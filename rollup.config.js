@@ -1,19 +1,20 @@
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
+import pkg from './package.json'
 
 export default {
   name: 'reas',
   input: 'src/index.js',
   output: [{
-    file: 'dist/index.js',
+    file: pkg.main,
     format: 'cjs',
     exports: 'named',
   }, {
-    file: 'dist/es.js',
+    file: pkg.module,
     format: 'es',
   }],
-  external: path => path.indexOf('node_modules') >= 0,
+  external: ['react', 'react-dom'].concat(Object.keys(pkg.dependencies)),
   plugins: [
     babel({
       exclude: 'node_modules/**',

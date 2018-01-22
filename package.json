@@ -1,7 +1,7 @@
 {
   "name": "reas",
   "version": "0.0.1",
-  "description": "A collection of beautiful React components",
+  "description": "A collection of beautiful, minimalist and highly customizable React components",
   "license": "MIT",
   "repository": "diegohaz/reas",
   "main": "dist/index.js",

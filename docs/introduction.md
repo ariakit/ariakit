@@ -5,7 +5,7 @@
 ### One component is one element
 No need to pass `innerComponentClassName` or any other props to nested components, because they don't exist.
 ```js { "showCode": true }
-const { Block, Popover, Tooltip } = require('reas');
+const { Block, Popover } = require('reas');
 
 <Block relative>
   <Popover visible>
