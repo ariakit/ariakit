@@ -1,0 +1,22 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "airbnb"
+  ],
+  "env": {
+    "jest": true,
+    "browser": true
+  },
+  "rules": {
+    "semi": [2, "never"],
+    "comma-dangle": [2, "always-multiline"],
+    "object-curly-newline": 0,
+    "import/prefer-default-export": 0,
+    "import/no-named-as-default": 0,
+    "import/no-webpack-loader-syntax": 0,
+    "import/no-extraneous-dependencies": 0,
+    "react/forbid-prop-types": 0,
+    "react/jsx-filename-extension": 0,
+    "react/prop-types": [2, { "skipUndeclared": true } ]
+  }
+}
