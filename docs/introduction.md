@@ -1,3 +1,9 @@
+<br /><br />
+
+- [GitHub repository](https://github.com/diegohaz/reas)
+
+<br />
+
 `reas` is a component system library built on top of [React](https://reactjs.org/) and [styled-components](https://www.styled-components.com/). The following principles were used to design it:
 
 <br /><br />
