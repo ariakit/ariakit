@@ -2,7 +2,7 @@ const path = require('path')
 const { createConfig, babel, resolve } = require('webpack-blocks')
 
 module.exports = {
-  title: 'Reas',
+  title: 'reas',
   webpackConfig: createConfig([
     babel(),
     resolve({ alias: { reas: path.join(__dirname, 'src') } }),
