@@ -1,5 +1,5 @@
-<img src="logo/logo.png" alt="reas" height="80" />
-<br /><br />
+<div><img src="logo/logo.png" alt="reas" height="100" /></div>
+<br />
 
 [![Generated with nod](https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square)](https://github.com/diegohaz/nod)
 [![NPM version](https://img.shields.io/npm/v/reas.svg?style=flat-square)](https://npmjs.org/package/reas)
