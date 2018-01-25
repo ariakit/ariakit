@@ -4,9 +4,9 @@ import commonjs from 'rollup-plugin-commonjs'
 import pkg from './package.json'
 
 export default {
-  name: 'reas',
   input: 'src/index.js',
   output: [{
+    name: 'reas',
     file: pkg.main,
     format: 'cjs',
     exports: 'named',
