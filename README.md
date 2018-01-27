@@ -1,11 +1,37 @@
-<div><img src="logo/logo.png" alt="reas" height="100" /></div>
-<br />
+<p align="center">
+  <br /><br />
+  <img src="logo/logo-vertical.png" alt="reas" height="150" />
+  <br /><br /><br />
 
-[![Generated with nod](https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square)](https://github.com/diegohaz/nod)
-[![NPM version](https://img.shields.io/npm/v/reas.svg?style=flat-square)](https://npmjs.org/package/reas)
-[![Build Status](https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square)](https://travis-ci.org/diegohaz/reas) [![Coverage Status](https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square)](https://codecov.io/gh/diegohaz/reas/branch/master)
+  <a href="https://github.com/diegohaz/nod">
+    <img 
+      alt="Generated with nod"
+      src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" 
+    />
+  </a>
 
------
+  <a href="https://npmjs.org/package/reas">
+    <img 
+      alt="NPM version"
+      src="https://img.shields.io/npm/v/reas.svg?style=flat-square" 
+    />
+  </a>
+
+  <a href="https://travis-ci.org/diegohaz/reas">
+    <img
+      alt="Build Status"
+      src="https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square" 
+    />
+  </a>
+
+  <a href="https://codecov.io/gh/diegohaz/reas/branch/master">
+    <img 
+      alt="Coverage Status"
+      src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" 
+    />
+  </a>
+  <br /><br />
+</p>
 
 A minimalist and highly customizable component system built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
 
@@ -24,21 +50,37 @@ npm:
 npm install --save reas
 ```
 
-## Usage
+## Example
+
+<p align="center">
+  <img 
+    src="https://user-images.githubusercontent.com/3068563/35465289-0cb7fe96-02e2-11e8-8bc5-60abcb6e92ac.gif"
+    width="200" 
+  />
+</p>
+
+Play with it on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) or go to [Documentation](https://reas.js.org) for more examples.
 
 ```jsx
 import React from 'react'
 import { render } from 'react-dom'
-import { Block, Popover } from 'reas'
+import { InlineBlock, Button, Popover, Backdrop, Shadow, withPopoverState } from 'reas'
 
-const App = () => (
-  <Block>
-    <Popover visible>
+const TransparentBackdrop = Backdrop.as(Popover.Hide).extend`
+  background-color: transparent;
+`
+
+const App = withPopoverState(({ popover }) => (
+  <InlineBlock relative>
+    <Button as={Popover.Toggle} {...popover}>Toggle</Button>
+    <TransparentBackdrop {...popover} />
+    <Popover {...popover}>
       <Popover.Arrow />
+      <Shadow depth={4} />
       Popover
     </Popover>
-  </Block>
-)
+  </InlineBlock>
+))
 
 render(<App />, document.getElementById('root'))
 ```
