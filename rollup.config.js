@@ -1,9 +1,10 @@
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
+import replace from 'rollup-plugin-replace'
 import commonjs from 'rollup-plugin-commonjs'
 import filesize from 'rollup-plugin-filesize'
 import uglify from 'rollup-plugin-uglify'
-import builtins from 'rollup-plugin-node-builtins'
+import ignore from 'rollup-plugin-ignore'
 import pkg from './package.json'
 
 const name = 'reas'
@@ -19,6 +20,7 @@ const common = {
     }),
     commonjs({
       include: /node_modules/,
+      ignoreGlobal: true,
       namedExports: {
         'pick-react-known-prop': ['pickSVGProps', 'pickHTMLProps'],
       },
@@ -57,11 +59,18 @@ const unpkg = Object.assign({}, common, {
     file: pkg.unpkg,
     format: 'umd',
     exports: 'named',
+    globals: {
+      react: 'React',
+      'react-dom': 'ReactDOM',
+    },
   },
   external,
   plugins: common.plugins.concat([
-    builtins(),
+    ignore(['stream']),
     uglify(),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
     resolve({
       preferBuiltins: false,
     }),
