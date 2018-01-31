@@ -1,10 +1,27 @@
 const path = require('path')
-const { createConfig, babel, resolve } = require('webpack-blocks')
+const {
+  createConfig,
+  babel,
+  resolve,
+  match,
+  url,
+  file,
+  css,
+  sourceMaps,
+} = require('webpack-blocks')
 
 module.exports = {
-  title: 'reas',
+  title: 'reas - React as Anything',
   webpackConfig: createConfig([
+    sourceMaps(),
     babel(),
+    css(),
+    match(['*.eot', '*.ttf', '*.woff', '*.woff2'], [
+      file(),
+    ]),
+    match(['*.gif', '*.jpg', '*.jpeg', '*.png', '*.svg', '*.webp'], [
+      url({ limit: 10000 }),
+    ]),
     resolve({ alias: { reas: path.join(__dirname, 'src') } }),
   ]),
   getComponentPathLine(componentPath) {
@@ -12,6 +29,12 @@ module.exports = {
     return `import { ${name} } from 'reas'`
   },
   styleguideDir: 'docs',
+  template: 'docs/template.html',
+  styleguideComponents: {
+    StyleGuideRenderer: path.join(__dirname, 'docs/components/StyleGuideRenderer.js'),
+    ToolbarButton: path.join(__dirname, 'docs/components/ToolbarButton.js'),
+    Editor: path.join(__dirname, 'docs/components/Editor.js'),
+  },
   skipComponentsWithoutExample: true,
   compilerConfig: {
     transforms: {
@@ -22,35 +45,30 @@ module.exports = {
   sections: [
     {
       name: 'Introduction',
-      content: 'docs/introduction.md',
+      content: 'docs/contents/intro.md',
     },
     {
-      name: 'Documentation',
+      name: 'Guide',
       sections: [
         {
           name: 'Installation',
-          content: 'docs/installation.md',
-          description: 'The description for the installation section',
+          content: 'docs/contents/installation.md',
         },
         {
           name: 'as',
-          content: 'docs/as.md',
-          description: 'The description for the installation section',
+          content: 'docs/contents/as.md',
         },
         {
           name: 'Styling',
-          content: 'docs/styling.md',
-          description: 'The description for the installation section',
+          content: 'docs/contents/styling.md',
         },
         {
           name: 'State',
-          content: 'docs/state.md',
-          description: 'The description for the installation section',
+          content: 'docs/contents/state.md',
         },
         {
           name: 'Behaviors',
-          content: 'docs/behaviors.md',
-          description: 'The description for the installation section',
+          content: 'docs/contents/behaviors.md',
         },
       ],
     },

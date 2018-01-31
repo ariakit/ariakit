@@ -56,8 +56,8 @@ class Component extends React.Component {
         active={active}
         aria-selected={active}
         aria-controls={`${tab}Panel`}
-        tabIndex={0}
         {...this.props}
+        tabIndex={active ? 0 : -1}
         onClick={flow(this.show, onClick)}
         onFocus={flow(this.show, onFocus)}
         onKeyDown={flow(this.keyDown, onKeyDown)}

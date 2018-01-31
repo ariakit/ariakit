@@ -6,6 +6,9 @@ import Flex from '../Flex'
 const Tabs = styled(Flex)`
   align-items: flex-end;
   list-style: none;
+  @media screen and (max-width: 640px) {
+    overflow-x: auto;
+  }
 `
 
 const enhance = compose(
