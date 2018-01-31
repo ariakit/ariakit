@@ -1,6 +1,6 @@
 {
   "name": "reas",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A minimalist and highly customizable component system built on top of React and styled-components",
   "license": "MIT",
   "repository": "diegohaz/reas",
