@@ -20,6 +20,10 @@ const StyledCodeMirror = styled(CodeMirror)`
     .CodeMirror-lines {
       font-size: 16px;
       font-weight: 400;
+
+      @media screen and (max-width: 640px) {
+        font-size: 14px;
+      }
     }
   }
 `

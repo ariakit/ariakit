@@ -19,6 +19,10 @@ const StyledMenu = Menu.extend`
   border-right: 1px solid #eee;
   max-height: calc(100vh - 32px);
   overflow: auto;
+
+  @media screen and (max-width: 800px) {
+    display: none;
+  }
 `
 
 const Contents = ({ children, sections, ...props }) => (

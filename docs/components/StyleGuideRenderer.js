@@ -33,6 +33,9 @@ const Wrapper = Block.extend`
       padding: 0;
       background: none;
       font-size: 16px;
+      @media screen and (max-width: 640px) {
+        font-size: 14px;
+      }
     }
   }
 `
