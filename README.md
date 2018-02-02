@@ -63,7 +63,7 @@ Play with it on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) or go to [Doc
 ```jsx
 import React from 'react'
 import { render } from 'react-dom'
-import { InlineBlock, Button, Popover, Backdrop, Shadow, withPopoverState } from 'reas'
+import { InlineBlock, Button, Popover, withPopoverState } from 'reas'
 
 const TransparentBackdrop = Backdrop.as(Popover.Hide).extend`
   background-color: transparent;
@@ -72,10 +72,8 @@ const TransparentBackdrop = Backdrop.as(Popover.Hide).extend`
 const App = withPopoverState(({ popover }) => (
   <InlineBlock relative>
     <Button as={Popover.Toggle} {...popover}>Toggle</Button>
-    <TransparentBackdrop {...popover} />
     <Popover {...popover}>
       <Popover.Arrow />
-      <Shadow depth={4} />
       Popover
     </Popover>
   </InlineBlock>
