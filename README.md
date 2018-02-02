@@ -30,7 +30,7 @@
     alt="Coverage Status"
     src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" 
   />
-</a><br />
+</a><br /><br />
 
 A minimalist and highly customizable component system built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
 
