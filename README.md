@@ -65,10 +65,6 @@ import React from 'react'
 import { render } from 'react-dom'
 import { InlineBlock, Button, Popover, withPopoverState } from 'reas'
 
-const TransparentBackdrop = Backdrop.as(Popover.Hide).extend`
-  background-color: transparent;
-`
-
 const App = withPopoverState(({ popover }) => (
   <InlineBlock relative>
     <Button as={Popover.Toggle} {...popover}>Toggle</Button>
