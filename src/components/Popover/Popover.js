@@ -1,5 +1,11 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic, withProps } from 'recompose'
+import {
+  compose,
+  setDisplayName,
+  setPropTypes,
+  setStatic,
+  withProps,
+} from 'recompose'
 import as from '../../enhancers/as'
 import Hidden from '../Hidden'
 import Perpendicular from '../Perpendicular'

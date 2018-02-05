@@ -37,9 +37,7 @@ const main = Object.assign({}, common, {
     exports: 'named',
   },
   external: allExternal,
-  plugins: common.plugins.concat([
-    resolve(),
-  ]),
+  plugins: common.plugins.concat([resolve()]),
 })
 
 const module = Object.assign({}, common, {
@@ -48,9 +46,7 @@ const module = Object.assign({}, common, {
     format: 'es',
   },
   external: allExternal,
-  plugins: common.plugins.concat([
-    resolve(),
-  ]),
+  plugins: common.plugins.concat([resolve()]),
 })
 
 const unpkg = Object.assign({}, common, {
@@ -77,8 +73,4 @@ const unpkg = Object.assign({}, common, {
   ]),
 })
 
-export default [
-  main,
-  module,
-  unpkg,
-]
+export default [main, module, unpkg]

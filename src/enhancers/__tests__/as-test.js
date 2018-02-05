@@ -96,6 +96,6 @@ it('renders with shorthand style', () => {
   const Comp = ({ as: T, ...props }) => <T {...props} />
   const Div = as('div')(Comp)
 
-  const wrapper = shallow(<Div fixed />)
-  expect(wrapper.html()).toMatch(/style="position:fixed"/)
+  const wrapper = shallow(<Div width={50} />)
+  expect(wrapper.html()).toMatch(/style="width:50px"/)
 })

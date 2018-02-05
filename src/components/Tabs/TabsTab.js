@@ -34,7 +34,7 @@ class Component extends React.Component {
     show(tab)
   }
 
-  keyDown = (e) => {
+  keyDown = e => {
     const keyMap = {
       ArrowLeft: this.props.previous,
       ArrowRight: this.props.next,
@@ -46,10 +46,19 @@ class Component extends React.Component {
   }
 
   render() {
-    const { isCurrent, tab, className, onClick, onFocus, onKeyDown } = this.props
+    const {
+      isCurrent,
+      tab,
+      className,
+      onClick,
+      onFocus,
+      onKeyDown,
+    } = this.props
     const active = isCurrent(tab)
     const activeClassName = active ? 'active' : ''
-    const finalClassName = [className, activeClassName].filter(c => !!c).join(' ')
+    const finalClassName = [className, activeClassName]
+      .filter(c => !!c)
+      .join(' ')
     return (
       <InlineFlex
         id={`${tab}Tab`}

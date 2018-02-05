@@ -53,7 +53,9 @@ it('passes props with namespace with options', () => {
       bar: text,
     }),
   ])
-  const Component = enhance({ text: 'baz' })(props => <div>{props.foo.bar}</div>)
+  const Component = enhance({ text: 'baz' })(props => (
+    <div>{props.foo.bar}</div>
+  ))
   const wrapper = shallow(<Component />)
   expect(wrapper.html()).toMatch(/^<div>baz<\/div>/)
 })
@@ -64,7 +66,9 @@ it('passes props with namespace with options and name', () => {
       bar: text,
     }),
   ])
-  const Component = enhance({ text: 'baz', name: 'qux' })(props => <div>{props.qux.bar}</div>)
+  const Component = enhance({ text: 'baz', name: 'qux' })(props => (
+    <div>{props.qux.bar}</div>
+  ))
   const wrapper = shallow(<Component />)
   expect(wrapper.html()).toMatch(/^<div>baz<\/div>/)
 })

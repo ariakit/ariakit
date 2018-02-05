@@ -36,7 +36,6 @@ const { Box, Field, Label, Input, Button, Shadow } = require('reas');
           <Button>Button</Button>
         </Group>
       </Field>
-      <Group.Item as={Button}>Button</Group.Item>
     </Group>
     <Button>Button</Button>
   </Group>

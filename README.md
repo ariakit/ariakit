@@ -7,30 +7,10 @@
 
 # reas
 
-<a href="https://github.com/diegohaz/nod">
-  <img 
-    alt="Generated with nod"
-    src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" 
-  />
-</a>
-<a href="https://npmjs.org/package/reas">
-  <img 
-    alt="NPM version"
-    src="https://img.shields.io/npm/v/reas.svg?style=flat-square" 
-  />
-</a>
-<a href="https://travis-ci.org/diegohaz/reas">
-  <img
-    alt="Build Status"
-    src="https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square" 
-  />
-</a>
-<a href="https://codecov.io/gh/diegohaz/reas/branch/master">
-  <img 
-    alt="Coverage Status"
-    src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" 
-  />
-</a><br /><br />
+<a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
+<a href="https://npmjs.org/package/reas"><img alt="NPM version" src="https://img.shields.io/npm/v/reas.svg?style=flat-square" /></a>
+<a href="https://travis-ci.org/diegohaz/reas"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square" /></a>
+<a href="https://codecov.io/gh/diegohaz/reas/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" /></a>
 
 A minimalist and highly customizable component system built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
 

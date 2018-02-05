@@ -15,7 +15,8 @@ const Tooltip = styled(Perpendicular)`
   border-radius: 0.15384em;
   padding: 0.75em 1em;
 
-  *:hover > &, *:focus > & {
+  *:hover > &,
+  *:focus > & {
     opacity: 1;
   }
 `

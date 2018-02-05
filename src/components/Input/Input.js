@@ -19,7 +19,8 @@ const Input = styled(BlockBox)`
     padding: 0.5em;
     height: auto;
   }
-  &[type=checkbox], &[type=radio] {
+  &[type='checkbox'],
+  &[type='radio'] {
     display: inline-block;
     width: auto;
     height: auto;

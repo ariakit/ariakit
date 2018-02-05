@@ -14,11 +14,13 @@ const opposites = {
 
 const opposite = ({ pos }) => opposites[pos]
 
-const perpendicular = ({ pos }) => (pos === 'left' || pos === 'right' ? 'top' : 'left')
+const perpendicular = ({ pos }) =>
+  pos === 'left' || pos === 'right' ? 'top' : 'left'
 
 const perpendicularOpposite = props => opposites[perpendicular(props)]
 
-const perpendicularAxis = ({ pos }) => (pos === 'left' || pos === 'right' ? 'Y' : 'X')
+const perpendicularAxis = ({ pos }) =>
+  pos === 'left' || pos === 'right' ? 'Y' : 'X'
 
 const rotation = ({ rotate, pos, reverse }) => {
   if (!rotate) return null
@@ -39,17 +41,14 @@ const Perpendicular = styled(Base)`
 
   ${switchProp('align', {
     start: css`
-      ${perpendicular}: 0;
-    `,
+      ${perpendicular}: 0;`,
     center: css`
       ${perpendicular}: 50%;
-      transform: translate${perpendicularAxis}(-50%) ${rotation};
-    `,
+      transform: translate${perpendicularAxis}(-50%) ${rotation};`,
     end: css`
-      ${perpendicularOpposite}: 0;
-    `,
-  })}
-  `
+      ${perpendicularOpposite}: 0;`,
+  })};
+`
 
 const enhance = compose(
   as('div'),
