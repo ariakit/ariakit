@@ -1,6 +1,6 @@
 import React from 'react'
 import GoMarkGithub from 'react-icons/lib/go/mark-github'
-import as, { Button, Inline } from '../../src'
+import as, { Button } from '../../src'
 
 const Wrapper = Button.extend`
   background-color: white;
@@ -13,7 +13,7 @@ const Wrapper = Button.extend`
 const GitHubButton = props => (
   <Wrapper {...props} href="https://github.com/diegohaz/reas">
     <GoMarkGithub />
-    <Inline marginLeft={5}>View on GitHub</Inline>
+    View on GitHub
   </Wrapper>
 )
 

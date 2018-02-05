@@ -23,8 +23,13 @@ const Reas = ({ as: t, ...props }) => {
   if (typeof T === 'string') {
     const { dangerouslySetInnerHTML, children } = props
     const propsWithoutStyle = omit(props, Object.keys(style))
-    const propsWithStyle = { ...propsWithoutStyle, ...(style ? { style } : {}) }
-    const otherProps = dangerouslySetInnerHTML ? { dangerouslySetInnerHTML } : {}
+    const propsWithStyle = {
+      ...propsWithoutStyle,
+      ...(style ? { style } : {}),
+    }
+    const otherProps = dangerouslySetInnerHTML
+      ? { dangerouslySetInnerHTML }
+      : {}
     const allProps = {
       ...(isSVGElement(T) && pickSVGProps(propsWithStyle)),
       ...pickHTMLProps(propsWithStyle),
@@ -49,31 +54,33 @@ const StyledReas = styled(Reas)`
 
 StyledReas.displayName = 'styled(Reas)'
 
-const getComponentName = component => (
+const getComponentName = component =>
   component.displayName || component.name || component
-)
 
-const getDisplayName = ([Component, ...elements]) => (
+const getDisplayName = ([Component, ...elements]) =>
   `${getComponentName(Component)}.as(${elements.map(getComponentName)})`
-)
 
-const getAs = (components, props) => (
+const getAs = (components, props) =>
   components.concat(props.as || [], props.nextAs || [])
-)
 
-const as = asComponents => (WrappedComponent) => {
+const as = asComponents => WrappedComponent => {
   const components = [].concat(WrappedComponent, asComponents)
-  const AsStyledReas = props => <StyledReas {...props} as={getAs(components, props)} />
+  const AsStyledReas = props => (
+    <StyledReas {...props} as={getAs(components, props)} />
+  )
   AsStyledReas.displayName = getDisplayName(components)
 
   const StyledAsStyledReas = styled(AsStyledReas)``
   StyledAsStyledReas.displayName = getComponentName(WrappedComponent)
   StyledAsStyledReas.styledComponentId = StyledAsStyledReas.displayName
 
-  StyledAsStyledReas.propTypes = components.reduce((finalPropTypes, component) => ({
-    ...finalPropTypes,
-    ...component.propTypes,
-  }), {})
+  StyledAsStyledReas.propTypes = components.reduce(
+    (finalPropTypes, component) => ({
+      ...finalPropTypes,
+      ...component.propTypes,
+    }),
+    {},
+  )
 
   StyledAsStyledReas.as = otherElements => as(otherElements)(StyledAsStyledReas)
 

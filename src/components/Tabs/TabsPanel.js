@@ -4,7 +4,7 @@ import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Hidden from '../Hidden'
 
-const TabsPanel = (props) => {
+const TabsPanel = props => {
   const { isCurrent, tab } = props
   return (
     <Hidden

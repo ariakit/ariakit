@@ -7,11 +7,3 @@ it('picks css props correctly', () => {
   }
   expect(pickCSSProps(props)).toEqual({ position: 'absolute' })
 })
-
-it('picks shorthand props', () => {
-  const props = {
-    foo: 'bar',
-    absolute: true,
-  }
-  expect(pickCSSProps(props)).toEqual({ position: 'absolute' })
-})

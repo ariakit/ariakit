@@ -17,7 +17,9 @@ class Component extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { visible, hideOnEsc } = this.props
     if (visible !== nextProps.visible && hideOnEsc) {
-      const addOrRemove = nextProps.visible ? 'addEventListener' : 'removeEventListener'
+      const addOrRemove = nextProps.visible
+        ? 'addEventListener'
+        : 'removeEventListener'
       document.body[addOrRemove]('keydown', this.handleKeyDown)
     }
   }
@@ -36,9 +38,11 @@ class Component extends React.Component {
 }
 
 const Hidden = styled(Component)`
-  ${props => !props.visible && css`
-    display: none !important;
-  `}
+  ${props =>
+    !props.visible &&
+    css`
+      display: none !important;
+    `};
 `
 
 const enhance = compose(

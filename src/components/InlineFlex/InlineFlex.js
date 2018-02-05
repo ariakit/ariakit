@@ -1,16 +1,16 @@
 import styled from 'styled-components'
 import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
-import Base from '../Base'
+import Flex from '../Flex'
 
-const InlineFlex = styled(Base)`
+const InlineFlex = styled(Flex)`
   display: inline-flex;
 `
 
 const enhance = compose(
   as('div'),
   setDisplayName('InlineFlex'),
-  setPropTypes(Base.propTypes),
+  setPropTypes(Flex.propTypes),
 )
 
 export default enhance(InlineFlex)

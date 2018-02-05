@@ -14,7 +14,7 @@
 const FaBeer = require('react-icons/lib/fa/beer');
 const { Inline } = require('reas');
 
-<Button><FaBeer /><Inline marginLeft={4}>Beer</Inline></Button>
+<Button><FaBeer />Beer</Button>
 ```
 
 ```js

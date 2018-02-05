@@ -7,22 +7,20 @@ import Box from '../Box'
 
 const InlineFlexBox = InlineFlex.as(Box)
 
-const handleKeyPress = (evt) => {
+const handleKeyPress = evt => {
   if (evt.charCode === 32 || evt.charCode === 13) {
     evt.preventDefault()
     evt.target.click()
   }
 }
 
-const Component = (props) => {
+const Component = props => {
   const otherProps = {
     role: 'button',
     tabIndex: 0,
     onKeyPress: handleKeyPress,
   }
-  return (
-    <InlineFlexBox {...otherProps} {...props} />
-  )
+  return <InlineFlexBox {...otherProps} {...props} />
 }
 
 const Button = styled(Component)`
@@ -40,11 +38,13 @@ const Button = styled(Component)`
   background-color: rgba(0, 0, 0, 0.03);
   height: 2.5em;
   min-width: 2.5em;
-  padding: 0 0.5em;
-  &:hover, &:focus {
+  padding: 0 0.68em;
+  &:hover,
+  &:focus {
     box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.1);
   }
-  &:active, &.active {
+  &:active,
+  &.active {
     box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.2);
   }
   &:after {
@@ -64,10 +64,16 @@ const Button = styled(Component)`
       display: block;
     }
   }
+  &:not(button):not(select):not(input) {
+    display: inline-grid;
+    grid-gap: 0.68em;
+    grid-auto-flow: column;
+    align-content: center;
+  }
 `
 
 const enhance = compose(
-  as('button'),
+  as('div'),
   setDisplayName('Button'),
   setPropTypes(InlineFlexBox.propTypes),
 )

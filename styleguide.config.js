@@ -16,12 +16,11 @@ module.exports = {
     sourceMaps(),
     babel(),
     css(),
-    match(['*.eot', '*.ttf', '*.woff', '*.woff2'], [
-      file(),
-    ]),
-    match(['*.gif', '*.jpg', '*.jpeg', '*.png', '*.svg', '*.webp'], [
-      url({ limit: 10000 }),
-    ]),
+    match(['*.eot', '*.ttf', '*.woff', '*.woff2'], [file()]),
+    match(
+      ['*.gif', '*.jpg', '*.jpeg', '*.png', '*.svg', '*.webp'],
+      [url({ limit: 10000 })],
+    ),
     resolve({ alias: { reas: path.join(__dirname, 'src') } }),
   ]),
   getComponentPathLine(componentPath) {
@@ -31,7 +30,10 @@ module.exports = {
   styleguideDir: 'docs',
   template: 'docs/template.html',
   styleguideComponents: {
-    StyleGuideRenderer: path.join(__dirname, 'docs/components/StyleGuideRenderer.js'),
+    StyleGuideRenderer: path.join(
+      __dirname,
+      'docs/components/StyleGuideRenderer.js',
+    ),
     ToolbarButton: path.join(__dirname, 'docs/components/ToolbarButton.js'),
     Editor: path.join(__dirname, 'docs/components/Editor.js'),
   },
