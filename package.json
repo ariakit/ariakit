@@ -45,12 +45,12 @@
     "reas"
   ],
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.5",
     "pick-react-known-prop": "^0.1.1",
     "prop-types": "^15.5.10",
     "react-required-if": "^1.0.1",
     "recompose": "^0.26.0",
-    "styled-components": "^3.1.4",
+    "styled-components": "^3.1.6",
     "styled-tools": "^0.4.0"
   },
   "devDependencies": {
@@ -68,7 +68,7 @@
     "codemirror-one-dark-theme": "^1.0.6",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.0",
-    "eslint": "^4.0.0",
+    "eslint": "^4.17.0",
     "eslint-config-airbnb": "^16.0.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-import": "^2.2.0",
@@ -84,10 +84,10 @@
     "react-codemirror2": "^4.0.0",
     "react-dom": "^16.0.0",
     "react-icons": "^2.2.5",
-    "react-styleguidist": "^6.2.1",
+    "react-styleguidist": "^6.2.2",
     "react-test-renderer": "^16.2.0",
     "rimraf": "^2.6.1",
-    "rollup": "^0.55.1",
+    "rollup": "^0.55.3",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.3.0",
     "rollup-plugin-filesize": "^1.5.0",
