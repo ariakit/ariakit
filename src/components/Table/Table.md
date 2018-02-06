@@ -4,10 +4,12 @@ const { Block } = require('reas');
 <Block overflowX="auto">
   <Table>
     <Table.Caption>A test table with merged cells</Table.Caption>
-    <Table.Column />
-    <Table.Column />
-    <Table.Column />
-    <Table.ColumnGroup backgroundColor="bisque" />
+    <Table.ColumnGroup>
+      <Table.Column />
+      <Table.Column />
+      <Table.Column />
+      <Table.Column backgroundColor="bisque" />
+    </Table.ColumnGroup>
     <Table.Head>
       <Table.Row>
         <Table.Cell rowSpan={2} />

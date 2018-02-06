@@ -14,7 +14,7 @@ const { withStateHandlers } = require('recompose');
 
 const enhance = withStateHandlers(
   { visible: true },
-  { hide: () => () => ({ visible: false }) },
+  { hide: () => () => ({ visible: false }) }
 );
 
 const Example = enhance(({ visible, hide }) => (
@@ -28,7 +28,7 @@ As a convenience, `reas` provides state enhancers so you don't need to worry abo
 ```js { "showCode": true }
 const { Hidden, withHiddenState } = require('reas');
 
-const enhance = withHiddenState({ visible: true })
+const enhance = withHiddenState({ visible: true });
 
 const Example = enhance(({ hidden }) => (
   <Hidden destroy hideOnEsc {...hidden}>Press esc</Hidden>

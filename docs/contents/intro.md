@@ -22,17 +22,18 @@ const { Button } = require('reas');
 ### A component can be rendered [`as`](#as) any other React component
 With that, you can render a `Button` as [`react-router`](https://reacttraining.com/react-router/)'s `Link`, for example. But, specially for `reas`, this is important so you can use [behaviors](#behaviors).
 ```js
-const { Button, Flex } = require('reas');
+const { Button, Hidden } = require('reas');
 
-<Button as={Flex}>Button</Button>
+// remove visible prop
+<Button as={Hidden} visible>I'm a button that can be hidden</Button>
 ```
 
 ### A component can be rendered [`as`](#as) multiple other components
-`Button` is `button`, `Flex` is `div`, but you can combine both and render it as a `span`.
+You can combine multiple components to create neat compositions.
 ```js
-const { Button, Flex } = require('reas');
+const { Button, Hidden } = require('reas');
 
-<Button as={[Flex, 'span']}>I'm a clickable/focusable span with display:flex</Button>
+<Button as={[Hidden, 'span']} visible>I'm a clickable/focusable span that can be hidden</Button>
 ```
 
 ### A component can be [styled](#styling) with props
@@ -60,7 +61,7 @@ const StyledButton = Button.extend`
 ### A `reas` component can be created by using [`as`](#as) enhancer
 Take advantage of all above features in your components.
 ```js
-const as = require('reas').default;
+const { as } = require('reas');
 
 const enhance = as('span');
 const Example = enhance(({ as: T, ...props }) => <T {...props} />);

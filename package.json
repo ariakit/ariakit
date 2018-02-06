@@ -84,7 +84,7 @@
     "react-codemirror2": "^4.0.0",
     "react-dom": "^16.0.0",
     "react-icons": "^2.2.5",
-    "react-styleguidist": "^6.2.2",
+    "react-styleguidist": "6.2.1",
     "react-test-renderer": "^16.2.0",
     "rimraf": "^2.6.1",
     "rollup": "^0.55.3",
