@@ -3,7 +3,7 @@ const { Label, Input } = require('reas');
 
 <Field>
   <Label htmlFor="input">Label</Label>
-  <Input id="input" placeholder="Input" />
+  <Input id="input1" placeholder="Input" />
 </Field>
 ```
 
