@@ -1,4 +1,4 @@
-```js
+```jsx
 <Paragraph>
   Popovers are typically dismissable, whether by click on other parts of the page or second
   clicking the popover target (depending on implementation), for that reason you can set up

@@ -1,33 +1,33 @@
-```js
+```jsx
 <Input placeholder="Input" />
 ```
 
-```js
+```jsx
 <Input disabled placeholder="Input" />
 ```
 
-```js
+```jsx
 <Input backgroundColor="palevioletred" color="white" placeholder="Input" />
 ```
 
-```js
+```jsx
 <Input as="select">
   <option>Select</option>
 </Input>
 ```
 
-```js
+```jsx
 <label>
   <Input type="checkbox" /> Input
 </label>
 ```
 
-```js
+```jsx
 <label>
   <Input type="radio" /> Input
 </label>
 ```
 
-```js
+```jsx
 <Input as="textarea" />
 ```

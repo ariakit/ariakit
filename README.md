@@ -1,7 +1,7 @@
 <p align="center">
   <br /><br /><br /><br /><br /><br /><br /><br />
   <img src="logo/logo-vertical.png" alt="reas" height="150" />
-  
+
   <br /><br /><br /><br /><br /><br /><br />
 </p>
 
@@ -32,9 +32,9 @@ npm install --save reas
 ## Example
 
 <p align="center">
-  <img 
+  <img
     src="https://user-images.githubusercontent.com/3068563/35465289-0cb7fe96-02e2-11e8-8bc5-60abcb6e92ac.gif"
-    width="200" 
+    width="200"
   />
 </p>
 

@@ -1,29 +1,29 @@
-```js
+```jsx
 <Button>Button</Button>
 ```
 
-```js
+```jsx
 <Button disabled>Button</Button>
 ```
 
-```js
+```jsx
 <Button as="a" href="https://reas.js.org" target="_Blank">Go to Website</Button>
 ```
 
-```js
+```jsx
 const FaBeer = require('react-icons/lib/fa/beer');
 const { Inline } = require('reas');
 
 <Button><FaBeer />Beer</Button>
 ```
 
-```js
+```jsx
 <Button as="select">
   <option>Select</option>
 </Button>
 ```
 
-```js
+```jsx
 const { Shadow } = require('reas');
 
 <Button>Button <Shadow /></Button>

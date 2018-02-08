@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Block } = require('reas');
 
 <Block relative width={50} height={50}>

@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Block, Button, Flex, Hidden, withHiddenState } = require('reas');
 
 const enhance = withHiddenState('backdrop');
