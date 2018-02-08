@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Block, withTabsState } = require('reas');
 
 const enhance = withTabsState();

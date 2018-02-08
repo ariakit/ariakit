@@ -1,20 +1,20 @@
-```js
+```jsx
 <Label>Label</Label>
 ```
 
-```js
+```jsx
 const { Input } = require('reas');
 
 <Label>Label <Input /></Label>
 ```
 
-```js
+```jsx
 const { Input } = require('reas');
 
 <Label><Input type="checkbox" /> Label</Label>
 ```
 
-```js
+```jsx
 const { Input } = require('reas');
 
 <Label><Input type="radio" /> Label</Label>

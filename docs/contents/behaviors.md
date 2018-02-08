@@ -2,7 +2,7 @@ Finally, we have behaviors, which are basically components that apply event hand
 
 Let's take the [`Hidden`](#hidden) example, but now using a behavior component to toggle its state:
 
-```js { "showCode": true }
+```jsx { "showCode": true }
 const { Block, Button, Hidden, withHiddenState } = require('reas');
 
 const enhance = withHiddenState();
@@ -17,7 +17,7 @@ const Example = enhance(({ hidden }) => (
 ```
 
 [`Step`](#step) is another example of a component which takes advantage from state enhancers and behaviors. Let's take a look:
-```js { "showCode": true }
+```jsx { "showCode": true }
 const { Block, Group, Button, Step, withStepState } = require('reas');
 
 const enhance = withStepState({ current: 0 });

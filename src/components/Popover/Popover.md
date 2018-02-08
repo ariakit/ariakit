@@ -1,4 +1,4 @@
-```js
+```jsx
 const GoArrowLeft = require('react-icons/lib/go/arrow-left');
 const GoArrowRight = require('react-icons/lib/go/arrow-right');
 const {

@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Button } = require('reas');
 
 <Group>
@@ -8,7 +8,7 @@ const { Button } = require('reas');
 </Group>
 ```
 
-```js
+```jsx
 const { Button } = require('reas');
 
 <Group vertical>
@@ -18,7 +18,7 @@ const { Button } = require('reas');
 </Group>
 ```
 
-```js
+```jsx
 const { Box, Field, Label, Input, Button, Shadow } = require('reas');
 
 <Box relative border={0}>

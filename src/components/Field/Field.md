@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Label, Input } = require('reas');
 
 <Field>
@@ -7,7 +7,7 @@ const { Label, Input } = require('reas');
 </Field>
 ```
 
-```js
+```jsx
 const { Label, Group, Button, Input } = require('reas');
 
 <Field>
@@ -20,7 +20,7 @@ const { Label, Group, Button, Input } = require('reas');
 </Field>
 ```
 
-```js
+```jsx
 const { Box, Label, Input } = require('reas');
 
 <Field as={Box} padding={8} backgroundColor="rgba(0, 0, 0, 0.03)">

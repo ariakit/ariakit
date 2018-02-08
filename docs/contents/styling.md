@@ -1,7 +1,7 @@
 `reas` components are styled using [styled-components](https://www.styled-components.com).
 
 This is an example of how a component is defined in the library:
-```js static
+```jsx static
 import styled from 'styled-components'
 import as, { Base } from 'reas'
 
@@ -18,7 +18,7 @@ export default enhance(Box)
 <br />
 
 Then, you can easily extend `Box` and apply new styles:
-```js static
+```jsx static
 import { Box } from 'reas'
 
 const MyBox = Box.extend`
@@ -29,7 +29,7 @@ const MyBox = Box.extend`
 But, even if you don't use `styled`, enhancing component with `as` will transform it into a styled component, which means you can still `extend` it.
 
 Another way to style your enhanced components is by passing style props:
-```js static
+```jsx static
 <Box absolute backgroundColor="palevioletred" color="white" />
 ```
 

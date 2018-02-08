@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Block } = require('reas');
 
 <Block overflowX="auto">

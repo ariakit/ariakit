@@ -1,4 +1,4 @@
-```js
+```jsx
 const { InlineBlock, Button, Group, Popover, Flex, Paragraph, withStepState } = require('reas');
 
 const PopoverStep = props => (

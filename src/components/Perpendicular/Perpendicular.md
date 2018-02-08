@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Block } = require('reas');
 
 <Block relative margin={50} width={10} height={10} backgroundColor="palevioletred">
@@ -6,7 +6,7 @@ const { Block } = require('reas');
 </Block>
 ```
 
-```js
+```jsx
 const { Block } = require('reas');
 
 <Block overflow="auto">
@@ -27,7 +27,7 @@ const { Block } = require('reas');
 </Block>
 ```
 
-```js
+```jsx
 const { Block } = require('reas');
 
 <Block overflow="auto">

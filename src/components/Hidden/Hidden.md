@@ -1,4 +1,4 @@
-```js
+```jsx
 const { withHiddenState } = require('reas');
 
 const Example = withHiddenState(({ hidden }) => (

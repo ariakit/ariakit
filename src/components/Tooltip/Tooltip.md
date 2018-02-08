@@ -1,4 +1,4 @@
-```js
+```jsx
 const { Button } = require('reas');
 
 <Button>
@@ -7,7 +7,7 @@ const { Button } = require('reas');
 </Button>
 ```
 
-```js
+```jsx
 const { Button } = require('reas');
 
 <Button>
@@ -16,7 +16,7 @@ const { Button } = require('reas');
 </Button>
 ```
 
-```js
+```jsx
 const { Button } = require('reas');
 
 <Button margin={32}>
@@ -28,7 +28,7 @@ const { Button } = require('reas');
 </Button>
 ```
 
-```js
+```jsx
 const { Button } = require('reas');
 
 <Button>
