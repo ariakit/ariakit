@@ -58,7 +58,7 @@ module.exports = {
         },
         {
           name: 'Create React App',
-          content: 'docs/contents/quickstart.md',
+          content: 'docs/contents/create-react-app.md',
         },
         {
           name: 'as',
