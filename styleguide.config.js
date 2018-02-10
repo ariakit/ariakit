@@ -57,6 +57,10 @@ module.exports = {
           content: 'docs/contents/installation.md',
         },
         {
+          name: 'Create React App',
+          content: 'docs/contents/create-react-app.md',
+        },
+        {
           name: 'as',
           content: 'docs/contents/as.md',
         },
