@@ -7,16 +7,30 @@ import uglify from 'rollup-plugin-uglify'
 import ignore from 'rollup-plugin-ignore'
 import pkg from './package.json'
 
-const name = 'reas'
-const external = ['react', 'react-dom']
-const allExternal = external.concat(Object.keys(pkg.dependencies))
+const { name } = pkg
+const external = Object.keys(pkg.peerDependencies || {})
+const allExternal = external.concat(Object.keys(pkg.dependencies || {}))
+
+const makeExternalPredicate = externalArr => {
+  const pattern = new RegExp(`^(${externalArr.join('|')})($|/)`)
+  return id => pattern.test(id)
+}
+
+const useLodashEs = () => ({
+  visitor: {
+    ImportDeclaration(path) {
+      const { source } = path.node
+      source.value = source.value.replace(/^lodash($|\/)/, 'lodash-es$1')
+    },
+  },
+})
 
 const common = {
   input: 'src/index.js',
   plugins: [
     babel({
       exclude: 'node_modules/**',
-      plugins: ['styled-components', 'external-helpers'],
+      plugins: ['styled-components', 'external-helpers', useLodashEs],
     }),
     commonjs({
       include: /node_modules/,
@@ -36,7 +50,7 @@ const main = Object.assign({}, common, {
     format: 'cjs',
     exports: 'named',
   },
-  external: allExternal,
+  external: makeExternalPredicate(allExternal),
   plugins: common.plugins.concat([resolve()]),
 })
 
@@ -45,7 +59,7 @@ const module = Object.assign({}, common, {
     file: pkg.module,
     format: 'es',
   },
-  external: allExternal,
+  external: makeExternalPredicate(allExternal),
   plugins: common.plugins.concat([resolve()]),
 })
 
@@ -60,7 +74,7 @@ const unpkg = Object.assign({}, common, {
       'react-dom': 'ReactDOM',
     },
   },
-  external,
+  external: makeExternalPredicate(external),
   plugins: common.plugins.concat([
     ignore(['stream']),
     uglify(),

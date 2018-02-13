@@ -46,6 +46,7 @@
   ],
   "dependencies": {
     "lodash": "^4.17.5",
+    "lodash-es": "^4.17.5",
     "pick-react-known-prop": "^0.1.1",
     "prop-types": "^15.5.10",
     "react-required-if": "^1.0.1",
