@@ -27,21 +27,26 @@ const useLodashEs = () => ({
 
 const common = {
   input: 'src/index.js',
-  plugins: [
-    babel({
-      exclude: 'node_modules/**',
-      plugins: ['styled-components', 'external-helpers', useLodashEs],
-    }),
-    commonjs({
-      include: /node_modules/,
-      ignoreGlobal: true,
-      namedExports: {
-        'pick-react-known-prop': ['pickSVGProps', 'pickHTMLProps'],
-      },
-    }),
-    filesize(),
-  ],
 }
+
+const createCommonPlugins = ({ es = true } = {}) => [
+  babel({
+    exclude: 'node_modules/**',
+    plugins: [
+      'styled-components',
+      'external-helpers',
+      es && useLodashEs,
+    ].filter(Boolean),
+  }),
+  commonjs({
+    include: /node_modules/,
+    ignoreGlobal: true,
+    namedExports: {
+      'pick-react-known-prop': ['pickSVGProps', 'pickHTMLProps'],
+    },
+  }),
+  filesize(),
+]
 
 const main = Object.assign({}, common, {
   output: {
@@ -51,7 +56,7 @@ const main = Object.assign({}, common, {
     exports: 'named',
   },
   external: makeExternalPredicate(allExternal),
-  plugins: common.plugins.concat([resolve()]),
+  plugins: createCommonPlugins({ es: false }).concat([resolve()]),
 })
 
 const module = Object.assign({}, common, {
@@ -60,7 +65,7 @@ const module = Object.assign({}, common, {
     format: 'es',
   },
   external: makeExternalPredicate(allExternal),
-  plugins: common.plugins.concat([resolve()]),
+  plugins: createCommonPlugins().concat([resolve()]),
 })
 
 const unpkg = Object.assign({}, common, {
@@ -75,7 +80,7 @@ const unpkg = Object.assign({}, common, {
     },
   },
   external: makeExternalPredicate(external),
-  plugins: common.plugins.concat([
+  plugins: createCommonPlugins().concat([
     ignore(['stream']),
     uglify(),
     replace({
