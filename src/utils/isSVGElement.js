@@ -19,4 +19,4 @@ const elements = [
   'tspan',
 ]
 
-export default name => elements.includes(name)
+export default name => elements.indexOf(name) !== -1
