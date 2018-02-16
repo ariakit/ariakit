@@ -50,23 +50,21 @@ const withStepState = namespace('step', options => [
     unregister: props => step => {
       const {
         setItems,
-        indexOf,
-        current,
+        isCurrent,
         hide,
         hasNext,
         hasPrevious,
         previous,
       } = props
       setItems(items => {
-        const index = indexOf(step)
-        if (current === index && !hasNext()) {
+        if (isCurrent(step) && !hasNext()) {
           if (hasPrevious()) {
             previous()
           } else {
             hide()
           }
         }
-        return [...items.slice(0, index), ...items.slice(index + 1)]
+        return items.filter(item => item !== step)
       })
     },
   }),
