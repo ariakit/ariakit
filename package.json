@@ -14,11 +14,10 @@
     "url": "https://github.com/diegohaz"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=7"
   },
   "files": [
-    "dist",
-    "index.js"
+    "dist"
   ],
   "scripts": {
     "test": "jest",
