@@ -102,14 +102,12 @@ const withStepState = namespace(
       loop: typeof props.loop !== 'undefined' ? props.loop : !!options.loop,
     })),
     withState('ids', 'setIds', props => props.ids || options.ids || []),
-    withState(
-      'current',
-      'setCurrent',
-      props =>
-        typeof props.current !== 'undefined'
-          ? props.current
-          : options.current || -1,
-    ),
+    withState('current', 'setCurrent', props => {
+      if (typeof props.current !== 'undefined') {
+        return props.current
+      }
+      return typeof options.current !== 'undefined' ? options.current : -1
+    }),
     withHandlers(handlers),
   ],
   ['loop', 'ids', 'current'],

@@ -1,6 +1,6 @@
 import React from 'react'
 import { mount } from 'enzyme'
-import withPopoverState from '../withPopoverState'
+import withTabsState from '../withTabsState'
 
 const Base = () => null
 
@@ -9,7 +9,7 @@ const wrap = (enhance, props = {}) => {
   return mount(<Comp {...props} />)
 }
 
-const getState = (wrapper, prop = 'popover') =>
+const getState = (wrapper, prop = 'tabs') =>
   wrapper
     .update()
     .find(Base)
@@ -17,7 +17,8 @@ const getState = (wrapper, prop = 'popover') =>
 
 const structure = (wrapper, prop) => {
   const state = getState(wrapper, prop)
-  expect(state).toHaveProperty('popoverId', expect.any(String))
+  expect(state).toHaveProperty('loop', true)
+  expect(state).toHaveProperty('current', 0)
 }
 
 const createTests = enhance => {
@@ -26,6 +27,6 @@ const createTests = enhance => {
   test('name option', () => structure(wrap(enhance({ name: 'foo' })), 'foo'))
 }
 
-describe('withPopoverState', () => {
-  createTests(withPopoverState)
+describe('withTabsState', () => {
+  createTests(withTabsState)
 })
