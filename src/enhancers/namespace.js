@@ -1,7 +1,8 @@
 import { compose, withProps, mapProps } from 'recompose'
 import omit from 'lodash/omit'
+import difference from 'lodash/difference'
 
-export const namespace = (defaultName, hocsOrFn) => (
+export const namespace = (defaultName, hocsOrFn, includeProps = []) => (
   optionsOrComponent = defaultName,
 ) => {
   const name =
@@ -23,7 +24,7 @@ export const namespace = (defaultName, hocsOrFn) => (
           props,
           options.name,
           '$parentProps',
-          ...Object.keys(props.$parentProps),
+          ...difference(Object.keys(props.$parentProps), includeProps),
         ),
         ...props[options.name],
       },

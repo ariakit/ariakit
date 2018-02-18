@@ -4,9 +4,9 @@ import withHiddenState from '../withHiddenState'
 
 const Base = () => null
 
-const wrap = enhance => {
+const wrap = (enhance, props = {}) => {
   const Comp = enhance(Base)
-  return mount(<Comp />)
+  return mount(<Comp {...props} />)
 }
 
 const getState = (wrapper, prop = 'hidden') =>
@@ -17,68 +17,64 @@ const getState = (wrapper, prop = 'hidden') =>
 
 const structure = (wrapper, prop) => {
   const state = getState(wrapper, prop)
-  expect(state).toEqual({
-    visible: expect.any(Boolean),
-    setVisible: expect.any(Function),
-    toggle: expect.any(Function),
-    show: expect.any(Function),
-    hide: expect.any(Function),
-  })
+  expect(state).toHaveProperty('visible', expect.any(Boolean))
+  expect(state).toHaveProperty('setVisible', expect.any(Function))
+  expect(state).toHaveProperty('toggle', expect.any(Function))
+  expect(state).toHaveProperty('show', expect.any(Function))
+  expect(state).toHaveProperty('hide', expect.any(Function))
 }
 
 const visible = (wrapper, initialState = false) => {
-  const state = getState(wrapper)
-  expect(state.visible).toBe(initialState)
+  expect(getState(wrapper).visible).toBe(initialState)
 }
 
 const setVisible = wrapper => {
-  const state = getState(wrapper)
-  expect(state.visible).toBe(false)
-  state.setVisible(true)
+  expect(getState(wrapper).visible).toBe(false)
+
+  getState(wrapper).setVisible(true)
   expect(getState(wrapper).visible).toBe(true)
 }
 
 const toggle = wrapper => {
-  const state = getState(wrapper)
-  expect(state.visible).toBe(false)
-  state.toggle()
+  expect(getState(wrapper).visible).toBe(false)
+
+  getState(wrapper).toggle()
   expect(getState(wrapper).visible).toBe(true)
-  state.toggle()
+
+  getState(wrapper).toggle()
   expect(getState(wrapper).visible).toBe(false)
 }
 
 const show = wrapper => {
-  const state = getState(wrapper)
-  expect(state.visible).toBe(false)
-  state.show()
+  expect(getState(wrapper).visible).toBe(false)
+
+  getState(wrapper).show()
   expect(getState(wrapper).visible).toBe(true)
 }
 
 const hide = wrapper => {
-  const state = getState(wrapper)
-  expect(state.visible).toBe(false)
-  state.show()
+  expect(getState(wrapper).visible).toBe(false)
+
+  getState(wrapper).show()
   expect(getState(wrapper).visible).toBe(true)
-  state.hide()
+
+  getState(wrapper).hide()
   expect(getState(wrapper).visible).toBe(false)
 }
 
-const createTests = enhance => ({
-  structure: () => structure(wrap(enhance)),
-  'name argument': () => structure(wrap(enhance('foo')), 'foo'),
-  'name option': () => structure(wrap(enhance({ name: 'foo' })), 'foo'),
-  visible: () => visible(wrap(enhance)),
-  'visible option': () => visible(wrap(enhance({ visible: true })), true),
-  setVisible: () => setVisible(wrap(enhance)),
-  toggle: () => toggle(wrap(enhance)),
-  show: () => show(wrap(enhance)),
-  hide: () => hide(wrap(enhance)),
-})
+const createTests = enhance => {
+  test('structure', () => structure(wrap(enhance)))
+  test('name argument', () => structure(wrap(enhance('foo')), 'foo'))
+  test('name option', () => structure(wrap(enhance({ name: 'foo' })), 'foo'))
+  test('visible', () => visible(wrap(enhance)))
+  test('visible option', () => visible(wrap(enhance({ visible: true })), true))
+  test('visible prop', () => visible(wrap(enhance, { visible: true }), true))
+  test('setVisible', () => setVisible(wrap(enhance)))
+  test('toggle', () => toggle(wrap(enhance)))
+  test('show', () => show(wrap(enhance)))
+  test('hide', () => hide(wrap(enhance)))
+}
 
 describe('withHiddenState', () => {
-  Object.entries(createTests(withHiddenState)).forEach(
-    ([description, suite]) => {
-      test(description, suite)
-    },
-  )
+  createTests(withHiddenState)
 })
