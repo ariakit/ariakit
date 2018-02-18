@@ -2498,6 +2498,12 @@ diff@^3.2.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.4.0.tgz#b1d85507daf3964828de54b37d0d73ba67dda56c"
 
+diffable-html@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/diffable-html/-/diffable-html-3.0.0.tgz#3766be8bcf6e90e061bdc321e04e14fc0630853f"
+  dependencies:
+    htmlparser2 "^3.9.2"
+
 diffie-hellman@^5.0.0:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/diffie-hellman/-/diffie-hellman-5.0.2.tgz#b5835739270cfe26acf632099fded2a07f209e5e"
@@ -2722,6 +2728,12 @@ enzyme-adapter-utils@^1.3.0:
     lodash "^4.17.4"
     object.assign "^4.0.4"
     prop-types "^15.6.0"
+
+enzyme-to-json@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/enzyme-to-json/-/enzyme-to-json-3.3.1.tgz#64239dcd417e2fb552f4baa6632de4744b9b5b93"
+  dependencies:
+    lodash "^4.17.4"
 
 enzyme@^3.2.0:
   version "3.3.0"
@@ -3972,7 +3984,7 @@ html-webpack-plugin@^2.30.1:
     pretty-error "^2.0.2"
     toposort "^1.0.0"
 
-htmlparser2@^3.9.1:
+htmlparser2@^3.9.1, htmlparser2@^3.9.2:
   version "3.9.2"
   resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-3.9.2.tgz#1bdf87acca0f3f9e53fa4fcceb0f4b4cbb00b338"
   dependencies:
@@ -4808,6 +4820,12 @@ jest-runtime@^22.3.0:
     strip-bom "3.0.0"
     write-file-atomic "^2.1.0"
     yargs "^10.0.3"
+
+jest-serializer-html@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/jest-serializer-html/-/jest-serializer-html-5.0.0.tgz#6848c4d8fb0f6c6dcb1e26a05e46d66c7ff9edb9"
+  dependencies:
+    diffable-html "^3.0.0"
 
 jest-snapshot@^22.2.0:
   version "22.2.0"
