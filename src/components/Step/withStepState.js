@@ -90,14 +90,16 @@ const handlers = {
   update,
 }
 
+const propTypes = {
+  loop: PropTypes.bool,
+  ids: PropTypes.array,
+  current: PropTypes.number,
+}
+
 const withStepState = namespace(
   'step',
   options => [
-    setPropTypes({
-      loop: PropTypes.bool,
-      ids: PropTypes.array,
-      current: PropTypes.number,
-    }),
+    setPropTypes(propTypes),
     withProps(props => ({
       loop: typeof props.loop !== 'undefined' ? props.loop : !!options.loop,
     })),
@@ -110,7 +112,7 @@ const withStepState = namespace(
     }),
     withHandlers(handlers),
   ],
-  ['loop', 'ids', 'current'],
+  Object.keys(propTypes),
 )
 
 export default withStepState

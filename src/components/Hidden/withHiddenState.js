@@ -1,9 +1,15 @@
-import { withState, withHandlers } from 'recompose'
+import PropTypes from 'prop-types'
+import { withState, withHandlers, setPropTypes } from 'recompose'
 import namespace from '../../enhancers/namespace'
+
+const propTypes = {
+  visible: PropTypes.bool,
+}
 
 const withHiddenState = namespace(
   'hidden',
   options => [
+    setPropTypes(propTypes),
     withState(
       'visible',
       'setVisible',
@@ -18,7 +24,7 @@ const withHiddenState = namespace(
       hide: ({ setVisible }) => () => setVisible(false),
     }),
   ],
-  ['visible'],
+  Object.keys(propTypes),
 )
 
 export default withHiddenState
