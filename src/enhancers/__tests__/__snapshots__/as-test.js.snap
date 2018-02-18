@@ -1,0 +1,1110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates component 1`] = `
+Array [
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "span",
+]
+`;
+
+exports[`creates component 2`] = `
+<styled(Base.as(span))>
+  <Base.as(span)
+    className="Base gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "span",
+        ]
+      }
+      className="Base gzgaGM"
+    >
+      <Base
+        as={[Function]}
+        className="Base gzgaGM"
+        nextAs={
+          Array [
+            "span",
+          ]
+        }
+      >
+        <Next
+          className="Base gzgaGM"
+          id="Base"
+          nextAs={
+            Array [
+              "span",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                "span",
+              ]
+            }
+            className="Base gzgaGM"
+            id="Base"
+          >
+            <span
+              className="Base gzgaGM"
+              id="Base"
+            />
+          </Reas>
+        </Next>
+      </Base>
+    </Reas>
+  </Base.as(span)>
+</styled(Base.as(span))>
+`;
+
+exports[`creates component 3`] = `
+
+<span class="Base gzgaGM"
+      id="Base"
+>
+</span>
+
+`;
+
+exports[`creates component by extending another one with extend 1`] = `
+Array [
+  "styled(Derivative.as(div))",
+  "Derivative.as(div)",
+  "Reas",
+  "Derivative",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Next",
+  "Reas",
+  "div",
+]
+`;
+
+exports[`creates component by extending another one with extend 2`] = `
+<styled(Derivative.as(div))>
+  <Derivative.as(div)
+    className="Derivative gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "div",
+        ]
+      }
+      className="Derivative gzgaGM"
+    >
+      <Derivative
+        as={[Function]}
+        className="Derivative gzgaGM"
+        nextAs={
+          Array [
+            "div",
+          ]
+        }
+      >
+        <Base.as(span)
+          as={[Function]}
+          className="Derivative gzgaGM Base--extended dCNizi"
+          nextAs={
+            Array [
+              "div",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                [Function],
+                "span",
+                [Function],
+                "div",
+              ]
+            }
+            className="Derivative gzgaGM Base--extended dCNizi"
+          >
+            <Base
+              as={[Function]}
+              className="Derivative gzgaGM Base--extended dCNizi"
+              nextAs={
+                Array [
+                  [Function],
+                  "div",
+                ]
+              }
+            >
+              <Next
+                className="Derivative gzgaGM Base--extended dCNizi"
+                id="Base"
+                nextAs={
+                  Array [
+                    [Function],
+                    "div",
+                  ]
+                }
+              >
+                <Reas
+                  as={
+                    Array [
+                      [Function],
+                      "div",
+                    ]
+                  }
+                  className="Derivative gzgaGM Base--extended dCNizi"
+                  id="Base"
+                >
+                  <Next
+                    as={[Function]}
+                    className="Derivative gzgaGM Base--extended dCNizi"
+                    id="Base"
+                    nextAs={
+                      Array [
+                        "div",
+                      ]
+                    }
+                  >
+                    <Reas
+                      as={
+                        Array [
+                          "div",
+                        ]
+                      }
+                      className="Derivative gzgaGM Base--extended dCNizi"
+                      id="Base"
+                    >
+                      <div
+                        className="Derivative gzgaGM Base--extended dCNizi"
+                        id="Base"
+                      />
+                    </Reas>
+                  </Next>
+                </Reas>
+              </Next>
+            </Base>
+          </Reas>
+        </Base.as(span)>
+      </Derivative>
+    </Reas>
+  </Derivative.as(div)>
+</styled(Derivative.as(div))>
+`;
+
+exports[`creates component by extending another one with extend 3`] = `
+
+<div class="Derivative gzgaGM Base--extended dCNizi"
+     id="Base"
+>
+</div>
+
+`;
+
+exports[`creates component by extending another one with styled 1`] = `
+Array [
+  "styled(Derivative.as(div))",
+  "Derivative.as(div)",
+  "Reas",
+  "Derivative",
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Next",
+  "Reas",
+  "div",
+]
+`;
+
+exports[`creates component by extending another one with styled 2`] = `
+<styled(Derivative.as(div))>
+  <Derivative.as(div)
+    className="Derivative gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "div",
+        ]
+      }
+      className="Derivative gzgaGM"
+    >
+      <Derivative
+        as={[Function]}
+        className="Derivative gzgaGM"
+        nextAs={
+          Array [
+            "div",
+          ]
+        }
+      >
+        <styled(Base.as(span))
+          as={[Function]}
+          className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA"
+          nextAs={
+            Array [
+              "div",
+            ]
+          }
+        >
+          <Base.as(span)
+            as={[Function]}
+            className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+            nextAs={
+              Array [
+                "div",
+              ]
+            }
+          >
+            <Reas
+              as={
+                Array [
+                  [Function],
+                  "span",
+                  [Function],
+                  "div",
+                ]
+              }
+              className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+            >
+              <Base
+                as={[Function]}
+                className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+                nextAs={
+                  Array [
+                    [Function],
+                    "div",
+                  ]
+                }
+              >
+                <Next
+                  className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+                  id="Base"
+                  nextAs={
+                    Array [
+                      [Function],
+                      "div",
+                    ]
+                  }
+                >
+                  <Reas
+                    as={
+                      Array [
+                        [Function],
+                        "div",
+                      ]
+                    }
+                    className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+                    id="Base"
+                  >
+                    <Next
+                      as={[Function]}
+                      className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+                      id="Base"
+                      nextAs={
+                        Array [
+                          "div",
+                        ]
+                      }
+                    >
+                      <Reas
+                        as={
+                          Array [
+                            "div",
+                          ]
+                        }
+                        className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base gzgaGM"
+                        id="Base"
+                      >
+                        <div
+                          className="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base"
+                          id="Base"
+                        />
+                      </Reas>
+                    </Next>
+                  </Reas>
+                </Next>
+              </Base>
+            </Reas>
+          </Base.as(span)>
+        </styled(Base.as(span))>
+      </Derivative>
+    </Reas>
+  </Derivative.as(div)>
+</styled(Derivative.as(div))>
+`;
+
+exports[`creates component by extending another one with styled 3`] = `
+
+<div class="Derivative gzgaGM as-test__Derivative-dFAIVE bDuygA Base"
+     id="Base"
+>
+</div>
+
+`;
+
+exports[`creates component passing property as 1`] = `
+Array [
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "div",
+]
+`;
+
+exports[`creates component passing property as 2`] = `
+<styled(Base.as(span))
+  as="div"
+>
+  <Base.as(span)
+    as="div"
+    className="Base gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "span",
+          "div",
+        ]
+      }
+      className="Base gzgaGM"
+    >
+      <Base
+        as={[Function]}
+        className="Base gzgaGM"
+        nextAs={
+          Array [
+            "div",
+          ]
+        }
+      >
+        <Next
+          className="Base gzgaGM"
+          id="Base"
+          nextAs={
+            Array [
+              "div",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                "div",
+              ]
+            }
+            className="Base gzgaGM"
+            id="Base"
+          >
+            <div
+              className="Base gzgaGM"
+              id="Base"
+            />
+          </Reas>
+        </Next>
+      </Base>
+    </Reas>
+  </Base.as(span)>
+</styled(Base.as(span))>
+`;
+
+exports[`creates component passing property as 3`] = `
+
+<div class="Base gzgaGM"
+     id="Base"
+>
+</div>
+
+`;
+
+exports[`creates component passing property as with another component 1`] = `
+Array [
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Derivative",
+  "div",
+]
+`;
+
+exports[`creates component passing property as with another component 2`] = `
+<styled(Base.as(span))
+  as={[Function]}
+>
+  <Base.as(span)
+    as={[Function]}
+    className="Base gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "span",
+          [Function],
+        ]
+      }
+      className="Base gzgaGM"
+    >
+      <Base
+        as={[Function]}
+        className="Base gzgaGM"
+        nextAs={
+          Array [
+            [Function],
+          ]
+        }
+      >
+        <Next
+          className="Base gzgaGM"
+          id="Base"
+          nextAs={
+            Array [
+              [Function],
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                [Function],
+              ]
+            }
+            className="Base gzgaGM"
+            id="Base"
+          >
+            <Derivative
+              className="Base gzgaGM"
+              id="Base"
+            >
+              <div
+                className="Base gzgaGM"
+                id="Base"
+              />
+            </Derivative>
+          </Reas>
+        </Next>
+      </Base>
+    </Reas>
+  </Base.as(span)>
+</styled(Base.as(span))>
+`;
+
+exports[`creates component passing property as with another component 3`] = `
+
+<div class="Base gzgaGM"
+     id="Base"
+>
+</div>
+
+`;
+
+exports[`creates component passing property as with array of components 1`] = `
+Array [
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Derivative",
+  "Next",
+  "Reas",
+  "p",
+]
+`;
+
+exports[`creates component passing property as with array of components 2`] = `
+<styled(Base.as(span))
+  as={
+    Array [
+      [Function],
+      "p",
+    ]
+  }
+>
+  <Base.as(span)
+    as={
+      Array [
+        [Function],
+        "p",
+      ]
+    }
+    className="Base gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "span",
+          [Function],
+          "p",
+        ]
+      }
+      className="Base gzgaGM"
+    >
+      <Base
+        as={[Function]}
+        className="Base gzgaGM"
+        nextAs={
+          Array [
+            [Function],
+            "p",
+          ]
+        }
+      >
+        <Next
+          className="Base gzgaGM"
+          id="Base"
+          nextAs={
+            Array [
+              [Function],
+              "p",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                [Function],
+                "p",
+              ]
+            }
+            className="Base gzgaGM"
+            id="Base"
+          >
+            <Derivative
+              as={[Function]}
+              className="Base gzgaGM"
+              id="Base"
+              nextAs={
+                Array [
+                  "p",
+                ]
+              }
+            >
+              <Next
+                className="Base gzgaGM"
+                id="Derivative"
+                nextAs={
+                  Array [
+                    "p",
+                  ]
+                }
+              >
+                <Reas
+                  as={
+                    Array [
+                      "p",
+                    ]
+                  }
+                  className="Base gzgaGM"
+                  id="Derivative"
+                >
+                  <p
+                    className="Base gzgaGM"
+                    id="Derivative"
+                  />
+                </Reas>
+              </Next>
+            </Derivative>
+          </Reas>
+        </Next>
+      </Base>
+    </Reas>
+  </Base.as(span)>
+</styled(Base.as(span))>
+`;
+
+exports[`creates component passing property as with array of components 3`] = `
+
+<p class="Base gzgaGM"
+   id="Derivative"
+>
+</p>
+
+`;
+
+exports[`creates component using as static method 1`] = `
+Array [
+  "styled(styled(Base.as(span)).as(p))",
+  "styled(Base.as(span)).as(p)",
+  "Reas",
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Next",
+  "Reas",
+  "p",
+]
+`;
+
+exports[`creates component using as static method 2`] = `
+<styled(styled(Base.as(span)).as(p))>
+  <styled(Base.as(span)).as(p)
+    className="Base gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          "p",
+        ]
+      }
+      className="Base gzgaGM"
+    >
+      <styled(Base.as(span))
+        as={[Function]}
+        className="Base gzgaGM"
+        nextAs={
+          Array [
+            "p",
+          ]
+        }
+      >
+        <Base.as(span)
+          as={[Function]}
+          className="Base gzgaGM Base gzgaGM"
+          nextAs={
+            Array [
+              "p",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                [Function],
+                "span",
+                [Function],
+                "p",
+              ]
+            }
+            className="Base gzgaGM Base gzgaGM"
+          >
+            <Base
+              as={[Function]}
+              className="Base gzgaGM Base gzgaGM"
+              nextAs={
+                Array [
+                  [Function],
+                  "p",
+                ]
+              }
+            >
+              <Next
+                className="Base gzgaGM Base gzgaGM"
+                id="Base"
+                nextAs={
+                  Array [
+                    [Function],
+                    "p",
+                  ]
+                }
+              >
+                <Reas
+                  as={
+                    Array [
+                      [Function],
+                      "p",
+                    ]
+                  }
+                  className="Base gzgaGM Base gzgaGM"
+                  id="Base"
+                >
+                  <Next
+                    as={[Function]}
+                    className="Base gzgaGM Base gzgaGM"
+                    id="Base"
+                    nextAs={
+                      Array [
+                        "p",
+                      ]
+                    }
+                  >
+                    <Reas
+                      as={
+                        Array [
+                          "p",
+                        ]
+                      }
+                      className="Base gzgaGM Base gzgaGM"
+                      id="Base"
+                    >
+                      <p
+                        className="Base gzgaGM"
+                        id="Base"
+                      />
+                    </Reas>
+                  </Next>
+                </Reas>
+              </Next>
+            </Base>
+          </Reas>
+        </Base.as(span)>
+      </styled(Base.as(span))>
+    </Reas>
+  </styled(Base.as(span)).as(p)>
+</styled(styled(Base.as(span)).as(p))>
+`;
+
+exports[`creates component using as static method 3`] = `
+
+<p class="Base gzgaGM"
+   id="Base"
+>
+</p>
+
+`;
+
+exports[`creates component using as static method with array of components 1`] = `
+Array [
+  "styled(styled(Base.as(span)).as(Derivative,p))",
+  "styled(Base.as(span)).as(Derivative,p)",
+  "Reas",
+  "styled(Base.as(span))",
+  "Base.as(span)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Next",
+  "Reas",
+  "Derivative",
+  "Next",
+  "Reas",
+  "p",
+]
+`;
+
+exports[`creates component using as static method with array of components 2`] = `
+<styled(styled(Base.as(span)).as(Derivative,p))>
+  <styled(Base.as(span)).as(Derivative,p)
+    className="Base-Derivative gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          [Function],
+          "p",
+        ]
+      }
+      className="Base-Derivative gzgaGM"
+    >
+      <styled(Base.as(span))
+        as={[Function]}
+        className="Base-Derivative gzgaGM"
+        nextAs={
+          Array [
+            [Function],
+            "p",
+          ]
+        }
+      >
+        <Base.as(span)
+          as={[Function]}
+          className="Base-Derivative gzgaGM Base gzgaGM"
+          nextAs={
+            Array [
+              [Function],
+              "p",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                [Function],
+                "span",
+                [Function],
+                [Function],
+                "p",
+              ]
+            }
+            className="Base-Derivative gzgaGM Base gzgaGM"
+          >
+            <Base
+              as={[Function]}
+              className="Base-Derivative gzgaGM Base gzgaGM"
+              nextAs={
+                Array [
+                  [Function],
+                  [Function],
+                  "p",
+                ]
+              }
+            >
+              <Next
+                className="Base-Derivative gzgaGM Base gzgaGM"
+                id="Base"
+                nextAs={
+                  Array [
+                    [Function],
+                    [Function],
+                    "p",
+                  ]
+                }
+              >
+                <Reas
+                  as={
+                    Array [
+                      [Function],
+                      [Function],
+                      "p",
+                    ]
+                  }
+                  className="Base-Derivative gzgaGM Base gzgaGM"
+                  id="Base"
+                >
+                  <Next
+                    as={[Function]}
+                    className="Base-Derivative gzgaGM Base gzgaGM"
+                    id="Base"
+                    nextAs={
+                      Array [
+                        [Function],
+                        "p",
+                      ]
+                    }
+                  >
+                    <Reas
+                      as={
+                        Array [
+                          [Function],
+                          "p",
+                        ]
+                      }
+                      className="Base-Derivative gzgaGM Base gzgaGM"
+                      id="Base"
+                    >
+                      <Derivative
+                        as={[Function]}
+                        className="Base-Derivative gzgaGM Base gzgaGM"
+                        id="Base"
+                        nextAs={
+                          Array [
+                            "p",
+                          ]
+                        }
+                      >
+                        <Next
+                          className="Base-Derivative gzgaGM Base gzgaGM"
+                          id="Derivative"
+                          nextAs={
+                            Array [
+                              "p",
+                            ]
+                          }
+                        >
+                          <Reas
+                            as={
+                              Array [
+                                "p",
+                              ]
+                            }
+                            className="Base-Derivative gzgaGM Base gzgaGM"
+                            id="Derivative"
+                          >
+                            <p
+                              className="Base-Derivative gzgaGM Base"
+                              id="Derivative"
+                            />
+                          </Reas>
+                        </Next>
+                      </Derivative>
+                    </Reas>
+                  </Next>
+                </Reas>
+              </Next>
+            </Base>
+          </Reas>
+        </Base.as(span)>
+      </styled(Base.as(span))>
+    </Reas>
+  </styled(Base.as(span)).as(Derivative,p)>
+</styled(styled(Base.as(span)).as(Derivative,p))>
+`;
+
+exports[`creates component using as static method with array of components 3`] = `
+
+<p class="Base-Derivative gzgaGM Base"
+   id="Derivative"
+>
+</p>
+
+`;
+
+exports[`creates component with array of components 1`] = `
+Array [
+  "styled(Base.as(Derivative,p))",
+  "Base.as(Derivative,p)",
+  "Reas",
+  "Base",
+  "Next",
+  "Reas",
+  "Derivative",
+  "Next",
+  "Reas",
+  "p",
+]
+`;
+
+exports[`creates component with array of components 2`] = `
+<styled(Base.as(Derivative,p))>
+  <Base.as(Derivative,p)
+    className="Base-Derivative gzgaGM"
+  >
+    <Reas
+      as={
+        Array [
+          [Function],
+          [Function],
+          "p",
+        ]
+      }
+      className="Base-Derivative gzgaGM"
+    >
+      <Base
+        as={[Function]}
+        className="Base-Derivative gzgaGM"
+        nextAs={
+          Array [
+            [Function],
+            "p",
+          ]
+        }
+      >
+        <Next
+          className="Base-Derivative gzgaGM"
+          id="Base"
+          nextAs={
+            Array [
+              [Function],
+              "p",
+            ]
+          }
+        >
+          <Reas
+            as={
+              Array [
+                [Function],
+                "p",
+              ]
+            }
+            className="Base-Derivative gzgaGM"
+            id="Base"
+          >
+            <Derivative
+              as={[Function]}
+              className="Base-Derivative gzgaGM"
+              id="Base"
+              nextAs={
+                Array [
+                  "p",
+                ]
+              }
+            >
+              <Next
+                className="Base-Derivative gzgaGM"
+                id="Derivative"
+                nextAs={
+                  Array [
+                    "p",
+                  ]
+                }
+              >
+                <Reas
+                  as={
+                    Array [
+                      "p",
+                    ]
+                  }
+                  className="Base-Derivative gzgaGM"
+                  id="Derivative"
+                >
+                  <p
+                    className="Base-Derivative gzgaGM"
+                    id="Derivative"
+                  />
+                </Reas>
+              </Next>
+            </Derivative>
+          </Reas>
+        </Next>
+      </Base>
+    </Reas>
+  </Base.as(Derivative,p)>
+</styled(Base.as(Derivative,p))>
+`;
+
+exports[`creates component with array of components 3`] = `
+
+<p class="Base-Derivative gzgaGM"
+   id="Derivative"
+>
+</p>
+
+`;
+
+exports[`renders SVG element 1`] = `
+
+<circle id="Base"
+        class="Base gzgaGM"
+>
+</circle>
+
+`;
+
+exports[`renders with dangerouslySetInnerHTML 1`] = `
+
+<span class="Base gzgaGM"
+      id="Base"
+>
+  <b>
+    Hello
+  </b>
+</span>
+
+`;
+
+exports[`renders with style 1`] = `
+
+<span class="Base gzgaGM"
+      id="Base"
+      style="position:absolute"
+>
+</span>
+
+`;
+
+exports[`renders with style passing property as with another component 1`] = `
+
+<div class="Base gzgaGM Derivate"
+     id="Derivate"
+     style="position:absolute"
+>
+</div>
+
+`;

@@ -7,7 +7,8 @@ const Wrapper = Block.extend`
   padding: 0 32px 0 0;
   line-height: 150%;
 
-  &, ul {
+  &,
+  ul {
     list-style: none;
     text-align: right;
   }
@@ -27,10 +28,13 @@ const Wrapper = Block.extend`
 const Menu = ({ sections, ...props }) => (
   <Wrapper {...props}>
     {sections.map((section, i) => (
-      <li key={i}><a href={`#${section.slug}`}>{section.name}</a>
+      <li key={i}>
+        <a href={`#${section.slug}`}>{section.name}</a>
         <ul>
           {section.sections.concat(section.components).map((sec, j) => (
-            <li key={j}><a href={`#${sec.slug}`}>{sec.name}</a></li>
+            <li key={j}>
+              <a href={`#${sec.slug}`}>{sec.name}</a>
+            </li>
           ))}
         </ul>
       </li>

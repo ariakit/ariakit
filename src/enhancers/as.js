@@ -6,8 +6,9 @@ import pickCSSProps from '../utils/pickCSSProps'
 import isSVGElement from '../utils/isSVGElement'
 import parseTag from '../utils/parseTag'
 import parseClassName from '../utils/parseClassName'
+import escapeClassName from '../utils/escapeClassName'
 
-const Next = ({ nextAs, ...props }) => <StyledReas {...props} as={nextAs} />
+const Next = ({ nextAs, ...props }) => <Reas {...props} as={nextAs} />
 
 const Reas = ({ as: t, ...props }) => {
   const T = parseTag(t)
@@ -42,18 +43,6 @@ const Reas = ({ as: t, ...props }) => {
   return <T {...props} className={className} {...(style ? { style } : {})} />
 }
 
-const StyledReas = styled(Reas)`
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-  box-sizing: border-box;
-`
-
-StyledReas.displayName = 'styled(Reas)'
-
 const getComponentName = component =>
   component.displayName || component.name || component
 
@@ -65,16 +54,26 @@ const getAs = (components, props) =>
 
 const as = asComponents => WrappedComponent => {
   const components = [].concat(WrappedComponent, asComponents)
-  const AsStyledReas = props => (
-    <StyledReas {...props} as={getAs(components, props)} />
+
+  const AsReas = props => (
+    <Reas {...props} as={getAs(components, props)} nextAs={undefined} />
   )
-  AsStyledReas.displayName = getDisplayName(components)
 
-  const StyledAsStyledReas = styled(AsStyledReas)``
-  StyledAsStyledReas.displayName = getComponentName(WrappedComponent)
-  StyledAsStyledReas.styledComponentId = StyledAsStyledReas.displayName
+  AsReas.displayName = getDisplayName(components)
 
-  StyledAsStyledReas.propTypes = components.reduce(
+  const StyledAsReas = styled(AsReas)`
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+    box-sizing: border-box;
+  `
+  StyledAsReas.displayName = `styled(${AsReas.displayName})`
+  StyledAsReas.styledComponentId = escapeClassName(StyledAsReas.displayName)
+
+  StyledAsReas.propTypes = components.reduce(
     (finalPropTypes, component) => ({
       ...finalPropTypes,
       ...component.propTypes,
@@ -82,22 +81,29 @@ const as = asComponents => WrappedComponent => {
     {},
   )
 
-  StyledAsStyledReas.as = otherElements => as(otherElements)(StyledAsStyledReas)
+  StyledAsReas.as = otherElements => as(otherElements)(StyledAsReas)
 
-  StyledAsStyledReas.$extend = StyledAsStyledReas.extend
+  const originalExtend = StyledAsReas.extend
 
-  Object.defineProperty(StyledAsStyledReas, 'extend', {
+  Object.defineProperty(StyledAsReas, 'extend', {
     value: (strings, ...interpolations) => {
       const modifiedStrings = [
         `&& {${strings[0] || ''}`,
         ...strings.slice(1, -1),
         `${strings[strings.length - 1] || ''}}`,
       ]
-      return StyledAsStyledReas.$extend(modifiedStrings, ...interpolations)
+      const extension = originalExtend(modifiedStrings, ...interpolations)
+
+      extension.displayName = StyledAsReas.displayName
+      extension.styledComponentId = `${
+        StyledAsReas.styledComponentId
+      }--extended`
+
+      return extension
     },
   })
 
-  return StyledAsStyledReas
+  return StyledAsReas
 }
 
 export default as

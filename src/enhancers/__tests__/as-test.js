@@ -1,101 +1,144 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import styled from 'styled-components'
+import { shallow, mount } from 'enzyme'
 import as from '../as'
 
-it('creates component passing property as', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} id="comp" />
-  const Div = as('div')(Comp)
+const createComponent = (element = 'span', id = 'Base') => {
+  const Base = ({ as: T, ...props }) => <T {...props} id={id} />
+  Base.displayName = id
+  return as(element)(Base)
+}
 
-  const wrapper = shallow(<Div as="span" />)
-  expect(wrapper.html()).toMatch(/^<span.+id="comp"/)
+const getStack = (wrapper, stack = []) => {
+  const type = wrapper.type()
+  const nextStack = [...stack, type.displayName || type.name || type]
+  const child = wrapper.childAt(0)
+
+  if (!child.length) {
+    return nextStack
+  }
+  return getStack(child, nextStack)
+}
+
+it('creates component', () => {
+  const Base = createComponent()
+  const wrapper = mount(<Base />)
+
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
+})
+
+it('creates component by extending another one with styled', () => {
+  const Base = createComponent()
+  const Derivative = styled(Base)``
+  Derivative.displayName = 'Derivative'
+  const Div = as('div')(Derivative)
+  const wrapper = mount(<Div />)
+
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
+})
+
+it('creates component by extending another one with extend', () => {
+  const Base = createComponent()
+  const Derivative = Base.extend``
+  Derivative.displayName = 'Derivative'
+  const Div = as('div')(Derivative)
+  const wrapper = mount(<Div />)
+
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
+})
+
+it('creates component passing property as', () => {
+  const Base = createComponent()
+  const wrapper = mount(<Base as="div" />)
+
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('creates component with array of components', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} id="comp" />
-  const Comp2 = ({ as: T, ...props }) => <T {...props} id="comp2" />
-  const P = as([Comp2, 'p'])(Comp)
+  const Derivative = ({ as: T, ...props }) => <T {...props} id="Derivative" />
+  const Base = createComponent([Derivative, 'p'])
+  const wrapper = mount(<Base />)
 
-  const wrapper = shallow(<P />)
-  expect(wrapper.html()).toMatch(/^<p.+id="comp2"/)
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('creates component passing property as with array of components', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} id="comp" />
-  const Comp2 = ({ as: T, ...props }) => <T {...props} id="comp2" />
-  const P = as('p')(Comp)
+  const Base = createComponent()
+  const Derivative = ({ as: T, ...props }) => <T {...props} id="Derivative" />
+  const wrapper = mount(<Base as={[Derivative, 'p']} />)
 
-  const wrapper = shallow(<P as={[Comp2, 'span']} />)
-  expect(wrapper.html()).toMatch(/^<span.+id="comp2"/)
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('creates component passing property as with another component', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} id="comp" />
-  const Comp2 = ({ as: T, ...props }) => <T {...props} id="comp2" />
-  const P = as('p')(Comp)
-  const Div = as('div')(Comp2)
+  const Base = createComponent()
+  const Derivative = props => <div {...props} />
+  const wrapper = mount(<Base as={Derivative} />)
 
-  const wrapper = shallow(<P as={Div} />)
-  expect(wrapper.html()).toMatch(/^<div.+id="comp2"/)
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('creates component using as static method', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} id="comp" />
-  const Div = as('div')(Comp)
-  const P = Div.as('p')
+  const Base = createComponent()
+  const Derivative = Base.as('p')
+  const wrapper = mount(<Derivative />)
 
-  const wrapper = shallow(<P />)
-  expect(wrapper.html()).toMatch(/^<p.+id="comp"/)
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('creates component using as static method with array of components', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} id="comp" />
-  const Comp2 = ({ as: T, ...props }) => <T {...props} id="comp2" />
-  const Div = as('div')(Comp)
-  const P = Div.as([Comp2, 'p'])
+  const Base = createComponent()
+  const Derivative = ({ as: T, ...props }) => <T {...props} id="Derivative" />
+  const Final = Base.as([Derivative, 'p'])
+  const wrapper = mount(<Final />)
 
-  const wrapper = shallow(<P />)
-  expect(wrapper.html()).toMatch(/^<p.+id="comp2"/)
+  expect(getStack(wrapper)).toMatchSnapshot()
+  expect(wrapper).toMatchSnapshot()
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('renders with style', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} />
-  const Div = as('div')(Comp)
+  const Base = createComponent()
+  const wrapper = shallow(<Base position="absolute" />)
 
-  const wrapper = shallow(<Div position="absolute" />)
-  expect(wrapper.html()).toMatch(/style="position:absolute/)
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('renders with style passing property as with another component', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} />
-  const Comp2 = ({ as: T, ...props }) => <T {...props} id="comp2" />
-  const P = as('p')(Comp)
-  const Div = as('div')(Comp2)
+  const Base = createComponent()
+  const Derivate = createComponent('div', 'Derivate')
+  const wrapper = shallow(<Base as={Derivate} position="absolute" />)
 
-  const wrapper = shallow(<P as={Div} position="absolute" />)
-  expect(wrapper.html()).toMatch(/<div.+style="position:absolute/)
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('renders with dangerouslySetInnerHTML', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} />
-  const Div = as('div')(Comp)
+  const Base = createComponent()
   const props = { dangerouslySetInnerHTML: { __html: '<b>Hello</b>' } }
+  const wrapper = shallow(<Base {...props} />)
 
-  const wrapper = shallow(<Div {...props} />)
-  expect(wrapper.html()).toMatch(/><b>Hello<\/b><\/div>/)
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 it('renders SVG element', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} />
-  const Svg = as('svg')(Comp)
+  const Base = createComponent('svg')
+  const wrapper = shallow(<Base as="circle" />)
 
-  const wrapper = shallow(<Svg as="circle" />)
-  expect(wrapper.html()).toMatch(/^<circle class=/)
-})
-
-it('renders with shorthand style', () => {
-  const Comp = ({ as: T, ...props }) => <T {...props} />
-  const Div = as('div')(Comp)
-
-  const wrapper = shallow(<Div width={50} />)
-  expect(wrapper.html()).toMatch(/style="width:50px"/)
+  expect(wrapper.html()).toMatchSnapshot()
 })
