@@ -24,19 +24,25 @@ const toggle = props => idOrIndex =>
   isCurrent(props)(idOrIndex) ? hide(props)() : show(props)(idOrIndex)
 
 const previous = props => () => {
-  if (hasPrevious(props)()) {
-    props.setCurrent(current => current - 1)
-  } else if (props.loop) {
-    show(props)(props.ids.length - 1)
-  }
+  props.setCurrent(current => {
+    if (hasPrevious({ ...props, current })()) {
+      return current - 1
+    } else if (props.loop) {
+      return props.ids.length - 1
+    }
+    return current
+  })
 }
 
 const next = props => () => {
-  if (hasNext(props)()) {
-    props.setCurrent(current => current + 1)
-  } else if (props.loop) {
-    show(props)(0)
-  }
+  props.setCurrent(current => {
+    if (hasNext({ ...props, current })()) {
+      return current + 1
+    } else if (props.loop) {
+      return 0
+    }
+    return current
+  })
 }
 
 const reorder = props => (id, order) => {
@@ -65,19 +71,20 @@ const register = props => (id, order = 0) => {
 
 const unregister = props => id => {
   props.setIds(ids => {
-    const index = indexOf(props)(id)
+    const nextProps = { ...props, ids }
+    const index = indexOf(nextProps)(id)
     if (index === -1) {
       return ids
     }
 
-    if (isCurrent(props)(id) && !hasNext(props)()) {
-      if (hasPrevious(props)()) {
-        previous(props)()
+    if (isCurrent(nextProps)(id) && !hasNext(nextProps)()) {
+      if (hasPrevious(nextProps)()) {
+        previous(nextProps)()
       } else {
-        hide(props)()
+        hide(nextProps)()
       }
     }
-    return [...props.ids.slice(0, index), ...ids.slice(index + 1)]
+    return [...ids.slice(0, index), ...ids.slice(index + 1)]
   })
 }
 
@@ -97,8 +104,8 @@ const update = props => (id, nextId, order = props.ordered[id]) => {
   } else {
     props.setIds(
       ids => {
-        const index = indexOf(props)(id)
-        return [...props.ids.slice(0, index), nextId, ...ids.slice(index + 1)]
+        const index = indexOf({ ...props, ids })(id)
+        return [...ids.slice(0, index), nextId, ...ids.slice(index + 1)]
       },
       () => {
         if (orderChanged) {
