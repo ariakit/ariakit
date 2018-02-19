@@ -15,18 +15,24 @@ const getState = (wrapper, prop = 'tabs') =>
     .find(Base)
     .prop(prop)
 
-const structure = (wrapper, prop) => {
+const ensureState = (wrapper, prop) => {
   const state = getState(wrapper, prop)
   expect(state).toHaveProperty('loop', true)
   expect(state).toHaveProperty('current', 0)
 }
 
 const createTests = enhance => {
-  test('structure', () => structure(wrap(enhance)))
-  test('name argument', () => structure(wrap(enhance('foo')), 'foo'))
-  test('name option', () => structure(wrap(enhance({ name: 'foo' })), 'foo'))
+  test('state', () => {
+    ensureState(wrap(enhance))
+  })
+
+  test('state name argument', () => {
+    ensureState(wrap(enhance('foo')), 'foo')
+  })
+
+  test('state name option', () => {
+    ensureState(wrap(enhance({ name: 'foo' })), 'foo')
+  })
 }
 
-describe('withTabsState', () => {
-  createTests(withTabsState)
-})
+describe('withTabsState', () => createTests(withTabsState))
