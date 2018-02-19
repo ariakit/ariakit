@@ -70,6 +70,8 @@ const unregister = state => id => {
       return { ...previous(state)(), ids }
     }
     return { ...hide(state)(), ids }
+  } else if (state.current >= ids.length) {
+    return { current: ids.length - 1, ids }
   }
   return { ids }
 }

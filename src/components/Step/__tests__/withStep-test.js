@@ -336,6 +336,13 @@ const createTests = enhance => {
     expect(getState(wrapper).current).toBe(-1)
   })
 
+  test('unregister id when current is no more available', () => {
+    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'], current: 2 }))
+    getState(wrapper).unregister('a')
+    expect(getState(wrapper).ids).toEqual(['b', 'c'])
+    expect(getState(wrapper).current).toBe(1)
+  })
+
   test('update', () => {
     const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'] }))
     getState(wrapper).update('a', 'a')
