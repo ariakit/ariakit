@@ -25,7 +25,7 @@ const toggle = props => idOrIndex =>
 
 const previous = props => () => {
   if (hasPrevious(props)()) {
-    show(props)(props.current - 1)
+    props.setCurrent(current => current - 1)
   } else if (props.loop) {
     show(props)(props.ids.length - 1)
   }
@@ -33,23 +33,42 @@ const previous = props => () => {
 
 const next = props => () => {
   if (hasNext(props)()) {
-    show(props)(props.current + 1)
+    props.setCurrent(current => current + 1)
   } else if (props.loop) {
     show(props)(0)
   }
 }
 
-const register = props => id => {
-  props.setIds(ids => {
-    if (ids.indexOf(id) >= 0) return ids
-    return [...ids, id]
+const reorder = props => (id, order) => {
+  props.setOrdered(ordered => {
+    const nextOrdered = { ...ordered, [id]: order }
+    const current = isCurrent(props)(id)
+    props.setIds(
+      ids => ids.sort((a, b) => (nextOrdered[a] || 0) - (nextOrdered[b] || 0)),
+      () => current && show(props)(id),
+    )
+    return nextOrdered
   })
+}
+
+const register = props => (id, order = 0) => {
+  props.setIds(
+    ids => {
+      if (ids.indexOf(id) >= 0) {
+        return ids
+      }
+      return [...ids, id]
+    },
+    () => reorder(props)(id, order),
+  )
 }
 
 const unregister = props => id => {
   props.setIds(ids => {
     const index = indexOf(props)(id)
-    if (index === -1) return ids
+    if (index === -1) {
+      return ids
+    }
 
     if (isCurrent(props)(id) && !hasNext(props)()) {
       if (hasPrevious(props)()) {
@@ -62,15 +81,31 @@ const unregister = props => id => {
   })
 }
 
-const update = props => (id, nextId) => {
-  if (id === nextId) return
-  if (props.ids.indexOf(nextId) >= 0) {
+const update = props => (id, nextId, order = props.ordered[id]) => {
+  const idChanged = id !== nextId
+  const orderChanged = order !== props.ordered[id]
+
+  if (!idChanged && !orderChanged) return
+
+  const overridingId = idChanged && props.ids.indexOf(nextId) >= 0
+
+  if (overridingId) {
     unregister(props)(id)
+    if (orderChanged) {
+      reorder(props)(nextId, order)
+    }
   } else {
-    props.setIds(ids => {
-      const index = indexOf(props)(id)
-      return [...props.ids.slice(0, index), nextId, ...ids.slice(index + 1)]
-    })
+    props.setIds(
+      ids => {
+        const index = indexOf(props)(id)
+        return [...props.ids.slice(0, index), nextId, ...ids.slice(index + 1)]
+      },
+      () => {
+        if (orderChanged) {
+          reorder(props)(nextId, order)
+        }
+      },
+    )
   }
 }
 
@@ -85,6 +120,7 @@ const handlers = {
   toggle,
   previous,
   next,
+  reorder,
   register,
   unregister,
   update,
@@ -104,6 +140,7 @@ const withStepState = namespace(
       loop: typeof props.loop !== 'undefined' ? props.loop : !!options.loop,
     })),
     withState('ids', 'setIds', props => props.ids || options.ids || []),
+    withState('ordered', 'setOrdered', {}),
     withState('current', 'setCurrent', props => {
       if (typeof props.current !== 'undefined') {
         return props.current

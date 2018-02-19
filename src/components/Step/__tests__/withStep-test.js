@@ -32,6 +32,7 @@ const structure = (wrapper, prop) => {
   expect(state).toHaveProperty('toggle', expect.any(Function))
   expect(state).toHaveProperty('previous', expect.any(Function))
   expect(state).toHaveProperty('next', expect.any(Function))
+  expect(state).toHaveProperty('reorder', expect.any(Function))
   expect(state).toHaveProperty('register', expect.any(Function))
   expect(state).toHaveProperty('unregister', expect.any(Function))
   expect(state).toHaveProperty('update', expect.any(Function))
@@ -218,6 +219,25 @@ const nextLoop = wrapper => {
   expect(getState(wrapper).getCurrentId()).toBe('foo')
 }
 
+const reorder = wrapper => {
+  expect(getState(wrapper).ids).toEqual([])
+
+  getState(wrapper).setIds(['a', 'b', 'c'])
+  expect(getState(wrapper).ids).toEqual(['a', 'b', 'c'])
+
+  getState(wrapper).setCurrent(0)
+  getState(wrapper).reorder('a', 1)
+  expect(getState(wrapper).ids).toEqual(['b', 'c', 'a'])
+  expect(getState(wrapper).current).toBe(2)
+
+  getState(wrapper).previous()
+  expect(getState(wrapper).getCurrentId()).toBe('c')
+
+  getState(wrapper).reorder('c', -1)
+  expect(getState(wrapper).ids).toEqual(['c', 'b', 'a'])
+  expect(getState(wrapper).current).toBe(0)
+}
+
 const register = wrapper => {
   expect(getState(wrapper).ids).toEqual([])
 
@@ -225,12 +245,20 @@ const register = wrapper => {
   expect(getState(wrapper).ids).toEqual(['foo'])
 
   const state = getState(wrapper)
-  state.register('foo')
-  state.register('foo')
   state.register('bar')
   state.register('baz')
-
+  state.register('foo', -1)
+  state.register('foo')
   expect(getState(wrapper).ids).toEqual(['foo', 'bar', 'baz'])
+
+  getState(wrapper).register('a', 0)
+  expect(getState(wrapper).ids).toEqual(['foo', 'bar', 'baz', 'a'])
+
+  getState(wrapper).register('b', -1)
+  expect(getState(wrapper).ids).toEqual(['b', 'foo', 'bar', 'baz', 'a'])
+
+  getState(wrapper).register('c', 999)
+  expect(getState(wrapper).ids).toEqual(['b', 'foo', 'bar', 'baz', 'a', 'c'])
 }
 
 const unregister = wrapper => {
@@ -270,6 +298,21 @@ const update = wrapper => {
 
   getState(wrapper).update('foo', 'foo')
   expect(getState(wrapper).ids).toEqual(['foo'])
+
+  getState(wrapper).setIds(['a', 'b', 'c'])
+  expect(getState(wrapper).ids).toEqual(['a', 'b', 'c'])
+
+  getState(wrapper).update('a', 'a', 99)
+  expect(getState(wrapper).ids).toEqual(['b', 'c', 'a'])
+
+  getState(wrapper).update('c', 'c', 0)
+  expect(getState(wrapper).ids).toEqual(['b', 'c', 'a'])
+
+  getState(wrapper).update('c', 'c', -1)
+  expect(getState(wrapper).ids).toEqual(['c', 'b', 'a'])
+
+  getState(wrapper).update('a', 'c', 100)
+  expect(getState(wrapper).ids).toEqual(['b', 'c'])
 }
 
 const createTests = enhance => {
@@ -299,6 +342,7 @@ const createTests = enhance => {
   test('previous loop', () => previousLoop(wrap(enhance({ loop: true }))))
   test('next', () => next(wrap(enhance)))
   test('next loop', () => nextLoop(wrap(enhance({ loop: true }))))
+  test('reorder', () => reorder(wrap(enhance)))
   test('register', () => register(wrap(enhance)))
   test('unregister', () => unregister(wrap(enhance)))
   test('update', () => update(wrap(enhance)))
