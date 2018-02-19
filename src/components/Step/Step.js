@@ -6,14 +6,14 @@ import Hidden from '../Hidden'
 
 class Step extends React.Component {
   componentDidMount() {
-    const { register, step } = this.props
-    register(step)
+    const { register, step, order } = this.props
+    register(step, order)
   }
 
   componentDidUpdate(prevProps) {
-    const { step, update } = this.props
-    if (prevProps.step !== step) {
-      update(prevProps.step, step)
+    const { step, update, order } = this.props
+    if (prevProps.step !== step || prevProps.order !== order) {
+      update(prevProps.step, step, order)
     }
   }
 
@@ -38,6 +38,7 @@ const enhance = compose(
     update: PropTypes.func.isRequired,
     unregister: PropTypes.func.isRequired,
     isCurrent: PropTypes.func.isRequired,
+    order: PropTypes.number,
   }),
 )
 
