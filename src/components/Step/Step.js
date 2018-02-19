@@ -10,10 +10,10 @@ class Step extends React.Component {
     register(step)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     const { step, update } = this.props
-    if (step !== nextProps.step) {
-      update(step, nextProps.step)
+    if (prevProps.step !== step) {
+      update(prevProps.step, step)
     }
   }
 

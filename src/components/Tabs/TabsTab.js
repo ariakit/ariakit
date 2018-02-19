@@ -14,12 +14,13 @@ class Component extends React.Component {
     register(tab)
   }
 
-  componentWillReceiveProps({ tab, current, isCurrent }) {
-    if (this.props.tab !== tab) {
-      this.props.update(this.props.tab, tab)
+  componentDidUpdate(prevProps) {
+    const { tab, update, current, isCurrent } = this.props
+    if (prevProps.tab !== tab) {
+      update(prevProps.tab, tab)
     }
 
-    if (this.props.current !== current && isCurrent(tab)) {
+    if (prevProps.current !== current && isCurrent(tab)) {
       findDOMNode(this).focus()
     }
   }
