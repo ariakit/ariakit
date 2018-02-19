@@ -30,7 +30,7 @@
     "patch": "npm version patch && npm publish",
     "minor": "npm version minor && npm publish",
     "major": "npm version major && npm publish",
-    "prepublish": "npm run lint && npm test && npm run build",
+    "prepublishOnly": "npm run lint && npm test && npm run build",
     "postpublish": "git push origin master --follow-tags",
     "docs": "styleguidist server",
     "docs:build": "styleguidist build"
