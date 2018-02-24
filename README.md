@@ -29,16 +29,17 @@ npm:
 npm install --save reas
 ```
 
-## Example
+## Examples
+
+### Popover
 
 <p align="center">
   <img
     src="https://user-images.githubusercontent.com/3068563/35465289-0cb7fe96-02e2-11e8-8bc5-60abcb6e92ac.gif"
     width="200"
-  />
+  /><br />
+  Play with it on <a href="https://codesandbox.io/s/m4n32vjkoj" target="_blank">CodeSandbox</a>
 </p>
-
-Play with it on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) or go to [Documentation](https://reas.js.org) for more examples.
 
 ```jsx
 import React from 'react'
@@ -53,6 +54,44 @@ const App = withPopoverState(({ popover }) => (
       Popover
     </Popover>
   </InlineBlock>
+))
+
+render(<App />, document.getElementById('root'))
+```
+
+### Step
+
+<p align="center">
+  <img
+    src="https://user-images.githubusercontent.com/3068563/36624496-d9a1fb60-18ee-11e8-81c1-b16b74ed5a7c.gif"
+    height="120"
+  /><br />
+  Play with it on <a href="https://codesandbox.io/s/4090w91mq0" target="_blank">CodeSandbox</a>
+</p>
+
+```jsx
+import React from 'react'
+import { render } from 'react-dom'
+import { Block, Flex, Group, Button, Step, withStepState } from 'reas'
+
+const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4']
+
+const App = withStepState({ current: 0 })(({ step }) => (
+  <Flex column alignItems='center' justifyContent='center'>
+    <Block>
+      {steps.map(id => (
+        <Step key={id} step={id} {...step}>{id}</Step>
+      ))}
+    </Block>
+    <Group>
+      <Button as={Step.Previous} {...step}>
+        Previous
+      </Button>
+      <Button as={Step.Next} {...step}>
+        Next
+      </Button>
+    </Group>
+  </Flex>
 ))
 
 render(<App />, document.getElementById('root'))
