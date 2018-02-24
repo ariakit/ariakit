@@ -77,7 +77,7 @@ import { Block, Flex, Group, Button, Step, withStepState } from 'reas'
 const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4']
 
 const App = withStepState({ current: 0 })(({ step }) => (
-  <Flex column alignItems='center' justifyContent='center'>
+  <Flex column alignItems="center" justifyContent="center">
     <Block>
       {steps.map(id => (
         <Step key={id} step={id} {...step}>{id}</Step>
