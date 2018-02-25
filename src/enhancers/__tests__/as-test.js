@@ -142,3 +142,21 @@ it('renders SVG element', () => {
 
   expect(wrapper.html()).toMatchSnapshot()
 })
+
+it('passes down innerRef', () => {
+  const BaseComponent = createComponent()
+  class Base extends React.Component {
+    render() {
+      return (
+        <BaseComponent
+          innerRef={element => {
+            this.element = element
+          }}
+        />
+      )
+    }
+  }
+  const wrapper = mount(<Base />)
+
+  expect(wrapper.instance().element).toMatchSnapshot()
+})

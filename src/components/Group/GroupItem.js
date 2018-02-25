@@ -1,9 +1,9 @@
-import React from 'react'
+import styled from 'styled-components'
 import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import Box from '../Box'
 
-const GroupItem = props => <Box {...props} />
+const GroupItem = styled(Box)``
 
 const enhance = compose(
   as('div'),

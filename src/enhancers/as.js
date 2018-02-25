@@ -6,7 +6,6 @@ import pickCSSProps from '../utils/pickCSSProps'
 import isSVGElement from '../utils/isSVGElement'
 import parseTag from '../utils/parseTag'
 import parseClassName from '../utils/parseClassName'
-import escapeClassName from '../utils/escapeClassName'
 
 const Next = ({ nextAs, ...props }) => <Reas {...props} as={nextAs} />
 
@@ -37,7 +36,11 @@ const Reas = ({ as: t, ...props }) => {
       ...otherProps,
       className,
     }
-    return <T {...allProps}>{children}</T>
+    return (
+      <T {...allProps} ref={props.innerRef}>
+        {children}
+      </T>
+    )
   }
 
   return <T {...props} className={className} {...(style ? { style } : {})} />
@@ -55,25 +58,18 @@ const getAs = (components, props) =>
 const as = asComponents => WrappedComponent => {
   const components = [].concat(WrappedComponent, asComponents)
 
-  const AsReas = props => (
+  let AsReas = props => (
     <Reas {...props} as={getAs(components, props)} nextAs={undefined} />
   )
 
   AsReas.displayName = getDisplayName(components)
 
-  const StyledAsReas = styled(AsReas)`
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font-family: inherit;
-    vertical-align: baseline;
-    box-sizing: border-box;
-  `
-  StyledAsReas.displayName = `styled(${AsReas.displayName})`
-  StyledAsReas.styledComponentId = escapeClassName(StyledAsReas.displayName)
+  if (WrappedComponent.withComponent) {
+    AsReas = WrappedComponent.withComponent(AsReas)
+    AsReas.displayName = `styled(${getDisplayName(components)})`
+  }
 
-  StyledAsReas.propTypes = components.reduce(
+  AsReas.propTypes = components.reduce(
     (finalPropTypes, component) => ({
       ...finalPropTypes,
       ...component.propTypes,
@@ -81,29 +77,13 @@ const as = asComponents => WrappedComponent => {
     {},
   )
 
-  StyledAsReas.as = otherElements => as(otherElements)(StyledAsReas)
+  AsReas.as = otherElements => as(otherElements)(AsReas)
 
-  const originalExtend = StyledAsReas.extend
-
-  Object.defineProperty(StyledAsReas, 'extend', {
-    value: (strings, ...interpolations) => {
-      const modifiedStrings = [
-        `&& {${strings[0] || ''}`,
-        ...strings.slice(1, -1),
-        `${strings[strings.length - 1] || ''}}`,
-      ]
-      const extension = originalExtend(modifiedStrings, ...interpolations)
-
-      extension.displayName = StyledAsReas.displayName
-      extension.styledComponentId = `${
-        StyledAsReas.styledComponentId
-      }--extended`
-
-      return extension
-    },
+  Object.defineProperty(AsReas, 'extend', {
+    value: (...args) => styled(AsReas)(...args),
   })
 
-  return StyledAsReas
+  return AsReas
 }
 
 export default as
