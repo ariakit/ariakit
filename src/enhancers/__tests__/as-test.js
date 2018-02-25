@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import styled from 'styled-components'
 import { shallow, mount } from 'enzyme'
@@ -143,13 +144,31 @@ it('renders SVG element', () => {
   expect(wrapper.html()).toMatchSnapshot()
 })
 
-it('passes down innerRef', () => {
+it('passes down elementRef', () => {
   const BaseComponent = createComponent()
+  const Base = class extends React.Component {
+    render() {
+      return (
+        <BaseComponent
+          elementRef={element => {
+            this.element = element
+          }}
+        />
+      )
+    }
+  }
+  const wrapper = mount(<Base />)
+
+  expect(wrapper.instance().element).toMatchSnapshot()
+})
+
+it('passes down elementRef when extended', () => {
+  const BaseComponent = createComponent().extend``
   class Base extends React.Component {
     render() {
       return (
         <BaseComponent
-          innerRef={element => {
+          elementRef={element => {
             this.element = element
           }}
         />
