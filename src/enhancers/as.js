@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import omit from 'lodash/omit'
 import { pickHTMLProps, pickSVGProps } from 'pick-react-known-prop'
@@ -37,7 +38,7 @@ const Reas = ({ as: t, ...props }) => {
       className,
     }
     return (
-      <T {...allProps} ref={props.innerRef}>
+      <T {...allProps} ref={props.elementRef}>
         {children}
       </T>
     )
@@ -71,6 +72,7 @@ const as = asComponents => WrappedComponent => {
 
   AsReas.propTypes = components.reduce(
     (finalPropTypes, component) => ({
+      elementRef: PropTypes.func,
       ...finalPropTypes,
       ...component.propTypes,
     }),

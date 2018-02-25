@@ -1,33 +1,22 @@
-/* eslint-disable react/no-find-dom-node */
 import React from 'react'
-import { findDOMNode } from 'react-dom'
 import PropTypes from 'prop-types'
 import flow from 'lodash/flow'
 import styled from 'styled-components'
 import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
+import createElementRef from '../../utils/createElementRef'
 import InlineFlex from '../InlineFlex'
+import Step from '../Step'
+
+const InlineFlexStep = InlineFlex.as(Step)
 
 class Component extends React.Component {
-  componentDidMount() {
-    const { register, tab } = this.props
-    register(tab)
-  }
-
   componentDidUpdate(prevProps) {
-    const { tab, update, current, isCurrent } = this.props
-    if (prevProps.tab !== tab) {
-      update(prevProps.tab, tab)
-    }
+    const { current, isCurrent, tab } = this.props
 
     if (prevProps.current !== current && isCurrent(tab)) {
-      findDOMNode(this).focus()
+      this.element.focus()
     }
-  }
-
-  componentWillUnmount() {
-    const { unregister, tab } = this.props
-    unregister(tab)
   }
 
   show = () => {
@@ -55,23 +44,28 @@ class Component extends React.Component {
       onFocus,
       onKeyDown,
     } = this.props
+
     const active = isCurrent(tab)
     const activeClassName = active ? 'active' : ''
     const finalClassName = [className, activeClassName]
       .filter(c => !!c)
       .join(' ')
+
     return (
-      <InlineFlex
+      <InlineFlexStep
         id={`${tab}Tab`}
+        step={tab}
         active={active}
         aria-selected={active}
         aria-controls={`${tab}Panel`}
-        {...this.props}
         tabIndex={active ? 0 : -1}
+        visible
+        {...this.props}
         onClick={flow(this.show, onClick)}
         onFocus={flow(this.show, onFocus)}
         onKeyDown={flow(this.keyDown, onKeyDown)}
         className={finalClassName}
+        elementRef={createElementRef(this, 'element')}
       />
     )
   }

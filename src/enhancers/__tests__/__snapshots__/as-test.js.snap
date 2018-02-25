@@ -924,8 +924,15 @@ exports[`creates component with array of components 3`] = `
 
 `;
 
-exports[`passes down innerRef 1`] = `
+exports[`passes down elementRef 1`] = `
 <span
+  id="Base"
+/>
+`;
+
+exports[`passes down elementRef when extended 1`] = `
+<span
+  class="sc-htpNat KtFsv"
   id="Base"
 />
 `;

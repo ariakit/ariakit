@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import flow from 'lodash/flow'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
+import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Base from '../Base'
 
-const StepPrevious = ({ onClick = () => {}, ...props }) => (
+const StepPrevious = ({ onClick, ...props }) => (
   <Base
     onClick={flow(props.previous, onClick)}
     disabled={!props.loop && !props.hasPrevious()}
@@ -22,6 +22,9 @@ const enhance = compose(
     hasPrevious: PropTypes.func.isRequired,
     loop: PropTypes.bool,
     onClick: PropTypes.func,
+  }),
+  setStatic('defaultProps', {
+    onClick: () => {},
   }),
 )
 
