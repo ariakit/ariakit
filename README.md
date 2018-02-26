@@ -99,7 +99,7 @@ render(<App />, document.getElementById('root'))
     src="https://user-images.githubusercontent.com/3068563/36648079-65a6d9a8-1a6d-11e8-9fb3-d440dad881c5.gif"
     height="640"
   /><br />
-  See and edit full source code on <a href="https://codesandbox.io/s/4090w91mq0">CodeSandbox</a>
+  See and edit full source code on <a href="https://codesandbox.io/s/73jy07vm56">CodeSandbox</a>
 </p>
 
 ```jsx
