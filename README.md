@@ -124,7 +124,7 @@ const App = withStepState({ current: 0 })(({ step }) => (
             <Button as={Step.Previous} {...step}>Previous</Button>
             <Button as={Step.Next} {...step}>Next</Button>
           </Group>
-         </Step>
+        </Step>
       ))}
     </Block>
   </Flex>
