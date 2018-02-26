@@ -31,14 +31,14 @@ npm install --save reas
 
 ## Examples
 
-### Popover
+### Simple Popover
 
 <p align="center">
   <img
     src="https://user-images.githubusercontent.com/3068563/35465289-0cb7fe96-02e2-11e8-8bc5-60abcb6e92ac.gif"
     width="200"
   /><br />
-  Play with it on <a href="https://codesandbox.io/s/m4n32vjkoj" target="_blank">CodeSandbox</a>
+  See and edit full source code on <a href="https://codesandbox.io/s/m4n32vjkoj">CodeSandbox</a>
 </p>
 
 ```jsx
@@ -59,14 +59,14 @@ const App = withPopoverState(({ popover }) => (
 render(<App />, document.getElementById('root'))
 ```
 
-### Step
+### Transition Steps
 
 <p align="center">
   <img
     src="https://user-images.githubusercontent.com/3068563/36624496-d9a1fb60-18ee-11e8-81c1-b16b74ed5a7c.gif"
     height="120"
   /><br />
-  Play with it on <a href="https://codesandbox.io/s/4090w91mq0" target="_blank">CodeSandbox</a>
+  See and edit full source code on <a href="https://codesandbox.io/s/4090w91mq0">CodeSandbox</a>
 </p>
 
 ```jsx
@@ -79,18 +79,54 @@ const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4']
 const App = withStepState({ current: 0 })(({ step }) => (
   <Flex column alignItems="center" justifyContent="center">
     <Block>
-      {steps.map(id => (
-        <Step key={id} step={id} {...step}>{id}</Step>
-      ))}
+      {steps.map(id => <Step key={id} step={id} {...step}>{id}</Step>)}
     </Block>
     <Group>
-      <Button as={Step.Previous} {...step}>
-        Previous
-      </Button>
-      <Button as={Step.Next} {...step}>
-        Next
-      </Button>
+      <Button as={Step.Previous} {...step}>Previous</Button>
+      <Button as={Step.Next} {...step}>Next</Button>
     </Group>
+  </Flex>
+))
+
+render(<App />, document.getElementById('root'))
+```
+
+
+### Fancy Steps
+
+<p align="center">
+  <img
+    src="https://user-images.githubusercontent.com/3068563/36648079-65a6d9a8-1a6d-11e8-9fb3-d440dad881c5.gif"
+    height="640"
+  /><br />
+  See and edit full source code on <a href="https://codesandbox.io/s/4090w91mq0">CodeSandbox</a>
+</p>
+
+```jsx
+import React from 'react'
+import { render } from 'react-dom'
+import { Block, Flex, Group, Button, Step, withStepState } from 'reas'
+
+const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Step 5', 'Step 6']
+
+const App = withStepState({ current: 0 })(({ step }) => (
+  <Flex column alignItems="center" justifyContent="center">
+    <Block>
+      {steps.map(id => (
+        <Step
+          key={id}
+          step={id}
+          onEnter={el => el.scrollIntoView()}
+          {...step}
+         >
+          <Block padding="30px 0">{id}</Block>
+          <Group vertical>
+            <Button as={Step.Previous} {...step}>Previous</Button>
+            <Button as={Step.Next} {...step}>Next</Button>
+          </Group>
+         </Step>
+      ))}
+    </Block>
   </Flex>
 ))
 
