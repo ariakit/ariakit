@@ -1,11 +1,13 @@
 ```jsx
 <Divider horizontal />
 ```
+
 ```jsx
-const {Block, InlineBlock} = require('reas');
-<Block height={20}>
-  <InlineBlock backgroundColor="palevioletred" color="white">InlineBlock</InlineBlock>
+const { Flex, Block } = require('reas');
+
+<Flex backgroundColor="palevioletred" color="white" padding={8}>
+  <Block>Block</Block>
   <Divider vertical />
-  <InlineBlock backgroundColor="palevioletred" color="white">InlineBlock</InlineBlock>
-</Block>
+  <Block>Block</Block>
+</Flex>
 ```

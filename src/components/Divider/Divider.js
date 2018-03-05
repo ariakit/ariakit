@@ -1,26 +1,38 @@
-import styled from 'styled-components'
-import { compose, setDisplayName } from 'recompose'
+import PropTypes from 'prop-types'
+import styled, { css } from 'styled-components'
+import { compose, setDisplayName, setPropTypes } from 'recompose'
+import { ifProp } from 'styled-tools'
+import as from '../../enhancers/as'
+import Base from '../Base'
 
-const Divider = styled.div.attrs({
-  className: props =>
-    (props.horizontal && 'horizontal') || (props.vertical && 'vertical'),
-})`
-  &.horizontal {
-    margin: 1rem 0;
-    height: 0;
-    border-top: 1px solid rgba(34, 36, 38, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  &.vertical {
-    margin: 0 1rem;
-    height: 100%;
-    width: 0;
-    display: inline-block;
-    border-left: 1px solid rgba(34, 36, 38, 0.3);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-  }
+const Divider = styled(Base)`
+  border: 1px solid currentcolor;
+  opacity: 0.2;
+
+  ${ifProp(
+    'vertical',
+    css`
+      margin: 0 1rem;
+      min-height: 100%;
+      width: 0;
+      border-width: 0 0 0 1px;
+    `,
+    css`
+      margin: 1rem 0;
+      height: 0;
+      border-width: 1px 0 0 0;
+    `,
+  )};
 `
 
-const enhance = compose(setDisplayName('Divider'))
+const enhance = compose(
+  as('div'),
+  setDisplayName('Divider'),
+  setPropTypes({
+    ...Base.propTypes,
+    horizontal: PropTypes.bool,
+    vertical: PropTypes.bool,
+  }),
+)
 
 export default enhance(Divider)
