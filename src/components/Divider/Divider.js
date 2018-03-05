@@ -1,13 +1,10 @@
-import React from 'react'
 import styled from 'styled-components'
-import PropTypes from 'prop-types'
-import as from '../../enhancers/as'
-import { compose, setDisplayName, setPropTypes, defaultProps } from 'recompose'
+import { compose, setDisplayName } from 'recompose'
 
 const Divider = styled.div.attrs({
-  className: props=>props.horizontal && 'horizontal' || props.vertical && 'vertical'
+  className: props =>
+    (props.horizontal && 'horizontal') || (props.vertical && 'vertical'),
 })`
-  
   &.horizontal {
     margin: 1rem 0;
     height: 0;
@@ -24,8 +21,6 @@ const Divider = styled.div.attrs({
   }
 `
 
-const enhance = compose(
-  setDisplayName('Divider'),
-)
+const enhance = compose(setDisplayName('Divider'))
 
 export default enhance(Divider)
