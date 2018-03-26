@@ -11,7 +11,7 @@ import as from '../../src'
 
 const StyledCodeMirror = styled(CodeMirror)`
   .CodeMirror {
-    font-family: "Fira Code", monospace;
+    font-family: 'Fira Code', monospace;
     line-height: 150%;
     background-color: rgb(40, 44, 52);
     padding: 8px;
@@ -28,9 +28,10 @@ const StyledCodeMirror = styled(CodeMirror)`
   }
 `
 
-const handleChange = onChange => debounce((editor, metadata, newCode) => {
-  onChange(newCode)
-}, 10)
+const handleChange = onChange =>
+  debounce((editor, metadata, newCode) => {
+    onChange(newCode)
+  }, 10)
 
 const Editor = ({ code, onChange, config, options, ...props }) => (
   <StyledCodeMirror
@@ -55,7 +56,7 @@ const enhance = compose(
     shouldComponentUpdate() {
       return false
     },
-  })
+  }),
 )
 
 export default enhance(Editor)

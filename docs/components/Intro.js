@@ -19,45 +19,45 @@ const Headline = Paragraph.extend`
 
 const filter = (intro, type) => intro.content.filter(v => v.type === type)
 
-const Intro = ({ intro, ...props }) => {
+const renderTabs = (intro, tabs) => {
   const mds = filter(intro, 'markdown')
   const codes = filter(intro, 'code')
-  const createItems = tabs =>
-    mds.map((md, i) => (
-      <IntroPanel
-        as={Tabs.Panel}
-        key={`tab${i}`}
-        tab={`tab${i}`}
-        content={md.content}
-        code={codes[i].content}
-        evalInContext={codes[i].evalInContext}
-        {...codes[i].settings}
-        {...tabs}
-      />
-    ))
+  const items = mds.map((md, i) => (
+    <IntroPanel
+      as={Tabs.Panel}
+      key={`tab${i}`}
+      tab={`tab${i}`}
+      content={md.content}
+      code={codes[i].content}
+      evalInContext={codes[i].evalInContext}
+      {...codes[i].settings}
+      {...tabs}
+    />
+  ))
+
   return (
-    <Block {...props}>
-      <Headline>
-        A minimalist and highly customizable component system built on top of{' '}
-        <Link href="https://reactjs.org" blank>
-          React
-        </Link>{' '}
-        and{' '}
-        <Link href="https://styled-components.com" blank>
-          styled-components
-        </Link>
-      </Headline>
-      <Tabs.State>
-        {tabs => (
-          <React.Fragment>
-            <IntroTabs items={createItems(tabs)} tabs={tabs} />
-            {createItems(tabs)}
-          </React.Fragment>
-        )}
-      </Tabs.State>
-    </Block>
+    <React.Fragment>
+      <IntroTabs items={items} tabs={tabs} />
+      {items}
+    </React.Fragment>
   )
 }
+
+const Intro = ({ intro, ...props }) => (
+  <Block {...props}>
+    <Headline>
+      A minimalist and highly customizable component system built on top of{' '}
+      <Link href="https://reactjs.org" blank>
+        React
+      </Link>{' '}
+      and{' '}
+      <Link href="https://styled-components.com" blank>
+        styled-components
+      </Link>
+    </Headline>
+    <Tabs.State>{tabs => renderTabs(intro, tabs)}</Tabs.State>
+  </Block>
+)
 
 Intro.propTypes = {
   intro: PropTypes.shape({

@@ -17,13 +17,13 @@ const Wrapper = Block.extend`
     padding: 16px 0;
     min-height: ${prop('size', 'auto')};
 
-    [role=button]:not(input) {
+    [role='button']:not(input) {
       color: white;
     }
   }
 
-  [class*="rsg--spacing"] *,
-  [class*="rsg--para"] {
+  [class*='rsg--spacing'] *,
+  [class*='rsg--para'] {
     color: white;
     a {
       color: #4dbcfc;
