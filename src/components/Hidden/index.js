@@ -10,5 +10,3 @@ Hidden.State = HiddenState
 Hidden.Toggle = HiddenToggle
 
 export default Hidden
-
-export withHiddenState from './withHiddenState'
