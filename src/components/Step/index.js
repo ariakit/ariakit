@@ -14,5 +14,3 @@ Step.State = StepState
 Step.Toggle = StepToggle
 
 export default Step
-
-export withStepState from './withStepState'

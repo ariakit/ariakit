@@ -72,15 +72,18 @@ const Example = enhance(({ as: T, ...props }) => <T {...props} />);
 ### A component state can be handled by using [state](#state) enhancers
 State enhancers encapsulate the complexity behind state logic.
 ```jsx
-const { Block, Button, Hidden, withHiddenState } = require('reas');
+const { Block, Button, Hidden } = require('reas');
 
-const enhance = withHiddenState();
-const Example = enhance(({ hidden }) => (
-  <Block>
-    <Button onClick={hidden.toggle}>Toggle</Button>
-    <Hidden visible={hidden.visible}>Hidden</Hidden>
-  </Block>
-));
+const Example = () => (
+  <Hidden.State>
+    {hidden => (
+      <Block>
+        <Button onClick={hidden.toggle}>Toggle</Button>
+        <Hidden visible={hidden.visible}>Hidden</Hidden>
+      </Block>
+    )}
+  </Hidden.State>
+);
 
 <Example />
 ```
@@ -88,15 +91,18 @@ const Example = enhance(({ hidden }) => (
 ### A component API can be encapsulated by using [behavior](#behaviors) components
 Behaviors such as `Hidden.Toggle` apply event handlers automatically.
 ```jsx
-const { Block, Button, Hidden, withHiddenState } = require('reas');
+const { Block, Button, Hidden } = require('reas');
 
-const enhance = withHiddenState();
-const Example = enhance(({ hidden }) => (
-  <Block>
-    <Button as={Hidden.Toggle} {...hidden}>Toggle</Button>
-    <Hidden {...hidden}>Hidden</Hidden>
-  </Block>
-));
+const Example = () => (
+  <Hidden.State>
+    {hidden => (
+      <Block>
+        <Button as={Hidden.Toggle} {...hidden}>Toggle</Button>
+        <Hidden {...hidden}>Hidden</Hidden>
+      </Block>
+    )}
+  </Hidden.State>
+);
 
 <Example />
 ```
