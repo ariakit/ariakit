@@ -1,6 +1,14 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from 'react'
 import PropTypes from 'prop-types'
+import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
+import mapStateToActions from '../../utils/mapStateToActions'
+
+const toggle = () => state => ({ visible: !state.visible })
+const show = () => () => ({ visible: true })
+const hide = () => () => ({ visible: false })
+
+const actions = { toggle, show, hide }
 
 class HiddenState extends React.Component {
   static propTypes = {
@@ -12,28 +20,20 @@ class HiddenState extends React.Component {
     visible: false,
   }
 
-  static getDerivedStateFromProps({ visible }, prevState) {
-    if (visible !== prevState.visible) {
-      return { visible }
-    }
-    return null
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return getDerivedStateFromProps(
+      nextProps,
+      prevState,
+      Object.keys(HiddenState.defaultProps),
+    )
   }
 
   state = {}
 
-  toggle = () => this.setState(state => ({ visible: !state.visible }))
-
-  show = () => this.setState({ visible: true })
-
-  hide = () => this.setState({ visible: false })
-
   render() {
-    const { toggle, show, hide } = this
     return this.props.children({
       ...this.state,
-      toggle,
-      show,
-      hide,
+      ...mapStateToActions(this, actions),
     })
   }
 }

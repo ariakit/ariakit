@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import uniqueId from 'lodash/uniqueId'
 import HiddenState from '../Hidden/HiddenState'
+import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 
 class PopoverState extends React.Component {
   static propTypes = {
@@ -15,11 +16,12 @@ class PopoverState extends React.Component {
     popoverId: uniqueId('popover'),
   }
 
-  static getDerivedStateFromProps({ popoverId }, prevState) {
-    if (popoverId !== prevState.popoverId) {
-      return { popoverId }
-    }
-    return null
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return getDerivedStateFromProps(
+      nextProps,
+      prevState,
+      Object.keys(PopoverState.defaultProps),
+    )
   }
 
   state = {}
