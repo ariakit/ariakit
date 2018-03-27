@@ -2,6 +2,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import uniqueId from 'lodash/uniqueId'
+import polyfill from 'react-lifecycles-compat'
 import HiddenState from '../Hidden/HiddenState'
 import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 
@@ -40,4 +41,4 @@ class PopoverState extends React.Component {
   }
 }
 
-export default PopoverState
+export default polyfill(PopoverState)

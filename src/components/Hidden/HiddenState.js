@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from 'react'
 import PropTypes from 'prop-types'
+import polyfill from 'react-lifecycles-compat'
 import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 import mapStateToActions from '../../utils/mapStateToActions'
 
@@ -38,4 +39,4 @@ class HiddenState extends React.Component {
   }
 }
 
-export default HiddenState
+export default polyfill(HiddenState)

@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from 'react'
 import PropTypes from 'prop-types'
+import polyfill from 'react-lifecycles-compat'
 import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 import mapStateToActions from '../../utils/mapStateToActions'
 import mapStateToSelectors from '../../utils/mapStateToSelectors'
@@ -152,4 +153,4 @@ class StepState extends React.Component {
   }
 }
 
-export default StepState
+export default polyfill(StepState)
