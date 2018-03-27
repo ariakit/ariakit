@@ -20,8 +20,10 @@ class Component extends React.Component {
   }
 
   show = () => {
-    const { show, tab } = this.props
-    show(tab)
+    const { show, isCurrent, tab } = this.props
+    if (!isCurrent(tab)) {
+      show(tab)
+    }
   }
 
   keyDown = e => {
