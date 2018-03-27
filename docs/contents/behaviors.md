@@ -1,4 +1,4 @@
-Finally, we have behaviors, which are basically components that apply event handlers and/or accessibility attributes into your component. Together with state enhancers, they will help you to control the state of your application without needing to touch state logic.
+Finally, we have behaviors, which are basically components that apply event handlers and/or accessibility attributes into your component. Together with state components, they will help you to control the state of your application without needing to touch state logic.
 
 Let's take the [`Hidden`](#hidden) example, but now using a behavior component to toggle its state:
 
@@ -19,7 +19,7 @@ const Example = () => (
 <Example />
 ```
 
-[`Step`](#step) is another example of a component which takes advantage from state enhancers and behaviors. Let's take a look:
+[`Step`](#step) is another example of a component which takes advantage from state components and behaviors:
 ```jsx { "showCode": true }
 const { Block, Group, Button, Step } = require('reas');
 

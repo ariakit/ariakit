@@ -24,7 +24,7 @@ const Example = enhance(({ visible, hide }) => (
 <Example />
 ```
 
-As a convenience, `reas` provides state enhancers so you don't need to worry about it. Here's the same as above but using `withHiddenState` (refresh the page if you have already pressed esc):
+As a convenience, `reas` provides state components so you don't need to worry about it. Here's the same as above but using `Hidden.State` (refresh the page if you have already pressed esc):
 ```jsx { "showCode": true }
 const { Hidden } = require('reas');
 

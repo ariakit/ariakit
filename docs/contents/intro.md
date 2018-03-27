@@ -69,8 +69,8 @@ const Example = enhance(({ as: T, ...props }) => <T {...props} />);
 <Example as="div" backgroundColor="palevioletred" color="white">Example</Example>
 ```
 
-### A component state can be handled by using [state](#state) enhancers
-State enhancers encapsulate the complexity behind state logic.
+### A component state can be handled by using [state](#state) components
+State components encapsulate the complexity behind state logic.
 ```jsx
 const { Block, Button, Hidden } = require('reas');
 
