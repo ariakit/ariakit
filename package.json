@@ -53,7 +53,6 @@
     "pick-react-known-prop": "^0.1.1",
     "prop-types": "^15.5.10",
     "react-lifecycles-compat": "^1.0.2",
-    "recompose": "^0.26.0",
     "styled-components": "^3.1.6",
     "styled-tools": "^0.4.0"
   },
