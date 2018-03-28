@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { ifProp } from 'styled-tools'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Flex from '../Flex'
 import GroupItem from './GroupItem'
@@ -31,16 +30,12 @@ const Group = styled(Flex)`
   }
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Group'),
-  setPropTypes({
-    ...Flex.propTypes,
-    vertical: PropTypes.bool,
-  }),
-  setStatic('defaultProps', {
-    role: 'group',
-  }),
-)
+Group.propTypes = {
+  vertical: PropTypes.bool,
+}
 
-export default enhance(Group)
+Group.defaultProps = {
+  role: 'group',
+}
+
+export default as('div')(Group)

@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Hidden from '../Hidden'
 
@@ -13,14 +12,9 @@ const Backdrop = styled(Hidden)`
   z-index: 998;
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Backdrop'),
-  setPropTypes(Hidden.propTypes),
-  setStatic('defaultProps', {
-    role: 'button',
-    tabIndex: -1,
-  }),
-)
+Backdrop.defaultProps = {
+  role: 'button',
+  tabIndex: -1,
+}
 
-export default enhance(Backdrop)
+export default as('div')(Backdrop)

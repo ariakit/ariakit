@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import omit from 'lodash/omit'
 import { pickHTMLProps, pickSVGProps } from 'pick-react-known-prop'
@@ -69,15 +68,6 @@ const as = asComponents => WrappedComponent => {
     AsReas = WrappedComponent.withComponent(AsReas)
     AsReas.displayName = `styled(${getDisplayName(components)})`
   }
-
-  AsReas.propTypes = components.reduce(
-    (finalPropTypes, component) => ({
-      elementRef: PropTypes.func,
-      ...finalPropTypes,
-      ...component.propTypes,
-    }),
-    {},
-  )
 
   AsReas.as = otherElements => as(otherElements)(AsReas)
 

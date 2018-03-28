@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import flow from 'lodash/flow'
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import createElementRef from '../../utils/createElementRef'
 import InlineFlex from '../InlineFlex'
@@ -95,31 +94,27 @@ const TabsTab = styled(Component)`
   }
 `
 
-const enhance = compose(
-  as('li'),
-  setDisplayName('TabsTab'),
-  setPropTypes({
-    ...InlineFlex.propTypes,
-    tab: PropTypes.string.isRequired,
-    register: PropTypes.func.isRequired,
-    update: PropTypes.func.isRequired,
-    unregister: PropTypes.func.isRequired,
-    isCurrent: PropTypes.func.isRequired,
-    show: PropTypes.func.isRequired,
-    next: PropTypes.func.isRequired,
-    previous: PropTypes.func.isRequired,
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-    onClick: PropTypes.func,
-    onFocus: PropTypes.func,
-    onKeyDown: PropTypes.func,
-  }),
-  setStatic('defaultProps', {
-    role: 'tab',
-    onClick: () => {},
-    onFocus: () => {},
-    onKeyDown: () => {},
-  }),
-)
+TabsTab.propTypes = {
+  tab: PropTypes.string.isRequired,
+  register: PropTypes.func.isRequired,
+  update: PropTypes.func.isRequired,
+  unregister: PropTypes.func.isRequired,
+  isCurrent: PropTypes.func.isRequired,
+  show: PropTypes.func.isRequired,
+  next: PropTypes.func.isRequired,
+  previous: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func,
+  onFocus: PropTypes.func,
+  onKeyDown: PropTypes.func,
+}
 
-export default enhance(TabsTab)
+TabsTab.defaultProps = {
+  role: 'tab',
+  onClick: () => {},
+  onFocus: () => {},
+  onKeyDown: () => {},
+}
+
+export default as('li')(TabsTab)

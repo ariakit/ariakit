@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Hidden from '../Hidden'
 
@@ -17,17 +16,13 @@ const TabsPanel = props => {
   )
 }
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('TabsPanel'),
-  setPropTypes({
-    ...Hidden.propTypes,
-    tab: PropTypes.string.isRequired,
-    isCurrent: PropTypes.func.isRequired,
-  }),
-  setStatic('defaultProps', {
-    role: 'tabpanel',
-  }),
-)
+TabsPanel.propTypes = {
+  tab: PropTypes.string.isRequired,
+  isCurrent: PropTypes.func.isRequired,
+}
 
-export default enhance(TabsPanel)
+TabsPanel.defaultProps = {
+  role: 'tabpanel',
+}
+
+export default as('div')(TabsPanel)

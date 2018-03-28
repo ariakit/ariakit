@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import InlineFlex from '../InlineFlex'
 import Box from '../Box'
@@ -72,10 +71,4 @@ const Button = styled(Component)`
   }
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Button'),
-  setPropTypes(InlineFlexBox.propTypes),
-)
-
-export default enhance(Button)
+export default as('div')(Button)

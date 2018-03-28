@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Block from '../Block'
 import Box from '../Box'
@@ -28,13 +27,8 @@ const Input = styled(BlockBox)`
   }
 `
 
-const enhance = compose(
-  as('input'),
-  setDisplayName('Input'),
-  setPropTypes(BlockBox.propTypes),
-  setStatic('defaultProps', {
-    type: 'text',
-  }),
-)
+Input.defaultProps = {
+  type: 'text',
+}
 
-export default enhance(Input)
+export default as('input')(Input)

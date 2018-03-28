@@ -1,11 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import createElementRef from '../../utils/createElementRef'
 import Hidden from '../Hidden'
 
 class Step extends React.Component {
+  static propTypes = {
+    step: PropTypes.string.isRequired,
+    current: PropTypes.number.isRequired,
+    register: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired,
+    unregister: PropTypes.func.isRequired,
+    indexOf: PropTypes.func.isRequired,
+    order: PropTypes.number,
+    onEnter: PropTypes.func,
+    onExit: PropTypes.func,
+  }
+
   componentDidMount() {
     const { register, step, order, onEnter, current, indexOf } = this.props
     register(step, order)
@@ -63,21 +74,4 @@ class Step extends React.Component {
   }
 }
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Step'),
-  setPropTypes({
-    ...Hidden.propTypes,
-    step: PropTypes.string.isRequired,
-    current: PropTypes.number.isRequired,
-    register: PropTypes.func.isRequired,
-    update: PropTypes.func.isRequired,
-    unregister: PropTypes.func.isRequired,
-    indexOf: PropTypes.func.isRequired,
-    order: PropTypes.number,
-    onEnter: PropTypes.func,
-    onExit: PropTypes.func,
-  }),
-)
-
-export default enhance(Step)
+export default as('div')(Step)

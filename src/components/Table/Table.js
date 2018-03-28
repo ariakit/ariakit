@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Base from '../Base'
 
@@ -12,13 +11,8 @@ const Table = styled(Base)`
   line-height: 200%;
 `
 
-const enhance = compose(
-  as('table'),
-  setDisplayName('Table'),
-  setPropTypes(Base.propTypes),
-  setStatic('defaultProps', {
-    role: 'table',
-  }),
-)
+Table.defaultProps = {
+  role: 'table',
+}
 
-export default enhance(Table)
+export default as('table')(Table)

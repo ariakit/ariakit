@@ -8,7 +8,6 @@ import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 
 class PopoverState extends React.Component {
   static propTypes = {
-    ...HiddenState.propTypes,
     children: PropTypes.func.isRequired,
     popoverId: PropTypes.string,
   }

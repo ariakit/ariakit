@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import { ifProp } from 'styled-tools'
 import as from '../../enhancers/as'
 import Base from '../Base'
@@ -25,14 +24,9 @@ const Divider = styled(Base)`
   )};
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Divider'),
-  setPropTypes({
-    ...Base.propTypes,
-    horizontal: PropTypes.bool,
-    vertical: PropTypes.bool,
-  }),
-)
+Divider.propTypes = {
+  horizontal: PropTypes.bool,
+  vertical: PropTypes.bool,
+}
 
-export default enhance(Divider)
+export default as('div')(Divider)
