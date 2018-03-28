@@ -1,15 +1,17 @@
+import React from 'react'
 import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
 import { ifProp } from 'styled-tools'
-import {
-  compose,
-  setDisplayName,
-  setPropTypes,
-  branch,
-  withProps,
-} from 'recompose'
 import as from '../../enhancers/as'
 import Base from '../Base'
+
+const Component = props => (
+  <Base
+    as={props.header ? 'th' : 'td'}
+    role={props.header ? 'columnheader' : 'cell'}
+    {...props}
+  />
+)
 
 const TableCell = styled(Base)`
   display: table-cell;
@@ -26,16 +28,8 @@ const TableCell = styled(Base)`
   )};
 `
 
-const enhance = compose(
-  branch(props => props.header, as('th'), as('td')),
-  setDisplayName('TableCell'),
-  withProps(props => ({
-    role: props.header ? 'columnheader' : 'cell',
-  })),
-  setPropTypes({
-    ...Base.propTypes,
-    header: PropTypes.bool,
-  }),
-)
+TableCell.propTypes = {
+  header: PropTypes.bool,
+}
 
-export default enhance(TableCell)
+export default as(Component)(TableCell)

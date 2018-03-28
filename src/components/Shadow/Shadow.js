@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import { withProp } from 'styled-tools'
 import as from '../../enhancers/as'
 import Fit from '../Fit'
@@ -14,16 +13,12 @@ const Shadow = styled(Fit)`
   )};
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Shadow'),
-  setPropTypes({
-    ...Fit.propTypes,
-    depth: PropTypes.number,
-  }),
-  setStatic('defaultProps', {
-    depth: 2,
-  }),
-)
+Shadow.propTypes = {
+  depth: PropTypes.number,
+}
 
-export default enhance(Shadow)
+Shadow.defaultProps = {
+  depth: 2,
+}
+
+export default as('div')(Shadow)

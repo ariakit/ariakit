@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import as from '../../enhancers/as'
 import Perpendicular from '../Perpendicular'
 
@@ -21,15 +20,10 @@ const Tooltip = styled(Perpendicular)`
   }
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Tooltip'),
-  setPropTypes(Perpendicular.propTypes),
-  setStatic('defaultProps', {
-    role: 'tooltip',
-    pos: 'top',
-    align: 'center',
-  }),
-)
+Tooltip.defaultProps = {
+  role: 'tooltip',
+  pos: 'top',
+  align: 'center',
+}
 
-export default enhance(Tooltip)
+export default as('div')(Tooltip)

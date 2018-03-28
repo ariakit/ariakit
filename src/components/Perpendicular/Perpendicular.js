@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
-import { compose, setDisplayName, setPropTypes, setStatic } from 'recompose'
 import { switchProp, prop } from 'styled-tools'
 import as from '../../enhancers/as'
 import Base from '../Base'
@@ -50,22 +49,18 @@ const Perpendicular = styled(Base)`
   })};
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Perpendicular'),
-  setPropTypes({
-    ...Base.propTypes,
-    pos: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
-    align: PropTypes.oneOf(['start', 'center', 'end']),
-    gutter: PropTypes.string,
-    rotate: PropTypes.bool,
-    reverse: PropTypes.bool,
-  }),
-  setStatic('defaultProps', {
-    pos: 'right',
-    align: 'center',
-    gutter: '0.75rem',
-  }),
-)
+Perpendicular.propTypes = {
+  pos: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
+  align: PropTypes.oneOf(['start', 'center', 'end']),
+  gutter: PropTypes.string,
+  rotate: PropTypes.bool,
+  reverse: PropTypes.bool,
+}
 
-export default enhance(Perpendicular)
+Perpendicular.defaultProps = {
+  pos: 'right',
+  align: 'center',
+  gutter: '0.75rem',
+}
+
+export default as('div')(Perpendicular)

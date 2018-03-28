@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose } from 'recompose'
-import as, { Paragraph, Block, Tabs, withTabsState } from '../../src'
+import as, { Paragraph, Block, Tabs } from '../../src'
 import IntroPanel from './IntroPanel'
 import IntroTabs from './IntroTabs'
 import Link from './Link'
 
 const Headline = Paragraph.extend`
-  font-family: "Fira Code", monospace;
+  font-family: 'Fira Code', monospace;
   font-size: 20px;
   font-style: italic;
   color: #aaa;
@@ -20,7 +19,7 @@ const Headline = Paragraph.extend`
 
 const filter = (intro, type) => intro.content.filter(v => v.type === type)
 
-const Intro = ({ intro, tabs, ...props }) => {
+const renderTabs = (intro, tabs) => {
   const mds = filter(intro, 'markdown')
   const codes = filter(intro, 'code')
   const items = mds.map((md, i) => (
@@ -35,32 +34,41 @@ const Intro = ({ intro, tabs, ...props }) => {
       {...tabs}
     />
   ))
+
   return (
-    <Block {...props}>
-      <Headline>
-        A minimalist and highly customizable component system built on top
-        of <Link href="https://reactjs.org" blank>React</Link> and <Link href="https://styled-components.com" blank>styled-components</Link>
-      </Headline>
+    <React.Fragment>
       <IntroTabs items={items} tabs={tabs} />
       {items}
-    </Block>
+    </React.Fragment>
   )
 }
 
-Intro.propTypes = {
-  intro: PropTypes.shape({
-    content: PropTypes.arrayOf(PropTypes.shape({
-      type: PropTypes.string.isRequired,
-      content: PropTypes.string.isRequired,
-      evalInContext: PropTypes.func,
-    })).isRequired,
-  }).isRequired,
-  tabs: PropTypes.object.isRequired,
-}
-
-const enhance = compose(
-  as('div'),
-  withTabsState(),
+const Intro = ({ intro, ...props }) => (
+  <Block {...props}>
+    <Headline>
+      A minimalist and highly customizable component system built on top of{' '}
+      <Link href="https://reactjs.org" blank>
+        React
+      </Link>{' '}
+      and{' '}
+      <Link href="https://styled-components.com" blank>
+        styled-components
+      </Link>
+    </Headline>
+    <Tabs.State>{tabs => renderTabs(intro, tabs)}</Tabs.State>
+  </Block>
 )
 
-export default enhance(Intro)
+Intro.propTypes = {
+  intro: PropTypes.shape({
+    content: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string.isRequired,
+        content: PropTypes.string.isRequired,
+        evalInContext: PropTypes.func,
+      }),
+    ).isRequired,
+  }).isRequired,
+}
+
+export default as('div')(Intro)

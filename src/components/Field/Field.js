@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import Flex from '../Flex'
 
@@ -14,10 +13,4 @@ const Field = styled(Flex)`
   }
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Field'),
-  setPropTypes(Flex.propTypes),
-)
-
-export default enhance(Field)
+export default as('div')(Field)

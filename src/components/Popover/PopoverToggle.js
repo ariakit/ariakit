@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import Hidden from '../Hidden'
 
@@ -13,14 +12,9 @@ const PopoverToggle = props => (
   />
 )
 
-const enhance = compose(
-  as('button'),
-  setDisplayName('PopoverToggle'),
-  setPropTypes({
-    ...Hidden.Toggle.propTypes,
-    popoverId: PropTypes.string.isRequired,
-    visible: PropTypes.bool,
-  }),
-)
+PopoverToggle.propTypes = {
+  popoverId: PropTypes.string.isRequired,
+  visible: PropTypes.bool,
+}
 
-export default enhance(PopoverToggle)
+export default as('button')(PopoverToggle)

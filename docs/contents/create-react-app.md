@@ -35,17 +35,21 @@ Modify `src/App.js`, import components from `reas`.
 
 ```jsx static
 import React from 'react';
-import { InlineBlock, Button, Popover, withPopoverState } from 'reas';
+import { InlineBlock, Button, Popover } from 'reas';
 
-const App = withPopoverState(({ popover }) => (
-  <InlineBlock relative>
-    <Button as={Popover.Toggle} {...popover}>Toggle</Button>
-    <Popover {...popover}>
-      <Popover.Arrow />
-      Popover
-    </Popover>
-  </InlineBlock>
-));
+const App = () => (
+  <Popover.State>
+    {popover => (
+      <InlineBlock relative>
+        <Button as={Popover.Toggle} {...popover}>Toggle</Button>
+        <Popover {...popover}>
+          <Popover.Arrow />
+          Popover
+        </Popover>
+      </InlineBlock>
+    )}
+  </Popover.State>
+);
 
 export default App;
 ```

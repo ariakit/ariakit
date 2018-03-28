@@ -1,5 +1,5 @@
 ```jsx
-const { InlineBlock, Button, Group, Popover, Flex, Paragraph, withStepState } = require('reas');
+const { InlineBlock, Button, Group, Popover, Flex, Paragraph } = require('reas');
 
 const PopoverStep = props => (
   <InlineBlock relative>
@@ -20,13 +20,17 @@ const PopoverStep = props => (
   </InlineBlock>
 );
 
-const Steps = withStepState(({ step }) => (
-  <Group>
-    <PopoverStep step="Step 1" {...step} />
-    <PopoverStep step="Step 2" {...step} />
-    <PopoverStep step="Step 3" {...step} />
-  </Group>
-));
+const Steps = () => (
+  <Step.State>
+    {step => (
+      <Group>
+        <PopoverStep step="Step 1" {...step} />
+        <PopoverStep step="Step 2" {...step} />
+        <PopoverStep step="Step 3" {...step} />
+      </Group>
+    )}
+  </Step.State>
+);
 
 <Steps />
 ```

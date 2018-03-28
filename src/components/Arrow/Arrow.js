@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import InlineFlex from '../InlineFlex'
 
@@ -31,10 +30,4 @@ const Arrow = styled(InlineFlex)`
   }
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Arrow'),
-  setPropTypes(InlineFlex.propTypes),
-)
-
-export default enhance(Arrow)
+export default as('div')(Arrow)

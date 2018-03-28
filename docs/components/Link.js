@@ -16,7 +16,11 @@ const Wrapper = InlineFlex.extend`
 const Link = ({ blank, children, ...props }) => (
   <Wrapper {...props} {...(blank ? { target: '_blank' } : {})}>
     {children}
-    {blank && <Inline marginLeft="0.35em"><FaExternalLink /></Inline>}
+    {blank && (
+      <Inline marginLeft="0.35em">
+        <FaExternalLink />
+      </Inline>
+    )}
   </Wrapper>
 )
 

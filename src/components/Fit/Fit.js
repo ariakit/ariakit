@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import Block from '../Block'
 
@@ -11,10 +10,4 @@ const Fit = styled(Block)`
   left: 0;
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Fit'),
-  setPropTypes(Block.propTypes),
-)
-
-export default enhance(Fit)
+export default as('div')(Fit)

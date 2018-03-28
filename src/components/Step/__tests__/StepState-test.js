@@ -1,19 +1,17 @@
 import React from 'react'
 import { mount } from 'enzyme'
-import withStepState from '../withStepState'
+import StepState from '../StepState'
 
 const Base = () => null
 
-const wrap = (enhance, props = {}) => {
-  const Comp = enhance(Base)
-  return mount(<Comp {...props} />)
-}
+const wrap = (State, props = {}) =>
+  mount(<State {...props}>{step => <Base step={step} />}</State>)
 
-const getState = (wrapper, prop = 'step') =>
+const getState = wrapper =>
   wrapper
     .update()
     .find(Base)
-    .prop(prop)
+    .prop('step')
 
 const initialState = {
   loop: false,
@@ -22,8 +20,8 @@ const initialState = {
   ordered: {},
 }
 
-const ensureState = (wrapper, prop) => {
-  const state = getState(wrapper, prop)
+const ensureState = wrapper => {
+  const state = getState(wrapper)
   expect(state).toHaveProperty('loop', expect.any(Boolean))
   expect(state).toHaveProperty('ids', expect.any(Array))
   expect(state).toHaveProperty('current', expect.any(Number))
@@ -43,126 +41,118 @@ const ensureState = (wrapper, prop) => {
   expect(state).toHaveProperty('update', expect.any(Function))
 }
 
-const createTests = enhance => {
+const createTests = State => {
   test('state', () => {
-    ensureState(wrap(enhance))
-  })
-
-  test('state with name argument', () => {
-    ensureState(wrap(enhance('a')), 'a')
-  })
-
-  test('state with name option', () => {
-    ensureState(wrap(enhance({ name: 'a' })), 'a')
+    ensureState(wrap(State))
   })
 
   test('loop', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).loop).toBe(initialState.loop)
   })
 
-  test('loop option true', () => {
-    const wrapper = wrap(enhance({ loop: true }))
+  test('loop prop true', () => {
+    const wrapper = wrap(State, { loop: true })
     expect(getState(wrapper).loop).toBe(true)
   })
 
-  test('loop option false', () => {
-    const wrapper = wrap(enhance({ loop: false }))
+  test('loop prop false', () => {
+    const wrapper = wrap(State, { loop: false })
     expect(getState(wrapper).loop).toBe(false)
   })
 
   test('ids', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).ids).toEqual(initialState.ids)
   })
 
-  test('ids option', () => {
-    const wrapper = wrap(enhance({ ids: ['a'] }))
+  test('ids prop', () => {
+    const wrapper = wrap(State, { ids: ['a'] })
     expect(getState(wrapper).ids).toEqual(['a'])
   })
 
   test('current', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).current).toBe(initialState.current)
   })
 
-  test('current option', () => {
-    const wrapper = wrap(enhance({ current: 1 }))
+  test('current prop', () => {
+    const wrapper = wrap(State, { current: 1 })
     expect(getState(wrapper).current).toBe(1)
   })
 
   test('getCurrentId', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).getCurrentId()).toBeUndefined()
   })
 
   test('getCurrentId different state', () => {
     const state = { ids: ['a', 'b'], current: 1 }
-    const wrapper = wrap(enhance(state))
+    const wrapper = wrap(State, state)
     expect(getState(wrapper).getCurrentId()).toBe('b')
   })
 
   test('hasPrevious', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).hasPrevious()).toBe(false)
   })
 
   test('hasPrevious with ids without current', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     expect(getState(wrapper).hasPrevious()).toBe(false)
   })
 
   test('hasPrevious with ids with current 0', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 0 })
     expect(getState(wrapper).hasPrevious()).toBe(false)
   })
 
   test('hasPrevious with ids with current 1', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 1 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 1 })
     expect(getState(wrapper).hasPrevious()).toBe(true)
   })
 
   test('hasNext', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).hasNext()).toBe(false)
   })
 
   test('hasNext with ids without current', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     expect(getState(wrapper).hasNext()).toBe(true)
   })
 
   test('hasNext with ids with current 0', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 0 })
     expect(getState(wrapper).hasNext()).toBe(true)
   })
 
   test('hasNext with ids with current 1', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 1 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 1 })
     expect(getState(wrapper).hasNext()).toBe(false)
   })
 
   test('indexOf', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).indexOf(0)).toBe(0)
     expect(getState(wrapper).indexOf('a')).toBe(-1)
   })
 
   test('indexOf with ids', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     expect(getState(wrapper).indexOf('b')).toBe(1)
     expect(getState(wrapper).indexOf('c')).toBe(-1)
   })
 
   test('isCurrent', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     expect(getState(wrapper).isCurrent(-1)).toBe(false)
     expect(getState(wrapper).isCurrent(0)).toBe(false)
     expect(getState(wrapper).isCurrent('a')).toBe(false)
   })
 
   test('isCurrent with ids and current', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 1 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 1 })
     expect(getState(wrapper).isCurrent(-1)).toBe(false)
     expect(getState(wrapper).isCurrent(0)).toBe(false)
     expect(getState(wrapper).isCurrent(1)).toBe(true)
@@ -171,7 +161,7 @@ const createTests = enhance => {
   })
 
   test('show', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     getState(wrapper).show(0)
     expect(getState(wrapper).current).toBe(0)
     getState(wrapper).show(1)
@@ -179,7 +169,7 @@ const createTests = enhance => {
   })
 
   test('show id', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     getState(wrapper).show('b')
     expect(getState(wrapper).current).toBe(1)
     getState(wrapper).show('a')
@@ -187,13 +177,13 @@ const createTests = enhance => {
   })
 
   test('hide', () => {
-    const wrapper = wrap(enhance({ current: 1 }))
+    const wrapper = wrap(State, { current: 1 })
     getState(wrapper).hide()
     expect(getState(wrapper).current).toBe(-1)
   })
 
   test('toggle', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     getState(wrapper).toggle(0)
     expect(getState(wrapper).current).toBe(0)
     getState(wrapper).toggle(0)
@@ -205,31 +195,31 @@ const createTests = enhance => {
   })
 
   test('previous', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     getState(wrapper).previous()
     expect(getState(wrapper).current).toBe(-1)
   })
 
   test('previous with ids without current', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     getState(wrapper).previous()
     expect(getState(wrapper).current).toBe(-1)
   })
 
   test('previous with ids with current 0', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 0 })
     getState(wrapper).previous()
     expect(getState(wrapper).current).toBe(0)
   })
 
   test('previous with ids with current 1', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 1 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 1 })
     getState(wrapper).previous()
     expect(getState(wrapper).current).toBe(0)
   })
 
   test('previous loop', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], loop: true }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], loop: true })
     getState(wrapper).previous()
     expect(getState(wrapper).current).toBe(1)
     getState(wrapper).previous()
@@ -239,31 +229,31 @@ const createTests = enhance => {
   })
 
   test('next', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     getState(wrapper).next()
     expect(getState(wrapper).current).toBe(-1)
   })
 
   test('next with ids without current', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     getState(wrapper).next()
     expect(getState(wrapper).current).toBe(0)
   })
 
   test('next with ids with current 0', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 0 })
     getState(wrapper).next()
     expect(getState(wrapper).current).toBe(1)
   })
 
   test('next with ids with current 1', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], current: 1 }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], current: 1 })
     getState(wrapper).next()
     expect(getState(wrapper).current).toBe(1)
   })
 
   test('next loop', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'], loop: true }))
+    const wrapper = wrap(State, { ids: ['a', 'b'], loop: true })
     getState(wrapper).next()
     expect(getState(wrapper).current).toBe(0)
     getState(wrapper).next()
@@ -273,7 +263,7 @@ const createTests = enhance => {
   })
 
   test('reorder', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'] })
     getState(wrapper).reorder('a', 1)
     expect(getState(wrapper).ids).toEqual(['b', 'c', 'a'])
     getState(wrapper).reorder('c', -1)
@@ -283,14 +273,14 @@ const createTests = enhance => {
   })
 
   test('reorder current', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'], current: 0 })
     getState(wrapper).reorder('a', 1)
     expect(getState(wrapper).ids).toEqual(['b', 'c', 'a'])
     expect(getState(wrapper).current).toBe(2)
   })
 
   test('register', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     getState(wrapper).register('a')
     expect(getState(wrapper).ids).toEqual(['a'])
     getState(wrapper).register('b')
@@ -304,47 +294,47 @@ const createTests = enhance => {
   })
 
   test('unregister', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b'] })
     getState(wrapper).unregister('a')
     expect(getState(wrapper).ids).toEqual(['b'])
   })
 
   test('unregister inexistent', () => {
-    const wrapper = wrap(enhance)
+    const wrapper = wrap(State)
     getState(wrapper).unregister('a')
     expect(getState(wrapper).ids).toEqual([])
   })
 
   test('unregister current and go to next one', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'], current: 0 })
     getState(wrapper).unregister('a')
     expect(getState(wrapper).ids).toEqual(['b', 'c'])
     expect(getState(wrapper).current).toBe(0)
   })
 
   test('unregister current and go to previous one', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'], current: 2 }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'], current: 2 })
     getState(wrapper).unregister('c')
     expect(getState(wrapper).ids).toEqual(['a', 'b'])
     expect(getState(wrapper).current).toBe(1)
   })
 
   test('unregister current with only one id', () => {
-    const wrapper = wrap(enhance({ ids: ['a'], current: 0 }))
+    const wrapper = wrap(State, { ids: ['a'], current: 0 })
     getState(wrapper).unregister('a')
     expect(getState(wrapper).ids).toEqual([])
     expect(getState(wrapper).current).toBe(-1)
   })
 
   test('unregister id when current is no more available', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'], current: 2 }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'], current: 2 })
     getState(wrapper).unregister('a')
     expect(getState(wrapper).ids).toEqual(['b', 'c'])
     expect(getState(wrapper).current).toBe(1)
   })
 
   test('update', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'] })
     getState(wrapper).update('a', 'a')
     expect(getState(wrapper).ids).toEqual(['a', 'b', 'c'])
     getState(wrapper).update('a', 'd')
@@ -352,7 +342,7 @@ const createTests = enhance => {
   })
 
   test('update and reorder', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'] })
     getState(wrapper).update('a', 'd', 99)
     expect(getState(wrapper).ids).toEqual(['b', 'c', 'd'])
     getState(wrapper).update('d', 'd', -1)
@@ -360,16 +350,16 @@ const createTests = enhance => {
   })
 
   test('update to an existing id', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'] })
     getState(wrapper).update('a', 'b')
     expect(getState(wrapper).ids).toEqual(['b', 'c'])
   })
 
   test('update to an existing id and reorder', () => {
-    const wrapper = wrap(enhance({ ids: ['a', 'b', 'c'] }))
+    const wrapper = wrap(State, { ids: ['a', 'b', 'c'] })
     getState(wrapper).update('a', 'b', 99)
     expect(getState(wrapper).ids).toEqual(['c', 'b'])
   })
 }
 
-describe('withStepState', () => createTests(withStepState))
+describe('StepState', () => createTests(StepState))

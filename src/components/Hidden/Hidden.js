@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
-import { compose, setDisplayName, setPropTypes } from 'recompose'
 import as from '../../enhancers/as'
 import Base from '../Base'
 
@@ -46,16 +45,11 @@ const Hidden = styled(Component)`
     `};
 `
 
-const enhance = compose(
-  as('div'),
-  setDisplayName('Hidden'),
-  setPropTypes({
-    ...Base.propTypes,
-    hide: PropTypes.func,
-    hideOnEsc: PropTypes.bool,
-    visible: PropTypes.bool,
-    destroy: PropTypes.bool,
-  }),
-)
+Hidden.propTypes = {
+  hide: PropTypes.func,
+  hideOnEsc: PropTypes.bool,
+  visible: PropTypes.bool,
+  destroy: PropTypes.bool,
+}
 
-export default enhance(Hidden)
+export default as('div')(Hidden)
