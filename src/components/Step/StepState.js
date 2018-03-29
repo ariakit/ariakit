@@ -3,9 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import polyfill from 'react-lifecycles-compat'
 import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
-import mapStateToActions from '../../utils/mapStateToActions'
-import mapStateToSelectors from '../../utils/mapStateToSelectors'
-import Context from '../Context'
+import State from '../State'
 
 const getCurrentId = () => state => state.ids[state.current]
 
@@ -107,12 +105,10 @@ const update = (id, nextId, orderArg) => state => {
 
 class StepState extends React.Component {
   static propTypes = {
-    children: PropTypes.func.isRequired,
     loop: PropTypes.bool,
     ids: PropTypes.arrayOf(PropTypes.string),
     current: PropTypes.number,
     ordered: PropTypes.objectOf(PropTypes.number),
-    context: PropTypes.string,
     state: PropTypes.object,
     actions: PropTypes.object,
     selectors: PropTypes.object,
@@ -160,21 +156,15 @@ class StepState extends React.Component {
       ...this.props.selectors,
     }
 
-    if (this.props.context) {
-      return (
-        <Context.Consumer
-          {...this.props}
-          state={state}
-          actions={actions}
-          selectors={selectors}
-        />
-      )
-    }
-    return this.props.children({
-      ...state,
-      ...mapStateToSelectors(state, selectors),
-      ...mapStateToActions(this.setState.bind(this), actions),
-    })
+    return (
+      <State
+        {...this.props}
+        state={state}
+        actions={actions}
+        selectors={selectors}
+        setState={(...args) => this.setState(...args)}
+      />
+    )
   }
 }
 
