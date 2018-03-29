@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`actions 1`] = `
+<ContextProvider>
+  <Provider
+    value={
+      Object {
+        "setState": [Function],
+        "state": Object {},
+      }
+    }
+  >
+    <ContextConsumer
+      actions={
+        Object {
+          "increment": [Function],
+        }
+      }
+      context="foo"
+      state={
+        Object {
+          "n": 0,
+        }
+      }
+    >
+      <Consumer>
+        <button
+          onClick={[Function]}
+        >
+          0
+        </button>
+      </Consumer>
+    </ContextConsumer>
+  </Provider>
+</ContextProvider>
+`;
+
+exports[`actions 2`] = `
+<ContextProvider>
+  <Provider
+    value={
+      Object {
+        "setState": [Function],
+        "state": Object {
+          "foo": Object {
+            "n": 1,
+          },
+        },
+      }
+    }
+  >
+    <ContextConsumer
+      actions={
+        Object {
+          "increment": [Function],
+        }
+      }
+      context="foo"
+      state={
+        Object {
+          "n": 0,
+        }
+      }
+    >
+      <Consumer>
+        <button
+          onClick={[Function]}
+        >
+          1
+        </button>
+      </Consumer>
+    </ContextConsumer>
+  </Provider>
+</ContextProvider>
+`;

@@ -10,6 +10,7 @@ class PopoverState extends React.Component {
   static propTypes = {
     children: PropTypes.func.isRequired,
     popoverId: PropTypes.string,
+    state: PropTypes.object,
   }
 
   static defaultProps = {
@@ -27,16 +28,8 @@ class PopoverState extends React.Component {
   state = {}
 
   render() {
-    return (
-      <HiddenState {...this.props}>
-        {hidden =>
-          this.props.children({
-            ...hidden,
-            ...this.state,
-          })
-        }
-      </HiddenState>
-    )
+    const state = { ...this.state, ...this.props.state }
+    return <HiddenState {...this.props} state={state} />
   }
 }
 

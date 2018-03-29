@@ -5,6 +5,7 @@ import polyfill from 'react-lifecycles-compat'
 import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 import mapStateToActions from '../../utils/mapStateToActions'
 import mapStateToSelectors from '../../utils/mapStateToSelectors'
+import Context from '../Context'
 
 const getCurrentId = () => state => state.ids[state.current]
 
@@ -104,20 +105,6 @@ const update = (id, nextId, orderArg) => state => {
   return reorder(nextId, order)({ ...state, ids })
 }
 
-const selectors = { getCurrentId, hasPrevious, hasNext, indexOf, isCurrent }
-
-const actions = {
-  show,
-  hide,
-  toggle,
-  previous,
-  next,
-  reorder,
-  register,
-  unregister,
-  update,
-}
-
 class StepState extends React.Component {
   static propTypes = {
     children: PropTypes.func.isRequired,
@@ -125,6 +112,10 @@ class StepState extends React.Component {
     ids: PropTypes.arrayOf(PropTypes.string),
     current: PropTypes.number,
     ordered: PropTypes.objectOf(PropTypes.number),
+    context: PropTypes.string,
+    state: PropTypes.object,
+    actions: PropTypes.object,
+    selectors: PropTypes.object,
   }
 
   static defaultProps = {
@@ -145,10 +136,44 @@ class StepState extends React.Component {
   state = {}
 
   render() {
+    const state = { ...this.state, ...this.props.state }
+
+    const actions = {
+      show,
+      hide,
+      toggle,
+      previous,
+      next,
+      reorder,
+      register,
+      unregister,
+      update,
+      ...this.props.actions,
+    }
+
+    const selectors = {
+      getCurrentId,
+      hasPrevious,
+      hasNext,
+      indexOf,
+      isCurrent,
+      ...this.props.selectors,
+    }
+
+    if (this.props.context) {
+      return (
+        <Context.Consumer
+          {...this.props}
+          state={state}
+          actions={actions}
+          selectors={selectors}
+        />
+      )
+    }
     return this.props.children({
-      ...this.state,
-      ...mapStateToSelectors(this.state, selectors),
-      ...mapStateToActions(this, actions),
+      ...state,
+      ...mapStateToSelectors(state, selectors),
+      ...mapStateToActions(this.setState.bind(this), actions),
     })
   }
 }

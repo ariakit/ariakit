@@ -1,11 +1,19 @@
 import React from 'react'
 import { mount } from 'enzyme'
 import StepState from '../StepState'
+import Context from '../../Context'
 
 const Base = () => null
 
-const wrap = (State, props = {}) =>
-  mount(<State {...props}>{step => <Base step={step} />}</State>)
+const wrap = (State, props = {}) => {
+  const children = <State {...props}>{step => <Base step={step} />}</State>
+  const component = props.context ? (
+    <Context.Provider>{children}</Context.Provider>
+  ) : (
+    children
+  )
+  return mount(component)
+}
 
 const getState = wrapper =>
   wrapper
@@ -58,6 +66,16 @@ const createTests = State => {
 
   test('loop prop false', () => {
     const wrapper = wrap(State, { loop: false })
+    expect(getState(wrapper).loop).toBe(false)
+  })
+
+  test('loop prop context true', () => {
+    const wrapper = wrap(State, { loop: true, context: 'foo' })
+    expect(getState(wrapper).loop).toBe(true)
+  })
+
+  test('loop prop context false', () => {
+    const wrapper = wrap(State, { loop: false, context: 'foo' })
     expect(getState(wrapper).loop).toBe(false)
   })
 
