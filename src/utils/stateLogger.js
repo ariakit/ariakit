@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { diffString } from 'json-diff'
 
-const logColor = string => {
+const colorLogger = string => {
   const colorMap = {
     '+': 'green',
     '-': 'red',
@@ -20,16 +20,16 @@ const logColor = string => {
     })
 }
 
-const ContextLogger = (prevState, nextState) => {
+const stateLogger = (prevState, nextState) => {
   const diff = diffString(prevState, nextState, { color: false }).trim()
   if (diff.split('\n').length > 6) {
-    console.groupCollapsed('Context Update')
+    console.groupCollapsed('State Update')
   } else {
-    console.group('Context Update')
+    console.group('State Update')
   }
   console.log('State', nextState)
-  logColor(diff)
+  colorLogger(diff)
   console.groupEnd()
 }
 
-export default ContextLogger
+export default stateLogger

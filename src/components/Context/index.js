@@ -7,5 +7,3 @@ const Context = {
 }
 
 export default Context
-
-export ContextLogger from './ContextLogger'

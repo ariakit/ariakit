@@ -1,36 +1,23 @@
-/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/prefer-stateless-function */
 import React from 'react'
 import PropTypes from 'prop-types'
 import uniqueId from 'lodash/uniqueId'
-import polyfill from 'react-lifecycles-compat'
 import HiddenState from '../Hidden/HiddenState'
-import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 
 class PopoverState extends React.Component {
   static propTypes = {
-    children: PropTypes.func.isRequired,
     popoverId: PropTypes.string,
-    state: PropTypes.object,
+    stateKeys: PropTypes.arrayOf(PropTypes.string),
   }
 
   static defaultProps = {
     popoverId: uniqueId('popover'),
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return getDerivedStateFromProps(
-      nextProps,
-      prevState,
-      Object.keys(PopoverState.defaultProps),
-    )
-  }
-
-  state = {}
-
   render() {
-    const state = { ...this.state, ...this.props.state }
-    return <HiddenState {...this.props} state={state} />
+    const stateKeys = ['popoverId', ...this.props.stateKeys]
+    return <HiddenState {...this.props} stateKeys={stateKeys} />
   }
 }
 
-export default polyfill(PopoverState)
+export default PopoverState

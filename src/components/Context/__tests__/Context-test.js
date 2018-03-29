@@ -2,9 +2,9 @@ import React from 'react'
 import { mount } from 'enzyme'
 import Context from '..'
 
-const wrap = props =>
+const wrap = (props, logger) =>
   mount(
-    <Context.Provider>
+    <Context.Provider logger={logger}>
       <Context.Consumer context="foo" {...props} />
     </Context.Provider>,
   )
@@ -36,4 +36,16 @@ test('selectors', () => {
   const children = v => v.getFoo()
   const wrapper = wrap({ state, selectors, children })
   expect(wrapper.contains('bar')).toBe(true)
+})
+
+test('logger', () => {
+  const logger = jest.fn()
+  const state = { n: 0 }
+  const actions = {
+    increment: () => s => ({ n: s.n + 1 }),
+  }
+  const children = v => <button onClick={v.increment}>{v.n}</button>
+  const wrapper = wrap({ state, actions, children }, logger)
+  wrapper.simulate('click')
+  expect(logger).toHaveBeenCalledWith({}, { foo: { n: 1 } })
 })

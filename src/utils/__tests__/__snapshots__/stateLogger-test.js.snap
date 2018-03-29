@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`big change 1`] = `
+"State Update
+State
+{
+   foo: {
+%c-    bar: \\"baz\\"
+%c+    bar: \\"qux\\"
+%c-    baz: \\"qux\\"
+%c+    baz: \\"quux\\"
+   }
+ }
+"
+`;
+
+exports[`minimal change 1`] = `
+"State Update
+State
+{
+   foo: {
+%c-    bar: \\"baz\\"
+%c+    bar: \\"qux\\"
+   }
+ }
+"
+`;

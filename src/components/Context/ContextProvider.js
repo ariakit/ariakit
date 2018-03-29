@@ -10,16 +10,13 @@ class ContextProvider extends React.Component {
 
   state = {}
 
-  onSetState = (fn, cb) => {
-    const prevState = { ...this.state }
-    this.setState(fn, () => {
-      if (typeof this.props.logger === 'function') {
-        this.props.logger(prevState, this.state)
-      }
-      if (typeof cb === 'function') {
-        cb()
-      }
-    })
+  onSetState = fn => {
+    if (typeof this.props.logger === 'function') {
+      const prevState = { ...this.state }
+      this.setState(fn, () => this.props.logger(prevState, this.state))
+    } else {
+      this.setState(fn)
+    }
   }
 
   render() {

@@ -1,5 +1,5 @@
 ```jsx
-const { Context, Hidden, Button, ContextLogger } = require('reas');
+const { Context, Hidden, Button, stateLogger } = require('reas');
 
 const MyButton = () => (
   <Hidden.State context="foo">
@@ -14,7 +14,7 @@ const MyHidden = () => (
 );
 
 const App = () => (
-  <Context.Provider logger={ContextLogger}>
+  <Context.Provider logger={stateLogger}>
     <MyButton />
     <MyHidden />
   </Context.Provider>

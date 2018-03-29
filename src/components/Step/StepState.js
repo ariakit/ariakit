@@ -1,8 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from 'react'
 import PropTypes from 'prop-types'
-import polyfill from 'react-lifecycles-compat'
-import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
 import State from '../State'
 
 const getCurrentId = () => state => state.ids[state.current]
@@ -103,38 +101,10 @@ const update = (id, nextId, orderArg) => state => {
   return reorder(nextId, order)({ ...state, ids })
 }
 
-class StepState extends React.Component {
-  static propTypes = {
-    loop: PropTypes.bool,
-    ids: PropTypes.arrayOf(PropTypes.string),
-    current: PropTypes.number,
-    ordered: PropTypes.objectOf(PropTypes.number),
-    state: PropTypes.object,
-    actions: PropTypes.object,
-    selectors: PropTypes.object,
-  }
-
-  static defaultProps = {
-    loop: false,
-    ids: [],
-    current: -1,
-    ordered: {},
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return getDerivedStateFromProps(
-      nextProps,
-      prevState,
-      Object.keys(StepState.defaultProps),
-    )
-  }
-
-  state = {}
-
-  render() {
-    const state = { ...this.state, ...this.props.state }
-
-    const actions = {
+const StepState = ({ actions, selectors, stateKeys, ...props }) => (
+  <State
+    {...props}
+    actions={{
       show,
       hide,
       toggle,
@@ -144,28 +114,35 @@ class StepState extends React.Component {
       register,
       unregister,
       update,
-      ...this.props.actions,
-    }
-
-    const selectors = {
+      ...actions,
+    }}
+    selectors={{
       getCurrentId,
       hasPrevious,
       hasNext,
       indexOf,
       isCurrent,
-      ...this.props.selectors,
-    }
+      ...selectors,
+    }}
+    stateKeys={[...Object.keys(StepState.defaultProps), ...stateKeys]}
+  />
+)
 
-    return (
-      <State
-        {...this.props}
-        state={state}
-        actions={actions}
-        selectors={selectors}
-        setState={(...args) => this.setState(...args)}
-      />
-    )
-  }
+StepState.propTypes = {
+  loop: PropTypes.bool,
+  ids: PropTypes.arrayOf(PropTypes.string),
+  current: PropTypes.number,
+  ordered: PropTypes.objectOf(PropTypes.number),
+  actions: PropTypes.object,
+  selectors: PropTypes.object,
+  stateKeys: PropTypes.arrayOf(PropTypes.string),
 }
 
-export default polyfill(StepState)
+StepState.defaultProps = {
+  loop: false,
+  ids: [],
+  current: -1,
+  ordered: {},
+}
+
+export default StepState
