@@ -9,28 +9,16 @@ class State extends React.Component {
     children: PropTypes.func.isRequired,
     actions: PropTypes.objectOf(PropTypes.func),
     selectors: PropTypes.objectOf(PropTypes.func),
-    logger: PropTypes.func,
+    initialState: PropTypes.object,
     context: PropTypes.string,
-    stateKeys: PropTypes.arrayOf(PropTypes.string),
+    logger: PropTypes.func,
   }
 
   static defaultProps = {
-    stateKeys: [],
+    initialState: {},
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return nextProps.stateKeys.reduce((finalState, key) => {
-      if (nextProps[key] !== prevState[key]) {
-        return {
-          ...finalState,
-          [key]: nextProps[key],
-        }
-      }
-      return finalState
-    }, null)
-  }
-
-  state = {}
+  state = this.props.initialState
 
   onSetState = fn => {
     if (typeof this.props.logger === 'function') {

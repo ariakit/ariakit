@@ -10,15 +10,10 @@ const selectors = {
 };
 
 const MyState = props => (
-  <State
-    {...props}
-    actions={actions}
-    selectors={selectors}
-    stateKeys={['n']} 
-  />
+  <State {...props} actions={actions} selectors={selectors} />
 );
 
-<MyState n={5} logger={stateLogger}>
+<MyState initialState={{ n: 5 }} logger={stateLogger}>
   {({ increment, n, getParity }) => (
     <Button onClick={() => increment(1)}>{n} {getParity()}</Button>
   )}

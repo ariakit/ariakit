@@ -1,60 +1,56 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import pick from 'lodash/pick'
 import Context from './Context'
 import mapStateToActions from '../../utils/mapStateToActions'
 import mapStateToSelectors from '../../utils/mapStateToSelectors'
 
-const ContextConsumer = ({
-  context,
-  stateKeys,
-  actions,
-  selectors,
-  children,
-  ...props
-}) => {
-  const parseState = globalState => ({
-    ...pick(props, stateKeys),
-    ...globalState[context],
-  })
+class ContextChild extends React.Component {
+  static propTypes = {
+    initialState: PropTypes.object,
+    state: PropTypes.object.isRequired,
+    setState: PropTypes.func.isRequired,
+    actions: PropTypes.objectOf(PropTypes.func),
+    selectors: PropTypes.objectOf(PropTypes.func),
+    children: PropTypes.func.isRequired,
+    context: PropTypes.string,
+  }
 
-  const parseActions = globalSetState =>
-    mapStateToActions(
-      (fn, cb) =>
-        globalSetState(
-          globalState => ({
-            [context]: {
-              ...parseState(globalState),
-              ...fn(parseState(globalState)),
-            },
-          }),
-          cb,
-        ),
-      actions,
-    )
+  componentDidMount() {
+    const { context, initialState, setState } = this.props
+    setState(state => ({
+      [context]: { ...state[context], ...initialState },
+    }))
+  }
 
-  const parseSelectors = globalState =>
-    mapStateToSelectors(parseState(globalState), selectors)
+  render() {
+    const { setState, state, context, children } = this.props
 
-  return (
-    <Context.Consumer>
-      {global =>
-        children({
-          ...parseState(global.state),
-          ...(actions && parseActions(global.setState)),
-          ...(selectors && parseSelectors(global.state)),
-        })
-      }
-    </Context.Consumer>
-  )
+    const actions =
+      this.props.actions &&
+      mapStateToActions(
+        fn =>
+          setState(s => ({
+            [context]: { ...s[context], ...fn(s[context]) },
+          })),
+        this.props.actions,
+      )
+
+    const selectors =
+      this.props.selectors &&
+      mapStateToSelectors(state[context] || {}, this.props.selectors)
+
+    return children({
+      ...state[context],
+      ...actions,
+      ...selectors,
+    })
+  }
 }
 
-ContextConsumer.propTypes = {
-  context: PropTypes.string,
-  stateKeys: PropTypes.arrayOf(PropTypes.string),
-  actions: PropTypes.objectOf(PropTypes.func),
-  selectors: PropTypes.objectOf(PropTypes.func),
-  children: PropTypes.func.isRequired,
-}
+const ContextConsumer = props => (
+  <Context.Consumer>
+    {global => <ContextChild {...global} {...props} />}
+  </Context.Consumer>
+)
 
 export default ContextConsumer

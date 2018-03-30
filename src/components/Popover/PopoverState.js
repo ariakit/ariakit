@@ -6,17 +6,21 @@ import HiddenState from '../Hidden/HiddenState'
 
 class PopoverState extends React.Component {
   static propTypes = {
-    popoverId: PropTypes.string,
-    stateKeys: PropTypes.arrayOf(PropTypes.string),
+    initialState: PropTypes.object,
   }
 
-  static defaultProps = {
-    popoverId: uniqueId('popover'),
-  }
+  popoverId = uniqueId('popover')
 
   render() {
-    const stateKeys = ['popoverId', ...this.props.stateKeys]
-    return <HiddenState {...this.props} stateKeys={stateKeys} />
+    return (
+      <HiddenState
+        {...this.props}
+        initialState={{
+          popoverId: this.popoverId,
+          ...this.props.initialState,
+        }}
+      />
+    )
   }
 }
 

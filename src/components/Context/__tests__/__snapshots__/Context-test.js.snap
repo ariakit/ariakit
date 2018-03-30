@@ -9,18 +9,39 @@ exports[`actions 1`] = `
       }
     }
     context="foo"
-    n={0}
-    stateKeys={
-      Array [
-        "n",
-      ]
+    initialState={
+      Object {
+        "n": 0,
+      }
     }
   >
-    <button
-      onClick={[Function]}
+    <ContextChild
+      actions={
+        Object {
+          "increment": [Function],
+        }
+      }
+      context="foo"
+      initialState={
+        Object {
+          "n": 0,
+        }
+      }
+      setState={[Function]}
+      state={
+        Object {
+          "foo": Object {
+            "n": 0,
+          },
+        }
+      }
     >
-      0
-    </button>
+      <button
+        onClick={[Function]}
+      >
+        0
+      </button>
+    </ContextChild>
   </ContextConsumer>
 </ContextProvider>
 `;
@@ -34,18 +55,39 @@ exports[`actions 2`] = `
       }
     }
     context="foo"
-    n={0}
-    stateKeys={
-      Array [
-        "n",
-      ]
+    initialState={
+      Object {
+        "n": 0,
+      }
     }
   >
-    <button
-      onClick={[Function]}
+    <ContextChild
+      actions={
+        Object {
+          "increment": [Function],
+        }
+      }
+      context="foo"
+      initialState={
+        Object {
+          "n": 0,
+        }
+      }
+      setState={[Function]}
+      state={
+        Object {
+          "foo": Object {
+            "n": 1,
+          },
+        }
+      }
     >
-      1
-    </button>
+      <button
+        onClick={[Function]}
+      >
+        1
+      </button>
+    </ContextChild>
   </ContextConsumer>
 </ContextProvider>
 `;

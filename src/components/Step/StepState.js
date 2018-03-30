@@ -101,9 +101,16 @@ const update = (id, nextId, orderArg) => state => {
   return reorder(nextId, order)({ ...state, ids })
 }
 
-const StepState = ({ actions, selectors, stateKeys, ...props }) => (
+const StepState = ({ initialState, actions, selectors, ...props }) => (
   <State
     {...props}
+    initialState={{
+      loop: false,
+      ids: [],
+      current: -1,
+      ordered: {},
+      ...initialState,
+    }}
     actions={{
       show,
       hide,
@@ -124,25 +131,13 @@ const StepState = ({ actions, selectors, stateKeys, ...props }) => (
       isCurrent,
       ...selectors,
     }}
-    stateKeys={[...Object.keys(StepState.defaultProps), ...stateKeys]}
   />
 )
 
 StepState.propTypes = {
-  loop: PropTypes.bool,
-  ids: PropTypes.arrayOf(PropTypes.string),
-  current: PropTypes.number,
-  ordered: PropTypes.objectOf(PropTypes.number),
+  initialState: PropTypes.object,
   actions: PropTypes.object,
   selectors: PropTypes.object,
-  stateKeys: PropTypes.arrayOf(PropTypes.string),
-}
-
-StepState.defaultProps = {
-  loop: false,
-  ids: [],
-  current: -1,
-  ordered: {},
 }
 
 export default StepState

@@ -45,20 +45,20 @@ const createTests = State => {
     expect(getState(wrapper).visible).toBe(initialState.visible)
   })
 
-  test('visible prop true', () => {
-    const wrapper = wrap(State, { visible: true })
+  test('initialState visible true', () => {
+    const wrapper = wrap(State, { initialState: { visible: true } })
     expect(getState(wrapper).visible).toBe(true)
   })
 
-  test('visible prop false', () => {
-    const wrapper = wrap(State, { visible: false })
+  test('initialState visible false', () => {
+    const wrapper = wrap(State, { initialState: { visible: false } })
     expect(getState(wrapper).visible).toBe(false)
   })
 
-  test('visible prop context true', () => {
+  test('initialState visible context true', () => {
     const wrapper = wrap(State, {
       context: 'foo',
-      visible: true,
+      initialState: { visible: true },
     })
     expect(getState(wrapper).visible).toBe(true)
   })
@@ -66,22 +66,13 @@ const createTests = State => {
   test('visible prop context false', () => {
     const wrapper = wrap(State, {
       context: 'foo',
-      visible: false,
+      initialState: { visible: false },
     })
     expect(getState(wrapper).visible).toBe(false)
   })
 
-  test('controlling with prop', () => {
-    const wrapper = wrap(State)
-    expect(getState(wrapper).visible).toBe(false)
-    wrapper.setProps({ visible: true })
-    expect(getState(wrapper).visible).toBe(true)
-    wrapper.setProps({ visible: true })
-    expect(getState(wrapper).visible).toBe(true)
-  })
-
   test('toggle', () => {
-    const wrapper = wrap(State, { visible: false })
+    const wrapper = wrap(State, { initialState: { visible: false } })
     getState(wrapper).toggle()
     expect(getState(wrapper).visible).toBe(true)
     getState(wrapper).toggle()
@@ -89,7 +80,7 @@ const createTests = State => {
   })
 
   test('show', () => {
-    const wrapper = wrap(State, { visible: false })
+    const wrapper = wrap(State, { initialState: { visible: false } })
     getState(wrapper).show()
     expect(getState(wrapper).visible).toBe(true)
     getState(wrapper).show()
@@ -97,7 +88,7 @@ const createTests = State => {
   })
 
   test('hide', () => {
-    const wrapper = wrap(State, { visible: true })
+    const wrapper = wrap(State, { initialState: { visible: true } })
     getState(wrapper).hide()
     expect(getState(wrapper).visible).toBe(false)
     getState(wrapper).hide()

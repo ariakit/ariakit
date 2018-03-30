@@ -7,22 +7,17 @@ const toggle = () => state => ({ visible: !state.visible })
 const show = () => () => ({ visible: true })
 const hide = () => () => ({ visible: false })
 
-const HiddenState = ({ actions, stateKeys, ...props }) => (
+const HiddenState = ({ actions, initialState, ...props }) => (
   <State
     {...props}
+    initialState={{ visible: false, ...initialState }}
     actions={{ toggle, show, hide, ...actions }}
-    stateKeys={['visible', ...stateKeys]}
   />
 )
 
 HiddenState.propTypes = {
-  visible: PropTypes.bool,
   actions: PropTypes.objectOf(PropTypes.func),
-  stateKeys: PropTypes.arrayOf(PropTypes.string),
-}
-
-HiddenState.defaultProps = {
-  visible: false,
+  initialState: PropTypes.object,
 }
 
 export default HiddenState

@@ -36,7 +36,7 @@ As a convenience, `reas` provides state components so you don't need to worry ab
 const { Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State visible>
+  <Hidden.State initialState={{ visible: true }}>
     {({ visible, hide }) => (
       <Hidden
         destroy
@@ -81,7 +81,7 @@ import React from 'react'
 import { Hidden } from 'reas'
 
 const MyHidden = () => (
-  <Hidden.State visible context="foo">
+  <Hidden.State context="foo" initialState={{ visible: true }}>
     {({ visible, hide }) => (
       <Hidden
         destroy
