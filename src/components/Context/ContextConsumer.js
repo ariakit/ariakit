@@ -18,7 +18,7 @@ class ContextChild extends React.Component {
   componentDidMount() {
     const { context, initialState, setState } = this.props
     setState(state => ({
-      [context]: { ...state[context], ...initialState },
+      [context]: { ...initialState, ...state[context] },
     }))
   }
 
