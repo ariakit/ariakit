@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import polyfill from 'react-lifecycles-compat'
 import Context from '../Context'
 import mapStateToActions from '../../utils/mapStateToActions'
 import mapStateToSelectors from '../../utils/mapStateToSelectors'
@@ -57,4 +56,4 @@ class State extends React.Component {
   }
 }
 
-export default polyfill(State)
+export default State
