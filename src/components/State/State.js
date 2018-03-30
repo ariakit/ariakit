@@ -43,7 +43,7 @@ class State extends React.Component {
 
   render() {
     if (this.props.context) {
-      return <Context.Consumer {...this.props} state={this.state} />
+      return <Context.Consumer {...this.props} />
     }
 
     const { children, actions, selectors } = this.props

@@ -1,11 +1,20 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import pick from 'lodash/pick'
 import Context from './Context'
 import mapStateToActions from '../../utils/mapStateToActions'
 import mapStateToSelectors from '../../utils/mapStateToSelectors'
 
-const ContextConsumer = ({ context, state, actions, selectors, children }) => {
+const ContextConsumer = ({
+  context,
+  stateKeys,
+  actions,
+  selectors,
+  children,
+  ...props
+}) => {
   const parseState = globalState => ({
-    ...state,
+    ...pick(props, stateKeys),
     ...globalState[context],
   })
 
@@ -38,6 +47,14 @@ const ContextConsumer = ({ context, state, actions, selectors, children }) => {
       }
     </Context.Consumer>
   )
+}
+
+ContextConsumer.propTypes = {
+  context: PropTypes.string,
+  stateKeys: PropTypes.arrayOf(PropTypes.string),
+  actions: PropTypes.objectOf(PropTypes.func),
+  selectors: PropTypes.objectOf(PropTypes.func),
+  children: PropTypes.func.isRequired,
 }
 
 export default ContextConsumer
