@@ -27,14 +27,6 @@ const createTests = State => {
     const wrapper = wrap(State)
     expect(getState(wrapper).popoverId).toMatch(/^popover\d$/)
   })
-
-  test('controlling with prop', () => {
-    const wrapper = wrap(State)
-    wrapper.setProps({ popoverId: 'foo' })
-    expect(getState(wrapper).popoverId).toBe('foo')
-    wrapper.setProps({ popoverId: 'foo' })
-    expect(getState(wrapper).popoverId).toBe('foo')
-  })
 }
 
 describe('PopoverState', () => createTests(PopoverState))

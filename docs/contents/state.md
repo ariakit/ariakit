@@ -18,7 +18,14 @@ const enhance = withStateHandlers(
 );
 
 const Example = enhance(({ visible, hide }) => (
-  <Hidden destroy hideOnEsc visible={visible} hide={hide}>Press esc</Hidden>
+  <Hidden
+    destroy
+    hideOnEsc
+    visible={visible}
+    hide={hide}
+  >
+    Press esc
+  </Hidden>
 ));
 
 <Example />
@@ -29,12 +36,60 @@ As a convenience, `reas` provides state components so you don't need to worry ab
 const { Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State visible>
-    {hidden => (
-      <Hidden destroy hideOnEsc {...hidden}>Press esc</Hidden>
+  <Hidden.State initialState={{ visible: true }}>
+    {({ visible, hide }) => (
+      <Hidden
+        destroy
+        hideOnEsc
+        visible={visible}
+        hide={hide}
+      >
+        Press esc
+      </Hidden>
     )}
   </Hidden.State>
 );
 
 <Example />
+```
+
+### Global state
+
+To be able to handle global state within your application, you need to `Provider`. First you must wrap your root component with `Provider` so as to hold the global state:
+
+```jsx static
+import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'reas'
+
+
+const App = () => (
+  <Provider>
+    ...
+  </Provider
+)
+
+render(<App />, document.getElementById('root'))
+```
+
+On your components, you can use the same `Component.State`, but with an additional property `context`:
+
+```jsx static
+import React from 'react'
+import { Hidden } from 'reas'
+
+const MyHidden = () => (
+  <Hidden.State context="foo" initialState={{ visible: true }}>
+    {({ visible, hide }) => (
+      <Hidden
+        destroy
+        hideOnEsc
+        visible={visible}
+        hide={hide}
+      >
+        Press esc
+      </Hidden>
+    )}
+  </Hidden.State>
+)
 ```

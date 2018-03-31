@@ -1,10 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from 'react'
 import PropTypes from 'prop-types'
-import polyfill from 'react-lifecycles-compat'
-import getDerivedStateFromProps from '../../utils/getDerivedStateFromProps'
-import mapStateToActions from '../../utils/mapStateToActions'
-import mapStateToSelectors from '../../utils/mapStateToSelectors'
+import { State } from 'constate'
 
 const getCurrentId = () => state => state.ids[state.current]
 
@@ -104,53 +101,43 @@ const update = (id, nextId, orderArg) => state => {
   return reorder(nextId, order)({ ...state, ids })
 }
 
-const selectors = { getCurrentId, hasPrevious, hasNext, indexOf, isCurrent }
+const StepState = ({ initialState, actions, selectors, ...props }) => (
+  <State
+    {...props}
+    initialState={{
+      loop: false,
+      ids: [],
+      current: -1,
+      ordered: {},
+      ...initialState,
+    }}
+    actions={{
+      show,
+      hide,
+      toggle,
+      previous,
+      next,
+      reorder,
+      register,
+      unregister,
+      update,
+      ...actions,
+    }}
+    selectors={{
+      getCurrentId,
+      hasPrevious,
+      hasNext,
+      indexOf,
+      isCurrent,
+      ...selectors,
+    }}
+  />
+)
 
-const actions = {
-  show,
-  hide,
-  toggle,
-  previous,
-  next,
-  reorder,
-  register,
-  unregister,
-  update,
+StepState.propTypes = {
+  initialState: PropTypes.object,
+  actions: PropTypes.object,
+  selectors: PropTypes.object,
 }
 
-class StepState extends React.Component {
-  static propTypes = {
-    children: PropTypes.func.isRequired,
-    loop: PropTypes.bool,
-    ids: PropTypes.arrayOf(PropTypes.string),
-    current: PropTypes.number,
-    ordered: PropTypes.objectOf(PropTypes.number),
-  }
-
-  static defaultProps = {
-    loop: false,
-    ids: [],
-    current: -1,
-    ordered: {},
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return getDerivedStateFromProps(
-      nextProps,
-      prevState,
-      Object.keys(StepState.defaultProps),
-    )
-  }
-
-  state = {}
-
-  render() {
-    return this.props.children({
-      ...this.state,
-      ...mapStateToSelectors(this.state, selectors),
-      ...mapStateToActions(this, actions),
-    })
-  }
-}
-
-export default polyfill(StepState)
+export default StepState
