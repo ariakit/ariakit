@@ -55,20 +55,18 @@ const Example = () => (
 
 ### Global state
 
-To be able to handle global state in your application, we need to use [`Context`](#context). First you must wrap your root component with `Context.Provider` so as to hold the global state:
+To be able to handle global state within your application, you need to `Provider`. First you must wrap your root component with `Provider` so as to hold the global state:
 
 ```jsx static
 import React from 'react'
 import { render } from 'react-dom'
-import { Context, stateLogger } from 'reas'
+import { Provider } from 'reas'
 
-// optional logger
-const logger = process.env.NODE_ENV === 'development' && stateLogger
 
 const App = () => (
-  <Context.Provider logger={logger}>
+  <Provider>
     ...
-  </Context.Provider
+  </Provider
 )
 
 render(<App />, document.getElementById('root'))
