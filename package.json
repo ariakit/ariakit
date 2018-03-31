@@ -48,6 +48,7 @@
     "reas"
   ],
   "dependencies": {
+    "constate": "^0.1.0",
     "json-diff": "^0.5.2",
     "lodash": "^4.17.5",
     "lodash-es": "^4.17.5",
@@ -105,8 +106,8 @@
     "webpack-blocks": "^1.0.0-rc.2"
   },
   "peerDependencies": {
+    "prop-types": "^15.0.0",
     "react": "^16.3.0",
-    "react-dom": "^16.3.0",
-    "prop-types": "^15.0.0"
+    "react-dom": "^16.3.0"
   }
 }

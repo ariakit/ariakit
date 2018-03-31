@@ -1,21 +1,11 @@
 import React from 'react'
 import { mount } from 'enzyme'
 import HiddenState from '../HiddenState'
-import Context from '../../Context'
 
 const Base = () => null
 
-const wrap = (State, props = {}) => {
-  const children = (
-    <State {...props}>{hidden => <Base hidden={hidden} />}</State>
-  )
-  const component = props.context ? (
-    <Context.Provider>{children}</Context.Provider>
-  ) : (
-    children
-  )
-  return mount(component)
-}
+const wrap = (State, props = {}) =>
+  mount(<State {...props}>{hidden => <Base hidden={hidden} />}</State>)
 
 const getState = wrapper =>
   wrapper
@@ -52,22 +42,6 @@ const createTests = State => {
 
   test('initialState visible false', () => {
     const wrapper = wrap(State, { initialState: { visible: false } })
-    expect(getState(wrapper).visible).toBe(false)
-  })
-
-  test('initialState visible context true', () => {
-    const wrapper = wrap(State, {
-      context: 'foo',
-      initialState: { visible: true },
-    })
-    expect(getState(wrapper).visible).toBe(true)
-  })
-
-  test('visible prop context false', () => {
-    const wrapper = wrap(State, {
-      context: 'foo',
-      initialState: { visible: false },
-    })
     expect(getState(wrapper).visible).toBe(false)
   })
 

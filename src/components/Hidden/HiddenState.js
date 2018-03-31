@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from 'react'
 import PropTypes from 'prop-types'
-import State from '../State'
+import { State } from 'constate'
 
 const toggle = () => state => ({ visible: !state.visible })
 const show = () => () => ({ visible: true })
