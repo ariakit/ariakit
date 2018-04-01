@@ -24,7 +24,7 @@ const Example = () => (
 const { Block, Group, Button, Step } = require('reas');
 
 const Example = () => (
-  <Step.State current={0}>
+  <Step.State initialState={{ current: 0 }}>
     {step => (
       <Block>
         <Group>
