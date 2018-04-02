@@ -1,1 +1,1 @@
-export default from './Shadow'
+export default from "./Shadow";

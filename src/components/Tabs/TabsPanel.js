@@ -1,10 +1,10 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import as from '../../enhancers/as'
-import Hidden from '../Hidden'
+import React from "react";
+import PropTypes from "prop-types";
+import as from "../../enhancers/as";
+import Hidden from "../Hidden";
 
 const TabsPanel = props => {
-  const { isCurrent, tab } = props
+  const { isCurrent, tab } = props;
   return (
     <Hidden
       id={`${tab}Panel`}
@@ -13,16 +13,16 @@ const TabsPanel = props => {
       {...props}
       visible={isCurrent(tab)}
     />
-  )
-}
+  );
+};
 
 TabsPanel.propTypes = {
   tab: PropTypes.string.isRequired,
-  isCurrent: PropTypes.func.isRequired,
-}
+  isCurrent: PropTypes.func.isRequired
+};
 
 TabsPanel.defaultProps = {
-  role: 'tabpanel',
-}
+  role: "tabpanel"
+};
 
-export default as('div')(TabsPanel)
+export default as("div")(TabsPanel);

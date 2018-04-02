@@ -42,9 +42,9 @@ npm install --save reas
 </p>
 
 ```jsx
-import React from 'react'
-import { render } from 'react-dom'
-import { InlineBlock, Button, Popover } from 'reas'
+import React from "react";
+import { render } from "react-dom";
+import { InlineBlock, Button, Popover } from "reas";
 
 const App = () => (
   <Popover.State>
@@ -58,9 +58,9 @@ const App = () => (
       </InlineBlock>
     )}
   </Popover.State>
-)
+);
 
-render(<App />, document.getElementById('root'))
+render(<App />, document.getElementById("root"));
 ```
 
 

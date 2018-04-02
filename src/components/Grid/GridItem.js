@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import { value } from '../../utils/styledProps'
-import Base from '../Base'
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import { value } from "../../utils/styledProps";
+import Base from "../Base";
 
 const GridItem = styled(Base)`
   &&& {
-    ${value('grid-area', 'area')};
-    ${value('grid-column', 'column')};
-    ${value('grid-row', 'row')};
-    ${value('grid-column-start', 'columnStart')};
-    ${value('grid-column-end', 'columnEnd')};
-    ${value('grid-row-start', 'rowStart')};
-    ${value('grid-row-end', 'rowEnd')};
+    ${value("grid-area", "area")};
+    ${value("grid-column", "column")};
+    ${value("grid-row", "row")};
+    ${value("grid-column-start", "columnStart")};
+    ${value("grid-column-end", "columnEnd")};
+    ${value("grid-row-start", "rowStart")};
+    ${value("grid-row-end", "rowEnd")};
   }
-`
+`;
 
-const valueType = PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+const valueType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
 
 GridItem.propTypes = {
   area: valueType,
@@ -25,7 +25,7 @@ GridItem.propTypes = {
   columnStart: valueType,
   columnEnd: valueType,
   rowStart: valueType,
-  rowEnd: valueType,
-}
+  rowEnd: valueType
+};
 
-export default as('div')(GridItem)
+export default as("div")(GridItem);

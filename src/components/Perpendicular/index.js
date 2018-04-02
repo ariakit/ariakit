@@ -1,1 +1,1 @@
-export default from './Perpendicular'
+export default from "./Perpendicular";

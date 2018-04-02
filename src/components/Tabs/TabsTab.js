@@ -1,40 +1,40 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import flow from 'lodash/flow'
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import createElementRef from '../../utils/createElementRef'
-import InlineFlex from '../InlineFlex'
-import Step from '../Step'
+import React from "react";
+import PropTypes from "prop-types";
+import flow from "lodash/flow";
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import createElementRef from "../../utils/createElementRef";
+import InlineFlex from "../InlineFlex";
+import Step from "../Step";
 
-const InlineFlexStep = InlineFlex.as(Step)
+const InlineFlexStep = InlineFlex.as(Step);
 
 class Component extends React.Component {
   componentDidUpdate(prevProps) {
-    const { current, isCurrent, tab } = this.props
+    const { current, isCurrent, tab } = this.props;
 
     if (prevProps.current !== current && isCurrent(tab)) {
-      this.element.focus()
+      this.element.focus();
     }
   }
 
   show = () => {
-    const { show, isCurrent, tab } = this.props
+    const { show, isCurrent, tab } = this.props;
     if (!isCurrent(tab)) {
-      show(tab)
+      show(tab);
     }
-  }
+  };
 
   keyDown = e => {
     const keyMap = {
       ArrowLeft: this.props.previous,
-      ArrowRight: this.props.next,
-    }
+      ArrowRight: this.props.next
+    };
     if (keyMap[e.key]) {
-      e.preventDefault()
-      keyMap[e.key]()
+      e.preventDefault();
+      keyMap[e.key]();
     }
-  }
+  };
 
   render() {
     const {
@@ -43,14 +43,14 @@ class Component extends React.Component {
       className,
       onClick,
       onFocus,
-      onKeyDown,
-    } = this.props
+      onKeyDown
+    } = this.props;
 
-    const active = isCurrent(tab)
-    const activeClassName = active ? 'active' : ''
+    const active = isCurrent(tab);
+    const activeClassName = active ? "active" : "";
     const finalClassName = [className, activeClassName]
       .filter(c => !!c)
-      .join(' ')
+      .join(" ");
 
     return (
       <InlineFlexStep
@@ -66,9 +66,9 @@ class Component extends React.Component {
         onFocus={flow(this.show, onFocus)}
         onKeyDown={flow(this.keyDown, onKeyDown)}
         className={finalClassName}
-        elementRef={createElementRef(this, 'element')}
+        elementRef={createElementRef(this, "element")}
       />
-    )
+    );
   }
 }
 
@@ -92,7 +92,7 @@ const TabsTab = styled(Component)`
   &[disabled] {
     pointer-events: none;
   }
-`
+`;
 
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
@@ -107,14 +107,14 @@ TabsTab.propTypes = {
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   onFocus: PropTypes.func,
-  onKeyDown: PropTypes.func,
-}
+  onKeyDown: PropTypes.func
+};
 
 TabsTab.defaultProps = {
-  role: 'tab',
+  role: "tab",
   onClick: () => {},
   onFocus: () => {},
-  onKeyDown: () => {},
-}
+  onKeyDown: () => {}
+};
 
-export default as('li')(TabsTab)
+export default as("li")(TabsTab);

@@ -1,1 +1,1 @@
-export default from './Fit'
+export default from "./Fit";

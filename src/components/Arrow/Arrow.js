@@ -1,8 +1,8 @@
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import InlineFlex from '../InlineFlex'
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import InlineFlex from "../InlineFlex";
 
-const SQRT2 = 1.41421356237
+const SQRT2 = 1.41421356237;
 
 const Arrow = styled(InlineFlex)`
   width: 1em;
@@ -17,7 +17,7 @@ const Arrow = styled(InlineFlex)`
   box-sizing: content-box;
 
   &:after {
-    content: '';
+    content: "";
     background-color: currentcolor;
     border: inherit;
     border-width: 1px;
@@ -28,6 +28,6 @@ const Arrow = styled(InlineFlex)`
     height: calc(100% / ${SQRT2});
     transform: rotateZ(45deg);
   }
-`
+`;
 
-export default as('div')(Arrow)
+export default as("div")(Arrow);

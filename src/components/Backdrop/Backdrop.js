@@ -1,6 +1,6 @@
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import Hidden from '../Hidden'
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import Hidden from "../Hidden";
 
 const Backdrop = styled(Hidden)`
   position: fixed;
@@ -10,11 +10,11 @@ const Backdrop = styled(Hidden)`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 998;
-`
+`;
 
 Backdrop.defaultProps = {
-  role: 'button',
-  tabIndex: -1,
-}
+  role: "button",
+  tabIndex: -1
+};
 
-export default as('div')(Backdrop)
+export default as("div")(Backdrop);

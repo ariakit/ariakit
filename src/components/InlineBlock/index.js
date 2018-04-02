@@ -1,1 +1,1 @@
-export default from './InlineBlock'
+export default from "./InlineBlock";

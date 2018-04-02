@@ -1,26 +1,26 @@
-import React from 'react'
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import InlineFlex from '../InlineFlex'
-import Box from '../Box'
+import React from "react";
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import InlineFlex from "../InlineFlex";
+import Box from "../Box";
 
-const InlineFlexBox = InlineFlex.as(Box)
+const InlineFlexBox = InlineFlex.as(Box);
 
 const handleKeyPress = evt => {
   if (evt.charCode === 32 || evt.charCode === 13) {
-    evt.preventDefault()
-    evt.target.click()
+    evt.preventDefault();
+    evt.target.click();
   }
-}
+};
 
 const Component = props => {
   const otherProps = {
-    role: 'button',
+    role: "button",
     tabIndex: 0,
-    onKeyPress: handleKeyPress,
-  }
-  return <InlineFlexBox {...otherProps} {...props} />
-}
+    onKeyPress: handleKeyPress
+  };
+  return <InlineFlexBox {...otherProps} {...props} />;
+};
 
 const Button = styled(Component)`
   position: relative;
@@ -48,7 +48,7 @@ const Button = styled(Component)`
   }
   &:after {
     display: none;
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     right: 0;
@@ -69,6 +69,6 @@ const Button = styled(Component)`
     grid-auto-flow: column;
     align-content: center;
   }
-`
+`;
 
-export default as('div')(Button)
+export default as("div")(Button);

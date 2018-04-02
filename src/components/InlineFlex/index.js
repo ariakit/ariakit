@@ -1,1 +1,1 @@
-export default from './InlineFlex'
+export default from "./InlineFlex";
