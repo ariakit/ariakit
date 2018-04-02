@@ -79,7 +79,8 @@ const unpkg = Object.assign({}, common, {
     exports: "named",
     globals: {
       react: "React",
-      "react-dom": "ReactDOM"
+      "react-dom": "ReactDOM",
+      "prop-types": "PropTypes"
     }
   },
   external: makeExternalPredicate(external),
