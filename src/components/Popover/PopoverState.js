@@ -1,15 +1,15 @@
 /* eslint-disable react/prefer-stateless-function */
-import React from 'react'
-import PropTypes from 'prop-types'
-import uniqueId from 'lodash/uniqueId'
-import HiddenState from '../Hidden/HiddenState'
+import React from "react";
+import PropTypes from "prop-types";
+import uniqueId from "lodash/uniqueId";
+import HiddenState from "../Hidden/HiddenState";
 
 class PopoverState extends React.Component {
   static propTypes = {
-    initialState: PropTypes.object,
-  }
+    initialState: PropTypes.object
+  };
 
-  popoverId = uniqueId('popover')
+  popoverId = uniqueId("popover");
 
   render() {
     return (
@@ -17,11 +17,11 @@ class PopoverState extends React.Component {
         {...this.props}
         initialState={{
           popoverId: this.popoverId,
-          ...this.props.initialState,
+          ...this.props.initialState
         }}
       />
-    )
+    );
   }
 }
 
-export default PopoverState
+export default PopoverState;

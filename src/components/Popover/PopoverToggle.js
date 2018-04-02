@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import as from '../../enhancers/as'
-import Hidden from '../Hidden'
+import React from "react";
+import PropTypes from "prop-types";
+import as from "../../enhancers/as";
+import Hidden from "../Hidden";
 
 const PopoverToggle = props => (
   <Hidden.Toggle
@@ -10,11 +10,11 @@ const PopoverToggle = props => (
     aria-haspopup
     {...props}
   />
-)
+);
 
 PopoverToggle.propTypes = {
   popoverId: PropTypes.string.isRequired,
-  visible: PropTypes.bool,
-}
+  visible: PropTypes.bool
+};
 
-export default as('button')(PopoverToggle)
+export default as("button")(PopoverToggle);

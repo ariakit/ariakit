@@ -1,8 +1,8 @@
-import uniq from 'lodash/uniq'
+import uniq from "lodash/uniq";
 
 const parseClassName = className => {
-  if (!className) return className
-  return uniq(className.split(' ')).join(' ')
-}
+  if (!className) return className;
+  return uniq(className.split(" ")).join(" ");
+};
 
-export default parseClassName
+export default parseClassName;

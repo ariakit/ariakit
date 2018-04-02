@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types'
-import styled, { css } from 'styled-components'
-import { ifProp } from 'styled-tools'
-import as from '../../enhancers/as'
-import Base from '../Base'
+import PropTypes from "prop-types";
+import styled, { css } from "styled-components";
+import { ifProp } from "styled-tools";
+import as from "../../enhancers/as";
+import Base from "../Base";
 
 const Divider = styled(Base)`
   border: 1px solid currentcolor;
   opacity: 0.2;
 
   ${ifProp(
-    'vertical',
+    "vertical",
     css`
       margin: 0 1rem;
       min-height: 100%;
@@ -20,13 +20,13 @@ const Divider = styled(Base)`
       margin: 1rem 0;
       height: 0;
       border-width: 1px 0 0 0;
-    `,
+    `
   )};
-`
+`;
 
 Divider.propTypes = {
   horizontal: PropTypes.bool,
-  vertical: PropTypes.bool,
-}
+  vertical: PropTypes.bool
+};
 
-export default as('div')(Divider)
+export default as("div")(Divider);

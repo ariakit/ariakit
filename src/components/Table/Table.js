@@ -1,6 +1,6 @@
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import Base from '../Base'
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import Base from "../Base";
 
 const Table = styled(Base)`
   display: table;
@@ -9,10 +9,10 @@ const Table = styled(Base)`
   background-color: white;
   border: 1px solid #bbb;
   line-height: 200%;
-`
+`;
 
 Table.defaultProps = {
-  role: 'table',
-}
+  role: "table"
+};
 
-export default as('table')(Table)
+export default as("table")(Table);

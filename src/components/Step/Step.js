@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import as from '../../enhancers/as'
-import createElementRef from '../../utils/createElementRef'
-import Hidden from '../Hidden'
+import React from "react";
+import PropTypes from "prop-types";
+import as from "../../enhancers/as";
+import createElementRef from "../../utils/createElementRef";
+import Hidden from "../Hidden";
 
 class Step extends React.Component {
   static propTypes = {
@@ -14,15 +14,15 @@ class Step extends React.Component {
     indexOf: PropTypes.func.isRequired,
     order: PropTypes.number,
     onEnter: PropTypes.func,
-    onExit: PropTypes.func,
-  }
+    onExit: PropTypes.func
+  };
 
   componentDidMount() {
-    const { register, step, order, onEnter, current, indexOf } = this.props
-    register(step, order)
+    const { register, step, order, onEnter, current, indexOf } = this.props;
+    register(step, order);
 
     if (onEnter && current === indexOf(step)) {
-      onEnter(this.element)
+      onEnter(this.element);
     }
   }
 
@@ -34,44 +34,44 @@ class Step extends React.Component {
       indexOf,
       current,
       onEnter,
-      onExit,
-    } = this.props
+      onExit
+    } = this.props;
 
     if (prevProps.step !== step || prevProps.order !== order) {
-      update(prevProps.step, step, order)
+      update(prevProps.step, step, order);
     }
 
     if (prevProps.current !== current) {
-      const index = indexOf(step)
+      const index = indexOf(step);
       if (onEnter && prevProps.current !== index && current === index) {
-        onEnter(this.element)
+        onEnter(this.element);
       } else if (onExit && prevProps.current === index) {
-        onExit(this.element)
+        onExit(this.element);
       }
     }
   }
 
   componentWillUnmount() {
-    const { step, onExit, current, indexOf, unregister } = this.props
+    const { step, onExit, current, indexOf, unregister } = this.props;
 
     if (onExit && current === indexOf(step)) {
-      onExit(this.element)
+      onExit(this.element);
     }
 
-    unregister(step)
+    unregister(step);
   }
 
   render() {
-    const { current, indexOf, step } = this.props
+    const { current, indexOf, step } = this.props;
     return (
       <Hidden
         destroy
         visible={current === indexOf(step)}
         {...this.props}
-        elementRef={createElementRef(this, 'element')}
+        elementRef={createElementRef(this, "element")}
       />
-    )
+    );
   }
 }
 
-export default as('div')(Step)
+export default as("div")(Step);

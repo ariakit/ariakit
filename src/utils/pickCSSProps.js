@@ -1,11 +1,11 @@
-import cssProps from './cssProps'
+import cssProps from "./cssProps";
 
 const pickCssProps = props =>
   Object.keys(props).reduce((finalObject, key) => {
     if (cssProps[key]) {
-      return { ...finalObject, [key]: props[key] }
+      return { ...finalObject, [key]: props[key] };
     }
-    return finalObject
-  }, '')
+    return finalObject;
+  }, "");
 
-export default pickCssProps
+export default pickCssProps;

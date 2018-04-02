@@ -1,21 +1,21 @@
-import kebabCase from 'lodash/kebabCase'
+import kebabCase from "lodash/kebabCase";
 
 export const bool = (cssProp, validComponentProps) => props => {
   const keys = Object.keys(props)
     .filter(k => validComponentProps.includes(k))
     .filter(k => !!props[k])
-    .map(kebabCase)
+    .map(kebabCase);
   if (keys.length) {
-    return `${cssProp}: ${keys.join(' ')};`
+    return `${cssProp}: ${keys.join(" ")};`;
   }
-  return ''
-}
+  return "";
+};
 
 export const value = (cssProp, componentProp) => props => {
-  const v = props[componentProp]
-  if (typeof v === 'undefined') return ''
-  if (typeof v === 'number') {
-    return `${cssProp}: ${v}px;`
+  const v = props[componentProp];
+  if (typeof v === "undefined") return "";
+  if (typeof v === "number") {
+    return `${cssProp}: ${v}px;`;
   }
-  return `${cssProp}: ${v};`
-}
+  return `${cssProp}: ${v};`;
+};

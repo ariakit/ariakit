@@ -1,1 +1,1 @@
-export default from './Inline'
+export default from "./Inline";

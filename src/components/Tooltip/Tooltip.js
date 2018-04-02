@@ -1,6 +1,6 @@
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import Perpendicular from '../Perpendicular'
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import Perpendicular from "../Perpendicular";
 
 const Tooltip = styled(Perpendicular)`
   pointer-events: none;
@@ -18,12 +18,12 @@ const Tooltip = styled(Perpendicular)`
   *:focus > & {
     opacity: 1;
   }
-`
+`;
 
 Tooltip.defaultProps = {
-  role: 'tooltip',
-  pos: 'top',
-  align: 'center',
-}
+  role: "tooltip",
+  pos: "top",
+  align: "center"
+};
 
-export default as('div')(Tooltip)
+export default as("div")(Tooltip);

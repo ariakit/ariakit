@@ -1,9 +1,9 @@
-import styled from 'styled-components'
-import as from '../../enhancers/as'
-import Block from '../Block'
-import Box from '../Box'
+import styled from "styled-components";
+import as from "../../enhancers/as";
+import Block from "../Block";
+import Box from "../Box";
 
-const BlockBox = Block.as(Box)
+const BlockBox = Block.as(Box);
 
 const Input = styled(BlockBox)`
   width: 100%;
@@ -18,17 +18,17 @@ const Input = styled(BlockBox)`
     padding: 0.5em;
     height: auto;
   }
-  &[type='checkbox'],
-  &[type='radio'] {
+  &[type="checkbox"],
+  &[type="radio"] {
     display: inline-block;
     width: auto;
     height: auto;
     padding: 0;
   }
-`
+`;
 
 Input.defaultProps = {
-  type: 'text',
-}
+  type: "text"
+};
 
-export default as('input')(Input)
+export default as("input")(Input);

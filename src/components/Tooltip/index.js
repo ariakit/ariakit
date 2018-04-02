@@ -1,6 +1,6 @@
-import Tooltip from './Tooltip'
-import TooltipArrow from './TooltipArrow'
+import Tooltip from "./Tooltip";
+import TooltipArrow from "./TooltipArrow";
 
-Tooltip.Arrow = TooltipArrow
+Tooltip.Arrow = TooltipArrow;
 
-export default Tooltip
+export default Tooltip;
