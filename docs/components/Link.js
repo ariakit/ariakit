@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import FaExternalLink from 'react-icons/lib/fa/external-link'
-import as, { Inline, InlineFlex } from '../../src'
+import React from "react";
+import PropTypes from "prop-types";
+import FaExternalLink from "react-icons/lib/fa/external-link";
+import as, { Inline, InlineFlex } from "../../src";
 
 const Wrapper = InlineFlex.extend`
   text-decoration: none;
@@ -11,10 +11,10 @@ const Wrapper = InlineFlex.extend`
   &:hover {
     text-decoration: underline !important;
   }
-`
+`;
 
 const Link = ({ blank, children, ...props }) => (
-  <Wrapper {...props} {...(blank ? { target: '_blank' } : {})}>
+  <Wrapper {...props} {...(blank ? { target: "_blank" } : {})}>
     {children}
     {blank && (
       <Inline marginLeft="0.35em">
@@ -22,11 +22,11 @@ const Link = ({ blank, children, ...props }) => (
       </Inline>
     )}
   </Wrapper>
-)
+);
 
 Link.propTypes = {
   blank: PropTypes.bool,
-  children: PropTypes.node.isRequired,
-}
+  children: PropTypes.node.isRequired
+};
 
-export default as('a')(Link)
+export default as("a")(Link);

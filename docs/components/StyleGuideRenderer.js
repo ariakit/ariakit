@@ -1,9 +1,9 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Block } from '../../src'
-import Banner from './Banner'
-import Contents from './Contents'
-import './globalStyles'
+import React from "react";
+import PropTypes from "prop-types";
+import { Block } from "../../src";
+import Banner from "./Banner";
+import Contents from "./Contents";
+import "./globalStyles";
 
 const Wrapper = Block.extend`
   font-family: sans-serif;
@@ -38,21 +38,21 @@ const Wrapper = Block.extend`
       }
     }
   }
-`
+`;
 
 const StyleGuideRenderer = ({ children }) => {
-  const [intro, ...sections] = children.props.sections
-  const child = React.cloneElement(children, { ...children.props, sections })
+  const [intro, ...sections] = children.props.sections;
+  const child = React.cloneElement(children, { ...children.props, sections });
   return (
     <Wrapper>
       <Banner intro={intro} />
       <Contents sections={sections}>{child}</Contents>
     </Wrapper>
-  )
-}
+  );
+};
 
 StyleGuideRenderer.propTypes = {
-  children: PropTypes.node.isRequired,
-}
+  children: PropTypes.node.isRequired
+};
 
-export default StyleGuideRenderer
+export default StyleGuideRenderer;

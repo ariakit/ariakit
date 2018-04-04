@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import as, { Flex } from '../../src'
-import Menu from './Menu'
+import React from "react";
+import PropTypes from "prop-types";
+import as, { Flex } from "../../src";
+import Menu from "./Menu";
 
 const Wrapper = Flex.extend`
   align-items: flex-start;
@@ -9,7 +9,7 @@ const Wrapper = Flex.extend`
   max-width: 1200px;
   padding: 64px 16px;
   margin: 0 auto;
-`
+`;
 
 const StyledMenu = Menu.extend`
   position: sticky;
@@ -23,18 +23,18 @@ const StyledMenu = Menu.extend`
   @media screen and (max-width: 800px) {
     display: none;
   }
-`
+`;
 
 const Contents = ({ children, sections, ...props }) => (
   <Wrapper {...props}>
     <StyledMenu sections={sections} />
     {children}
   </Wrapper>
-)
+);
 
 Contents.propTypes = {
   children: PropTypes.node.isRequired,
-  sections: PropTypes.array.isRequired,
-}
+  sections: PropTypes.array.isRequired
+};
 
-export default as('div')(Contents)
+export default as("div")(Contents);

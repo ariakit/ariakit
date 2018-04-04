@@ -7,26 +7,32 @@ const { Hidden } = require('reas');
 <Hidden visible destroy>Remove visible prop</Hidden>
 ```
 
-If you pass in a `hideOnEsc` prop, you will need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed. In this example, we will be using [`recompose`](https://github.com/acdlite/recompose) as state manager.
+If you pass in a `hideOnEsc` prop, you will need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed.
 ```jsx { "showCode": true }
 const { Hidden } = require('reas');
-const { withStateHandlers } = require('recompose');
 
-const enhance = withStateHandlers(
-  { visible: true },
-  { hide: () => () => ({ visible: false }) }
-);
+class Example extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      visible: true
+    }
+    this.hide = () => this.setState({ visible: false })
+  }
 
-const Example = enhance(({ visible, hide }) => (
-  <Hidden
-    destroy
-    hideOnEsc
-    visible={visible}
-    hide={hide}
-  >
-    Press esc
-  </Hidden>
-));
+  render() {
+    return (
+      <Hidden
+        destroy
+        hideOnEsc
+        visible={this.state.visible}
+        hide={this.hide}
+      >
+        Press esc
+      </Hidden>
+    )
+  }
+};
 
 <Example />
 ```
@@ -35,8 +41,10 @@ As a convenience, `reas` provides state components so you don't need to worry ab
 ```jsx { "showCode": true }
 const { Hidden } = require('reas');
 
+const initialState = { visible: true }
+
 const Example = () => (
-  <Hidden.State initialState={{ visible: true }}>
+  <Hidden.State initialState={initialState}>
     {({ visible, hide }) => (
       <Hidden
         destroy
@@ -78,8 +86,10 @@ On your components, you can use the same `Component.State`, but with an addition
 import React from 'react'
 import { Hidden } from 'reas'
 
+const initialState = { visible: true }
+
 const MyHidden = () => (
-  <Hidden.State context="foo" initialState={{ visible: true }}>
+  <Hidden.State context="foo" initialState={initialState}>
     {({ visible, hide }) => (
       <Hidden
         destroy
