@@ -2,10 +2,11 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { ifProp } from "styled-tools";
 import as from "../../enhancers/as";
-import Flex from "../Flex";
+import Base from "../Base";
 import GroupItem from "./GroupItem";
 
-const Group = styled(Flex)`
+const Group = styled(Base)`
+  display: flex;
   flex-direction: ${ifProp("vertical", "column", "row")};
   > *,
   > * ${GroupItem} {

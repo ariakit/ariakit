@@ -1,7 +1,9 @@
-import React from "react";
+import styled from "styled-components";
 import as from "../../enhancers/as";
-import InlineBlock from "../InlineBlock";
+import Base from "../Base";
 
-const Label = props => <InlineBlock {...props} />;
+const Label = styled(Base)`
+  display: inline-block;
+`;
 
 export default as("label")(Label);

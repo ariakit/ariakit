@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import as from "../../enhancers/as";
-import Block from "../Block";
+import Base from "../Base";
 
-const Fit = styled(Block)`
+const Fit = styled(Base)`
   position: absolute;
   top: 0;
   right: 0;

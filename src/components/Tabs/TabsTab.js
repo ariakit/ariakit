@@ -4,10 +4,7 @@ import flow from "lodash/flow";
 import styled from "styled-components";
 import as from "../../enhancers/as";
 import createElementRef from "../../utils/createElementRef";
-import InlineFlex from "../InlineFlex";
 import Step from "../Step";
-
-const InlineFlexStep = InlineFlex.as(Step);
 
 class Component extends React.Component {
   componentDidUpdate(prevProps) {
@@ -53,7 +50,7 @@ class Component extends React.Component {
       .join(" ");
 
     return (
-      <InlineFlexStep
+      <Step
         id={`${tab}Tab`}
         step={tab}
         active={active}
@@ -73,6 +70,7 @@ class Component extends React.Component {
 }
 
 const TabsTab = styled(Component)`
+  display: inline-flex;
   position: relative;
   flex: 1;
   user-select: none;

@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import as from "../../enhancers/as";
-import Flex from "../Flex";
+import Base from "../Base";
 
-const Tabs = styled(Flex)`
+const Tabs = styled(Base)`
+  display: flex;
   align-items: flex-end;
   list-style: none;
   @media screen and (max-width: 640px) {

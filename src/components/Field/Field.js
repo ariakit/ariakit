@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import as from "../../enhancers/as";
-import Flex from "../Flex";
+import Base from "../Base";
 
-const Field = styled(Flex)`
+const Field = styled(Base)`
+  display: flex;
   flex-direction: column;
   flex: 1;
   label {

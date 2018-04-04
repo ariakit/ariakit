@@ -1,11 +1,9 @@
 import styled from "styled-components";
 import as from "../../enhancers/as";
-import Block from "../Block";
 import Box from "../Box";
 
-const BlockBox = Block.as(Box);
-
-const Input = styled(BlockBox)`
+const Input = styled(Box)`
+  display: block;
   width: 100%;
   padding: 0 0.5em;
   height: 2.5em;

@@ -1,10 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import as from "../../enhancers/as";
-import InlineFlex from "../InlineFlex";
 import Box from "../Box";
-
-const InlineFlexBox = InlineFlex.as(Box);
 
 const handleKeyPress = evt => {
   if (evt.charCode === 32 || evt.charCode === 13) {
@@ -19,10 +16,11 @@ const Component = props => {
     tabIndex: 0,
     onKeyPress: handleKeyPress
   };
-  return <InlineFlexBox {...otherProps} {...props} />;
+  return <Box {...otherProps} {...props} />;
 };
 
 const Button = styled(Component)`
+  display: inline-flex;
   position: relative;
   flex: none;
   appearance: none;

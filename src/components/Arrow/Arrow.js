@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import as from "../../enhancers/as";
-import InlineFlex from "../InlineFlex";
+import Base from "../Base";
 
 const SQRT2 = 1.41421356237;
 
-const Arrow = styled(InlineFlex)`
+const Arrow = styled(Base)`
+  display: inline-flex;
   width: 1em;
   height: 1em;
   overflow: hidden;
