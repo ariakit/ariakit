@@ -1,6 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import as, { Block } from '../../src'
+import React from "react";
+import PropTypes from "prop-types";
+import as, { Block } from "../../src";
 
 const Wrapper = Block.extend`
   padding-right: 32px;
@@ -23,7 +23,7 @@ const Wrapper = Block.extend`
       color: #666;
     }
   }
-`
+`;
 
 const Menu = ({ sections, ...props }) => (
   <Wrapper {...props}>
@@ -40,10 +40,10 @@ const Menu = ({ sections, ...props }) => (
       </li>
     ))}
   </Wrapper>
-)
+);
 
 Menu.propTypes = {
-  sections: PropTypes.array.isRequired,
-}
+  sections: PropTypes.array.isRequired
+};
 
-export default as('ul')(Menu)
+export default as("ul")(Menu);

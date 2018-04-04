@@ -1,8 +1,8 @@
-import { injectGlobal } from 'styled-components'
-import FiraCodeBold from './assets/FiraCode/FiraCode-Bold.woff'
-import FiraCodeLight from './assets/FiraCode/FiraCode-Light.woff'
-import FiraCodeMedium from './assets/FiraCode/FiraCode-Medium.woff'
-import FiraCodeRegular from './assets/FiraCode/FiraCode-Regular.woff'
+import { injectGlobal } from "styled-components";
+import FiraCodeBold from "./assets/FiraCode/FiraCode-Bold.woff";
+import FiraCodeLight from "./assets/FiraCode/FiraCode-Light.woff";
+import FiraCodeMedium from "./assets/FiraCode/FiraCode-Medium.woff";
+import FiraCodeRegular from "./assets/FiraCode/FiraCode-Regular.woff";
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -33,4 +33,4 @@ injectGlobal`
     font-weight: 700;
     font-style: normal;
   }
-`
+`;

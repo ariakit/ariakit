@@ -1,14 +1,14 @@
-import React from 'react'
-import { Block, Flex } from '../../src'
-import logo from '../../logo/logo-vertical-white.svg'
-import Intro from './Intro'
-import GitHubButton from './GitHubButton'
+import React from "react";
+import { Block, Flex } from "../../src";
+import logo from "../../logo/logo-vertical-white.svg";
+import Intro from "./Intro";
+import GitHubButton from "./GitHubButton";
 
 const Wrapper = Flex.extend`
   align-items: center;
   justify-content: center;
   background-color: rgb(48, 52, 60);
-`
+`;
 
 const InnerWrapper = Flex.extend`
   align-items: flex-start;
@@ -29,19 +29,19 @@ const InnerWrapper = Flex.extend`
     padding: 32px 8px 8px;
     flex-direction: column;
   }
-`
+`;
 
 const Left = Flex.extend`
   flex-direction: column;
   flex: 0;
   align-items: center;
-`
+`;
 
 const Logo = Block.extend`
   flex: 0;
   width: 150px;
   margin-bottom: 32px;
-`
+`;
 
 const Banner = ({ intro }) => (
   <Wrapper>
@@ -53,6 +53,6 @@ const Banner = ({ intro }) => (
       <Intro flex={1} intro={intro} maxWidth="100%" />
     </InnerWrapper>
   </Wrapper>
-)
+);
 
-export default Banner
+export default Banner;

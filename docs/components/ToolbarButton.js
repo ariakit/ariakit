@@ -1,3 +1,3 @@
-const ToolbarButton = () => null
+const ToolbarButton = () => null;
 
-export default ToolbarButton
+export default ToolbarButton;
