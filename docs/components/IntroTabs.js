@@ -33,31 +33,21 @@ const Navigation = Flex.extend`
   margin: 32px 0;
 `;
 
-class IntroTabs extends React.PureComponent {
-  static propTypes = {
-    tabs: PropTypes.object.isRequired,
-    items: PropTypes.array.isRequired
-  };
+const IntroTabs = ({ tabs, items, ...props }) => (
+  <Navigation {...props}>
+    <Brackets as={[Button, Tabs.Previous]} {...tabs} pos="left" />
+    <Bullets as={Tabs}>
+      {items.map((_, i) => (
+        <Bullet key={`bullet-${i}`} as={Tabs.Tab} tab={`tab${i}`} {...tabs} />
+      ))}
+    </Bullets>
+    <Brackets as={[Button, Tabs.Next]} {...tabs} pos="right" />
+  </Navigation>
+);
 
-  render() {
-    const { tabs, items, ...props } = this.props;
-    return (
-      <Navigation {...props}>
-        <Brackets as={[Button, Tabs.Previous]} {...tabs} pos="left" />
-        <Bullets as={Tabs}>
-          {items.map((_, i) => (
-            <Bullet
-              key={`bullet-${i}`}
-              as={Tabs.Tab}
-              tab={`tab${i}`}
-              {...tabs}
-            />
-          ))}
-        </Bullets>
-        <Brackets as={[Button, Tabs.Next]} {...tabs} pos="right" />
-      </Navigation>
-    );
-  }
-}
+IntroTabs.propTypes = {
+  tabs: PropTypes.object.isRequired,
+  items: PropTypes.array.isRequired
+};
 
 export default as("div")(IntroTabs);

@@ -34,7 +34,7 @@ const Wrapper = Block.extend`
   }
 `;
 
-class IntroPanel extends React.PureComponent {
+class IntroPanel extends React.Component {
   state = {
     code: this.props.code
   };
