@@ -7,25 +7,17 @@ const toggle = () => state => ({ visible: !state.visible });
 const show = () => () => ({ visible: true });
 const hide = () => () => ({ visible: false });
 
-class HiddenState extends React.Component {
-  static propTypes = {
-    actions: PropTypes.objectOf(PropTypes.func),
-    initialState: PropTypes.object
-  };
+const HiddenState = ({ initialState, actions, ...props }) => (
+  <State
+    {...props}
+    initialState={{ visible: false, ...initialState }}
+    actions={{ toggle, show, hide, ...actions }}
+  />
+);
 
-  initialState = { visible: false, ...this.props.initialState };
-
-  actions = { toggle, show, hide, ...this.props.actions };
-
-  render() {
-    return (
-      <State
-        {...this.props}
-        initialState={this.initialState}
-        actions={this.actions}
-      />
-    );
-  }
-}
+HiddenState.propTypes = {
+  initialState: PropTypes.object,
+  actions: PropTypes.objectOf(PropTypes.func)
+};
 
 export default HiddenState;

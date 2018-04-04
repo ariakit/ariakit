@@ -9,10 +9,15 @@ class PopoverState extends React.Component {
     initialState: PropTypes.object
   };
 
-  initialState = { popoverId: uniqueId("popover"), ...this.props.initialState };
+  popoverId = uniqueId("popover");
 
   render() {
-    return <HiddenState {...this.props} initialState={this.initialState} />;
+    return (
+      <HiddenState
+        {...this.props}
+        initialState={{ popoverId: this.popoverId, ...this.props.initialState }}
+      />
+    );
   }
 }
 

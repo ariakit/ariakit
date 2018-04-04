@@ -101,53 +101,43 @@ const update = (id, nextId, orderArg) => state => {
   return reorder(nextId, order)({ ...state, ids });
 };
 
-class StepState extends React.Component {
-  static propTypes = {
-    initialState: PropTypes.object,
-    actions: PropTypes.object,
-    selectors: PropTypes.object
-  };
+const StepState = ({ initialState, actions, selectors, ...props }) => (
+  <State
+    {...props}
+    initialState={{
+      loop: false,
+      ids: [],
+      current: -1,
+      ordered: {},
+      ...initialState
+    }}
+    actions={{
+      show,
+      hide,
+      toggle,
+      previous,
+      next,
+      reorder,
+      register,
+      unregister,
+      update,
+      ...actions
+    }}
+    selectors={{
+      getCurrentId,
+      hasPrevious,
+      hasNext,
+      indexOf,
+      isCurrent,
+      ...selectors
+    }}
+  />
+);
 
-  initialState = {
-    loop: false,
-    ids: [],
-    current: -1,
-    ordered: {},
-    ...this.props.initialState
-  };
-
-  actions = {
-    show,
-    hide,
-    toggle,
-    previous,
-    next,
-    reorder,
-    register,
-    unregister,
-    update,
-    ...this.props.actions
-  };
-
-  selectors = {
-    getCurrentId,
-    hasPrevious,
-    hasNext,
-    indexOf,
-    isCurrent,
-    ...this.props.selectors
-  };
-
-  render() {
-    return (
-      <State
-        {...this.props}
-        initialState={this.initialState}
-        actions={this.actions}
-        selectors={this.selectors}
-      />
-    );
-  }
-}
+StepState.propTypes = {
+  initialState: PropTypes.object,
+  actions: PropTypes.object,
+  selectors: PropTypes.object
+};
 
 export default StepState;
