@@ -49,7 +49,6 @@
   ],
   "dependencies": {
     "constate": "^0.1.0",
-    "json-diff": "^0.5.2",
     "lodash": "^4.17.5",
     "lodash-es": "^4.17.5",
     "pick-react-known-prop": "^0.1.1",
