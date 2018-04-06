@@ -12,7 +12,7 @@
 <a href="https://travis-ci.org/diegohaz/reas"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square" /></a>
 <a href="https://codecov.io/gh/diegohaz/reas/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" /></a>
 
-A minimalist and highly composable UI toolkit built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
+Minimalist and highly composable building blocks built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
 
 - [**Documentation**](https://diegohaz.github.io/reas/)
 - [**Components**](https://diegohaz.github.io/reas/#components)
