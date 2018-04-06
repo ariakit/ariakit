@@ -1,9 +1,8 @@
 import as from "./enhancers/as";
 
-export { Provider } from "constate";
-
-export default as;
+export * from "constate";
+export * from "styled-components";
+export * from "./components";
 
 export { as };
-
-export * from "./components";
+export default as;
