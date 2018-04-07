@@ -1,7 +1,7 @@
 import as from "./enhancers/as";
 
-export * from "constate";
-export * from "styled-components";
+export { State, Provider } from "constate";
+export styled, { injectGlobal, css, keyframes } from "styled-components";
 export * from "./components";
 
 export { as };
