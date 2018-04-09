@@ -1,0 +1,20 @@
+{
+  "name": "reas-website",
+  "private": true,
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegohaz/reas/tree/master/website"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "react-router-dom": "^4.2.2"
+  }
+}

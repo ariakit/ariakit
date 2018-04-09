@@ -27,54 +27,19 @@ module.exports = {
     const name = path.basename(componentPath, ".js");
     return `import { ${name} } from 'reas'`;
   },
-  styleguideDir: "docs",
-  template: "docs/template.html",
+  styleguideDir: "website",
   styleguideComponents: {
-    StyleGuideRenderer: path.join(
-      __dirname,
-      "docs/components/StyleGuideRenderer.js"
-    ),
-    ToolbarButton: path.join(__dirname, "docs/components/ToolbarButton.js"),
-    Editor: path.join(__dirname, "docs/components/Editor.js")
+    StyleGuide: path.join(__dirname, "website/src/components/App.js")
   },
   skipComponentsWithoutExample: true,
-  compilerConfig: {
-    transforms: {
-      dangerousTaggedTemplateString: true
-    },
-    objectAssign: "Object.assign"
-  },
+  pagePerSection: true,
   sections: [
-    {
-      name: "Introduction",
-      content: "docs/contents/intro.md"
-    },
     {
       name: "Guide",
       sections: [
         {
-          name: "Installation",
-          content: "docs/contents/installation.md"
-        },
-        {
-          name: "Create React App",
-          content: "docs/contents/create-react-app.md"
-        },
-        {
-          name: "as",
-          content: "docs/contents/as.md"
-        },
-        {
-          name: "Styling",
-          content: "docs/contents/styling.md"
-        },
-        {
-          name: "State",
-          content: "docs/contents/state.md"
-        },
-        {
-          name: "Behaviors",
-          content: "docs/contents/behaviors.md"
+          name: "Install",
+          content: "docs/install.md"
         }
       ]
     },
