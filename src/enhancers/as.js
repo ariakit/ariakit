@@ -7,14 +7,16 @@ import isSVGElement from "../utils/isSVGElement";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
 
-const Next = ({ nextAs, ...props }) => <Reas {...props} as={nextAs} />;
+// eslint-disable-next-line no-use-before-define
+const As = ({ nextAs, ...props }) => render({ ...props, as: nextAs });
 
-const Reas = ({ as: t, ...props }) => {
+const render = ({ as: t, ...props }) => {
   const T = parseTag(t);
 
   if (Array.isArray(T)) {
     const FirstT = T[0];
-    return <FirstT as={Next} {...props} nextAs={T.slice(1)} />;
+    const nextAs = T.slice(1).filter(x => x !== As);
+    return <FirstT as={As} {...props} nextAs={nextAs} />;
   }
 
   const style = pickCSSProps(props);
@@ -36,6 +38,7 @@ const Reas = ({ as: t, ...props }) => {
       ...otherProps,
       className
     };
+
     return (
       <T {...allProps} ref={props.elementRef}>
         {children}
@@ -46,36 +49,34 @@ const Reas = ({ as: t, ...props }) => {
   return <T {...props} className={className} {...(style ? { style } : {})} />;
 };
 
-const getComponentName = component =>
-  component.displayName || component.name || component;
-
-const getDisplayName = ([Component, ...elements]) =>
-  `${getComponentName(Component)}.as(${elements.map(getComponentName)})`;
-
-const getAs = (components, props) =>
-  components.concat(props.as || [], props.nextAs || []);
-
 const as = asComponents => WrappedComponent => {
   const components = [].concat(WrappedComponent, asComponents);
 
-  let AsReas = props => (
-    <Reas {...props} as={getAs(components, props)} nextAs={undefined} />
-  );
+  const getComponentName = component =>
+    component.displayName || component.name || component;
 
-  AsReas.displayName = getDisplayName(components);
+  const displayName = `${getComponentName(WrappedComponent)}.as(${[]
+    .concat(asComponents)
+    .map(getComponentName)})`;
+
+  const getAs = props => components.concat(props.as || [], props.nextAs || []);
+
+  let Reas = props => render({ ...omit(props, "nextAs"), as: getAs(props) });
+
+  Reas.displayName = displayName;
 
   if (WrappedComponent.withComponent) {
-    AsReas = WrappedComponent.withComponent(AsReas);
-    AsReas.displayName = `styled(${getDisplayName(components)})`;
+    Reas = WrappedComponent.withComponent(Reas);
+    Reas.displayName = `styled(${displayName})`;
   }
 
-  AsReas.as = otherElements => as(otherElements)(AsReas);
+  Reas.as = otherElements => as(otherElements)(Reas);
 
-  Object.defineProperty(AsReas, "extend", {
-    value: (...args) => styled(AsReas)(...args)
+  Object.defineProperty(Reas, "extend", {
+    value: (...args) => styled(Reas)(...args)
   });
 
-  return AsReas;
+  return Reas;
 };
 
 export default as;
