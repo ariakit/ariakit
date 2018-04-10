@@ -63,6 +63,20 @@ const App = () => (
 render(<App />, document.getElementById("root"));
 ```
 
+## Performance
+
+Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark) with MacBook Pro (Retina, 13-inch, Late 2013). Clone the repository and run `yarn && yarn benchmark` to see the results.
+
+| Library | ops/sec |
+| ------- | -------:|
+| [react](benchmark/cases/react.js) | 103,029 |
+| [reas (`as`)](benchmark/cases/reas-as.js) | 45,975 |
+| [antd](https://github.com/ant-design/ant-design) | 29,122 |
+| [reas (`Base`)](benchmark/cases/reas-base.js) | 17,071 |
+| [reas (`Box`)](benchmark/cases/reas-box.js) | 13,163 |
+| [material-ui](https://github.com/mui-org/material-ui) | 9,840 |
+| [rebass](https://github.com/jxnblk/rebass) | 7,989 |
+
 
 ## License
 
