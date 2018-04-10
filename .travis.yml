@@ -2,9 +2,7 @@ language: node_js
 node_js:
   - v8
 script:
-  - npm run lint && npm test -- --coverage
-  - npm run build
-  - npm run benchmark
+  - npm run lint && npm test -- --coverage && npm run build
 cache:
   - yarn
 after_success:

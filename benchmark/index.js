@@ -5,10 +5,8 @@ const { join } = require("path");
 function doBenchmark(filename) {
   const path = join(__dirname, "cases", filename);
   const binPath = join(__dirname, "../node_modules/.bin/react-benchmark");
-  console.log(filename);
+  console.log(filename); // eslint-disable-line no-console
   return spawn.sync(binPath, [path], { stdio: "inherit" });
 }
 
-readdirSync(join(__dirname, "cases"))
-  .filter(x => x === "reas-box.js")
-  .forEach(doBenchmark);
+readdirSync(join(__dirname, "cases")).forEach(doBenchmark);
