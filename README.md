@@ -17,6 +17,15 @@ Minimalist and highly composable building blocks built on top of [React](https:/
 - [**Documentation**](https://diegohaz.github.io/reas/)
 - [**Components**](https://diegohaz.github.io/reas/#components)
 
+<br>
+<hr>
+<p align="center">
+If you find this useful, please don't forget to star ⭐️ the repo, as this will help to promote the project.<br>
+Follow me on <a href="https://twitter.com/diegohaz">Twitter</a> and <a href="https://github.com/diegohaz">GitHub</a> to keep updated about this project and <a href="https://github.com/diegohaz?tab=repositories">others</a>.
+</p>
+<hr>
+<br>
+
 ## Install
 
 Yarn:
@@ -29,9 +38,7 @@ npm:
 npm install --save reas
 ```
 
-## Examples
-
-### Simple Popover
+## Example
 
 <p align="center">
   <img
