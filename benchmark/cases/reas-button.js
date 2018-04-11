@@ -1,4 +1,4 @@
 import React from "react";
-import Button from "material-ui/Button";
+import { Button } from "../../src";
 
 export default () => <Button />;

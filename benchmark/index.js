@@ -9,4 +9,14 @@ function doBenchmark(filename) {
   return spawn.sync(binPath, [path], { stdio: "inherit" });
 }
 
-readdirSync(join(__dirname, "cases")).forEach(doBenchmark);
+let cases = readdirSync(join(__dirname, "cases"));
+const hasOnly = cases.find(x => x.indexOf(".only") >= 0);
+const hasSkip = cases.find(x => x.indexOf(".skip") >= 0);
+
+if (hasOnly) {
+  cases = cases.filter(x => x.indexOf(".only") >= 0);
+} else if (hasSkip) {
+  cases = cases.filter(x => x.indexOf(".skip") === -1);
+}
+
+cases.forEach(doBenchmark);

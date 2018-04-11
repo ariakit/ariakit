@@ -17,9 +17,14 @@ class Step extends React.Component {
     onExit: PropTypes.func
   };
 
-  componentDidMount() {
-    const { register, step, order, onEnter, current, indexOf } = this.props;
+  constructor(props) {
+    super(props);
+    const { register, step, order } = this.props;
     register(step, order);
+  }
+
+  componentDidMount() {
+    const { step, onEnter, current, indexOf } = this.props;
 
     if (onEnter && current === indexOf(step)) {
       onEnter(this.element);
