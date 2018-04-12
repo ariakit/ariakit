@@ -19,6 +19,16 @@ const { Button } = require('reas');
 ```
 
 ```jsx
+const { Button } = require('reas');
+
+<Group responsive={800}>
+  <Button>Button</Button>
+  <Button>Button</Button>
+  <Button>Button</Button>
+</Group>
+```
+
+```jsx
 const { Box, Field, Label, Input, Button, Shadow } = require('reas');
 
 <Box relative border={0}>

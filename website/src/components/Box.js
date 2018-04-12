@@ -1,12 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { prop, withProp, ifProp } from "styled-tools";
+import clamp from "lodash/clamp";
 import { Box as ReasBox, Block, Button, css, keyframes } from "../../../src";
+import BoxCall from "./BoxCall";
 
 const width = prop("dimensions.0");
 const height = prop("dimensions.1");
 const length = prop("dimensions.2");
 const fontSize = withProp(width, w => w / 3);
+
+const clampDimensions = (dimensions, padding = 120) => {
+  const [w, h, l] = dimensions;
+  const clampedW = clamp(w, window.innerWidth - padding);
+  const factor = w / clampedW;
+  const clampedH = h / factor;
+  const clampedL = l / factor;
+  return [clampedW, clampedH, clampedL];
+};
 
 const hoverIfAnimate = content =>
   ifProp(
@@ -150,9 +161,13 @@ const Left = Small.extend`
 
 const Box = ({ dimensions, children, label, animate, ...props }) => {
   const childrenArray = React.Children.toArray(children);
-  const surfaceProps = { dimensions, animate };
+  const surfaceProps = {
+    dimensions: clampDimensions(dimensions),
+    animate
+  };
   return (
     <Container {...surfaceProps} {...props}>
+      <BoxCall textAlign="center" width="100%" top={-100} />
       <Wrapper {...surfaceProps}>
         <Front {...surfaceProps}>{label}</Front>
         {childrenArray.map((child, i) => (
