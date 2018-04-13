@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Provider } from "../../../src";
 import Home from "./Home";
 
-const App = props => (
+const App = () => (
   <Provider>
     <Router>
       <Route exact path="/" render={Home} />
