@@ -1,5 +1,5 @@
 ### One component is one element
-There's no nested components encapsulated. No need to pass `nestedComponentProps`. You have direct access to any component that can be part of another one, such as `Popover.Arrow`.
+There are no encapsulated nested components. No need to pass `nestedComponentProps`. You have direct access to any component that can be part of another one, such as `Popover.Arrow`.
 ```jsx { "showCode": true, "size": "80px" }
 const { Block, Popover } = require('reas');
 
