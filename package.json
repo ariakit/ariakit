@@ -68,7 +68,6 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
-    "babel-standalone": "^6.26.0",
     "codemirror": "^5.36.0",
     "cross-spawn": "^6.0.5",
     "enzyme": "^3.2.0",

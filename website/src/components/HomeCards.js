@@ -1,7 +1,6 @@
 import React from "react";
 import { Block, Code, Button, Popover } from "../../../src";
 import Editor from "./Editor";
-import Preview from "./Preview";
 
 const HomeCards = () => (
   <React.Fragment>
@@ -18,6 +17,7 @@ const HomeCards = () => (
     </Block>
     <Block>
       <Editor
+        readOnly
         code={`import React from "react";
 import { Button, Popover } from "reas";
 

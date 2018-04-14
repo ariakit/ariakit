@@ -31,6 +31,12 @@ module.exports = {
   styleguideComponents: {
     StyleGuide: path.join(__dirname, "website/src/components/App.js")
   },
+  compilerConfig: {
+    transforms: {
+      dangerousTaggedTemplateString: true
+    },
+    objectAssign: "Object.assign"
+  },
   skipComponentsWithoutExample: true,
   pagePerSection: true,
   sections: [
