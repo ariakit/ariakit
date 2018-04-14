@@ -19,9 +19,11 @@ const Wrapper = Flex.extend`
 `;
 
 const Banner = Flex.extend`
+  padding-top: 200px;
   position: relative;
   align-items: flex-end;
   @media (max-width: 768px) {
+    padding-top: 50px;
     align-items: center;
     flex-direction: column;
   }
@@ -40,19 +42,18 @@ const BannerRight = Block.extend`
 `;
 
 const Buttons = Block.extend`
-  margin: 40px 0;
+  margin: 100px 0;
   @media (max-width: 768px) {
-    margin: 20px 0;
+    margin: 40px 0;
   }
 `;
 
 const Cards = Grid.extend`
+  padding: 80px;
+  background-color: #f6f6f6;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   grid-gap: 20px;
-  & > * {
-    background-color: red;
-  }
   @media (max-width: 768px) {
     grid-auto-flow: row;
     grid-auto-rows: 1fr;
