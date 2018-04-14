@@ -33,8 +33,8 @@
     "major": "npm version major && npm publish",
     "prepublishOnly": "npm run lint && npm test && npm run build",
     "postpublish": "git push origin master --follow-tags",
-    "docs": "styleguidist server",
-    "docs:build": "styleguidist build"
+    "website": "styleguidist server",
+    "website:build": "styleguidist build"
   },
   "jest": {
     "setupFiles": [
