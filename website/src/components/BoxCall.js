@@ -10,7 +10,6 @@ const animation = keyframes`
 
 const Text = Hidden.extend`
   position: absolute;
-  font-family: sans-serif;
   color: #999;
   animation: 1s infinite ${animation} ease-in-out;
   display: block !important;

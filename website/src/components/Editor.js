@@ -40,7 +40,7 @@ class Editor extends React.Component {
   static propTypes = {
     code: PropTypes.string.isRequired,
     readOnly: PropTypes.bool.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func
   };
 
   shouldComponentUpdate() {
@@ -48,7 +48,10 @@ class Editor extends React.Component {
   }
 
   handleChange = debounce((editor, metadata, newCode) => {
-    this.props.onChange(newCode);
+    const { onChange } = this.props;
+    if (typeof onChange === "function") {
+      onChange(newCode);
+    }
   }, 10);
 
   render() {

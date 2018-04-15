@@ -1,45 +1,41 @@
 import React from "react";
-import { Grid, Block, Button, Popover } from "reas";
+import { Block, Group, Button, Input } from "reas";
 import Editor from "./Editor";
 import Code from "./Code";
+import HomeCard from "./HomeCard";
 
 const code = `import React from "react";
-import { Button, Popover } from "reas";
+import { Group, Input, Button } from "reas";
 
 const Component = () => (
-  <Button>
-    Button
-    <Popover visible>
-      <Popover.Arrow />
-      Popover
-    </Popover>
-  </Button>
+  <Group vertical>
+    <Input placeholder="Input" />
+    <Button>Button</Button>
+  </Group>
 );`;
 
 const HomeCards = () => (
   <React.Fragment>
-    <Block>
-      <Block as="h2">Install</Block>
+    <HomeCard title="Install">
       <Block>npm</Block>
-      <Code block codeClassName="bash">
+      <Code margin="10px 0 20px" block>
         npm i reas
       </Code>
       <Block>browser</Block>
-      <Code block>{`<script src="https://unpkg.com/reas"></script>`}</Code>
-    </Block>
-    <Block>
-      <Block as="h2">Use</Block>
+      <Code
+        margin="10px 0 20px"
+        block
+      >{`<script src="https://unpkg.com/reas"></script>`}</Code>
+    </HomeCard>
+    <HomeCard title="Compose">
       <Editor readOnly code={code} />
-    </Block>
-    <Block>
-      <Button>
-        Button
-        <Popover visible>
-          <Popover.Arrow />
-          Popover
-        </Popover>
-      </Button>
-    </Block>
+    </HomeCard>
+    <HomeCard title="Render" width="100%">
+      <Group vertical>
+        <Input placeholder="Input" />
+        <Button>Button</Button>
+      </Group>
+    </HomeCard>
   </React.Fragment>
 );
 

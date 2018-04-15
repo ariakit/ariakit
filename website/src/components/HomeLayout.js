@@ -1,5 +1,6 @@
 import React from "react";
-import { Flex, Block, Grid } from "reas";
+import HeartIcon from "react-icons/lib/fa/heart";
+import { Flex, Block, Grid, Link } from "reas";
 
 const Wrapper = Flex.extend`
   flex-direction: column;
@@ -7,6 +8,7 @@ const Wrapper = Flex.extend`
   align-items: center;
   min-height: 100vh;
   padding: 80px;
+  font-family: sans-serif;
   & > * {
     max-width: 1200px;
   }
@@ -48,20 +50,41 @@ const Buttons = Block.extend`
   }
 `;
 
-const Cards = Grid.extend`
-  padding: 80px;
+const CardsWrapper = Flex.extend`
   background-color: #f6f6f6;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  grid-gap: 20px;
+  width: 100vw;
+  max-width: none;
+  justify-content: center;
+  padding: 80px 20px;
+  border: 1px solid #e0e0e0;
+  border-width: 1px 0;
   > * {
-    overflow: hidden;
+    max-width: 1200px;
   }
   @media (max-width: 768px) {
+    padding: 20px;
+  }
+`;
+
+const Cards = Grid.extend`
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  grid-gap: 40px;
+  justify-items: center;
+  > * {
+    overflow: hidden;
+    max-width: 100%;
+  }
+  @media (max-width: 1024px) {
     grid-auto-flow: row;
     padding: 20px;
     margin: 0 -20px;
   }
+`;
+
+const Credits = Block.extend`
+  text-align: center;
+  margin-top: 40px;
 `;
 
 const HomeLayout = ({ bannerLeft, bannerRight, middle, cards, ...props }) => (
@@ -71,7 +94,15 @@ const HomeLayout = ({ bannerLeft, bannerRight, middle, cards, ...props }) => (
       <BannerRight>{bannerRight}</BannerRight>
     </Banner>
     <Buttons>{middle}</Buttons>
-    <Cards>{cards}</Cards>
+    <CardsWrapper>
+      <Cards>{cards}</Cards>
+    </CardsWrapper>
+    <Credits>
+      Made with <HeartIcon /> by{" "}
+      <Link href="https://twitter.com/diegohaz" target="_blank">
+        Haz
+      </Link>
+    </Credits>
   </Wrapper>
 );
 

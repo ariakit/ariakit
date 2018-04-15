@@ -8,7 +8,6 @@ const Wrapper = Grid.extend`
   grid-auto-flow: column;
   grid-gap: 20px;
   font-size: 18px;
-  font-family: sans-serif;
 
   @media (max-width: 768px) {
     grid-auto-flow: row;
