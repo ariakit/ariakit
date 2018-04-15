@@ -23,7 +23,7 @@
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint src benchmark",
+    "lint": "eslint src benchmark website/src",
     "benchmark": "node benchmark",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
