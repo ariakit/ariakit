@@ -1,4 +1,6 @@
+import PropTypes from "prop-types";
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
@@ -16,6 +18,7 @@ const Arrow = styled(Base)`
   border-right-width: 0 !important;
   border-left-width: 0 !important;
   box-sizing: content-box;
+  transform: rotateZ(${prop("angle")}deg);
 
   &:after {
     content: "";
@@ -30,5 +33,13 @@ const Arrow = styled(Base)`
     transform: rotateZ(45deg);
   }
 `;
+
+Arrow.propTypes = {
+  angle: PropTypes.number
+};
+
+Arrow.defaultProps = {
+  angle: 0
+};
 
 export default as("div")(Arrow);

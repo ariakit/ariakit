@@ -27,13 +27,16 @@ const Wrapper = Block.extend`
 
   [class*="rsg--pre"] {
     width: 100%;
-    overflow: auto;
 
     code {
       font-size: 16px;
       @media screen and (max-width: 640px) {
         font-size: 14px;
       }
+    }
+
+    &:not([class*="preview"]) {
+      overflow: auto;
     }
   }
 `;
