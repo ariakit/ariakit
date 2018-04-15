@@ -1,8 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { Provider } from "../../../src";
-import ConfigContext from "./ConfigContext";
-import Home from "./Home";
+import { Provider } from "reas";
+import ConfigContext from "../ConfigContext";
+import Home from "../Home";
+import "./globalStyles";
 
 const App = props => (
   <Provider>

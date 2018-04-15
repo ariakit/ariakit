@@ -29,7 +29,7 @@ module.exports = {
   },
   styleguideDir: "website",
   styleguideComponents: {
-    StyleGuide: path.join(__dirname, "website/src/components/App.js")
+    StyleGuide: path.join(__dirname, "website/src/components/App")
   },
   compilerConfig: {
     transforms: {

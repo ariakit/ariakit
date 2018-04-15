@@ -80,6 +80,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-react": "^7.6.1",
+    "file-loader": "^1.1.11",
     "jest-cli": "^22.1.4",
     "jest-serializer-html": "^5.0.0",
     "opn-cli": "^3.1.0",

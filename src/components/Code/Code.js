@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { ifProp } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
@@ -19,10 +19,15 @@ const Component = props => {
 
 const Code = styled(Base)`
   background-color: rgba(0, 0, 0, 0.05);
-  padding: ${ifProp("block", "1em", "0.25em 0.35em")};
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
+  padding: ${ifProp("block", "0", "0.25em 0.35em")};
+
+  code {
+    display: block;
+    padding: 1em;
+  }
 `;
 
 Code.propTypes = {

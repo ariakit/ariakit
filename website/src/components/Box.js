@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { prop, withProp, ifProp } from "styled-tools";
 import clamp from "lodash/clamp";
-import { Box as ReasBox, Block, Button, css, keyframes } from "../../../src";
+import { Box as ReasBox, Block, Button, css, keyframes } from "reas";
 import BoxCall from "./BoxCall";
 
 const width = prop("dimensions.0");

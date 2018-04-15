@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Block, Grid } from "../../../src";
+import { Flex, Block, Grid } from "reas";
 
 const Wrapper = Flex.extend`
   flex-direction: column;
@@ -54,9 +54,13 @@ const Cards = Grid.extend`
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   grid-gap: 20px;
+  > * {
+    overflow: hidden;
+  }
   @media (max-width: 768px) {
     grid-auto-flow: row;
-    grid-auto-rows: 1fr;
+    padding: 20px;
+    margin: 0 -20px;
   }
 `;
 

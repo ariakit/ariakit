@@ -1,5 +1,5 @@
 import React from "react";
-import { Paragraph } from "../../../src";
+import { Paragraph } from "reas";
 
 const Text = Paragraph.extend`
   font-family: Georgia, serif;

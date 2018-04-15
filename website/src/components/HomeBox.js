@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/mouse-events-have-key-events */
 import React from "react";
-import Box from "./Box";
 import {
   Flex,
   Group,
@@ -10,7 +9,8 @@ import {
   Popover,
   Table,
   Hidden
-} from "../../../src";
+} from "reas";
+import Box from "./Box";
 
 const HomeBox = props => (
   <Hidden.State context="homeBox">

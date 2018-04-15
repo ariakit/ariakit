@@ -1,6 +1,6 @@
 import React from "react";
 import { ifProp } from "styled-tools";
-import { Hidden, Arrow, Perpendicular, keyframes } from "../../../src";
+import { Hidden, Arrow, Perpendicular, keyframes } from "reas";
 
 const animation = keyframes`
   0% { transform: translateY(0) }

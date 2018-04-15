@@ -1,30 +1,26 @@
 {
   "parser": "babel-eslint",
-  "extends": [
-    "airbnb",
-    "plugin:prettier/recommended",
-    "prettier/react"
-  ],
+  "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
   "env": {
     "jest": true,
     "browser": true
   },
+  "settings": {
+    "import/ignore": ["^reas"]
+  },
   "rules": {
     "jsx-a11y/accessible-emoji": "off",
+    "import/extensions": "off",
     "import/prefer-default-export": "off",
     "import/no-named-as-default": "off",
     "import/no-webpack-loader-syntax": "off",
     "import/no-extraneous-dependencies": "off",
+    "import/no-unresolved": ["error", { "ignore": ["^reas"] }],
     "react/require-default-props": "off",
     "react/default-props-match-prop-types": "off",
     "react/no-array-index-key": "off",
     "react/forbid-prop-types": "off",
     "react/jsx-filename-extension": "off",
-    "react/prop-types": [
-      "error",
-      {
-        "skipUndeclared": true
-      }
-    ]
+    "react/prop-types": ["error", { "skipUndeclared": true }]
   }
 }
