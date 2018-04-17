@@ -27,7 +27,7 @@ const HomeCards = () => (
         block
       >{`<script src="https://unpkg.com/reas"></script>`}</Code>
     </HomeCard>
-    <HomeCard title="Compose">
+    <HomeCard title="Compose" transform="rotateY(25deg)">
       <Editor readOnly code={code} />
     </HomeCard>
     <HomeCard title="Render" width="100%">

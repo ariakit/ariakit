@@ -11,7 +11,7 @@ const animation = keyframes`
 const Text = Hidden.extend`
   position: absolute;
   color: #999;
-  animation: 1s infinite ${animation} ease-in-out;
+  animation: 2s infinite ${animation} ease-in-out;
   display: block !important;
   font-size: 14px;
   opacity: 1;

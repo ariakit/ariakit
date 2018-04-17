@@ -1,20 +1,23 @@
 import React from "react";
-import { Paragraph } from "reas";
+import { Flex, Paragraph } from "reas";
 
-const Text = Paragraph.extend`
+const Wrapper = Flex.extend`
+  flex-direction: column;
+`;
+
+const Headline = Paragraph.extend`
   font-family: Georgia, serif;
-  font-size: 66px;
-  @media (max-width: 1024px) {
-    font-size: 50px;
-  }
+  font-size: 34px;
   @media (max-width: 768px) {
-    font-size: 33px;
+    font-size: 24px;
     text-align: center;
   }
 `;
 
 const HomeText = () => (
-  <Text>Minimalist components for your next React app</Text>
+  <Wrapper>
+    <Headline>Minimalist components for your next React app</Headline>
+  </Wrapper>
 );
 
 export default HomeText;

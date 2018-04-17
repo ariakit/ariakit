@@ -2,31 +2,24 @@ import React from "react";
 import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/fa/code";
 import GitHubIcon from "react-icons/lib/go/mark-github";
-import { Grid, Button } from "reas";
+import { Group, Button } from "reas";
 
-const Wrapper = Grid.extend`
-  grid-auto-flow: column;
-  grid-gap: 20px;
-  font-size: 18px;
-
-  @media (max-width: 768px) {
-    grid-auto-flow: row;
-    grid-gap: 10px;
-  }
+const IconButton = Button.extend`
+  background-color: #fdfdfd;
 `;
 
 const HomeButtons = props => (
-  <Wrapper {...props}>
-    <Button>
+  <Group fontSize={18} responsive={768} {...props}>
+    <IconButton>
       <LibraryBooksIcon />Guide
-    </Button>
-    <Button>
+    </IconButton>
+    <IconButton>
       <CodeIcon />Components
-    </Button>
-    <Button>
+    </IconButton>
+    <IconButton>
       <GitHubIcon />GitHub
-    </Button>
-  </Wrapper>
+    </IconButton>
+  </Group>
 );
 
 export default HomeButtons;
