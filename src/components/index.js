@@ -11,6 +11,7 @@ export Fit from "./Fit";
 export Flex from "./Flex";
 export Grid from "./Grid";
 export Group from "./Group";
+export Heading from "./Heading";
 export Hidden from "./Hidden";
 export Inline from "./Inline";
 export InlineBlock from "./InlineBlock";
