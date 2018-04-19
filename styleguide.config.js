@@ -7,6 +7,8 @@ const {
   url,
   file,
   css,
+  env,
+  devServer,
   sourceMaps
 } = require("webpack-blocks");
 
@@ -21,7 +23,12 @@ module.exports = {
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
       [url({ limit: 10000 })]
     ),
-    resolve({ alias: { reas: path.join(__dirname, "src") } })
+    resolve({ alias: { reas: path.join(__dirname, "src") } }),
+    env("development", [
+      devServer({
+        historyApiFallback: { index: "/" }
+      })
+    ])
   ]),
   getComponentPathLine(componentPath) {
     const name = path.basename(componentPath, ".js");

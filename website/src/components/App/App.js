@@ -1,9 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider, Block } from "reas";
 import ConfigContext from "../ConfigContext";
-import Home from "../Home";
 import "./globalStyles";
+import Home from "../Home";
+import Guide from "../Guide";
 
 const Wrapper = Block.extend`
   font-family: sans-serif;
@@ -14,7 +15,10 @@ const App = props => (
     <ConfigContext.Provider value={props.config}>
       <Wrapper>
         <Router>
-          <Route exact path="/" render={Home} />
+          <Switch>
+            <Route exact path="/" render={Home} {...props} />
+            <Route exact path="/guide" render={Guide} {...props} />
+          </Switch>
         </Router>
       </Wrapper>
     </ConfigContext.Provider>
