@@ -2,6 +2,7 @@ import React from "react";
 import { Flex } from "reas";
 import HomeBanner from "./HomeBanner";
 import HomeExample from "./HomeExample";
+import Credits from "./Credits";
 
 const Wrapper = Flex.extend`
   flex-direction: column;
@@ -14,6 +15,7 @@ const Home = () => (
   <Wrapper>
     <HomeBanner />
     <HomeExample />
+    <Credits />
   </Wrapper>
 );
 
