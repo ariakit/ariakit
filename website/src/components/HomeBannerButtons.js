@@ -11,7 +11,6 @@ const Wrapper = Grid.extend`
   grid-auto-flow: column;
   grid-auto-columns: min-content;
   grid-gap: 8px;
-  font-size: 20px;
   @media (max-width: 768px) {
     grid-auto-flow: row;
   }

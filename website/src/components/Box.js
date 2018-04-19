@@ -77,7 +77,7 @@ const Surface = ReasBox.extend`
   letter-spacing: -0.03em;
   color: #333;
   transition: 500ms transform ease-out, 300ms opacity ease-out;
-  background-color: rgba(230, 230, 230, 0.6);
+  background-color: rgba(240, 240, 240, 0.6);
   box-shadow: none !important;
   cursor: default;
   transform-origin: 0 0;

@@ -16,12 +16,14 @@ const StyledCodeMirror = styled(CodeMirror)`
     background-color: rgb(0, 0, 0, 0.05) !important;
     padding: 1em;
     height: auto;
+    max-width: 100vw;
+
     .CodeMirror-lines {
       font-size: 14px;
       font-weight: 400;
 
       .CodeMirror-line {
-        white-space: pre;
+        white-space: pre-wrap;
       }
     }
 

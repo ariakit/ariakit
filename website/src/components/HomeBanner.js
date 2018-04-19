@@ -6,7 +6,7 @@ import HomeBannerButtons from "./HomeBannerButtons";
 
 const Wrapper = Flex.extend`
   position: relative;
-  padding: 200px 80px 0px;
+  padding: 120px 80px 0px;
   justify-content: center;
   width: 100%;
 
@@ -19,7 +19,6 @@ const Content = Flex.extend`
   flex-direction: column;
   align-items: center;
   max-width: 1200px;
-  padding: 20px;
 `;
 
 const Text = Heading.extend`

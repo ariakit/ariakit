@@ -1,31 +1,33 @@
 import React from "react";
-import { Flex } from "reas";
+import { Flex, Grid } from "reas";
 import Editor from "./Editor";
 import HomeExampleUI from "./HomeExampleUI";
-import Box from "./Box";
+
+// eslint-disable-next-line
+import code from "!!raw-loader!./Example.js";
 
 const Wrapper = Flex.extend`
   width: 100%;
   justify-content: center;
-  background-color: #282b36;
+  background-color: #282a36;
   margin: 40px 0;
 `;
 
-const Content = Flex.extend`
+const Content = Grid.extend`
   max-width: 1200px;
-  height: 400px;
-`;
-
-const code = `import React from "react";
-import { Button, Popover } from "reas";
-
-const MenuButton = 
+  grid-gap: 20px;
+  grid-auto-flow: column;
+  align-items: end;
+  @media (max-width: 768px) {
+    grid-auto-flow: row;
+  }
 `;
 
 const HomeExample = props => (
   <Wrapper {...props}>
     <Content>
-      <Editor readOnly code="ol" />
+      <Editor readOnly code={code.trim()} />
+      <HomeExampleUI />
     </Content>
   </Wrapper>
 );
