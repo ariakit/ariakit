@@ -18,6 +18,7 @@ export InlineBlock from "./InlineBlock";
 export InlineFlex from "./InlineFlex";
 export Input from "./Input";
 export Label from "./Label";
+export List from "./List";
 export Paragraph from "./Paragraph";
 export Perpendicular from "./Perpendicular";
 export Popover from "./Popover";
