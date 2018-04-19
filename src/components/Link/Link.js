@@ -8,7 +8,7 @@ const Link = styled(Base)`
 
   &:hover {
     outline-width: 0;
-    text-decoration: undeline;
+    text-decoration: underline;
   }
 `;
 
