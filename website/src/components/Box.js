@@ -19,14 +19,18 @@ const clampDimensions = (dimensions, padding = 120) => {
   return [clampedW, clampedH, clampedL];
 };
 
-const hoverIfAnimate = content =>
+const openedOrHoverIfAnimate = content =>
   ifProp(
-    "animate",
-    css`
-      *:hover > & {
-        ${content};
-      }
-    `
+    "opened",
+    content,
+    ifProp(
+      "animate",
+      css`
+        *:hover > & {
+          ${content};
+        }
+      `
+    )
   );
 
 const animation = keyframes`
@@ -39,7 +43,6 @@ const animation = keyframes`
 `;
 
 const Container = Block.extend`
-  position: absolute;
   perspective-origin: 50% -50%;
   perspective: 2000px;
   width: ${width}px;
@@ -65,7 +68,7 @@ const Surface = ReasBox.extend`
   justify-content: center;
   align-items: center;
   position: absolute;
-  border-width: 0.02em;
+  border-width: 2px;
   min-width: auto;
   padding: 0;
   font-size: ${fontSize}px;
@@ -108,7 +111,7 @@ const Small = Surface.extend`
 const Front = Large.extend`
   transform: rotateY(0deg) translateZ(${length}px);
   opacity: 1;
-  ${hoverIfAnimate("opacity: 0")};
+  ${openedOrHoverIfAnimate("opacity: 0")};
 `;
 
 const contentZ = withProp(
@@ -126,7 +129,7 @@ const pqp5 = withProp("i", i => 20 * i);
 
 const Content = Large.extend`
   transform: translateZ(${contentZ}px);
-  ${hoverIfAnimate(css`
+  ${openedOrHoverIfAnimate(css`
     transform: rotateX(-${pqp5}deg) rotateZ(${pqp4}deg) translateX(${pqp3}px)
       translateY(${pqp3}px) translateZ(${contentAnimateZ}px);
     background-color: rgba(240, 240, 240, 0.9);
@@ -138,37 +141,38 @@ const Back = Large.extend``;
 const Top = Medium.extend`
   transform: rotateX(90deg);
   top: 0;
-  ${hoverIfAnimate("transform: rotateX(135deg)")};
+  ${openedOrHoverIfAnimate("transform: rotateX(135deg)")};
 `;
 
 const Bottom = Medium.extend`
   transform: rotateX(90deg);
   top: ${height}px;
-  ${hoverIfAnimate("transform: rotateX(45deg)")};
+  ${openedOrHoverIfAnimate("transform: rotateX(45deg)")};
 `;
 
 const Right = Small.extend`
   transform: rotateY(-90deg);
   left: ${width}px;
-  ${hoverIfAnimate("transform: rotateY(-45deg)")};
+  ${openedOrHoverIfAnimate("transform: rotateY(-45deg)")};
 `;
 
 const Left = Small.extend`
   transform: rotateY(-90deg);
   left: 0;
-  ${hoverIfAnimate("transform: rotateY(-135deg)")};
+  ${openedOrHoverIfAnimate("transform: rotateY(-135deg)")};
 `;
 
-const Box = ({ dimensions, children, label, animate, ...props }) => {
+const Box = ({ dimensions, children, label, animate, opened, ...props }) => {
   const childrenArray = React.Children.toArray(children);
   const surfaceProps = {
     dimensions: clampDimensions(dimensions),
-    animate
+    animate,
+    opened
   };
   return (
-    <Container {...surfaceProps} {...props}>
-      <BoxCall textAlign="center" width="100%" top={-100} />
-      <Wrapper {...surfaceProps}>
+    <Container {...surfaceProps}>
+      {animate && <BoxCall textAlign="center" width="100%" top={-100} />}
+      <Wrapper {...surfaceProps} {...props}>
         <Front {...surfaceProps}>{label}</Front>
         {childrenArray.map((child, i) => (
           <Content key={i} i={i} count={childrenArray.length} {...surfaceProps}>
@@ -189,7 +193,8 @@ Box.propTypes = {
   dimensions: PropTypes.array,
   children: PropTypes.node,
   label: PropTypes.string,
-  animate: PropTypes.bool
+  animate: PropTypes.bool,
+  opened: PropTypes.bool
 };
 
 Box.defaultProps = {

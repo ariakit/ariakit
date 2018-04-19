@@ -1,17 +1,20 @@
 import React from "react";
-import HomeBox from "./HomeBox";
-import HomeLayout from "./HomeLayout";
-import HomeButtons from "./HomeButtons";
-import HomeText from "./HomeText";
-import HomeCards from "./HomeCards";
+import { Flex } from "reas";
+import HomeBanner from "./HomeBanner";
+import HomeExample from "./HomeExample";
+
+const Wrapper = Flex.extend`
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  font-family: sans-serif;
+`;
 
 const Home = () => (
-  <HomeLayout
-    bannerLeft={<HomeBox />}
-    bannerRight={<HomeText />}
-    middle={<HomeButtons />}
-    cards={<HomeCards />}
-  />
+  <Wrapper>
+    <HomeBanner />
+    <HomeExample />
+  </Wrapper>
 );
 
 export default Home;

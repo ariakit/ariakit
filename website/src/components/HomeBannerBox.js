@@ -12,7 +12,7 @@ import {
 } from "reas";
 import Box from "./Box";
 
-const HomeBox = props => (
+const HomeBannerBox = props => (
   <Hidden.State context="homeBox">
     {({ hide }) => (
       <Box label="reas" animate onMouseOver={hide} {...props}>
@@ -51,4 +51,4 @@ const HomeBox = props => (
   </Hidden.State>
 );
 
-export default HomeBox;
+export default HomeBannerBox;
