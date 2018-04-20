@@ -16,8 +16,12 @@ const App = props => (
       <Wrapper>
         <Router>
           <Switch>
-            <Route exact path="/" render={Home} {...props} />
-            <Route exact path="/guide" render={Guide} {...props} />
+            <Route exact path="/" component={Home} />
+            <Route
+              exact
+              path="/guide"
+              render={p => <Guide {...props} {...p} />}
+            />
           </Switch>
         </Router>
       </Wrapper>
