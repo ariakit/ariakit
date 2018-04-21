@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
 import React from "react";
-import styled from "styled-components";
+import styled, { isStyledComponent } from "styled-components";
 import omit from "lodash/omit";
 import { pickHTMLProps, pickSVGProps } from "pick-react-known-prop";
 import pickCSSProps from "../utils/pickCSSProps";
@@ -50,6 +51,10 @@ const render = ({ as: t, ...props }) => {
 };
 
 const as = asComponents => WrappedComponent => {
+  const target = isStyledComponent(WrappedComponent)
+    ? WrappedComponent.target
+    : WrappedComponent;
+
   const components = [].concat(WrappedComponent, asComponents);
 
   const getComponentName = component =>
@@ -59,24 +64,40 @@ const as = asComponents => WrappedComponent => {
     .concat(asComponents)
     .map(getComponentName)})`;
 
-  const getAs = props => components.concat(props.as || [], props.nextAs || []);
+  const defineProperties = scope => {
+    scope.asComponents = asComponents;
+    scope.as = otherComponents => as(otherComponents)(scope);
 
-  let Reas = props => render({ ...omit(props, "nextAs"), as: getAs(props) });
+    // we need to use Object.defineProperty to replace styled.extend
+    Object.defineProperty(scope, "extend", {
+      value: (...args) => {
+        const Extended = styled(scope)(...args);
+        Extended.displayName = `Extended(${displayName})`;
+        return defineProperties(Extended);
+      },
+      writable: true
+    });
 
-  Reas.displayName = displayName;
+    return scope;
+  };
 
-  if (WrappedComponent.withComponent) {
-    Reas = WrappedComponent.withComponent(Reas);
-    Reas.displayName = `styled(${displayName})`;
+  if (asComponents === target.asComponents) {
+    return defineProperties(WrappedComponent);
   }
 
-  Reas.as = otherElements => as(otherElements)(Reas);
+  const getAs = props => components.concat(props.as || [], props.nextAs || []);
 
-  Object.defineProperty(Reas, "extend", {
-    value: (...args) => styled(Reas)(...args)
-  });
+  let Component = props =>
+    render({ ...omit(props, "nextAs"), as: getAs(props) });
 
-  return Reas;
+  Component.displayName = displayName;
+
+  if (isStyledComponent(WrappedComponent)) {
+    Component = WrappedComponent.withComponent(Component);
+    Component.displayName = `Styled(${displayName})`;
+  }
+
+  return defineProperties(Component);
 };
 
 export default as;

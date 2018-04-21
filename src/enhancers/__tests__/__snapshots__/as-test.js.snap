@@ -44,7 +44,7 @@ exports[`creates component 3`] = `
 
 exports[`creates component by extending another one with extend 1`] = `
 Array [
-  "styled(Derivative.as(div))",
+  "Styled(Derivative.as(div))",
   "Derivative.as(div)",
   "Derivative",
   "Base.as(span)",
@@ -55,7 +55,7 @@ Array [
 `;
 
 exports[`creates component by extending another one with extend 2`] = `
-<styled(Derivative.as(div))>
+<Styled(Derivative.as(div))>
   <Derivative.as(div)
     className="sc-bwzfXH uTxCW"
   >
@@ -104,7 +104,7 @@ exports[`creates component by extending another one with extend 2`] = `
       </Base.as(span)>
     </Derivative>
   </Derivative.as(div)>
-</styled(Derivative.as(div))>
+</Styled(Derivative.as(div))>
 `;
 
 exports[`creates component by extending another one with extend 3`] = `
@@ -118,7 +118,7 @@ exports[`creates component by extending another one with extend 3`] = `
 
 exports[`creates component by extending another one with styled 1`] = `
 Array [
-  "styled(Derivative.as(div))",
+  "Styled(Derivative.as(div))",
   "Derivative.as(div)",
   "Derivative",
   "Base.as(span)",
@@ -129,7 +129,7 @@ Array [
 `;
 
 exports[`creates component by extending another one with styled 2`] = `
-<styled(Derivative.as(div))>
+<Styled(Derivative.as(div))>
   <Derivative.as(div)
     className="as-test__Derivative-dFAIVE bDuygA"
   >
@@ -178,7 +178,7 @@ exports[`creates component by extending another one with styled 2`] = `
       </Base.as(span)>
     </Derivative>
   </Derivative.as(div)>
-</styled(Derivative.as(div))>
+</Styled(Derivative.as(div))>
 `;
 
 exports[`creates component by extending another one with styled 3`] = `
@@ -545,6 +545,48 @@ exports[`creates component with array of components 3`] = `
 
 <p id="Derivative">
 </p>
+
+`;
+
+exports[`does not create another component if asComponents are equal 1`] = `
+Array [
+  "Base.as(div)",
+  "Base",
+  "As",
+  "div",
+]
+`;
+
+exports[`does not create another component if asComponents are equal 2`] = `
+<Base.as(div)>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        "div",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          "div",
+        ]
+      }
+    >
+      <div
+        id="Base"
+      />
+    </As>
+  </Base>
+</Base.as(div)>
+`;
+
+exports[`does not create another component if asComponents are equal 3`] = `
+
+<div id="Base">
+</div>
 
 `;
 

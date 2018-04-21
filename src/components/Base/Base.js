@@ -34,4 +34,4 @@ Base.propTypes = {
   )
 };
 
-export default as("span")(Base);
+export default as("div")(Base);
