@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import as from "../../enhancers/as";
 import Box from "../Box";
@@ -10,16 +9,7 @@ const handleKeyPress = evt => {
   }
 };
 
-const Component = props => {
-  const otherProps = {
-    role: "button",
-    tabIndex: 0,
-    onKeyPress: handleKeyPress
-  };
-  return <Box {...otherProps} {...props} />;
-};
-
-const Button = styled(Component)`
+const Button = styled(Box)`
   display: inline-flex;
   position: relative;
   flex: none;
@@ -68,5 +58,11 @@ const Button = styled(Component)`
     align-content: center;
   }
 `;
+
+Button.defaultProps = {
+  role: "button",
+  tabIndex: 0,
+  onKeyPress: handleKeyPress
+};
 
 export default as("div")(Button);

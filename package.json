@@ -50,10 +50,11 @@
   ],
   "dependencies": {
     "constate": "^0.1.0",
+    "hoist-non-react-statics": "^2.5.0",
     "lodash": "^4.17.5",
     "lodash-es": "^4.17.5",
     "pick-react-known-prop": "^0.1.1",
-    "styled-components": "^3.1.6",
+    "styled-components": "^3.0.0",
     "styled-tools": "^0.5.0"
   },
   "devDependencies": {

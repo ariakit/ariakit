@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
@@ -36,6 +37,8 @@ class Component extends React.Component {
     return <Base aria-hidden={!visible} hidden={!visible} {...this.props} />;
   }
 }
+
+hoistNonReactStatics(Component, Base);
 
 const Hidden = styled(Component)`
   ${props =>

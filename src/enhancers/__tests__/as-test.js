@@ -114,6 +114,16 @@ it("creates component using as static method with array of components", () => {
   expect(wrapper.html()).toMatchSnapshot();
 });
 
+it("does not create another component if asComponents are equal", () => {
+  const Base = createComponent("div");
+  const Derivative = Base.as("div");
+  const wrapper = mount(<Derivative />);
+
+  expect(getStack(wrapper)).toMatchSnapshot();
+  expect(wrapper).toMatchSnapshot();
+  expect(wrapper.html()).toMatchSnapshot();
+});
+
 it("renders with style", () => {
   const Base = createComponent();
   const wrapper = shallow(<Base position="absolute" />);
