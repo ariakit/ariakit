@@ -21,7 +21,7 @@ module.exports = {
     match(["*.eot", "*.ttf", "*.woff", "*.woff2"], [file()]),
     match(
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
-      [url({ limit: 10000 })]
+      [url({ limit: 10000, outputPath:  })]
     ),
     resolve({ alias: { reas: path.join(__dirname, "src") } }),
     env("development", [
@@ -34,7 +34,7 @@ module.exports = {
     const name = path.basename(componentPath, ".js");
     return `import { ${name} } from 'reas'`;
   },
-  styleguideDir: "website",
+  styleguideDir: "website/public",
   styleguideComponents: {
     StyleGuide: path.join(__dirname, "website/src/components/App")
   },
