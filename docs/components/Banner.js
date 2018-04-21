@@ -1,16 +1,16 @@
 import React from "react";
-import { Block, Flex } from "../../src";
+import { styled, Block, Flex } from "../../src";
 import logo from "../../logo/logo-vertical-white.svg";
 import Intro from "./Intro";
 import GitHubButton from "./GitHubButton";
 
-const Wrapper = Flex.extend`
+const Wrapper = styled(Flex)`
   align-items: center;
   justify-content: center;
   background-color: rgb(48, 52, 60);
 `;
 
-const InnerWrapper = Flex.extend`
+const InnerWrapper = styled(Flex)`
   align-items: flex-start;
   width: 100%;
   max-width: 1200px;
@@ -31,13 +31,13 @@ const InnerWrapper = Flex.extend`
   }
 `;
 
-const Left = Flex.extend`
+const Left = styled(Flex)`
   flex-direction: column;
   flex: 0;
   align-items: center;
 `;
 
-const Logo = Block.extend`
+const Logo = styled(Block)`
   flex: 0;
   width: 150px;
   margin-bottom: 32px;

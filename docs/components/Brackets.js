@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { ifProp } from "styled-tools";
-import as, { InlineBlock } from "../../src";
+import as, { styled, InlineBlock } from "../../src";
 
-const StyledInlineBlock = InlineBlock.extend`
+const StyledInlineBlock = styled(InlineBlock)`
   font-family: "Fira Code", monospace;
   font-weight: 700;
   font-size: 20px;

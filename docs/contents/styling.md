@@ -10,23 +10,19 @@ const Box = styled(Base)`
   border-radius: 0.25em;
 `
 
-const enhance = as('div')
-
-export default enhance(Box)
+export default as('div')(Box)
 ```
 
 <br />
 
 Then, you can easily extend `Box` and apply new styles:
 ```jsx static
-import { Box } from 'reas'
+import { styled, Box } from 'reas'
 
-const MyBox = Box.extend`
+const MyBox = styled(Box)`
   background-color: palevioletred;
 `
 ```
-
-But, even if you don't use `styled`, enhancing component with `as` will transform it into a styled component, which means you can still `extend` it.
 
 Another way to style your enhanced components is by passing style props:
 ```jsx static

@@ -1,16 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
-import as, { Flex, Button, Tabs } from "../../src";
+import as, { styled, Flex, Button, Tabs } from "../../src";
 import Brackets from "./Brackets";
 
-const Bullets = Flex.extend`
+const Bullets = styled(Flex)`
   align-items: center;
   > * {
     margin: 8px;
   }
 `;
 
-const Bullet = Button.extend`
+const Bullet = styled(Button)`
   border: none;
   border-radius: 50%;
   width: 16px;
@@ -27,7 +27,7 @@ const Bullet = Button.extend`
   }
 `;
 
-const Navigation = Flex.extend`
+const Navigation = styled(Flex)`
   align-items: center;
   justify-content: center;
   margin: 32px 0;

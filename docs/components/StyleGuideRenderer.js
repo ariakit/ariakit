@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Block, Code } from "../../src";
+import { styled, Block, Code } from "../../src";
 import Banner from "./Banner";
 import Contents from "./Contents";
 import "./globalStyles";
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   font-family: sans-serif;
 
   a {

@@ -47,9 +47,9 @@ const { Button } = require('reas');
 ### A component can be [styled](#styling) by extending another component
 Using [styled-components](https://www.styled-components.com/).
 ```jsx
-const { Button } = require('reas');
+const { styled, Button } = require('reas');
 
-const StyledButton = Button.extend`
+const StyledButton = styled(Button)`
   position: relative;
   background-color: palevioletred;
   color: white;

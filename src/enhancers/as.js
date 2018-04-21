@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
-import styled, { isStyledComponent } from "styled-components";
+import { isStyledComponent } from "styled-components";
 import omit from "lodash/omit";
 import { pickHTMLProps, pickSVGProps } from "pick-react-known-prop";
 import pickCSSProps from "../utils/pickCSSProps";
@@ -67,17 +67,6 @@ const as = asComponents => WrappedComponent => {
   const defineProperties = scope => {
     scope.asComponents = asComponents;
     scope.as = otherComponents => as(otherComponents)(scope);
-
-    // we need to use Object.defineProperty to replace styled.extend
-    Object.defineProperty(scope, "extend", {
-      value: (...args) => {
-        const Extended = styled(scope)(...args);
-        Extended.displayName = `Extended(${displayName})`;
-        return defineProperties(Extended);
-      },
-      writable: true
-    });
-
     return scope;
   };
 

@@ -42,80 +42,6 @@ exports[`creates component 3`] = `
 
 `;
 
-exports[`creates component by extending another one with extend 1`] = `
-Array [
-  "Styled(Derivative.as(div))",
-  "Derivative.as(div)",
-  "Derivative",
-  "Base.as(span)",
-  "Base",
-  "As",
-  "div",
-]
-`;
-
-exports[`creates component by extending another one with extend 2`] = `
-<Styled(Derivative.as(div))>
-  <Derivative.as(div)
-    className="sc-bwzfXH uTxCW"
-  >
-    <Derivative
-      as={[Function]}
-      className="sc-bwzfXH uTxCW"
-      nextAs={
-        Array [
-          "div",
-        ]
-      }
-    >
-      <Base.as(span)
-        as={[Function]}
-        className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-        nextAs={
-          Array [
-            "div",
-          ]
-        }
-      >
-        <Base
-          as={[Function]}
-          className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-          nextAs={
-            Array [
-              "div",
-            ]
-          }
-        >
-          <As
-            className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-            id="Base"
-            nextAs={
-              Array [
-                "div",
-              ]
-            }
-          >
-            <div
-              className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-              id="Base"
-            />
-          </As>
-        </Base>
-      </Base.as(span)>
-    </Derivative>
-  </Derivative.as(div)>
-</Styled(Derivative.as(div))>
-`;
-
-exports[`creates component by extending another one with extend 3`] = `
-
-<div class="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-     id="Base"
->
-</div>
-
-`;
-
 exports[`creates component by extending another one with styled 1`] = `
 Array [
   "Styled(Derivative.as(div))",
@@ -598,7 +524,7 @@ exports[`passes down elementRef 1`] = `
 
 exports[`passes down elementRef when extended 1`] = `
 <span
-  class="sc-htpNat KtFsv"
+  class="as-test__BaseComponent-JKudl cyoGEe"
   id="Base"
 />
 `;

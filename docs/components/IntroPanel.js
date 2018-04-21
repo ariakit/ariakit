@@ -3,9 +3,9 @@ import { prop } from "styled-tools";
 import Preview from "react-styleguidist/lib/rsg-components/Preview";
 import Markdown from "react-styleguidist/lib/rsg-components/Markdown";
 import Editor from "./Editor";
-import as, { Block } from "../../src";
+import as, { styled, Block } from "../../src";
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   &&& a {
     code {
       color: #4dbcfc;
