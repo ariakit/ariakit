@@ -1,8 +1,8 @@
 import React from "react";
 import GoMarkGithub from "react-icons/lib/go/mark-github";
-import as, { Button } from "../../src";
+import as, { styled, Button } from "../../src";
 
-const Wrapper = Button.extend`
+const Wrapper = styled(Button)`
   background-color: white;
   color: #333 !important;
   &&&:hover {

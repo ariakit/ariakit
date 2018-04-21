@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import as, { Paragraph, Block, Tabs } from "../../src";
+import as, { styled, Paragraph, Block, Tabs } from "../../src";
 import IntroPanel from "./IntroPanel";
 import IntroTabs from "./IntroTabs";
 import Link from "./Link";
 
-const Headline = Paragraph.extend`
+const Headline = styled(Paragraph)`
   font-family: "Fira Code", monospace;
   font-size: 20px;
   font-style: italic;

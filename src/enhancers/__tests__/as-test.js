@@ -42,18 +42,6 @@ it("creates component by extending another one with styled", () => {
   expect(wrapper.html()).toMatchSnapshot();
 });
 
-it("creates component by extending another one with extend", () => {
-  const Base = createComponent();
-  const Derivative = Base.extend``;
-  Derivative.displayName = "Derivative";
-  const Div = as("div")(Derivative);
-  const wrapper = mount(<Div />);
-
-  expect(getStack(wrapper)).toMatchSnapshot();
-  expect(wrapper).toMatchSnapshot();
-  expect(wrapper.html()).toMatchSnapshot();
-});
-
 it("creates component passing property as", () => {
   const Base = createComponent();
   const wrapper = mount(<Base as="div" />);
@@ -173,7 +161,7 @@ it("passes down elementRef", () => {
 });
 
 it("passes down elementRef when extended", () => {
-  const BaseComponent = createComponent().extend``;
+  const BaseComponent = styled(createComponent())``;
   class Base extends React.Component {
     render() {
       return (
