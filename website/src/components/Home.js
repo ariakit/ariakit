@@ -1,10 +1,10 @@
 import React from "react";
-import { Flex } from "reas";
+import { styled, Flex } from "reas";
 import HomeBanner from "./HomeBanner";
 import HomeExample from "./HomeExample";
 import Credits from "./Credits";
 
-const Wrapper = Flex.extend`
+const Wrapper = styled(Flex)`
   flex-direction: column;
   align-items: center;
   min-height: 100vh;

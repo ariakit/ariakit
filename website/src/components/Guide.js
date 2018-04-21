@@ -1,8 +1,8 @@
 import React from "react";
-import { Flex } from "reas";
+import { styled, Flex } from "reas";
 import Menu from "./Menu";
 
-const Wrapper = Flex.extend``;
+const Wrapper = styled(Flex)``;
 
 const Guide = props => (
   <Wrapper {...props}>

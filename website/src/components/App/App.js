@@ -1,12 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { Provider, Block } from "reas";
+import { Provider, styled, Block } from "reas";
 import ConfigContext from "../ConfigContext";
 import "./globalStyles";
 import Home from "../Home";
 import Guide from "../Guide";
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   font-family: sans-serif;
 `;
 

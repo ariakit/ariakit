@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/fa/code";
 import GitHubIcon from "react-icons/lib/go/mark-github";
-import { Grid } from "reas";
+import { styled, Grid } from "reas";
 import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
 
-const Wrapper = Grid.extend`
+const Wrapper = styled(Grid)`
   grid-auto-flow: column;
   grid-auto-columns: min-content;
   grid-gap: 8px;

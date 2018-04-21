@@ -1,5 +1,5 @@
-import { Button } from "reas";
+import { styled, Button } from "reas";
 
-export default Button.extend`
+export default styled(Button)`
   background-color: transparent;
 `;

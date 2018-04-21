@@ -1,8 +1,8 @@
 import React from "react";
 import HeartIcon from "react-icons/lib/fa/heart";
-import { Block, InlineBlock, Link } from "reas";
+import { styled, Block, InlineBlock, Link } from "reas";
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   padding: 20px;
 `;
 

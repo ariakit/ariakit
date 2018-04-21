@@ -1,10 +1,10 @@
 import React from "react";
-import { Flex } from "reas";
+import { styled, Flex } from "reas";
 import Heading from "./Heading";
 import HomeBannerBox from "./HomeBannerBox";
 import HomeBannerButtons from "./HomeBannerButtons";
 
-const Wrapper = Flex.extend`
+const Wrapper = styled(Flex)`
   position: relative;
   padding: 120px 80px 0px;
   justify-content: center;
@@ -15,13 +15,13 @@ const Wrapper = Flex.extend`
   }
 `;
 
-const Content = Flex.extend`
+const Content = styled(Flex)`
   flex-direction: column;
   align-items: center;
   max-width: 1200px;
 `;
 
-const Text = Heading.extend`
+const Text = styled(Heading)`
   text-align: center;
   margin: 75px 0 40px;
   font-size: 44px;

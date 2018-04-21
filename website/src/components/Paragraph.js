@@ -1,6 +1,6 @@
-import { Paragraph } from "reas";
+import { styled, Paragraph } from "reas";
 
-export default Paragraph.extend`
+export default styled(Paragraph)`
   font-family: Georgia, serif;
   font-weight: 400;
   font-style: normal;

@@ -1,8 +1,8 @@
 import React from "react";
-import { Block, Flex, Grid } from "reas";
+import { styled, Block, Flex, Grid } from "reas";
 import Example from "./Example";
 
-const Wrapper = Flex.extend`
+const Wrapper = styled(Flex)`
   width: 400px;
   max-width: calc(100vw - 32px);
   margin: 0 16px;

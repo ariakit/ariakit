@@ -1,6 +1,6 @@
 import React from "react";
 import { ifProp } from "styled-tools";
-import { Hidden, Arrow, Perpendicular, keyframes } from "reas";
+import { styled, Hidden, Arrow, Perpendicular, keyframes } from "reas";
 
 const animation = keyframes`
   0% { transform: translateY(0) }
@@ -8,7 +8,7 @@ const animation = keyframes`
   100% { transform: translateY(0) }
 `;
 
-const Text = Hidden.extend`
+const Text = styled(Hidden)`
   position: absolute;
   color: #999;
   animation: 2s infinite ${animation} ease-in-out;

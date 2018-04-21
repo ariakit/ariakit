@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { prop, withProp, ifProp } from "styled-tools";
 import clamp from "lodash/clamp";
-import { Box as ReasBox, Block, Button, css, keyframes } from "reas";
+import { styled, Box as ReasBox, Block, Button, css, keyframes } from "reas";
 import BoxCall from "./BoxCall";
 
 const width = prop("dimensions.0");
@@ -42,14 +42,14 @@ const animation = keyframes`
   }
 `;
 
-const Container = Block.extend`
+const Container = styled(Block)`
   perspective-origin: 50% -50%;
   perspective: 2000px;
   width: ${width}px;
   height: ${height}px;
 `;
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -63,7 +63,7 @@ const Wrapper = Block.extend`
   )};
 `;
 
-const Surface = ReasBox.extend`
+const Surface = styled(ReasBox)`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -93,22 +93,22 @@ const Surface = ReasBox.extend`
   }
 `;
 
-const Large = Surface.extend`
+const Large = styled(Surface)`
   width: 100%;
   height: 100%;
 `;
 
-const Medium = Surface.extend`
+const Medium = styled(Surface)`
   width: 100%;
   height: ${length}px;
 `;
 
-const Small = Surface.extend`
+const Small = styled(Surface)`
   width: ${length}px;
   height: 100%;
 `;
 
-const Front = Large.extend`
+const Front = styled(Large)`
   transform: rotateY(0deg) translateZ(${length}px);
   opacity: 1;
   ${openedOrHoverIfAnimate("opacity: 0")};
@@ -127,7 +127,7 @@ const pqp4 = withProp("i", i => 20 * i - 5);
 
 const pqp5 = withProp("i", i => 20 * i);
 
-const Content = Large.extend`
+const Content = styled(Large)`
   transform: translateZ(${contentZ}px);
   ${openedOrHoverIfAnimate(css`
     transform: rotateX(-${pqp5}deg) rotateZ(${pqp4}deg) translateX(${pqp3}px)
@@ -136,27 +136,27 @@ const Content = Large.extend`
   `)};
 `;
 
-const Back = Large.extend``;
+const Back = styled(Large)``;
 
-const Top = Medium.extend`
+const Top = styled(Medium)`
   transform: rotateX(90deg);
   top: 0;
   ${openedOrHoverIfAnimate("transform: rotateX(135deg)")};
 `;
 
-const Bottom = Medium.extend`
+const Bottom = styled(Medium)`
   transform: rotateX(90deg);
   top: ${height}px;
   ${openedOrHoverIfAnimate("transform: rotateX(45deg)")};
 `;
 
-const Right = Small.extend`
+const Right = styled(Small)`
   transform: rotateY(-90deg);
   left: ${width}px;
   ${openedOrHoverIfAnimate("transform: rotateY(-45deg)")};
 `;
 
-const Left = Small.extend`
+const Left = styled(Small)`
   transform: rotateY(-90deg);
   left: 0;
   ${openedOrHoverIfAnimate("transform: rotateY(-135deg)")};

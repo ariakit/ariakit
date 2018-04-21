@@ -1,19 +1,19 @@
 import React from "react";
-import { Flex, Grid } from "reas";
+import { styled, Flex, Grid } from "reas";
 import Editor from "./Editor";
 import HomeExampleUI from "./HomeExampleUI";
 
 // eslint-disable-next-line
 import code from "!!raw-loader!./Example.js";
 
-const Wrapper = Flex.extend`
+const Wrapper = styled(Flex)`
   width: 100%;
   justify-content: center;
   background-color: #282a36;
   margin: 40px 0;
 `;
 
-const Content = Grid.extend`
+const Content = styled(Grid)`
   max-width: 1200px;
   grid-gap: 20px;
   grid-auto-flow: column;

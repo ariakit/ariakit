@@ -1,7 +1,7 @@
 import React from "react";
-import { Block } from "reas";
+import { styled, Block } from "reas";
 
-const Wrapper = Block.extend``;
+const Wrapper = styled(Block)``;
 
 const Menu = ({ sections, ...props }) =>
   console.log(sections) || (
