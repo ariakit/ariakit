@@ -80,7 +80,7 @@ Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark)
 | [reas (`as`)](benchmark/cases/reas-as.js) | 45,975 |
 | [antd](https://github.com/ant-design/ant-design) | 29,122 |
 | [reas (`Base`)](benchmark/cases/reas-base.js) | 17,071 |
-| [reas (`Button`)](benchmark/cases/reas-button.js) | 11,009 |
+| [reas (`Button`)](benchmark/cases/reas-button.js) | 12,107 |
 | [material-ui](https://github.com/mui-org/material-ui) | 9,840 |
 | [rebass](https://github.com/jxnblk/rebass) | 7,989 |
 
