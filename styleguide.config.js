@@ -21,7 +21,7 @@ module.exports = {
     match(["*.eot", "*.ttf", "*.woff", "*.woff2"], [file()]),
     match(
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
-      [url({ limit: 10000, outputPath:  })]
+      [url({ limit: 10000 })]
     ),
     resolve({ alias: { reas: path.join(__dirname, "src") } }),
     env("development", [
