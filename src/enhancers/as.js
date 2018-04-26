@@ -15,9 +15,8 @@ const render = ({ as: t, ...props }) => {
   const T = parseTag(t);
 
   if (Array.isArray(T)) {
-    const FirstT = T[0];
-    const nextAs = T.slice(1).filter(x => x !== As);
-    return <FirstT as={As} {...props} nextAs={nextAs} />;
+    const [First, ...others] = T.filter(x => x !== As);
+    return <First {...props} as={As} nextAs={others} />;
   }
 
   const style = pickCSSProps(props);
