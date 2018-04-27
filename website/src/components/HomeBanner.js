@@ -34,7 +34,7 @@ const HomeBanner = props => (
   <Wrapper {...props}>
     <Content>
       <HomeBannerBox />
-      <Text>Minimalist components for your next React app</Text>
+      <Text>Toolkit for building interactive UI&apos;s with React</Text>
       <HomeBannerButtons />
     </Content>
   </Wrapper>

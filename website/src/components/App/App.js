@@ -4,7 +4,7 @@ import { Provider, styled, Block } from "reas";
 import ConfigContext from "../ConfigContext";
 import "./globalStyles";
 import Home from "../Home";
-import Guide from "../Guide";
+import Sections from "../Sections";
 
 const Wrapper = styled(Block)`
   font-family: sans-serif;
@@ -17,11 +17,7 @@ const App = props => (
         <Router>
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route
-              exact
-              path="/guide"
-              render={p => <Guide {...props} {...p} />}
-            />
+            <Route path="/" render={p => <Sections {...props} {...p} />} />
           </Switch>
         </Router>
       </Wrapper>

@@ -34,6 +34,11 @@ module.exports = {
     const name = path.basename(componentPath, ".js");
     return `import { ${name} } from 'reas'`;
   },
+  template: {
+    head: {
+      raw: '<base href="/">'
+    }
+  },
   styleguideDir: "website/public",
   styleguideComponents: {
     StyleGuide: path.join(__dirname, "website/src/components/App")

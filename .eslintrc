@@ -10,6 +10,7 @@
   },
   "rules": {
     "jsx-a11y/accessible-emoji": "off",
+    "jsx-a11y/anchor-is-valid": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
     "import/no-named-as-default": "off",
