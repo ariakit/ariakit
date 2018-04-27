@@ -54,7 +54,7 @@ import { render } from "react-dom";
 import { InlineBlock, Button, Popover } from "reas";
 
 const App = () => (
-  <Popover.State>
+  <Popover.Container>
     {popover => (
       <InlineBlock relative>
         <Button as={Popover.Toggle} {...popover}>Toggle</Button>
@@ -64,7 +64,7 @@ const App = () => (
         </Popover>
       </InlineBlock>
     )}
-  </Popover.State>
+  </Popover.Container>
 );
 
 render(<App />, document.getElementById("root"));

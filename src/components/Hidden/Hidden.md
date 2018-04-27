@@ -1,6 +1,6 @@
 ```jsx
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {hidden => (
       <Flex>
         <Group>
@@ -11,7 +11,7 @@ const Example = () => (
         <Hidden {...hidden}>Hidden</Hidden>  
       </Flex>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />

@@ -4,7 +4,7 @@ const GoArrowRight = require('react-icons/lib/go/arrow-right');
 const { InlineBlock, Button, Group, Backdrop, Paragraph, Flex, Shadow } = require('reas');
 
 const Example = () => (
-  <Popover.State>
+  <Popover.Container>
     {popover => (
       <InlineBlock relative>
         <Button as={Popover.Toggle} {...popover}>Click me</Button>
@@ -25,7 +25,7 @@ const Example = () => (
         </Popover>
       </InlineBlock>
     )}
-  </Popover.State>
+  </Popover.Container>
 );
 
 <Example />

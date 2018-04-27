@@ -2,7 +2,7 @@
 const { Block, Button, Flex, Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {backdrop => (
       <Block>
         <Button as={Hidden.Show} {...backdrop}>Show</Button>
@@ -11,7 +11,7 @@ const Example = () => (
         </Flex>
       </Block>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />

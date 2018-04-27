@@ -69,20 +69,20 @@ const Example = enhance(({ as: T, ...props }) => <T {...props} />);
 <Example as="div" backgroundColor="palevioletred" color="white">Example</Example>
 ```
 
-### A component state can be handled by using [state](#state) components
-State components encapsulate the complexity behind state logic.
+### A component state can be handled by using [container](#containers) components
+Containers encapsulate the complexity behind state logic.
 ```jsx
 const { Block, Button, Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {hidden => (
       <Block>
         <Button onClick={hidden.toggle}>Toggle</Button>
         <Hidden visible={hidden.visible}>Hidden</Hidden>
       </Block>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />
@@ -94,14 +94,14 @@ Behaviors such as `Hidden.Toggle` apply event handlers automatically.
 const { Block, Button, Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {hidden => (
       <Block>
         <Button as={Hidden.Toggle} {...hidden}>Toggle</Button>
         <Hidden {...hidden}>Hidden</Hidden>
       </Block>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />

@@ -2,9 +2,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import uniqueId from "lodash/uniqueId";
-import HiddenState from "../Hidden/HiddenState";
+import HiddenContainer from "../Hidden/HiddenContainer";
 
-class PopoverState extends React.Component {
+class PopoverContainer extends React.Component {
   static propTypes = {
     initialState: PropTypes.object
   };
@@ -13,7 +13,7 @@ class PopoverState extends React.Component {
 
   render() {
     return (
-      <HiddenState
+      <HiddenContainer
         {...this.props}
         initialState={{ popoverId: this.popoverId, ...this.props.initialState }}
       />
@@ -21,4 +21,4 @@ class PopoverState extends React.Component {
   }
 }
 
-export default PopoverState;
+export default PopoverContainer;

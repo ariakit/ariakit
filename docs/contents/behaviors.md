@@ -1,4 +1,4 @@
-Finally, we have behaviors, which are basically components that apply event handlers and/or accessibility attributes into your component. Together with state components, they will help you to control the state of your application without needing to touch state logic.
+Finally, we have behaviors, which are basically components that apply event handlers and/or accessibility attributes into your component. Together with containers, they will help you to control the state of your application without needing to touch state logic.
 
 Let's take the [`Hidden`](#hidden) example, but now using a behavior component to toggle its state:
 
@@ -6,25 +6,25 @@ Let's take the [`Hidden`](#hidden) example, but now using a behavior component t
 const { Block, Button, Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {hidden => (
       <Block>
         <Button as={Hidden.Toggle} {...hidden}>Toggle</Button>
         <Hidden destroy {...hidden}>Hidden</Hidden>
       </Block>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />
 ```
 
-[`Step`](#step) is another example of a component which takes advantage from state components and behaviors:
+[`Step`](#step) is another example of a component which takes advantage from containers and behaviors:
 ```jsx { "showCode": true }
 const { Block, Group, Button, Step } = require('reas');
 
 const Example = () => (
-  <Step.State initialState={{ current: 0 }}>
+  <Step.Container initialState={{ current: 0 }}>
     {step => (
       <Block>
         <Group>
@@ -36,7 +36,7 @@ const Example = () => (
         <Step step="third" {...step}>Third</Step>
       </Block>
     )}
-  </Step.State>
+  </Step.Container>
 );
 
 <Example />

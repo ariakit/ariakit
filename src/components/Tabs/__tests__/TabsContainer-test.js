@@ -1,11 +1,11 @@
 import React from "react";
 import { mount } from "enzyme";
-import TabsState from "../TabsState";
+import TabsContainer from "../TabsContainer";
 
 const Base = () => null;
 
-const wrap = (State, props = {}) =>
-  mount(<State {...props}>{tabs => <Base tabs={tabs} />}</State>);
+const wrap = (Container, props = {}) =>
+  mount(<Container {...props}>{tabs => <Base tabs={tabs} />}</Container>);
 
 const getState = wrapper =>
   wrapper
@@ -19,10 +19,10 @@ const ensureState = wrapper => {
   expect(state).toHaveProperty("current", 0);
 };
 
-const createTests = State => {
+const createTests = Container => {
   test("state", () => {
-    ensureState(wrap(State));
+    ensureState(wrap(Container));
   });
 };
 
-describe("TabsState", () => createTests(TabsState));
+describe("TabsContainer", () => createTests(TabsContainer));

@@ -1,11 +1,11 @@
 import React from "react";
 import { mount } from "enzyme";
-import HiddenState from "../HiddenState";
+import HiddenContainer from "../HiddenContainer";
 
 const Base = () => null;
 
-const wrap = (State, props = {}) =>
-  mount(<State {...props}>{hidden => <Base hidden={hidden} />}</State>);
+const wrap = (Container, props = {}) =>
+  mount(<Container {...props}>{hidden => <Base hidden={hidden} />}</Container>);
 
 const getState = wrapper =>
   wrapper
@@ -25,28 +25,28 @@ const ensureState = wrapper => {
   expect(state).toHaveProperty("hide", expect.any(Function));
 };
 
-const createTests = State => {
+const createTests = Container => {
   test("state", () => {
-    ensureState(wrap(State));
+    ensureState(wrap(Container));
   });
 
   test("visible", () => {
-    const wrapper = wrap(State);
+    const wrapper = wrap(Container);
     expect(getState(wrapper).visible).toBe(initialState.visible);
   });
 
   test("initialState visible true", () => {
-    const wrapper = wrap(State, { initialState: { visible: true } });
+    const wrapper = wrap(Container, { initialState: { visible: true } });
     expect(getState(wrapper).visible).toBe(true);
   });
 
   test("initialState visible false", () => {
-    const wrapper = wrap(State, { initialState: { visible: false } });
+    const wrapper = wrap(Container, { initialState: { visible: false } });
     expect(getState(wrapper).visible).toBe(false);
   });
 
   test("toggle", () => {
-    const wrapper = wrap(State, { initialState: { visible: false } });
+    const wrapper = wrap(Container, { initialState: { visible: false } });
     getState(wrapper).toggle();
     expect(getState(wrapper).visible).toBe(true);
     getState(wrapper).toggle();
@@ -54,7 +54,7 @@ const createTests = State => {
   });
 
   test("show", () => {
-    const wrapper = wrap(State, { initialState: { visible: false } });
+    const wrapper = wrap(Container, { initialState: { visible: false } });
     getState(wrapper).show();
     expect(getState(wrapper).visible).toBe(true);
     getState(wrapper).show();
@@ -62,7 +62,7 @@ const createTests = State => {
   });
 
   test("hide", () => {
-    const wrapper = wrap(State, { initialState: { visible: true } });
+    const wrapper = wrap(Container, { initialState: { visible: true } });
     getState(wrapper).hide();
     expect(getState(wrapper).visible).toBe(false);
     getState(wrapper).hide();
@@ -70,4 +70,4 @@ const createTests = State => {
   });
 };
 
-describe("HiddenState", () => createTests(HiddenState));
+describe("HiddenContainer", () => createTests(HiddenContainer));
