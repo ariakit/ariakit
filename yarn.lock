@@ -2135,9 +2135,9 @@ constants-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
 
-constate@^0.1.0:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/constate/-/constate-0.1.2.tgz#6fcee0ba6eee2cfb2aab138d1fa995d2d6a20fb2"
+constate@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/constate/-/constate-0.3.0.tgz#40d2d4d313b012463d94cd9b2bb5cf5ee93c6545"
 
 contains-path@^0.1.0:
   version "0.1.0"

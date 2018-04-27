@@ -69,8 +69,8 @@ module.exports = {
           content: "docs/contents/styling.md"
         },
         {
-          name: "State",
-          content: "docs/contents/state.md"
+          name: "Containers",
+          content: "docs/contents/containers.md"
         },
         {
           name: "Behaviors",

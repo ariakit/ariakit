@@ -1,16 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
-import StepState from "../Step/StepState";
+import StepContainer from "../Step/StepContainer";
 
-const TabsState = ({ initialState, ...props }) => (
-  <StepState
+const TabsContainer = ({ initialState, ...props }) => (
+  <StepContainer
     {...props}
     initialState={{ loop: true, current: 0, ...initialState }}
   />
 );
 
-TabsState.propTypes = {
+TabsContainer.propTypes = {
   initialState: PropTypes.object
 };
 
-export default TabsState;
+export default TabsContainer;

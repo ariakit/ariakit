@@ -1,6 +1,6 @@
 import as from "./enhancers/as";
 
-export { State, Provider } from "constate";
+export { Container, Provider } from "constate";
 export styled, {
   css,
   keyframes,

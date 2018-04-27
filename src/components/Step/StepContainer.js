@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from "react";
 import PropTypes from "prop-types";
-import { State } from "constate";
+import { Container } from "constate";
 
 const getCurrentId = () => state => state.ids[state.current];
 
@@ -101,8 +101,8 @@ const update = (id, nextId, orderArg) => state => {
   return reorder(nextId, order)({ ...state, ids });
 };
 
-const StepState = ({ initialState, actions, selectors, ...props }) => (
-  <State
+const StepContainer = ({ initialState, actions, selectors, ...props }) => (
+  <Container
     {...props}
     initialState={{
       loop: false,
@@ -134,10 +134,10 @@ const StepState = ({ initialState, actions, selectors, ...props }) => (
   />
 );
 
-StepState.propTypes = {
+StepContainer.propTypes = {
   initialState: PropTypes.object,
   actions: PropTypes.object,
   selectors: PropTypes.object
 };
 
-export default StepState;
+export default StepContainer;

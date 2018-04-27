@@ -55,7 +55,7 @@ const Intro = ({ intro, ...props }) => (
         styled-components
       </Link>
     </Headline>
-    <Tabs.State>{tabs => renderTabs(intro, tabs)}</Tabs.State>
+    <Tabs.Container>{tabs => renderTabs(intro, tabs)}</Tabs.Container>
   </Block>
 );
 

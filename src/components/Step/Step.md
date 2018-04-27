@@ -21,7 +21,7 @@ const PopoverStep = props => (
 );
 
 const Steps = () => (
-  <Step.State>
+  <Step.Container>
     {step => (
       <Group>
         <PopoverStep step="Step 1" {...step} />
@@ -29,7 +29,7 @@ const Steps = () => (
         <PopoverStep step="Step 3" {...step} />
       </Group>
     )}
-  </Step.State>
+  </Step.Container>
 );
 
 <Steps />
