@@ -1,17 +1,20 @@
-/* eslint-disable react/no-unused-prop-types */
 import React from "react";
 import PropTypes from "prop-types";
 import { Container } from "constate";
 
-const toggle = () => state => ({ visible: !state.visible });
-const show = () => () => ({ visible: true });
-const hide = () => () => ({ visible: false });
+export const initialState = { visible: false };
 
-const HiddenContainer = ({ initialState, actions, ...props }) => (
+export const toggle = () => state => ({ visible: !state.visible });
+
+export const show = () => () => ({ visible: true });
+
+export const hide = () => () => ({ visible: false });
+
+const HiddenContainer = props => (
   <Container
     {...props}
-    initialState={{ visible: false, ...initialState }}
-    actions={{ toggle, show, hide, ...actions }}
+    initialState={{ ...initialState, ...props.initialState }}
+    actions={{ toggle, show, hide, ...props.actions }}
   />
 );
 

@@ -2,10 +2,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import StepContainer from "../Step/StepContainer";
 
-const TabsContainer = ({ initialState, ...props }) => (
+export const initialState = {
+  loop: true,
+  current: 0
+};
+
+// istanbul ignore next
+const TabsContainer = props => (
   <StepContainer
     {...props}
-    initialState={{ loop: true, current: 0, ...initialState }}
+    initialState={{ ...initialState, ...props.initialState }}
   />
 );
 
