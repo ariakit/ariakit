@@ -2,7 +2,7 @@ import React from "react";
 import { Step } from "../../src";
 
 const Component = () => (
-  <Step.State>
+  <Step.Container>
     {step => (
       <div>
         <Step.Previous {...step}>Previous</Step.Previous>
@@ -18,7 +18,7 @@ const Component = () => (
         </Step>
       </div>
     )}
-  </Step.State>
+  </Step.Container>
 );
 
 export default () => <Component />;

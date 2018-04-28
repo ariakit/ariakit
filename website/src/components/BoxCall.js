@@ -23,7 +23,7 @@ const Text = styled(Hidden)`
 `;
 
 const BoxCall = props => (
-  <Hidden.State initialState={{ visible: true }} context="homeBox">
+  <Hidden.Container initialState={{ visible: true }} context="homeBox">
     {hidden => (
       <Text relative {...hidden} {...props}>
         open the box
@@ -36,7 +36,7 @@ const BoxCall = props => (
         />
       </Text>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 export default BoxCall;

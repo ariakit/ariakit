@@ -13,7 +13,7 @@ import {
 import Box from "./Box";
 
 const HomeBannerBox = props => (
-  <Hidden.State context="homeBox">
+  <Hidden.Container context="homeBox">
     {({ hide }) => (
       <Box label="reas" animate onMouseOver={hide} {...props}>
         <Flex column relative>
@@ -48,7 +48,7 @@ const HomeBannerBox = props => (
         </Flex>
       </Box>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 export default HomeBannerBox;

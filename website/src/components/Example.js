@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Popover } from "reas";
 
 const Example = () => (
-  <Popover.State>
+  <Popover.Container>
     {({ toggle, visible }) => (
       <Button onClick={toggle}>
         Click me
@@ -12,7 +12,7 @@ const Example = () => (
         </Popover>
       </Button>
     )}
-  </Popover.State>
+  </Popover.Container>
 );
 
 export default Example;

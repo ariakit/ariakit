@@ -2,7 +2,7 @@
 const { Block } = require('reas');
 
 const Example = () => (
-  <Tabs.State>
+  <Tabs.Container>
     {tabs => (
       <Block>
         <Tabs>
@@ -15,7 +15,7 @@ const Example = () => (
         <Tabs.Panel tab="third" {...tabs}>Third</Tabs.Panel>
       </Block>
     )}
-  </Tabs.State>
+  </Tabs.Container>
 );
 
 <Example />
