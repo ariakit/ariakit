@@ -13,7 +13,7 @@ import {
 import Box from "./Box";
 
 const HomeBannerBox = props => (
-  <Hidden.Container context="homeBox">
+  <Hidden.Container initialState={{ visible: true }} context="homeBox">
     {({ hide }) => (
       <Box label="reas" animate onMouseOver={hide} {...props}>
         <Flex column relative>

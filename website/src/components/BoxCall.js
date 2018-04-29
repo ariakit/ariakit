@@ -23,7 +23,7 @@ const Text = styled(Hidden)`
 `;
 
 const BoxCall = props => (
-  <Hidden.Container initialState={{ visible: true }} context="homeBox">
+  <Hidden.Container context="homeBox">
     {hidden => (
       <Text relative {...hidden} {...props}>
         open the box
