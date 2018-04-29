@@ -1,19 +1,11 @@
 /* eslint-disable jsx-a11y/mouse-events-have-key-events */
 import React from "react";
-import {
-  Flex,
-  Group,
-  Button,
-  Tooltip,
-  Input,
-  Popover,
-  Table,
-  Hidden
-} from "reas";
+import { Flex, Group, Button, Tooltip, Input, Popover, Table } from "reas";
 import Box from "./Box";
+import BoxCallContainer from "../containers/BoxCallContainer";
 
 const HomeBannerBox = props => (
-  <Hidden.Container initialState={{ visible: true }} context="homeBox">
+  <BoxCallContainer>
     {({ hide }) => (
       <Box label="reas" animate onMouseOver={hide} {...props}>
         <Flex column relative>
@@ -48,7 +40,7 @@ const HomeBannerBox = props => (
         </Flex>
       </Box>
     )}
-  </Hidden.Container>
+  </BoxCallContainer>
 );
 
 export default HomeBannerBox;

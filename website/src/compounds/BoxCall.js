@@ -1,6 +1,7 @@
 import React from "react";
 import { ifProp } from "styled-tools";
 import { styled, Hidden, Arrow, Perpendicular, keyframes } from "reas";
+import BoxCallContainer from "../containers/BoxCallContainer";
 
 const animation = keyframes`
   0% { transform: translateY(0) }
@@ -23,7 +24,7 @@ const Text = styled(Hidden)`
 `;
 
 const BoxCall = props => (
-  <Hidden.Container context="homeBox">
+  <BoxCallContainer>
     {hidden => (
       <Text relative {...hidden} {...props}>
         open the box
@@ -36,7 +37,7 @@ const BoxCall = props => (
         />
       </Text>
     )}
-  </Hidden.Container>
+  </BoxCallContainer>
 );
 
 export default BoxCall;
