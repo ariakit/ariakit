@@ -17,6 +17,7 @@ const StyledCodeMirror = styled(CodeMirror)`
     padding: 1em;
     height: auto;
     max-width: 100vw;
+    margin-bottom: 20px;
 
     .CodeMirror-lines {
       font-size: 14px;
@@ -41,7 +42,7 @@ const StyledCodeMirror = styled(CodeMirror)`
 class Editor extends React.Component {
   static propTypes = {
     code: PropTypes.string.isRequired,
-    readOnly: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool,
     onChange: PropTypes.func
   };
 
