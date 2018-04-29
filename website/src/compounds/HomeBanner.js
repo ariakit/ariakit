@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Flex } from "reas";
-import Heading from "./Heading";
+import Heading from "../elements/Heading";
 import HomeBannerBox from "./HomeBannerBox";
 import HomeBannerButtons from "./HomeBannerButtons";
 

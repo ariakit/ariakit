@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider, styled, Block } from "reas";
-import ConfigContext from "../ConfigContext";
+import ConfigContext from "./containers/ConfigContext";
 import "./globalStyles";
-import Home from "../Home";
-import Sections from "../Sections";
+import Home from "./pages/Home";
+import Sections from "./pages/Sections";
 
 const Wrapper = styled(Block)`
   font-family: sans-serif;

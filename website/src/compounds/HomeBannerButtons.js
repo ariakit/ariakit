@@ -4,8 +4,8 @@ import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/fa/code";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import { styled, Grid } from "reas";
-import PrimaryButton from "./PrimaryButton";
-import SecondaryButton from "./SecondaryButton";
+import PrimaryButton from "../elements/PrimaryButton";
+import SecondaryButton from "../elements/SecondaryButton";
 
 const Wrapper = styled(Grid)`
   grid-auto-flow: column;

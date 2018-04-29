@@ -1,8 +1,8 @@
 import React from "react";
 import { styled, Flex } from "reas";
-import HomeBanner from "./HomeBanner";
-import HomeExample from "./HomeExample";
-import Credits from "./Credits";
+import HomeBanner from "../compounds/HomeBanner";
+import HomeExample from "../compounds/HomeExample";
+import Credits from "../compounds/Credits";
 
 const Wrapper = styled(Flex)`
   flex-direction: column;

@@ -41,7 +41,7 @@ module.exports = {
   },
   styleguideDir: "website/public",
   styleguideComponents: {
-    StyleGuide: path.join(__dirname, "website/src/components/App")
+    StyleGuide: path.join(__dirname, "website/src")
   },
   compilerConfig: {
     transforms: {

@@ -7,7 +7,7 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import "codemirror/mode/jsx/jsx";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
-import ConfigContext from "./ConfigContext";
+import ConfigContext from "../containers/ConfigContext";
 
 const StyledCodeMirror = styled(CodeMirror)`
   .CodeMirror {
