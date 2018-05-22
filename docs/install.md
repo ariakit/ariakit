@@ -1,9 +1,13 @@
-# Title
+# To install
 
-Hey [google](https://google.com)
+Use your favorite package manager
 
-```jsx
-const { Block } = require("reas");
+Yarn
+```sh
+yarn add reas
+```
 
-<Block>Block</Block>
+npm
+```sh
+npm install --save reas
 ```
