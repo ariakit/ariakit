@@ -12,7 +12,6 @@
 
 ```jsx
 const FaBeer = require('react-icons/lib/fa/beer');
-const { Inline } = require('reas');
 
 <Button><FaBeer />Beer</Button>
 ```
