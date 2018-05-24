@@ -9,7 +9,8 @@ By default it renders a `div` tag with basic reset styles.
   Base
 </div>
 ```
-Any additional css attributes can be added as props.
+
+Any additional css rules can be added as props.
 ```jsx
 <Base backgroundColor="palevioletred" color="white">Base</Base>
 ```
@@ -29,6 +30,6 @@ The `as` prop allows you to change the element from a `div` to any other element
 
   const Nav = () => (
     <Base as={Link} to="/" fontWeight="bold">React router link to home page</Base>
-    <Base as='a' target="_blank">External Link</Base>
+    <Base as="a" target="_blank">External Link</Base>
   )
 ```
