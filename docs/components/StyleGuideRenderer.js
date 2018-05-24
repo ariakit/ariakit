@@ -18,7 +18,7 @@ const Wrapper = styled(Block)`
     }
   }
 
-  *:not(${Code}) > code:not(${Code}) {
+  p > code:not(${Code}) {
     background-color: rgba(0, 0, 0, 0.05);
     padding: 2px 5px;
     font-family: "Fira Code", monospace;
