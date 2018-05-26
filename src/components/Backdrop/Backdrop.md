@@ -23,7 +23,7 @@ const { Button, Hidden, Backdrop } = require("reas");
 </Hidden.Container>;
 ```
 
-Rendered HTML
+Rendered HTML.
 
 ```html static
 <div>

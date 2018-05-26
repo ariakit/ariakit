@@ -8,7 +8,7 @@ Basic `div` with `display: block`.
 <Block>Displaying as block</Block>
 ```
 
-Rendered HTML
+Rendered HTML.
 
 ```html
 <div class="Block-euiAZJ tSBxN Base-gxTqDr bCPnxv">
@@ -18,7 +18,7 @@ Rendered HTML
 
 <!-- while(not done) { Prop explanation, examples } -->
 
-Basic styling via props
+Basic styling via props.
 
 ```jsx
 <Block border="2px dashed black" color="brown" textAlign="center">
