@@ -1,23 +1,23 @@
   <!-- Description -->
 
-The Backdrop is a hidden component that is shown when something happens. Backdrop by itself does nothing and renders as an uninteresting hidden `div`. It is meant to be used inside a `Hidden.Container`, with prop `as={Hidden.Hide}` on the Backdrop, and some other component with prop `as={Hidden.Show}`.
+The Backdrop is a hidden component that sits behind some other component and handles clicks (like a button). It can be used to implement a **_"click outside to close"_** functionality. Normally, Backdrops are transparent.
 
-Below, the Link shows the Backdrop when clicked.
+Backdrop by itself does nothing and renders as an uninteresting hidden `div`. Use it inside a `Hidden.Container`, with prop `as={Hidden.Hide}` on the Backdrop, and the component that triggers the Backdrop, e.g. a button, with prop `as={Hidden.Show}`. When clicked, the button will show the Backdrop (and do anything else it was programmed to do.)
+
+Below, the Button shows an opaque Backdrop when clicked.
 
   <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Link, Hidden, Backdrop } = require("reas");
+const { Button, Hidden, Backdrop } = require("reas");
 
 <Hidden.Container>
-  {backdropProps => (
+  {props => (
     <div>
-      <Link as={Hidden.Show} {...backdropProps}>
-        Clicking this will show a fullscreen Backdrop
-      </Link>
-      <Backdrop as={Hidden.Hide} {...backdropProps}>
-        {"CLICK ME TO HIDE ME"}
-      </Backdrop>
+      <Button as={Hidden.Show} {...props}>
+        Show visible Backdrop
+      </Button>
+      <Backdrop as={Hidden.Hide} {...props} />
     </div>
   )}
 </Hidden.Container>;
@@ -26,19 +26,36 @@ const { Link, Hidden, Backdrop } = require("reas");
 Rendered HTML
 
 ```html static
-  <div>
-    <button class="Base-gxTqDr bCPnxv Link-DKeTA kdtdgQ">
-      Clicking this will show a fullscreen Backdrop
-    </button>
-    <button class="Backdrop-epcaqy haJeUx Hidden-kQwNaS kWLiGv Base-gxTqDr bCPnxv" aria-hidden="true" role="button" tabindex="-1" hidden="">
-      CLICK ME TO HIDE ME
-    </button>
-  </div>
+<div>
+  <button class="Button-kDSBcD eMpnqe Box-cwadsP gAhprV Base-gxTqDr bCPnxv" role="button" tabindex="0">
+    Show visible Backdrop
+  </button>
+  <button class="Backdrop-epcaqy haJeUx Hidden-kQwNaS kWLiGv Base-gxTqDr bCPnxv" aria-hidden="true" role="button" tabindex="-1" hidden=""></button>
+</div>
 ```
 
   <!-- while(not done) { Prop explanation, examples } -->
 
-It is possible to wrap the Backdrop in another component to further style it.
+Transparent Backdrop behind a colored box.
+
+```jsx
+const { Button, Hidden, Backdrop, Block } = require("reas");
+
+<Hidden.Container>
+  {props => (
+    <div>
+      <Button as={Hidden.Show} {...props}>
+        Show box (with Backdrop)
+      </Button>
+      <Backdrop as={Hidden.Hide} {...props} backgroundColor="transparent">
+        <Block relative width='20vmin' height='20vmin' left="50%" backgroundColor="pink"/>
+      </Backdrop>
+    </div>
+  )}
+</Hidden.Container>;
+```
+
+It is possible to wrap the Backdrop in another component to restrict its effect to a certain area of the UI.
 
 ```jsx
 const { Block, Button, Flex, Hidden } = require("reas");
