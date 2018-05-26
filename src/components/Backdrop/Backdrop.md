@@ -1,10 +1,10 @@
   <!-- Description -->
 
-The Backdrop is a hidden component that sits behind some other component and handles clicks (like a button). It can be used to implement a **_"click outside to close"_** functionality. Normally, Backdrops are transparent.
+The Backdrop is a hidden component that sits behind some other component and handles clicks (like a `button`). It can be used to implement a **_"click outside to close"_** functionality. Normally, Backdrops are transparent.
 
-Backdrop by itself does nothing and renders as an uninteresting hidden `div`. Use it inside a `Hidden.Container`, with prop `as={Hidden.Hide}` on the Backdrop, and the component that triggers the Backdrop, e.g. a button, with prop `as={Hidden.Show}`. When clicked, the button will show the Backdrop (and do anything else it was programmed to do.)
+Backdrop by itself does nothing and renders as an uninteresting hidden `div`. Use it inside a `Hidden.Container`, with prop `as={Hidden.Hide}` on the Backdrop, and the component that triggers the Backdrop, e.g. a `button`, with prop `as={Hidden.Show}`. When clicked, the `button` will show the Backdrop (and do anything else it was programmed to do.)
 
-Below, the Button shows an opaque Backdrop when clicked.
+Below, the `Button` shows an opaque Backdrop when clicked.
 
   <!-- Minimal JSX to showcase component -->
 
@@ -48,7 +48,13 @@ const { Button, Hidden, Backdrop, Block } = require("reas");
         Show box (with Backdrop)
       </Button>
       <Backdrop as={Hidden.Hide} {...props} backgroundColor="transparent">
-        <Block relative width='20vmin' height='20vmin' left="50%" backgroundColor="pink"/>
+        <Block
+          relative
+          width="20vmin"
+          height="20vmin"
+          left="50%"
+          backgroundColor="pink"
+        />
       </Backdrop>
     </div>
   )}
