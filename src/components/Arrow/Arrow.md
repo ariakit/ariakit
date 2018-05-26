@@ -1,12 +1,15 @@
 <!-- Description -->
+
 An arrow made by rotating a square 45 degrees, producing an equilateral triangle. The ::after pseudo-element is used for the square.
 
-<!-- Component only JSX -->
+<!-- Minimal JSX to showcase component -->
+
 ```jsx
 <Arrow />
 ```
 
 <!-- Rendered HTML -->
+
 Rendered HTML
 
 ```html
@@ -14,6 +17,7 @@ Rendered HTML
 ```
 
 <!-- while(not done) { Prop explanation, examples } -->
+
 By default it points down, but you can use the `angle` prop to change it.
 
 ```jsx
@@ -21,11 +25,7 @@ By default it points down, but you can use the `angle` prop to change it.
 ```
 
 <!-- Cool styling example -->
+
 ```jsx
 <Arrow border="3px solid orange" color="white" angle={195} />
 ```
-
-
-
-
-

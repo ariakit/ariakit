@@ -1,8 +1,8 @@
-  <!-- Description -->
+<!-- Description -->
 
 Basic `div` with `display: block`.
 
-  <!-- Minimal JSX to showcase component -->
+<!-- Minimal JSX to showcase component -->
 
 ```jsx
 <Block>Displaying as block</Block>
@@ -16,7 +16,7 @@ Rendered HTML
 </div>
 ```
 
-  <!-- while(not done) { Prop explanation, examples } -->
+<!-- while(not done) { Prop explanation, examples } -->
 
 Basic styling via props
 
@@ -26,4 +26,4 @@ Basic styling via props
 </Block>
 ```
 
-  <!-- Cool styling example -->
+<!-- Cool styling example -->

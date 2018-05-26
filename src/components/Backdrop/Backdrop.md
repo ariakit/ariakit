@@ -1,4 +1,4 @@
-  <!-- Description -->
+<!-- Description -->
 
 The Backdrop is a hidden component that sits behind some other component and handles clicks (like a `button`). It can be used to implement a **_"click outside to close"_** functionality. Normally, Backdrops are transparent.
 
@@ -6,7 +6,7 @@ Backdrop by itself does nothing and renders as an uninteresting hidden `div`. Us
 
 Below, the `Button` shows an opaque Backdrop when clicked.
 
-  <!-- Minimal JSX to showcase component -->
+<!-- Minimal JSX to showcase component -->
 
 ```jsx
 const { Button, Hidden, Backdrop } = require("reas");
@@ -34,7 +34,7 @@ Rendered HTML
 </div>
 ```
 
-  <!-- while(not done) { Prop explanation, examples } -->
+<!-- while(not done) { Prop explanation, examples } -->
 
 Transparent Backdrop behind a colored box.
 
@@ -86,4 +86,4 @@ const Example = () => (
 <Example />;
 ```
 
-  <!-- Cool styling example -->
+<!-- Cool styling example -->
