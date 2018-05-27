@@ -1,29 +1,29 @@
 ```jsx
-const { Button } = require('reas');
+const { Button } = require("reas");
 
 <Group>
   <Button>Button</Button>
   <Button>Button</Button>
   <Button>Button</Button>
-</Group>
+</Group>;
 ```
 
 ```jsx
-const { Button } = require('reas');
+const { Button } = require("reas");
 
 <Group vertical>
   <Button>Button</Button>
   <Button>Button</Button>
   <Button>Button</Button>
-</Group>
+</Group>;
 ```
 
 ```jsx
-const { Box, Field, Label, Input, Button, Shadow } = require('reas');
+const { Box, Field, Label, Input, Button, Shadow, Flex } = require("reas");
 
 <Box relative border={0}>
   <Group vertical>
-    <Group>
+    <Group as={Flex} column>
       <Field as={Group.Item} padding={8}>
         <Label htmlFor="input">Label</Label>
         <Input id="input" placeholder="Input" />
@@ -40,5 +40,5 @@ const { Box, Field, Label, Input, Button, Shadow } = require('reas');
     <Button>Button</Button>
   </Group>
   <Shadow />
-</Box>
+</Box>;
 ```
