@@ -13,7 +13,9 @@ const Component = props => {
       </Base>
     );
   }
-  const className = `${props.className} ${props.codeClassName}`.trim();
+  const className = props.codeClassName
+    ? `${props.className} ${props.codeClassName}`.trim()
+    : `${props.className}`.trim();
   return <Base as="code" {...props} className={className} />;
 };
 
