@@ -8,14 +8,14 @@ const Flex = styled(Base)`
   display: flex;
 
   &&& {
-    ${bool("flex-direction", ["row", "column", "rowReverse", "columnReverse"])}
-    ${bool("flex-wrap", ["nowrap", "wrap", "wrapReverse"])}
-    ${value("flex-grow", "grow")}
-    ${value("flex-shrink", "shrink")}
+    ${bool("flex-direction", [
+      "row",
+      "column",
+      "rowReverse",
+      "columnReverse"
+    ])} ${bool("flex-wrap", ["nowrap", "wrap", "wrapReverse"])};
   }
 `;
-
-const valueType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
 
 Flex.propTypes = {
   row: PropTypes.bool,
@@ -24,9 +24,7 @@ Flex.propTypes = {
   columnReverse: PropTypes.bool,
   nowrap: PropTypes.bool,
   wrap: PropTypes.bool,
-  wrapReverse: PropTypes.bool,
-  grow: valueType,
-  shrink: valueType
+  wrapReverse: PropTypes.bool
 };
 
 export default as("div")(Flex);
