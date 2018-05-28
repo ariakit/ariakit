@@ -4,14 +4,14 @@ import as from "../../enhancers/as";
 import { bool } from "../../utils/styledProps";
 import Base from "../Base";
 
-const flexDirection = ["row", "column", "rowReverse", "columnReverse"];
-const flexWrap = ["nowrap", "wrap", "wrapReverse"];
+const directions = ["row", "column", "rowReverse", "columnReverse"];
+const wraps = ["nowrap", "wrap", "wrapReverse"];
 
 const Flex = styled(Base)`
   display: flex;
   &&& {
-    ${bool("flex-direction", flexDirection)};
-    ${bool("flex-wrap", flexWrap)};
+    ${bool("flex-direction", directions)};
+    ${bool("flex-wrap", wraps)};
   }
 `;
 
