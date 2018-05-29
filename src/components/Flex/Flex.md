@@ -38,7 +38,7 @@ Rendered HTML.
 </div>
 ```
 
-`rowReverse` on parent Flex and `flex={n}` on flex items.
+`rowReverse` on parent Flex and `flex` on flex items.
 
 ```jsx
 const { Box } = require("reas");
@@ -59,7 +59,7 @@ const { Box } = require("reas");
 
 <!-- Cool styling example -->
 
-Basic styling via props and columns using `flex={n}`.
+Basic styling via props to create columns.
 
 ```jsx
 const { Paragraph } = require("reas");
