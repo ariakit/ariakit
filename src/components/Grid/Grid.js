@@ -10,9 +10,9 @@ const Grid = styled(Base)`
     ${bool("grid-auto-flow", ["row", "column", "dense"])}
     ${value("grid-gap", "gap")}
     ${value("grid-template", "template")}
-    ${value("grid-template-areas", "areas")}
-    ${value("grid-template-columns", "columns")}
-    ${value("grid-template-rows", "rows")}
+    ${value("grid-template-areas", "templateAreas")}
+    ${value("grid-template-columns", "templateColumns")}
+    ${value("grid-template-rows", "templateRows")}
     ${value("grid-auto-columns", "autoColumns")}
     ${value("grid-auto-rows", "autoRows")}
   }
