@@ -19,11 +19,11 @@ const { Button } = require("reas");
 ```
 
 ```jsx
-const { Box, Field, Label, Input, Button, Shadow, Flex } = require("reas");
+const { Box, Field, Label, Input, Button, Shadow } = require("reas");
 
 <Box relative border={0}>
   <Group vertical>
-    <Group as={Flex} column>
+    <Group verticalAt={800}>
       <Field as={Group.Item} padding={8}>
         <Label htmlFor="input">Label</Label>
         <Input id="input" placeholder="Input" />
