@@ -26,9 +26,9 @@ Grid.propTypes = {
   dense: PropTypes.bool,
   gap: valueType,
   template: valueType,
-  templateAreas: valueType,
-  templateColumns: valueType,
-  templateRows: valueType,
+  areas: valueType,
+  columns: valueType,
+  rows: valueType,
   autoColumns: valueType,
   autoRows: valueType
 };
