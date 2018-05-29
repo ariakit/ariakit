@@ -48,7 +48,7 @@ const { Box, Field, Label, Input, Button, Shadow } = require("reas");
 
 <Box relative border={0}>
   <Group vertical>
-    <Group>
+    <Group verticalAt={800}>
       <Field as={Group.Item} padding={8}>
         <Label htmlFor="input">First name</Label>
         <Input id="input" placeholder="..." />
