@@ -28,10 +28,10 @@ const Example = () => (
   <Hidden.Container>
     {hidden => (
       <div>
-        <Hidden.Show as={Button} marginRight={"1em"} {...hidden}>
+        <Hidden.Show as={Button} marginRight="1em" {...hidden}>
           Show
         </Hidden.Show>
-        <Hidden.Hide as={Button} marginRight={"1em"} {...hidden}>
+        <Hidden.Hide as={Button} marginRight="1em" {...hidden}>
           Hide
         </Hidden.Hide>
         <Hidden.Toggle as={Button} {...hidden}>
@@ -79,7 +79,7 @@ const Example = () => (
           Pizza ingredients
         </Button>
         <Hidden absolute transform="translateX(100%)" {...props}>
-          <List padding={"2em"} backgroundColor="bisque">
+          <List padding="2em" backgroundColor="bisque">
             <List.Item marginBottom="2em">Cheese</List.Item>
             <List.Item marginBottom="2em">Tomatoes</List.Item>
             <List.Item>Pizza dough</List.Item>

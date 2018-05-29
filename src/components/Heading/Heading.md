@@ -2,7 +2,7 @@
 
 A component to be used for all heading weights.
 By default renders as an `<h1>` element.
-Use, e.g. `as={h2}`, to render as another heading element.
+Use, e.g. `as="h2"`, to render as another heading element.
 
 <!-- Minimal JSX to showcase component -->
 

@@ -35,8 +35,8 @@ Use handy prop `vertical` to group components vertically.
 const { Button } = require("reas");
 
 <Group vertical>
-  <Button maxWidth={"20vmin"}>Up</Button>
-  <Button maxWidth={"20vmin"}>Down</Button>
+  <Button maxWidth="20vmin">Up</Button>
+  <Button maxWidth="20vmin">Down</Button>
 </Group>;
 ```
 

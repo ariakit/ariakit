@@ -7,7 +7,7 @@ Both take props to set several grid-\* related properties.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-<Grid columns="repeat(2, 1fr)" autoRows={"auto"} gap={"3vw"}>
+<Grid columns="repeat(2, 1fr)" autoRows="auto" gap="3vw">
   <Grid.Item>
     Non proident duis cupidatat veniam ea. Lorem esse ullamco do velit voluptate
     anim eiusmod pariatur aute ullamco est. Magna incididunt elit dolor quis
@@ -45,7 +45,7 @@ Rendered HTML.
 Basic styling via props.
 
 ```jsx
-<Grid columns="1fr 1fr 15vmin" autoRows={"minmax(50px, auto)"} gap={"3vw"}>
+<Grid columns="1fr 1fr 15vmin" autoRows="minmax(50px, auto)" gap="3vw">
   <Grid.Item>
     Consequat ut pariatur nostrud qui laborum tempor adipisicing sit cillum.
     aute in pariatur. Veniam laboris ipsum velit laboris consectetur in
@@ -61,8 +61,8 @@ Basic styling via props.
   </Grid.Item>
   <Grid.Item
     backgroundColor="palevioletred"
-    fontSize={"3em"}
-    gridArea={"2/1/2/5"}
+    fontSize="3em"
+    area="2/1/2/5"
     textAlign="center"
   >
     CSS Grid
@@ -70,7 +70,7 @@ Basic styling via props.
   <Grid.Item backgroundColor="palevioletred" />
   <Grid.Item backgroundColor="palevioletred" />
   <Grid.Item backgroundColor="palevioletred" />
-  <Grid.Item gridArea={"1/2/1/3"} backgroundColor="palevioletred">
+  <Grid.Item area="1/2/1/3" backgroundColor="palevioletred">
     Veniam laboris ipsum velit.
   </Grid.Item>
 </Grid>
