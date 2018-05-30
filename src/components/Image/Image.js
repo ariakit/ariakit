@@ -3,11 +3,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { ifProp } from "styled-tools";
 import as from "../../enhancers/as";
-import Base from "../Base";
 import Block from "../Block";
 
-const Img = styled(Base)`
-  display: block;
+const Img = styled(Block)`
   max-width: 100%;
   margin-left: ${ifProp("centered", "auto", "0")};
   margin-right: ${ifProp("centered", "auto", "0")};
