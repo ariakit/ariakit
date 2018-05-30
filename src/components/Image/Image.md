@@ -3,7 +3,10 @@
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-<Image src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg" wrapped/>
+<Image
+  src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg"
+  centered
+/>
 ```
 
 Rendered HTML.
