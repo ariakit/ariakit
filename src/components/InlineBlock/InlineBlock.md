@@ -1,6 +1,6 @@
 <!-- Description -->
 
-Inline is Base with `display: inline-block`.
+InlineBlock is Base with `display: inline-block`.
 By default it renders as a `<div>`.
 
 <!-- Minimal JSX to showcase component -->
