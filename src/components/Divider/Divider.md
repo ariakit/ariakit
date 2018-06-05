@@ -24,7 +24,7 @@ Horizontal.
 
 <!-- Cool styling example -->
 
-Vertical, styled via props.
+Basic styling via props, with `vertical`.
 
 ```jsx
 const { Flex, Block } = require("reas");

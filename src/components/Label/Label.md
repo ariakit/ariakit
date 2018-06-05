@@ -1,21 +1,50 @@
+<!-- Description -->
+
+Label renders by default as a `<label>` tag with `display: inline-block`.
+
+<!-- Minimal JSX to showcase component -->
+
 ```jsx
-<Label>Label</Label>
+const { Input } = require("reas");
+
+<Label>
+  Try it<Input />
+</Label>;
 ```
 
-```jsx
-const { Input } = require('reas');
+Rendered HTML.
 
-<Label>Label <Input /></Label>
+```html
+<label class="Base-gxTqDr bCPnxv Label-bxMjsr cAGeQq">
+  Try it
+  <input class="Base-gxTqDr bCPnxv Input-hxTtdt edhqsy Box-cwadsP gAhprV" type="text">
+</label>
 ```
 
-```jsx
-const { Input } = require('reas');
+With `type="checkbox"` on the Input.
 
-<Label><Input type="checkbox" /> Label</Label>
+```jsx
+const { Input } = require("reas");
+
+<Label>
+  <Input type="checkbox" /> Option 1
+</Label>;
 ```
 
-```jsx
-const { Input } = require('reas');
+With `type="radio"` on the Input.
 
-<Label><Input type="radio" /> Label</Label>
+```jsx
+const { Input } = require("reas");
+
+<Label>
+  <Input type="radio" /> Choice 1
+</Label>;
+```
+
+Basic styling via props.
+
+```jsx
+<Label backgroundColor="#f0f0f0" fontStyle="italic">
+  <Input type="checkbox"/> Checko
+</Label>;
 ```

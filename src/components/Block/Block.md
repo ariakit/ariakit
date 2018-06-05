@@ -1,18 +1,40 @@
 <!-- Description -->
 
-Basic `div` with `display: block`.
+Block is Base with `display: block`.
+By default it renders as a `<div>`.
 
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-<Block>Displaying as block</Block>
+<div>
+  <Block
+    width="100px"
+    height="100px"
+    backgroundColor="rgb(219, 112, 147)"
+  />
+  <Block
+    width="100px"
+    height="100px"
+    backgroundColor="rgb(219, 112, 198)"
+  />
+  <Block
+    width="100px"
+    height="100px"
+    backgroundColor="rgb(205, 112, 219)"
+  />
+</div>
 ```
 
 Rendered HTML.
 
 ```html
-<div class="Block-euiAZJ tSBxN Base-gxTqDr bCPnxv">
-  Block
+<div>
+  <div class="Block-jzkjxj ffjSwg Base-gxTqDr bCPnxv" style="width: 100px; height: 100px; background-color: rgb(219, 112, 147);">
+  </div>
+  <div class="Block-jzkjxj ffjSwg Base-gxTqDr bCPnxv" style="width: 100px; height: 100px; background-color: rgb(219, 112, 198);">
+  </div>
+  <div class="Block-jzkjxj ffjSwg Base-gxTqDr bCPnxv" style="width: 100px; height: 100px; background-color: rgb(205, 112, 219);">
+  </div>
 </div>
 ```
 
