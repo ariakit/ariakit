@@ -1,6 +1,7 @@
 <!-- Description -->
 
-Button is extremely useful and versatile. It is built from Box with sane default styles to expect from a button.
+Button is built from Box with minimal default styles to support the many possible uses a button has.
+By default renders as a `<div>`.
 
 <!-- Minimal JSX to showcase component -->
 

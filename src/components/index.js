@@ -13,6 +13,7 @@ export Grid from "./Grid";
 export Group from "./Group";
 export Heading from "./Heading";
 export Hidden from "./Hidden";
+export Image from "./Image";
 export Inline from "./Inline";
 export InlineBlock from "./InlineBlock";
 export InlineFlex from "./InlineFlex";

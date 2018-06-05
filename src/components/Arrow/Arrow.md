@@ -24,6 +24,8 @@ By default it points down, but you can use the `angle` prop to change it.
 <Arrow angle={135} />
 ```
 
+Basic styling via props.
+
 <!-- Cool styling example -->
 
 ```jsx
