@@ -45,7 +45,7 @@ const createCommonPlugins = ({ es = true } = {}) => [
     include: /node_modules/,
     ignoreGlobal: true,
     namedExports: {
-      "pick-react-known-prop": ["pickSVGProps", "pickHTMLProps"],
+      "react-known-props": ["getElementProps", "getEventProps"],
       "react-is": ["isValidElementType"]
     }
   }),

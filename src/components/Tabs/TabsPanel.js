@@ -12,7 +12,7 @@ const TabsPanel = props => {
       aria-labelledby={`${tab}Tab`}
       destroy
       {...props}
-      visible={isCurrent(tab)}
+      visible={isCurrent && isCurrent(tab)}
     />
   );
 };

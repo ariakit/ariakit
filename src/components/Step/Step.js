@@ -4,6 +4,8 @@ import as from "../../enhancers/as";
 import createElementRef from "../../utils/createElementRef";
 import Hidden from "../Hidden";
 
+const noop = () => {};
+
 class Step extends React.Component {
   static propTypes = {
     step: PropTypes.string.isRequired,
@@ -15,6 +17,13 @@ class Step extends React.Component {
     order: PropTypes.number,
     onEnter: PropTypes.func,
     onExit: PropTypes.func
+  };
+
+  static defaultProps = {
+    register: noop,
+    update: noop,
+    unregister: noop,
+    indexOf: noop
   };
 
   constructor(props) {
