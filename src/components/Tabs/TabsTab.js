@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import flow from "lodash/flow";
 import styled from "styled-components";
 import as from "../../enhancers/as";
+import callAll from "../../utils/callAll";
 import createElementRef from "../../utils/createElementRef";
 import Step from "../Step";
 
@@ -59,9 +59,9 @@ class Component extends React.Component {
         tabIndex={active ? 0 : -1}
         visible
         {...this.props}
-        onClick={flow(this.show, onClick)}
-        onFocus={flow(this.show, onFocus)}
-        onKeyDown={flow(this.keyDown, onKeyDown)}
+        onClick={callAll(this.show, onClick)}
+        onFocus={callAll(this.show, onFocus)}
+        onKeyDown={callAll(this.keyDown, onKeyDown)}
         className={finalClassName}
         elementRef={createElementRef(this, "element")}
       />
@@ -108,11 +108,17 @@ TabsTab.propTypes = {
   onKeyDown: PropTypes.func
 };
 
+const noop = () => {};
+
 TabsTab.defaultProps = {
   role: "tab",
-  onClick: () => {},
-  onFocus: () => {},
-  onKeyDown: () => {}
+  register: noop,
+  update: noop,
+  unregister: noop,
+  isCurrent: noop,
+  show: noop,
+  next: noop,
+  previous: noop
 };
 
 export default as("li")(TabsTab);
