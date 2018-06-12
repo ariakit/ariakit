@@ -45,7 +45,6 @@ const createCommonPlugins = ({ es = true } = {}) => [
     include: /node_modules/,
     ignoreGlobal: true,
     namedExports: {
-      "react-known-props": ["getElementProps", "getEventProps"],
       "react-is": ["isValidElementType"]
     }
   }),
