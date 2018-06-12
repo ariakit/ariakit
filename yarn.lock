@@ -517,7 +517,7 @@ argparse@^1.0.7:
   dependencies:
     sprintf-js "~1.0.2"
 
-aria-attributes@^1.2.3:
+aria-attributes@^1.2.3, aria-attributes@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/aria-attributes/-/aria-attributes-1.3.0.tgz#f39f10913175d7074a4aad00d1d11f45b240e796"
 
@@ -2298,9 +2298,9 @@ constants-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
 
-constate@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/constate/-/constate-0.3.0.tgz#40d2d4d313b012463d94cd9b2bb5cf5ee93c6545"
+constate@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/constate/-/constate-0.6.0.tgz#568b8325f4d67a92899256e1852862240884f3d2"
 
 contains-path@^0.1.0:
   version "0.1.0"
@@ -7350,9 +7350,15 @@ react-is@^16.3.1, react-is@^16.4.0:
   version "16.4.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.0.tgz#cc9fdc855ac34d2e7d9d2eb7059bbc240d35ffcf"
 
-react-known-props@^2.0.0, react-known-props@^2.0.1:
+react-known-props@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/react-known-props/-/react-known-props-2.0.1.tgz#4fc3e9a285ff510ac758746eadf81e7a8ad9b484"
+
+react-known-props@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-known-props/-/react-known-props-2.1.0.tgz#ce03cc3e815b87616fc36be70c15cc69d69d6860"
+  dependencies:
+    aria-attributes "^1.3.0"
 
 react-reconciler@^0.7.0:
   version "0.7.0"

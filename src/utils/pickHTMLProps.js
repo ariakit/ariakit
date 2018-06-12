@@ -3,12 +3,11 @@ import { getElementProps, getEventProps } from "react-known-props";
 const pickHTMLProps = (tagName, props) => {
   const allowedProps = [
     ...getElementProps(tagName, { legacy: true }),
-    ...getEventProps(),
-    "role"
+    ...getEventProps()
   ];
 
   const testProp = prop =>
-    allowedProps.indexOf(prop) >= 0 || /^(data-|aria-).+/.test(prop);
+    allowedProps.indexOf(prop) >= 0 || /^data-.+/.test(prop);
 
   return Object.keys(props).reduce(
     (finalProps, key) => ({

@@ -50,11 +50,11 @@
     "reas"
   ],
   "dependencies": {
-    "constate": "^0.3.0",
+    "constate": "^0.6.0",
     "hoist-non-react-statics": "^2.5.0",
     "lodash": "^4.17.5",
     "lodash-es": "^4.17.5",
-    "react-known-props": "^2.0.1",
+    "react-known-props": "^2.1.0",
     "styled-components": "^3.0.0",
     "styled-tools": "^0.5.0",
     "svg-attributes": "^1.0.0"
