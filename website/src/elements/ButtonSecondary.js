@@ -1,5 +1,4 @@
-import { styled } from "reakit";
-import Button from "./Button";
+import { styled, Button } from "reakit";
 
 const ButtonSecondary = styled(Button)`
   background-color: transparent;

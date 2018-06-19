@@ -1,6 +1,5 @@
-import { styled } from "reakit";
+import { styled, Button } from "reakit";
 import { prop } from "styled-tools";
-import Button from "./Button";
 
 const ButtonPrimary = styled(Button)`
   background-color: ${prop("theme.pinkDark")};

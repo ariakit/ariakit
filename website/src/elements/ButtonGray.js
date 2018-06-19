@@ -1,5 +1,4 @@
-import { styled } from "reakit";
-import Button from "./Button";
+import { styled, Button } from "reakit";
 
 const ButtonGray = styled(Button)`
   background-color: #eee;

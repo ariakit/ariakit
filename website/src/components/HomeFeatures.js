@@ -1,8 +1,6 @@
 import React from "react";
-import { as, styled, Grid, Paragraph } from "reakit";
+import { as, styled, Grid, Paragraph, Heading, Link } from "reakit";
 import ContentWrapper from "../elements/ContentWrapper";
-import Heading from "../elements/Heading";
-import Link2 from "../elements/Link";
 
 const Wrapper = styled(ContentWrapper)`
   display: grid;
@@ -46,12 +44,12 @@ const HomeFeatures = props => (
       <Title>Reliable</Title>
       <Paragraph>
         All components are in accordance with the{" "}
-        <Link2
+        <Link
           href="https://medium.freecodecamp.org/introducing-the-single-element-pattern-dfbd2c295c5d"
           target="_blank"
         >
           Single Element Pattern
-        </Link2>, which makes them resemble native HTML elements as most as
+        </Link>, which makes them resemble native HTML elements as most as
         possible.
       </Paragraph>
     </Feature>

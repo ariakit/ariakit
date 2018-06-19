@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Flex, Grid } from "reakit";
+import { styled, Flex, Grid, Link } from "reakit";
 import { prop } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
@@ -7,7 +7,6 @@ import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import ContentWrapper from "../elements/ContentWrapper";
 import ViewportContainer from "../containers/ViewportContainer";
-import Link from "../elements/Link";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "../elements/Icon";

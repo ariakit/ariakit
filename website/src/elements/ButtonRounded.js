@@ -1,5 +1,4 @@
-import { styled } from "reakit";
-import Button from "./Button";
+import { styled, Button } from "reakit";
 
 const ButtonRounded = styled(Button)`
   border-radius: 1.25em;

@@ -1,11 +1,10 @@
 import React from "react";
-import { styled, Grid } from "reakit";
+import { styled, Grid, Heading } from "reakit";
 import { Link } from "react-router-dom";
 import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/go/code";
 import ButtonPrimary from "../elements/ButtonPrimary";
 import ButtonSecondary from "../elements/ButtonSecondary";
-import Heading from "../elements/Heading";
 import LogoSymbol from "../elements/LogoSymbol";
 import ContentWrapper from "../elements/ContentWrapper";
 import ButtonRounded from "../elements/ButtonRounded";
