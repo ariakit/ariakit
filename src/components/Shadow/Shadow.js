@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { withProp } from "styled-tools";
+import { withProp, prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Fit from "../Fit";
 
@@ -11,6 +11,7 @@ const Shadow = styled(Fit)`
     "depth",
     d => `0 ${d * 2}px ${d * 4}px rgba(0, 0, 0, 0.2)`
   )};
+  ${prop("theme.Shadow")};
 `;
 
 Shadow.propTypes = {

@@ -1,31 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import createElementRef from "../../utils/createElementRef";
 import Hidden from "../Hidden";
 
 const noop = () => {};
 
-class Step extends React.Component {
-  static propTypes = {
-    step: PropTypes.string.isRequired,
-    current: PropTypes.number.isRequired,
-    register: PropTypes.func.isRequired,
-    update: PropTypes.func.isRequired,
-    unregister: PropTypes.func.isRequired,
-    indexOf: PropTypes.func.isRequired,
-    order: PropTypes.number,
-    onEnter: PropTypes.func,
-    onExit: PropTypes.func
-  };
-
-  static defaultProps = {
-    register: noop,
-    update: noop,
-    unregister: noop,
-    indexOf: noop
-  };
-
+class Component extends React.Component {
   constructor(props) {
     super(props);
     const { register, step, order } = this.props;
@@ -87,5 +70,28 @@ class Step extends React.Component {
     );
   }
 }
+
+const Step = styled(Component)`
+  ${prop("theme.Step")};
+`;
+
+Step.propTypes = {
+  step: PropTypes.string.isRequired,
+  current: PropTypes.number.isRequired,
+  register: PropTypes.func.isRequired,
+  update: PropTypes.func.isRequired,
+  unregister: PropTypes.func.isRequired,
+  indexOf: PropTypes.func.isRequired,
+  order: PropTypes.number,
+  onEnter: PropTypes.func,
+  onExit: PropTypes.func
+};
+
+Step.defaultProps = {
+  register: noop,
+  update: noop,
+  unregister: noop,
+  indexOf: noop
+};
 
 export default as("div")(Step);

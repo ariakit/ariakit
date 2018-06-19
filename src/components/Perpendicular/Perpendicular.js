@@ -47,6 +47,8 @@ const Perpendicular = styled(Base)`
     end: css`
       ${perpendicularOpposite}: 0;`
   })};
+
+  ${prop("theme.Perpendicular")};
 `;
 
 Perpendicular.propTypes = {

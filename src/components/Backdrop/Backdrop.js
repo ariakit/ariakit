@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Hidden from "../Hidden";
 
@@ -10,6 +11,7 @@ const Backdrop = styled(Hidden)`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 998;
+  ${prop("theme.Backdrop")};
 `;
 
 Backdrop.defaultProps = {

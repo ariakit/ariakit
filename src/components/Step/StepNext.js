@@ -1,16 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 import callAll from "../../utils/callAll";
 
-const StepNext = ({ onClick, ...props }) => (
+const Component = ({ onClick, ...props }) => (
   <Base
     onClick={callAll(props.next, onClick)}
     disabled={!props.loop && props.hasNext && !props.hasNext()}
     {...props}
   />
 );
+
+const StepNext = styled(Component)`
+  ${prop("theme.StepNext")};
+`;
 
 StepNext.propTypes = {
   next: PropTypes.func.isRequired,

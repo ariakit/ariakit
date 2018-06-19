@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Perpendicular from "../Perpendicular";
 import Arrow from "../Arrow";
@@ -10,6 +11,7 @@ const TooltipArrow = styled(PerpendicularArrow)`
   color: rgba(0, 0, 0, 0.85);
   border: inherit;
   font-size: 1.1764705882em;
+  ${prop("theme.TooltipArrow")};
 `;
 
 TooltipArrow.defaultProps = {

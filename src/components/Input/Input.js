@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Box from "../Box";
 
@@ -23,6 +24,8 @@ const Input = styled(Box)`
     height: auto;
     padding: 0;
   }
+
+  ${prop("theme.Input")};
 `;
 
 Input.defaultProps = {
