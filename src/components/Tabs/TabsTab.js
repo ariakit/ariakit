@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import callAll from "../../utils/callAll";
 import createElementRef from "../../utils/createElementRef";
@@ -90,6 +91,7 @@ const TabsTab = styled(Component)`
   &[disabled] {
     pointer-events: none;
   }
+  ${prop("theme.TabsTab")};
 `;
 
 TabsTab.propTypes = {

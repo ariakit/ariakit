@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Hidden from "../Hidden";
 import Perpendicular from "../Perpendicular";
@@ -20,6 +21,7 @@ const Popover = styled(Component)`
   padding: 1em;
   z-index: 999;
   outline: 0;
+  ${prop("theme.Popover")};
 `;
 
 Popover.propTypes = {

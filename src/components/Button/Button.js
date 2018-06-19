@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Box from "../Box";
 
@@ -57,6 +58,7 @@ const Button = styled(Box)`
     grid-auto-flow: column;
     align-content: center;
   }
+  ${prop("theme.Button")};
 `;
 
 Button.defaultProps = {
