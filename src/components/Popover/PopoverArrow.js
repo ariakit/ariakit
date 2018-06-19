@@ -10,7 +10,7 @@ const PopoverArrow = styled(PerpendicularArrowBox)`
   color: white;
   border: inherit;
   border-top: 0;
-  font-size: 24px;
+  font-size: 1.5em;
 `;
 
 PopoverArrow.defaultProps = {

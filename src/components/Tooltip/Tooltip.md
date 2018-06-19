@@ -1,5 +1,5 @@
 ```jsx
-const { Button } = require('reas');
+const { Button } = require('reakit');
 
 <Button>
   Hover me
@@ -8,7 +8,7 @@ const { Button } = require('reas');
 ```
 
 ```jsx
-const { Button } = require('reas');
+const { Button } = require('reakit');
 
 <Button>
   Hover me
@@ -17,7 +17,7 @@ const { Button } = require('reas');
 ```
 
 ```jsx
-const { Button } = require('reas');
+const { Button } = require('reakit');
 
 <Button margin={32}>
   Hover me
@@ -29,7 +29,7 @@ const { Button } = require('reas');
 ```
 
 ```jsx
-const { Button } = require('reas');
+const { Button } = require('reakit');
 
 <Button>
   Hover me

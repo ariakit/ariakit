@@ -7,11 +7,13 @@ const {
   url,
   file,
   css,
+  env,
+  devServer,
   sourceMaps
 } = require("webpack-blocks");
 
 module.exports = {
-  title: "reas - React as Anything",
+  title: "ReaKit",
   webpackConfig: createConfig([
     sourceMaps(),
     babel(),
@@ -21,66 +23,79 @@ module.exports = {
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
       [url({ limit: 10000 })]
     ),
-    resolve({ alias: { reas: path.join(__dirname, "src") } })
+    resolve({ alias: { reakit: path.join(__dirname, "src") } }),
+    env("development", [
+      devServer({
+        historyApiFallback: { index: "/" }
+      })
+    ])
   ]),
   getComponentPathLine(componentPath) {
     const name = path.basename(componentPath, ".js");
-    return `import { ${name} } from 'reas'`;
+    return `import { ${name} } from 'reakit'`;
   },
-  styleguideDir: "docs",
-  template: "docs/template.html",
+  logger: {
+    warn: () => {}
+  },
+  template: {
+    head: {
+      raw: '<base href="/">',
+      links: [
+        {
+          rel: "stylesheet",
+          href:
+            "https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700"
+        }
+      ]
+    },
+    favicon: "/icon.png"
+  },
+  assetsDir: "website/public",
+  styleguideDir: "website/public",
   styleguideComponents: {
-    StyleGuideRenderer: path.join(
-      __dirname,
-      "docs/components/StyleGuideRenderer.js"
-    ),
-    ToolbarButton: path.join(__dirname, "docs/components/ToolbarButton.js"),
-    Editor: path.join(__dirname, "docs/components/Editor.js")
+    StyleGuide: path.join(__dirname, "website/src")
   },
-  skipComponentsWithoutExample: true,
   compilerConfig: {
     transforms: {
       dangerousTaggedTemplateString: true
     },
     objectAssign: "Object.assign"
   },
+  skipComponentsWithoutExample: true,
+  pagePerSection: true,
   sections: [
-    {
-      name: "Introduction",
-      content: "docs/contents/intro.md"
-    },
     {
       name: "Guide",
       sections: [
         {
-          name: "Installation",
-          content: "docs/contents/installation.md"
+          name: "Install",
+          content: "docs/install.md"
         },
         {
           name: "Create React App",
-          content: "docs/contents/create-react-app.md"
+          content: "docs/create-react-app.md"
         },
         {
-          name: "as",
-          content: "docs/contents/as.md"
+          name: "{as}",
+          content: "docs/as.md"
         },
         {
           name: "Styling",
-          content: "docs/contents/styling.md"
+          content: "docs/styling.md"
         },
         {
-          name: "Containers",
-          content: "docs/contents/containers.md"
+          name: "State Containers",
+          content: "docs/state-containers.md"
         },
         {
           name: "Behaviors",
-          content: "docs/contents/behaviors.md"
+          content: "docs/behaviors.md"
         }
       ]
     },
     {
       name: "Components",
-      components: "src/components/**/[A-Z]*.js"
+      components: "src/components/**/*.js"
     }
   ]
 };

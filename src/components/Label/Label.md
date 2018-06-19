@@ -5,7 +5,7 @@ Label renders by default as a `<label>` tag with `display: inline-block`.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Input } = require("reas");
+const { Input } = require("reakit");
 
 <Label>
   Try it<Input />
@@ -24,7 +24,7 @@ Rendered HTML.
 With `type="checkbox"` on the Input.
 
 ```jsx
-const { Input } = require("reas");
+const { Input } = require("reakit");
 
 <Label>
   <Input type="checkbox" /> Option 1
@@ -34,7 +34,7 @@ const { Input } = require("reas");
 With `type="radio"` on the Input.
 
 ```jsx
-const { Input } = require("reas");
+const { Input } = require("reakit");
 
 <Label>
   <Input type="radio" /> Choice 1

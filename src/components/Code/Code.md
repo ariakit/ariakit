@@ -18,7 +18,7 @@ Rendered HTML.
 Inline Code inside a Paragraph.
 
 ```jsx
-const { Paragraph } = require("reas");
+const { Paragraph } = require("reakit");
 <Paragraph>
   <Code>let foo = "bar"</Code> will define foo as a block-scoped variable.
 </Paragraph>;

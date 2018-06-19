@@ -27,12 +27,12 @@ Here we use `as="a"` to render the Button as an `<a>`, and give it an `href` poi
 __*Clicking will open a tab!*__
 
 ```jsx
-<Button as="a" href="https://reas.js.org" target="_Blank">
+<Button as="a" href="https://github.com/reakit/reakit" target="_Blank">
   Go to Website
 </Button>
 ```
 
-An example of integrating `react-icons` into `reas`.
+An example of integrating `react-icons` into ReaKit.
 
 ```jsx
 const FaBeer = require("react-icons/lib/fa/beer");
@@ -50,10 +50,10 @@ Here the `as` is set to `select`, making an `<option>` pop up.
 </Button>
 ```
 
-How to use `reas`'s Shadow with Button.
+How to use ReaKit's Shadow with Button.
 
 ```jsx
-const { Shadow } = require("reas");
+const { Shadow } = require("reakit");
 
 <Button>
   Button <Shadow />

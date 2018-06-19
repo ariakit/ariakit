@@ -27,7 +27,7 @@ Horizontal.
 Basic styling via props, with `vertical`.
 
 ```jsx
-const { Flex, Block } = require("reas");
+const { Flex, Block } = require("reakit");
 
 <Flex
   backgroundColor="rgb(85.9%, 54.3%, 30.3%)"

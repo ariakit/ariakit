@@ -35,7 +35,7 @@ The `depth` prop customizes the shadow depth.
 Basic styling via props.
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Flex
   justifyContent="space-around"

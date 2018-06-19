@@ -1,5 +1,5 @@
 ```jsx
-const { InlineBlock, Button, Group, Popover, Flex, Paragraph } = require('reas');
+const { InlineBlock, Button, Group, Popover, Flex, Paragraph } = require('reakit');
 
 const PopoverStep = props => (
   <InlineBlock relative>

@@ -6,7 +6,7 @@ Specially things that come in pairs, like `<label>` and `<input>`.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Label, Input } = require("reas");
+const { Label, Input } = require("reakit");
 
 <Field>
   <Label htmlFor="input1">Username</Label>
@@ -31,7 +31,7 @@ Rendered HTML.
 Field wrapping a Group.
 
 ```jsx
-const { Label, Group, Button, Input } = require("reas");
+const { Label, Group, Button, Input } = require("reakit");
 
 <Field>
   <Label htmlFor="input2">Organize</Label>
@@ -46,7 +46,7 @@ const { Label, Group, Button, Input } = require("reas");
 Field `as="Box"`, styled via props.
 
 ```jsx
-const { Box, Label, Input } = require("reas");
+const { Box, Label, Input } = require("reakit");
 
 <Field as={Box} padding={8} backgroundColor="rgb(49.9%, 72.5%, 44.9%)">
   <Label htmlFor="input3">How do you feel looking at green?</Label>

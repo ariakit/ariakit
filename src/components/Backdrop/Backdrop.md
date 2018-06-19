@@ -9,7 +9,7 @@ Below, the `Button` shows an opaque Backdrop when clicked.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Button, Hidden, Backdrop } = require("reas");
+const { Button, Hidden, Backdrop } = require("reakit");
 
 <Hidden.Container>
   {props => (
@@ -39,7 +39,7 @@ Rendered HTML.
 Transparent Backdrop behind a colored box.
 
 ```jsx
-const { Button, Hidden, Backdrop, Block } = require("reas");
+const { Button, Hidden, Backdrop, Block } = require("reakit");
 
 <Hidden.Container>
   {props => (
@@ -64,7 +64,7 @@ const { Button, Hidden, Backdrop, Block } = require("reas");
 It is possible to wrap the Backdrop in another component to restrict its effect to a certain area of the UI.
 
 ```jsx
-const { Block, Button, Flex, Hidden } = require("reas");
+const { Block, Button, Flex, Hidden } = require("reakit");
 
 const Example = () => (
   <Hidden.Container>

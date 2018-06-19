@@ -8,7 +8,7 @@ By default Perpendicular renders as a `<div>`.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block
   relative
@@ -34,7 +34,7 @@ Rendered HTML.
 Use the `pos` prop to position the perpendicular.
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block
   relative
@@ -48,7 +48,7 @@ const { Block } = require("reas");
 ```
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block
   relative
@@ -64,7 +64,7 @@ const { Block } = require("reas");
 Use the `align` prop to fine tune the position.
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block overflow="auto">
   <Block
@@ -90,7 +90,7 @@ const { Block } = require("reas");
 All combinations of `pos` and `align`.
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block overflow="auto">
   <Block
@@ -143,7 +143,7 @@ const { Block } = require("reas");
 Perpendicular doesn't rotate itself to keep text readable, but the `rotate` prop allows it.
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block overflow="auto">
   <Block
@@ -196,7 +196,7 @@ const { Block } = require("reas");
 Basic styling via props.
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block overflow="auto">
   <InlineBlock relative margin={60}>

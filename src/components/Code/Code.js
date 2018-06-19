@@ -21,10 +21,15 @@ const Component = props => {
 
 const Code = styled(Base)`
   background-color: rgba(0, 0, 0, 0.05);
-  padding: ${ifProp("block", "1em", "0.25em 0.35em")};
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
+  padding: ${ifProp("block", "0", "0.25em 0.35em")};
+
+  code {
+    display: block;
+    padding: 1em;
+  }
 `;
 
 Code.propTypes = {

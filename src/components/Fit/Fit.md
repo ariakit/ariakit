@@ -8,7 +8,7 @@ Parent below is a 50px square Block.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block relative width={50} height={50}>
   <Fit backgroundColor="#f4f4f4" />
@@ -28,7 +28,7 @@ Basic styling via props.
 <!-- while(not done) { Prop explanation, examples } -->
 
 ```jsx
-const { Block } = require("reas");
+const { Block } = require("reakit");
 
 <Block relative width={50} height={50} border="2px solid palevioletred">
   <Fit

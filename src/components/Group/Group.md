@@ -6,7 +6,7 @@ It **doesn't** add borders, only adjusts `border-radius` of its children.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Button } = require("reas");
+const { Button } = require("reakit");
 
 <Group>
   <Button>Ok</Button>
@@ -32,7 +32,7 @@ Rendered HTML.
 Use handy prop `vertical` to group components vertically.
 
 ```jsx
-const { Button } = require("reas");
+const { Button } = require("reakit");
 
 <Group vertical>
   <Button maxWidth="20vmin">Up</Button>
@@ -44,7 +44,7 @@ Nesting Group components.
 Group applies styling to its direct children, but in case the component isn't a direct child, use `as={Group.Item}`.
 
 ```jsx
-const { Box, Field, Label, Input, Button, Shadow } = require("reas");
+const { Box, Field, Label, Input, Button, Shadow } = require("reakit");
 
 <Box relative border={0}>
   <Group vertical>

@@ -7,7 +7,7 @@ Several flex properties can be passed directly as props for convenience.
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-const { Paragraph } = require("reas");
+const { Paragraph } = require("reakit");
 
 <Flex>
   <Paragraph marginRight="1em">
@@ -41,7 +41,7 @@ Rendered HTML.
 `rowReverse` on parent Flex and `flex` on flex items.
 
 ```jsx
-const { Box } = require("reas");
+const { Box } = require("reakit");
 
 <Flex rowReverse>
   <Box flex={1} height="50px">
@@ -62,7 +62,7 @@ const { Box } = require("reas");
 Basic styling via props to create columns.
 
 ```jsx
-const { Paragraph } = require("reas");
+const { Paragraph } = require("reakit");
 
 <Flex>
   <Paragraph flex={2} marginRight="1em" backgroundColor="#eee" color="#666">

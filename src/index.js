@@ -1,6 +1,7 @@
 import as from "./enhancers/as";
 
-export { Container, Provider } from "constate";
+export { Container, Provider, Consumer } from "constate";
+
 export styled, {
   css,
   keyframes,
@@ -12,7 +13,9 @@ export styled, {
   ServerStyleSheet,
   StyleSheetManager
 } from "styled-components";
+
 export * from "./components";
 
 export { as };
+
 export default as;

@@ -40,12 +40,16 @@ const Perpendicular = styled(Base)`
 
   ${switchProp("align", {
     start: css`
-      ${perpendicular}: 0;`,
+      ${perpendicular}: 0;
+    `,
     center: css`
       ${perpendicular}: 50%;
-      transform: translate${perpendicularAxis}(-50%) ${rotation};`,
+      // prettier-ignore
+      transform: translate${perpendicularAxis}(-50%) ${rotation};
+    `,
     end: css`
-      ${perpendicularOpposite}: 0;`
+      ${perpendicularOpposite}: 0;
+    `
   })};
 `;
 

@@ -42,7 +42,7 @@ Add a Popover.Arrow child to Popover to make it render an arrow.
 Popover.Container and Popover.toggle can be composed together to make a toggleable UI.
 
 ```jsx
-const { Block, Popover } = require("reas");
+const { Block, Popover } = require("reakit");
 
 <Popover.Container>
   {popover => (
@@ -62,7 +62,7 @@ const { Block, Popover } = require("reas");
 Adding a Backdrop allows the Popover to hide if the user clicks outside.
 
 ```jsx
-const { Block, Popover } = require("reas");
+const { Block, Popover } = require("reakit");
 
 <Popover.Container>
   {popover => (
@@ -93,7 +93,7 @@ const {
   Paragraph,
   Flex,
   Shadow
-} = require("reas");
+} = require("reakit");
 
 const Example = () => (
   <Popover.Container>

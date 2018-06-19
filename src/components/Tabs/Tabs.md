@@ -1,5 +1,5 @@
 ```jsx
-const { Block } = require('reas');
+const { Block } = require('reakit');
 
 const Example = () => (
   <Tabs.Container>
