@@ -30,3 +30,19 @@ Another way to style your enhanced components is by passing style props:
 ```
 
 `absolute` is a shorthand for `position="absolute"`. Those styles will be converted into `style={{ ... }}` and applied as inline styles.
+
+Finally, you can pass a theme object to `ThemeProvider` and style ReaKit elements directly:
+
+```jsx
+const { ThemeProvider, Button } = require("reakit");
+
+const theme = {
+  Button: `
+    color: red;
+  `
+};
+
+<ThemeProvider theme={theme}>
+  <Button>Button</Button>
+</ThemeProvider>
+```

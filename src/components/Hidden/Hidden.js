@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
+import { prop } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import as from "../../enhancers/as";
 import Base from "../Base";
@@ -46,6 +47,7 @@ const Hidden = styled(Component)`
     css`
       display: none !important;
     `};
+  ${prop("theme.Hidden")};
 `;
 
 Hidden.propTypes = {

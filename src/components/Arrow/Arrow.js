@@ -32,6 +32,8 @@ const Arrow = styled(Base)`
     height: calc(100% / ${SQRT2});
     transform: rotateZ(45deg);
   }
+
+  ${prop("theme.Arrow")};
 `;
 
 Arrow.propTypes = {

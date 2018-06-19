@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { ifProp } from "styled-tools";
+import { ifProp, prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
@@ -30,6 +30,8 @@ const Code = styled(Base)`
     display: block;
     padding: 1em;
   }
+
+  ${prop("theme.Code")};
 `;
 
 Code.propTypes = {
