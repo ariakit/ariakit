@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled, { css } from "styled-components";
-import { prop } from "styled-tools";
+import styled from "styled-components";
+import { prop, ifNotProp, switchProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import as from "../../enhancers/as";
 import Base from "../Base";
@@ -29,41 +29,33 @@ class Component extends React.Component {
   };
 
   render() {
-    const { visible, destroy } = this.props;
+    const { visible, styleProp, destroy } = this.props;
 
     if (destroy) {
       return visible ? <Base {...this.props} /> : null;
     }
 
-    return <Base aria-hidden={!visible} hidden={!visible} {...this.props} />;
+    return (
+      <Base
+        aria-hidden={!visible}
+        hidden={!visible && styleProp === "display"}
+        {...this.props}
+      />
+    );
   }
 }
 
 hoistNonReactStatics(Component, Base);
 
-/**
- * Gets the css method for hiding the element based on the requested styleProp
- * @param {'visibility' | 'opacity' | 'display'} styleProp
- */
-const hiddenCssForStyleProp = styleProp => {
-  switch (styleProp) {
-    case "visibility":
-      return css`
-        visibility: hidden !important;
-      `;
-    case "opacity":
-      return css`
-        opacity: 0 !important;
-      `;
-    default:
-      return css`
-        display: none !important;
-      `;
-  }
-};
-
 const Hidden = styled(Component)`
-  ${props => !props.visible && hiddenCssForStyleProp(props.styleProp)};
+  ${ifNotProp(
+    "visible",
+    switchProp("styleProp", {
+      visibility: "visibility: hidden !important",
+      opacity: "opacity: 0 !important",
+      display: "display: none !important"
+    })
+  )};
   ${prop("theme.Hidden")};
 `;
 
@@ -73,6 +65,10 @@ Hidden.propTypes = {
   visible: PropTypes.bool,
   destroy: PropTypes.bool,
   styleProp: PropTypes.oneOf(["display", "visibility", "opacity"])
+};
+
+Hidden.defaultProps = {
+  styleProp: "display"
 };
 
 export default as("div")(Hidden);

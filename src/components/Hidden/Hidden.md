@@ -99,22 +99,22 @@ const Example = () => (
 The `styleProp` property allows you to control how the component will be hidden.
 
 * `display` (default) uses `display: none;`
-* `visibility` uses `display: none;`
+* `visibility` uses `visibility: hidden;`
 * `opacity` uses `opacity: 0;`
 
-```jsx static
+```jsx
 <div>
-  <Hidden visible={false} styleProp="display" />
-  <Hidden visible={false} styleProp="visibility" />
-  <Hidden visible={false} styleProp="opacity" />
+  <Hidden visible styleProp="display">Hidden</Hidden>
+  <Hidden visible styleProp="visibility">Hidden</Hidden>
+  <Hidden visible styleProp="opacity">Hidden</Hidden>
 </div>
 ```
 
 If you want the component to be removed from the DOM entirely you can add the `destroy` prop.
 
 ```jsx static
-<div className="Container">
-  <Hidden visible={false} destroy />
+<div class="Container">
+  <Hidden destroy />
 </div>
 ```
 
