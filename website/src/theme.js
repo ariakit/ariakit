@@ -3,7 +3,7 @@ import { prop } from "styled-tools";
 
 export default {
   pinkLight: "#fd88ce",
-  pinkMedium: "#fd6099",
+  pink: "#fd6099",
   pinkDark: "#fc4577",
   black: "#282b36",
   grayLightest: "#eee",

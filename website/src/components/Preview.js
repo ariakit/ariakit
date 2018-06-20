@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Block } from "reakit";
 import { transform } from "buble";
 import splitExampleCode from "react-styleguidist/lib/utils/splitExampleCode";
-import ConfigContainer from "../containers/ConfigContainer";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import transformCode from "../utils/transformCode";
 
 const compileCode = (code, config) =>
@@ -14,6 +14,7 @@ const wrapCodeInFragment = code => `<React.Fragment>${code}</React.Fragment>;`;
 class Preview extends React.Component {
   static propTypes = {
     code: PropTypes.string.isRequired,
+    evalInContext: PropTypes.func.isRequired,
     config: PropTypes.object.isRequired
   };
 
@@ -43,7 +44,7 @@ class Preview extends React.Component {
 
   getExampleComponent(compiledCode) {
     try {
-      return this.props.config.evalInContext(compiledCode)();
+      return this.props.evalInContext(compiledCode)();
     } catch (e) {
       this.handleError(e);
     }
@@ -115,7 +116,9 @@ class Preview extends React.Component {
 }
 
 export default props => (
-  <ConfigContainer>
-    {config => <Preview {...props} config={config} />}
-  </ConfigContainer>
+  <StyleguidistContainer>
+    {({ config, evalInContext }) => (
+      <Preview {...props} evalInContext={evalInContext} config={config} />
+    )}
+  </StyleguidistContainer>
 );

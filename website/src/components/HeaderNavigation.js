@@ -2,6 +2,7 @@ import React from "react";
 import { styled, Grid } from "reakit";
 import { NavLink } from "react-router-dom";
 import { prop } from "styled-tools";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 
 const Navigation = styled(Grid.as("nav"))`
   grid-auto-flow: column;
@@ -27,8 +28,15 @@ const Link = styled(NavLink)`
 
 const HeaderNavigation = props => (
   <Navigation {...props}>
-    <Link to="/guide">Guide</Link>
-    <Link to="/components">Components</Link>
+    <StyleguidistContainer>
+      {({ sections }) =>
+        sections.map(section => (
+          <Link key={section.name} to={`/${section.slug}`}>
+            {section.name}
+          </Link>
+        ))
+      }
+    </StyleguidistContainer>
   </Navigation>
 );
 

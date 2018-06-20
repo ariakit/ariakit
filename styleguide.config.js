@@ -30,10 +30,6 @@ module.exports = {
       })
     ])
   ]),
-  getComponentPathLine(componentPath) {
-    const name = path.basename(componentPath, ".js");
-    return `import { ${name} } from 'reakit'`;
-  },
   logger: {
     warn: () => {}
   },
@@ -62,14 +58,19 @@ module.exports = {
     objectAssign: "Object.assign"
   },
   skipComponentsWithoutExample: true,
-  pagePerSection: true,
   sections: [
     {
       name: "Guide",
       sections: [
         {
           name: "Install",
-          content: "docs/install.md"
+          content: "docs/install.md",
+          sections: [
+            {
+              name: "Fuck",
+              content: "docs/create-react-app.md"
+            }
+          ]
         },
         {
           name: "Create React App",

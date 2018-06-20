@@ -1,58 +1,92 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import { styled, Block, List, Link } from "reakit";
+import { NavLink } from "react-router-dom";
+import { styled, Grid, List, Link, Input } from "reakit";
+import { prop, ifProp } from "styled-tools";
+import MenuContainer from "../containers/MenuContainer";
 
-const mergeChildSections = object => [...object.sections, ...object.components];
+const Wrapper = styled(Grid)`
+  grid-gap: 16px;
+`;
 
-const Wrapper = styled(Block)`
-  text-align: right;
+const MenuList = styled(List)`
+  ${List} {
+    ${ifProp("alwaysVisible", "display: block !important")};
+  }
+
+  ${List.Item} {
+    margin: 0;
+  }
 `;
 
 const SectionLink = styled(Link)`
   display: block;
-  text-transform: uppercase;
-  color: #333;
-  font-size: 0.9em;
-  margin: 20px 0 10px;
-  font-weight: 500;
+  line-height: 1.75;
+  font-weight: 400;
+  margin: 0;
+  font-size: 1em;
+  color: ${prop("theme.black")};
+  border-left: 3px solid transparent;
+  padding-left: 10px;
+
+  &:hover {
+    border-color: ${prop("theme.pinkLight")};
+    text-decoration: none;
+  }
+
+  &.active {
+    font-weight: 600;
+    border-color: ${prop("theme.pinkDark")};
+
+    & + ${MenuList} {
+      display: block;
+    }
+  }
+
+  & + ${MenuList} {
+    display: none;
+  }
+
+  & + ${MenuList} & {
+    padding-left: 30px;
+  }
 `;
 
-const ComponentLink = styled(Link)`
-  line-height: 1.4;
-`;
+const renderList = (section, prevSlug = "") => {
+  const sections = (section.filtered || section.sections).filter(Boolean);
+  if (!sections.length) return null;
+  const slug = `${prevSlug}/${section.slug}`;
 
-const MenuList = styled(List)`
-  padding-top: 1.5em;
-`;
-
-const Menu = ({ sections, ...props }) => (
-  <Wrapper {...props}>
-    <MenuList>
-      <List.Item>
-        <SectionLink as={RouterLink} to="/">
-          Home
-        </SectionLink>
-      </List.Item>
-      {sections.map(section => (
-        <List.Item key={section.slug}>
-          <SectionLink as={RouterLink} to={`/${section.slug}`}>
-            {section.name}
+  return (
+    <MenuList alwaysVisible={prevSlug === "" && sections.length <= 5}>
+      {sections.map(s => (
+        <List.Item key={s.slug}>
+          <SectionLink as={NavLink} to={`${slug}/${s.slug}`}>
+            {s.name}
           </SectionLink>
-          <MenuList>
-            {mergeChildSections(section).map(child => (
-              <List.Item key={child.slug}>
-                <ComponentLink
-                  as={RouterLink}
-                  to={`/${section.slug}/${child.slug}`}
-                >
-                  {child.name}
-                </ComponentLink>
-              </List.Item>
-            ))}
-          </MenuList>
+          {renderList(s, slug)}
         </List.Item>
       ))}
     </MenuList>
+  );
+};
+
+const Menu = ({ section, showFilter, ...props }) => (
+  <Wrapper {...props}>
+    {showFilter ? (
+      <MenuContainer initialState={section} key={section.name}>
+        {({ filter, ...rest }) => (
+          <React.Fragment>
+            <Input
+              placeholder="Filter..."
+              onChange={e => filter(e.target.value)}
+            />
+            {renderList(rest)}
+          </React.Fragment>
+        )}
+      </MenuContainer>
+    ) : (
+      renderList(section)
+    )}
   </Wrapper>
 );
 

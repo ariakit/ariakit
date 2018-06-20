@@ -19,7 +19,20 @@ const StyledHeader = styled(Header)`
   position: fixed;
   top: 0;
   left: 0;
+  height: 60px;
   ${ifProp("shadowed", "box-shadow: 0 0 1px rgba(0, 0, 0, 0.25)")};
+`;
+
+const Content = styled(Flex)`
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  margin: 60px 0;
+  width: 100%;
+`;
+
+const StyledFooter = styled(Footer)`
+  margin-top: auto;
 `;
 
 const CoreLayout = ({ children, ...props }) => (
@@ -27,8 +40,8 @@ const CoreLayout = ({ children, ...props }) => (
     <ScrollContainer>
       {({ y }) => <StyledHeader shadowed={y > 0} />}
     </ScrollContainer>
-    {children}
-    <Footer />
+    <Content>{children}</Content>
+    <StyledFooter />
   </Wrapper>
 );
 

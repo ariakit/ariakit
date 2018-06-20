@@ -6,16 +6,16 @@ import CoreLayout from "../layouts/CoreLayout";
 import HomeFeatures from "../components/HomeFeatures";
 
 const StyledHero = styled(Hero)`
-  margin: 160px 0 100px;
+  margin: 100px 0;
   @media (max-width: 768px) {
-    margin: 100px 0 40px;
+    margin: 40px 0;
   }
 `;
 
 const StyledHomeFeatures = styled(HomeFeatures)`
-  margin: 100px 0;
+  margin: 100px 0 60px;
   @media (max-width: 768px) {
-    margin: 40px 0 60px;
+    margin: 40px 0 0;
   }
 `;
 

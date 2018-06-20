@@ -4,18 +4,20 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider, Provider, styled, Block } from "reakit";
 import "./globalStyles";
 import theme from "./theme";
+import getEvalInContext from "./utils/getEvalInContext";
+import parseSections from "./utils/parseSections";
 import Home from "./pages/Home";
 import Sections from "./pages/Sections";
-import getEvalInContext from "./utils/getEvalInContext";
 
 const Wrapper = styled(Block)`
   font-family: "Source Sans Pro", sans-serif;
   -webkit-font-smoothing: antialiased;
 `;
 
-const getInitialState = props => ({
-  config: {
-    ...props.config,
+const getInitialState = ({ allSections, ...props }) => ({
+  styleguidist: {
+    ...props,
+    sections: parseSections(allSections),
     evalInContext: getEvalInContext(props)
   }
 });
@@ -26,8 +28,8 @@ const App = props => (
       <Wrapper>
         <Router>
           <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/" render={p => <Sections {...props} {...p} />} />
+            <Route exact path="/" component={Home} />
+            <Route path="/" component={Sections} />
           </Switch>
         </Router>
       </Wrapper>

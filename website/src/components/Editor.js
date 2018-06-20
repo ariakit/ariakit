@@ -7,13 +7,8 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import "codemirror/mode/jsx/jsx";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
-import ConfigContainer from "../containers/ConfigContainer";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import ViewportContainer from "../containers/ViewportContainer";
-
-// find a font for the site
-// finish home (features and footer)
-// create sidebar
-// create mobile menu
 
 const StyledCodeMirror = styled(CodeMirror)`
   .CodeMirror {
@@ -61,8 +56,8 @@ class Editor extends React.Component {
   render() {
     const { code, readOnly, ...props } = this.props;
     return (
-      <ConfigContainer>
-        {({ editorConfig }) => (
+      <StyleguidistContainer>
+        {({ config }) => (
           <ViewportContainer>
             {({ width }) => (
               <StyledCodeMirror
@@ -70,7 +65,7 @@ class Editor extends React.Component {
                 value={code}
                 onChange={this.handleChange}
                 options={{
-                  ...editorConfig,
+                  ...config.editorConfig,
                   theme: "dracula",
                   readOnly: width <= 768 || readOnly ? "nocursor" : false
                 }}
@@ -78,7 +73,7 @@ class Editor extends React.Component {
             )}
           </ViewportContainer>
         )}
-      </ConfigContainer>
+      </StyleguidistContainer>
     );
   }
 }
