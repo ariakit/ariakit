@@ -68,6 +68,7 @@ Rendered HTML.
 ```
 
 <!-- Cool styling example -->
+
 Basic styling via props.
 
 ```jsx
@@ -91,4 +92,35 @@ const Example = () => (
 );
 
 <Example />;
+```
+
+<!-- changing how the element is hidden -->
+
+The `styleProp` property allows you to control how the component will be hidden.
+
+* `display` (default) uses `display: none;`
+* `visibility` uses `visibility: hidden;`
+* `opacity` uses `opacity: 0;`
+
+```jsx
+<div>
+  <Hidden visible styleProp="display">Hidden</Hidden>
+  <Hidden visible styleProp="visibility">Hidden</Hidden>
+  <Hidden visible styleProp="opacity">Hidden</Hidden>
+</div>
+```
+
+If you want the component to be removed from the DOM entirely you can add the `destroy` prop.
+
+```jsx static
+<div class="Container">
+  <Hidden destroy />
+</div>
+```
+
+Rendered HTML.
+
+```html
+<div class="Container">
+</div>
 ```
