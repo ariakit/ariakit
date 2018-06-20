@@ -2,7 +2,7 @@
 
 
 A Card can be used to serve related information together such as Actions, image, text, etc.
-Card is Base with `display: inline-block`, `float: left`, small padding and a box shadow.
+Card is Base with `display: inline-block`, small padding and a box shadow.
 By default it renders as a `<div>`.
 
 <!-- Minimal JSX to showcase component -->
@@ -28,19 +28,21 @@ Rendered HTML.
 Basic styling via props.
 
 ```jsx
-<div>
-  <Card width="40%" marginRight="1em">
+const { Grid } = require("reas");
+
+<Grid column gap={20} justifyContent="start">
+  <Card width={300}>
     <Heading as="h4">First Card</Heading>
     <Paragraph>First Card Description</Paragraph>
     <Image src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg" />
   </Card>
-  <Card width="50%">
+  <Card>
     <Heading as="h3">Second Card</Heading>
     <Paragraph>Second Card Description</Paragraph>
     <Button>Action 1</Button>
     <Button>Action 2</Button>
   </Card>
-</div>
+</Grid>
 ```
 
 <!-- Cool styling example -->

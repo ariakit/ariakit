@@ -86,6 +86,7 @@
     "file-loader": "^1.1.11",
     "jest-cli": "^23.0.0",
     "jest-serializer-html": "^5.0.0",
+    "jest-styled-components": "^5.0.1",
     "opn-cli": "^3.1.0",
     "prettier": "1.13.5",
     "prop-types": "^15.6.2",
