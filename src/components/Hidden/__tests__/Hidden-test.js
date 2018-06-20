@@ -1,5 +1,6 @@
 import React from "react";
 import { mount } from "enzyme";
+import "jest-styled-components";
 import Hidden from "../Hidden";
 
 const addEventListener = jest.spyOn(document.body, "addEventListener");
@@ -59,4 +60,31 @@ it("adds event handler when component becomes visible", () => {
   expect(addEventListener).not.toHaveBeenCalled();
   wrapper.setProps({ visible: true });
   expect(addEventListener).toHaveBeenCalledTimes(1);
+});
+
+describe("visibility methodologies", () => {
+  describe("destroy", () => {
+    it("removes the element when visible is false", () => {
+      const wrapper = mount(<Hidden visible={false} destroy />);
+      expect(wrapper.html()).toBe(null);
+    });
+  });
+  describe("display", () => {
+    it("adds display: none", () => {
+      const wrapper = mount(<Hidden visible={false} />);
+      expect(wrapper).toHaveStyleRule("display", "none !important");
+    });
+  });
+  describe("visibility", () => {
+    it("adds visibility: hidden", () => {
+      const wrapper = mount(<Hidden visible={false} styleProp="visibility" />);
+      expect(wrapper).toHaveStyleRule("visibility", "hidden !important");
+    });
+  });
+  describe("opacity", () => {
+    it("adds opacity: 0", () => {
+      const wrapper = mount(<Hidden visible={false} styleProp="opacity" />);
+      expect(wrapper).toHaveStyleRule("opacity", "0 !important");
+    });
+  });
 });

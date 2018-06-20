@@ -41,12 +41,29 @@ class Component extends React.Component {
 
 hoistNonReactStatics(Component, Base);
 
+/**
+ * Gets the css method for hiding the element based on the requested styleProp
+ * @param {'visibility' | 'opacity' | 'display'} styleProp
+ */
+const hiddenCssForStyleProp = styleProp => {
+  switch (styleProp) {
+    case "visibility":
+      return css`
+        visibility: hidden !important;
+      `;
+    case "opacity":
+      return css`
+        opacity: 0 !important;
+      `;
+    default:
+      return css`
+        display: none !important;
+      `;
+  }
+};
+
 const Hidden = styled(Component)`
-  ${props =>
-    !props.visible &&
-    css`
-      display: none !important;
-    `};
+  ${props => !props.visible && hiddenCssForStyleProp(props.styleProp)};
   ${prop("theme.Hidden")};
 `;
 
@@ -54,7 +71,8 @@ Hidden.propTypes = {
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
   visible: PropTypes.bool,
-  destroy: PropTypes.bool
+  destroy: PropTypes.bool,
+  styleProp: PropTypes.oneOf(["display", "visibility", "opacity"])
 };
 
 export default as("div")(Hidden);

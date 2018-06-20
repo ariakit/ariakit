@@ -85,6 +85,7 @@
     "eslint-plugin-react": "^7.6.1",
     "jest-cli": "^22.1.4",
     "jest-serializer-html": "^5.0.0",
+    "jest-styled-components": "^5.0.1",
     "opn-cli": "^3.1.0",
     "prettier": "1.10.2",
     "prop-types": "^15.6.1",
