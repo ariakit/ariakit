@@ -49,8 +49,7 @@ const HomeFeatures = props => (
           target="_blank"
         >
           Single Element Pattern
-        </Link>, which makes them resemble native HTML elements as most as
-        possible.
+        </Link>, which makes them as consistent as native HTML elements.
       </Paragraph>
     </Feature>
   </Wrapper>
