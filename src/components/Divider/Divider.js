@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
-import { ifProp } from "styled-tools";
+import { ifProp, prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
@@ -22,6 +22,8 @@ const Divider = styled(Base)`
       border-width: 1px 0 0 0;
     `
   )};
+
+  ${prop("theme.Divider")};
 `;
 
 Divider.propTypes = {

@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import { bool } from "../../utils/styledProps";
 import Base from "../Base";
@@ -13,6 +14,8 @@ const Flex = styled(Base)`
     ${bool("flex-direction", directions)};
     ${bool("flex-wrap", wraps)};
   }
+
+  ${prop("theme.Flex")};
 `;
 
 Flex.propTypes = {

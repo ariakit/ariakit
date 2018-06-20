@@ -1,20 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
-import flow from "lodash/flow";
+import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
+import callAll from "../../utils/callAll";
 import Base from "../Base";
 
-const HiddenShow = ({ onClick, ...props }) => (
-  <Base onClick={flow(onClick, props.show)} {...props} />
+const Component = ({ onClick, ...props }) => (
+  <Base onClick={callAll(props.show, onClick)} {...props} />
 );
+
+const HiddenShow = styled(Component)`
+  ${prop("theme.HiddenShow")};
+`;
 
 HiddenShow.propTypes = {
   show: PropTypes.func.isRequired,
   onClick: PropTypes.func
-};
-
-HiddenShow.defaultProps = {
-  onClick: () => {}
 };
 
 export default as("button")(HiddenShow);

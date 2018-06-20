@@ -64,6 +64,8 @@ const Group = styled(Base)`
       `
     )};
   }
+
+  ${prop("theme.Group")};
 `;
 
 Group.propTypes = {

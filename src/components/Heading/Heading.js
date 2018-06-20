@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { switchProp } from "styled-tools";
+import { switchProp, prop } from "styled-tools";
 import as from "../../enhancers/as";
 import getUnderlyingElement from "../../utils/getUnderlyingElement";
 import Base from "../Base";
@@ -15,6 +15,8 @@ const Heading = styled(Base)`
     h5: "1em",
     h6: "0.75em"
   })};
+
+  ${prop("theme.Heading")};
 `;
 
 export default as("h1")(Heading);

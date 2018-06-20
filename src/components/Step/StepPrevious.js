@@ -1,26 +1,28 @@
 import React from "react";
 import PropTypes from "prop-types";
-import flow from "lodash/flow";
+import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
+import callAll from "../../utils/callAll";
 import Base from "../Base";
 
-const StepPrevious = ({ onClick, ...props }) => (
+const Component = ({ onClick, ...props }) => (
   <Base
-    onClick={flow(props.previous, onClick)}
-    disabled={!props.loop && !props.hasPrevious()}
+    onClick={callAll(props.previous, onClick)}
+    disabled={!props.loop && props.hasPrevious && !props.hasPrevious()}
     {...props}
   />
 );
+
+const StepPrevious = styled(Component)`
+  ${prop("theme.StepPrevious")};
+`;
 
 StepPrevious.propTypes = {
   previous: PropTypes.func.isRequired,
   hasPrevious: PropTypes.func.isRequired,
   loop: PropTypes.bool,
   onClick: PropTypes.func
-};
-
-StepPrevious.defaultProps = {
-  onClick: () => {}
 };
 
 export default as("button")(StepPrevious);
