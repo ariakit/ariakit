@@ -4,7 +4,9 @@ import as from "../../enhancers/as";
 import Base from "../Base";
 
 const Paragraph = styled(Base)`
-  margin-bottom: 1rem;
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
   ${prop("theme.Paragraph")};
 `;
 

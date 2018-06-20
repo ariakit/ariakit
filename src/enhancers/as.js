@@ -82,6 +82,7 @@ const as = asComponents => WrappedComponent => {
 
   if (isStyledComponent(WrappedComponent)) {
     Component = WrappedComponent.withComponent(Component);
+    Component.styledComponentId = WrappedComponent.styledComponentId;
     Component.displayName = `Styled(${displayName})`;
   }
 

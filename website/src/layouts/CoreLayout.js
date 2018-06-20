@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { styled, Flex } from "reakit";
 import { prop, ifProp } from "styled-tools";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import ScrollContainer from "../containers/ScrollContainer";
 
 const Wrapper = styled(Flex)`
@@ -27,6 +28,7 @@ const CoreLayout = ({ children, ...props }) => (
       {({ y }) => <StyledHeader shadowed={y > 0} />}
     </ScrollContainer>
     {children}
+    <Footer />
   </Wrapper>
 );
 
