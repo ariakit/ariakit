@@ -28,7 +28,7 @@ Rendered HTML.
 Basic styling via props.
 
 ```jsx
-const { Grid } = require("reas");
+const { Grid } = require("reakit");
 
 <Grid column gap={20} justifyContent="start">
   <Card width={300}>
