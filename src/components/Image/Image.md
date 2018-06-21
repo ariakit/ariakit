@@ -6,13 +6,13 @@ The only css applied is `max-width: 100%`, so the component will fit to parent w
 <!-- Minimal JSX to showcase component -->
 
 ```jsx
-<Image src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg" />
+<Image src="https://placekitten.com/350/" />
 ```
 
 Rendered HTML.
 
 ```html
-<img class="Image-daFSPM fVKZHS Base-gxTqDr bCPnxv" src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg">
+<img class="Image-daFSPM fVKZHS Base-gxTqDr bCPnxv" src="https://placekitten.com/350/">
 ```
 
 <!-- while(not done) { Prop explanation, examples } -->
@@ -20,7 +20,7 @@ Rendered HTML.
 Basic styling via props.
 
 ```jsx
-<Image src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg"
+<Image src="https://placekitten.com/350/"
 width={350}
 margin="0 auto"
 boxShadow="10px 5px 5px #795546"
