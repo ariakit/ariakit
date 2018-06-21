@@ -1,6 +1,6 @@
 import React from "react";
 import { Route } from "react-router-dom";
-import { styled, Flex } from "reakit";
+import { styled } from "reakit";
 import Menu from "../components/Menu";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import CoreLayout from "../layouts/CoreLayout";
@@ -8,9 +8,6 @@ import ContentWrapper from "../elements/ContentWrapper";
 import Section from "./Section";
 
 const getSlug = pathname => pathname.split("/")[1];
-// {/* <Menu sections={}
-// <Menu sections={props.sections} /> */}
-// {/* <Route path={match.url} render={p => <Section {...props} {...p} />} /> */}
 
 const Content = styled(ContentWrapper)`
   display: grid;

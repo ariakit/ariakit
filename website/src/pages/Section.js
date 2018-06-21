@@ -56,9 +56,19 @@ const getSection = ({ location, sections }) => {
   const slugs = location.pathname.split("/").filter(Boolean);
   return slugs.filter(Boolean).reduce((section, slug) => {
     const items = Array.isArray(section) ? section : section.sections;
-
     return items.find(item => item.slug === slug);
   }, sections);
+};
+
+const getSectionContent = section =>
+  section.hasExamples ? section.props.examples : section.content;
+
+const getNextNonEmptyPath = (sections, path = "/") => {
+  const [section] = sections;
+  const normalizePath = p => p.replace(/\/+/g, "/");
+  const nextPath = `${path}/${section.slug}`;
+  if (getSectionContent(section)) return normalizePath(nextPath);
+  return getNextNonEmptyPath(section.sections, nextPath);
 };
 
 const sectionMap = {
@@ -75,9 +85,7 @@ const Section = props => (
   <StyleguidistContainer>
     {({ sections }) => {
       const section = getSection({ sections, ...props });
-      const sectionContent = section.hasExamples
-        ? section.props.examples
-        : section.content;
+      const sectionContent = getSectionContent(section);
       if (sectionContent) {
         return (
           <Wrapper {...props}>
@@ -92,7 +100,7 @@ const Section = props => (
       }
       return (
         <Redirect
-          to={`${props.location.pathname}/${section.sections[0].slug}`}
+          to={getNextNonEmptyPath(section.sections, props.location.pathname)}
         />
       );
     }}
