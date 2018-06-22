@@ -56,13 +56,13 @@ const Example = () => (
     {tabs => (
       <Block>
         <Tabs>
-          <Tabs.Tab borderRadius={8} backgroundColor="#e96767" tab="first" {...tabs}>Red</Tabs.Tab>
-          <Tabs.Tab borderRadius={8} backgroundColor="#72e967" tab="second" {...tabs}>Green</Tabs.Tab>
-          <Tabs.Tab borderRadius={8} backgroundColor="#677de9" tab="third" {...tabs}>Blue</Tabs.Tab>
+          <Tabs.Tab borderRadius={4} backgroundColor="#e8abab" tab="red" {...tabs}>Red</Tabs.Tab>
+          <Tabs.Tab borderRadius={4} backgroundColor="#b1e8ac" tab="green" {...tabs}>Green</Tabs.Tab>
+          <Tabs.Tab borderRadius={4} backgroundColor="#acb6e8" tab="blue" {...tabs}>Blue</Tabs.Tab>
         </Tabs>
-        <Tabs.Panel height={140} tab="first" backgroundColor="#e96767" {...tabs}>Red tab contents go here</Tabs.Panel>
-        <Tabs.Panel height={140} tab="second" backgroundColor="#72e967" {...tabs}>Green tab contents go here</Tabs.Panel>
-        <Tabs.Panel height={140} tab="third" backgroundColor="#677de9" {...tabs}>Blue tab contents go here</Tabs.Panel>
+        <Tabs.Panel height={140} tab="red" backgroundColor="#e8abab" {...tabs}>Red tab contents go here</Tabs.Panel>
+        <Tabs.Panel height={140} tab="green" backgroundColor="#b1e8ac" {...tabs}>Green tab contents go here</Tabs.Panel>
+        <Tabs.Panel height={140} tab="blue" backgroundColor="#acb6e8" {...tabs}>Blue tab contents go here</Tabs.Panel>
       </Block>
     )}
   </Tabs.Container>
