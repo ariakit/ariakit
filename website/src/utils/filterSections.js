@@ -1,6 +1,6 @@
 import kebabCase from "lodash/kebabCase";
 
-const filterSections = (sections, input) => {
+const filterSections = (sections = [], input) => {
   const normalizedInput = kebabCase(input)
     .trim()
     .replace(/\s+/, "");
