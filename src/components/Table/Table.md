@@ -1,5 +1,5 @@
 <!-- Description -->
-Table is composed from Base with basic default styles with collapsed borders.
+Table is composed from Base with minimal styles including collapsed borders.
 Table renders by default as a `<table>`.
 It comes with several sub components, one for each logical part of a table:
 
