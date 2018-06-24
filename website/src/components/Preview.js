@@ -90,7 +90,7 @@ class Preview extends React.Component {
 export default props => (
   <StyleguidistContainer>
     {({ config, evalInContext }) => (
-      <Preview {...props} evalInContext={evalInContext} config={config} />
+      <Preview evalInContext={evalInContext} config={config} {...props} />
     )}
   </StyleguidistContainer>
 );

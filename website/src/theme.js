@@ -7,6 +7,7 @@ export default {
   pinkDark: "#fc4577",
   black: "#282b36",
   grayLightest: "#eee",
+  grayLighter: "#ccc",
   grayLight: "#999",
   gray: "#666",
   grayDark: "#333",

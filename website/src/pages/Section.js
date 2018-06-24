@@ -1,11 +1,9 @@
 import React from "react";
 import Markdown from "react-styleguidist/lib/rsg-components/Markdown";
-// import Preview from "react-styleguidist/lib/rsg-components/Preview";
 import { styled, Block, Heading, InlineFlex } from "reakit";
 import { Redirect } from "react-router-dom";
-import Preview from "../components/Preview";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
-import EditorWithTabs from "../components/EditorWithTabs";
+import Playground from "../components/Playground";
 
 const Wrapper = styled(Block)`
   overflow: auto;
@@ -72,12 +70,9 @@ const getNextNonEmptyPath = (sections, path = "/") => {
 };
 
 const sectionMap = {
-  markdown: ({ content }) => <Markdown text={content} />,
-  code: ({ content, evalInContext }) => (
-    <div>
-      <Preview code={content} evalInContext={evalInContext} />
-      <EditorWithTabs code={content} />
-    </div>
+  markdown: ({ content }, key) => <Markdown text={content} key={key} />,
+  code: ({ content, evalInContext }, key) => (
+    <Playground code={content} evalInContext={evalInContext} key={key} />
   )
 };
 
@@ -92,8 +87,10 @@ const Section = props => (
             <Name>{section.name}</Name>
             <PathLine>{section.pathLine}</PathLine>
             {sectionContent.map(
-              ({ type, ...others }) =>
-                sectionMap[type] ? sectionMap[type](others) : null
+              ({ type, ...rest }, i) =>
+                sectionMap[type]
+                  ? sectionMap[type](rest, section.name + i)
+                  : null
             )}
           </Wrapper>
         );

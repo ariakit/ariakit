@@ -10,6 +10,10 @@ import StyleguidistContainer from "../containers/StyleguidistContainer";
 const Wrapper = styled(Block)`
   position: relative;
 
+  .CodeMirror-line:first-child {
+    margin-right: 90px;
+  }
+
   ${Tabs} {
     display: block;
     position: absolute;
@@ -54,14 +58,14 @@ const EditorWithTabs = props => (
         </Tabs.Panel>
         <Tabs.Panel tab="html" {...tabs}>
           <StyleguidistContainer>
-            {({ config, evalInContext }) =>
+            {({ config }) =>
               tabs.isCurrent("html") && (
                 <Editor
                   {...props}
                   code={getHTML(
                     props.code,
                     config.compilerConfig,
-                    evalInContext
+                    props.evalInContext
                   )}
                   readOnly
                 />
@@ -75,7 +79,8 @@ const EditorWithTabs = props => (
 );
 
 EditorWithTabs.propTypes = {
-  code: PropTypes.string.isRequired
+  code: PropTypes.string.isRequired,
+  evalInContext: PropTypes.func.isRequired
 };
 
 export default EditorWithTabs;
