@@ -22,6 +22,7 @@ const StyledMenu = styled(Menu)`
   top: 120px;
   overflow: auto;
   padding-right: 16px;
+  max-height: calc(100vh - 136px);
 `;
 
 const Sections = ({ location, match }) => (

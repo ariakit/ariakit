@@ -87,6 +87,7 @@
     "jest-cli": "^23.0.0",
     "jest-serializer-html": "^5.0.0",
     "jest-styled-components": "^5.0.1",
+    "markdown-to-jsx": "^6.6.8",
     "opn-cli": "^3.1.0",
     "prettier": "1.13.5",
     "pretty": "^2.0.0",

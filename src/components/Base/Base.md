@@ -4,6 +4,7 @@ By default it renders a `div` tag with basic reset styles.
 ```jsx static
 <Base>Base</Base>
 ```
+
 ```html
 <div style="margin: 0; padding: 0; border: 0; font-size: 100%; font-family: inherit; vertical-align: baseline; box-sizing:border-box;">
   Base
@@ -26,10 +27,10 @@ It also offers convenience props to control the `position` css property.
 The `as` prop allows you to change the element from a `div` to any other element or react component.
 
 ```jsx static
-  import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-  const Nav = () => (
-    <Base as={Link} to="/" fontWeight="bold">React router link to home page</Base>
-    <Base as="a" target="_blank">External Link</Base>
-  )
+const Nav = () => (
+  <Base as={Link} to="/" fontWeight="bold">React router link to home page</Base>
+  <Base as="a" target="_blank">External Link</Base>
+)
 ```

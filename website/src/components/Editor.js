@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { styled } from "reakit";
+import { ifProp } from "styled-tools";
 import debounce from "lodash/debounce";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import "codemirror/mode/jsx/jsx";
@@ -11,6 +12,8 @@ import StyleguidistContainer from "../containers/StyleguidistContainer";
 import ViewportContainer from "../containers/ViewportContainer";
 
 const StyledCodeMirror = styled(CodeMirror)`
+  margin-bottom: 2em;
+
   .CodeMirror {
     font-family: "Fira Code", monospace;
     padding: 1em;
@@ -19,6 +22,7 @@ const StyledCodeMirror = styled(CodeMirror)`
     .CodeMirror-lines {
       font-size: 16px;
       line-height: 1.4;
+      ${ifProp("options.readOnly", "cursor: default")};
 
       @media (max-width: 768px) {
         font-size: 14px;

@@ -1,12 +1,12 @@
 import React from "react";
-import Markdown from "react-styleguidist/lib/rsg-components/Markdown";
 import { styled, Block, Heading, InlineFlex } from "reakit";
 import { Redirect } from "react-router-dom";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
+import Markdown from "../components/Markdown";
 
 const Wrapper = styled(Block)`
-  overflow: auto;
+  overflow: hidden;
 
   [class*="rsg--code"] {
     font-family: "Fira Code", monospace;

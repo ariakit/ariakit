@@ -1,18 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { styled, Flex } from "reakit";
+import { styled, Flex, Block } from "reakit";
 import Preview from "./Preview";
 import StateContainer from "../containers/StateContainer";
 import EditorWithTabs from "./EditorWithTabs";
 
 const Wrapper = styled(Flex)`
   flex-direction: column;
-  margin: 16px 0 24px;
+  margin: 2em 0 1em;
 `;
 
-const PreviewWrapper = styled(Flex)`
+const PreviewWrapper = styled(Block)`
   padding: 16px;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0, 0, 0, 0.05);
 `;
 
 const Playground = ({ code, evalInContext, ...props }) => (

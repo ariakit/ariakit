@@ -39,10 +39,6 @@ const LogoLink = styled(RouterLink)`
 `;
 
 const GitHubLink = styled(Link)`
-  display: grid;
-  grid-gap: 4px;
-  align-items: center;
-  grid-auto-flow: column;
   color: ${prop("theme.gray")};
   font-size: 18px;
   justify-self: flex-end;
