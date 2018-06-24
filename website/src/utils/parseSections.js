@@ -1,4 +1,6 @@
 import kebabCase from "lodash/kebabCase";
+import get from "lodash/get";
+import flattenSections from "./flattenSections";
 
 const groups = {
   Primitives: [
@@ -15,14 +17,28 @@ const groups = {
 const getGroupName = sectioName =>
   Object.keys(groups).find(key => groups[key].includes(sectioName));
 
-const parseSections = sections => {
+const findUses = (sections, name) =>
+  sections
+    .filter(x => get(x, "props.uses", []).includes(name))
+    .map(x => x.name);
+
+const parseSections = (sections, rootSections = sections) => {
   if (!sections) return [];
+  const flattenedSections = flattenSections(rootSections);
+
   return sections.filter(Boolean).reduce((acc, { components, ...section }) => {
     const groupName = getGroupName(section.name);
 
     const finalSection = {
       ...section,
-      sections: parseSections([...section.sections, ...components]),
+      props: {
+        ...section.props,
+        usedBy: findUses(flattenedSections, section.name)
+      },
+      sections: parseSections(
+        [...section.sections, ...components],
+        rootSections
+      ),
       slug: section.slug.replace(/-\d$/, "")
     };
 

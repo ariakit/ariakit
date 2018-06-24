@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const {
   createConfig,
   babel,
@@ -30,6 +31,15 @@ module.exports = {
       })
     ])
   ]),
+  updateDocs(docs, filePath) {
+    const contents = fs.readFileSync(filePath, "utf8");
+    const regex = /import ([a-z0-9]+) from "\.\.\/[^."]+"/gim;
+    const uses = (contents.match(regex) || []).map(x => x.replace(regex, "$1"));
+    return {
+      ...docs,
+      uses
+    };
+  },
   logger: {
     warn: () => {}
   },

@@ -4,6 +4,10 @@ import { Redirect } from "react-router-dom";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
+import findSectionByLocation from "../utils/findSectionByLocation";
+import getSectionContent from "../utils/getSectionContent";
+import getSectionUrl from "../utils/getSectionUrl";
+import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 
 const Wrapper = styled(Block)`
   overflow: hidden;
@@ -50,25 +54,6 @@ const PathLine = styled(InlineFlex)`
   margin-bottom: 3em;
 `;
 
-const getSection = ({ location, sections }) => {
-  const slugs = location.pathname.split("/").filter(Boolean);
-  return slugs.filter(Boolean).reduce((section, slug) => {
-    const items = Array.isArray(section) ? section : section.sections;
-    return items.find(item => item.slug === slug);
-  }, sections);
-};
-
-const getSectionContent = section =>
-  section.hasExamples ? section.props.examples : section.content;
-
-const getNextNonEmptyPath = (sections, path = "/") => {
-  const [section] = sections;
-  const normalizePath = p => p.replace(/\/+/g, "/");
-  const nextPath = `${path}/${section.slug}`;
-  if (getSectionContent(section)) return normalizePath(nextPath);
-  return getNextNonEmptyPath(section.sections, nextPath);
-};
-
 const sectionMap = {
   markdown: ({ content }, key) => <Markdown text={content} key={key} />,
   code: ({ content, evalInContext }, key) => (
@@ -76,10 +61,10 @@ const sectionMap = {
   )
 };
 
-const Section = props => (
+const Section = ({ location, ...props }) => (
   <StyleguidistContainer>
     {({ sections }) => {
-      const section = getSection({ sections, ...props });
+      const section = findSectionByLocation(sections, location);
       const sectionContent = getSectionContent(section);
       if (sectionContent) {
         return (
@@ -97,7 +82,10 @@ const Section = props => (
       }
       return (
         <Redirect
-          to={getNextNonEmptyPath(section.sections, props.location.pathname)}
+          to={getSectionUrl(
+            sections,
+            findNonEmptySiblingSection(sections, section)
+          )}
         />
       );
     }}
