@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled, { css } from "styled-components";
-import { ifProp } from "styled-tools";
+import { styled } from "reakit";
 import debounce from "lodash/debounce";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import "codemirror/mode/jsx/jsx";
+import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
@@ -24,15 +24,6 @@ const StyledCodeMirror = styled(CodeMirror)`
         font-size: 14px;
       }
     }
-
-    ${ifProp(
-      "options.readOnly",
-      css`
-        .CodeMirror-cursor {
-          display: none;
-        }
-      `
-    )};
   }
 `;
 

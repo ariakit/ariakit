@@ -3,9 +3,9 @@ import Markdown from "react-styleguidist/lib/rsg-components/Markdown";
 // import Preview from "react-styleguidist/lib/rsg-components/Preview";
 import { styled, Block, Heading, InlineFlex } from "reakit";
 import { Redirect } from "react-router-dom";
-import Editor from "../components/Editor";
 import Preview from "../components/Preview";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
+import EditorWithTabs from "../components/EditorWithTabs";
 
 const Wrapper = styled(Block)`
   overflow: auto;
@@ -76,7 +76,7 @@ const sectionMap = {
   code: ({ content, evalInContext }) => (
     <div>
       <Preview code={content} evalInContext={evalInContext} />
-      <Editor code={content} />
+      <EditorWithTabs code={content} />
     </div>
   )
 };

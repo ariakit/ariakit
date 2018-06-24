@@ -21,7 +21,6 @@ const StyledMenu = styled(Menu)`
   position: sticky;
   top: 120px;
   overflow: auto;
-  max-height: calc(100vh - 136px);
   padding-right: 16px;
 `;
 

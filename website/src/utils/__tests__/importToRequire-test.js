@@ -1,8 +1,8 @@
-import transformCode from "../transformCode";
+import importToRequire from "../importToRequire";
 
-test("transformCode", () => {
+test("importToRequire", () => {
   expect(
-    transformCode(
+    importToRequire(
       [
         "import foo from 'foo'",
         "import bar from 'bar/baz';",

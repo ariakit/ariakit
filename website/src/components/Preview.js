@@ -2,14 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Block } from "reakit";
-import { transform } from "buble";
-import splitExampleCode from "react-styleguidist/lib/utils/splitExampleCode";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
-import transformCode from "../utils/transformCode";
-
-const compileCode = (code, config) =>
-  transform(transformCode(code), config).code;
-const wrapCodeInFragment = code => `<React.Fragment>${code}</React.Fragment>;`;
+import compileComponent from "../utils/compileComponent";
 
 class Preview extends React.Component {
   static propTypes = {
@@ -42,15 +36,6 @@ class Preview extends React.Component {
     this.unmountPreview();
   }
 
-  getExampleComponent(compiledCode) {
-    try {
-      return this.props.evalInContext(compiledCode)();
-    } catch (e) {
-      this.handleError(e);
-    }
-    return null;
-  }
-
   mountNode = React.createRef();
 
   unmountPreview() {
@@ -61,36 +46,23 @@ class Preview extends React.Component {
 
   executeCode() {
     this.setState({ error: null });
-
-    const { code } = this.props;
+    const { code, config, evalInContext } = this.props;
     if (!code) return;
 
-    const compiledCode = this.compileCode(code);
-    if (!compiledCode) return;
-
-    const { example } = splitExampleCode(compiledCode);
-    const exampleComponent = this.getExampleComponent(example);
-
-    window.requestAnimationFrame(() => {
-      this.unmountPreview();
-      try {
-        ReactDOM.render(exampleComponent, this.mountNode.current);
-      } catch (e) {
-        this.handleError(e);
-      }
-    });
-  }
-
-  compileCode(code) {
     try {
-      const wrappedCode = code.trim().match(/^</)
-        ? wrapCodeInFragment(code)
-        : code;
-      return compileCode(wrappedCode, this.props.config.compilerConfig);
+      const exampleComponent = compileComponent(
+        code,
+        config.compilerConfig,
+        evalInContext
+      );
+
+      window.requestAnimationFrame(() => {
+        this.unmountPreview();
+        ReactDOM.render(exampleComponent, this.mountNode.current);
+      });
     } catch (e) {
       this.handleError(e);
     }
-    return false;
   }
 
   handleError = e => {
