@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { renderToStaticMarkup } from "react-dom/server";
 import { styled, Block, Tabs, Group, Button } from "reakit";
+import PencilIcon from "react-icons/lib/md/create";
 import pretty from "pretty";
 import Editor from "./Editor";
 import compileComponent from "../utils/compileComponent";
@@ -15,7 +16,6 @@ const Wrapper = styled(Block)`
   }
 
   ${Tabs} {
-    display: block;
     position: absolute;
     top: 8px;
     right: 8px;
@@ -28,10 +28,18 @@ const Wrapper = styled(Block)`
       text-transform: uppercase;
       font-size: 0.85em;
       font-weight: 400;
+      grid-gap: 2px;
+      padding: 0 8px;
       &.active {
         background-color: transparent;
       }
     }
+  }
+`;
+
+const StyledPencilIcon = styled(PencilIcon)`
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -47,7 +55,7 @@ const EditorWithTabs = props => (
       <Wrapper>
         <Tabs as={Group}>
           <Tabs.Tab as={Button} tab="jsx" {...tabs}>
-            JSX
+            <StyledPencilIcon /> JSX
           </Tabs.Tab>
           <Tabs.Tab as={Button} tab="html" {...tabs}>
             HTML

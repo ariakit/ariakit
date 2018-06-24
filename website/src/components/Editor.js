@@ -8,6 +8,7 @@ import "codemirror/mode/jsx/jsx";
 import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
+import "codemirror/theme/oceanic-next.css";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import ViewportContainer from "../containers/ViewportContainer";
 
@@ -61,7 +62,8 @@ class Editor extends React.Component {
                 onChange={this.handleChange}
                 options={{
                   ...config.editorConfig,
-                  theme: "dracula",
+                  tabSize: 2,
+                  theme: readOnly && width > 768 ? "oceanic-next" : "dracula",
                   readOnly: width <= 768 || readOnly ? "nocursor" : false
                 }}
               />

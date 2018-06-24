@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import unescape from "lodash/unescape";
 import { compiler } from "markdown-to-jsx";
-import { styled, Paragraph, Link, Heading, List, Code } from "reakit";
+import { Paragraph, Link, Heading, List, Code } from "reakit";
 import { Link as RouterLink } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import Editor from "./Editor";
@@ -44,5 +44,9 @@ const overrides = {
 };
 
 const Markdown = ({ text }) => compiler(text, { overrides, forceBlock: true });
+
+Markdown.propTypes = {
+  text: PropTypes.string.isRequired
+};
 
 export default Markdown;
