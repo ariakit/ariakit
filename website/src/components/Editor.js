@@ -33,6 +33,11 @@ const StyledCodeMirror = styled(CodeMirror)`
 `;
 
 class Editor extends React.Component {
+  handleChange = debounce((editor, metadata, newCode) => {
+    const { onChange } = this.props;
+    if (onChange) onChange(newCode);
+  }, 10);
+
   static propTypes = {
     code: PropTypes.string.isRequired,
     readOnly: PropTypes.bool,
@@ -42,12 +47,6 @@ class Editor extends React.Component {
   shouldComponentUpdate() {
     return false;
   }
-
-  handleChange = debounce((editor, metadata, newCode) => {
-    if (this.props.onChange) {
-      this.props.onChange(newCode);
-    }
-  }, 10);
 
   render() {
     const { code, readOnly, ...props } = this.props;

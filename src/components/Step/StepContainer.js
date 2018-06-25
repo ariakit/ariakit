@@ -37,7 +37,8 @@ export const toggle = idOrIndex => state =>
 export const previous = () => state => {
   if (hasPrevious()(state)) {
     return { current: state.current - 1 };
-  } else if (state.loop) {
+  }
+  if (state.loop) {
     return { current: state.ids.length - 1 };
   }
   return {};
@@ -46,7 +47,8 @@ export const previous = () => state => {
 export const next = () => state => {
   if (hasNext()(state)) {
     return { current: state.current + 1 };
-  } else if (state.loop) {
+  }
+  if (state.loop) {
     return { current: 0 };
   }
   return {};
@@ -83,7 +85,8 @@ export const unregister = id => state => {
       return { ...previous()(state), ids, ordered };
     }
     return { ...hide()(state), ids, ordered };
-  } else if (state.current >= ids.length) {
+  }
+  if (state.current >= ids.length) {
     return { current: ids.length - 1, ids, ordered };
   }
   return { ids, ordered };

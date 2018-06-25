@@ -22,6 +22,8 @@
     "react/no-array-index-key": "off",
     "react/forbid-prop-types": "off",
     "react/jsx-filename-extension": "off",
+    "react/destructuring-assignment": "off",
+    "react/sort-comp": "off",
     "react/prop-types": ["error", { "skipUndeclared": true }]
   }
 }
