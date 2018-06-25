@@ -20,6 +20,10 @@ const StyledCodeMirror = styled(CodeMirror)`
     padding: 1em;
     height: auto;
 
+    @media (max-width: 768px) {
+      padding: 1em 8px;
+    }
+
     .CodeMirror-lines {
       font-size: 16px;
       line-height: 1.4;

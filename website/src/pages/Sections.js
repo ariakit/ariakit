@@ -13,16 +13,22 @@ const Content = styled(ContentWrapper)`
   display: grid;
   grid-template-columns: 1fr 200px;
   grid-gap: 32px;
-  margin-top: 60px;
+  margin-top: 40px;
   align-items: start;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const StyledMenu = styled(Menu)`
   position: sticky;
-  top: 120px;
+  top: 100px;
   overflow: auto;
   padding-right: 16px;
   max-height: calc(100vh - 136px);
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Sections = ({ location, match }) => (

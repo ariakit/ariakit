@@ -1,5 +1,6 @@
 import React from "react";
-import { styled, Block, Heading, InlineFlex } from "reakit";
+import { styled, Block, Heading } from "reakit";
+import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
@@ -8,50 +9,27 @@ import findSectionByLocation from "../utils/findSectionByLocation";
 import getSectionContent from "../utils/getSectionContent";
 import getSectionUrl from "../utils/getSectionUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
+import SectionUses from "../components/SectionUses";
 
 const Wrapper = styled(Block)`
   overflow: hidden;
-
-  [class*="rsg--code"] {
-    font-family: "Fira Code", monospace;
-  }
-
-  p > code {
-    background-color: rgba(0, 0, 0, 0.05);
-    padding: 2px 5px;
-    font-family: "Fira Code", monospace;
-    cursor: inherit;
-  }
-
-  [class*="rsg--pre"] {
-    width: 100%;
-    line-height: 1.2rem;
-    padding: 1em;
-    height: auto;
-    max-width: 100%;
-    margin-bottom: 20px;
-
-    code {
-      font-size: 14px;
-      @media screen and (max-width: 640px) {
-        font-size: 13px;
-      }
-    }
-
-    &:not([class*="preview"]) {
-      overflow: auto;
-    }
-  }
-
-  [class*="CodeWrapper"]:first-of-type {
-    margin-top: 0;
+  @media (max-width: 768px) {
+    overflow: auto;
+    margin-left: -8px;
+    width: 100vw;
   }
 `;
 
-const Name = styled(Heading)``;
+const Name = styled(Heading)`
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
+`;
 
-const PathLine = styled(InlineFlex)`
-  margin-bottom: 3em;
+const Content = styled(Block)`
+  border-top: 1px solid ${prop("theme.grayLightest")};
+  margin-top: 1em;
+  padding-top: 1em;
 `;
 
 const sectionMap = {
@@ -70,13 +48,18 @@ const Section = ({ location, ...props }) => (
         return (
           <Wrapper {...props}>
             <Name>{section.name}</Name>
-            <PathLine>{section.pathLine}</PathLine>
-            {sectionContent.map(
-              ({ type, ...rest }, i) =>
-                sectionMap[type]
-                  ? sectionMap[type](rest, section.name + i)
-                  : null
+            {section.name !== "Base" && <SectionUses section={section} />}
+            {section.name !== "Base" && (
+              <SectionUses usedBy section={section} />
             )}
+            <Content>
+              {sectionContent.map(
+                ({ type, ...rest }, i) =>
+                  sectionMap[type]
+                    ? sectionMap[type](rest, section.name + i)
+                    : null
+              )}
+            </Content>
           </Wrapper>
         );
       }
