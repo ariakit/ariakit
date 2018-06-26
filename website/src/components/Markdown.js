@@ -8,11 +8,16 @@ import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import Editor from "./Editor";
 
 const StyledParagraph = styled(Paragraph)`
-  padding: 0 8px;
+  line-height: 1.5;
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
 `;
 
 const StyledHeading = styled(Heading)`
-  padding: 0 8px;
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
 `;
 
 const Anchor = ({ href, ...props }) => {
