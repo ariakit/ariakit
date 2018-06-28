@@ -32,6 +32,12 @@ const Content = styled(Block)`
   padding-top: 1em;
 `;
 
+const StyledSectionUses = styled(SectionUses)`
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
+`;
+
 const sectionMap = {
   markdown: ({ content }, key) => <Markdown text={content} key={key} />,
   code: ({ content, evalInContext }, key) => (
@@ -48,9 +54,9 @@ const Section = ({ location, ...props }) => (
         return (
           <Wrapper {...props}>
             <Name>{section.name}</Name>
-            {section.name !== "Base" && <SectionUses section={section} />}
+            {section.name !== "Base" && <StyledSectionUses section={section} />}
             {section.name !== "Base" && (
-              <SectionUses usedBy section={section} />
+              <StyledSectionUses usedBy section={section} />
             )}
             <Content>
               {sectionContent.map(
