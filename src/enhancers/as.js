@@ -3,11 +3,9 @@ import React from "react";
 import { isStyledComponent } from "styled-components";
 import omit from "lodash/omit";
 import pickCSSProps from "../utils/pickCSSProps";
-import isSVGElement from "../utils/isSVGElement";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
 import pickHTMLProps from "../utils/pickHTMLProps";
-import pickSVGProps from "../utils/pickSVGProps";
 
 // eslint-disable-next-line no-use-before-define
 const As = ({ nextAs, ...props }) => render({ ...props, as: nextAs });
@@ -33,7 +31,6 @@ const render = ({ as: t, ...props }) => {
       ? { dangerouslySetInnerHTML }
       : {};
     const allProps = {
-      ...(isSVGElement(T) && pickSVGProps(propsWithStyle)),
       ...pickHTMLProps(T, propsWithStyle),
       ...otherProps,
       className
