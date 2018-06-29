@@ -28,6 +28,7 @@ export Paragraph from "./Paragraph";
 export Perpendicular from "./Perpendicular";
 export Popover from "./Popover";
 export Shadow from "./Shadow";
+export Sidebar from "./Sidebar";
 export Step from "./Step";
 export Table from "./Table";
 export Tabs from "./Tabs";
