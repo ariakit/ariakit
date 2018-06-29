@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import as, { Flex } from "../../src";
+import as, { styled, Flex } from "../../src";
 import Menu from "./Menu";
 
-const Wrapper = Flex.extend`
+const Wrapper = styled(Flex)`
   align-items: flex-start;
   width: 100%;
   max-width: 1200px;
@@ -11,7 +11,7 @@ const Wrapper = Flex.extend`
   margin: 0 auto;
 `;
 
-const StyledMenu = Menu.extend`
+const StyledMenu = styled(Menu)`
   position: sticky;
   top: 16px;
   min-width: 214px;

@@ -1,11 +1,11 @@
 import Popover from "./Popover";
 import PopoverArrow from "./PopoverArrow";
-import PopoverState from "./PopoverState";
+import PopoverContainer from "./PopoverContainer";
 import PopoverToggle from "./PopoverToggle";
 import Hidden from "../Hidden";
 
 Popover.Arrow = PopoverArrow;
-Popover.State = PopoverState;
+Popover.Container = PopoverContainer;
 Popover.Toggle = PopoverToggle;
 Popover.Show = Hidden.Show;
 Popover.Hide = Hidden.Hide;

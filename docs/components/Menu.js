@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import as, { Block } from "../../src";
+import as, { styled, Block } from "../../src";
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   padding-right: 32px;
   padding: 0 32px 0 0;
   line-height: 150%;

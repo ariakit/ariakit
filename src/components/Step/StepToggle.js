@@ -1,23 +1,25 @@
 import React from "react";
 import PropTypes from "prop-types";
-import flow from "lodash/flow";
+import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
+import callAll from "../../utils/callAll";
 import Base from "../Base";
 
-const toggle = props => () => props.toggle(props.step);
+const toggle = props => () => props.toggle && props.toggle(props.step);
 
-const StepToggle = ({ onClick, ...props }) => (
-  <Base onClick={flow(toggle(props), onClick)} {...props} />
+const Component = ({ onClick, ...props }) => (
+  <Base onClick={callAll(toggle(props), onClick)} {...props} />
 );
+
+const StepToggle = styled(Component)`
+  ${prop("theme.StepToggle")};
+`;
 
 StepToggle.propTypes = {
   toggle: PropTypes.func.isRequired,
   step: PropTypes.string.isRequired,
   onClick: PropTypes.func
-};
-
-StepToggle.defaultProps = {
-  onClick: () => {}
 };
 
 export default as("button")(StepToggle);

@@ -2,7 +2,7 @@ import kebabCase from "lodash/kebabCase";
 
 export const bool = (cssProp, validComponentProps) => props => {
   const keys = Object.keys(props)
-    .filter(k => validComponentProps.includes(k))
+    .filter(k => validComponentProps.indexOf(k) >= 0)
     .filter(k => !!props[k])
     .map(kebabCase);
   if (keys.length) {

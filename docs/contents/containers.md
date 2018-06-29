@@ -37,14 +37,14 @@ class Example extends React.Component {
 <Example />
 ```
 
-As a convenience, `reas` provides state components so you don't need to worry about it. Here's the same as above but using `Hidden.State` (refresh the page if you have already pressed esc):
+As a convenience, `reas` provides containers so you don't need to worry about it. Here's the same as above but using `Hidden.Container` (refresh the page if you have already pressed esc):
 ```jsx { "showCode": true }
 const { Hidden } = require('reas');
 
 const initialState = { visible: true }
 
 const Example = () => (
-  <Hidden.State initialState={initialState}>
+  <Hidden.Container initialState={initialState}>
     {({ visible, hide }) => (
       <Hidden
         destroy
@@ -55,7 +55,7 @@ const Example = () => (
         Press esc
       </Hidden>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />
@@ -80,7 +80,7 @@ const App = () => (
 render(<App />, document.getElementById('root'))
 ```
 
-On your components, you can use the same `Component.State`, but with an additional property `context`:
+On your components, you can use the same `Component.Container`, but with an additional property `context`:
 
 ```jsx static
 import React from 'react'
@@ -89,7 +89,7 @@ import { Hidden } from 'reas'
 const initialState = { visible: true }
 
 const MyHidden = () => (
-  <Hidden.State context="foo" initialState={initialState}>
+  <Hidden.Container context="foo" initialState={initialState}>
     {({ visible, hide }) => (
       <Hidden
         destroy
@@ -100,6 +100,6 @@ const MyHidden = () => (
         Press esc
       </Hidden>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 )
 ```

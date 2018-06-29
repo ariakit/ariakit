@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Perpendicular from "../Perpendicular";
 
@@ -18,6 +19,8 @@ const Tooltip = styled(Perpendicular)`
   *:focus > & {
     opacity: 1;
   }
+
+  ${prop("theme.Tooltip")};
 `;
 
 Tooltip.defaultProps = {

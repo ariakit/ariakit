@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Block } from "../../src";
+import { styled, Block, Code } from "../../src";
 import Banner from "./Banner";
 import Contents from "./Contents";
 import "./globalStyles";
 
-const Wrapper = Block.extend`
+const Wrapper = styled(Block)`
   font-family: sans-serif;
 
   a {
@@ -18,24 +18,25 @@ const Wrapper = Block.extend`
     }
   }
 
-  code {
+  p > code:not(${Code}) {
     background-color: rgba(0, 0, 0, 0.05);
     padding: 2px 5px;
     font-family: "Fira Code", monospace;
     cursor: inherit;
   }
 
-  [class*="rsg--pre-"] {
+  [class*="rsg--pre"] {
     width: 100%;
-    overflow: auto;
 
     code {
-      padding: 0;
-      background: none;
       font-size: 16px;
       @media screen and (max-width: 640px) {
         font-size: 14px;
       }
+    }
+
+    &:not([class*="preview"]) {
+      overflow: auto;
     }
   }
 `;

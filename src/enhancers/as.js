@@ -1,20 +1,23 @@
+/* eslint-disable no-param-reassign */
 import React from "react";
-import styled from "styled-components";
+import { isStyledComponent } from "styled-components";
 import omit from "lodash/omit";
-import { pickHTMLProps, pickSVGProps } from "pick-react-known-prop";
 import pickCSSProps from "../utils/pickCSSProps";
 import isSVGElement from "../utils/isSVGElement";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
+import pickHTMLProps from "../utils/pickHTMLProps";
+import pickSVGProps from "../utils/pickSVGProps";
 
-const Next = ({ nextAs, ...props }) => <Reas {...props} as={nextAs} />;
+// eslint-disable-next-line no-use-before-define
+const As = ({ nextAs, ...props }) => render({ ...props, as: nextAs });
 
-const Reas = ({ as: t, ...props }) => {
+const render = ({ as: t, ...props }) => {
   const T = parseTag(t);
 
   if (Array.isArray(T)) {
-    const FirstT = T[0];
-    return <FirstT as={Next} {...props} nextAs={T.slice(1)} />;
+    const [First, ...others] = T.filter(x => x !== As);
+    return <First {...props} as={As} nextAs={others} />;
   }
 
   const style = pickCSSProps(props);
@@ -22,9 +25,8 @@ const Reas = ({ as: t, ...props }) => {
 
   if (typeof T === "string") {
     const { dangerouslySetInnerHTML, children } = props;
-    const propsWithoutStyle = omit(props, Object.keys(style));
     const propsWithStyle = {
-      ...propsWithoutStyle,
+      ...props,
       ...(style ? { style } : {})
     };
     const otherProps = dangerouslySetInnerHTML
@@ -32,10 +34,11 @@ const Reas = ({ as: t, ...props }) => {
       : {};
     const allProps = {
       ...(isSVGElement(T) && pickSVGProps(propsWithStyle)),
-      ...pickHTMLProps(propsWithStyle),
+      ...pickHTMLProps(T, propsWithStyle),
       ...otherProps,
       className
     };
+
     return (
       <T {...allProps} ref={props.elementRef}>
         {children}
@@ -46,36 +49,44 @@ const Reas = ({ as: t, ...props }) => {
   return <T {...props} className={className} {...(style ? { style } : {})} />;
 };
 
-const getComponentName = component =>
-  component.displayName || component.name || component;
-
-const getDisplayName = ([Component, ...elements]) =>
-  `${getComponentName(Component)}.as(${elements.map(getComponentName)})`;
-
-const getAs = (components, props) =>
-  components.concat(props.as || [], props.nextAs || []);
-
 const as = asComponents => WrappedComponent => {
+  const target = isStyledComponent(WrappedComponent)
+    ? WrappedComponent.target
+    : WrappedComponent;
+
   const components = [].concat(WrappedComponent, asComponents);
 
-  let AsReas = props => (
-    <Reas {...props} as={getAs(components, props)} nextAs={undefined} />
-  );
+  const getComponentName = component =>
+    component.displayName || component.name || component;
 
-  AsReas.displayName = getDisplayName(components);
+  const displayName = `${getComponentName(WrappedComponent)}.as(${[]
+    .concat(asComponents)
+    .map(getComponentName)})`;
 
-  if (WrappedComponent.withComponent) {
-    AsReas = WrappedComponent.withComponent(AsReas);
-    AsReas.displayName = `styled(${getDisplayName(components)})`;
+  const defineProperties = scope => {
+    scope.asComponents = asComponents;
+    scope.as = otherComponents => as(otherComponents)(scope);
+    return scope;
+  };
+
+  if (asComponents === target.asComponents) {
+    return defineProperties(WrappedComponent);
   }
 
-  AsReas.as = otherElements => as(otherElements)(AsReas);
+  const getAs = props => components.concat(props.as || [], props.nextAs || []);
 
-  Object.defineProperty(AsReas, "extend", {
-    value: (...args) => styled(AsReas)(...args)
-  });
+  let Component = props =>
+    render({ ...omit(props, "nextAs"), as: getAs(props) });
 
-  return AsReas;
+  Component.displayName = displayName;
+
+  if (isStyledComponent(WrappedComponent)) {
+    Component = WrappedComponent.withComponent(Component);
+    Component.styledComponentId = WrappedComponent.styledComponentId;
+    Component.displayName = `Styled(${displayName})`;
+  }
+
+  return defineProperties(Component);
 };
 
 export default as;

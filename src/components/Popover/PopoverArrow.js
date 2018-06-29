@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Perpendicular from "../Perpendicular";
 import Arrow from "../Arrow";
@@ -11,6 +12,7 @@ const PopoverArrow = styled(PerpendicularArrowBox)`
   border: inherit;
   border-top: 0;
   font-size: 24px;
+  ${prop("theme.PopoverArrow")};
 `;
 
 PopoverArrow.defaultProps = {

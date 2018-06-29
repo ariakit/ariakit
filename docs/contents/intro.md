@@ -1,5 +1,5 @@
 ### One component is one element
-There's no nested components encapsulated. No need to pass `nestedComponentProps`. You have direct access to any component that can be part of another one, such as `Popover.Arrow`.
+There are no encapsulated nested components. No need to pass `nestedComponentProps`. You have direct access to any component that can be part of another one, such as `Popover.Arrow`.
 ```jsx { "showCode": true, "size": "80px" }
 const { Block, Popover } = require('reas');
 
@@ -47,9 +47,9 @@ const { Button } = require('reas');
 ### A component can be [styled](#styling) by extending another component
 Using [styled-components](https://www.styled-components.com/).
 ```jsx
-const { Button } = require('reas');
+const { styled, Button } = require('reas');
 
-const StyledButton = Button.extend`
+const StyledButton = styled(Button)`
   position: relative;
   background-color: palevioletred;
   color: white;
@@ -69,20 +69,20 @@ const Example = enhance(({ as: T, ...props }) => <T {...props} />);
 <Example as="div" backgroundColor="palevioletred" color="white">Example</Example>
 ```
 
-### A component state can be handled by using [state](#state) components
-State components encapsulate the complexity behind state logic.
+### A component state can be handled by using [container](#containers) components
+Containers encapsulate the complexity behind state logic.
 ```jsx
 const { Block, Button, Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {hidden => (
       <Block>
         <Button onClick={hidden.toggle}>Toggle</Button>
         <Hidden visible={hidden.visible}>Hidden</Hidden>
       </Block>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />
@@ -94,14 +94,14 @@ Behaviors such as `Hidden.Toggle` apply event handlers automatically.
 const { Block, Button, Hidden } = require('reas');
 
 const Example = () => (
-  <Hidden.State>
+  <Hidden.Container>
     {hidden => (
       <Block>
         <Button as={Hidden.Toggle} {...hidden}>Toggle</Button>
         <Hidden {...hidden}>Hidden</Hidden>
       </Block>
     )}
-  </Hidden.State>
+  </Hidden.Container>
 );
 
 <Example />

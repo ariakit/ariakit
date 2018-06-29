@@ -12,10 +12,19 @@
 <a href="https://travis-ci.org/diegohaz/reas"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square" /></a>
 <a href="https://codecov.io/gh/diegohaz/reas/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" /></a>
 
-A minimalist and highly composable UI toolkit built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
+Minimalist and highly composable building blocks built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
 
 - [**Documentation**](https://diegohaz.github.io/reas/)
 - [**Components**](https://diegohaz.github.io/reas/#components)
+
+<br>
+<hr>
+<p align="center">
+If you find this useful, please don't forget to star ⭐️ the repo, as this will help to promote the project.<br>
+Follow me on <a href="https://twitter.com/diegohaz">Twitter</a> and <a href="https://github.com/diegohaz">GitHub</a> to keep updated about this project and <a href="https://github.com/diegohaz?tab=repositories">others</a>.
+</p>
+<hr>
+<br>
 
 ## Install
 
@@ -29,9 +38,7 @@ npm:
 npm install --save reas
 ```
 
-## Examples
-
-### Simple Popover
+## Example
 
 <p align="center">
   <img
@@ -44,24 +51,38 @@ npm install --save reas
 ```jsx
 import React from "react";
 import { render } from "react-dom";
-import { InlineBlock, Button, Popover } from "reas";
+import { Button, Popover } from "reas";
 
 const App = () => (
-  <Popover.State>
+  <Popover.Container>
     {popover => (
-      <InlineBlock relative>
-        <Button as={Popover.Toggle} {...popover}>Toggle</Button>
+      <Button as={Popover.Toggle} {...popover}>
+        Button
         <Popover {...popover}>
           <Popover.Arrow />
           Popover
         </Popover>
-      </InlineBlock>
+      </Button>
     )}
-  </Popover.State>
+  </Popover.Container>
 );
 
 render(<App />, document.getElementById("root"));
 ```
+
+## Performance
+
+Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark) with MacBook Pro (Retina, 13-inch, Late 2013). Clone the repository and run `yarn && yarn benchmark` to see the results.
+
+| Library | ops/sec |
+| ------- | -------:|
+| [react](benchmark/cases/react.js) | 103,029 |
+| [reas (`as`)](benchmark/cases/reas-as.js) | 45,975 |
+| [antd](https://github.com/ant-design/ant-design) | 29,122 |
+| [reas (`Base`)](benchmark/cases/reas-base.js) | 17,071 |
+| [reas (`Button`)](benchmark/cases/reas-button.js) | 12,107 |
+| [material-ui](https://github.com/mui-org/material-ui) | 9,840 |
+| [rebass](https://github.com/jxnblk/rebass) | 7,989 |
 
 
 ## License

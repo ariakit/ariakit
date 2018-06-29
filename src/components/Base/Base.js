@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import { bool } from "../../utils/styledProps";
 import as from "../../enhancers/as";
 
@@ -16,6 +17,7 @@ const Base = styled(Component)`
   font-family: inherit;
   vertical-align: baseline;
   box-sizing: border-box;
+  ${prop("theme.Base")};
   &&& {
     ${bool("position", positions)};
   }
@@ -34,4 +36,4 @@ Base.propTypes = {
   )
 };
 
-export default as("span")(Base);
+export default as("div")(Base);

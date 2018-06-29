@@ -1,11 +1,13 @@
 import React from "react";
 import { mount } from "enzyme";
-import PopoverState from "../PopoverState";
+import PopoverContainer from "../PopoverContainer";
 
 const Base = () => null;
 
-const wrap = (State, props = {}) =>
-  mount(<State {...props}>{popover => <Base popover={popover} />}</State>);
+const wrap = (Container, props = {}) =>
+  mount(
+    <Container {...props}>{popover => <Base popover={popover} />}</Container>
+  );
 
 const getState = wrapper =>
   wrapper
@@ -18,15 +20,15 @@ const ensureState = wrapper => {
   expect(state).toHaveProperty("popoverId", expect.any(String));
 };
 
-const createTests = State => {
+const createTests = Container => {
   test("state", () => {
-    ensureState(wrap(State));
+    ensureState(wrap(Container));
   });
 
   test("popoverId", () => {
-    const wrapper = wrap(State);
+    const wrapper = wrap(Container);
     expect(getState(wrapper).popoverId).toMatch(/^popover\d$/);
   });
 };
 
-describe("PopoverState", () => createTests(PopoverState));
+describe("PopoverContainer", () => createTests(PopoverContainer));

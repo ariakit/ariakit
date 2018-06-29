@@ -3,55 +3,35 @@
 exports[`creates component 1`] = `
 Array [
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
+  "As",
   "span",
 ]
 `;
 
 exports[`creates component 2`] = `
 <Base.as(span)>
-  <Reas
-    as={
+  <Base
+    as={[Function]}
+    nextAs={
       Array [
-        [Function],
         "span",
       ]
     }
   >
-    <Base
-      as={[Function]}
+    <As
+      id="Base"
       nextAs={
         Array [
           "span",
         ]
       }
     >
-      <Next
+      <span
         id="Base"
-        nextAs={
-          Array [
-            "span",
-          ]
-        }
-      >
-        <Reas
-          as={
-            Array [
-              "span",
-            ]
-          }
-          id="Base"
-        >
-          <span
-            id="Base"
-          />
-        </Reas>
-      </Next>
-    </Base>
-  </Reas>
+      />
+    </As>
+  </Base>
 </Base.as(span)>
 `;
 
@@ -62,182 +42,42 @@ exports[`creates component 3`] = `
 
 `;
 
-exports[`creates component by extending another one with extend 1`] = `
-Array [
-  "styled(Derivative.as(div))",
-  "Derivative.as(div)",
-  "Reas",
-  "Derivative",
-  "Base.as(span)",
-  "Reas",
-  "Base",
-  "Next",
-  "Reas",
-  "Next",
-  "Reas",
-  "div",
-]
-`;
-
-exports[`creates component by extending another one with extend 2`] = `
-<styled(Derivative.as(div))>
-  <Derivative.as(div)
-    className="sc-bwzfXH uTxCW"
-  >
-    <Reas
-      as={
-        Array [
-          [Function],
-          "div",
-        ]
-      }
-      className="sc-bwzfXH uTxCW"
-    >
-      <Derivative
-        as={[Function]}
-        className="sc-bwzfXH uTxCW"
-        nextAs={
-          Array [
-            "div",
-          ]
-        }
-      >
-        <Base.as(span)
-          as={[Function]}
-          className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-          nextAs={
-            Array [
-              "div",
-            ]
-          }
-        >
-          <Reas
-            as={
-              Array [
-                [Function],
-                "span",
-                [Function],
-                "div",
-              ]
-            }
-            className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-          >
-            <Base
-              as={[Function]}
-              className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-              nextAs={
-                Array [
-                  [Function],
-                  "div",
-                ]
-              }
-            >
-              <Next
-                className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-                id="Base"
-                nextAs={
-                  Array [
-                    [Function],
-                    "div",
-                  ]
-                }
-              >
-                <Reas
-                  as={
-                    Array [
-                      [Function],
-                      "div",
-                    ]
-                  }
-                  className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-                  id="Base"
-                >
-                  <Next
-                    as={[Function]}
-                    className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-                    id="Base"
-                    nextAs={
-                      Array [
-                        "div",
-                      ]
-                    }
-                  >
-                    <Reas
-                      as={
-                        Array [
-                          "div",
-                        ]
-                      }
-                      className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-                      id="Base"
-                    >
-                      <div
-                        className="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-                        id="Base"
-                      />
-                    </Reas>
-                  </Next>
-                </Reas>
-              </Next>
-            </Base>
-          </Reas>
-        </Base.as(span)>
-      </Derivative>
-    </Reas>
-  </Derivative.as(div)>
-</styled(Derivative.as(div))>
-`;
-
-exports[`creates component by extending another one with extend 3`] = `
-
-<div class="sc-bwzfXH uTxCW sc-bdVaJa bDWFJH"
-     id="Base"
->
-</div>
-
-`;
-
 exports[`creates component by extending another one with styled 1`] = `
 Array [
-  "styled(Derivative.as(div))",
+  "Styled(Derivative.as(div))",
   "Derivative.as(div)",
-  "Reas",
   "Derivative",
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
-  "Next",
-  "Reas",
+  "As",
   "div",
 ]
 `;
 
 exports[`creates component by extending another one with styled 2`] = `
-<styled(Derivative.as(div))>
+<Styled(Derivative.as(div))>
   <Derivative.as(div)
     className="as-test__Derivative-dFAIVE bDuygA"
   >
-    <Reas
-      as={
+    <Derivative
+      as={[Function]}
+      className="as-test__Derivative-dFAIVE bDuygA"
+      nextAs={
         Array [
-          [Function],
           "div",
         ]
       }
-      className="as-test__Derivative-dFAIVE bDuygA"
     >
-      <Derivative
+      <Base.as(span)
         as={[Function]}
-        className="as-test__Derivative-dFAIVE bDuygA"
+        className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
         nextAs={
           Array [
             "div",
           ]
         }
       >
-        <Base.as(span)
+        <Base
           as={[Function]}
           className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
           nextAs={
@@ -246,81 +86,25 @@ exports[`creates component by extending another one with styled 2`] = `
             ]
           }
         >
-          <Reas
-            as={
+          <As
+            className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
+            id="Base"
+            nextAs={
               Array [
-                [Function],
-                "span",
-                [Function],
                 "div",
               ]
             }
-            className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
           >
-            <Base
-              as={[Function]}
-              className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
-              nextAs={
-                Array [
-                  [Function],
-                  "div",
-                ]
-              }
-            >
-              <Next
-                className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
-                id="Base"
-                nextAs={
-                  Array [
-                    [Function],
-                    "div",
-                  ]
-                }
-              >
-                <Reas
-                  as={
-                    Array [
-                      [Function],
-                      "div",
-                    ]
-                  }
-                  className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
-                  id="Base"
-                >
-                  <Next
-                    as={[Function]}
-                    className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
-                    id="Base"
-                    nextAs={
-                      Array [
-                        "div",
-                      ]
-                    }
-                  >
-                    <Reas
-                      as={
-                        Array [
-                          "div",
-                        ]
-                      }
-                      className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
-                      id="Base"
-                    >
-                      <div
-                        className="as-test__Derivative-dFAIVE bDuygA"
-                        id="Base"
-                      />
-                    </Reas>
-                  </Next>
-                </Reas>
-              </Next>
-            </Base>
-          </Reas>
-        </Base.as(span)>
-      </Derivative>
-    </Reas>
+            <div
+              className="as-test__Derivative-dFAIVE bDuygA"
+              id="Base"
+            />
+          </As>
+        </Base>
+      </Base.as(span)>
+    </Derivative>
   </Derivative.as(div)>
-</styled(Derivative.as(div))>
+</Styled(Derivative.as(div))>
 `;
 
 exports[`creates component by extending another one with styled 3`] = `
@@ -335,10 +119,8 @@ exports[`creates component by extending another one with styled 3`] = `
 exports[`creates component passing property as 1`] = `
 Array [
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
+  "As",
   "div",
 ]
 `;
@@ -347,46 +129,27 @@ exports[`creates component passing property as 2`] = `
 <Base.as(span)
   as="div"
 >
-  <Reas
-    as={
+  <Base
+    as={[Function]}
+    nextAs={
       Array [
-        [Function],
-        "span",
         "div",
       ]
     }
   >
-    <Base
-      as={[Function]}
+    <As
+      id="Base"
       nextAs={
         Array [
           "div",
         ]
       }
     >
-      <Next
+      <div
         id="Base"
-        nextAs={
-          Array [
-            "div",
-          ]
-        }
-      >
-        <Reas
-          as={
-            Array [
-              "div",
-            ]
-          }
-          id="Base"
-        >
-          <div
-            id="Base"
-          />
-        </Reas>
-      </Next>
-    </Base>
-  </Reas>
+      />
+    </As>
+  </Base>
 </Base.as(span)>
 `;
 
@@ -400,10 +163,8 @@ exports[`creates component passing property as 3`] = `
 exports[`creates component passing property as with another component 1`] = `
 Array [
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
+  "As",
   "Derivative",
   "div",
 ]
@@ -413,50 +174,31 @@ exports[`creates component passing property as with another component 2`] = `
 <Base.as(span)
   as={[Function]}
 >
-  <Reas
-    as={
+  <Base
+    as={[Function]}
+    nextAs={
       Array [
-        [Function],
-        "span",
         [Function],
       ]
     }
   >
-    <Base
-      as={[Function]}
+    <As
+      id="Base"
       nextAs={
         Array [
           [Function],
         ]
       }
     >
-      <Next
+      <Derivative
         id="Base"
-        nextAs={
-          Array [
-            [Function],
-          ]
-        }
       >
-        <Reas
-          as={
-            Array [
-              [Function],
-            ]
-          }
+        <div
           id="Base"
-        >
-          <Derivative
-            id="Base"
-          >
-            <div
-              id="Base"
-            />
-          </Derivative>
-        </Reas>
-      </Next>
-    </Base>
-  </Reas>
+        />
+      </Derivative>
+    </As>
+  </Base>
 </Base.as(span)>
 `;
 
@@ -470,13 +212,10 @@ exports[`creates component passing property as with another component 3`] = `
 exports[`creates component passing property as with array of components 1`] = `
 Array [
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
+  "As",
   "Derivative",
-  "Next",
-  "Reas",
+  "As",
   "p",
 ]
 `;
@@ -490,18 +229,17 @@ exports[`creates component passing property as with array of components 2`] = `
     ]
   }
 >
-  <Reas
-    as={
+  <Base
+    as={[Function]}
+    nextAs={
       Array [
-        [Function],
-        "span",
         [Function],
         "p",
       ]
     }
   >
-    <Base
-      as={[Function]}
+    <As
+      id="Base"
       nextAs={
         Array [
           [Function],
@@ -509,59 +247,30 @@ exports[`creates component passing property as with array of components 2`] = `
         ]
       }
     >
-      <Next
+      <Derivative
+        as={[Function]}
         id="Base"
         nextAs={
           Array [
-            [Function],
             "p",
           ]
         }
       >
-        <Reas
-          as={
+        <As
+          id="Derivative"
+          nextAs={
             Array [
-              [Function],
               "p",
             ]
           }
-          id="Base"
         >
-          <Derivative
-            as={[Function]}
-            id="Base"
-            nextAs={
-              Array [
-                "p",
-              ]
-            }
-          >
-            <Next
-              id="Derivative"
-              nextAs={
-                Array [
-                  "p",
-                ]
-              }
-            >
-              <Reas
-                as={
-                  Array [
-                    "p",
-                  ]
-                }
-                id="Derivative"
-              >
-                <p
-                  id="Derivative"
-                />
-              </Reas>
-            </Next>
-          </Derivative>
-        </Reas>
-      </Next>
-    </Base>
-  </Reas>
+          <p
+            id="Derivative"
+          />
+        </As>
+      </Derivative>
+    </As>
+  </Base>
 </Base.as(span)>
 `;
 
@@ -575,29 +284,24 @@ exports[`creates component passing property as with array of components 3`] = `
 exports[`creates component using as static method 1`] = `
 Array [
   "Base.as(span).as(p)",
-  "Reas",
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
-  "Next",
-  "Reas",
+  "As",
   "p",
 ]
 `;
 
 exports[`creates component using as static method 2`] = `
 <Base.as(span).as(p)>
-  <Reas
-    as={
+  <Base.as(span)
+    as={[Function]}
+    nextAs={
       Array [
-        [Function],
         "p",
       ]
     }
   >
-    <Base.as(span)
+    <Base
       as={[Function]}
       nextAs={
         Array [
@@ -605,71 +309,20 @@ exports[`creates component using as static method 2`] = `
         ]
       }
     >
-      <Reas
-        as={
+      <As
+        id="Base"
+        nextAs={
           Array [
-            [Function],
-            "span",
-            [Function],
             "p",
           ]
         }
       >
-        <Base
-          as={[Function]}
-          nextAs={
-            Array [
-              [Function],
-              "p",
-            ]
-          }
-        >
-          <Next
-            id="Base"
-            nextAs={
-              Array [
-                [Function],
-                "p",
-              ]
-            }
-          >
-            <Reas
-              as={
-                Array [
-                  [Function],
-                  "p",
-                ]
-              }
-              id="Base"
-            >
-              <Next
-                as={[Function]}
-                id="Base"
-                nextAs={
-                  Array [
-                    "p",
-                  ]
-                }
-              >
-                <Reas
-                  as={
-                    Array [
-                      "p",
-                    ]
-                  }
-                  id="Base"
-                >
-                  <p
-                    id="Base"
-                  />
-                </Reas>
-              </Next>
-            </Reas>
-          </Next>
-        </Base>
-      </Reas>
-    </Base.as(span)>
-  </Reas>
+        <p
+          id="Base"
+        />
+      </As>
+    </Base>
+  </Base.as(span)>
 </Base.as(span).as(p)>
 `;
 
@@ -683,170 +336,21 @@ exports[`creates component using as static method 3`] = `
 exports[`creates component using as static method with array of components 1`] = `
 Array [
   "Base.as(span).as(Derivative,p)",
-  "Reas",
   "Base.as(span)",
-  "Reas",
   "Base",
-  "Next",
-  "Reas",
-  "Next",
-  "Reas",
+  "As",
   "Derivative",
-  "Next",
-  "Reas",
+  "As",
   "p",
 ]
 `;
 
 exports[`creates component using as static method with array of components 2`] = `
 <Base.as(span).as(Derivative,p)>
-  <Reas
-    as={
+  <Base.as(span)
+    as={[Function]}
+    nextAs={
       Array [
-        [Function],
-        [Function],
-        "p",
-      ]
-    }
-  >
-    <Base.as(span)
-      as={[Function]}
-      nextAs={
-        Array [
-          [Function],
-          "p",
-        ]
-      }
-    >
-      <Reas
-        as={
-          Array [
-            [Function],
-            "span",
-            [Function],
-            [Function],
-            "p",
-          ]
-        }
-      >
-        <Base
-          as={[Function]}
-          nextAs={
-            Array [
-              [Function],
-              [Function],
-              "p",
-            ]
-          }
-        >
-          <Next
-            id="Base"
-            nextAs={
-              Array [
-                [Function],
-                [Function],
-                "p",
-              ]
-            }
-          >
-            <Reas
-              as={
-                Array [
-                  [Function],
-                  [Function],
-                  "p",
-                ]
-              }
-              id="Base"
-            >
-              <Next
-                as={[Function]}
-                id="Base"
-                nextAs={
-                  Array [
-                    [Function],
-                    "p",
-                  ]
-                }
-              >
-                <Reas
-                  as={
-                    Array [
-                      [Function],
-                      "p",
-                    ]
-                  }
-                  id="Base"
-                >
-                  <Derivative
-                    as={[Function]}
-                    id="Base"
-                    nextAs={
-                      Array [
-                        "p",
-                      ]
-                    }
-                  >
-                    <Next
-                      id="Derivative"
-                      nextAs={
-                        Array [
-                          "p",
-                        ]
-                      }
-                    >
-                      <Reas
-                        as={
-                          Array [
-                            "p",
-                          ]
-                        }
-                        id="Derivative"
-                      >
-                        <p
-                          id="Derivative"
-                        />
-                      </Reas>
-                    </Next>
-                  </Derivative>
-                </Reas>
-              </Next>
-            </Reas>
-          </Next>
-        </Base>
-      </Reas>
-    </Base.as(span)>
-  </Reas>
-</Base.as(span).as(Derivative,p)>
-`;
-
-exports[`creates component using as static method with array of components 3`] = `
-
-<p id="Derivative">
-</p>
-
-`;
-
-exports[`creates component with array of components 1`] = `
-Array [
-  "Base.as(Derivative,p)",
-  "Reas",
-  "Base",
-  "Next",
-  "Reas",
-  "Derivative",
-  "Next",
-  "Reas",
-  "p",
-]
-`;
-
-exports[`creates component with array of components 2`] = `
-<Base.as(Derivative,p)>
-  <Reas
-    as={
-      Array [
-        [Function],
         [Function],
         "p",
       ]
@@ -861,7 +365,7 @@ exports[`creates component with array of components 2`] = `
         ]
       }
     >
-      <Next
+      <As
         id="Base"
         nextAs={
           Array [
@@ -870,50 +374,96 @@ exports[`creates component with array of components 2`] = `
           ]
         }
       >
-        <Reas
-          as={
+        <Derivative
+          as={[Function]}
+          id="Base"
+          nextAs={
             Array [
-              [Function],
               "p",
             ]
           }
-          id="Base"
         >
-          <Derivative
-            as={[Function]}
-            id="Base"
+          <As
+            id="Derivative"
             nextAs={
               Array [
                 "p",
               ]
             }
           >
-            <Next
+            <p
               id="Derivative"
-              nextAs={
-                Array [
-                  "p",
-                ]
-              }
-            >
-              <Reas
-                as={
-                  Array [
-                    "p",
-                  ]
-                }
-                id="Derivative"
-              >
-                <p
-                  id="Derivative"
-                />
-              </Reas>
-            </Next>
-          </Derivative>
-        </Reas>
-      </Next>
+            />
+          </As>
+        </Derivative>
+      </As>
     </Base>
-  </Reas>
+  </Base.as(span)>
+</Base.as(span).as(Derivative,p)>
+`;
+
+exports[`creates component using as static method with array of components 3`] = `
+
+<p id="Derivative">
+</p>
+
+`;
+
+exports[`creates component with array of components 1`] = `
+Array [
+  "Base.as(Derivative,p)",
+  "Base",
+  "As",
+  "Derivative",
+  "As",
+  "p",
+]
+`;
+
+exports[`creates component with array of components 2`] = `
+<Base.as(Derivative,p)>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        [Function],
+        "p",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          [Function],
+          "p",
+        ]
+      }
+    >
+      <Derivative
+        as={[Function]}
+        id="Base"
+        nextAs={
+          Array [
+            "p",
+          ]
+        }
+      >
+        <As
+          id="Derivative"
+          nextAs={
+            Array [
+              "p",
+            ]
+          }
+        >
+          <p
+            id="Derivative"
+          />
+        </As>
+      </Derivative>
+    </As>
+  </Base>
 </Base.as(Derivative,p)>
 `;
 
@@ -921,6 +471,48 @@ exports[`creates component with array of components 3`] = `
 
 <p id="Derivative">
 </p>
+
+`;
+
+exports[`does not create another component if asComponents are equal 1`] = `
+Array [
+  "Base.as(div)",
+  "Base",
+  "As",
+  "div",
+]
+`;
+
+exports[`does not create another component if asComponents are equal 2`] = `
+<Base.as(div)>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        "div",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          "div",
+        ]
+      }
+    >
+      <div
+        id="Base"
+      />
+    </As>
+  </Base>
+</Base.as(div)>
+`;
+
+exports[`does not create another component if asComponents are equal 3`] = `
+
+<div id="Base">
+</div>
 
 `;
 
@@ -932,7 +524,7 @@ exports[`passes down elementRef 1`] = `
 
 exports[`passes down elementRef when extended 1`] = `
 <span
-  class="sc-htpNat KtFsv"
+  class="as-test__BaseComponent-JKudl cyoGEe"
   id="Base"
 />
 `;

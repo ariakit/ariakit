@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import FaExternalLink from "react-icons/lib/fa/external-link";
-import as, { Inline, InlineFlex } from "../../src";
+import as, { styled, Inline, InlineFlex } from "../../src";
 
-const Wrapper = InlineFlex.extend`
+const Wrapper = styled(InlineFlex)`
   text-decoration: none;
   font-weight: 500;
   color: #4dbcfc !important;
