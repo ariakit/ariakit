@@ -18,9 +18,6 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
-  role: "dialog",
-  "aria-modal": true,
-  hideOnEsc: true,
   align: "left"
 };
 
