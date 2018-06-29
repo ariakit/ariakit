@@ -1,25 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Hidden from "../Hidden";
-import Box from "../Box";
-
-const HiddenBox = Hidden.as(Box);
 
 class Component extends React.Component {
   componentDidMount() {
-    document.body.appendChild(this.container);
+    document.body.appendChild(this.wrapper);
   }
 
   componentWillUnmount() {
-    document.body.removeChild(this.container);
+    document.body.removeChild(this.wrapper);
   }
 
-  container = document && document.createElement("div");
+  wrapper = document && document.createElement("div");
 
   render() {
-    return ReactDOM.createPortal(<HiddenBox {...this.props} />, this.container);
+    return ReactDOM.createPortal(<Hidden {...this.props} />, this.wrapper);
   }
 }
 
@@ -29,7 +27,8 @@ const Overlay = styled(Component)`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 999;
+  z-index: 19900410;
+  ${prop("theme.Overlay")};
 `;
 
 Overlay.defaultProps = {

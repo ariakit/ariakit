@@ -2,7 +2,7 @@
 const { Block, Button, Backdrop } = require('reas');
 
 const Example = () => (
-  <Overlay.State>
+  <Overlay.Container>
     {overlay => (
       <Block>
         <Button as={Overlay.Show} {...overlay}>Click me</Button>
@@ -10,7 +10,7 @@ const Example = () => (
         <Overlay {...overlay}>Overlay</Overlay>
       </Block>
     )}
-  </Overlay.State>
+  </Overlay.Container>
 );
 
 <Example />
