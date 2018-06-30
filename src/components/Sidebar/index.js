@@ -1,9 +1,12 @@
 import Sidebar from "./Sidebar";
-import Overlay from "../Overlay";
+import SidebarContainer from "./SidebarContainer";
+import SidebarToggle from "./SidebarToggle";
+import SidebarShow from "./SidebarShow";
+import SidebarHide from "./SidebarHide";
 
-Sidebar.Container = Overlay.Container;
-Sidebar.Toggle = Overlay.Toggle;
-Sidebar.Show = Overlay.Show;
-Sidebar.Hide = Overlay.Hide;
+Sidebar.Container = SidebarContainer;
+Sidebar.Toggle = SidebarToggle;
+Sidebar.Show = SidebarShow;
+Sidebar.Hide = SidebarHide;
 
 export default Sidebar;
