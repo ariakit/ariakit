@@ -11,6 +11,8 @@ const Backdrop = styled(Hidden)`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 998;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -moz-tap-highlight-color: rgba(0, 0, 0, 0);
   ${prop("theme.Backdrop")};
 `;
 

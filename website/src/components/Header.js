@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Flex, Grid, Link } from "reakit";
+import { styled, Flex, Grid, Link, Sidebar, Backdrop } from "reakit";
 import { prop } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
@@ -11,12 +11,14 @@ import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "../elements/Icon";
 import HeaderNavigation from "./HeaderNavigation";
+import Menu from "./Menu";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 
 const Wrapper = styled(Flex)`
   width: 100%;
   justify-content: center;
   background-color: white;
-  z-index: 99999;
+  z-index: 9999;
 `;
 
 const Layout = styled(Grid)`
@@ -65,9 +67,28 @@ const Desktop = () => (
 
 const Mobile = () => (
   <React.Fragment>
-    <Grid.Item as={ButtonTransparent} area="menu">
-      <Icon as={MenuIcon} />
-    </Grid.Item>
+    <Sidebar.Container>
+      {sidebar => (
+        <React.Fragment>
+          <Grid.Item
+            as={[Sidebar.Toggle, ButtonTransparent]}
+            {...sidebar}
+            area="menu"
+          >
+            <Icon as={MenuIcon} />
+          </Grid.Item>
+          <Backdrop as={Sidebar.Hide} zIndex={99999} {...sidebar} />
+          <StyleguidistContainer>
+            {({ sections }) => (
+              <Sidebar {...sidebar} destroy overflow="auto">
+                <Menu section={sections[0]} />
+                <Menu section={sections[1]} />
+              </Sidebar>
+            )}
+          </StyleguidistContainer>
+        </React.Fragment>
+      )}
+    </Sidebar.Container>
     <Grid.Item area="logo">
       <LogoLink to="/">
         <Logo height={26} />
