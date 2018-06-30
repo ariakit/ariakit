@@ -7370,8 +7370,8 @@ react-known-props@^2.0.0:
   resolved "https://registry.yarnpkg.com/react-known-props/-/react-known-props-2.0.1.tgz#4fc3e9a285ff510ac758746eadf81e7a8ad9b484"
 
 react-known-props@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/react-known-props/-/react-known-props-2.2.0.tgz#83b36f6b7d4366136de49bd209b45e5e0ec16b01"
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-known-props/-/react-known-props-2.3.0.tgz#c67972f9f669d3546cfc4dbb63b0cc2ea7201a40"
 
 react-reconciler@^0.7.0:
   version "0.7.0"
