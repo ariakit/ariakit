@@ -1,3 +1,10 @@
+<!-- Description -->
+
+Tooltip is composed from Perpendicular.
+It displays a tooltip when the parent element is hovered or receives focus.
+By default it renders as a `<div>`.
+
+<!-- Minimal JSX to showcase component -->
 ```jsx
 const { Button } = require('reakit');
 
@@ -7,6 +14,18 @@ const { Button } = require('reakit');
 </Button>
 ```
 
+Rendered HTML.
+```html
+<div>
+  <div class="Button-kDSBcD eKEElF Box-cwadsP fBQxeS Base-gxTqDr dXMyxz" role="button" tabindex="0">Hover me
+    <div class="Tooltip-fPHSWX bgARGo Perpendicular-dUeEhm fCaXcc Base-gxTqDr dXMyxz" role="tooltip">Tooltip</div>
+  </div>
+</div>
+```
+
+Tooltip.Arrow can be used to add an arrow to the tooltip.
+Add it as a child of Tooltip.
+
 ```jsx
 const { Button } = require('reakit');
 
@@ -15,6 +34,8 @@ const { Button } = require('reakit');
   <Tooltip><Tooltip.Arrow />Tooltip</Tooltip>
 </Button>
 ```
+
+Multiple Tooltips are possible.
 
 ```jsx
 const { Button } = require('reakit');
@@ -28,14 +49,16 @@ const { Button } = require('reakit');
 </Button>
 ```
 
+Basic styling via props.
+
 ```jsx
 const { Button } = require('reakit');
 
 <Button>
-  Hover me
+  Rose
   <Tooltip backgroundColor="palevioletred" borderColor="palevioletred">
     <Tooltip.Arrow color="palevioletred" />
-    Tooltip
+    A type of flower: 🌹
   </Tooltip>
 </Button>
 ```
