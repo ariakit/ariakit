@@ -11,6 +11,7 @@ import "codemirror/theme/dracula.css";
 import "codemirror/theme/oceanic-next.css";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import ViewportContainer from "../containers/ViewportContainer";
+import requireToImport from "../utils/requireToImport";
 
 const StyledCodeMirror = styled(CodeMirror)`
   margin-bottom: 2em;
@@ -24,10 +25,13 @@ const StyledCodeMirror = styled(CodeMirror)`
       padding: 1em 8px;
     }
 
+    .CodeMirror-cursors {
+      ${ifProp("options.readOnly", "display: none")};
+    }
+
     .CodeMirror-lines {
       font-size: 16px;
       line-height: 1.4;
-      ${ifProp("options.readOnly", "cursor: default")};
 
       @media (max-width: 768px) {
         font-size: 14px;
@@ -40,7 +44,7 @@ class Editor extends React.Component {
   handleChange = debounce((editor, metadata, newCode) => {
     const { onChange } = this.props;
     if (onChange) onChange(newCode);
-  }, 10);
+  }, 500);
 
   static propTypes = {
     code: PropTypes.string.isRequired,
@@ -61,13 +65,13 @@ class Editor extends React.Component {
             {({ width }) => (
               <StyledCodeMirror
                 {...props}
-                value={code}
+                value={requireToImport(code)}
                 onChange={this.handleChange}
                 options={{
                   ...config.editorConfig,
                   tabSize: 2,
                   theme: readOnly && width > 768 ? "oceanic-next" : "dracula",
-                  readOnly: width <= 768 || readOnly ? "nocursor" : false
+                  readOnly: width <= 768 ? "nocursor" : readOnly
                 }}
               />
             )}

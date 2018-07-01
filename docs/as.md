@@ -1,41 +1,54 @@
-`as` is the base method of ReaKit. Understanding how it works is all you need to start using the library.
+`as` is one of the most powerful functions of ReaKit. This leverages composability in React and provides a nice way to create new components by composing many others.
 
-The first usage of `as` is enhancing components. With that, you can take advantage of all ReaKit features on any component.
+Your first contact with `as` will be most probably with the prop, changing the underlying element of a component:
+```jsx
+import { Button } from "reakit";
 
-```jsx static
-import React from 'react'
-import as from 'reakit'
-
-const MyComponent = ({ as: T, ...props }) => <T {...props} />
-
-const enhance = as('span')
-
-export default enhance(MyComponent)
+<Button as="a" href="https://github.com/reakit/reakit" target="_blank">
+  Go to GitHub
+</Button>
 ```
 
-<br />
-The second way is by calling `as` from an enhanced component. Thus, you can combine it with any other component. This is specially useful when you need to apply [behaviors](#behaviors) to your components.
+You can pass HTML string elements, other React components or an array of both.
 
-```jsx static
-import { Hidden } from 'reakit'
-import { Link } from 'react-router-dom'
-import MyComponent from './MyComponent'
+You can use the `as` enhancer to create new components and take advantage of all ReaKit features:
 
-const MyComponentDiv = MyComponent.as('div')
-const MyComponentLink = MyComponent.as(Link)
-const MyComponentToggleLink = MyComponent.as([Hidden.Toggle, Link])
-const MyComponentToggleLinkDiv = MyComponent.as([Hidden.Toggle, Link, 'div'])
+```jsx
+import { as, Button } from 'reakit'
+
+const MyComponent = as("span")(
+  ({ as: T, ...props }) => <T {...props} />
+);
+
+<MyComponent 
+  as={[Button, "a"]} 
+  href="https://github.com/reakit/reakit" 
+  target="_blank"
+>
+  GitHub
+</MyComponent>
 ```
 
-<br />
-Finally, you can use it as a prop on the enhanced component.
+That means you can also use it to enhance a ReaKit component with `as` and change what it renders:
 
-```jsx static
-import { Hidden } from 'reakit'
-import { Link } from 'react-router-dom'
-import MyComponent from './MyComponent'
+```jsx
+import { as, Button } from 'reakit'
 
-const AnotherComponent = () => (
-  <MyComponent as={[Hidden.Toggle, Link, 'div']} />
-)
+const LinkButton = as("a")(Button);
+
+<LinkButton href="https://github.com/reakit/reakit" target="_blank">
+  GitHub
+</LinkButton>
+```
+
+Finally, all enhanced components expose an `as` static method, which has the same API as the other versions:
+
+```jsx
+import { Button } from "reakit";
+
+const LinkButton = Button.as("a");
+
+<LinkButton href="https://github.com/reakit/reakit" target="_blank">
+  GitHub
+</LinkButton>
 ```

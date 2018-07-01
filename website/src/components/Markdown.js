@@ -6,6 +6,7 @@ import { styled, Paragraph, Link, Heading, List, Code } from "reakit";
 import { Link as RouterLink } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import Editor from "./Editor";
+import Blockquote from "../elements/Blockquote";
 
 const StyledParagraph = styled(Paragraph)`
   line-height: 1.5;
@@ -47,6 +48,7 @@ const overrides = {
   ul: List,
   code: Code,
   pre: CodeBlock,
+  blockquote: Blockquote,
   ol: asComponent(List, "ol"),
   h1: asComponent(StyledHeading, "h1"),
   h2: asComponent(StyledHeading, "h2"),

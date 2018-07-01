@@ -12,7 +12,6 @@ import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
 
 const Wrapper = styled(Block)`
-  overflow: hidden;
   @media (max-width: 768px) {
     overflow: auto;
     margin-left: -8px;

@@ -12,6 +12,7 @@ const {
   devServer,
   sourceMaps
 } = require("webpack-blocks");
+const importToRequire = require("./website/src/utils/importToRequire");
 
 module.exports = {
   title: "ReaKit",
@@ -38,6 +39,12 @@ module.exports = {
     return {
       ...docs,
       uses
+    };
+  },
+  updateExample(props) {
+    return {
+      ...props,
+      content: importToRequire(props.content)
     };
   },
   logger: {
@@ -73,21 +80,28 @@ module.exports = {
       name: "Guide",
       sections: [
         {
-          name: "Install",
-          content: "docs/install.md",
+          name: "Get Started",
+          content: "docs/get-started.md"
+        },
+        {
+          name: "Principles",
           sections: [
             {
-              name: "Fuck",
-              content: "docs/create-react-app.md"
+              name: "Composability",
+              content: "docs/composability.md"
+            },
+            {
+              name: "Accessibility",
+              content: "docs/accessibility.md"
+            },
+            {
+              name: "Reliability",
+              content: "docs/reliability.md"
             }
           ]
         },
         {
-          name: "Create React App",
-          content: "docs/create-react-app.md"
-        },
-        {
-          name: "{as}",
+          name: "as",
           content: "docs/as.md"
         },
         {
@@ -97,10 +111,6 @@ module.exports = {
         {
           name: "State Containers",
           content: "docs/state-containers.md"
-        },
-        {
-          name: "Behaviors",
-          content: "docs/behaviors.md"
         }
       ]
     },

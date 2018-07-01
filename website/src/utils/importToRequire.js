@@ -7,4 +7,4 @@ const importToRequire = string =>
       "const $1 = require($2).default || require($2);"
     );
 
-export default importToRequire;
+module.exports = importToRequire;
