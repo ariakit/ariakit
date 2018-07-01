@@ -57,11 +57,11 @@ Array [
 exports[`creates component by extending another one with styled 2`] = `
 <Styled(Derivative.as(div))>
   <Derivative.as(div)
-    className="as-test__Derivative-dFAIVE bDuygA"
+    className="as-test__Derivative-cQWxNw gcSFEM"
   >
     <Derivative
       as={[Function]}
-      className="as-test__Derivative-dFAIVE bDuygA"
+      className="as-test__Derivative-cQWxNw gcSFEM"
       nextAs={
         Array [
           "div",
@@ -70,7 +70,7 @@ exports[`creates component by extending another one with styled 2`] = `
     >
       <Base.as(span)
         as={[Function]}
-        className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
+        className="as-test__Derivative-cQWxNw gcSFEM as-test__Derivative-cQWxNw gxwxdP"
         nextAs={
           Array [
             "div",
@@ -79,7 +79,7 @@ exports[`creates component by extending another one with styled 2`] = `
       >
         <Base
           as={[Function]}
-          className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
+          className="as-test__Derivative-cQWxNw gcSFEM as-test__Derivative-cQWxNw gxwxdP"
           nextAs={
             Array [
               "div",
@@ -87,7 +87,7 @@ exports[`creates component by extending another one with styled 2`] = `
           }
         >
           <As
-            className="as-test__Derivative-dFAIVE bDuygA as-test__Derivative-dFAIVE bDuygA"
+            className="as-test__Derivative-cQWxNw gcSFEM as-test__Derivative-cQWxNw gxwxdP"
             id="Base"
             nextAs={
               Array [
@@ -96,7 +96,7 @@ exports[`creates component by extending another one with styled 2`] = `
             }
           >
             <div
-              className="as-test__Derivative-dFAIVE bDuygA"
+              className="as-test__Derivative-cQWxNw gcSFEM gxwxdP"
               id="Base"
             />
           </As>
@@ -109,7 +109,7 @@ exports[`creates component by extending another one with styled 2`] = `
 
 exports[`creates component by extending another one with styled 3`] = `
 
-<div class="as-test__Derivative-dFAIVE bDuygA"
+<div class="as-test__Derivative-cQWxNw gcSFEM gxwxdP"
      id="Base"
 >
 </div>
@@ -524,7 +524,7 @@ exports[`passes down elementRef 1`] = `
 
 exports[`passes down elementRef when extended 1`] = `
 <span
-  class="as-test__BaseComponent-JKudl cyoGEe"
+  class="as-test__BaseComponent-gfnfdZ fvFuam"
   id="Base"
 />
 `;
