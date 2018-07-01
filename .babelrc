@@ -4,7 +4,10 @@
       "env",
       {
         "modules": false,
-        "loose": true
+        "loose": true,
+        "targets": {
+          "browsers": "defaults"
+        }
       }
     ],
     "stage-1",
