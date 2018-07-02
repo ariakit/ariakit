@@ -6,18 +6,24 @@ import as from "../../enhancers/as";
 import Hidden from "../Hidden";
 
 class Component extends React.Component {
+  state = {};
+
   componentDidMount() {
-    document.body.appendChild(this.wrapper);
+    const wrapper = document.createElement("div");
+    document.body.appendChild(wrapper);
+    this.setState({ wrapper });
   }
 
   componentWillUnmount() {
-    document.body.removeChild(this.wrapper);
+    document.body.removeChild(this.state.wrapper);
   }
 
-  wrapper = document && document.createElement("div");
-
   render() {
-    return ReactDOM.createPortal(<Hidden {...this.props} />, this.wrapper);
+    const { wrapper } = this.state;
+    if (wrapper) {
+      return ReactDOM.createPortal(<Hidden {...this.props} />, wrapper);
+    }
+    return null;
   }
 }
 
