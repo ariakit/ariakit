@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import Box from "../Box";
+import Base from "../Base";
 
-const Card = styled(Box)`
+const Card = styled(Base)`
   position: relative;
   display: inline-grid;
   background-color: white;
