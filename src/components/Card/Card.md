@@ -1,48 +1,29 @@
-<!-- Description -->
-
-
-A Card can be used to serve related information together such as Actions, image, text, etc.
-Card is Base with `display: inline-block`, small padding and a box shadow.
-By default it renders as a `<div>`.
-
-<!-- Minimal JSX to showcase component -->
+A Card can be used to serve related information together such as actions, image, text etc.
 
 ```jsx
+import { Heading, Image, Paragraph } from "reakit";
+
 <Card>
-  <Heading as="h4">Card Heading</Heading>
+  <Heading as="h3">Card Heading</Heading>
+  <Image src="https://placekitten.com/300/300" alt="Kitten" width={300} height={300} />
   <Paragraph>Description for Card</Paragraph>
 </Card>
 ```
 
-Rendered HTML.
-
-```html
-<div class="Card-RQot gVanYl Base-gxTqDr bCPnxv">
-  <h1 class="Base-gxTqDr bCPnxv Heading-gqIVUu fgNjay">Card Heading</h1>
-  <p class="Base-gxTqDr bCPnxv Paragraph-hHEPzZ gGuRi">Description for Card</p>
-</div>
-```
-
-<!-- while(not done) { Prop explanation, examples } -->
-
-Basic styling via props.
-
 ```jsx
-const { Grid } = require("reakit");
+const { Grid, Image, Heading, Paragraph, Shadow } = require("reakit");
 
-<Grid column gap={20} justifyContent="start">
-  <Card width={300}>
-    <Heading as="h4">First Card</Heading>
-    <Paragraph>First Card Description</Paragraph>
-    <Image src="http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg" />
+<Grid column autoColumns="minmax(min-content, max-content)" gap={20} alignItems="start">
+  <Card>
+    <Heading as="h3">Card Heading</Heading>
+    <Image src="https://placekitten.com/180/300" alt="Kitten" width={180} height={300} />
+    <Paragraph>Description for Card</Paragraph>
+    <Shadow />
   </Card>
   <Card>
-    <Heading as="h3">Second Card</Heading>
-    <Paragraph>Second Card Description</Paragraph>
-    <Button>Action 1</Button>
-    <Button>Action 2</Button>
+    <Image src="https://placekitten.com/300/200" alt="Kitten" width={300} height={200} />
+    <Heading as="h3">Card Heading</Heading>
+    <Paragraph>Description for Card</Paragraph>
   </Card>
 </Grid>
 ```
-
-<!-- Cool styling example -->

@@ -1,13 +1,26 @@
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import Base from "../Base";
+import Box from "../Box";
 
-const Card = styled(Base)`
-  display: inline-block;
-  box-shadow: rgba(51, 51, 51, 0.1) 0px 1px 6px,
-    rgba(51, 51, 51, 0.15) 0px 1px 4px;
-  padding: 0.5em 1em;
+const Card = styled(Box)`
+  position: relative;
+  display: inline-grid;
+  background-color: white;
+  grid-gap: 1rem;
+  padding: 1rem 0;
+  &&& > * {
+    margin: 0 1rem;
+  }
+  &&& > img {
+    margin: 0;
+    &:first-child {
+      margin-top: -1rem;
+    }
+    &:last-child {
+      margin-bottom: -1rem;
+    }
+  }
   ${prop("theme.Card")};
 `;
 
