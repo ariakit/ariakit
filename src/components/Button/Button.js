@@ -3,10 +3,10 @@ import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Box from "../Box";
 
-const handleKeyPress = evt => {
-  if (evt.charCode === 32 || evt.charCode === 13) {
-    evt.preventDefault();
-    evt.target.click();
+const handleKeyPress = e => {
+  if (e.charCode === 32 || e.charCode === 13) {
+    e.preventDefault();
+    e.target.click();
   }
 };
 

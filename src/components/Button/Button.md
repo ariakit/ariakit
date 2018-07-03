@@ -1,61 +1,17 @@
-<!-- Description -->
+`Button` is built from [Box](/components/primitives/box) with minimal default styles to support the many possible uses a button has.
 
-Button is built from Box with minimal default styles to support the many possible uses a button has.
-By default renders as a `<div>`.
-
-<!-- Minimal JSX to showcase component -->
+It renders a `<div>` by default since that's more flexible than `<button>`. Proper ARIA attributes and event handlers are applied in order to guarantee accessibility (see the `HTML` tab below).
 
 ```jsx
-<Button>Ok</Button>
+<Button>Button</Button>
 ```
 
-Rendered HTML.
-
-```html
-<div class="Button-kDSBcD eMpnqe Box-cwadsP gAhprV Base-gxTqDr bCPnxv" role="button" tabindex="0">Ok</div>
-```
-
-<!-- while(not done) { Prop explanation, examples } -->
-
-Use `disabled` prop to make a non-interactive button.
+It has `display: inline-grid` and `grid-gap: 0.68em` by default, which means that you can put icons and other elements inside the button and they will be properly distributed within it. Here's an example using [react-icons](https://github.com/react-icons/react-icons):
 
 ```jsx
-<Button disabled>Button</Button>
-```
-
-Here we use `as="a"` to render the Button as an `<a>`, and give it an `href` pointing to this site.
-__*Clicking will open a tab!*__
-
-```jsx
-<Button as="a" href="https://github.com/reakit/reakit" target="_Blank">
-  Go to Website
-</Button>
-```
-
-An example of integrating `react-icons` into ReaKit.
-
-```jsx
-const FaBeer = require("react-icons/lib/fa/beer");
+import Bell from "react-icons/lib/fa/bell";
 
 <Button>
-  <FaBeer />Beer
-</Button>;
-```
-
-Here the `as` is set to `select`, making an `<option>` pop up.
-
-```jsx
-<Button as="select">
-  <option>Select</option>
+  <Bell />Bell
 </Button>
-```
-
-How to use ReaKit's Shadow with Button.
-
-```jsx
-const { Shadow } = require("reakit");
-
-<Button>
-  Button <Shadow />
-</Button>;
 ```
