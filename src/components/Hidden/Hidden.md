@@ -1,6 +1,5 @@
 <!-- Description -->
 
-Hidden includes [behaviors](#behaviors) and a [container](#containers), accessible as properties in Hidden.
 Hidden itself is very generic and simply hides away waiting for an event to show itself and its children.
 It is made to be composed with other components in creative ways.
 
