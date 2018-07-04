@@ -3875,6 +3875,13 @@ finalhandler@1.1.1:
     statuses "~1.4.0"
     unpipe "~1.0.0"
 
+find-babel-config@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/find-babel-config/-/find-babel-config-1.1.0.tgz#acc01043a6749fec34429be6b64f542ebb5d6355"
+  dependencies:
+    json5 "^0.5.1"
+    path-exists "^3.0.0"
+
 find-cache-dir@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/find-cache-dir/-/find-cache-dir-1.0.0.tgz#9288e3e9e3cc3748717d39eade17cf71fc30ee6f"
@@ -8545,9 +8552,9 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-singel@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/singel/-/singel-0.5.1.tgz#5ebf42e9059f6eecbf3866be9ea2b9613de9b314"
+singel@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/singel/-/singel-0.5.2.tgz#2b6a1a7b4074c2666df40052b1f81700b3de0586"
   dependencies:
     babel-plugin-transform-es2015-modules-commonjs "^6.26.2"
     babel-plugin-transform-require-stub "^0.3.0"
@@ -8557,6 +8564,7 @@ singel@^0.5.1:
     commander "^2.16.0"
     enzyme "^3.3.0"
     enzyme-adapter-react-16 "^1.1.1"
+    find-babel-config "^1.1.0"
     glob "^7.1.2"
     jsdom "^11.11.0"
     known-css-properties "^0.6.1"
