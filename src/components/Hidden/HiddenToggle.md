@@ -1,10 +1,10 @@
 ```jsx
 import { Block } from "reakit";
 
-<Hidden.Container initialState={{ visible: true }}>
-  {({ visible, hide }) => (
+<Hidden.Container>
+  {({ visible, toggle }) => (
     <Block>
-      <Hidden.Hide hide={hide}>Hide</Hidden.Hide>
+      <Hidden.Toggle toggle={toggle}>Toggle</Hidden.Toggle>
       <Hidden visible={visible}>Hidden</Hidden>
     </Block>
   )}

@@ -1,7 +1,7 @@
-`List` renders by default as an `<ul>` tag with `list-style` unset.
+`ListItem` render by default as an `li`.
 
 ```jsx
-<List>
+<List as="ol">
   <List.Item>Item 1</List.Item>
   <List.Item>Item 2</List.Item>
   <List.Item>Item 3</List.Item>

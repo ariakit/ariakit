@@ -1,9 +1,4 @@
-<!-- Description -->
-
-InlineBlock is Base with `display: inline-block`.
-By default it renders as a `<div>`.
-
-<!-- Minimal JSX to showcase component -->
+`InlineBlock` is [Base](/components/primitives/base) with `display: inline-block`.
 
 ```jsx
 <div>
@@ -22,36 +17,5 @@ By default it renders as a `<div>`.
     height="100px"
     backgroundColor="rgb(205, 112, 219)"
   />
-</div>
-```
-
-Rendered HTML.
-
-```html
-<div>
-  <div class="InlineBlock-jzkjxj ffjSwg Base-gxTqDr bCPnxv" style="width: 100px; height: 100px; background-color: rgb(219, 112, 147);">
-  </div>
-  <div class="InlineBlock-jzkjxj ffjSwg Base-gxTqDr bCPnxv" style="width: 100px; height: 100px; background-color: rgb(219, 112, 198);">
-  </div>
-  <div class="InlineBlock-jzkjxj ffjSwg Base-gxTqDr bCPnxv" style="width: 100px; height: 100px; background-color: rgb(205, 112, 219);">
-  </div>
-</div>
-```
-
-<!-- Cool styling example -->
-
-Basic styling via props.
-
-```jsx
-<div>
-  <InlineBlock fontSize="3em" border="1px solid palevioletred">
-    ⭐️
-  </InlineBlock>
-  <InlineBlock fontSize="3em" border="1px solid palevioletred">
-    💫
-  </InlineBlock>
-  <InlineBlock fontSize="3em" border="1px solid palevioletred">
-    🌙
-  </InlineBlock>
 </div>
 ```

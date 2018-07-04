@@ -24,7 +24,7 @@
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint src benchmark website/src",
-    "singel": "singel src/components/*/index.js",
+    "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{test,Container}.js'",
     "benchmark": "node benchmark",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
