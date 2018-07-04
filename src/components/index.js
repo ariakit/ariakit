@@ -2,6 +2,7 @@ export Arrow from "./Arrow";
 export Backdrop from "./Backdrop";
 export Base from "./Base";
 export Block from "./Block";
+export Blockquote from "./Blockquote";
 export Box from "./Box";
 export Button from "./Button";
 export Card from "./Card";
