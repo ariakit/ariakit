@@ -25,6 +25,13 @@ const Code = styled(Base)`
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
+  padding: ${ifProp("block", "0", "0.25em 0.35em")};
+
+  code {
+    display: block;
+    padding: 1em;
+  }
+
   ${prop("theme.Code")};
 `;
 
