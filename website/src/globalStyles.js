@@ -6,6 +6,11 @@ import FiraCodeRegular from "./fonts/FiraCode-Regular.woff";
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
+  body {
+    font-family: "Source Sans Pro", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
   @font-face {
     font-family: 'Fira Code';
     src: url(${FiraCodeLight});

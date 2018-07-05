@@ -56,8 +56,11 @@ const renderList = (section, prevSlug = "") => {
   if (!sections.length) return null;
   const slug = `${prevSlug}/${section.slug}`;
 
+  const alwaysVisible =
+    prevSlug === "" && (sections.length <= 5 || section.filtered);
+
   return (
-    <MenuList alwaysVisible={prevSlug === "" && sections.length <= 5}>
+    <MenuList alwaysVisible={alwaysVisible}>
       {sections.map(s => (
         <List.Item key={s.slug}>
           <SectionLink as={NavLink} to={`${slug}/${s.slug}`}>

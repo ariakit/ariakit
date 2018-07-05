@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Flex, Grid, Link, Sidebar, Backdrop } from "reakit";
+import { styled, Flex, Grid, Link, Sidebar } from "reakit";
 import { prop } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
@@ -11,8 +11,7 @@ import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "../elements/Icon";
 import HeaderNavigation from "./HeaderNavigation";
-import Menu from "./Menu";
-import StyleguidistContainer from "../containers/StyleguidistContainer";
+import MobileSidebar from "./MobileSidebar";
 
 const Wrapper = styled(Flex)`
   width: 100%;
@@ -67,7 +66,7 @@ const Desktop = () => (
 
 const Mobile = () => (
   <React.Fragment>
-    <Sidebar.Container>
+    <Sidebar.Container context="sidebar">
       {sidebar => (
         <React.Fragment>
           <Grid.Item
@@ -77,15 +76,7 @@ const Mobile = () => (
           >
             <Icon as={MenuIcon} />
           </Grid.Item>
-          <Backdrop as={Sidebar.Hide} zIndex={99999} {...sidebar} />
-          <StyleguidistContainer>
-            {({ sections }) => (
-              <Sidebar {...sidebar} destroy overflow="auto">
-                <Menu section={sections[0]} />
-                <Menu section={sections[1]} />
-              </Sidebar>
-            )}
-          </StyleguidistContainer>
+          <MobileSidebar />
         </React.Fragment>
       )}
     </Sidebar.Container>
