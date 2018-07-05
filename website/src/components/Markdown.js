@@ -21,6 +21,14 @@ const StyledHeading = styled(Heading)`
   }
 `;
 
+const StyledList = styled(List)`
+  list-style: initial;
+  padding-left: 2em;
+  li {
+    line-height: 1.5;
+  }
+`;
+
 const Anchor = ({ href, ...props }) => {
   if (/^(http|www)/.test(href)) {
     return (
@@ -45,7 +53,7 @@ const asComponent = (component, as) => ({ component, props: { as } });
 const overrides = {
   p: StyledParagraph,
   a: Anchor,
-  ul: List,
+  ul: StyledList,
   code: Code,
   pre: CodeBlock,
   blockquote: Blockquote,
