@@ -35,7 +35,8 @@
     "prepublishOnly": "npm run lint && npm test && npm run build",
     "postpublish": "git push origin master --follow-tags",
     "website": "styleguidist server",
-    "website:build": "styleguidist build"
+    "website:build": "styleguidist build",
+    "website:deploy": "npm run website:build && gh-pages -d website/public"
   },
   "jest": {
     "setupFiles": [
@@ -83,6 +84,7 @@
     "eslint-plugin-prettier": "^2.6.1",
     "eslint-plugin-react": "^7.10.0",
     "file-loader": "^1.1.11",
+    "gh-pages": "^1.2.0",
     "jest-cli": "^23.3.0",
     "jest-serializer-html": "^5.0.0",
     "jest-styled-components": "^5.0.1",
