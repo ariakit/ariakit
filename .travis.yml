@@ -13,5 +13,6 @@ after_success:
 deploy:
   provider: script
   script: npm run website:deploy
+  skip_cleanup: true
   on:
     branch: master
