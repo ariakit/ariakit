@@ -11,8 +11,14 @@ cache:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 deploy:
-  provider: script
-  script: npm run website:deploy
-  skip_cleanup: true
-  on:
-    branch: master
+  - provider: script
+    skip_cleanup: true
+    script: npm run website:build
+    on:
+      branch: master
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: website/public
+    on:
+      branch: master
