@@ -83,10 +83,8 @@ const TabsTab = styled(Component)`
   height: 2.5em;
   padding: 0 0.5em;
   min-width: 2.5em;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
   &.active {
-    border-bottom: 1px solid black;
+    font-weight: bold;
   }
   &[disabled] {
     pointer-events: none;
