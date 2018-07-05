@@ -24,7 +24,7 @@
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint src benchmark",
-    "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{Container,test}.js'",
+    "singel": "singel src/components/*/index.js",
     "benchmark": "node benchmark",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
@@ -56,8 +56,7 @@
     "lodash-es": "^4.17.5",
     "react-known-props": "^2.1.0",
     "styled-components": "^3.0.0",
-    "styled-tools": "^0.5.0",
-    "svg-attributes": "^1.0.0"
+    "styled-tools": "^0.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -108,7 +107,7 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^3.0.0",
-    "singel": "^0.4.0",
+    "singel": "^0.5.0",
     "webpack": "^3.11.0",
     "webpack-blocks": "^1.0.0-rc.2"
   },
