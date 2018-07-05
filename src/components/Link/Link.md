@@ -1,3 +1,3 @@
 ```jsx
-<Link href="https://github.com/reakit/reakit">GitHub</Link>
+<Link href="https://github.com/diegohaz/reakit">GitHub</Link>
 ```

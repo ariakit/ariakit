@@ -4,7 +4,7 @@ Your first contact with `as` will be most probably with the prop, changing the u
 ```jsx
 import { Button } from "reakit";
 
-<Button as="a" href="https://github.com/reakit/reakit" target="_blank">
+<Button as="a" href="https://github.com/diegohaz/reakit" target="_blank">
   Go to GitHub
 </Button>
 ```
@@ -22,7 +22,7 @@ const MyComponent = as("span")(
 
 <MyComponent 
   as={[Button, "a"]} 
-  href="https://github.com/reakit/reakit" 
+  href="https://github.com/diegohaz/reakit" 
   target="_blank"
 >
   GitHub
@@ -36,7 +36,7 @@ import { as, Button } from 'reakit'
 
 const LinkButton = as("a")(Button);
 
-<LinkButton href="https://github.com/reakit/reakit" target="_blank">
+<LinkButton href="https://github.com/diegohaz/reakit" target="_blank">
   GitHub
 </LinkButton>
 ```
@@ -48,7 +48,7 @@ import { Button } from "reakit";
 
 const LinkButton = Button.as("a");
 
-<LinkButton href="https://github.com/reakit/reakit" target="_blank">
+<LinkButton href="https://github.com/diegohaz/reakit" target="_blank">
   GitHub
 </LinkButton>
 ```

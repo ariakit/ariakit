@@ -4,7 +4,7 @@ You can use the `as` prop just to change the underlying HTML element of a compon
 ```jsx
 import { Button } from "reakit";
 
-<Button as="a" href="https://github.com/reakit/reakit" target="_blank">
+<Button as="a" href="https://github.com/diegohaz/reakit" target="_blank">
   GitHub
 </Button>
 ```

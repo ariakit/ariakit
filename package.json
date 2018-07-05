@@ -83,7 +83,7 @@
     "eslint-plugin-prettier": "^2.6.1",
     "eslint-plugin-react": "^7.10.0",
     "file-loader": "^1.1.11",
-    "jest-cli": "^23.2.0",
+    "jest-cli": "^23.3.0",
     "jest-serializer-html": "^5.0.0",
     "jest-styled-components": "^5.0.1",
     "markdown-to-jsx": "^6.6.8",
@@ -112,7 +112,7 @@
     "rollup-plugin-uglify": "^4.0.0",
     "singel": "^0.5.2",
     "url-loader": "^1.0.1",
-    "webpack": "^4.14.0",
+    "webpack": "^4.15.1",
     "webpack-blocks": "^1.0.0-rc.2",
     "whatwg-fetch": "^2.0.4"
   },

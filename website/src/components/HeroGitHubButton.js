@@ -33,7 +33,7 @@ const StarsPopover = styled(Popover)`
 const HeroGitHubButton = props => (
   <Button
     as={[ButtonRounded, "a"]}
-    href="https://github.com/reakit/reakit"
+    href="https://github.com/diegohaz/reakit"
     target="_blank"
     {...props}
   >
