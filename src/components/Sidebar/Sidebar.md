@@ -1,5 +1,5 @@
 ```jsx
-const { Block, Button, Backdrop } = require('reakit');
+import { Block, Button, Backdrop } from "reakit";
 
 <Sidebar.Container>
   {sidebar => (
@@ -13,7 +13,7 @@ const { Block, Button, Backdrop } = require('reakit');
 ```
 
 ```jsx
-const { Block, Button, Backdrop } = require('reakit');
+import { Block, Button, Backdrop } from "reakit";
 
 <Sidebar.Container>
   {sidebar => (
