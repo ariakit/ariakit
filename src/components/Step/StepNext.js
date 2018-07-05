@@ -20,7 +20,7 @@ const StepNext = styled(Component)`
 
 StepNext.propTypes = {
   next: PropTypes.func.isRequired,
-  hasNext: PropTypes.func.isRequired,
+  hasNext: PropTypes.func,
   loop: PropTypes.bool,
   onClick: PropTypes.func
 };

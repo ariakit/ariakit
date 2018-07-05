@@ -8,6 +8,7 @@ const Sidebar = styled(Overlay)`
   top: 0;
   height: 100vh;
   transform: none;
+  overflow: auto;
   left: ${ifProp({ align: "right" }, "auto", 0)};
   right: ${ifProp({ align: "right" }, 0, "auto")};
   ${prop("theme.Sidebar")};

@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const {
   createConfig,
   babel,
@@ -7,11 +8,14 @@ const {
   url,
   file,
   css,
+  env,
+  devServer,
   sourceMaps
 } = require("webpack-blocks");
+const importToRequire = require("./website/src/utils/importToRequire");
 
 module.exports = {
-  title: "reas - React as Anything",
+  title: "ReaKit",
   webpackConfig: createConfig([
     sourceMaps(),
     babel(),
@@ -21,66 +25,98 @@ module.exports = {
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
       [url({ limit: 10000 })]
     ),
-    resolve({ alias: { reas: path.join(__dirname, "src") } })
+    resolve({ alias: { reakit: path.join(__dirname, "src") } }),
+    env("development", [
+      devServer({
+        historyApiFallback: { index: "/" }
+      })
+    ])
   ]),
-  getComponentPathLine(componentPath) {
-    const name = path.basename(componentPath, ".js");
-    return `import { ${name} } from 'reas'`;
+  updateDocs(docs, filePath) {
+    const contents = fs.readFileSync(filePath, "utf8");
+    const regex = /import ([a-z0-9]+) from "\.\.\/[^."]+"/gim;
+    const uses = (contents.match(regex) || []).map(x => x.replace(regex, "$1"));
+    return {
+      ...docs,
+      uses
+    };
   },
-  styleguideDir: "docs",
-  template: "docs/template.html",
+  updateExample(props) {
+    return {
+      ...props,
+      content: importToRequire(props.content)
+    };
+  },
+  logger: {
+    warn: () => {}
+  },
+  template: {
+    head: {
+      raw: '<base href="/">',
+      links: [
+        {
+          rel: "stylesheet",
+          href:
+            "https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700"
+        }
+      ]
+    },
+    favicon: "/icon.png"
+  },
+  assetsDir: "website/public",
+  styleguideDir: "website/public",
   styleguideComponents: {
-    StyleGuideRenderer: path.join(
-      __dirname,
-      "docs/components/StyleGuideRenderer.js"
-    ),
-    ToolbarButton: path.join(__dirname, "docs/components/ToolbarButton.js"),
-    Editor: path.join(__dirname, "docs/components/Editor.js")
+    StyleGuide: path.join(__dirname, "website/src")
   },
-  skipComponentsWithoutExample: true,
   compilerConfig: {
     transforms: {
       dangerousTaggedTemplateString: true
     },
     objectAssign: "Object.assign"
   },
+  skipComponentsWithoutExample: true,
   sections: [
-    {
-      name: "Introduction",
-      content: "docs/contents/intro.md"
-    },
     {
       name: "Guide",
       sections: [
         {
-          name: "Installation",
-          content: "docs/contents/installation.md"
+          name: "Get Started",
+          content: "docs/get-started.md"
         },
         {
-          name: "Create React App",
-          content: "docs/contents/create-react-app.md"
+          name: "Principles",
+          sections: [
+            {
+              name: "Composability",
+              content: "docs/composability.md"
+            },
+            {
+              name: "Accessibility",
+              content: "docs/accessibility.md"
+            },
+            {
+              name: "Reliability",
+              content: "docs/reliability.md"
+            }
+          ]
         },
         {
           name: "as",
-          content: "docs/contents/as.md"
+          content: "docs/as.md"
         },
         {
           name: "Styling",
-          content: "docs/contents/styling.md"
+          content: "docs/styling.md"
         },
         {
-          name: "Containers",
-          content: "docs/contents/containers.md"
-        },
-        {
-          name: "Behaviors",
-          content: "docs/contents/behaviors.md"
+          name: "State Containers",
+          content: "docs/state-containers.md"
         }
       ]
     },
     {
       name: "Components",
-      components: "src/components/**/[A-Z]*.js"
+      components: "src/components/**/*.js"
     }
   ]
 };

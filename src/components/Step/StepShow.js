@@ -3,14 +3,10 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import callAll from "../../utils/callAll";
-import Base from "../Base";
+import HiddenShow from "../Hidden/HiddenShow";
 
 const show = props => () => props.show && props.show(props.step);
-
-const Component = ({ onClick, ...props }) => (
-  <Base onClick={callAll(show(props), onClick)} {...props} />
-);
+const Component = props => <HiddenShow {...props} show={show(props)} />;
 
 const StepShow = styled(Component)`
   ${prop("theme.StepShow")};
@@ -18,8 +14,7 @@ const StepShow = styled(Component)`
 
 StepShow.propTypes = {
   show: PropTypes.func.isRequired,
-  step: PropTypes.string.isRequired,
-  onClick: PropTypes.func
+  step: PropTypes.string.isRequired
 };
 
 export default as("button")(StepShow);

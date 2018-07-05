@@ -3,7 +3,7 @@ import resolve from "rollup-plugin-node-resolve";
 import replace from "rollup-plugin-replace";
 import commonjs from "rollup-plugin-commonjs";
 import filesize from "rollup-plugin-filesize";
-import uglify from "rollup-plugin-uglify";
+import { uglify } from "rollup-plugin-uglify";
 import ignore from "rollup-plugin-ignore";
 import pkg from "./package.json";
 

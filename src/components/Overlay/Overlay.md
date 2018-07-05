@@ -1,5 +1,5 @@
 ```jsx
-const { Block, Button, Backdrop } = require('reas');
+const { Block, Button, Backdrop } = require('reakit');
 
 const Example = () => (
   <Overlay.Container>

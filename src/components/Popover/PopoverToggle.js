@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import Hidden from "../Hidden";
+import HiddenToggle from "../Hidden/HiddenToggle";
 
 const Component = props => (
-  <Hidden.Toggle
+  <HiddenToggle
     aria-expanded={props.visible}
     aria-controls={props.popoverId}
     aria-haspopup
