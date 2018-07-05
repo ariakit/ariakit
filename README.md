@@ -1,21 +1,18 @@
 <p align="center">
-  <br /><br /><br /><br /><br /><br /><br /><br />
-  <img src="logo/logo-vertical.png" alt="reas" height="150" />
-
-  <br /><br /><br /><br /><br /><br /><br />
+  <br>
+  <img src="logo/logo.png" alt="reakit" width="300" />
+  <br><br><br>
+  <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
+  <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
+  <a href="https://travis-ci.org/diegohaz/reakit"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reakit/master.svg?style=flat-square" /></a>
+  <a href="https://codecov.io/gh/diegohaz/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reakit/master.svg?style=flat-square" /></a>
 </p>
 
-# reas
-
-<a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
-<a href="https://npmjs.org/package/reas"><img alt="NPM version" src="https://img.shields.io/npm/v/reas.svg?style=flat-square" /></a>
-<a href="https://travis-ci.org/diegohaz/reas"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reas/master.svg?style=flat-square" /></a>
-<a href="https://codecov.io/gh/diegohaz/reas/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reas/master.svg?style=flat-square" /></a>
 
 Minimalist and highly composable building blocks built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
 
-- [**Documentation**](https://diegohaz.github.io/reas/)
-- [**Components**](https://diegohaz.github.io/reas/#components)
+- [**Documentation**](https://reakit.io)
+- [**Components**](https://reakit.io/components)
 
 <br>
 <hr>
@@ -30,12 +27,12 @@ Follow me on <a href="https://twitter.com/diegohaz">Twitter</a> and <a href="htt
 
 Yarn:
 ```sh
-yarn add reas
+yarn add reakit
 ```
 
 npm:
 ```sh
-npm install --save reas
+npm install --save reakit
 ```
 
 ## Example
@@ -51,13 +48,13 @@ npm install --save reas
 ```jsx
 import React from "react";
 import { render } from "react-dom";
-import { Button, Popover } from "reas";
+import { Button, Popover } from "reakit";
 
 const App = () => (
   <Popover.Container>
     {popover => (
       <Button as={Popover.Toggle} {...popover}>
-        Button
+        Toggle
         <Popover {...popover}>
           <Popover.Arrow />
           Popover
@@ -77,10 +74,10 @@ Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark)
 | Library | ops/sec |
 | ------- | -------:|
 | [react](benchmark/cases/react.js) | 103,029 |
-| [reas (`as`)](benchmark/cases/reas-as.js) | 45,975 |
+| [reakit (`as`)](benchmark/cases/reakit-as.js) | 45,975 |
 | [antd](https://github.com/ant-design/ant-design) | 29,122 |
-| [reas (`Base`)](benchmark/cases/reas-base.js) | 17,071 |
-| [reas (`Button`)](benchmark/cases/reas-button.js) | 12,107 |
+| [reakit (`Base`)](benchmark/cases/reakit-base.js) | 17,071 |
+| [reakit (`Button`)](benchmark/cases/reakit-button.js) | 12,107 |
 | [material-ui](https://github.com/mui-org/material-ui) | 9,840 |
 | [rebass](https://github.com/jxnblk/rebass) | 7,989 |
 
