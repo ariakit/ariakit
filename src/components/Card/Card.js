@@ -5,6 +5,9 @@ import Base from "../Base";
 
 const Card = styled(Base)`
   position: relative;
+  display: inline-grid;
+  background-color: white;
+  grid-gap: 1rem;
   padding: 1rem 0;
   &&& > * {
     margin: 0 1rem;
