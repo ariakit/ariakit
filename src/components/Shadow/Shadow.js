@@ -11,6 +11,9 @@ const Shadow = styled(Fit)`
     "depth",
     d => `0 ${d * 2}px ${d * 4}px rgba(0, 0, 0, 0.2)`
   )};
+  &&& {
+    margin: 0;
+  }
   ${prop("theme.Shadow")};
 `;
 
