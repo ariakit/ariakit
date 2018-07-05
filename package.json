@@ -42,6 +42,10 @@
     "snapshotSerializers": [
       "enzyme-to-json/serializer",
       "jest-serializer-html"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/website"
     ]
   },
   "keywords": [
