@@ -14,9 +14,8 @@ import SectionUses from "../components/SectionUses";
 
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
-    overflow: auto;
     margin-left: -8px;
-    width: 100vw;
+    width: calc(100vw - 15px);
   }
 `;
 
@@ -52,10 +51,14 @@ const StyledLink = styled(Link.as(RouterLink))`
   }
 `;
 
-const StyledFlex = styled(Flex)`
+const ArticleNavigation = styled(Flex)`
   justify-content: space-between;
   @media (max-width: 768px) {
     padding: 0 8px;
+    position: sticky;
+    bottom: 0px;
+    background-color: white;
+    z-index: 2;
   }
 `;
 
@@ -94,7 +97,7 @@ const Section = ({ location, ...props }) => (
                     : null
               )}
             </Content>
-            <StyledFlex>
+            <ArticleNavigation>
               {previous && (
                 <Block>
                   <Block>Previous article</Block>
@@ -111,7 +114,7 @@ const Section = ({ location, ...props }) => (
                   </StyledLink>
                 </Block>
               )}
-            </StyledFlex>
+            </ArticleNavigation>
           </Wrapper>
         );
       }
