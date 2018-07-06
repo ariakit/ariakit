@@ -3,12 +3,14 @@ import { styled, Block, Heading, Link } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
+import EditIcon from "react-icons/lib/md/edit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
 import findSectionByLocation from "../utils/findSectionByLocation";
 import getSectionContent from "../utils/getSectionContent";
 import getSectionUrl from "../utils/getSectionUrl";
+import getSectionGithubSrcUrl from "../utils/getSectionGithubSrcUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
 
@@ -28,6 +30,7 @@ const Name = styled(Heading)`
 
 const GithubSrcLink = styled(Link)`
   margin-bottom: 0.35em;
+  display: block;
   @media (max-width: 768px) {
     padding: 0 8px;
   }
@@ -57,18 +60,25 @@ const Section = ({ location, ...props }) => (
     {({ sections }) => {
       const section = findSectionByLocation(sections, location);
       const sectionContent = getSectionContent(section);
+      const githubDocUrl = getSectionGithubSrcUrl(section, "doc");
+      const githubSrcUrl = getSectionGithubSrcUrl(section, "component");
       if (sectionContent) {
         return (
           <Wrapper {...props}>
             <Name>{section.name}</Name>
-            {section.props.githubSrcUrl && (
-              <GithubSrcLink href={section.props.githubSrcUrl} target="_blank">
-                View source on GitHub <OpenInNewIcon />
-              </GithubSrcLink>
-            )}
             {section.name !== "Base" && <StyledSectionUses section={section} />}
             {section.name !== "Base" && (
               <StyledSectionUses usedBy section={section} />
+            )}
+            {githubSrcUrl && (
+              <GithubSrcLink href={githubSrcUrl} target="_blank">
+                <OpenInNewIcon /> View source on GitHub
+              </GithubSrcLink>
+            )}
+            {githubDocUrl && (
+              <GithubSrcLink href={githubDocUrl} target="_blank">
+                <EditIcon /> Improve this page
+              </GithubSrcLink>
             )}
             <Content>
               {sectionContent.map(
