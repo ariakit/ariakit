@@ -1,39 +1,28 @@
 <p align="center">
-  <br>
+  <br><br><br><br>
   <img src="logo/logo.png" alt="reakit" width="300" />
-  <br><br><br>
+  <br><br><br><br>
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
   <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
   <a href="https://travis-ci.org/diegohaz/reakit"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reakit/master.svg?style=flat-square" /></a>
   <a href="https://codecov.io/gh/diegohaz/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reakit/master.svg?style=flat-square" /></a>
 </p>
 
+---
 
-Minimalist and highly composable building blocks built on top of [React](https://reactjs.org) and [styled-components](https://www.styled-components.com).
+Toolkit for building [composable](https://reakit.io/guide/principles/composability), [accessible](https://reakit.io/guide/principles/accessibility) and [reliable](https://reakit.io/guide/principles/reliability) interactive UIs with [React](https://reactjs.org/).
 
-- [**Documentation**](https://reakit.io)
-- [**Components**](https://reakit.io/components)
+- 🌎 [**Website**](https://reakit.io)
+- 📖 [**Guide**](https://reakit.io/guide)
+- 📦 [**Components**](https://reakit.io/components)
 
-<br>
-<hr>
-<p align="center">
-If you find this useful, please don't forget to star ⭐️ the repo, as this will help to promote the project.<br>
-Follow me on <a href="https://twitter.com/diegohaz">Twitter</a> and <a href="https://github.com/diegohaz">GitHub</a> to keep updated about this project and <a href="https://github.com/diegohaz?tab=repositories">others</a>.
-</p>
-<hr>
-<br>
+## Installation
 
-## Install
-
-Yarn:
 ```sh
-yarn add reakit
+npm i reakit
 ```
 
-npm:
-```sh
-npm install --save reakit
-```
+Thanks @nosebit for the package name.
 
 ## Example
 
