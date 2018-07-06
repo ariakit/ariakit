@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Block, Heading, Link } from "reakit";
+import { styled, Block, Heading, Link, Flex } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
@@ -45,6 +45,15 @@ const StyledSectionUses = styled(SectionUses)`
   }
 `;
 
+const StyledLink = styled(Link)`
+  font-size: 2em;
+`;
+
+const StyledFlex = styled(Flex)`
+  justify-content: space-between;
+  padding: 0 8px;
+`;
+
 const sectionMap = {
   markdown: ({ content }, key) => <Markdown text={content} key={key} />,
   code: ({ content, evalInContext }, key) => (
@@ -57,6 +66,8 @@ const Section = ({ location, ...props }) => (
     {({ sections }) => {
       const section = findSectionByLocation(sections, location);
       const sectionContent = getSectionContent(section);
+      const next = findNonEmptySiblingSection(sections, section.name);
+      const previous = findNonEmptySiblingSection(sections, section.name, true);
       if (sectionContent) {
         return (
           <Wrapper {...props}>
@@ -78,6 +89,24 @@ const Section = ({ location, ...props }) => (
                     : null
               )}
             </Content>
+            <StyledFlex>
+              {previous && (
+                <Block>
+                  <Block>Previous article</Block>
+                  <StyledLink href={getSectionUrl(sections, previous)}>
+                    {previous.name}
+                  </StyledLink>
+                </Block>
+              )}
+              {next && (
+                <Block>
+                  <Block>Next article</Block>
+                  <StyledLink href={getSectionUrl(sections, next)}>
+                    {next.name}
+                  </StyledLink>
+                </Block>
+              )}
+            </StyledFlex>
           </Wrapper>
         );
       }
