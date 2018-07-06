@@ -26,13 +26,11 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "build": "rollup -c",
-    "patch": "npm version patch && npm publish",
-    "minor": "npm version minor && npm publish",
-    "major": "npm version major && npm publish",
-    "prepublishOnly": "npm run lint && npm test && npm run build",
-    "postpublish": "git push origin master --follow-tags",
     "website": "styleguidist server",
-    "website:build": "styleguidist build"
+    "website:build": "styleguidist build",
+    "preversion": "npm run lint && npm test && npm run build",
+    "version": "standard-changelog && git add CHANGELOG.md",
+    "postpublish": "git push origin master --follow-tags"
   },
   "jest": {
     "setupFiles": [
@@ -112,6 +110,7 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^4.0.0",
     "singel": "^0.5.2",
+    "standard-changelog": "^2.0.0",
     "url-loader": "^1.0.1",
     "webpack": "^4.15.1",
     "webpack-blocks": "^1.0.0-rc.2",
