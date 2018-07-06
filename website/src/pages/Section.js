@@ -1,7 +1,7 @@
 import React from "react";
 import { styled, Block, Heading, Link, Flex } from "reakit";
 import { prop } from "styled-tools";
-import { Redirect, Link as routerLink } from "react-router-dom";
+import { Redirect, Link as RouterLink } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
@@ -45,13 +45,8 @@ const StyledSectionUses = styled(SectionUses)`
   }
 `;
 
-const StyledLink = styled(routerLink)`
+const StyledLink = styled(Link.as(RouterLink))`
   font-size: 1.85em;
-  text-decoration-color: transparent;
-  color: #fc4577;
-  &:hover {
-    text-decoration-color: #fc4577;
-  }
   @media (max-width: 768px) {
     font-size: 1.4em;
   }
@@ -109,7 +104,7 @@ const Section = ({ location, ...props }) => (
                 </Block>
               )}
               {next && (
-                <Block style={{ textAlign: "right" }}>
+                <Block textAlign="right">
                   <Block>Next article</Block>
                   <StyledLink to={getSectionUrl(sections, next)}>
                     {next.name}
