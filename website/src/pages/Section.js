@@ -1,7 +1,8 @@
 import React from "react";
-import { styled, Block, Heading } from "reakit";
+import { styled, Block, Heading, Link } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
+import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
@@ -20,6 +21,13 @@ const Wrapper = styled(Block)`
 `;
 
 const Name = styled(Heading)`
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
+`;
+
+const GithubSrcLink = styled(Link)`
+  margin-bottom: 0.35em;
   @media (max-width: 768px) {
     padding: 0 8px;
   }
@@ -53,6 +61,11 @@ const Section = ({ location, ...props }) => (
         return (
           <Wrapper {...props}>
             <Name>{section.name}</Name>
+            {section.props.githubSrcUrl && (
+              <GithubSrcLink href={section.props.githubSrcUrl} target="_blank">
+                View source on GitHub <OpenInNewIcon />
+              </GithubSrcLink>
+            )}
             {section.name !== "Base" && <StyledSectionUses section={section} />}
             {section.name !== "Base" && (
               <StyledSectionUses usedBy section={section} />

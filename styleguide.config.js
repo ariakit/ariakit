@@ -36,9 +36,12 @@ module.exports = {
     const contents = fs.readFileSync(filePath, "utf8");
     const regex = /import ([a-z0-9]+) from "\.\.\/[^."]+"/gim;
     const uses = (contents.match(regex) || []).map(x => x.replace(regex, "$1"));
+    const relativeSrcPath = filePath.match(/(src\/components.+)/)[0];
+    const githubSrcUrl = `https://github.com/diegohaz/reakit/tree/master/${relativeSrcPath}`;
     return {
       ...docs,
-      uses
+      uses,
+      githubSrcUrl
     };
   },
   updateExample(props) {
