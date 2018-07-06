@@ -1,7 +1,7 @@
 import React from "react";
 import { styled, Block, Heading, Link, Flex } from "reakit";
 import { prop } from "styled-tools";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link as routerLink } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
@@ -45,13 +45,23 @@ const StyledSectionUses = styled(SectionUses)`
   }
 `;
 
-const StyledLink = styled(Link)`
-  font-size: 2em;
+const StyledLink = styled(routerLink)`
+  font-size: 1.85em;
+  text-decoration-color: transparent;
+  color: #fc4577;
+  &:hover {
+    text-decoration-color: #fc4577;
+  }
+  @media (max-width: 768px) {
+    font-size: 1.4em;
+  }
 `;
 
 const StyledFlex = styled(Flex)`
   justify-content: space-between;
-  padding: 0 8px;
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
 `;
 
 const sectionMap = {
@@ -93,15 +103,15 @@ const Section = ({ location, ...props }) => (
               {previous && (
                 <Block>
                   <Block>Previous article</Block>
-                  <StyledLink href={getSectionUrl(sections, previous)}>
+                  <StyledLink to={getSectionUrl(sections, previous)}>
                     {previous.name}
                   </StyledLink>
                 </Block>
               )}
               {next && (
-                <Block>
+                <Block style={{ textAlign: "right" }}>
                   <Block>Next article</Block>
-                  <StyledLink href={getSectionUrl(sections, next)}>
+                  <StyledLink to={getSectionUrl(sections, next)}>
                     {next.name}
                   </StyledLink>
                 </Block>
