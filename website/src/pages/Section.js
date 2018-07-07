@@ -1,16 +1,19 @@
 import React from "react";
-import { styled, Block, Heading, Link } from "reakit";
+import { styled, Block, Heading, Flex, Base } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
-import OpenInNewIcon from "react-icons/lib/md/open-in-new";
+import CodeIcon from "react-icons/lib/md/code";
+import EditIcon from "react-icons/lib/md/edit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
 import findSectionByLocation from "../utils/findSectionByLocation";
 import getSectionContent from "../utils/getSectionContent";
 import getSectionUrl from "../utils/getSectionUrl";
+import getSectionGithubSrcUrl from "../utils/getSectionGithubSrcUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
+import ButtonTransparent from "../elements/ButtonTransparent";
 
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
@@ -20,16 +23,21 @@ const Wrapper = styled(Block)`
   }
 `;
 
-const Name = styled(Heading)`
+const Header = styled(Flex)`
+  align-items: center;
+
   @media (max-width: 768px) {
     padding: 0 8px;
   }
 `;
 
-const GithubSrcLink = styled(Link)`
-  margin-bottom: 0.35em;
+const Name = styled(Heading)`
+  margin-right: auto;
+`;
+
+const GithubSrcButtonText = styled(Base)`
   @media (max-width: 768px) {
-    padding: 0 8px;
+    display: none;
   }
 `;
 
@@ -57,15 +65,30 @@ const Section = ({ location, ...props }) => (
     {({ sections }) => {
       const section = findSectionByLocation(sections, location);
       const sectionContent = getSectionContent(section);
+      const githubDocUrl = getSectionGithubSrcUrl(section, "doc");
+      const githubSrcUrl = getSectionGithubSrcUrl(section, "component");
       if (sectionContent) {
         return (
           <Wrapper {...props}>
-            <Name>{section.name}</Name>
-            {section.props.githubSrcUrl && (
-              <GithubSrcLink href={section.props.githubSrcUrl} target="_blank">
-                View source on GitHub <OpenInNewIcon />
-              </GithubSrcLink>
-            )}
+            <Header>
+              <Name>{section.name}</Name>
+              <Flex>
+                {githubSrcUrl && (
+                  <ButtonTransparent as="a" href={githubSrcUrl} target="_blank">
+                    <CodeIcon />
+                    <GithubSrcButtonText>
+                      View source on GitHub
+                    </GithubSrcButtonText>
+                  </ButtonTransparent>
+                )}
+                {githubDocUrl && (
+                  <ButtonTransparent as="a" href={githubDocUrl} target="_blank">
+                    <EditIcon />
+                    <GithubSrcButtonText>Improve this page</GithubSrcButtonText>
+                  </ButtonTransparent>
+                )}
+              </Flex>
+            </Header>
             {section.name !== "Base" && <StyledSectionUses section={section} />}
             {section.name !== "Base" && (
               <StyledSectionUses usedBy section={section} />
