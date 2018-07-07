@@ -15,15 +15,13 @@ import SectionUses from "../components/SectionUses";
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
     margin-left: -8px;
-    width: 100vw;
-    overflow: hidden;
+    margin-right: -8px;
   }
 `;
 
 const Name = styled(Heading)`
   @media (max-width: 768px) {
     padding: 0 8px;
-    font-size: 1.5em;
   }
 `;
 
@@ -49,13 +47,14 @@ const StyledSectionUses = styled(SectionUses)`
 const NavLink = styled(Link.as(RouterLink))`
   font-size: 1.75em;
   @media (max-width: 768px) {
-    font-size: 1.35em;
+    font-size: 1.2em;
   }
 `;
 
 const ArticleNavigation = styled(Flex)`
   border-top: 1px solid ${prop("theme.grayLightest")};
   margin-top: 1em;
+  padding-top: 1em;
   justify-content: space-between;
   @media (max-width: 768px) {
     padding: 8px 1em;
