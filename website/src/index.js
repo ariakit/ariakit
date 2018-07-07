@@ -8,6 +8,7 @@ import getEvalInContext from "./utils/getEvalInContext";
 import parseSections from "./utils/parseSections";
 import Home from "./pages/Home";
 import Sections from "./pages/Sections";
+import ScrollToTop from "./components/ScrollToTop";
 
 const getInitialState = ({ allSections, ...props }) => ({
   styleguidist: {
@@ -21,10 +22,12 @@ const App = props => (
   <Provider initialState={getInitialState(props)} devtools>
     <ThemeProvider theme={theme}>
       <Router>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/" component={Sections} />
-        </Switch>
+        <ScrollToTop>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/" component={Sections} />
+          </Switch>
+        </ScrollToTop>
       </Router>
     </ThemeProvider>
   </Provider>
