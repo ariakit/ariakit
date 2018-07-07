@@ -10,7 +10,7 @@
 
 ---
 
-Toolkit for building [composable](https://reakit.io/guide/principles/composability), [accessible](https://reakit.io/guide/principles/accessibility) and [reliable](https://reakit.io/guide/principles/reliability) interactive UIs with [React](https://reactjs.org/).
+Toolkit for building [composable](https://reakit.io/guide/principles/composability), [accessible](https://reakit.io/guide/principles/accessibility) and [reliable](https://reakit.io/guide/principles/reliability) UIs with [React](https://reactjs.org/).
 
 - 🌎 [**Website**](https://reakit.io)
 - 📖 [**Guide**](https://reakit.io/guide)
