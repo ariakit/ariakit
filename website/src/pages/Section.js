@@ -2,6 +2,7 @@ import React from "react";
 import { styled, Block, Heading, Flex, Base } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect, Link as RouterLink } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import CodeIcon from "react-icons/lib/md/code";
 import EditIcon from "react-icons/lib/md/edit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
@@ -108,6 +109,9 @@ const Section = ({ location, ...props }) => (
       if (sectionContent) {
         return (
           <Wrapper {...props}>
+            <Helmet>
+              <title>{section.name} | ReaKit</title>
+            </Helmet>
             <Header>
               <Name>{section.name}</Name>
               <Flex>
