@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Block, Heading, Link, Flex } from "reakit";
+import { styled, Block, Heading, Flex, Base } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import CodeIcon from "react-icons/lib/md/code";
@@ -35,7 +35,7 @@ const Name = styled(Heading)`
   margin-right: auto;
 `;
 
-const GithubSrcButtonText = styled(Link)`
+const GithubSrcButtonText = styled(Base)`
   @media (max-width: 768px) {
     display: none;
   }
