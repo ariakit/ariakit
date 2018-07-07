@@ -15,13 +15,15 @@ import SectionUses from "../components/SectionUses";
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
     margin-left: -8px;
-    width: calc(100vw - 15px);
+    width: 100vw;
+    overflow: hidden;
   }
 `;
 
 const Name = styled(Heading)`
   @media (max-width: 768px) {
     padding: 0 8px;
+    font-size: 1.5em;
   }
 `;
 
@@ -44,22 +46,30 @@ const StyledSectionUses = styled(SectionUses)`
   }
 `;
 
-const StyledLink = styled(Link.as(RouterLink))`
-  font-size: 1.85em;
+const NavLink = styled(Link.as(RouterLink))`
+  font-size: 1.75em;
   @media (max-width: 768px) {
-    font-size: 1.4em;
+    font-size: 1.35em;
   }
 `;
 
 const ArticleNavigation = styled(Flex)`
+  border-top: 1px solid ${prop("theme.grayLightest")};
+  margin-top: 1em;
   justify-content: space-between;
   @media (max-width: 768px) {
-    padding: 0 8px;
+    padding: 8px 1em;
     position: sticky;
     bottom: 0px;
     background-color: white;
-    z-index: 2;
+    z-index: 300;
   }
+`;
+
+const NavText = styled(RouterLink)`
+  display: block;
+  text-decoration: none;
+  color: inherit;
 `;
 
 const sectionMap = {
@@ -100,18 +110,22 @@ const Section = ({ location, ...props }) => (
             <ArticleNavigation>
               {previous && (
                 <Block>
-                  <Block>Previous article</Block>
-                  <StyledLink to={getSectionUrl(sections, previous)}>
+                  <NavText to={getSectionUrl(sections, previous)}>
+                    Previous article
+                  </NavText>
+                  <NavLink to={getSectionUrl(sections, previous)}>
                     {previous.name}
-                  </StyledLink>
+                  </NavLink>
                 </Block>
               )}
               {next && (
-                <Block textAlign="right">
-                  <Block>Next article</Block>
-                  <StyledLink to={getSectionUrl(sections, next)}>
+                <Block textAlign="right" marginLeft="auto">
+                  <NavText to={getSectionUrl(sections, next)}>
+                    Next article
+                  </NavText>
+                  <NavLink to={getSectionUrl(sections, next)}>
                     {next.name}
-                  </StyledLink>
+                  </NavLink>
                 </Block>
               )}
             </ArticleNavigation>
