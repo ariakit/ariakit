@@ -1,5 +1,6 @@
 import React from "react";
 import { styled } from "reakit";
+import { Helmet } from "react-helmet";
 import Hero from "../components/Hero";
 import HomeExample from "../components/HomeExample";
 import CoreLayout from "../layouts/CoreLayout";
@@ -21,6 +22,9 @@ const StyledHomeFeatures = styled(HomeFeatures)`
 
 const Home = () => (
   <CoreLayout>
+    <Helmet>
+      <title>ReaKit</title>
+    </Helmet>
     <StyledHero />
     <HomeExample />
     <StyledHomeFeatures />

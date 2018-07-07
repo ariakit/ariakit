@@ -96,6 +96,7 @@
     "react-benchmark": "^1.0.4",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.4.1",
+    "react-helmet": "^5.2.0",
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
     "react-styleguidist": "^7.0.20",
