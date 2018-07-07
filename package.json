@@ -27,7 +27,7 @@
     "prebuild": "npm run clean",
     "build": "rollup -c",
     "website": "styleguidist server",
-    "website:build": "styleguidist build",
+    "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
     "preversion": "npm run lint && npm test && npm run build",
     "version": "standard-changelog && git add CHANGELOG.md",
     "postpublish": "git push origin master --follow-tags"
