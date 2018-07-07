@@ -62,19 +62,14 @@ module.exports = {
         { property: "og:description", content: description },
         { property: "og:site_name", content: "ReaKit" },
         { property: "og:url", content: "https://reakit.io" },
-        {
-          property: "og:image",
-          content:
-            "https://deploy-preview-127--reakit.netlify.com/thumbnail.png"
-        },
+        { property: "og:image", content: "https://reakit.io/thumbnail.png" },
         { property: "og:image:type", content: "image/png" },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
         { property: "twitter:card", content: "summary_large_image" },
         {
           property: "twitter:image:src",
-          content:
-            "https://deploy-preview-127--reakit.netlify.com/thumbnail.png"
+          content: "https://reakit.io/thumbnail.png"
         },
         { property: "twitter:description", content: description },
         { property: "twitter:creator", content: "@diegohaz" }
