@@ -8,9 +8,7 @@ const findNonEmptySiblingSection = (sections, sectionOrName, findPrevious) => {
   const name = sectionOrName.name || sectionOrName;
   const currentIndex = flattenedSections.findIndex(x => x.name === name);
   if (currentIndex >= 0) {
-    return flattenedSections
-      .slice(currentIndex + 1)
-      .find(x => getSectionContent(x));
+    return flattenedSections.slice(currentIndex + 1).find(getSectionContent);
   }
   return undefined;
 };

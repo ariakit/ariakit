@@ -11,13 +11,13 @@ import Blockquote from "../elements/Blockquote";
 const StyledParagraph = styled(Paragraph)`
   line-height: 1.5;
   @media (max-width: 768px) {
-    padding: 0 8px;
+    padding: 0 16px;
   }
 `;
 
 const StyledHeading = styled(Heading)`
   @media (max-width: 768px) {
-    padding: 0 8px;
+    padding: 0 16px;
   }
 `;
 
