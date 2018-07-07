@@ -71,7 +71,7 @@ const NavLink = styled(RouterLink)`
   line-height: 1;
   text-decoration: none;
   color: ${prop("theme.black")};
-  & + & {
+  &:last-child {
     margin-left: auto;
     text-align: right;
   }
