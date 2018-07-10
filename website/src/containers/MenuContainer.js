@@ -3,12 +3,11 @@ import { Container } from "reakit";
 import filterSections from "../utils/filterSections";
 
 const initialState = {
-  sections: [],
-  filtered: []
+  sections: []
 };
 
 const filter = input => state => ({
-  filtered: filterSections(state.sections, input)
+  filtered: input ? filterSections(state.sections, input) : undefined
 });
 
 const MenuContainer = props => (

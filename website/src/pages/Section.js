@@ -11,10 +11,11 @@ import Markdown from "../components/Markdown";
 import findSectionByLocation from "../utils/findSectionByLocation";
 import getSectionContent from "../utils/getSectionContent";
 import getSectionUrl from "../utils/getSectionUrl";
-import getSectionGithubSrcUrl from "../utils/getSectionGithubSrcUrl";
+import getSectionGitHubUrl from "../utils/getSectionGitHubUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
 import ButtonTransparent from "../elements/ButtonTransparent";
+import PropTypesTable from "../components/PropTypesTable";
 
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
@@ -24,9 +25,7 @@ const Wrapper = styled(Block)`
   }
 `;
 
-const Header = styled(Flex)`
-  align-items: center;
-
+const ContentWrapper = styled(Flex)`
   @media (max-width: 768px) {
     padding: 0 16px;
   }
@@ -48,15 +47,9 @@ const Content = styled(Block)`
   padding-top: 1em;
 `;
 
-const StyledSectionUses = styled(SectionUses)`
-  @media (max-width: 768px) {
-    padding: 0 16px;
-  }
-`;
-
 const ArticleNavigation = styled(Flex)`
   border-top: 1px solid ${prop("theme.grayLightest")};
-  margin-top: 1em;
+  margin-top: 2em;
   padding-top: 1em;
   justify-content: space-between;
   @media (max-width: 768px) {
@@ -104,15 +97,15 @@ const Section = ({ location, ...props }) => (
       const sectionContent = getSectionContent(section);
       const next = findNonEmptySiblingSection(sections, section.name);
       const previous = findNonEmptySiblingSection(sections, section.name, true);
-      const githubDocUrl = getSectionGithubSrcUrl(section, "doc");
-      const githubSrcUrl = getSectionGithubSrcUrl(section, "component");
+      const githubDocUrl = getSectionGitHubUrl(section, "md");
+      const githubSrcUrl = getSectionGitHubUrl(section, "js");
       if (sectionContent) {
         return (
           <Wrapper {...props}>
             <Helmet>
               <title>{section.name} - ReaKit</title>
             </Helmet>
-            <Header>
+            <ContentWrapper alignItems="center">
               <Name>{section.name}</Name>
               <Flex>
                 {githubSrcUrl && (
@@ -130,10 +123,12 @@ const Section = ({ location, ...props }) => (
                   </ButtonTransparent>
                 )}
               </Flex>
-            </Header>
-            {section.name !== "Base" && <StyledSectionUses section={section} />}
+            </ContentWrapper>
             {section.name !== "Base" && (
-              <StyledSectionUses usedBy section={section} />
+              <ContentWrapper as={SectionUses} section={section} />
+            )}
+            {section.name !== "Base" && (
+              <ContentWrapper as={SectionUses} usedBy section={section} />
             )}
             <Content>
               {sectionContent.map(
@@ -143,6 +138,7 @@ const Section = ({ location, ...props }) => (
                     : null
               )}
             </Content>
+            <PropTypesTable section={section} />
             <ArticleNavigation>
               {previous && (
                 <NavLink to={getSectionUrl(sections, previous)}>
