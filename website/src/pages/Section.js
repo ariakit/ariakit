@@ -17,6 +17,7 @@ import SectionUses from "../components/SectionUses";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import PropTypesTable from "../components/PropTypesTable";
 import SectionNavigation from "../components/SectionNavigation";
+import isComponentSection from "../utils/isComponentSection";
 
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
@@ -62,6 +63,27 @@ const Section = ({ location, ...props }) => (
       const sectionContent = getSectionContent(section);
       const githubDocUrl = getSectionGitHubUrl(section, "md");
       const githubSrcUrl = getSectionGitHubUrl(section, "js");
+      let foo;
+      if (/Container$/.test(section.name) && isComponentSection(section)) {
+        const { default: Component } = section.module;
+        foo = (
+          <Component shouldUpdate={() => false}>
+            {arg => {
+              Object.entries(arg)
+                .filter(([, value]) => typeof value !== "function")
+                .forEach(([key, value]) => {
+                  console.log(key, value);
+                });
+              Object.entries(arg)
+                .filter(([, value]) => typeof value === "function")
+                .forEach(([key, fn]) => {
+                  console.log(key, fn());
+                });
+              return null;
+            }}
+          </Component>
+        );
+      }
       if (sectionContent) {
         return (
           <Wrapper {...props}>
@@ -103,6 +125,7 @@ const Section = ({ location, ...props }) => (
             </Content>
             <PropTypesTable section={section} />
             <SectionNavigation section={section} />
+            {foo}
           </Wrapper>
         );
       }
