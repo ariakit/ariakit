@@ -78,7 +78,7 @@ const PropTypesTable = ({ section }) =>
             <StyledHeading as="h2">Props</StyledHeading>
             {propTypes.map(([compName, types], i) => (
               <Hidden.Container
-                key={compName}
+                key={`${section.name}${compName}`}
                 initialState={{ visible: i === 0 }}
               >
                 {({ visible, toggle }) => (
@@ -111,7 +111,9 @@ const PropTypesTable = ({ section }) =>
                           <Table.Body>
                             {Object.entries(types).map(
                               ([name, { type, required, defaultValue }]) => (
-                                <Table.Row key={`${compName}${name}`}>
+                                <Table.Row
+                                  key={`${section.name}${compName}${name}`}
+                                >
                                   <Table.Cell>
                                     <Code>{name}</Code>
                                   </Table.Cell>
