@@ -1,7 +1,7 @@
 import React from "react";
 import { styled, Block, Heading, Flex, Base } from "reakit";
 import { prop } from "styled-tools";
-import { Redirect, Link as RouterLink } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import CodeIcon from "react-icons/lib/md/code";
 import EditIcon from "react-icons/lib/md/edit";
@@ -16,6 +16,7 @@ import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import PropTypesTable from "../components/PropTypesTable";
+import SectionNavigation from "../components/SectionNavigation";
 
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
@@ -47,42 +48,6 @@ const Content = styled(Block)`
   padding-top: 1em;
 `;
 
-const ArticleNavigation = styled(Flex)`
-  border-top: 1px solid ${prop("theme.grayLightest")};
-  margin-top: 2em;
-  padding-top: 1em;
-  justify-content: space-between;
-  @media (max-width: 768px) {
-    padding: 0.5em 16px;
-    position: sticky;
-    bottom: 0px;
-    background-color: white;
-    z-index: 300;
-  }
-`;
-
-const NavLink = styled(RouterLink)`
-  line-height: 1;
-  text-decoration: none;
-  color: ${prop("theme.black")};
-  &:last-child {
-    margin-left: auto;
-    text-align: right;
-  }
-`;
-
-const NavSectionName = styled(Block)`
-  font-size: 1.75em;
-  font-weight: 600;
-  *:hover > & {
-    text-decoration: underline;
-  }
-  @media (max-width: 768px) {
-    font-size: 1.35em;
-    text-decoration: none !important;
-  }
-`;
-
 const sectionMap = {
   markdown: ({ content }, key) => <Markdown text={content} key={key} />,
   code: ({ content, evalInContext }, key) => (
@@ -95,8 +60,6 @@ const Section = ({ location, ...props }) => (
     {({ sections }) => {
       const section = findSectionByLocation(sections, location);
       const sectionContent = getSectionContent(section);
-      const next = findNonEmptySiblingSection(sections, section.name);
-      const previous = findNonEmptySiblingSection(sections, section.name, true);
       const githubDocUrl = getSectionGitHubUrl(section, "md");
       const githubSrcUrl = getSectionGitHubUrl(section, "js");
       if (sectionContent) {
@@ -139,20 +102,7 @@ const Section = ({ location, ...props }) => (
               )}
             </Content>
             <PropTypesTable section={section} />
-            <ArticleNavigation>
-              {previous && (
-                <NavLink to={getSectionUrl(sections, previous)}>
-                  Previous article
-                  <NavSectionName>{previous.name}</NavSectionName>
-                </NavLink>
-              )}
-              {next && (
-                <NavLink to={getSectionUrl(sections, next)}>
-                  Next article
-                  <NavSectionName>{next.name}</NavSectionName>
-                </NavLink>
-              )}
-            </ArticleNavigation>
+            <SectionNavigation section={section} />
           </Wrapper>
         );
       }
