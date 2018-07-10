@@ -11,7 +11,7 @@ import Markdown from "../components/Markdown";
 import findSectionByLocation from "../utils/findSectionByLocation";
 import getSectionContent from "../utils/getSectionContent";
 import getSectionUrl from "../utils/getSectionUrl";
-import getSectionGithubSrcUrl from "../utils/getSectionGithubSrcUrl";
+import getSectionGitHubUrl from "../utils/getSectionGitHubUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
 import ButtonTransparent from "../elements/ButtonTransparent";
@@ -97,8 +97,8 @@ const Section = ({ location, ...props }) => (
       const sectionContent = getSectionContent(section);
       const next = findNonEmptySiblingSection(sections, section.name);
       const previous = findNonEmptySiblingSection(sections, section.name, true);
-      const githubDocUrl = getSectionGithubSrcUrl(section, "doc");
-      const githubSrcUrl = getSectionGithubSrcUrl(section, "component");
+      const githubDocUrl = getSectionGitHubUrl(section, "md");
+      const githubSrcUrl = getSectionGitHubUrl(section, "js");
       if (sectionContent) {
         return (
           <Wrapper {...props}>
