@@ -23,10 +23,13 @@ const Base = styled(Component)`
   }
 `;
 
-const type = PropTypes.oneOfType([PropTypes.func, PropTypes.string]);
+const asTypes = [PropTypes.func, PropTypes.string];
 
 Base.propTypes = {
-  as: PropTypes.oneOfType([type, PropTypes.arrayOf(type)]),
+  as: PropTypes.oneOfType([
+    ...asTypes,
+    PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
+  ]),
   ...positions.reduce(
     (obj, position) => ({
       ...obj,

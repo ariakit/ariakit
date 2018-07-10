@@ -27,7 +27,6 @@ const Divider = styled(Base)`
 `;
 
 Divider.propTypes = {
-  horizontal: PropTypes.bool,
   vertical: PropTypes.bool
 };
 

@@ -87,6 +87,7 @@
     "jest-styled-components": "^5.0.1",
     "markdown-to-jsx": "^6.6.8",
     "opn-cli": "^3.1.0",
+    "parse-prop-types": "^0.2.0",
     "prettier": "1.13.7",
     "pretty": "^2.0.0",
     "prop-types": "^15.6.2",

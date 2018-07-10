@@ -1,4 +1,5 @@
 import "babel-polyfill";
+import "parse-prop-types";
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider, Provider } from "reakit";

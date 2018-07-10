@@ -22,5 +22,5 @@ import { Box, Field, Label, Input, Button, Shadow } from "reakit";
     <Button>Ok</Button>
   </Group>
   <Shadow />
-</Box>;
+</Box>
 ```

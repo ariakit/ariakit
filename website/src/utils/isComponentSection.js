@@ -1,5 +1,3 @@
-export default function isComponentSection(section) {
-  return Boolean(
-    section.filepath && section.filepath.startsWith("src/components")
-  );
-}
+const isComponentSection = section => !!section.module;
+
+export default isComponentSection;
