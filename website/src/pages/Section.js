@@ -110,7 +110,7 @@ const Section = ({ location, ...props }) => (
         return (
           <Wrapper {...props}>
             <Helmet>
-              <title>{section.name} | ReaKit</title>
+              <title>{section.name} - ReaKit</title>
             </Helmet>
             <Header>
               <Name>{section.name}</Name>
