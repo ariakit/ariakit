@@ -31,10 +31,6 @@ module.exports = ({ title, css, js, publicPath }) => `
       <meta property="twitter:creator" content="@diegohaz">
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700">
       ${generateCSSReferences(css, publicPath)}
-    </head>
-    <body>
-      <div id="rsg-root"></div>
-      ${generateJSReferences(js, publicPath)}
       <!-- Google Tag Manager -->
       <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
       new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -42,5 +38,9 @@ module.exports = ({ title, css, js, publicPath }) => `
       'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
       })(window,document,'script','dataLayer','GTM-NWWM5K3');</script>
       <!-- End Google Tag Manager -->
+    </head>
+    <body>
+      <div id="rsg-root"></div>
+      ${generateJSReferences(js, publicPath)}
     </body>
   </html>`;
