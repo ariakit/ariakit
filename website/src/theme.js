@@ -43,11 +43,13 @@ export default {
   Table: css`
     table-layout: auto;
     border: 0;
+    width: 100%;
     td {
       vertical-align: top;
       padding: 0.5em;
     }
     th {
+      padding: 0.5em;
       text-align: left;
       background-color: white;
     }
