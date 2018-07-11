@@ -10,7 +10,7 @@ const Table = styled(Base)`
   background-color: white;
   border: 1px solid #bbb;
   line-height: 200%;
-  ${prop("Table")};
+  ${prop("theme.Table")};
 `;
 
 Table.defaultProps = {
