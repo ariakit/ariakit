@@ -13,9 +13,7 @@ const {
   sourceMaps
 } = require("webpack-blocks");
 const importToRequire = require("./website/src/utils/importToRequire");
-
-const description =
-  "Toolkit for building composable, accessible and reliable UIs with React.";
+const template = require("./website/src/template");
 
 module.exports = {
   title: "ReaKit",
@@ -53,46 +51,7 @@ module.exports = {
   logger: {
     warn: () => {}
   },
-  template: {
-    head: {
-      raw: [
-        '<base href="/">',
-        `<!-- Google Tag Manager -->
-      <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-NWWM5K3');</script>
-      <!-- End Google Tag Manager -->`
-      ].join("\n"),
-      meta: [
-        { name: "description", content: description },
-        { property: "og:title", content: "ReaKit" },
-        { property: "og:description", content: description },
-        { property: "og:site_name", content: "ReaKit" },
-        { property: "og:url", content: "https://reakit.io" },
-        { property: "og:image", content: "https://reakit.io/thumbnail.png" },
-        { property: "og:image:type", content: "image/png" },
-        { property: "og:image:width", content: "1200" },
-        { property: "og:image:height", content: "630" },
-        { property: "twitter:card", content: "summary_large_image" },
-        {
-          property: "twitter:image:src",
-          content: "https://reakit.io/thumbnail.png"
-        },
-        { property: "twitter:description", content: description },
-        { property: "twitter:creator", content: "@diegohaz" }
-      ],
-      links: [
-        {
-          rel: "stylesheet",
-          href:
-            "https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700"
-        }
-      ]
-    },
-    favicon: "/icon.png"
-  },
+  template,
   assetsDir: "website/public",
   styleguideDir: "website/dist",
   styleguideComponents: {
