@@ -22,22 +22,6 @@ const TableWrapper = styled(Block)`
   -webkit-overflow-scrolling: touch;
 `;
 
-const StyledTable = styled(Table)`
-  table-layout: auto;
-  border: 0;
-  td {
-    vertical-align: top;
-    padding: 0.5em;
-  }
-  th {
-    text-align: left;
-    background-color: white;
-  }
-  tr:nth-child(odd) {
-    background-color: #f6f6f6;
-  }
-`;
-
 const renderType = type => {
   if (!type) return "unknown";
   if (Array.isArray(type)) {
@@ -99,7 +83,7 @@ const PropTypesTable = ({ section }) =>
                     </Button>
                     {visible && (
                       <TableWrapper>
-                        <StyledTable width="100%">
+                        <Table>
                           <Table.Head>
                             <Table.Row>
                               <Table.Cell header>Prop</Table.Cell>
@@ -132,7 +116,7 @@ const PropTypesTable = ({ section }) =>
                               )
                             )}
                           </Table.Body>
-                        </StyledTable>
+                        </Table>
                       </TableWrapper>
                     )}
                   </React.Fragment>
