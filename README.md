@@ -22,7 +22,7 @@ Toolkit for building [composable](https://reakit.io/guide/principles/composabili
 npm i reakit
 ```
 
-Thanks [**@nosebit**](https://github.com/nosebit) for the package name.
+> Thanks to [@nosebit](https://github.com/nosebit) for the package name on npm.
 
 ## Example
 
