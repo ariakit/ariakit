@@ -1,6 +1,6 @@
 <p align="center">
   <br><br><br>
-  <img src="logo/logo.png" alt="reakit" width="300" />
+  <img src="logo/logo.png" alt="reakit" width="400" />
   <br><br><br><br>
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
   <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
