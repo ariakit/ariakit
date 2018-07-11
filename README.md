@@ -1,5 +1,5 @@
 <p align="center">
-  <br><br><br><br>
+  <br><br><br>
   <img src="logo/logo.png" alt="reakit" width="300" />
   <br><br><br><br>
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
