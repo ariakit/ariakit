@@ -44,6 +44,7 @@ export default {
     table-layout: auto;
     border: 0;
     width: 100%;
+    margin-bottom: 1em;
     td {
       vertical-align: top;
       padding: 0.5em;

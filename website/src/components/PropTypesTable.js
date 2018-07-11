@@ -5,6 +5,7 @@ import ArrowDownIcon from "react-icons/lib/md/arrow-drop-down";
 import ArrowUpIcon from "react-icons/lib/md/arrow-drop-up";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Icon from "../elements/Icon";
+import TableWrapper from "../elements/TableWrapper";
 import findSectionPropTypes from "../utils/findSectionPropTypes";
 import isComponentSection from "../utils/isComponentSection";
 
@@ -14,12 +15,6 @@ const StyledHeading = styled(Heading)`
     margin-left: 16px;
     margin-right: 16px;
   }
-`;
-
-const TableWrapper = styled(Block)`
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 `;
 
 const renderType = type => {
@@ -95,9 +90,7 @@ const PropTypesTable = ({ section }) =>
                           <Table.Body>
                             {Object.entries(types).map(
                               ([name, { type, required, defaultValue }]) => (
-                                <Table.Row
-                                  key={`${section.name}${compName}${name}`}
-                                >
+                                <Table.Row key={name}>
                                   <Table.Cell>
                                     <Code>{name}</Code>
                                   </Table.Cell>
