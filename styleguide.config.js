@@ -15,7 +15,7 @@ const {
 const importToRequire = require("./website/src/utils/importToRequire");
 
 const description =
-  "Tookit for building composable, accessible and reliable UIs with React.";
+  "Toolkit for building composable, accessible and reliable UIs with React.";
 
 module.exports = {
   title: "ReaKit",
