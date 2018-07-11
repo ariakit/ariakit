@@ -1,44 +1,26 @@
 import React from "react";
-import { styled, Block, Heading, Flex, Base } from "reakit";
+import { styled, Block } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import CodeIcon from "react-icons/lib/md/code";
-import EditIcon from "react-icons/lib/md/edit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
 import findSectionByLocation from "../utils/findSectionByLocation";
 import getSectionContent from "../utils/getSectionContent";
 import getSectionUrl from "../utils/getSectionUrl";
-import getSectionGitHubUrl from "../utils/getSectionGitHubUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 import SectionUses from "../components/SectionUses";
-import ButtonTransparent from "../elements/ButtonTransparent";
 import PropTypesTable from "../components/PropTypesTable";
 import SectionNavigation from "../components/SectionNavigation";
+import ContainerAPITable from "../components/ContainerAPITable";
+import SectionGitHubButtons from "../components/SectionGitHubButtons";
 
 const Wrapper = styled(Block)`
   @media (max-width: 768px) {
     margin-left: -8px;
     margin-right: -8px;
     max-width: 100vw;
-  }
-`;
-
-const ContentWrapper = styled(Flex)`
-  @media (max-width: 768px) {
-    padding: 0 16px;
-  }
-`;
-
-const Name = styled(Heading)`
-  margin-right: auto;
-`;
-
-const GithubSrcButtonText = styled(Base)`
-  @media (max-width: 768px) {
-    display: none;
   }
 `;
 
@@ -60,38 +42,18 @@ const Section = ({ location, ...props }) => (
     {({ sections }) => {
       const section = findSectionByLocation(sections, location);
       const sectionContent = getSectionContent(section);
-      const githubDocUrl = getSectionGitHubUrl(section, "md");
-      const githubSrcUrl = getSectionGitHubUrl(section, "js");
       if (sectionContent) {
         return (
           <Wrapper {...props}>
             <Helmet>
               <title>{section.name} - ReaKit</title>
             </Helmet>
-            <ContentWrapper alignItems="center">
-              <Name>{section.name}</Name>
-              <Flex>
-                {githubSrcUrl && (
-                  <ButtonTransparent as="a" href={githubSrcUrl} target="_blank">
-                    <CodeIcon />
-                    <GithubSrcButtonText>
-                      View source on GitHub
-                    </GithubSrcButtonText>
-                  </ButtonTransparent>
-                )}
-                {githubDocUrl && (
-                  <ButtonTransparent as="a" href={githubDocUrl} target="_blank">
-                    <EditIcon />
-                    <GithubSrcButtonText>Improve this page</GithubSrcButtonText>
-                  </ButtonTransparent>
-                )}
-              </Flex>
-            </ContentWrapper>
+            <SectionGitHubButtons section={section} />
             {section.name !== "Base" && (
-              <ContentWrapper as={SectionUses} section={section} />
-            )}
-            {section.name !== "Base" && (
-              <ContentWrapper as={SectionUses} usedBy section={section} />
+              <React.Fragment>
+                <SectionUses section={section} />
+                <SectionUses usedBy section={section} />
+              </React.Fragment>
             )}
             <Content>
               {sectionContent.map(
@@ -101,6 +63,7 @@ const Section = ({ location, ...props }) => (
                     : null
               )}
             </Content>
+            <ContainerAPITable section={section} />
             <PropTypesTable section={section} />
             <SectionNavigation section={section} />
           </Wrapper>

@@ -38,5 +38,24 @@ export default {
   Link: css`
     color: ${prop("theme.pinkDark")};
     font-weight: 600;
+  `,
+
+  Table: css`
+    table-layout: auto;
+    border: 0;
+    width: 100%;
+    margin-bottom: 1em;
+    td {
+      vertical-align: top;
+      padding: 0.5em;
+    }
+    th {
+      padding: 0.5em;
+      text-align: left;
+      background-color: white;
+    }
+    tr:nth-child(odd) {
+      background-color: #f6f6f6;
+    }
   `
 };

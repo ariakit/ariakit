@@ -148,8 +148,8 @@ const StepContainer = props => (
 
 StepContainer.propTypes = {
   initialState: PropTypes.object,
-  actions: PropTypes.object,
-  selectors: PropTypes.object
+  actions: PropTypes.objectOf(PropTypes.func),
+  selectors: PropTypes.objectOf(PropTypes.func)
 };
 
 export default StepContainer;

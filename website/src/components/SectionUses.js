@@ -5,8 +5,9 @@ import { Link as RouterLink } from "react-router-dom";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import getSectionUrl from "../utils/getSectionUrl";
 import findSectionUses from "../utils/findSectionUses";
+import SectionContentWrapper from "../elements/SectionContentWrapper";
 
-const Wrapper = styled(Grid)`
+const Wrapper = styled(Grid.as(SectionContentWrapper))`
   grid-auto-flow: column;
   grid-gap: 5px;
   justify-content: start;
