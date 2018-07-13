@@ -13,8 +13,8 @@ const Component = props => {
       id={`${tab}Panel`}
       aria-labelledby={`${tab}Tab`}
       destroy
-      {...props}
       visible={isCurrent && isCurrent(tab)}
+      {...props}
     />
   );
 };
