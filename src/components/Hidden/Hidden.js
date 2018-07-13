@@ -29,9 +29,9 @@ class Component extends React.Component {
   };
 
   render() {
-    const { visible, styleProp, destroy } = this.props;
+    const { visible, styleProp, unmount } = this.props;
 
-    if (destroy) {
+    if (unmount) {
       return visible ? <Base {...this.props} /> : null;
     }
 
@@ -63,7 +63,7 @@ Hidden.propTypes = {
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
   visible: PropTypes.bool,
-  destroy: PropTypes.bool,
+  unmount: PropTypes.bool,
   styleProp: PropTypes.oneOf(["display", "visibility", "opacity"])
 };
 

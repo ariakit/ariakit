@@ -62,7 +62,7 @@ class Component extends React.Component {
     const { current, indexOf, step } = this.props;
     return (
       <Hidden
-        destroy
+        unmount
         visible={current === indexOf(step)}
         {...this.props}
         elementRef={createElementRef(this, "element")}
