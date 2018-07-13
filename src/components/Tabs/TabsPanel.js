@@ -12,9 +12,9 @@ const Component = props => {
     <Hidden
       id={`${tab}Panel`}
       aria-labelledby={`${tab}Tab`}
-      destroy
-      {...props}
+      unmount
       visible={isCurrent && isCurrent(tab)}
+      {...props}
     />
   );
 };

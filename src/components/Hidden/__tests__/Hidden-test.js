@@ -63,9 +63,9 @@ it("adds event handler when component becomes visible", () => {
 });
 
 describe("visibility methodologies", () => {
-  describe("destroy", () => {
+  describe("unmount", () => {
     it("removes the element when visible is false", () => {
-      const wrapper = mount(<Hidden visible={false} destroy />);
+      const wrapper = mount(<Hidden visible={false} unmount />);
       expect(wrapper.html()).toBe(null);
     });
   });
