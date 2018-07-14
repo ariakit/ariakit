@@ -8,9 +8,4 @@ const SidebarFade = styled(HiddenFade.as(Sidebar))`
   ${prop("theme.SidebarFade")};
 `;
 
-HiddenFade.defaultProps = {
-  ...HiddenFade.defaultProps,
-  ...Sidebar.defaultProps
-};
-
 export default as("div")(SidebarFade);
