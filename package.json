@@ -32,19 +32,6 @@
     "version": "standard-changelog && git add CHANGELOG.md",
     "postpublish": "git push origin master --follow-tags"
   },
-  "jest": {
-    "setupFiles": [
-      "<rootDir>/test.config.js"
-    ],
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer",
-      "jest-serializer-html"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "<rootDir>/website"
-    ]
-  },
   "keywords": [
     "reakit"
   ],
