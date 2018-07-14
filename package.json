@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "type-check": "tsc --noEmit",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint src benchmark website/src",
