@@ -1,7 +1,7 @@
 {
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {
         "modules": false,
         "loose": true,
@@ -10,10 +10,15 @@
         }
       }
     ],
-    "stage-1",
-    "react"
+    "@babel/preset-typescript",
+    "@babel/preset-react"
   ],
-  "plugins": ["styled-components"],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-proposal-export-default-from",
+    "styled-components"
+  ],
   "env": {
     "test": {
       "plugins": ["transform-es2015-modules-commonjs"]
