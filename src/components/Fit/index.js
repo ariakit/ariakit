@@ -1,1 +1,3 @@
-export default from "./Fit";
+import Fit from "./Fit";
+
+export default Fit;

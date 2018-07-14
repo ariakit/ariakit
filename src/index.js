@@ -2,7 +2,8 @@ import as from "./enhancers/as";
 
 export { Container, Provider, Consumer } from "constate";
 
-export styled, {
+export {
+  default as styled,
   css,
   keyframes,
   injectGlobal,

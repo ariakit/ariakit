@@ -1,1 +1,3 @@
-export default from "./InlineBlock";
+import InlineBlock from "./InlineBlock";
+
+export default InlineBlock;

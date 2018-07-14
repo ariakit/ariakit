@@ -1,1 +1,3 @@
-export default from "./InlineFlex";
+import InlineFlex from "./InlineFlex";
+
+export default InlineFlex;

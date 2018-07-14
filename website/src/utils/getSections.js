@@ -1,3 +1,3 @@
-const getSections = section => [...section.sections, ...section.components];
+const getSections = section => [].concat(section.sections, section.components);
 
 export default getSections;

@@ -1,1 +1,3 @@
-export default from "./Shadow";
+import Shadow from "./Shadow";
+
+export default Shadow;

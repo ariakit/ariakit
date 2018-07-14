@@ -1,1 +1,3 @@
-export default from "./Code";
+import Code from "./Code";
+
+export default Code;

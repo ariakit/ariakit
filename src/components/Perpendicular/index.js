@@ -1,1 +1,3 @@
-export default from "./Perpendicular";
+import Perpendicular from "./Perpendicular";
+
+export default Perpendicular;

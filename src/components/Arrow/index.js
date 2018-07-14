@@ -1,1 +1,3 @@
-export default from "./Arrow";
+import Arrow from "./Arrow";
+
+export default Arrow;

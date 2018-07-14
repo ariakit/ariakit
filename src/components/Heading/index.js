@@ -1,1 +1,3 @@
-export default from "./Heading";
+import Heading from "./Heading";
+
+export default Heading;

@@ -1,1 +1,3 @@
-export default from "./Navigation";
+import Navigation from "./Navigation";
+
+export default Navigation;
