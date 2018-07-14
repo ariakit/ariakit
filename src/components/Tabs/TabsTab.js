@@ -8,11 +8,8 @@ import createElementRef from "../../utils/createElementRef";
 import Step from "../Step";
 
 class Component extends React.Component {
-  constructor(props) {
-    super(props);
-    /** @type {HTMLElement | undefined} */
-    this.element = undefined;
-  }
+  /** @type {HTMLElement | undefined} */
+  element = undefined;
 
   componentDidUpdate(prevProps) {
     const { current, isCurrent, tab } = this.props;
