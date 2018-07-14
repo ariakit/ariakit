@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "allowJs": true,
     "checkJs": true,
     "target": "esnext",
@@ -8,7 +9,11 @@
     "declaration": true,
     "outDir": "lib",
     "strict": true,
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+  },
+  "exclude": [
+    "website/**/*"
+  ],
 }
