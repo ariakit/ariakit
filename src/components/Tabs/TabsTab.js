@@ -8,10 +8,16 @@ import createElementRef from "../../utils/createElementRef";
 import Step from "../Step";
 
 class Component extends React.Component {
+  constructor(props) {
+    super(props);
+    /** @type {HTMLElement | undefined} */
+    this.element = undefined;
+  }
+
   componentDidUpdate(prevProps) {
     const { current, isCurrent, tab } = this.props;
 
-    if (prevProps.current !== current && isCurrent(tab)) {
+    if (prevProps.current !== current && isCurrent(tab) && this.element) {
       this.element.focus();
     }
   }
