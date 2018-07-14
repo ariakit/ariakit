@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
-import { switchProp, prop } from "styled-tools";
+import { switchProp, prop, ifProp } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
@@ -18,8 +18,7 @@ const perpendicular = ({ pos }) =>
 
 const perpendicularOpposite = props => opposites[perpendicular(props)];
 
-const perpendicularAxis = ({ pos }) =>
-  pos === "left" || pos === "right" ? "Y" : "X";
+const isVertical = ({ pos }) => pos === "left" || pos === "right";
 
 const rotation = ({ rotate, pos, reverse }) => {
   if (!rotate) return null;
@@ -33,10 +32,21 @@ const rotation = ({ rotate, pos, reverse }) => {
   return rotations[pos];
 };
 
+export const transform = (x = "0px", y = "0px") =>
+  ifProp(
+    { align: "center" },
+    css`translateX(${ifProp(
+      isVertical,
+      x,
+      `calc(${x} - 50%)`
+    )}) translateY(${ifProp(isVertical, `calc(${y} - 50%)`, y)}) ${rotation}`,
+    rotation
+  );
+
 const Perpendicular = styled(Base)`
   position: absolute;
   ${opposite}: calc(100% + ${prop("gutter")});
-  transform: ${rotation};
+  transform: ${transform()};
 
   ${switchProp("align", {
     start: css`
@@ -44,8 +54,6 @@ const Perpendicular = styled(Base)`
     `,
     center: css`
       ${perpendicular}: 50%;
-      // prettier-ignore
-      transform: translate${perpendicularAxis}(-50%) ${rotation};
     `,
     end: css`
       ${perpendicularOpposite}: 0;

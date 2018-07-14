@@ -5,7 +5,7 @@ import { Block } from "reakit";
   {overlay => (
     <Block>
       <Overlay.Toggle {...overlay}>Toggle</Overlay.Toggle>
-      <Overlay.Fade {...overlay}>Overlay</Overlay.Fade>
+      <Overlay.Fade to="top" {...overlay}>Overlay</Overlay.Fade>
     </Block>
   )}
 </Overlay.Container>
