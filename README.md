@@ -71,6 +71,34 @@ Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark)
 | [rebass](https://github.com/jxnblk/rebass) | 7,989 |
 
 
+## Contributors
+
+This project exists thanks to all the people who contribute.
+<a href="https://github.com/diegohaz/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏
+
+<a href="https://opencollective.com/reakit#backers" target="_blank"><img src="https://opencollective.com/reakit/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
+
+<a href="https://opencollective.com/reakit/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/1/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/2/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/3/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/4/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/5/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/6/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/7/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/8/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/reakit/sponsor/9/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
+
 ## License
 
 MIT © [Diego Haz](https://github.com/diegohaz)
