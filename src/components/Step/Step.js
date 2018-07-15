@@ -18,7 +18,7 @@ class Component extends React.Component {
   /**
    * @type HTMLElement | undefined
    */
-  element = undefined
+  element = undefined;
 
   componentDidMount() {
     const { step, onEnter, current, indexOf } = this.props;
