@@ -6,7 +6,11 @@
     "browser": true
   },
   "settings": {
-    "import/ignore": ["^reakit"]
+    "import/ignore": ["^reakit"],
+    "import/resolver": {
+      "node": true,
+      "eslint-import-resolver-typescript": true
+    }
   },
   "rules": {
     "jsx-a11y/accessible-emoji": "off",
