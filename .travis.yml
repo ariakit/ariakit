@@ -4,7 +4,7 @@ node_js:
 script:
   - npm run lint
   - npm run type-check
-  - npm run singel
+  # - npm run singel
   - npm test -- --coverage
   - npm run build
 cache:
