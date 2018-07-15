@@ -12,6 +12,8 @@ const { name } = pkg;
 const external = Object.keys(pkg.peerDependencies || {});
 const allExternal = external.concat(Object.keys(pkg.dependencies || {}));
 
+const resovleExtensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
+
 const makeExternalPredicate = externalArr => {
   if (externalArr.length === 0) {
     return () => false;
@@ -38,7 +40,7 @@ const createCommonPlugins = ({ es = true } = {}) => [
     exclude: "node_modules/**",
     plugins: [
       "styled-components",
-      "external-helpers",
+      "@babel/external-helpers",
       es && useLodashEs
     ].filter(Boolean)
   }),
@@ -60,7 +62,11 @@ const main = Object.assign({}, common, {
     exports: "named"
   },
   external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins({ es: false }).concat([resolve()])
+  plugins: createCommonPlugins({ es: false }).concat([
+    resolve({
+      extensions: resovleExtensions
+    })
+  ])
 });
 
 const module = Object.assign({}, common, {
@@ -69,7 +75,11 @@ const module = Object.assign({}, common, {
     format: "es"
   },
   external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins().concat([resolve()])
+  plugins: createCommonPlugins().concat([
+    resolve({
+      extensions: resovleExtensions
+    })
+  ])
 });
 
 const unpkg = Object.assign({}, common, {
@@ -92,6 +102,7 @@ const unpkg = Object.assign({}, common, {
       "process.env.NODE_ENV": JSON.stringify("production")
     }),
     resolve({
+      extensions: resovleExtensions,
       preferBuiltins: false
     })
   ])
