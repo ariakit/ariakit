@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
 import { switchProp, prop, ifProp } from "styled-tools";
 import as from "../../enhancers/as";
+import { hasTransition, expand } from "../../utils/transitions";
 import Base from "../Base";
 
 const opposites = {
@@ -61,29 +62,21 @@ const Perpendicular = styled(Base)`
   })};
 
   ${ifProp(
-    props => props.expand || props.slide,
+    hasTransition,
     css`
-      &:not(.visible) {
+      &[aria-hidden="true"] {
         transform: ${ifProp(
             "slide",
             switchProp("slide", {
-              top: transform("0px", "10em"),
-              right: transform("-10em", "0px"),
-              bottom: transform("0px", "-10em"),
-              left: transform("10em", "0px")
+              top: transform("0px", "1em"),
+              right: transform("-1em"),
+              bottom: transform("0px", "-1em"),
+              left: transform("1em"),
+              true: transform("-1em")
             }),
             transform()
           )}
-          ${ifProp(
-            "expand",
-            switchProp("expand", {
-              top: "scaleY(0)",
-              right: "scaleX(0)",
-              bottom: "scaleY(0)",
-              left: "scaleX(0)",
-              true: "scale(0)"
-            })
-          )} !important;
+          ${expand()} !important;
       }
     `
   )};

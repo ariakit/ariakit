@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
-import { prop, ifProp, switchProp } from "styled-tools";
+import styled, { css } from "styled-components";
+import { prop, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import as from "../../enhancers/as";
 import callAll from "../../utils/callAll";
+import { hasTransition, expand, slide, origin } from "../../utils/transitions";
 import Base from "../Base";
 
 class Component extends React.Component {
@@ -21,14 +22,12 @@ class Component extends React.Component {
   }
 
   applyState = () => {
-    const { fade, slide, expand, visible, unmount } = this.props;
+    const { visible, unmount } = this.props;
 
-    const hasTransition = fade || slide || expand;
-
-    if (unmount && hasTransition) {
+    if (typeof window !== "undefined" && unmount && hasTransition(this.props)) {
       if (visible) {
         this.setState({ transitioning: true });
-        requestAnimationFrame(() =>
+        window.requestAnimationFrame(() =>
           this.setState({ transitioning: false, visible: true })
         );
       } else {
@@ -40,17 +39,8 @@ class Component extends React.Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { visible, hideOnEsc } = this.props;
-
-    if (prevProps.visible !== visible) {
+    if (prevProps.visible !== this.props.visible) {
       this.applyState();
-
-      if (hideOnEsc) {
-        const addOrRemove = visible
-          ? "addEventListener"
-          : "removeEventListener";
-        document.body[addOrRemove]("keydown", this.handleKeyDown);
-      }
     }
   }
 
@@ -66,30 +56,25 @@ class Component extends React.Component {
   };
 
   handleKeyDown = e => {
-    if (e.key === "Escape" && this.props.hide) {
-      this.props.hide();
+    const { visible, hide } = this.props;
+    if (e.key === "Escape" && visible && hide) {
+      hide();
     }
   };
 
   render() {
-    const { className, unmount, onTransitionEnd } = this.props;
+    const { unmount, onTransitionEnd } = this.props;
     const { visible, transitioning } = this.state;
 
     if (unmount && !visible && !transitioning) {
       return null;
     }
 
-    const visibleClassName = visible && "visible";
-    const finalClassName = [className, visibleClassName]
-      .filter(Boolean)
-      .join(" ");
-
     return (
       <Base
         aria-hidden={!visible}
         {...this.props}
         {...this.state}
-        className={finalClassName}
         onTransitionEnd={callAll(this.handleTransitionEnd, onTransitionEnd)}
       />
     );
@@ -99,43 +84,28 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Base);
 
 const Hidden = styled(Component)`
-  transition: opacity ${prop("duration")} ${prop("timing")},
-    transform ${prop("duration")} ${prop("timing")};
   ${ifProp(
-    "expand",
-    switchProp("expand", {
-      top: "transform-origin: 50% 100%",
-      right: "transform-origin: 0 50%",
-      bottom: "transform-origin: 50% 0",
-      left: "transform-origin: 100% 50%"
-    })
+    hasTransition,
+    css`
+      transition: all ${prop("duration")} ${prop("timing")} ${prop("delay")};
+    `
   )};
-  &:not(.visible) {
+
+  ${origin()};
+
+  &[aria-hidden="true"] {
     pointer-events: none;
+
+    ${ifProp("fade", "opacity: 0")};
+
     ${ifProp(
-      props => !props.fade && !props.slide && !props.expand,
+      hasTransition,
+      css`
+        transform: ${slide()} ${expand()};
+        visibility: hidden;
+      `,
       "display: none !important"
     )};
-    ${ifProp("fade", "opacity: 0")};
-    transform: ${ifProp(
-        "expand",
-        switchProp("expand", {
-          top: "scaleY(0)",
-          right: "scaleX(0)",
-          bottom: "scaleY(0)",
-          left: "scaleX(0)",
-          undefined: "scale(0)"
-        })
-      )}
-      ${ifProp(
-        "slide",
-        switchProp(prop("slide", "right"), {
-          top: "translateY(100%)",
-          right: "translateX(-100%)",
-          bottom: "translateY(-100%)",
-          left: "translateX(100%)"
-        })
-      )};
   }
 
   ${prop("theme.Hidden")};
@@ -145,9 +115,20 @@ Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
+  unmount: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  fade: PropTypes.bool,
+  expand: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.oneOf(["top", "right", "bottom", "left"])
+  ]),
+  slide: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.oneOf(["top", "right", "bottom", "left"])
+  ]),
   duration: PropTypes.string,
+  delay: PropTypes.string,
   timing: PropTypes.string,
-  unmount: PropTypes.oneOfType([PropTypes.bool, PropTypes.number])
+  animated: PropTypes.bool
 };
 
 Hidden.defaultProps = {

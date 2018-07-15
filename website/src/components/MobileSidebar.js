@@ -31,7 +31,7 @@ const MobileSidebar = () => (
         <Backdrop fade as={Sidebar.Hide} zIndex={99999} {...sidebar} />
         <StyleguidistContainer>
           {({ sections }) => (
-            <StyledSidebar unmount slide="right" {...sidebar}>
+            <StyledSidebar slide {...sidebar}>
               {sections.map(section => (
                 <Block key={section.slug} onClick={sidebar.hide}>
                   <SectionLink to={getSectionUrl(sections, section)}>

@@ -9,9 +9,18 @@ import Box from "../Box";
 
 const HiddenPerpendicularBox = Hidden.as([Perpendicular, Box]);
 
-const Component = props => (
-  <HiddenPerpendicularBox id={props.popoverId} {...props} />
-);
+const Component = props => {
+  const slide = props.slide === true ? "bottom" : props.slide;
+  const expand = props.expand === true ? "bottom" : props.expand;
+  return (
+    <HiddenPerpendicularBox
+      id={props.popoverId}
+      {...props}
+      slide={slide}
+      expand={expand}
+    />
+  );
+};
 
 const Popover = styled(Component)`
   user-select: auto;
