@@ -32,7 +32,7 @@ const rotation = ({ rotate, pos, reverse }) => {
   return rotations[pos];
 };
 
-export const transform = (x = "0px", y = "0px") =>
+const transform = (x = "0px", y = "0px") =>
   ifProp(
     { align: "center" },
     css`translateX(${ifProp(
@@ -46,7 +46,7 @@ export const transform = (x = "0px", y = "0px") =>
 const Perpendicular = styled(Base)`
   position: absolute;
   ${opposite}: calc(100% + ${prop("gutter")});
-  transform: ${transform()};
+  transform: ${transform()} scale(1);
 
   ${switchProp("align", {
     start: css`
@@ -59,6 +59,34 @@ const Perpendicular = styled(Base)`
       ${perpendicularOpposite}: 0;
     `
   })};
+
+  ${ifProp(
+    props => props.expand || props.slide,
+    css`
+      &:not(.visible) {
+        transform: ${ifProp(
+            "slide",
+            switchProp("slide", {
+              top: transform("0px", "10em"),
+              right: transform("-10em", "0px"),
+              bottom: transform("0px", "-10em"),
+              left: transform("10em", "0px")
+            }),
+            transform()
+          )}
+          ${ifProp(
+            "expand",
+            switchProp("expand", {
+              top: "scaleY(0)",
+              right: "scaleX(0)",
+              bottom: "scaleY(0)",
+              left: "scaleX(0)",
+              true: "scale(0)"
+            })
+          )} !important;
+      }
+    `
+  )};
 
   ${prop("theme.Perpendicular")};
 `;

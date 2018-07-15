@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
-import { prop } from "styled-tools";
+import styled, { css } from "styled-components";
+import { prop, ifProp, switchProp } from "styled-tools";
 import as from "../../enhancers/as";
 import Hidden from "../Hidden";
 
@@ -34,6 +34,34 @@ const Overlay = styled(Component)`
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 19900410;
+
+  &:not(.visible) {
+    ${ifProp(
+      props => props.expand || props.slide,
+      css`
+        transform: ${ifProp(
+            "expand",
+            switchProp("expand", {
+              top: "scaleY(0)",
+              right: "scaleX(0)",
+              bottom: "scaleY(0)",
+              left: "scaleX(0)",
+              undefined: "scale(0)"
+            })
+          )}
+          ${ifProp(
+            "slide",
+            switchProp(prop("slide", "top"), {
+              top: "translate(-50%, 50%)",
+              right: "translate(-150%, -50%)",
+              bottom: "translate(-50%, -150%)",
+              left: "translate(50%, -50%)"
+            })
+          )};
+      `
+    )};
+  }
+
   ${prop("theme.Overlay")};
 `;
 

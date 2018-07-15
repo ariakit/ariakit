@@ -23,7 +23,7 @@ import { Block, Popover } from "reakit";
       <Button as={Popover.Toggle} {...popover}>
         Toggle
       </Button>
-      <Popover {...popover}>
+      <Popover expand="bottom" slide="bottom" {...popover}>
         <Popover.Arrow />
         Click outside to hide
       </Popover>

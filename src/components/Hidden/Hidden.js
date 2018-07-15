@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { prop, ifProp, ifNotProp, switchProp } from "styled-tools";
+import { prop, ifProp, switchProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import as from "../../enhancers/as";
 import callAll from "../../utils/callAll";
@@ -28,7 +28,7 @@ class Component extends React.Component {
     if (unmount && hasTransition) {
       if (visible) {
         this.setState({ transitioning: true });
-        setTimeout(() =>
+        requestAnimationFrame(() =>
           this.setState({ transitioning: false, visible: true })
         );
       } else {
@@ -117,7 +117,16 @@ const Hidden = styled(Component)`
       "display: none !important"
     )};
     ${ifProp("fade", "opacity: 0")};
-    transform: ${ifProp("expand", "scale(0)")}
+    transform: ${ifProp(
+        "expand",
+        switchProp("expand", {
+          top: "scaleY(0)",
+          right: "scaleX(0)",
+          bottom: "scaleY(0)",
+          left: "scaleX(0)",
+          undefined: "scale(0)"
+        })
+      )}
       ${ifProp(
         "slide",
         switchProp(prop("slide", "right"), {
