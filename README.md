@@ -1,20 +1,27 @@
+<br><br>
+
 <p align="center">
-  <br><br><br>
   <img src="logo/logo.png" alt="reakit" width="400" />
-  <br><br><br><br>
-  <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
-  <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
-  <a href="https://travis-ci.org/diegohaz/reakit"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reakit/master.svg?style=flat-square" /></a>
-  <a href="https://codecov.io/gh/diegohaz/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reakit/master.svg?style=flat-square" /></a>
 </p>
 
----
+<p align="center">
+  Toolkit for building <a href="https://reakit.io/guide/principles/composability">composable</a>, <a href="https://reakit.io/guide/principles/accessibility">accessible</a> and <a href="https://reakit.io/guide/principles/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
+</p>
 
-Toolkit for building [composable](https://reakit.io/guide/principles/composability), [accessible](https://reakit.io/guide/principles/accessibility) and [reliable](https://reakit.io/guide/principles/reliability) UIs with [React](https://reactjs.org/).
+<p align="center">
+  <a href="https://reakit.io"><strong>Website</strong></a> |
+  <a href="https://reakit.io/guide"><strong>Guide</strong></a> |
+  <a href="https://reakit.io/components"><strong>Components</strong></a>
+</p>
 
-- 🌎 [**Website**](https://reakit.io)
-- 📖 [**Guide**](https://reakit.io/guide)
-- 📦 [**Components**](https://reakit.io/components)
+<br>
+
+# ReaKit
+
+<a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
+<a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
+<a href="https://travis-ci.org/diegohaz/reakit"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reakit/master.svg?style=flat-square" /></a>
+<a href="https://codecov.io/gh/diegohaz/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reakit/master.svg?style=flat-square" /></a>
 
 ## Installation
 
