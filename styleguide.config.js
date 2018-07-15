@@ -19,14 +19,17 @@ module.exports = {
   title: "ReaKit",
   webpackConfig: createConfig([
     sourceMaps(),
-    babel(),
+    match(["*.js", "*.jsx", "*.ts", "*.tsx"], [babel()]),
     css(),
     match(["*.eot", "*.ttf", "*.woff", "*.woff2"], [file()]),
     match(
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
       [url({ limit: 10000 })]
     ),
-    resolve({ alias: { reakit: path.join(__dirname, "src") } }),
+    resolve({
+      alias: { reakit: path.join(__dirname, "src") },
+      extensions: [".ts", ".tsx", ".jsx", ".js"]
+    }),
     env("development", [
       devServer({
         historyApiFallback: { index: "/" }

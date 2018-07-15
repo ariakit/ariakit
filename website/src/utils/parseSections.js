@@ -36,7 +36,7 @@ const parseSections = (sections, rootSections = sections) => {
         usedBy: findUses(flattenedSections, section.name)
       },
       sections: parseSections(
-        [...section.sections, ...components],
+        [...(section.sections || []), ...(components || [])],
         rootSections
       ),
       slug: section.slug.replace(/-\d$/, "")
@@ -49,7 +49,7 @@ const parseSections = (sections, rootSections = sections) => {
         sections: []
       };
       return [
-        { ...group, sections: [...group.sections, finalSection] },
+        { ...group, sections: [...(group.sections || []), finalSection] },
         ...acc.filter(x => x.name !== groupName)
       ];
     }
@@ -59,7 +59,7 @@ const parseSections = (sections, rootSections = sections) => {
     if (parent) {
       return [
         ...acc.filter(x => x.name !== parent.name),
-        { ...parent, sections: [...parent.sections, finalSection] }
+        { ...parent, sections: [...(parent.sections || []), finalSection] }
       ];
     }
 
