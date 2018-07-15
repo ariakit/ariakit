@@ -72,7 +72,7 @@ test("show", () => {
 });
 
 test("hide", () => {
-  expect(hide()(state())).toEqual({ current: -1 });
+  expect(hide()()).toEqual({ current: -1 });
 });
 
 test("toggle", () => {

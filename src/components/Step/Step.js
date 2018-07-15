@@ -15,6 +15,11 @@ class Component extends React.Component {
     register(step, order);
   }
 
+  /**
+   * @type HTMLElement | undefined
+   */
+  element = undefined
+
   componentDidMount() {
     const { step, onEnter, current, indexOf } = this.props;
 

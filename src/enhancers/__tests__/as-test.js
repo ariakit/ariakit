@@ -53,6 +53,7 @@ it("creates component passing property as", () => {
 
 it("creates component with array of components", () => {
   const Derivative = ({ as: T, ...props }) => <T {...props} id="Derivative" />;
+  // @ts-ignore
   const Base = createComponent([Derivative, "p"]);
   const wrapper = mount(<Base />);
 

@@ -5,6 +5,7 @@ import commonjs from "rollup-plugin-commonjs";
 import filesize from "rollup-plugin-filesize";
 import { uglify } from "rollup-plugin-uglify";
 import ignore from "rollup-plugin-ignore";
+// @ts-ignore
 import pkg from "./package.json";
 
 const { name } = pkg;

@@ -32,7 +32,7 @@ export const show = idOrIndex => state => ({
 export const hide = () => () => ({ current: -1 });
 
 export const toggle = idOrIndex => state =>
-  isCurrent(idOrIndex)(state) ? hide()(state) : show(idOrIndex)(state);
+  isCurrent(idOrIndex)(state) ? hide()() : show(idOrIndex)(state);
 
 export const previous = () => state => {
   if (hasPrevious()(state)) {
@@ -84,7 +84,7 @@ export const unregister = id => state => {
     if (hasPrevious()(state)) {
       return { ...previous()(state), ids, ordered };
     }
-    return { ...hide()(state), ids, ordered };
+    return { ...hide()(), ids, ordered };
   }
   if (state.current >= ids.length) {
     return { current: ids.length - 1, ids, ordered };

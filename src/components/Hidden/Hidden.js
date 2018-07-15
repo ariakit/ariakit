@@ -17,8 +17,11 @@ class Component extends React.Component {
   componentDidUpdate(prevProps) {
     const { visible, hideOnEsc } = this.props;
     if (prevProps.visible !== visible && hideOnEsc) {
-      const addOrRemove = visible ? "addEventListener" : "removeEventListener";
-      document.body[addOrRemove]("keydown", this.handleKeyDown);
+      if (visible) {
+        document.body.addEventListener("keydown", this.handleKeyDown);
+      } else {
+        document.body.removeEventListener("keydown", this.handleKeyDown);
+      }
     }
   }
 
