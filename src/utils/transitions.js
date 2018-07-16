@@ -32,5 +32,5 @@ export const slide = ({
       bottom: `translateX(${x}) translateY(calc(-${gutter} + ${y}))`,
       left: `translateX(calc(${gutter} + ${x})) translateY(${y})`
     }),
-    `translateX(${x}) translateY(${x})`
+    `translateX(${x}) translateY(${y})`
   );
