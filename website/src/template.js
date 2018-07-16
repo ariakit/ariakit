@@ -16,9 +16,9 @@ module.exports = ({ title, css, js, publicPath }) => `
       <title>${title}</title>
       <link rel="icon" type="image/x-icon" href="/icon.png">
       <base href="/">
-      <meta name="description" content=${description}>
+      <meta name="description" content="${description}">
       <meta property="og:title" content="ReaKit">
-      <meta property="og:description" content=${description}>
+      <meta property="og:description" content="${description}">
       <meta property="og:site_name" content="ReaKit">
       <meta property="og:url" content="https://reakit.io">
       <meta property="og:image" content="https://reakit.io/thumbnail.png">
@@ -27,7 +27,7 @@ module.exports = ({ title, css, js, publicPath }) => `
       <meta property="og:image:height" content="630">
       <meta property="twitter:card" content="summary_large_image">
       <meta property="twitter:image:src" content="https://reakit.io/thumbnail.png">
-      <meta property="twitter:description" content=${description}>
+      <meta property="twitter:description" content="${description}">
       <meta property="twitter:creator" content="@diegohaz">
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700">
       ${generateCSSReferences(css, publicPath)}
