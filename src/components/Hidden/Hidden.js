@@ -119,7 +119,7 @@ Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
-  unmount: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  unmount: PropTypes.bool,
   fade: PropTypes.bool,
   expand: movePropType,
   slide: movePropType,

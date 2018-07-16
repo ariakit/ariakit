@@ -33,7 +33,7 @@ const rotation = ({ rotate, pos, reverse }) => {
   return rotations[pos];
 };
 
-const transform = (x = "0px", y = "0px") =>
+const transform = ({ x = "0px", y = "0px" } = {}) =>
   ifProp(
     { align: "center" },
     css`translateX(${ifProp(
@@ -67,13 +67,16 @@ const Perpendicular = styled(Base)`
       &[aria-hidden="true"] {
         transform: ${ifProp(
             "slide",
-            switchProp("slide", {
-              top: transform("0px", "1em"),
-              right: transform("-1em"),
-              bottom: transform("0px", "-1em"),
-              left: transform("1em"),
-              true: transform("-1em")
-            }),
+            switchProp(
+              "slide",
+              {
+                top: transform({ y: "1em" }),
+                right: transform({ x: "-1em" }),
+                bottom: transform({ y: "-1em" }),
+                left: transform({ x: "1em" })
+              },
+              transform({ x: "-1em" })
+            ),
             transform()
           )}
           ${expand()} !important;
