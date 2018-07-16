@@ -87,11 +87,10 @@ const Hidden = styled(Component)`
   ${ifProp(
     hasTransition,
     css`
+      transform-origin: ${origin()};
       transition: all ${prop("duration")} ${prop("timing")} ${prop("delay")};
     `
   )};
-
-  ${origin()};
 
   &[aria-hidden="true"] {
     pointer-events: none;
@@ -111,20 +110,19 @@ const Hidden = styled(Component)`
   ${prop("theme.Hidden")};
 `;
 
+const movePropType = PropTypes.oneOfType([
+  PropTypes.bool,
+  PropTypes.oneOf(["top", "right", "bottom", "left"])
+]);
+
 Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
   unmount: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   fade: PropTypes.bool,
-  expand: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.oneOf(["top", "right", "bottom", "left"])
-  ]),
-  slide: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.oneOf(["top", "right", "bottom", "left"])
-  ]),
+  expand: movePropType,
+  slide: movePropType,
   duration: PropTypes.string,
   delay: PropTypes.string,
   timing: PropTypes.string,

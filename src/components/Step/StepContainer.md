@@ -9,10 +9,9 @@ import { Block, Group, Button } from "reakit";
     hasPrevious,
     next,
     hasNext,
-    current,
     register,
     unregister,
-    indexOf
+    isCurrent
   }) => (
     <Block>
       <Group>
@@ -33,28 +32,25 @@ import { Block, Group, Button } from "reakit";
       </Group>
       <Step
         step="Step 1"
-        current={current}
         register={register}
         unregister={unregister}
-        indexOf={indexOf}
+        isCurrent={isCurrent}
       >
         Step 1
       </Step>
       <Step
         step="Step 2"
-        current={current}
         register={register}
         unregister={unregister}
-        indexOf={indexOf}
+        isCurrent={isCurrent}
       >
         Step 2
       </Step>
       <Step
         step="Step 3"
-        current={current}
         register={register}
         unregister={unregister}
-        indexOf={indexOf}
+        isCurrent={isCurrent}
       >
         Step 3
       </Step>

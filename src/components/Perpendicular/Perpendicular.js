@@ -47,7 +47,7 @@ const transform = (x = "0px", y = "0px") =>
 const Perpendicular = styled(Base)`
   position: absolute;
   ${opposite}: calc(100% + ${prop("gutter")});
-  transform: ${transform()} scale(1);
+  transform: ${transform()};
 
   ${switchProp("align", {
     start: css`

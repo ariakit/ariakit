@@ -1,31 +1,21 @@
 import { prop, ifProp, switchProp } from "styled-tools";
 
 export const hasTransition = props =>
-  props.animated || props.fade || props.slide || props.expand;
+  Boolean(props.animated || props.fade || props.slide || props.expand);
 
-export const expand = () =>
-  ifProp(
-    "expand",
-    switchProp("expand", {
-      top: "scaleY(0.0001)",
-      right: "scaleX(0.0001)",
-      bottom: "scaleY(0.0001)",
-      left: "scaleX(0.0001)",
-      true: "scale(0.0001)"
-    })
-  );
+export const expand = () => ifProp("expand", "scale(0.00001)");
 
 export const origin = ({ x = "0px", y = "0px" } = {}) =>
   ifProp(
     "expand",
     switchProp("expand", {
-      top: `transform-origin: calc(50% + ${x}) calc(100% + ${y})`,
-      right: `transform-origin: calc(0px + ${x}) calc(50% + ${y})`,
-      bottom: `transform-origin: calc(50% + ${x}) calc(0px + ${y})`,
-      left: `transform-origin: calc(100% + ${x}) calc(50% + ${y})`,
-      true: `transform-origin: calc(50% + ${x}) calc(50% + ${y})`
+      true: `calc(50% + ${x}) calc(50% + ${y})`,
+      top: `calc(50% + ${x}) calc(100% + ${y})`,
+      right: `calc(0px + ${x}) calc(50% + ${y})`,
+      bottom: `calc(50% + ${x}) calc(0px + ${y})`,
+      left: `calc(100% + ${x}) calc(50% + ${y})`
     }),
-    `transform-origin: calc(50% + ${x}) calc(50% + ${y})`
+    `calc(50% + ${x}) calc(50% + ${y})`
   );
 
 export const slide = ({
