@@ -17,6 +17,10 @@ const StyledHeading = styled(Heading)`
   }
 `;
 
+const StyledCode = styled(Code)`
+  white-space: normal;
+`;
+
 const renderType = type => {
   if (!type) return "unknown";
   if (Array.isArray(type)) {
@@ -92,17 +96,19 @@ const PropTypesTable = ({ section }) =>
                               ([name, { type, required, defaultValue }]) => (
                                 <Table.Row key={name}>
                                   <Table.Cell>
-                                    <Code>{name}</Code>
+                                    <StyledCode>{name}</StyledCode>
                                   </Table.Cell>
                                   <Table.Cell>
-                                    <Code>{renderType(type)}</Code>
+                                    <StyledCode>{renderType(type)}</StyledCode>
                                   </Table.Cell>
                                   <Table.Cell>
                                     {required ? "Required" : ""}
                                   </Table.Cell>
                                   <Table.Cell>
                                     {defaultValue && (
-                                      <Code>{defaultValue.value}</Code>
+                                      <StyledCode>
+                                        {defaultValue.value}
+                                      </StyledCode>
                                     )}
                                   </Table.Cell>
                                 </Table.Row>

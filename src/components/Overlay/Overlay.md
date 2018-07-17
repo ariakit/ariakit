@@ -6,8 +6,8 @@ const Example = () => (
     {overlay => (
       <Block>
         <Button as={Overlay.Show} {...overlay}>Click me</Button>
-        <Backdrop as={Overlay.Hide} {...overlay} />
-        <Overlay {...overlay}>Overlay</Overlay>
+        <Backdrop fade as={Overlay.Hide} {...overlay} />
+        <Overlay fade slide {...overlay}>Overlay</Overlay>
       </Block>
     )}
   </Overlay.Container>
