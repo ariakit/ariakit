@@ -3,7 +3,9 @@ import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
-const TableWrapper = styled(Base)`
+const Component = props => <div {...props} />;
+
+const TableWrapper = styled(Base)(Component)`
 	width: 100%;
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
