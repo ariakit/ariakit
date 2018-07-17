@@ -21,9 +21,9 @@ const perpendicularOpposite = props => opposites[perpendicular(props)];
 
 const isVertical = ({ pos }) => pos === "left" || pos === "right";
 
-const rotation = ({ rotate, pos, reverse }) => {
+const rotation = ({ rotate, pos, angle }) => {
   if (!rotate) return null;
-  const rotateZ = value => `rotateZ(${reverse ? value + 180 : value}deg)`;
+  const rotateZ = value => `rotateZ(${value + angle}deg)`;
   const rotations = {
     top: rotateZ(0),
     right: rotateZ(90),
@@ -92,13 +92,14 @@ Perpendicular.propTypes = {
   align: PropTypes.oneOf(["start", "center", "end"]),
   gutter: PropTypes.string,
   rotate: PropTypes.bool,
-  reverse: PropTypes.bool
+  angle: PropTypes.number
 };
 
 Perpendicular.defaultProps = {
   pos: "right",
   align: "center",
-  gutter: "0.75rem"
+  gutter: "0.75rem",
+  angle: 0
 };
 
 export default as("div")(Perpendicular);
