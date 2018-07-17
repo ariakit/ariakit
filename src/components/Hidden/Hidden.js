@@ -15,8 +15,7 @@ class Component extends React.Component {
   };
 
   componentDidMount() {
-    const { visible, hideOnEsc } = this.props;
-    if (visible && hideOnEsc) {
+    if (this.props.hideOnEsc) {
       document.body.addEventListener("keydown", this.handleKeyDown);
     }
   }

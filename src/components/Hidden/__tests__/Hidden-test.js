@@ -6,6 +6,7 @@ import Hidden from "../Hidden";
 const wrap = comp => mount(shallow(comp).get(0));
 
 const addEventListener = jest.spyOn(document.body, "addEventListener");
+
 const raf = jest
   .spyOn(window, "requestAnimationFrame")
   .mockImplementation(cb => setTimeout(cb, 200));
@@ -32,10 +33,10 @@ it("adds event handler on mount", () => {
 it("calls hide when press Escape", () => {
   const props = {
     hide: jest.fn(),
-    visible: true,
     hideOnEsc: true
   };
-  mount(<Hidden {...props} />);
+  const wrapper = mount(<Hidden {...props} />);
+  wrapper.setProps({ visible: true });
   expect(props.hide).toHaveBeenCalledTimes(0);
   dispatchEvent("Enter");
   expect(props.hide).toHaveBeenCalledTimes(0);
