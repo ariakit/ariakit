@@ -19,7 +19,7 @@ TooltipArrow.defaultProps = {
   align: "center",
   gutter: "0px",
   rotate: true,
-  reverse: true
+  angle: 180
 };
 
 export default as("div")(TooltipArrow);

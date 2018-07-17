@@ -107,7 +107,7 @@ const PropTypesTable = ({ section }) =>
                                   <Table.Cell>
                                     {defaultValue && (
                                       <StyledCode>
-                                        {defaultValue.value}
+                                        {JSON.stringify(defaultValue.value)}
                                       </StyledCode>
                                     )}
                                   </Table.Cell>
