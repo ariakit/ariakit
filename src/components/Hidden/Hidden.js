@@ -129,7 +129,7 @@ Hidden.propTypes = {
 };
 
 Hidden.defaultProps = {
-  duration: "200ms",
+  duration: "250ms",
   timing: "ease-in-out"
 };
 
