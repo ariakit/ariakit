@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
-import { switchProp, prop, ifProp } from "styled-tools";
-import as from "../../enhancers/as";
+import { switchProp, prop, ifProp, withProp } from "styled-tools";
 import { hasTransition, expand } from "../../utils/transitions";
+import numberToPx from "../../utils/numberToPx";
+import as from "../../enhancers/as";
 import Base from "../Base";
 
 const opposites = {
@@ -46,18 +47,18 @@ const transform = ({ x = "0px", y = "0px" } = {}) =>
 
 const Perpendicular = styled(Base)`
   position: absolute;
-  ${opposite}: calc(100% + ${prop("gutter")});
+  ${opposite}: calc(100% + ${withProp("gutter", numberToPx)});
   transform: ${transform()};
 
   ${switchProp("align", {
     start: css`
-      ${perpendicular}: 0;
+      ${perpendicular}: ${withProp("alignOffset", numberToPx)};
     `,
     center: css`
       ${perpendicular}: 50%;
     `,
     end: css`
-      ${perpendicularOpposite}: 0;
+      ${perpendicularOpposite}: ${withProp("alignOffset", numberToPx)};
     `
   })};
 
@@ -90,7 +91,8 @@ const Perpendicular = styled(Base)`
 Perpendicular.propTypes = {
   pos: PropTypes.oneOf(["top", "right", "bottom", "left"]),
   align: PropTypes.oneOf(["start", "center", "end"]),
-  gutter: PropTypes.string,
+  alignOffset: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  gutter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   rotate: PropTypes.bool,
   angle: PropTypes.number
 };
@@ -98,7 +100,8 @@ Perpendicular.propTypes = {
 Perpendicular.defaultProps = {
   pos: "right",
   align: "center",
-  gutter: "0.75rem",
+  alignOffset: 0,
+  gutter: 0,
   angle: 0
 };
 

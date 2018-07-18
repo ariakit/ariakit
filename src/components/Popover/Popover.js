@@ -37,6 +37,7 @@ Popover.defaultProps = {
   role: "group",
   pos: "bottom",
   align: "center",
+  gutter: "0.75rem",
   hideOnEsc: true
 };
 

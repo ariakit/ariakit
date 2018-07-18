@@ -19,7 +19,7 @@ const PopoverArrow = styled(PerpendicularArrowBox)`
 PopoverArrow.defaultProps = {
   pos: "top",
   align: "center",
-  gutter: "0px",
+  alignOffset: "0.5rem",
   rotate: true,
   angle: 180
 };
