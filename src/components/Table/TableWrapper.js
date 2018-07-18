@@ -4,7 +4,7 @@ import as from "../../enhancers/as";
 import Base from "../Base";
 
 const TableWrapper = styled(Base)`
-  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   ${prop("theme.TableWrapper")};

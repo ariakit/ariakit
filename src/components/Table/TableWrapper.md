@@ -1,14 +1,13 @@
-`Table.Wrapper` is composed from [Base](/components/primitives/base) . Table.Wrapper  renders by default as a `<div />`.
-
-- `Table.Wrapper`
+`Table.Wrapper` can be used to make a [Table](/components/table) responsive. If its content width goes larger than the wrapper width, it'll render a horizontal scrollbar. It renders by default as a `<div>`.
 
 ```jsx
-import { TableWrapper } from "reakit";
- <Table.Wrapper>
-    <Table>
-      <Table.Caption>A test table with merged cells</Table.Caption>
-      ...
-    </Table>
-  </Table.Wrapper>
+<Table.Wrapper>
+  <Table>
+    <Table.Row>
+      <Table.Cell>Nonproidentduiscupidatatveniamea.Loremesseullamcodovelitvoluptateanimeiusmodpariaturauteullamcoest.</Table.Cell>
+      <Table.Cell>Nullamagnareprehenderitfugiatinproidentofficialaborisreprehenderitproidentestpariatureiusmod.</Table.Cell>
+    </Table.Row>
+  </Table>
+</Table.Wrapper>
 ```
 
