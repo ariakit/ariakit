@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
