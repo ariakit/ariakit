@@ -1,8 +1,12 @@
 import cssProps from "./cssProps";
 
-const pickCssProps = (props: {[key: string]: any}) =>
+interface IUnknownProps {
+  [key: string]: any
+}
+
+const pickCssProps = (props: IUnknownProps) =>
   Object.keys(props).reduce((finalObject: {}, key) => {
-    if (cssProps[key]) {
+    if (key in cssProps) {
       return { ...finalObject, [key]: props[key] };
     }
     return finalObject;
