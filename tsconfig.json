@@ -7,7 +7,7 @@
     "module": "commonjs",
     "jsx": "react",
     "declaration": true,
-    "outDir": "lib",
+    "outDir": "./dist/",
     "strict": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
