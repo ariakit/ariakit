@@ -26,7 +26,7 @@
     "benchmark": "node benchmark",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "build": "rollup -c",
+    "build": "tsc --emitDeclarationOnly --allowJs false --checkJs false && rollup -c",
     "website": "styleguidist server",
     "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
     "preversion": "npm run lint && npm test && npm run build",
