@@ -28,9 +28,9 @@ const ContainerAPITable = ({ section, ...props }) => {
             <Table>
               <Table.Head>
                 <Table.Row>
-                  <Table.Cell header>Name</Table.Cell>
-                  <Table.Cell header>Type</Table.Cell>
-                  <Table.Cell header>Initial value</Table.Cell>
+                  <Table.Cell as="th">Name</Table.Cell>
+                  <Table.Cell as="th">Type</Table.Cell>
+                  <Table.Cell as="th">Initial value</Table.Cell>
                 </Table.Row>
               </Table.Head>
               <Table.Body>

@@ -18,19 +18,19 @@ import { Block } from "reakit";
     <Table.Caption>A Basic table</Table.Caption>
     <Table.Head>
       <Table.Row>
-        <Table.Cell header/>
-        <Table.Cell header>Chars</Table.Cell>
-        <Table.Cell header>Popularity</Table.Cell>
+        <Table.Cell as="th"/>
+        <Table.Cell as="th">Chars</Table.Cell>
+        <Table.Cell as="th">Popularity</Table.Cell>
       </Table.Row>
     </Table.Head>
     <Table.Body>
       <Table.Row>
-        <Table.Cell header>Foo</Table.Cell>
+        <Table.Cell as="th">Foo</Table.Cell>
         <Table.Cell>3</Table.Cell>
         <Table.Cell>0.7</Table.Cell>
       </Table.Row>
       <Table.Row>
-        <Table.Cell header>Bar</Table.Cell>
+        <Table.Cell as="th">Bar</Table.Cell>
         <Table.Cell>3</Table.Cell>
         <Table.Cell>0.4</Table.Cell>
       </Table.Row>
@@ -56,23 +56,23 @@ import { Block } from "reakit";
     <Table.Head>
       <Table.Row>
         <Table.Cell rowSpan={2} />
-        <Table.Cell header colSpan={2}>Average</Table.Cell>
-        <Table.Cell header rowSpan={2}>Red eyes</Table.Cell>
+        <Table.Cell as="th" colSpan={2}>Average</Table.Cell>
+        <Table.Cell as="th" rowSpan={2}>Red eyes</Table.Cell>
       </Table.Row>
       <Table.Row>
-        <Table.Cell header>Height</Table.Cell>
-        <Table.Cell header>Weight</Table.Cell>
+        <Table.Cell as="th">Height</Table.Cell>
+        <Table.Cell as="th">Weight</Table.Cell>
       </Table.Row>
     </Table.Head>
     <Table.Body>
       <Table.Row>
-        <Table.Cell header>Males</Table.Cell>
+        <Table.Cell as="th">Males</Table.Cell>
         <Table.Cell>1.9</Table.Cell>
         <Table.Cell>0.003</Table.Cell>
         <Table.Cell>40%</Table.Cell>
       </Table.Row>
       <Table.Row>
-        <Table.Cell header>Females</Table.Cell>
+        <Table.Cell as="th">Females</Table.Cell>
         <Table.Cell>1.7</Table.Cell>
         <Table.Cell>0.002</Table.Cell>
         <Table.Cell>43%</Table.Cell>
