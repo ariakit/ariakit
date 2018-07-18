@@ -1,26 +1,25 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
 import { ifProp, prop } from "styled-tools";
 import as from "../../enhancers/as";
+import getUnderlyingElement from "../../utils/getUnderlyingElement";
 import Base from "../Base";
 
 const Component = props => (
   <Base
-    as={props.header ? "th" : "td"}
-    role={props.header ? "columnheader" : "cell"}
+    role={getUnderlyingElement(props) === "th" ? "columnheader" : "cell"}
     {...props}
   />
 );
 
-const TableCell = styled(Base)`
+const TableCell = styled(Component)`
   display: table-cell;
   border: inherit;
   padding: 0 8px;
   vertical-align: middle;
 
   ${ifProp(
-    "header",
+    props => getUnderlyingElement(props) === "th",
     css`
       font-weight: bold;
       background-color: rgba(0, 0, 0, 0.05);
@@ -30,8 +29,4 @@ const TableCell = styled(Base)`
   ${prop("theme.TableCell")};
 `;
 
-TableCell.propTypes = {
-  header: PropTypes.bool
-};
-
-export default as(Component)(TableCell);
+export default as("td")(TableCell);
