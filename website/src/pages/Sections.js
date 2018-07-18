@@ -5,7 +5,9 @@ import Menu from "../components/Menu";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import CoreLayout from "../layouts/CoreLayout";
 import ContentWrapper from "../elements/ContentWrapper";
+import findSectionByLocation from "../utils/findSectionByLocation";
 import Section from "./Section";
+import NotFound from "./NotFound";
 
 const getSlug = pathname => pathname.split("/")[1];
 
@@ -35,6 +37,12 @@ const Sections = ({ location, match }) => (
   <StyleguidistContainer>
     {({ sections }) => {
       const section = sections.find(s => s.slug === getSlug(location.pathname));
+      const matchedSection = findSectionByLocation(sections, location);
+
+      if (!matchedSection) {
+        return <NotFound />;
+      }
+
       return (
         <CoreLayout>
           <Content>

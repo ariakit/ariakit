@@ -28,10 +28,10 @@ const MobileSidebar = () => (
   <Sidebar.Container context="sidebar">
     {sidebar => (
       <React.Fragment>
-        <Backdrop as={Sidebar.Hide} zIndex={99999} {...sidebar} />
+        <Backdrop fade as={Sidebar.Hide} zIndex={99999} {...sidebar} />
         <StyleguidistContainer>
           {({ sections }) => (
-            <StyledSidebar {...sidebar}>
+            <StyledSidebar slide {...sidebar}>
               {sections.map(section => (
                 <Block key={section.slug} onClick={sidebar.hide}>
                   <SectionLink to={getSectionUrl(sections, section)}>

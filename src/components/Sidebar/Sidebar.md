@@ -5,8 +5,8 @@ import { Block, Button, Backdrop } from "reakit";
   {sidebar => (
     <Block>
       <Button as={Sidebar.Show} {...sidebar}>Open left sidebar</Button>
-      <Backdrop as={Sidebar.Hide} {...sidebar} />
-      <Sidebar {...sidebar}>Sidebar</Sidebar>
+      <Backdrop fade as={Sidebar.Hide} {...sidebar} />
+      <Sidebar slide {...sidebar}>Sidebar</Sidebar>
     </Block>
   )}
 </Sidebar.Container>
@@ -19,8 +19,8 @@ import { Block, Button, Backdrop } from "reakit";
   {sidebar => (
     <Block>
       <Button as={Sidebar.Show} {...sidebar}>Open right sidebar</Button>
-      <Backdrop as={Sidebar.Hide} {...sidebar} />
-      <Sidebar align="right" {...sidebar}>Sidebar</Sidebar>
+      <Backdrop fade as={Sidebar.Hide} {...sidebar} />
+      <Sidebar slide align="right" {...sidebar}>Sidebar</Sidebar>
     </Block>
   )}
 </Sidebar.Container>

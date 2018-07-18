@@ -1,4 +1,5 @@
 import kebabCase from "lodash/kebabCase";
+import numberToPx from "./numberToPx";
 
 export const bool = (cssProp, validComponentProps) => props => {
   const keys = Object.keys(props)
@@ -14,8 +15,5 @@ export const bool = (cssProp, validComponentProps) => props => {
 export const value = (cssProp, componentProp) => props => {
   const v = props[componentProp];
   if (typeof v === "undefined") return "";
-  if (typeof v === "number") {
-    return `${cssProp}: ${v}px;`;
-  }
-  return `${cssProp}: ${v};`;
+  return `${cssProp}: ${numberToPx(v)};`;
 };

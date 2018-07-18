@@ -22,17 +22,13 @@ const render = ({ as: t, ...props }) => {
   const className = parseClassName(props.className);
 
   if (typeof T === "string") {
-    const { dangerouslySetInnerHTML, children } = props;
+    const { children } = props;
     const propsWithStyle = {
       ...props,
       ...(style ? { style } : {})
     };
-    const otherProps = dangerouslySetInnerHTML
-      ? { dangerouslySetInnerHTML }
-      : {};
     const allProps = {
       ...pickHTMLProps(T, propsWithStyle),
-      ...otherProps,
       className
     };
 
@@ -51,15 +47,6 @@ const as = asComponents => WrappedComponent => {
     ? WrappedComponent.target
     : WrappedComponent;
 
-  const components = [].concat(WrappedComponent, asComponents);
-
-  const getComponentName = component =>
-    component.displayName || component.name || component;
-
-  const displayName = `${getComponentName(WrappedComponent)}.as(${[]
-    .concat(asComponents)
-    .map(getComponentName)})`;
-
   const defineProperties = scope => {
     scope.asComponents = asComponents;
     scope.as = otherComponents => as(otherComponents)(scope);
@@ -70,7 +57,16 @@ const as = asComponents => WrappedComponent => {
     return defineProperties(WrappedComponent);
   }
 
+  const components = [].concat(WrappedComponent, asComponents);
+
+  const getComponentName = component =>
+    component.displayName || component.name || component;
+
   const getAs = props => components.concat(props.as || [], props.nextAs || []);
+
+  const displayName = `${getComponentName(WrappedComponent)}.as(${[]
+    .concat(asComponents)
+    .map(getComponentName)})`;
 
   let Component = props =>
     render({ ...omit(props, "nextAs"), as: getAs(props) });
