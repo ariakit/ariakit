@@ -8,11 +8,11 @@ import ignore from "rollup-plugin-ignore";
 import pkg from "./package.json";
 
 const { name } = pkg;
-const external = Object.keys(pkg.peerDependencies || {});
-const allExternal = external.concat(Object.keys(pkg.dependencies || {}));
+const external = Object.keys(pkg.peerDependencies).concat("prop-types");
+const allExternal = external.concat(Object.keys(pkg.dependencies));
 
 const makeExternalPredicate = externalArr => {
-  if (externalArr.length === 0) {
+  if (!externalArr.length) {
     return () => false;
   }
   const pattern = new RegExp(`^(${externalArr.join("|")})($|/)`);
