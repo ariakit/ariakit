@@ -85,10 +85,10 @@ const PropTypesTable = ({ section }) =>
                         <Table>
                           <Table.Head>
                             <Table.Row>
-                              <Table.Cell header>Prop</Table.Cell>
-                              <Table.Cell header>Type</Table.Cell>
-                              <Table.Cell header>Required</Table.Cell>
-                              <Table.Cell header>Default</Table.Cell>
+                              <Table.Cell as="th">Prop</Table.Cell>
+                              <Table.Cell as="th">Type</Table.Cell>
+                              <Table.Cell as="th">Required</Table.Cell>
+                              <Table.Cell as="th">Default</Table.Cell>
                             </Table.Row>
                           </Table.Head>
                           <Table.Body>
