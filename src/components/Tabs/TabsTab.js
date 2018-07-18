@@ -50,7 +50,7 @@ class Component extends React.Component {
     const active = isCurrent(tab);
     const activeClassName = active ? "active" : "";
     const finalClassName = [className, activeClassName]
-      .filter(c => !!c)
+      .filter(Boolean)
       .join(" ");
 
     return (

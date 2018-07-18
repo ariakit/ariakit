@@ -2,6 +2,7 @@
   "include": ["src", "types"],
   "compilerOptions": {
     "baseUrl": ".",
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "target": "esnext",
     "module": "esnext",

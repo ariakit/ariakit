@@ -11,16 +11,17 @@ const PopoverArrow = styled(PerpendicularArrowBox)`
   color: white;
   border: inherit;
   border-top: 0;
-  font-size: 1.5em;
+  font-size: 1.25em;
+  border-radius: 0;
   ${prop("theme.PopoverArrow")};
 `;
 
 PopoverArrow.defaultProps = {
   pos: "top",
   align: "center",
-  gutter: "-1px",
+  alignOffset: "0.5rem",
   rotate: true,
-  reverse: true
+  angle: 180
 };
 
 export default as("div")(PopoverArrow);

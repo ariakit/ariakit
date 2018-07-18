@@ -26,7 +26,8 @@ const Tooltip = styled(Perpendicular)`
 Tooltip.defaultProps = {
   role: "tooltip",
   pos: "top",
-  align: "center"
+  align: "center",
+  gutter: "0.75rem"
 };
 
 export default as("div")(Tooltip);

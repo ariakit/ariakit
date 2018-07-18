@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
-import { switchProp, prop } from "styled-tools";
+import { switchProp, prop, ifProp, withProp } from "styled-tools";
+import { hasTransition, expand } from "../../utils/transitions";
+import numberToPx from "../../utils/numberToPx";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
@@ -18,12 +20,11 @@ const perpendicular = ({ pos }) =>
 
 const perpendicularOpposite = props => opposites[perpendicular(props)];
 
-const perpendicularAxis = ({ pos }) =>
-  pos === "left" || pos === "right" ? "Y" : "X";
+const isVertical = ({ pos }) => pos === "left" || pos === "right";
 
-const rotation = ({ rotate, pos, reverse }) => {
+const rotation = ({ rotate, pos, angle }) => {
   if (!rotate) return null;
-  const rotateZ = value => `rotateZ(${reverse ? value + 180 : value}deg)`;
+  const rotateZ = value => `rotateZ(${value + angle}deg)`;
   const rotations = {
     top: rotateZ(0),
     right: rotateZ(90),
@@ -33,24 +34,56 @@ const rotation = ({ rotate, pos, reverse }) => {
   return rotations[pos];
 };
 
+const transform = ({ x = "0px", y = "0px" } = {}) =>
+  ifProp(
+    { align: "center" },
+    css`translateX(${ifProp(
+      isVertical,
+      x,
+      `calc(${x} - 50%)`
+    )}) translateY(${ifProp(isVertical, `calc(${y} - 50%)`, y)}) ${rotation}`,
+    rotation
+  );
+
 const Perpendicular = styled(Base)`
   position: absolute;
-  ${opposite}: calc(100% + ${prop("gutter")});
-  transform: ${rotation};
+  ${opposite}: calc(100% + ${withProp("gutter", numberToPx)});
+  transform: ${transform()};
 
   ${switchProp("align", {
     start: css`
-      ${perpendicular}: 0;
+      ${perpendicular}: ${withProp("alignOffset", numberToPx)};
     `,
     center: css`
       ${perpendicular}: 50%;
-      // prettier-ignore
-      transform: translate${perpendicularAxis}(-50%) ${rotation};
     `,
     end: css`
-      ${perpendicularOpposite}: 0;
+      ${perpendicularOpposite}: ${withProp("alignOffset", numberToPx)};
     `
   })};
+
+  ${ifProp(
+    hasTransition,
+    css`
+      &[aria-hidden="true"] {
+        transform: ${ifProp(
+            "slide",
+            switchProp(
+              "slide",
+              {
+                top: transform({ y: "1em" }),
+                right: transform({ x: "-1em" }),
+                bottom: transform({ y: "-1em" }),
+                left: transform({ x: "1em" })
+              },
+              transform({ x: "-1em" })
+            ),
+            transform()
+          )}
+          ${expand()} !important;
+      }
+    `
+  )};
 
   ${prop("theme.Perpendicular")};
 `;
@@ -58,15 +91,18 @@ const Perpendicular = styled(Base)`
 Perpendicular.propTypes = {
   pos: PropTypes.oneOf(["top", "right", "bottom", "left"]),
   align: PropTypes.oneOf(["start", "center", "end"]),
-  gutter: PropTypes.string,
+  alignOffset: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  gutter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   rotate: PropTypes.bool,
-  reverse: PropTypes.bool
+  angle: PropTypes.number
 };
 
 Perpendicular.defaultProps = {
   pos: "right",
   align: "center",
-  gutter: "0.75rem"
+  alignOffset: 0,
+  gutter: 0,
+  angle: 0
 };
 
 export default as("div")(Perpendicular);

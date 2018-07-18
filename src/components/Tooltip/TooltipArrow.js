@@ -17,9 +17,9 @@ const TooltipArrow = styled(PerpendicularArrow)`
 TooltipArrow.defaultProps = {
   pos: "bottom",
   align: "center",
-  gutter: "0px",
+  alignOffset: "0.5rem",
   rotate: true,
-  reverse: true
+  angle: 180
 };
 
 export default as("div")(TooltipArrow);

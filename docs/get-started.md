@@ -1,8 +1,8 @@
 ## Installation
 
-First, make sure to have `react`, `react-dom` and `prop-types` installed:
+First, make sure to have `react` and `react-dom` installed:
 ```sh
-npm install --save react react-dom prop-types
+npm install --save react react-dom
 ```
 
 Then, install `reakit`:
