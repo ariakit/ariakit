@@ -500,6 +500,6 @@ enum cssProps {
   wrapThrough = "wrap-through",
   writingMode = "writing-mode",
   zIndex = "z-index"
-};
+}
 
 export default cssProps;

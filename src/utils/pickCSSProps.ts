@@ -1,7 +1,7 @@
 import cssProps from "./cssProps";
 
 interface IUnknownProps {
-  [key: string]: any
+  [key: string]: any;
 }
 
 const pickCssProps = (props: IUnknownProps) =>
