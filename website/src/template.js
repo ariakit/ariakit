@@ -42,5 +42,8 @@ module.exports = ({ title, css, js, publicPath }) => `
     <body>
       <div id="rsg-root"></div>
       ${generateJSReferences(js, publicPath)}
+      <!-- MailChimp -->
+      <script type="text/javascript" src="//downloads.mailchimp.com/js/signup-forms/popup/embed.js" data-dojo-config="usePlainJson: true, isDebug: false"></script><script type="text/javascript">require(["mojo/signup-forms/Loader"], function(L) { L.start({"baseUrl":"mc.us18.list-manage.com","uuid":"cf382e48d5d8ed7178cb22060","lid":"941e41af27"}) })</script>
+      <!-- End MailChimp -->
     </body>
   </html>`;

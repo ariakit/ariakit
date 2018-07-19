@@ -85,7 +85,6 @@
     "file-loader": "^1.1.11",
     "jest-cli": "^23.4.1",
     "jest-serializer-html": "^5.0.0",
-    "jest-styled-components": "^5.0.1",
     "markdown-to-jsx": "^6.6.9",
     "opn-cli": "^3.1.0",
     "parse-prop-types": "^0.3.0",
