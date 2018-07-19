@@ -17,6 +17,8 @@ import ContainerAPITable from "../components/ContainerAPITable";
 import SectionGitHubButtons from "../components/SectionGitHubButtons";
 
 const Wrapper = styled(Block)`
+  width: 920px;
+  max-width: calc(100vw - 264px);
   @media (max-width: 768px) {
     margin-left: -8px;
     margin-right: -8px;
