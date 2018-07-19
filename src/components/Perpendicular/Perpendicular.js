@@ -55,7 +55,7 @@ const Perpendicular = styled(Base)`
       ${perpendicular}: ${withProp("alignOffset", numberToPx)};
     `,
     center: css`
-      ${perpendicular}: 50%;
+      ${perpendicular}: calc(50% + ${withProp("alignOffset", numberToPx)});
     `,
     end: css`
       ${perpendicularOpposite}: ${withProp("alignOffset", numberToPx)};
