@@ -12,7 +12,7 @@ const { name } = pkg;
 const external = Object.keys(pkg.peerDependencies).concat("prop-types");
 const allExternal = external.concat(Object.keys(pkg.dependencies));
 
-const resovleExtensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
+const resolveExtensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
 const makeExternalPredicate = externalArr => {
   if (!externalArr.length) {
@@ -64,7 +64,7 @@ const main = Object.assign({}, common, {
   external: makeExternalPredicate(allExternal),
   plugins: createCommonPlugins({ es: false }).concat([
     resolve({
-      extensions: resovleExtensions
+      extensions: resolveExtensions
     })
   ])
 });
@@ -77,7 +77,7 @@ const module = Object.assign({}, common, {
   external: makeExternalPredicate(allExternal),
   plugins: createCommonPlugins().concat([
     resolve({
-      extensions: resovleExtensions
+      extensions: resolveExtensions
     })
   ])
 });
@@ -102,7 +102,7 @@ const unpkg = Object.assign({}, common, {
       "process.env.NODE_ENV": JSON.stringify("production")
     }),
     resolve({
-      extensions: resovleExtensions,
+      extensions: resolveExtensions,
       preferBuiltins: false
     })
   ])
