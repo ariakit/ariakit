@@ -53,6 +53,7 @@
     "hoist-non-react-statics": "^2.5.5",
     "lodash": "^4.17.5",
     "lodash-es": "^4.17.5",
+    "popper.js": "^1.14.3",
     "prop-types": "^15.6.2",
     "react-known-props": "^2.3.1",
     "styled-components": "^3.3.3",

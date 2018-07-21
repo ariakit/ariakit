@@ -1,5 +1,37 @@
 Use Perpendicular to position elements relative to one another. Perpendicular positions itself and its children relative to its parent. The parent must have `position` set to something other than `static`, such as `relative`. By default Perpendicular renders as a `<div>`.
 
+
+```jsx
+<Block relative>
+  <Button id="foo">Lol</Button>
+  <Perpendicular pos="bottom" alignWith="foo" width={20} height={20} background="palevioletred" />
+</Block>
+```
+
+```jsx
+class Lol extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {}
+    this.setRef = ref => {
+      this.setState({ ref })
+    }
+  }
+
+  render() {
+    return (
+      <Block relative>
+        <Button elementRef={this.setRef}>Lol</Button>
+        <Perpendicular pos="bottom" alignWith={this.state.ref} width={20} height={20} background="palevioletred" />
+      </Block>
+    );
+  }
+}
+
+<Lol />
+```
+
+
 ```jsx
 import { Block } from "reakit";
 

@@ -1,7 +1,9 @@
+import React from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
-import { switchProp, prop, ifProp, withProp } from "styled-tools";
-import { hasTransition, expand } from "../../utils/transitions";
+import { switchProp, prop, ifProp, ifNotProp, withProp } from "styled-tools";
+import { hasTransition, expandWithProps } from "../../utils/transform";
 import numberToPx from "../../utils/numberToPx";
 import as from "../../enhancers/as";
 import Base from "../Base";
@@ -45,22 +47,66 @@ const transform = ({ x = "0px", y = "0px" } = {}) =>
     rotation
   );
 
-const Perpendicular = styled(Base)`
+class Component extends React.Component {
+  componentDidMount() {
+    this.align();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.alignWith !== this.props.alignWith) {
+      this.align();
+    }
+  }
+
+  align() {
+    const { alignWith, alignOffset } = this.props;
+    if (!alignWith) return;
+    const target =
+      typeof alignWith === "string"
+        ? document.getElementById(alignWith)
+        : ReactDOM.findDOMNode(alignWith);
+
+    const current = ReactDOM.findDOMNode(this);
+    const { top, left, width, height } = target.getBoundingClientRect();
+    const parent = current.parentNode.getBoundingClientRect();
+
+    if (isVertical(this.props)) {
+      current.style.top = `calc(${top -
+        parent.top +
+        height / 2 +
+        current.parentNode.clientHeight / 2}px + ${numberToPx(alignOffset)})`;
+    } else {
+      current.style.left = `calc(${left -
+        parent.left +
+        width / 2 +
+        current.parentNode.clientWidth / 2}px + ${numberToPx(alignOffset)})`;
+    }
+  }
+
+  render() {
+    return <Base {...this.props} />;
+  }
+}
+
+const Perpendicular = styled(Component)`
   position: absolute;
   ${opposite}: calc(100% + ${withProp("gutter", numberToPx)});
   transform: ${transform()};
 
-  ${switchProp("align", {
-    start: css`
-      ${perpendicular}: ${withProp("alignOffset", numberToPx)};
-    `,
-    center: css`
-      ${perpendicular}: calc(50% + ${withProp("alignOffset", numberToPx)});
-    `,
-    end: css`
-      ${perpendicularOpposite}: ${withProp("alignOffset", numberToPx)};
-    `
-  })};
+  ${ifNotProp(
+    "alignWith",
+    switchProp("align", {
+      start: css`
+        ${perpendicular}: ${withProp("alignOffset", numberToPx)};
+      `,
+      center: css`
+        ${perpendicular}: calc(50% + ${withProp("alignOffset", numberToPx)});
+      `,
+      end: css`
+        ${perpendicularOpposite}: ${withProp("alignOffset", numberToPx)};
+      `
+    })
+  )};
 
   ${ifProp(
     hasTransition,
@@ -80,7 +126,7 @@ const Perpendicular = styled(Base)`
             ),
             transform()
           )}
-          ${expand()} !important;
+          ${expandWithProps} !important;
       }
     `
   )};

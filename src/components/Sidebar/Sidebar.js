@@ -1,30 +1,24 @@
+import React from "react";
 import PropTypes from "prop-types";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { prop, ifProp } from "styled-tools";
 import as from "../../enhancers/as";
-import { hasTransition, slide, expand } from "../../utils/transitions";
 import Overlay from "../Overlay";
 
-const Sidebar = styled(Overlay)`
+const Component = props => (
+  <Overlay
+    defaultSlide={props.align === "right" ? "left" : "right"}
+    {...props}
+  />
+);
+
+const Sidebar = styled(Component)`
   top: 0;
   height: 100vh;
   transform: none;
   overflow: auto;
   left: ${ifProp({ align: "right" }, "auto", 0)};
   right: ${ifProp({ align: "right" }, 0, "auto")};
-
-  ${ifProp(
-    hasTransition,
-    css`
-      &[aria-hidden="true"] {
-        transform: ${slide({
-            defaultValue: ifProp({ align: "right" }, "left", "right")
-          })}
-          ${expand()};
-      }
-    `
-  )};
-
   ${prop("theme.Sidebar")};
 `;
 

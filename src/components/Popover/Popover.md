@@ -3,12 +3,11 @@
 ```jsx
 import { InlineBlock } from "reakit";
 
-<InlineBlock relative width={100} marginBottom={70}>
+/* <InlineBlock relative width={100} height={100}>
   <Popover visible>
-    <Popover.Arrow />
     Popover
   </Popover>
-</InlineBlock>
+</InlineBlock>*/
 ```
 
 Adding a Backdrop allows the Popover to hide if the user clicks outside.
@@ -20,10 +19,10 @@ import { Block, Popover } from "reakit";
   {popover => (
     <InlineBlock relative>
       <Backdrop background="transparent" as={Popover.Hide} {...popover} />
-      <Button as={Popover.Toggle} {...popover}>
+      <Button id="lol" as={Popover.Toggle} {...popover}>
         Toggle
       </Button>
-      <Popover fade expand slide timing="cubic-bezier(0.25,0.1,0.25,1.5)" {...popover}>
+      <Popover fade expand placement="top-start" {...popover}>
         <Popover.Arrow />
         Click outside to hide
       </Popover>
