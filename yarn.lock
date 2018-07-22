@@ -10170,6 +10170,10 @@ style-loader@^0.21.0:
     loader-utils "^1.1.0"
     schema-utils "^0.4.5"
 
+styled-components-ts@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/styled-components-ts/-/styled-components-ts-0.0.14.tgz#bbd7a2e2a570e011827e92e460a49d72cc1e1c80"
+
 styled-components@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-3.3.3.tgz#09e702055ab11f7a8eab8229b1c0d0b855095686"
