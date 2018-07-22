@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
@@ -7,7 +8,14 @@ import Box from "../Box";
 
 const PerpendicularArrowBox = Perpendicular.as([Arrow, Box]);
 
-const PopoverArrow = styled(PerpendicularArrowBox)`
+const Component = props => (
+  <PerpendicularArrowBox
+    alignOffset={props.align !== "center" ? "0.5rem" : 0}
+    {...props}
+  />
+);
+
+const PopoverArrow = styled(Component)`
   color: white;
   border: inherit;
   border-top: 0;
@@ -19,7 +27,6 @@ const PopoverArrow = styled(PerpendicularArrowBox)`
 PopoverArrow.defaultProps = {
   pos: "top",
   align: "center",
-  alignOffset: "0.5rem",
   rotate: true,
   angle: 180
 };

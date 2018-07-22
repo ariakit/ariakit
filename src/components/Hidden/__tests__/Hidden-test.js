@@ -1,6 +1,5 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
-import "jest-styled-components";
 import Hidden from "../Hidden";
 
 const wrap = comp => mount(shallow(comp).get(0));

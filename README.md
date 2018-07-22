@@ -1,7 +1,7 @@
 <br><br>
 
 <p align="center">
-  <img src="logo/logo.png" alt="reakit" width="400" />
+  <img src="logo/logo.png" alt="reakit" width="320" />
 </p>
 
 <p align="center">
@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://reakit.io"><strong>Website</strong></a> |
-  <a href="https://reakit.io/guide"><strong>Guide</strong></a> |
+  <a href="https://reakit.io"><strong>Website</strong></a> ·
+  <a href="https://reakit.io/guide"><strong>Guide</strong></a> ·
   <a href="https://reakit.io/components"><strong>Components</strong></a>
 </p>
 
