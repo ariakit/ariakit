@@ -9,7 +9,7 @@ import {
   hasTransition,
   translateWithProps,
   originWithProps,
-  expandWithProps,
+  scaleWithProps,
   slideWithProps
 } from "../../utils/transform";
 import Base from "../Base";
@@ -106,7 +106,7 @@ const Hidden = styled(Component)`
     ${ifProp(
       hasTransition,
       css`
-        transform: ${slideWithProps} ${expandWithProps};
+        transform: ${slideWithProps} ${scaleWithProps};
         visibility: hidden;
       `,
       "display: none !important"

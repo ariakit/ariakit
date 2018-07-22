@@ -4,7 +4,7 @@ import isEmpty from "lodash/isEmpty";
 import ArrowDownIcon from "react-icons/lib/md/arrow-drop-down";
 import ArrowUpIcon from "react-icons/lib/md/arrow-drop-up";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
-import Icon from "../elements/Icon";
+import Icon from "./Icon";
 import TableWrapper from "../elements/TableWrapper";
 import findSectionPropTypes from "../utils/findSectionPropTypes";
 import isComponentSection from "../utils/isComponentSection";

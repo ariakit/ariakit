@@ -27,7 +27,9 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
-  align: "left"
+  align: "left",
+  translateX: 0,
+  translateY: 0
 };
 
 export default as("div")(Sidebar);
