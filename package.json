@@ -27,6 +27,7 @@
     "prebuild": "npm run clean",
     "build": "rollup -c",
     "website": "styleguidist server",
+    "dev": "styleguidist server --config styleguide.dev.config.js",
     "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
     "preversion": "npm run lint && npm test && npm run build",
     "version": "standard-changelog && git add CHANGELOG.md",
