@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://reakit.io"><strong>Website</strong></a> |
-  <a href="https://reakit.io/guide"><strong>Guide</strong></a> |
+  <a href="https://reakit.io"><strong>Website</strong></a> ·
+  <a href="https://reakit.io/guide"><strong>Guide</strong></a> ·
   <a href="https://reakit.io/components"><strong>Components</strong></a>
 </p>
 
