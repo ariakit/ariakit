@@ -1,7 +1,7 @@
 <br><br>
 
 <p align="center">
-  <img src="logo/logo.png" alt="reakit" width="400" />
+  <img src="logo/logo.png" alt="reakit" width="320" />
 </p>
 
 <p align="center">
