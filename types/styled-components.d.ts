@@ -1,10 +1,12 @@
-/*
-  This file is to fix a missing type from styled-components.
-  It can be deleted when https://github.com/styled-components/styled-components/pull/1827 gets released
-*/
-import * as React from "react";
-import { Component } from "react";
+import * as React from 'react';
+import { Component } from 'react';
+import { StyledComponentClass } from 'styled-components';
 
-declare module "styled-components" {
-   export function isStyledComponent(target: string | Component<object>): boolean;
+declare module 'styled-components' {
+  /*
+    TODO can be deleted when https://github.com/styled-components/styled-components/pull/1827 gets released
+  */
+  export function isStyledComponent<Props>(
+    target: Component | StyledComponentClass<Props, any>
+  ): target is StyledComponentClass<Props, any>;
 }
