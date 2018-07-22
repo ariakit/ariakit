@@ -36,7 +36,7 @@ class Component extends React.Component {
     const { popper, arrow } = offsets;
     const [position] = placement.split("-");
     const minus = ["bottom", "right"].indexOf(position) >= 0;
-
+    // abstract everything
     if (arrow) {
       const { top, left } = arrowStyles;
       arrowElement.style.top = `${top}px`;
@@ -50,6 +50,7 @@ class Component extends React.Component {
           : `${minus ? "-" : ""}${arrowElement.clientWidth}px`
       });
     } else {
+      // need to consider start, end
       this.setState({
         originX: 0,
         originY: 0
@@ -107,57 +108,6 @@ class Component extends React.Component {
   componentDidMount() {
     this.initPopper();
   }
-
-  // componentDidMount() {
-  //   const { controller, placement } = this.props;
-  //   const current = findDOMNode(this);
-  //   const element =
-  //     typeof controller === "string"
-  //       ? document.getElementById(controller)
-  //       : controller || current.parentNode;
-  //   this.popper = new Popper(element, current, {
-  //     placement,
-  //     modifiers: {
-  //       applyStyle: {
-  //         enabled: false
-  //       },
-  //       arrow: {
-  //         element: current.querySelector(`.${PopoverArrow.styledComponentId}`)
-  //       },
-  //       flip: {
-  //         padding: 16
-  //       },
-  //       offset: {
-  //         offset: "0, 16"
-  //       },
-  //       foo: {
-  //         enabled: true,
-  //         order: 900,
-  //         fn: data => {
-  //           console.log(data);
-  //           const lol = current.querySelector(
-  //             `.${PopoverArrow.styledComponentId}`
-  //           );
-  //           if (lol) {
-  //             const { top, left } = data.arrowStyles;
-  //             lol.style.top = `${top}px`;
-  //             lol.style.left = `${left}px`;
-  //             this.setState({
-  //               originX: left ? `${numberToPx(left)} - 50% + 0.625em` : 0,
-  //               originY: top ? `${numberToPx(top)} - 50% + 0.625em` : 0
-  //             });
-  //           }
-  //           this.setState({
-  //             x: data.offsets.popper.left,
-  //             y: data.offsets.popper.top,
-  //             placement: data.placement
-  //           });
-  //           return data;
-  //         }
-  //       }
-  //     }
-  //   });
-  // }
 
   componentDidUpdate(prevProps) {
     if (
