@@ -1,17 +1,45 @@
 /* eslint-disable no-param-reassign */
-import React from "react";
-import { isStyledComponent } from "styled-components";
-import omit from "lodash/omit";
-import pickCSSProps from "../utils/pickCSSProps";
-import parseTag from "../utils/parseTag";
-import parseClassName from "../utils/parseClassName";
-import pickHTMLProps from "../utils/pickHTMLProps";
+import React, {
+  Component,
+  ComponentClass,
+  ComponentType,
+  CSSProperties,
+  ReactNode,
+  Ref
+} from 'react';
+import { isStyledComponent } from 'styled-components';
+import pickCSSProps from '../utils/pickCSSProps';
+import parseTag from '../utils/parseTag';
+import parseClassName from '../utils/parseClassName';
+import pickHTMLProps from '../utils/pickHTMLProps';
+
+export type AsComponent = keyof JSX.IntrinsicElements | ComponentType<any>;
+export type AsComponents = AsComponent | AsComponent[];
+export interface AsProps {
+  as: AsComponents;
+}
+
+export type ReakitComponentProps = CSSProperties & AsProps;
+
+export interface ReakitComponent<Props = any> extends ComponentClass<Props & ReakitComponentProps> {
+  asComponents: AsComponents;
+  as: (
+    asComponents: AsComponents
+  ) => (WrappedComponent: Component<AsProps>) => ReakitComponent<Props & ReakitComponentProps>;
+  displayName: string;
+}
 
 // eslint-disable-next-line no-use-before-define
-const As = ({ nextAs, ...props }) => render({ ...props, as: nextAs });
+const As = ({ nextAs, ...props }: { nextAs: AsComponent }) => render({ ...props, as: nextAs });
 
-const render = ({ as: t, ...props }) => {
-  const T = parseTag(t);
+interface IRenderProps extends AsProps {
+  className?: string;
+  children?: ReactNode;
+  elementRef?: Ref<any>;
+}
+
+const render = ({ as: t, ...props }: IRenderProps): React.ReactNode => {
+  const T = parseTag(t) as AsComponents;
 
   if (Array.isArray(T)) {
     const [First, ...others] = T.filter(x => x !== As);
@@ -21,7 +49,7 @@ const render = ({ as: t, ...props }) => {
   const style = pickCSSProps(props);
   const className = parseClassName(props.className);
 
-  if (typeof T === "string") {
+  if (typeof T === 'string') {
     const { children } = props;
     const propsWithStyle = {
       ...props,
@@ -42,44 +70,64 @@ const render = ({ as: t, ...props }) => {
   return <T {...props} className={className} {...(style ? { style } : {})} />;
 };
 
-const as = asComponents => WrappedComponent => {
+function isWrappedWithAs(target: any): target is ReakitComponent<any> {
+  return typeof target.asComponents !== 'undefined';
+}
+
+const as = (asComponents: AsComponents) => <Props extends AsProps>(
+  WrappedComponent: ComponentType<Props>
+): ReakitComponent<Props> => {
   const target = isStyledComponent(WrappedComponent)
-    ? WrappedComponent.target
+    ? // @ts-ignore
+      WrappedComponent.target
     : WrappedComponent;
 
-  const defineProperties = scope => {
+  const defineProperties = (scope: ReakitComponent) => {
     scope.asComponents = asComponents;
+    // @ts-ignore
     scope.as = otherComponents => as(otherComponents)(scope);
     return scope;
   };
 
-  if (asComponents === target.asComponents) {
-    return defineProperties(WrappedComponent);
+  if (isWrappedWithAs(target) && asComponents === target.asComponents) {
+    return defineProperties(WrappedComponent as ReakitComponent);
   }
 
-  const components = [].concat(WrappedComponent, asComponents);
+  const components = [WrappedComponent, asComponents].flatten();
 
-  const getComponentName = component =>
+  const getComponentName = (component: ComponentType<any>): any =>
+    // @ts-ignore
     component.displayName || component.name || component;
 
-  const getAs = props => components.concat(props.as || [], props.nextAs || []);
+  const getAs = (props: { as: AsComponents; nextAs: AsComponent }): AsComponents =>
+    components.concat(props.as || [], props.nextAs || []);
 
-  const displayName = `${getComponentName(WrappedComponent)}.as(${[]
-    .concat(asComponents)
+  const displayName = `${getComponentName(WrappedComponent)}.as(${[asComponents]
+    .flatten()
     .map(getComponentName)})`;
 
-  let Component = props =>
-    render({ ...omit(props, "nextAs"), as: getAs(props) });
+  let EnhancedComponent = ({
+    as: as,
+    nextAs: nextAs,
+    ...rest
+  }: {
+    as: AsComponents;
+    nextAs: AsComponent;
+  }) => render({ ...rest, as: getAs({ as, nextAs }) });
 
-  Component.displayName = displayName;
+  // @ts-ignore
+  EnhancedComponent.displayName = displayName;
 
   if (isStyledComponent(WrappedComponent)) {
-    Component = WrappedComponent.withComponent(Component);
-    Component.styledComponentId = WrappedComponent.styledComponentId;
-    Component.displayName = `Styled(${displayName})`;
+    // @ts-ignore
+    EnhancedComponent = WrappedComponent.withComponent(EnhancedComponent) as ReakitComponent;
+    // @ts-ignore
+    EnhancedComponent.styledComponentId = WrappedComponent.styledComponentId;
+    // @ts-ignore
+    EnhancedComponent.displayName = `Styled(${displayName})`;
   }
 
-  return defineProperties(Component);
+  return defineProperties((EnhancedComponent as any) as ReakitComponent) as ReakitComponent<Props>;
 };
 
 export default as;

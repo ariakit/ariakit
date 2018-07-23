@@ -1,15 +1,19 @@
-import React from "react";
+import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+import styled from "../../utils/styled";
 import { prop } from "styled-tools";
 import { bool } from "../../utils/styledProps";
 import as from "../../enhancers/as";
 
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-const Component = ({ as: T, ...props }) => <T {...props} />;
+interface IComponentProps {
+  as: string | ComponentType
+}
 
-const Base = styled(Component)`
+const Component = ({ as: Type, ...props } : IComponentProps) => React.createElement(Type, props);
+
+const Base = styled<IComponentProps>(Component)`
   margin: 0;
   padding: 0;
   border: 0;
