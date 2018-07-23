@@ -1,12 +1,19 @@
 import PropTypes from "prop-types";
-import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
+import styled from '../../utils/styled';
 
 const SQRT2 = 1.41421356237;
 
-const Arrow = styled(Base)`
+interface ArrowProps {
+  /**
+   * Rotation (in degrees) of the arrow - default 0
+   */
+  angle?: number,
+};
+
+const Arrow = styled<ArrowProps>(Base)`
   display: inline-flex;
   width: 1em;
   height: 1em;
