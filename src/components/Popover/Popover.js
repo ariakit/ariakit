@@ -6,7 +6,6 @@ import styled from "styled-components";
 import { prop } from "styled-tools";
 import Popper from "popper.js";
 import as from "../../enhancers/as";
-import numberToPx from "../../utils/numberToPx";
 import Hidden from "../Hidden";
 import Box from "../Box";
 import PopoverArrow from "./PopoverArrow";
@@ -26,46 +25,37 @@ class Component extends React.Component {
     const { controller } = this.props;
     return typeof controller === "string"
       ? document.getElementById(controller)
-      : controller || findDOMNode(this).parentNode;
+      : controller || this.getPopover().parentNode;
   };
 
   getPopover = () => findDOMNode(this);
 
   modifierFn = data => {
     const { placement, offsets, arrowElement, arrowStyles } = data;
-    const { popper, arrow } = offsets;
+    const { reference, popper } = offsets;
     const [position] = placement.split("-");
-    const minus = ["bottom", "right"].indexOf(position) >= 0;
-    // abstract everything
-    if (arrow) {
+    const isVertical = ["top", "bottom"].indexOf(position) >= 0;
+
+    const referenceCenter = isVertical
+      ? reference.width / 2
+      : reference.height / 2;
+    const side = isVertical ? "left" : "top";
+    const sideValue = referenceCenter - popper[side];
+
+    if (arrowElement) {
       const { top, left } = arrowStyles;
-      arrowElement.style.top = `${top}px`;
-      arrowElement.style.left = `${left}px`;
-      this.setState({
-        originX: left
-          ? `${numberToPx(left)} - 50% + ${arrowElement.clientWidth / 2}px`
-          : `${minus ? "-" : ""}${arrowElement.clientHeight}px`,
-        originY: top
-          ? `${numberToPx(top)} - 50% + ${arrowElement.clientHeight / 2}px`
-          : `${minus ? "-" : ""}${arrowElement.clientWidth}px`
-      });
-    } else {
-      // need to consider start, end
-      this.setState({
-        originX: 0,
-        originY: 0
-      });
+      arrowElement.style.top = isVertical ? "" : `${top}px`;
+      arrowElement.style.left = isVertical ? `${left}px` : "";
     }
-    this.setState(
-      {
-        translateX: popper.left,
-        translateY: popper.top,
-        placement: data.placement
-      },
-      () => {
-        console.log(this.state);
-      }
-    );
+
+    this.setState({
+      originX: isVertical ? `${sideValue}px - 50%` : 0,
+      originY: !isVertical ? `${sideValue}px - 50%` : 0,
+      translateX: popper.left,
+      translateY: popper.top,
+      placement: data.placement
+    });
+
     return data;
   };
 
@@ -80,7 +70,7 @@ class Component extends React.Component {
         applyStyle: { enabled: false },
         arrow: { enabled: !!arrow, element: arrow },
         flip: { padding: 16 },
-        offset: { offset: "0, 12" },
+        offset: { offset: `0, ${this.props.offset}` },
         setState: {
           enabled: true,
           order: 900,
@@ -91,10 +81,12 @@ class Component extends React.Component {
   };
 
   initPopper = () => {
-    const reference = this.getReference();
-    const popover = this.getPopover();
     if (!this.popper) {
-      this.popper = new Popper(reference, popover, this.getOptions());
+      this.popper = new Popper(
+        this.getReference(),
+        this.getPopover(),
+        this.getOptions()
+      );
     }
   };
 
@@ -107,6 +99,10 @@ class Component extends React.Component {
 
   componentDidMount() {
     this.initPopper();
+  }
+
+  componentWillUnmount() {
+    this.destroyPopper();
   }
 
   componentDidUpdate(prevProps) {
@@ -126,9 +122,9 @@ class Component extends React.Component {
         id={this.props.popoverId}
         {...this.state}
         data-placement={this.state.placement}
-        slideDistance="1em"
         defaultSlide={this.state.placement.replace(/-.+$/, "")}
         defaultExpand={this.state.placement.replace(/-.+$/, "")}
+        slideOffset={this.props.offset}
         {...this.props}
       />
     );
@@ -172,13 +168,20 @@ Popover.propTypes = {
     "bottom-end",
     "left-end"
   ]),
+  controller: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.element,
+    PropTypes.instanceOf(Element)
+  ]),
+  offset: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   popoverId: PropTypes.string
 };
 
 Popover.defaultProps = {
   role: "group",
   placement: "bottom",
-  hideOnEsc: true
+  hideOnEsc: true,
+  offset: 12
 };
 
 export default as("div")(Popover);

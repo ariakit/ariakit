@@ -38,15 +38,15 @@ export const translateWithProps = withProp(
 );
 
 export const slideWithProps = withProp(
-  ["slideDistance", "translateX", "translateY", "defaultSlide"],
-  (distance = "100%", x, y, defaultSlide = "right") =>
+  ["slideOffset", "translateX", "translateY", "defaultSlide"],
+  (offset = "100%", x, y, defaultSlide = "right") =>
     ifProp(
       "slide",
       switchProp(ifProp({ slide: true }, defaultSlide, prop("slide")), {
-        top: translate3d(x, calc(distance, y)),
-        right: translate3d(calc(minus(distance), x), y),
-        bottom: translate3d(x, calc(minus(distance), y)),
-        left: translate3d(calc(distance, x), y)
+        top: translate3d(x, calc(offset, y)),
+        right: translate3d(calc(minus(offset), x), y),
+        bottom: translate3d(x, calc(minus(offset), y)),
+        left: translate3d(calc(offset, x), y)
       }),
       translate3d(x, y)
     )
