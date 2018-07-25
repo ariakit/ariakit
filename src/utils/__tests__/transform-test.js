@@ -4,6 +4,8 @@ import {
   origin,
   calc,
   minus,
+  expand,
+  slide,
   scaleWithProps,
   originWithProps,
   translateWithProps,
@@ -53,6 +55,22 @@ test("minus", () => {
   expect(minus()).toBe("-0px");
   expect(minus(12)).toBe("-12px");
   expect(minus("1em")).toBe("-1em");
+});
+
+test("expand", () => {
+  expect(render()`${expand}`).toBe("");
+  expect(render({ expand: true })`${expand}`).toBe("center");
+  expect(render({ expand: "top" })`${expand}`).toBe("top");
+  expect(render({ expand: true, defaultExpand: "left" })`${expand}`).toBe(
+    "left"
+  );
+});
+
+test("slide", () => {
+  expect(render()`${slide}`).toBe("");
+  expect(render({ slide: true })`${slide}`).toBe("right");
+  expect(render({ slide: "top" })`${slide}`).toBe("top");
+  expect(render({ slide: true, defaultSlide: "left" })`${slide}`).toBe("left");
 });
 
 test("scaleWithProps", () => {
