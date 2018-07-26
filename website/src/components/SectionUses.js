@@ -36,11 +36,11 @@ const SectionUses = ({ usedBy, section, ...props }) => {
             {label}
             <Sections>
               {uses.map(s => (
-                <List.Item key={s.name}>
+                <li key={s.name}>
                   <Link as={RouterLink} to={getSectionUrl(sections, s)}>
                     {s.name}
                   </Link>
-                </List.Item>
+                </li>
               ))}
             </Sections>
           </Wrapper>
