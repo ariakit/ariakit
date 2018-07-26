@@ -1,6 +1,6 @@
 import isComponentSection from "./isComponentSection";
 
-const repoUrl = "https://github.com/diegohaz/reakit/tree/master";
+const repoUrl = "https://github.com/reakit/reakit/tree/master";
 
 const getComponentGithubSrcUrl = (section, extension) => {
   if (!section.filepath) {

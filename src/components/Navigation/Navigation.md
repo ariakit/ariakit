@@ -6,7 +6,7 @@ import { List } from "reakit";
 <Navigation>
   <List>
     <List.Item>
-      <Link href="https://github.com/diegohaz/reakit">GitHub</Link>
+      <Link href="https://github.com/reakit/reakit">GitHub</Link>
     </List.Item>
     <List.Item>
       <Link href="https://google.com">Google</Link>
