@@ -56,7 +56,7 @@ const Desktop = () => (
     <Grid.Item
       as={GitHubLink}
       area="github"
-      href="https://github.com/diegohaz/reakit"
+      href="https://github.com/reakit/reakit"
       target="_blank"
     >
       GitHub<OpenInNewIcon />
@@ -88,7 +88,7 @@ const Mobile = () => (
     <Grid.Item
       as={GitHubLink}
       area="github"
-      href="https://github.com/diegohaz/reakit"
+      href="https://github.com/reakit/reakit"
       target="_blank"
     >
       <Icon as={GitHubIcon} />

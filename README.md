@@ -20,8 +20,8 @@
 
 <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
 <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
-<a href="https://travis-ci.org/diegohaz/reakit"><img alt="Build Status" src="https://img.shields.io/travis/diegohaz/reakit/master.svg?style=flat-square" /></a>
-<a href="https://codecov.io/gh/diegohaz/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/diegohaz/reakit/master.svg?style=flat-square" /></a>
+<a href="https://travis-ci.org/reakit/reakit"><img alt="Build Status" src="https://img.shields.io/travis/reakit/reakit/master.svg?style=flat-square" /></a>
+<a href="https://codecov.io/gh/reakit/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/reakit/reakit/master.svg?style=flat-square" /></a>
 
 ## Installation
 
@@ -81,14 +81,14 @@ Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark)
 ## Contributors
 
 This project exists thanks to all the people who contribute.
-<a href="https://github.com/diegohaz/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=890&button=false" /></a>
 
 
 ## Backers
 
 Thank you to all our backers! 🙏
 
-<a href="https://opencollective.com/reakit#backers" target="_blank"><img src="https://opencollective.com/reakit/backers.svg?width=890"></a>
+<a href="https://opencollective.com/reakit#backer" target="_blank"><img src="https://opencollective.com/reakit/backers.svg?width=890"></a>
 
 
 ## Sponsors

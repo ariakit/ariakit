@@ -21,4 +21,4 @@ import { Block, Tabs } from "reakit";
 </Tabs.Container>
 ```
 
-> If you find some accessibility issue or something that could be improved regarding accessibility, don't hesitate to [open an issue](https://github.com/diegohaz/reakit/issues/new) or [send a PR](https://github.com/diegohaz/reakit/compare).
+> If you find some accessibility issue or something that could be improved regarding accessibility, don't hesitate to [open an issue](https://github.com/reakit/reakit/issues/new) or [send a PR](https://github.com/reakit/reakit/compare).

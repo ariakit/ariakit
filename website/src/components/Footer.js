@@ -51,7 +51,7 @@ const Credits = props => (
           </Link>
         </li>
         <li>
-          <Link href="https://github.com/diegohaz/reakit" target="_blank">
+          <Link href="https://github.com/reakit/reakit" target="_blank">
             <GitHubIcon />
           </Link>
         </li>
