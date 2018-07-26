@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import Perpendicular from "../Perpendicular";
+import Popover from "../Popover";
 
-const Tooltip = styled(Perpendicular)`
+const Tooltip = styled(Popover)`
   pointer-events: none;
   opacity: 0;
   white-space: nowrap;
