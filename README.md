@@ -88,7 +88,7 @@ This project exists thanks to all the people who contribute.
 
 Thank you to all our backers! 🙏
 
-<a href="https://opencollective.com/reakit#backers" target="_blank"><img src="https://opencollective.com/reakit/backers.svg?width=890"></a>
+<a href="https://opencollective.com/reakit#backer" target="_blank"><img src="https://opencollective.com/reakit/backers.svg?width=890"></a>
 
 
 ## Sponsors
