@@ -40,21 +40,21 @@ const Credits = props => (
   <Wrapper {...props}>
     <ContentWrapper column>
       <Icons as={List}>
-        <List.Item>
+        <li>
           <Link href="https://facebook.com/reakitjs" target="_blank">
             <FacebookIcon />
           </Link>
-        </List.Item>
-        <List.Item>
+        </li>
+        <li>
           <Link href="https://twitter.com/reakitjs" target="_blank">
             <TwitterIcon />
           </Link>
-        </List.Item>
-        <List.Item>
+        </li>
+        <li>
           <Link href="https://github.com/diegohaz/reakit" target="_blank">
             <GitHubIcon />
           </Link>
-        </List.Item>
+        </li>
       </Icons>
       <Paragraph>
         Released under the{" "}

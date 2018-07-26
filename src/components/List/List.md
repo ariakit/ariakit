@@ -2,9 +2,9 @@
 
 ```jsx
 <List>
-  <List.Item>Item 1</List.Item>
-  <List.Item>Item 2</List.Item>
-  <List.Item>Item 3</List.Item>
-  <List.Item>Item 4</List.Item>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+  <li>Item 4</li>
 </List>
 ```
