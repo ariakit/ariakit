@@ -12,9 +12,7 @@ import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "../elements/Icon";
 import HeaderNavigation from "./HeaderNavigation";
 import MobileSidebar from "./MobileSidebar";
-import { version } from "../../../package.json";
-
-const displayVersion = `v${version}`;
+import getRelease from "../utils/getRelease";
 
 const Wrapper = styled(Flex)`
   width: 100%;
@@ -59,10 +57,10 @@ const Desktop = () => (
     <Grid.Item
       as={HeaderLink}
       area="version"
-      href={`https://github.com/reakit/reakit/releases/tag/${displayVersion}`}
+      href={getRelease.url()}
       target="_blank"
     >
-      {displayVersion}
+      {getRelease.version}
     </Grid.Item>
     <Grid.Item
       as={HeaderLink}
