@@ -63,7 +63,7 @@ class Component extends React.Component {
         applyStyle: { enabled: false },
         arrow: { enabled: !!arrow, element: arrow },
         flip: { padding: 16 },
-        offset: { offset: `0, ${this.props.distance}` },
+        offset: { offset: `0, ${this.props.gutter}` },
         setState: {
           enabled: true,
           order: 900,
@@ -114,7 +114,7 @@ class Component extends React.Component {
         data-placement={this.state.placement}
         defaultSlide={this.state.placement.replace(/-.+$/, "")}
         defaultExpand={this.state.placement.replace(/-.+$/, "")}
-        slideOffset={this.props.distance}
+        slideOffset={this.props.gutter}
         {...this.props}
       />
     );
@@ -158,7 +158,7 @@ Popover.propTypes = {
     "bottom-end",
     "left-end"
   ]),
-  distance: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   popoverId: PropTypes.string
 };
 
@@ -166,7 +166,7 @@ Popover.defaultProps = {
   role: "group",
   placement: "bottom",
   hideOnEsc: true,
-  distance: 12
+  gutter: 12
 };
 
 export default as("div")(Popover);
