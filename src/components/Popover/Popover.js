@@ -21,16 +21,19 @@ class Component extends React.Component {
     originY: undefined
   };
 
-  getReference = () => {
-    const { controller } = this.props;
-    return typeof controller === "string"
-      ? document.getElementById(controller)
-      : controller || this.getPopover().parentNode;
-  };
-
   getPopover = () => findDOMNode(this);
 
-  modifierFn = data => {
+  getController = () => {
+    const { controller } = this.props;
+    if (controller) {
+      return typeof controller === "string"
+        ? document.getElementById(controller)
+        : controller;
+    }
+    return this.getPopover().parentNode;
+  };
+
+  modifier = data => {
     const { placement, offsets, arrowElement, arrowStyles } = data;
     const { reference, popper } = offsets;
     const [position] = placement.split("-");
@@ -74,7 +77,7 @@ class Component extends React.Component {
         setState: {
           enabled: true,
           order: 900,
-          fn: this.modifierFn
+          fn: this.modifier
         }
       }
     };
@@ -83,7 +86,7 @@ class Component extends React.Component {
   initPopper = () => {
     if (!this.popper) {
       this.popper = new Popper(
-        this.getReference(),
+        this.getController(),
         this.getPopover(),
         this.getOptions()
       );
