@@ -59,7 +59,8 @@ const Desktop = () => (
       href="https://github.com/reakit/reakit"
       target="_blank"
     >
-      GitHub<OpenInNewIcon />
+      GitHub
+      <OpenInNewIcon />
     </Grid.Item>
   </React.Fragment>
 );

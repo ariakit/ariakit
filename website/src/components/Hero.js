@@ -60,10 +60,12 @@ const Hero = props => (
     </Headline>
     <Buttons gridArea="buttons">
       <ButtonPrimary as={[ButtonRounded, Link]} to="/guide">
-        <LibraryBooksIcon />Get Started
+        <LibraryBooksIcon />
+        Get Started
       </ButtonPrimary>
       <ButtonSecondary as={[ButtonRounded, Link]} to="/components">
-        <CodeIcon />Components
+        <CodeIcon />
+        Components
       </ButtonSecondary>
       <HeroGitHubButton />
     </Buttons>

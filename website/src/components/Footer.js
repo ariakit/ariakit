@@ -62,7 +62,10 @@ const Credits = props => (
           MIT License
         </Link>
       </Paragraph>
-      <Paragraph>Copyright © 2017-{year} Diego Haz</Paragraph>
+      <Paragraph>
+        Copyright © 2017-
+        {year} Diego Haz
+      </Paragraph>
     </ContentWrapper>
   </Wrapper>
 );
