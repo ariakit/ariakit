@@ -5,12 +5,12 @@ import { List } from "reakit";
 
 <Navigation>
   <List>
-    <List.Item>
-      <Link href="https://github.com/diegohaz/reakit">GitHub</Link>
-    </List.Item>
-    <List.Item>
+    <li>
+      <Link href="https://github.com/reakit/reakit">GitHub</Link>
+    </li>
+    <li>
       <Link href="https://google.com">Google</Link>
-    </List.Item>
+    </li>
   </List>
 </Navigation>
 ```

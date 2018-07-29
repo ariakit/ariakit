@@ -13,7 +13,7 @@ const MenuList = styled(List)`
     ${ifProp("alwaysVisible", "display: block !important")};
   }
 
-  ${List.Item} {
+  li {
     margin: 0;
   }
 `;
@@ -62,12 +62,12 @@ const renderList = (section, prevSlug = "") => {
   return (
     <MenuList alwaysVisible={alwaysVisible}>
       {sections.map(s => (
-        <List.Item key={s.slug}>
+        <li key={s.slug}>
           <SectionLink as={NavLink} to={`${slug}/${s.slug}`}>
             {s.name}
           </SectionLink>
           {renderList(s, slug)}
-        </List.Item>
+        </li>
       ))}
     </MenuList>
   );
