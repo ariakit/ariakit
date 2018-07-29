@@ -23,16 +23,6 @@ class Component extends React.Component {
 
   getPopover = () => findDOMNode(this);
 
-  getController = () => {
-    const { controller } = this.props;
-    if (controller) {
-      return typeof controller === "string"
-        ? document.getElementById(controller)
-        : controller;
-    }
-    return this.getPopover().parentNode;
-  };
-
   modifier = data => {
     const { placement, offsets, arrowElement, arrowStyles } = data;
     const { reference, popper } = offsets;
@@ -85,11 +75,8 @@ class Component extends React.Component {
 
   initPopper = () => {
     if (!this.popper) {
-      this.popper = new Popper(
-        this.getController(),
-        this.getPopover(),
-        this.getOptions()
-      );
+      const popover = this.getPopover();
+      this.popper = new Popper(popover.parentNode, popover, this.getOptions());
     }
   };
 
@@ -170,11 +157,6 @@ Popover.propTypes = {
     "right-end",
     "bottom-end",
     "left-end"
-  ]),
-  controller: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.element,
-    PropTypes.instanceOf(Element)
   ]),
   distance: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   popoverId: PropTypes.string

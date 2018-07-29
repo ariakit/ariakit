@@ -12,22 +12,22 @@ class Component extends React.Component {
   };
 
   componentDidMount() {
-    const controller = this.getController();
-    if (controller && !this.isControlled()) {
-      controller.addEventListener("mouseenter", this.show);
-      controller.addEventListener("focus", this.show);
-      controller.addEventListener("mouseleave", this.hide);
-      controller.addEventListener("blur", this.hide);
+    const { parentNode } = this.getTooltip();
+    if (parentNode && !this.isControlled()) {
+      parentNode.addEventListener("mouseenter", this.show);
+      parentNode.addEventListener("focus", this.show);
+      parentNode.addEventListener("mouseleave", this.hide);
+      parentNode.addEventListener("blur", this.hide);
     }
   }
 
   componentWillUnmount() {
-    const controller = this.getController();
-    if (controller) {
-      controller.removeEventListener("mouseenter", this.show);
-      controller.removeEventListener("focus", this.show);
-      controller.removeEventListener("mouseleave", this.hide);
-      controller.removeEventListener("blur", this.hide);
+    const { parentNode } = this.getTooltip();
+    if (parentNode) {
+      parentNode.removeEventListener("mouseenter", this.show);
+      parentNode.removeEventListener("focus", this.show);
+      parentNode.removeEventListener("mouseleave", this.hide);
+      parentNode.removeEventListener("blur", this.hide);
     }
   }
 
@@ -38,16 +38,6 @@ class Component extends React.Component {
   hide = () => this.setState({ visible: false });
 
   getTooltip = () => findDOMNode(this);
-
-  getController = () => {
-    const { controller } = this.props;
-    if (controller) {
-      return typeof controller === "string"
-        ? document.getElementById(controller)
-        : controller;
-    }
-    return this.getTooltip().parentNode;
-  };
 
   render() {
     const { visible } = this.isControlled() ? this.props : this.state;
