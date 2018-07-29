@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import { translateWithProps } from "../../utils/transform";
 import Hidden from "../Hidden";
 
 class Component extends React.Component {
@@ -33,7 +32,6 @@ const Overlay = styled(Component)`
   background-color: white;
   left: 50%;
   top: 50%;
-  transform: ${translateWithProps};
   z-index: 19900410;
   ${prop("theme.Overlay")};
 `;
