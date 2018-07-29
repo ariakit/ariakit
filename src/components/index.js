@@ -26,7 +26,6 @@ export List from "./List";
 export Navigation from "./Navigation";
 export Overlay from "./Overlay";
 export Paragraph from "./Paragraph";
-export Perpendicular from "./Perpendicular";
 export Popover from "./Popover";
 export Shadow from "./Shadow";
 export Sidebar from "./Sidebar";

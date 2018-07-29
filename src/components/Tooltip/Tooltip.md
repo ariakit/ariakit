@@ -16,9 +16,9 @@ import { Button } from "reakit";
 
 <Button margin="50px 80px">
   Hover me
-  <Tooltip pos="top"><Tooltip.Arrow pos="bottom" />Tooltip</Tooltip>
-  <Tooltip pos="right"><Tooltip.Arrow pos="left" />Tooltip</Tooltip>
-  <Tooltip pos="bottom"><Tooltip.Arrow pos="top" />Tooltip</Tooltip>
-  <Tooltip pos="left"><Tooltip.Arrow pos="right" />Tooltip</Tooltip>
+  <Tooltip placement="top"><Tooltip.Arrow />Tooltip</Tooltip>
+  <Tooltip placement="right"><Tooltip.Arrow />Tooltip</Tooltip>
+  <Tooltip placement="bottom"><Tooltip.Arrow />Tooltip</Tooltip>
+  <Tooltip placement="left"><Tooltip.Arrow />Tooltip</Tooltip>
 </Button>
 ```
