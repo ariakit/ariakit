@@ -37,7 +37,8 @@ const HeroGitHubButton = props => (
     target="_blank"
     {...props}
   >
-    <Icon as={GitHubIcon} />GitHub
+    <Icon as={GitHubIcon} />
+    GitHub
     <ViewportContainer>
       {({ width }) => (
         <GitHubStarsContainer context="github">
