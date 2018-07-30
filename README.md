@@ -22,6 +22,7 @@
 <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
 <a href="https://travis-ci.org/reakit/reakit"><img alt="Build Status" src="https://img.shields.io/travis/reakit/reakit/master.svg?style=flat-square" /></a>
 <a href="https://codecov.io/gh/reakit/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/reakit/reakit/master.svg?style=flat-square" /></a>
+<a href="https://spectrum.chat/reakit"><img src="https://img.shields.io/badge/join_the_community-on_spectrum-7A2DFB.svg?style=flat-square" alt="Join the community on Spectrum" /></a>
 
 ## Installation
 
