@@ -17,7 +17,7 @@ const StyledSidebar = styled(Sidebar)`
 const VersionLink = styled(Link)`
   font-size: 16px;
   color: ${prop("theme.grayLight")};
-`
+`;
 
 const SectionLink = styled(Link.as(RouterLink))`
   font-size: 22px;
