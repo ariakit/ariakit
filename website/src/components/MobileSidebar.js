@@ -5,12 +5,18 @@ import { Link as RouterLink } from "react-router-dom";
 import { prop } from "styled-tools";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import getSectionUrl from "../utils/getSectionUrl";
+import getRelease from "../utils/getRelease";
 import Menu from "./Menu";
 
 const StyledSidebar = styled(Sidebar)`
   padding: 1em;
   min-width: 250px;
   -webkit-overflow-scrolling: touch;
+`;
+
+const VersionLink = styled(Link)`
+  font-size: 16px;
+  color: ${prop("theme.grayLight")};
 `;
 
 const SectionLink = styled(Link.as(RouterLink))`
@@ -32,6 +38,11 @@ const MobileSidebar = () => (
         <StyleguidistContainer>
           {({ sections }) => (
             <StyledSidebar slide {...sidebar}>
+              <Block>
+                <VersionLink href={getRelease.url()}>
+                  {getRelease.version}
+                </VersionLink>
+              </Block>
               {sections.map(section => (
                 <Block key={section.slug} onClick={sidebar.hide}>
                   <SectionLink to={getSectionUrl(sections, section)}>
