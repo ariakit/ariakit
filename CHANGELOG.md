@@ -1,3 +1,19 @@
+<a name="0.12.1"></a>
+## [0.12.1](https://github.com/reakit/reakit/compare/v0.12.0...v0.12.1) (2018-07-30)
+
+
+### Bug Fixes
+
+* **Perpendicular:** Also consider alignOffset when align is center ([3ffcd9d](https://github.com/reakit/reakit/commit/3ffcd9d))
+* Only applies a default alignOffset to PopoverArrow and TooltipArrow when align is not center ([37a9d5c](https://github.com/reakit/reakit/commit/37a9d5c))
+
+
+### Features
+
+* **Table:** Add Table.Wrapper component ([#156](https://github.com/reakit/reakit/issues/156)) ([ae4f92a](https://github.com/reakit/reakit/commit/ae4f92a))
+
+
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/reakit/reakit/compare/v0.11.2...v0.12.0) (2018-07-18)
 
