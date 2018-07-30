@@ -16,16 +16,6 @@ import SectionNavigation from "../components/SectionNavigation";
 import ContainerAPITable from "../components/ContainerAPITable";
 import SectionGitHubButtons from "../components/SectionGitHubButtons";
 
-const Wrapper = styled(Block)`
-  width: 920px;
-  max-width: calc(100vw - 264px);
-  @media (max-width: 768px) {
-    margin-left: -8px;
-    margin-right: -8px;
-    max-width: 100vw;
-  }
-`;
-
 const Content = styled(Block)`
   border-top: 1px solid ${prop("theme.grayLightest")};
   margin-top: 1em;
@@ -46,7 +36,7 @@ const Section = ({ location, ...props }) => (
       const sectionContent = getSectionContent(section);
       if (sectionContent) {
         return (
-          <Wrapper {...props}>
+          <Block {...props}>
             <Helmet>
               <title>{section.name} - ReaKit</title>
             </Helmet>
@@ -68,7 +58,7 @@ const Section = ({ location, ...props }) => (
             <ContainerAPITable section={section} />
             <PropTypesTable section={section} />
             <SectionNavigation section={section} />
-          </Wrapper>
+          </Block>
         );
       }
       return (

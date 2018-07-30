@@ -10,7 +10,6 @@ const year = new Date().getFullYear();
 
 const Wrapper = styled(Flex)`
   justify-content: center;
-  background-color: ${prop("theme.grayLightest")};
   width: 100%;
   padding: 40px 0;
   color: ${prop("theme.gray")};

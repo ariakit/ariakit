@@ -35,18 +35,23 @@ const StyledFooter = styled(Footer)`
   margin-top: auto;
 `;
 
-const CoreLayout = ({ children, ...props }) => (
+const CoreLayout = ({ children, headerShadowed, ...props }) => (
   <Wrapper {...props}>
-    <ScrollContainer>
-      {({ y }) => <StyledHeader shadowed={y > 0} />}
-    </ScrollContainer>
+    {headerShadowed ? (
+      <StyledHeader shadowed />
+    ) : (
+      <ScrollContainer>
+        {({ y }) => <StyledHeader shadowed={y > 0} />}
+      </ScrollContainer>
+    )}
     <Content>{children}</Content>
     <StyledFooter />
   </Wrapper>
 );
 
 CoreLayout.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
+  headerShadowed: PropTypes.bool
 };
 
 export default CoreLayout;

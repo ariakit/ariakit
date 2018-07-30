@@ -5,7 +5,6 @@ import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import GitHubIcon from "react-icons/lib/go/mark-github";
-import ContentWrapper from "../elements/ContentWrapper";
 import ViewportContainer from "../containers/ViewportContainer";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
@@ -18,11 +17,15 @@ const Wrapper = styled(Flex)`
   justify-content: center;
   background-color: white;
   z-index: 9999;
+  padding: 0 55px;
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
 `;
 
 const Layout = styled(Grid)`
   align-items: center;
-  grid-gap: 40px;
+  grid-gap: 55px;
   width: 100%;
   grid-template: "logo nav . github" 60px / auto auto 1fr auto;
   @media (max-width: 768px) {
@@ -99,13 +102,11 @@ const Mobile = () => (
 
 const Header = props => (
   <Wrapper {...props}>
-    <ContentWrapper>
-      <Layout>
-        <ViewportContainer>
-          {({ width }) => (width > 768 ? <Desktop /> : <Mobile />)}
-        </ViewportContainer>
-      </Layout>
-    </ContentWrapper>
+    <Layout>
+      <ViewportContainer>
+        {({ width }) => (width > 768 ? <Desktop /> : <Mobile />)}
+      </ViewportContainer>
+    </Layout>
   </Wrapper>
 );
 
