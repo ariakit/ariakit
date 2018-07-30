@@ -1,20 +1,20 @@
-`Popover` is a component that shows itself briefly, then goes away. Tooltips, error messages and graphical tutorials come to mind as examples. The parent must have `position` set to something other than `static`, such as `relative`. By default it renders as a `<div>`.
+`Popover` is a component that displays floating content relative to its parent component.
 
 ```jsx
-import { InlineBlock } from "reakit";
+import { InlineBlock, Button } from "reakit";
 
-<InlineBlock relative width={100} marginBottom={70}>
-  <Popover visible>
-    <Popover.Arrow />
+<InlineBlock relative>
+  <Button>Button</Button>
+  <Popover placement="right" visible>
     Popover
   </Popover>
 </InlineBlock>
 ```
 
-Adding a Backdrop allows the Popover to hide if the user clicks outside.
+You can use [PopoverContainer](/components/popover/popovercontainer) in combination with [PopoverHide](/components/popover/popoverhide) and [PopoverToggle](/components/popover/popovertoggle) to easily create an animated popover:
 
 ```jsx
-import { Block, Popover } from "reakit";
+import { InlineBlock, Popover } from "reakit";
 
 <Popover.Container>
   {popover => (
@@ -23,7 +23,7 @@ import { Block, Popover } from "reakit";
       <Button as={Popover.Toggle} {...popover}>
         Toggle
       </Button>
-      <Popover fade expand slide timing="cubic-bezier(0.25,0.1,0.25,1.5)" {...popover}>
+      <Popover fade slide expand {...popover}>
         <Popover.Arrow />
         Click outside to hide
       </Popover>

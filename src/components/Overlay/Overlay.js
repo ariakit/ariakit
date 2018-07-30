@@ -1,9 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import styled, { css } from "styled-components";
-import { prop, ifProp } from "styled-tools";
+import styled from "styled-components";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import { hasTransition, expand, slide } from "../../utils/transitions";
 import Hidden from "../Hidden";
 
 class Component extends React.Component {
@@ -33,26 +32,17 @@ const Overlay = styled(Component)`
   background-color: white;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
   z-index: 19900410;
-
-  ${ifProp(
-    hasTransition,
-    css`
-      &[aria-hidden="true"] {
-        transform: ${slide({ x: "-50%", y: "-50%", defaultValue: "top" })}
-          ${expand()};
-      }
-    `
-  )};
-
   ${prop("theme.Overlay")};
 `;
 
 Overlay.defaultProps = {
   role: "dialog",
   "aria-modal": true,
-  hideOnEsc: true
+  hideOnEsc: true,
+  translateX: "-50%",
+  translateY: "-50%",
+  defaultSlide: "top"
 };
 
 export default as("div")(Overlay);

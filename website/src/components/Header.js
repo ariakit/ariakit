@@ -9,7 +9,7 @@ import ContentWrapper from "../elements/ContentWrapper";
 import ViewportContainer from "../containers/ViewportContainer";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
-import Icon from "../elements/Icon";
+import Icon from "./Icon";
 import HeaderNavigation from "./HeaderNavigation";
 import MobileSidebar from "./MobileSidebar";
 
@@ -59,7 +59,8 @@ const Desktop = () => (
       href="https://github.com/reakit/reakit"
       target="_blank"
     >
-      GitHub<OpenInNewIcon />
+      GitHub
+      <OpenInNewIcon />
     </Grid.Item>
   </React.Fragment>
 );
