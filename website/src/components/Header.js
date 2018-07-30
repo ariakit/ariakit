@@ -11,6 +11,7 @@ import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "../elements/Icon";
 import HeaderNavigation from "./HeaderNavigation";
 import MobileSidebar from "./MobileSidebar";
+import getRelease from "../utils/getRelease";
 
 const Wrapper = styled(Flex)`
   width: 100%;
@@ -27,7 +28,7 @@ const Layout = styled(Grid)`
   align-items: center;
   grid-gap: 55px;
   width: 100%;
-  grid-template: "logo nav . github" 60px / auto auto 1fr auto;
+  grid-template: "logo nav . version github" 60px / auto auto 1fr auto;
   @media (max-width: 768px) {
     grid-template: "menu logo github" 60px / 40px auto 40px;
     justify-content: space-between;
@@ -42,7 +43,7 @@ const LogoLink = styled(RouterLink)`
   text-decoration: none;
 `;
 
-const GitHubLink = styled(Link)`
+const HeaderLink = styled(Link)`
   color: ${prop("theme.gray")};
   font-size: 18px;
   justify-self: flex-end;
@@ -57,7 +58,15 @@ const Desktop = () => (
     </Grid.Item>
     <Grid.Item as={HeaderNavigation} area="nav" />
     <Grid.Item
-      as={GitHubLink}
+      as={HeaderLink}
+      area="version"
+      href={getRelease.url()}
+      target="_blank"
+    >
+      {getRelease.version}
+    </Grid.Item>
+    <Grid.Item
+      as={HeaderLink}
       area="github"
       href="https://github.com/reakit/reakit"
       target="_blank"
@@ -90,7 +99,7 @@ const Mobile = () => (
       </LogoLink>
     </Grid.Item>
     <Grid.Item
-      as={GitHubLink}
+      as={HeaderLink}
       area="github"
       href="https://github.com/reakit/reakit"
       target="_blank"
