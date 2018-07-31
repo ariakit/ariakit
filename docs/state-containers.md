@@ -9,7 +9,7 @@ import { Hidden } from "reakit";
 <Hidden visible>Hidden</Hidden>
 ```
 
-If you pass in a `hideOnEsc` prop, you will need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed.
+If you pass in a `hideOnEsc` or `hideOnClickOutside` props, you will need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed or do you clicked outisde the component.
 ```jsx
 import { Hidden } from "reakit";
 
@@ -22,7 +22,7 @@ class Example extends React.Component {
 
   render() {
     return (
-      <Hidden hideOnEsc visible={this.state.visible} hide={this.hide}>
+      <Hidden hideOnEsc hideOnClickOutside visible={this.state.visible} hide={this.hide}>
         Hidden
       </Hidden>
     )
