@@ -15,8 +15,14 @@ class Component extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props.hideOnEsc) {
+    const { hideOnEsc, hideOnClickOutside } = this.props;
+
+    if (hideOnEsc) {
       document.body.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    if (hideOnClickOutside) {
+      document.body.addEventListener("click", this.handleClickOutside);
     }
   }
 
@@ -45,6 +51,7 @@ class Component extends React.Component {
 
   componentWillUnmount() {
     document.body.removeEventListener("keydown", this.handleKeyDown);
+    document.body.removeEventListener("click", this.handleClickOutside);
   }
 
   handleTransitionEnd = () => {
@@ -57,6 +64,14 @@ class Component extends React.Component {
   handleKeyDown = e => {
     const { visible, hide } = this.props;
     if (e.key === "Escape" && visible && hide) {
+      hide();
+    }
+  };
+
+  handleClickOutside = e => {
+    const { className, hide, visible } = this.props;
+
+    if (!e.target.closest(`[class^='${className}']`) && visible && hide) {
       hide();
     }
   };
@@ -118,6 +133,7 @@ Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
+  hideOnClickOutside: PropTypes.bool,
   unmount: PropTypes.bool,
   fade: PropTypes.bool,
   expand: movePropType,
