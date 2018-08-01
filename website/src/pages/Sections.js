@@ -1,33 +1,47 @@
 import React from "react";
 import { Route } from "react-router-dom";
-import { styled } from "reakit";
+import { styled, Grid } from "reakit";
 import Menu from "../components/Menu";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import CoreLayout from "../layouts/CoreLayout";
-import ContentWrapper from "../elements/ContentWrapper";
 import findSectionByLocation from "../utils/findSectionByLocation";
 import Section from "./Section";
 import NotFound from "./NotFound";
 
 const getSlug = pathname => pathname.split("/")[1];
 
-const Content = styled(ContentWrapper)`
-  display: grid;
-  grid-template-columns: 1fr 200px;
-  grid-gap: 32px;
-  margin-top: 40px;
-  align-items: start;
+const Content = styled(Grid)`
+  position: relative;
+  align-items: center;
+  margin: 40px 250px 0;
+  max-width: 800px;
+  width: calc(100% - 250px);
+
+  @media (max-width: 1300px) {
+    margin-right: auto;
+    padding-right: 32px;
+    align-items: flex-start;
+  }
+
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    width: 100vw;
+    max-width: auto;
+    margin-left: auto;
+    padding: 0;
   }
 `;
 
 const StyledMenu = styled(Menu)`
-  position: sticky;
-  top: 100px;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
   overflow: auto;
-  padding-right: 16px;
-  max-height: calc(100vh - 136px);
+  max-height: calc(100% - 60px);
+  padding: 16px;
+  width: 220px;
+  background-color: #f6f6f6;
+  z-index: 999;
   @media (max-width: 768px) {
     display: none;
   }
@@ -44,13 +58,13 @@ const Sections = ({ location, match }) => (
       }
 
       return (
-        <CoreLayout>
+        <CoreLayout headerShadowed>
+          <StyledMenu
+            section={section}
+            showFilter={section.slug === "components"}
+          />
           <Content>
             <Route path={match.url} component={Section} />
-            <StyledMenu
-              section={section}
-              showFilter={section.slug === "components"}
-            />
           </Content>
         </CoreLayout>
       );

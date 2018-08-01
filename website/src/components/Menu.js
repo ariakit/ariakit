@@ -6,6 +6,7 @@ import MenuContainer from "../containers/MenuContainer";
 
 const Wrapper = styled(Grid)`
   grid-gap: 16px;
+  align-content: start;
 `;
 
 const MenuList = styled(List)`
@@ -25,8 +26,9 @@ const SectionLink = styled(Link)`
   margin: 0;
   font-size: 1em;
   color: ${prop("theme.black")};
-  border-left: 3px solid transparent;
-  padding-left: 10px;
+  border-left: 5px solid transparent;
+  padding-left: 20px;
+  margin-left: -16px;
 
   &:hover {
     border-color: ${prop("theme.pinkLight")};
@@ -47,7 +49,7 @@ const SectionLink = styled(Link)`
   }
 
   & + ${MenuList} & {
-    padding-left: 30px;
+    padding-left: 40px;
   }
 `;
 
