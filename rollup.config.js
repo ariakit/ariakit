@@ -1,5 +1,3 @@
-const { existsSync } = require("fs");
-const { join } = require("path");
 const babel = require("rollup-plugin-babel");
 const resolve = require("rollup-plugin-node-resolve");
 const replace = require("rollup-plugin-replace");
@@ -12,10 +10,6 @@ const publicFiles = require("./scripts/publicFiles");
 
 const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
 const allExternal = [...external, ...Object.keys(pkg.dependencies)];
-
-const multipleInput = Object.values(publicFiles).map(file =>
-  file.replace(/\/index.js$/, "")
-);
 
 const makeExternalPredicate = externalArr => {
   if (!externalArr.length) {
@@ -34,14 +28,6 @@ const useLodashEs = () => ({
   }
 });
 
-const inputAsDir = () => ({
-  name: "inputAsDir",
-  resolveId: path => {
-    const dir = join(path, "index.js");
-    return existsSync(dir) ? dir : null;
-  }
-});
-
 const createCommonPlugins = es => [
   babel({
     exclude: "node_modules/**",
@@ -51,20 +37,15 @@ const createCommonPlugins = es => [
       es && useLodashEs
     ].filter(Boolean)
   }),
-  commonjs({
-    include: /node_modules/,
-    ignoreGlobal: true,
-    namedExports: {
-      "react-is": ["isValidElementType"]
-    }
-  }),
-  filesize(),
-  inputAsDir()
+  filesize()
 ];
 
 const es = {
   experimentalCodeSplitting: true,
-  input: ["src/index.js"].concat(multipleInput),
+  input: {
+    index: "src/index.js",
+    ...publicFiles
+  },
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(true), resolve()],
   output: {
@@ -75,7 +56,10 @@ const es = {
 
 const cjs = {
   experimentalCodeSplitting: true,
-  input: ["src/index.js"].concat(multipleInput),
+  input: {
+    index: "src/index.js",
+    ...publicFiles
+  },
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(), resolve()],
   output: {
@@ -90,7 +74,7 @@ const umd = {
   external: makeExternalPredicate(external),
   output: {
     name: pkg.name,
-    file: pkg.browser,
+    file: pkg.unpkg,
     format: "umd",
     exports: "named",
     globals: {
@@ -101,6 +85,12 @@ const umd = {
   },
   plugins: [
     ...createCommonPlugins(),
+    commonjs({
+      include: "node_modules/**",
+      namedExports: {
+        "react-is": ["isValidElementType"]
+      }
+    }),
     ignore(["stream"]),
     uglify(),
     replace({

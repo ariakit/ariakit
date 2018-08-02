@@ -6,7 +6,7 @@
   "repository": "reakit/reakit",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "browser": "dist/reakit.min.js",
+  "unpkg": "dist/reakit.min.js",
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
