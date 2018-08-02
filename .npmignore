@@ -5,6 +5,7 @@ coverage
 docs
 logo
 node_modules
+scripts
 src
 website
 .babelrc

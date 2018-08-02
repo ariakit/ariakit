@@ -1,30 +1,22 @@
-import { lstatSync, readdirSync, existsSync } from "fs";
-import { join } from "path";
-import babel from "rollup-plugin-babel";
-import resolve from "rollup-plugin-node-resolve";
-import replace from "rollup-plugin-replace";
-import commonjs from "rollup-plugin-commonjs";
-import filesize from "rollup-plugin-filesize";
-import { uglify } from "rollup-plugin-uglify";
-import ignore from "rollup-plugin-ignore";
-import pkg from "./package.json";
+const { existsSync } = require("fs");
+const { join } = require("path");
+const babel = require("rollup-plugin-babel");
+const resolve = require("rollup-plugin-node-resolve");
+const replace = require("rollup-plugin-replace");
+const commonjs = require("rollup-plugin-commonjs");
+const filesize = require("rollup-plugin-filesize");
+const { uglify } = require("rollup-plugin-uglify");
+const ignore = require("rollup-plugin-ignore");
+const pkg = require("./package.json");
+const publicFiles = require("./scripts/publicFiles");
 
 const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
 const allExternal = [...external, ...Object.keys(pkg.dependencies)];
 
-const componentsDir = "./src/components";
-const components = readdirSync(componentsDir)
-  .filter(x => x !== "index.js")
-  .map(x => join(componentsDir, x));
+const multipleInput = Object.values(publicFiles).map(file =>
+  file.replace(/\/index.js$/, "")
+);
 
-const enhancersDir = "./src/enhancers";
-const enhancers = readdirSync(enhancersDir)
-  .filter(x => x !== "__tests__")
-  .map(x => join(enhancersDir, x));
-
-const multiple = [...components, ...enhancers];
-
-// Keep lodash/foo as external too
 const makeExternalPredicate = externalArr => {
   if (!externalArr.length) {
     return () => false;
@@ -42,14 +34,12 @@ const useLodashEs = () => ({
   }
 });
 
-const isDirectory = source => lstatSync(source).isDirectory();
-
 const inputAsDir = () => ({
   name: "inputAsDir",
-  resolveId: importee =>
-    existsSync(importee) && isDirectory(importee)
-      ? join(importee, "index.js")
-      : null
+  resolveId: path => {
+    const dir = join(path, "index.js");
+    return existsSync(dir) ? dir : null;
+  }
 });
 
 const createCommonPlugins = es => [
@@ -74,7 +64,7 @@ const createCommonPlugins = es => [
 
 const multipleEs = {
   experimentalCodeSplitting: true,
-  input: multiple,
+  input: multipleInput,
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(true), resolve()],
   output: {
@@ -85,7 +75,7 @@ const multipleEs = {
 
 const multipleCjs = {
   experimentalCodeSplitting: true,
-  input: multiple,
+  input: multipleInput,
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(), resolve()],
   output: {

@@ -1,6 +1,6 @@
 {
-  "name": "quory",
-  "version": "0.0.3",
+  "name": "reakit",
+  "version": "0.12.1",
   "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
   "license": "MIT",
   "repository": "reakit/reakit",
@@ -19,16 +19,15 @@
     "lint": "eslint src benchmark website/src scripts",
     "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{test,Container}.js'",
     "benchmark": "node benchmark",
-    "clean": "rimraf dist",
-    "prebuild": "npm run clean",
-    "build": "rollup -c",
-    "website": "styleguidist server",
+    "build:clean": "rimraf dist es lib && node scripts/cleanProxies",
+    "prebuild": "npm run build:clean",
+    "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server --config styleguide.dev.config.js",
+    "website": "styleguidist server",
     "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
     "preversion": "npm run lint && npm test && npm run build",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "cherry-pick": "cherry-pick --input-files 'es/!(index).{js,ts}'",
-    "postpublish": "cherry-pick clean --input-files 'es/!(index).{js,ts}'"
+    "postpublish": "npm run build:clean"
   },
   "jest": {
     "setupFiles": [
@@ -69,7 +68,6 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
-    "cherry-pick": "file:../cherry-pick",
     "codemirror": "^5.39.2",
     "cross-spawn": "^6.0.5",
     "enzyme": "^3.2.0",
