@@ -62,9 +62,9 @@ const createCommonPlugins = es => [
   inputAsDir()
 ];
 
-const multipleEs = {
+const es = {
   experimentalCodeSplitting: true,
-  input: multipleInput,
+  input: ["src/index.js"].concat(multipleInput),
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(true), resolve()],
   output: {
@@ -73,35 +73,14 @@ const multipleEs = {
   }
 };
 
-const multipleCjs = {
-  experimentalCodeSplitting: true,
-  input: multipleInput,
-  external: makeExternalPredicate(allExternal),
-  plugins: [...createCommonPlugins(), resolve()],
-  output: {
-    format: "cjs",
-    dir: "lib"
-  }
-};
-
-const es = {
-  input: "src/index.js",
-  external: makeExternalPredicate(allExternal),
-  plugins: [...createCommonPlugins(true), resolve()],
-  output: {
-    file: pkg.module,
-    format: "es"
-  }
-};
-
 const cjs = {
-  input: "src/index.js",
+  experimentalCodeSplitting: true,
+  input: ["src/index.js"].concat(multipleInput),
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(), resolve()],
   output: {
-    name: pkg.name,
-    file: pkg.main,
     format: "cjs",
+    dir: "lib",
     exports: "named"
   }
 };
@@ -133,4 +112,4 @@ const umd = {
   ]
 };
 
-export default [multipleEs, multipleCjs, es, cjs, umd];
+export default [es, cjs, umd];

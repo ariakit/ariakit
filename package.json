@@ -4,8 +4,8 @@
   "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
   "license": "MIT",
   "repository": "reakit/reakit",
-  "main": "lib/reakit.js",
-  "module": "es/reakit.js",
+  "main": "lib/index.js",
+  "module": "es/index.js",
   "browser": "dist/reakit.min.js",
   "author": {
     "name": "Diego Haz",
