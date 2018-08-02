@@ -1,3 +1,5 @@
+import { lstatSync, readdirSync, existsSync } from "fs";
+import { join } from "path";
 import babel from "rollup-plugin-babel";
 import resolve from "rollup-plugin-node-resolve";
 import replace from "rollup-plugin-replace";
@@ -7,10 +9,22 @@ import { uglify } from "rollup-plugin-uglify";
 import ignore from "rollup-plugin-ignore";
 import pkg from "./package.json";
 
-const { name } = pkg;
-const external = Object.keys(pkg.peerDependencies).concat("prop-types");
-const allExternal = external.concat(Object.keys(pkg.dependencies));
+const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
+const allExternal = [...external, ...Object.keys(pkg.dependencies)];
 
+const componentsDir = "./src/components";
+const components = readdirSync(componentsDir)
+  .filter(x => x !== "index.js")
+  .map(x => join(componentsDir, x));
+
+const enhancersDir = "./src/enhancers";
+const enhancers = readdirSync(enhancersDir)
+  .filter(x => x !== "__tests__")
+  .map(x => join(enhancersDir, x));
+
+const multiple = [...components, ...enhancers];
+
+// Keep lodash/foo as external too
 const makeExternalPredicate = externalArr => {
   if (!externalArr.length) {
     return () => false;
@@ -28,11 +42,17 @@ const useLodashEs = () => ({
   }
 });
 
-const common = {
-  input: "src/index.js"
-};
+const isDirectory = source => lstatSync(source).isDirectory();
 
-const createCommonPlugins = ({ es = true } = {}) => [
+const inputAsDir = () => ({
+  name: "inputAsDir",
+  resolveId: importee =>
+    existsSync(importee) && isDirectory(importee)
+      ? join(importee, "index.js")
+      : null
+});
+
+const createCommonPlugins = es => [
   babel({
     exclude: "node_modules/**",
     plugins: [
@@ -48,33 +68,60 @@ const createCommonPlugins = ({ es = true } = {}) => [
       "react-is": ["isValidElementType"]
     }
   }),
-  filesize()
+  filesize(),
+  inputAsDir()
 ];
 
-const main = Object.assign({}, common, {
-  output: {
-    name,
-    file: pkg.main,
-    format: "cjs",
-    exports: "named"
-  },
+const multipleEs = {
+  experimentalCodeSplitting: true,
+  input: multiple,
   external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins({ es: false }).concat([resolve()])
-});
+  plugins: [...createCommonPlugins(true), resolve()],
+  output: {
+    format: "es",
+    dir: "es"
+  }
+};
 
-const module = Object.assign({}, common, {
+const multipleCjs = {
+  experimentalCodeSplitting: true,
+  input: multiple,
+  external: makeExternalPredicate(allExternal),
+  plugins: [...createCommonPlugins(), resolve()],
+  output: {
+    format: "cjs",
+    dir: "lib"
+  }
+};
+
+const es = {
+  input: "src/index.js",
+  external: makeExternalPredicate(allExternal),
+  plugins: [...createCommonPlugins(true), resolve()],
   output: {
     file: pkg.module,
     format: "es"
-  },
-  external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins().concat([resolve()])
-});
+  }
+};
 
-const unpkg = Object.assign({}, common, {
+const cjs = {
+  input: "src/index.js",
+  external: makeExternalPredicate(allExternal),
+  plugins: [...createCommonPlugins(), resolve()],
   output: {
-    name,
-    file: pkg.unpkg,
+    name: pkg.name,
+    file: pkg.main,
+    format: "cjs",
+    exports: "named"
+  }
+};
+
+const umd = {
+  input: "src/index.js",
+  external: makeExternalPredicate(external),
+  output: {
+    name: pkg.name,
+    file: pkg.browser,
     format: "umd",
     exports: "named",
     globals: {
@@ -83,8 +130,8 @@ const unpkg = Object.assign({}, common, {
       "prop-types": "PropTypes"
     }
   },
-  external: makeExternalPredicate(external),
-  plugins: createCommonPlugins().concat([
+  plugins: [
+    ...createCommonPlugins(),
     ignore(["stream"]),
     uglify(),
     replace({
@@ -93,7 +140,7 @@ const unpkg = Object.assign({}, common, {
     resolve({
       preferBuiltins: false
     })
-  ])
-});
+  ]
+};
 
-export default [main, module, unpkg];
+export default [multipleEs, multipleCjs, es, cjs, umd];
