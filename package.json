@@ -1,6 +1,6 @@
 {
   "name": "quory",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
   "license": "MIT",
   "repository": "reakit/reakit",
@@ -12,9 +12,6 @@
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "test": "jest",
     "coverage": "npm test -- --coverage",
@@ -30,7 +27,8 @@
     "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
     "preversion": "npm run lint && npm test && npm run build",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "postpublish": "git push origin master --follow-tags"
+    "cherry-pick": "cherry-pick --input-files 'es/!(index).{js,ts}'",
+    "postpublish": "cherry-pick clean --input-files 'es/!(index).{js,ts}'"
   },
   "jest": {
     "setupFiles": [
@@ -71,7 +69,7 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
-    "cherry-pick": "^0.2.1",
+    "cherry-pick": "file:../cherry-pick",
     "codemirror": "^5.39.2",
     "cross-spawn": "^6.0.5",
     "enzyme": "^3.2.0",

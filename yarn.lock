@@ -2227,9 +2227,8 @@ cheerio@^1.0.0-rc.2:
     lodash "^4.15.0"
     parse5 "^3.0.1"
 
-cherry-pick@^0.2.1:
+"cherry-pick@file:../cherry-pick":
   version "0.2.1"
-  resolved "https://registry.yarnpkg.com/cherry-pick/-/cherry-pick-0.2.1.tgz#ce380972cc2a00f3e665331d5762f09bbb172045"
   dependencies:
     chalk "^2.4.1"
     rimraf "^2.6.2"
