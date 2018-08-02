@@ -43,7 +43,10 @@
     ]
   },
   "keywords": [
-    "reakit"
+    "reakit",
+    "react",
+    "ui",
+    "toolkit"
   ],
   "dependencies": {
     "constate": "^0.7.2",
