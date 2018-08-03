@@ -16,56 +16,56 @@
 
 * `Hidden` styles have been changed. Now it has a `transform` property by default.
 
-This affects all the other components that use `Hidden`: `Backdrop`, `Overlay`, `Sidebar`, `Popover`, `Tooltip`, `Step` and `TabsPanel`.
+  This affects all the other components that use `Hidden`: `Backdrop`, `Overlay`, `Sidebar`, `Popover`, `Tooltip`, `Step` and `TabsPanel`.
 * `Perpendicular` has been removed. `Popover` and `Tooltip` use [popper.js](https://github.com/FezVrasta/popper.js) instead. 
 
-It affects also `PopoverArrow` and `TooltipArrow`, which don't accept `Perpendicular` props anymore.
+  It affects also `PopoverArrow` and `TooltipArrow`, which don't accept `Perpendicular` props anymore.
 * `pos` prop on `Popover` and `Tooltip` has been replaced by `placement` prop, which accepts all the `pos` values plus `-start` and `-end` versions.
 
-Before:
-```jsx
-<Popover pos="top" align="start" />
-```
+  Before:
+  ```jsx
+  <Popover pos="top" align="start" />
+  ```
 
-After:
-```jsx
-<Popover placement="top-start" />
-```
+  After:
+  ```jsx
+  <Popover placement="top-start" />
+  ```
 * `PopoverArrow` and `TooltipArrow` don't accept `pos` anymore. Their position and angle are now automatically set according to `Popover` and `Tooltip` `placement` prop.
 
-Before:
-```jsx
-<Popover pos="top">
-  <Popover.Arrow pos="bottom" />
-</Popover>
-```
+  Before:
+  ```jsx
+  <Popover pos="top">
+    <Popover.Arrow pos="bottom" />
+  </Popover>
+  ```
 
-After:
-```jsx
-<Popover placement="top">
-  <Popover.Arrow />
-</Popover>
-```
+  After:
+  ```jsx
+  <Popover placement="top">
+    <Popover.Arrow />
+  </Popover>
+  ```
 * `popoverId` state on `PopoverContainer` is now set on `componentDidMount` instead of on initial state. 
 
-This means that it'll be `undefined` on the first render, but will have a consistent behavior when using [`context`](https://github.com/diegohaz/constate#context) prop.
+  This means that it'll be `undefined` on the first render, but will have a consistent behavior when using [`context`](https://github.com/diegohaz/constate#context) prop.
 * `Tooltip` styles have been changed. Now it has a slightly larger `font-size` and opaque `background-color`.
 * `ListItem` and `Table` children components have been removed. You can replace them by their respective html tags (like `li`, `tr`, `th` etc.):
 
-```jsx
-<List>
-  <li>Item 1</li>
-  <li>Item 2</li>
-</List>
-```
+  ```jsx
+  <List>
+    <li>Item 1</li>
+    <li>Item 2</li>
+  </List>
+  ```
 
-If you were using some enhanced feature of ReaKit components, like inline styles, you can use `<Base as="li">`:
+  If you were using some enhanced feature of ReaKit components, like inline styles, you can use `<Base as="li">`:
 
-```jsx
-<List>
-  <Base as="li" marginTop={10}>Item</Base>
-</List>
-```
+  ```jsx
+  <List>
+    <Base as="li" marginTop={10}>Item</Base>
+  </List>
+  ```
 
 
 
