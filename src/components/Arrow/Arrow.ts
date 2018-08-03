@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
-import styled from '../../utils/styled';
+import styled from "../../enhancers/styled";
 
 const SQRT2 = 1.41421356237;
 
@@ -10,8 +10,8 @@ interface ArrowProps {
   /**
    * Rotation (in degrees) of the arrow - default 0
    */
-  angle?: number,
-};
+  angle?: number;
+}
 
 const Arrow = styled<ArrowProps>(Base)`
   display: inline-flex;

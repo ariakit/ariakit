@@ -1,8 +1,7 @@
-import * as React from 'react';
-import { ComponentType } from 'react';
-import { StyledComponentClass } from 'styled-components';
+import React, { ComponentType } from "react";
+import { StyledComponentClass } from "styled-components";
 
-declare module 'styled-components' {
+declare module "styled-components" {
   /*
     TODO can be deleted when https://github.com/styled-components/styled-components/pull/1827 gets released
   */

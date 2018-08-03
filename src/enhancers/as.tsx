@@ -6,31 +6,35 @@ import React, {
   CSSProperties,
   ReactNode,
   Ref
-} from 'react';
-import { isStyledComponent } from 'styled-components';
-import pickCSSProps from '../utils/pickCSSProps';
-import parseTag from '../utils/parseTag';
-import parseClassName from '../utils/parseClassName';
-import pickHTMLProps from '../utils/pickHTMLProps';
+} from "react";
+import { isStyledComponent } from "styled-components";
+import pickCSSProps from "../utils/pickCSSProps";
+import parseTag from "../utils/parseTag";
+import parseClassName from "../utils/parseClassName";
+import pickHTMLProps from "../utils/pickHTMLProps";
 
 export type AsComponent = keyof JSX.IntrinsicElements | ComponentType<any>;
 export type AsComponents = AsComponent | AsComponent[];
 export interface AsProps {
   as: AsComponents;
+  nextAs?: AsComponent;
 }
 
 export type ReakitComponentProps = CSSProperties & AsProps;
 
-export interface ReakitComponent<Props = any> extends ComponentClass<Props & ReakitComponentProps> {
+export interface ReakitComponent<Props = any>
+  extends ComponentClass<Props & ReakitComponentProps> {
   asComponents: AsComponents;
   as: (
     asComponents: AsComponents
-  ) => (WrappedComponent: Component<AsProps>) => ReakitComponent<Props & ReakitComponentProps>;
+  ) => (
+    WrappedComponent: Component<AsProps>
+  ) => ReakitComponent<Props & ReakitComponentProps>;
   displayName: string;
 }
 
-// eslint-disable-next-line no-use-before-define
-const As = ({ nextAs, ...props }: { nextAs: AsComponent }) => render({ ...props, as: nextAs });
+const As = ({ nextAs, ...props }: { nextAs: AsComponent }) =>
+  render({ ...props, as: nextAs });
 
 interface IRenderProps extends AsProps {
   className?: string;
@@ -49,7 +53,7 @@ const render = ({ as: t, ...props }: IRenderProps): React.ReactNode => {
   const style = pickCSSProps(props);
   const className = parseClassName(props.className);
 
-  if (typeof T === 'string') {
+  if (typeof T === "string") {
     const { children } = props;
     const propsWithStyle = {
       ...props,
@@ -71,7 +75,7 @@ const render = ({ as: t, ...props }: IRenderProps): React.ReactNode => {
 };
 
 function isWrappedWithAs(target: any): target is ReakitComponent<any> {
-  return typeof target.asComponents !== 'undefined';
+  return typeof target.asComponents !== "undefined";
 }
 
 const as = (asComponents: AsComponents) => <Props extends AsProps>(
@@ -99,35 +103,36 @@ const as = (asComponents: AsComponents) => <Props extends AsProps>(
     // @ts-ignore
     component.displayName || component.name || component;
 
-  const getAs = (props: { as: AsComponents; nextAs: AsComponent }): AsComponents =>
-    components.concat(props.as || [], props.nextAs || []);
+  const getAs = (props: {
+    as: AsComponents;
+    nextAs: AsComponent;
+  }): AsComponents => components.concat(props.as || [], props.nextAs || []);
 
   const displayName = `${getComponentName(WrappedComponent)}.as(${[asComponents]
     .flatten()
     .map(getComponentName)})`;
 
-  let EnhancedComponent = ({
-    as: as,
-    nextAs: nextAs,
-    ...rest
-  }: {
-    as: AsComponents;
-    nextAs: AsComponent;
-  }) => render({ ...rest, as: getAs({ as, nextAs }) });
+  let EnhancedComponent = (props: { as: AsComponents; nextAs: AsComponent }) =>
+    render({ ...props, as: getAs(props) });
 
   // @ts-ignore
   EnhancedComponent.displayName = displayName;
 
   if (isStyledComponent(WrappedComponent)) {
     // @ts-ignore
-    EnhancedComponent = WrappedComponent.withComponent(EnhancedComponent) as ReakitComponent;
+    EnhancedComponent = WrappedComponent.withComponent(
+      // @ts-ignore
+      EnhancedComponent
+    ) as ReakitComponent;
     // @ts-ignore
     EnhancedComponent.styledComponentId = WrappedComponent.styledComponentId;
     // @ts-ignore
     EnhancedComponent.displayName = `Styled(${displayName})`;
   }
 
-  return defineProperties((EnhancedComponent as any) as ReakitComponent) as ReakitComponent<Props>;
+  return defineProperties(
+    (EnhancedComponent as any) as ReakitComponent
+  ) as ReakitComponent<Props>;
 };
 
 export default as;
