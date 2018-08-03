@@ -33,11 +33,12 @@ const StarsPopover = styled(Popover)`
 const HeroGitHubButton = props => (
   <Button
     as={[ButtonRounded, "a"]}
-    href="https://github.com/diegohaz/reakit"
+    href="https://github.com/reakit/reakit"
     target="_blank"
     {...props}
   >
-    <Icon as={GitHubIcon} />GitHub
+    <Icon as={GitHubIcon} />
+    GitHub
     <ViewportContainer>
       {({ width }) => (
         <GitHubStarsContainer context="github">

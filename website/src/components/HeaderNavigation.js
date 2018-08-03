@@ -14,8 +14,8 @@ const Navigation = styled(Grid.as("nav"))`
 const Link = styled(NavLink)`
   display: flex;
   align-items: center;
-  padding-top: 3px;
-  border-bottom: 3px solid transparent;
+  padding-top: 5px;
+  border-bottom: 5px solid transparent;
   color: ${prop("theme.black")};
   text-decoration: none;
   &:hover {

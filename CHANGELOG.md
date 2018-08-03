@@ -1,15 +1,31 @@
-<a name="0.12.0"></a>
-# [0.12.0](https://github.com/diegohaz/reakit/compare/v0.11.2...v0.12.0) (2018-07-18)
+<a name="0.12.1"></a>
+## [0.12.1](https://github.com/reakit/reakit/compare/v0.12.0...v0.12.1) (2018-07-30)
+
+
+### Bug Fixes
+
+* **Perpendicular:** Also consider alignOffset when align is center ([3ffcd9d](https://github.com/reakit/reakit/commit/3ffcd9d))
+* Only applies a default alignOffset to PopoverArrow and TooltipArrow when align is not center ([37a9d5c](https://github.com/reakit/reakit/commit/37a9d5c))
 
 
 ### Features
 
-* **Hidden:** Add transition props ([#147](https://github.com/diegohaz/reakit/issues/147)) ([db8a801](https://github.com/diegohaz/reakit/commit/db8a801))
-* **Hidden:** Replace destroy prop by unmount ([#145](https://github.com/diegohaz/reakit/issues/145)) ([07308ba](https://github.com/diegohaz/reakit/commit/07308ba))
-* **Perpendicular:** Add alignOffset prop ([#150](https://github.com/diegohaz/reakit/issues/150)) ([e1823d6](https://github.com/diegohaz/reakit/commit/e1823d6))
-* **Perpendicular:** Add angle prop ([#149](https://github.com/diegohaz/reakit/issues/149)) ([4ce1a64](https://github.com/diegohaz/reakit/commit/4ce1a64))
-* Make prop-types a dependency ([#151](https://github.com/diegohaz/reakit/issues/151)) ([a31efd9](https://github.com/diegohaz/reakit/commit/a31efd9))
-* **TableCell:** Replace header prop by as="th" ([#152](https://github.com/diegohaz/reakit/issues/152)) ([9e1a37c](https://github.com/diegohaz/reakit/commit/9e1a37c))
+* **Table:** Add Table.Wrapper component ([#156](https://github.com/reakit/reakit/issues/156)) ([ae4f92a](https://github.com/reakit/reakit/commit/ae4f92a))
+
+
+
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/reakit/reakit/compare/v0.11.2...v0.12.0) (2018-07-18)
+
+
+### Features
+
+* **Hidden:** Add transition props ([#147](https://github.com/reakit/reakit/issues/147)) ([db8a801](https://github.com/reakit/reakit/commit/db8a801))
+* **Hidden:** Replace destroy prop by unmount ([#145](https://github.com/reakit/reakit/issues/145)) ([07308ba](https://github.com/reakit/reakit/commit/07308ba))
+* **Perpendicular:** Add alignOffset prop ([#150](https://github.com/reakit/reakit/issues/150)) ([e1823d6](https://github.com/reakit/reakit/commit/e1823d6))
+* **Perpendicular:** Add angle prop ([#149](https://github.com/reakit/reakit/issues/149)) ([4ce1a64](https://github.com/reakit/reakit/commit/4ce1a64))
+* Make prop-types a dependency ([#151](https://github.com/reakit/reakit/issues/151)) ([a31efd9](https://github.com/reakit/reakit/commit/a31efd9))
+* **TableCell:** Replace header prop by as="th" ([#152](https://github.com/reakit/reakit/issues/152)) ([9e1a37c](https://github.com/reakit/reakit/commit/9e1a37c))
 
 
 ### BREAKING CHANGES
@@ -27,13 +43,13 @@
 
 
 <a name="0.11.2"></a>
-## [0.11.2](https://github.com/diegohaz/reakit/compare/v0.11.1...v0.11.2) (2018-07-18)
+## [0.11.2](https://github.com/reakit/reakit/compare/v0.11.1...v0.11.2) (2018-07-18)
 
 
 ### Bug Fixes
 
-* **Table:** Use theme.Table ([a4bed90](https://github.com/diegohaz/reakit/commit/a4bed90))
-* **TabsPanel:** Make it possible to pass visible to TabsPanel ([#144](https://github.com/diegohaz/reakit/issues/144)) ([54a8f9a](https://github.com/diegohaz/reakit/commit/54a8f9a))
+* **Table:** Use theme.Table ([a4bed90](https://github.com/reakit/reakit/commit/a4bed90))
+* **TabsPanel:** Make it possible to pass visible to TabsPanel ([#144](https://github.com/reakit/reakit/issues/144)) ([54a8f9a](https://github.com/reakit/reakit/commit/54a8f9a))
 
 
 

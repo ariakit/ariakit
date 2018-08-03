@@ -8,7 +8,7 @@ const initialState = {
 
 const onMount = async ({ setState }) => {
   try {
-    const result = await fetch("https://api.github.com/repos/diegohaz/reakit");
+    const result = await fetch("https://api.github.com/repos/reakit/reakit");
     const { stargazers_count: stars } = await result.json();
     setState({ stars });
   } catch (e) {

@@ -10,7 +10,6 @@ const year = new Date().getFullYear();
 
 const Wrapper = styled(Flex)`
   justify-content: center;
-  background-color: ${prop("theme.grayLightest")};
   width: 100%;
   padding: 40px 0;
   color: ${prop("theme.gray")};
@@ -51,7 +50,7 @@ const Credits = props => (
           </Link>
         </List.Item>
         <List.Item>
-          <Link href="https://github.com/diegohaz/reakit" target="_blank">
+          <Link href="https://github.com/reakit/reakit" target="_blank">
             <GitHubIcon />
           </Link>
         </List.Item>
@@ -62,7 +61,10 @@ const Credits = props => (
           MIT License
         </Link>
       </Paragraph>
-      <Paragraph>Copyright © 2017-{year} Diego Haz</Paragraph>
+      <Paragraph>
+        Copyright © 2017-
+        {year} Diego Haz
+      </Paragraph>
     </ContentWrapper>
   </Wrapper>
 );
