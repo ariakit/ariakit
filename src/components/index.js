@@ -26,7 +26,6 @@ export { default as List } from "./List";
 export { default as Navigation } from "./Navigation";
 export { default as Overlay } from "./Overlay";
 export { default as Paragraph } from "./Paragraph";
-export { default as Perpendicular } from "./Perpendicular";
 export { default as Popover } from "./Popover";
 export { default as Shadow } from "./Shadow";
 export { default as Sidebar } from "./Sidebar";

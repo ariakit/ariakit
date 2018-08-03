@@ -19,7 +19,7 @@ const PopoverToggle = styled(Component)`
 `;
 
 PopoverToggle.propTypes = {
-  popoverId: PropTypes.string.isRequired,
+  popoverId: PropTypes.string,
   visible: PropTypes.bool
 };
 

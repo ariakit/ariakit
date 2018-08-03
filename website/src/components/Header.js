@@ -8,7 +8,7 @@ import GitHubIcon from "react-icons/lib/go/mark-github";
 import ViewportContainer from "../containers/ViewportContainer";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
-import Icon from "../elements/Icon";
+import Icon from "./Icon";
 import HeaderNavigation from "./HeaderNavigation";
 import MobileSidebar from "./MobileSidebar";
 import getRelease from "../utils/getRelease";

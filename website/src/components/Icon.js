@@ -2,7 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const Icon = ({ as: T, ...props }) => (
-  <T width="1.5em" height="1.5em" {...props} />
+  <div>
+    <T width="1.5em" height="1.5em" {...props} />
+  </div>
 );
 
 Icon.propTypes = {

@@ -1,24 +1,14 @@
-/* eslint-disable react/prefer-stateless-function */
 import React from "react";
-import PropTypes from "prop-types";
 import uniqueId from "lodash/uniqueId";
 import HiddenContainer from "../Hidden/HiddenContainer";
+import callAll from "../../utils/callAll";
 
-class PopoverContainer extends React.Component {
-  static propTypes = {
-    initialState: PropTypes.object
-  };
+const onMount = ({ setState }) => {
+  setState({ popoverId: uniqueId("popover") });
+};
 
-  popoverId = uniqueId("popover");
-
-  render() {
-    return (
-      <HiddenContainer
-        {...this.props}
-        initialState={{ popoverId: this.popoverId, ...this.props.initialState }}
-      />
-    );
-  }
-}
+const PopoverContainer = props => (
+  <HiddenContainer {...props} onMount={callAll(onMount, props.onMount)} />
+);
 
 export default PopoverContainer;

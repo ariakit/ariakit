@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
   "license": "MIT",
   "repository": "reakit/reakit",
@@ -42,6 +42,7 @@
     "hoist-non-react-statics": "^3.0.1",
     "lodash": "^4.17.5",
     "lodash-es": "^4.17.5",
+    "popper.js": "^1.14.3",
     "prop-types": "^15.6.2",
     "react-known-props": "^2.3.1",
     "styled-components": "^3.3.3",
