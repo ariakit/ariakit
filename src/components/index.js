@@ -27,6 +27,7 @@ export Navigation from "./Navigation";
 export Overlay from "./Overlay";
 export Paragraph from "./Paragraph";
 export Popover from "./Popover";
+export Portal from "./Portal";
 export Shadow from "./Shadow";
 export Sidebar from "./Sidebar";
 export Step from "./Step";
