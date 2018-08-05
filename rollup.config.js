@@ -29,6 +29,7 @@ const createCommonPlugins = () => [
 
 const regular = {
   experimentalCodeSplitting: true,
+  perf: true,
   input: {
     index: "src/index.js",
     ...publicFiles
