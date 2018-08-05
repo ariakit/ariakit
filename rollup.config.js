@@ -2,6 +2,7 @@ const babel = require("rollup-plugin-babel");
 const resolve = require("rollup-plugin-node-resolve");
 const replace = require("rollup-plugin-replace");
 const commonjs = require("rollup-plugin-commonjs");
+const filesize = require("rollup-plugin-filesize");
 const { uglify } = require("rollup-plugin-uglify");
 const ignore = require("rollup-plugin-ignore");
 const pkg = require("./package.json");
@@ -18,33 +19,54 @@ const makeExternalPredicate = externalArr => {
   return id => pattern.test(id);
 };
 
-const createCommonPlugins = () => [
+const useLodashEs = () => ({
+  visitor: {
+    ImportDeclaration(path) {
+      const { source } = path.node;
+      source.value = source.value.replace(/^lodash($|\/)/, "lodash-es$1");
+    }
+  }
+});
+
+const createCommonPlugins = es => [
   babel({
     exclude: "node_modules/**",
-    plugins: ["styled-components", "external-helpers"]
-  })
+    plugins: [
+      "styled-components",
+      "external-helpers",
+      es && useLodashEs
+    ].filter(Boolean)
+  }),
+  filesize()
 ];
 
-const regular = {
+const es = {
   experimentalCodeSplitting: true,
-  perf: true,
+  input: {
+    index: "src/index.js",
+    ...publicFiles
+  },
+  external: makeExternalPredicate(allExternal),
+  plugins: [...createCommonPlugins(true), resolve()],
+  output: {
+    format: "es",
+    dir: "es"
+  }
+};
+
+const cjs = {
+  experimentalCodeSplitting: true,
   input: {
     index: "src/index.js",
     ...publicFiles
   },
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(), resolve()],
-  output: [
-    {
-      format: "es",
-      dir: "es"
-    },
-    {
-      format: "cjs",
-      dir: "lib",
-      exports: "named"
-    }
-  ]
+  output: {
+    format: "cjs",
+    dir: "lib",
+    exports: "named"
+  }
 };
 
 const umd = {
@@ -80,4 +102,4 @@ const umd = {
   ]
 };
 
-export default [regular, umd];
+export default [es, cjs, umd];

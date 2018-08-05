@@ -1,7 +1,7 @@
 import React from "react";
+import uniqueId from "lodash/uniqueId";
 import HiddenContainer from "../Hidden/HiddenContainer";
 import callAll from "../../utils/callAll";
-import { uniqueId } from "../../utils/lodash-like";
 
 const onMount = ({ setState }) => {
   setState({ popoverId: uniqueId("popover") });

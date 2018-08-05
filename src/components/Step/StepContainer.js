@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from "react";
 import PropTypes from "prop-types";
+import omit from "lodash/omit";
 import { Container } from "constate";
 
 export const initialState = {
@@ -76,7 +77,7 @@ export const unregister = id => state => {
     return {};
   }
 
-  const { [state.ids[index]]: omitted, ...ordered } = state.ordered;
+  const ordered = omit(state.ordered, state.ids[index]);
   const ids = [...state.ids.slice(0, index), ...state.ids.slice(index + 1)];
 
   if (isCurrent(id)(state) && !hasNext()(state)) {
