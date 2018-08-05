@@ -1,4 +1,4 @@
-import uniq from "lodash/uniq";
+import { uniq } from "./lodash-like";
 
 const parseClassName = className =>
   className && uniq(className.split(" ")).join(" ");

@@ -19,42 +19,15 @@ const makeExternalPredicate = externalArr => {
   return id => pattern.test(id);
 };
 
-const useLodashEs = () => ({
-  visitor: {
-    ImportDeclaration(path) {
-      const { source } = path.node;
-      source.value = source.value.replace(/^lodash($|\/)/, "lodash-es$1");
-    }
-  }
-});
-
-const createCommonPlugins = es => [
+const createCommonPlugins = () => [
   babel({
     exclude: "node_modules/**",
-    plugins: [
-      "styled-components",
-      "external-helpers",
-      es && useLodashEs
-    ].filter(Boolean)
+    plugins: ["styled-components", "external-helpers"]
   }),
   filesize()
 ];
 
-const es = {
-  experimentalCodeSplitting: true,
-  input: {
-    index: "src/index.js",
-    ...publicFiles
-  },
-  external: makeExternalPredicate(allExternal),
-  plugins: [...createCommonPlugins(true), resolve()],
-  output: {
-    format: "es",
-    dir: "es"
-  }
-};
-
-const cjs = {
+const regular = {
   experimentalCodeSplitting: true,
   input: {
     index: "src/index.js",
@@ -62,11 +35,17 @@ const cjs = {
   },
   external: makeExternalPredicate(allExternal),
   plugins: [...createCommonPlugins(), resolve()],
-  output: {
-    format: "cjs",
-    dir: "lib",
-    exports: "named"
-  }
+  output: [
+    {
+      format: "es",
+      dir: "es"
+    },
+    {
+      format: "cjs",
+      dir: "lib",
+      exports: "named"
+    }
+  ]
 };
 
 const umd = {
@@ -102,4 +81,4 @@ const umd = {
   ]
 };
 
-export default [es, cjs, umd];
+export default [regular, umd];

@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
 import { isStyledComponent } from "styled-components";
-import omit from "lodash/omit";
 import pickCSSProps from "../utils/pickCSSProps";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
@@ -68,8 +67,10 @@ const as = asComponents => WrappedComponent => {
     .concat(asComponents)
     .map(getComponentName)})`;
 
-  let Component = props =>
-    render({ ...omit(props, "nextAs"), as: getAs(props) });
+  let Component = props => {
+    const { nextAs, ...purifiedProps } = props;
+    return render({ ...purifiedProps, as: getAs(props) });
+  };
 
   Component.displayName = displayName;
 
