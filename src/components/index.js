@@ -32,4 +32,5 @@ export Sidebar from "./Sidebar";
 export Step from "./Step";
 export Table from "./Table";
 export Tabs from "./Tabs";
+export Toolbar from "./Toolbar";
 export Tooltip from "./Tooltip";
