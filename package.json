@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
   "license": "MIT",
   "repository": "reakit/reakit",

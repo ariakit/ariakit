@@ -1,3 +1,18 @@
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/reakit/reakit/compare/v0.13.0...v0.13.1) (2018-08-05)
+
+
+### Bug Fixes
+
+* Let theme override default styles on Table ([ab74f7c](https://github.com/reakit/reakit/commit/ab74f7c))
+
+
+### Features
+
+* Build a separate entry point for each public file ([#168](https://github.com/reakit/reakit/issues/168)) ([31bd3f6](https://github.com/reakit/reakit/commit/31bd3f6)), closes [#106](https://github.com/reakit/reakit/issues/106)
+
+
+
 <a name="0.13.0"></a>
 # [0.13.0](https://github.com/reakit/reakit/compare/v0.12.1...v0.13.0) (2018-08-03)
 
