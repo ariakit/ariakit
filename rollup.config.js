@@ -2,7 +2,6 @@ const babel = require("rollup-plugin-babel");
 const resolve = require("rollup-plugin-node-resolve");
 const replace = require("rollup-plugin-replace");
 const commonjs = require("rollup-plugin-commonjs");
-const filesize = require("rollup-plugin-filesize");
 const { uglify } = require("rollup-plugin-uglify");
 const ignore = require("rollup-plugin-ignore");
 const pkg = require("./package.json");
@@ -36,8 +35,7 @@ const createCommonPlugins = es => [
       "external-helpers",
       es && useLodashEs
     ].filter(Boolean)
-  }),
-  filesize()
+  })
 ];
 
 const es = {

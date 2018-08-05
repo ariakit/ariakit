@@ -9,7 +9,7 @@ Switch to `HTML` tab on the code block below to see the generated markup.
 ```jsx
 import { Popover } from "reakit";
 
-<Popover visible relative>
+<Popover visible relative transform="none">
   <Popover.Arrow />
   Popover
 </Popover>
