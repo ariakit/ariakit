@@ -27,7 +27,7 @@
     "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
     "preversion": "npm run lint && npm test && npm run build",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "postpublish": "npm run build:clean"
+    "postpublish": "npm run build:clean && git push --follow-tags"
   },
   "jest": {
     "setupFiles": [
