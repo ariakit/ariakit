@@ -20,6 +20,6 @@ it("gets underlying element from nextAs if as is not string", () => {
   expect(getUnderlyingElement({ as: () => {}, nextAs: ["div"] })).toBe("div");
 });
 
-it("returns span by default", () => {
-  expect(getUnderlyingElement({})).toBe("span");
+it("returns div by default", () => {
+  expect(getUnderlyingElement({})).toBe("div");
 });

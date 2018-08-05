@@ -3,9 +3,9 @@ const parseTag = tag => {
     const tags = tag.filter(
       (currentTag, i) => typeof currentTag !== "string" || i === tag.length - 1
     );
-    return tags.length <= 1 ? tags[0] || "span" : tags;
+    return tags.length <= 1 ? tags[0] || "div" : tags;
   }
-  return tag || "span";
+  return tag || "div";
 };
 
 export default parseTag;

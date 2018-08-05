@@ -9,7 +9,7 @@ const getUnderlyingElement = ({ as, nextAs = [] }) => {
       return lastElement;
     }
   }
-  return "span";
+  return "div";
 };
 
 export default getUnderlyingElement;

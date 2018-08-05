@@ -28,10 +28,10 @@ it("removes string tags from middle", () => {
   expect(parseTag([Component, "div", "span"])).toEqual([Component, "span"]);
 });
 
-it("returns span when nothing is passed in", () => {
-  expect(parseTag()).toBe("span");
+it("returns div when nothing is passed in", () => {
+  expect(parseTag()).toBe("div");
 });
 
-it("returns span when empty array is passed in", () => {
-  expect(parseTag([])).toBe("span");
+it("returns div when empty array is passed in", () => {
+  expect(parseTag([])).toBe("div");
 });
