@@ -6,8 +6,6 @@ script:
   - npm run singel
   - npm test -- --coverage
   - npm run build
-cache:
-  - yarn
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 deploy:
