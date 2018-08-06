@@ -1,8 +1,8 @@
 import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
+import styled from "styled-components";
 import { bool } from "../../utils/styledProps";
-import styled from "../../enhancers/styled";
 import as from "../../enhancers/as";
 
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];

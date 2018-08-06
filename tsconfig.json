@@ -26,6 +26,6 @@
     "experimentalDecorators": false,
     "removeComments": true,
     "strictNullChecks": true,
-    "stripInternal": true,
+    "stripInternal": true
   }
 }

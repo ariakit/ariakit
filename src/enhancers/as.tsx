@@ -16,7 +16,7 @@ import pickHTMLProps from "../utils/pickHTMLProps";
 export type AsComponent = keyof JSX.IntrinsicElements | ComponentType<any>;
 export type AsComponents = AsComponent | AsComponent[];
 export interface AsProps {
-  as: AsComponents;
+  as?: AsComponents;
   nextAs?: AsComponent;
 }
 
@@ -82,8 +82,7 @@ const as = (asComponents: AsComponents) => <Props extends AsProps>(
   WrappedComponent: ComponentType<Props>
 ): ReakitComponent<Props> => {
   const target = isStyledComponent(WrappedComponent)
-    ? // @ts-ignore
-      WrappedComponent.target
+    ? WrappedComponent.target
     : WrappedComponent;
 
   const defineProperties = (scope: ReakitComponent) => {
@@ -97,7 +96,7 @@ const as = (asComponents: AsComponents) => <Props extends AsProps>(
     return defineProperties(WrappedComponent as ReakitComponent);
   }
 
-  const components = [WrappedComponent, asComponents].flatten();
+  const components = [WrappedComponent, asComponents].flat();
 
   const getComponentName = (component: ComponentType<any>): any =>
     // @ts-ignore
@@ -109,7 +108,7 @@ const as = (asComponents: AsComponents) => <Props extends AsProps>(
   }): AsComponents => components.concat(props.as || [], props.nextAs || []);
 
   const displayName = `${getComponentName(WrappedComponent)}.as(${[asComponents]
-    .flatten()
+    .flat()
     .map(getComponentName)})`;
 
   let EnhancedComponent = (props: { as: AsComponents; nextAs: AsComponent }) =>
