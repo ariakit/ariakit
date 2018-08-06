@@ -12,19 +12,7 @@ class Component extends React.Component {
   };
 
   componentDidMount() {
-    this.element = findDOMNode(this);
-    this.toolbar = this.element.closest(`.${Toolbar.styledComponentId}`);
-    const allFocusable = this.toolbar.querySelectorAll(
-      `.${ToolbarFocusable.styledComponentId}`
-    );
-    let currentIndex = -1;
-    allFocusable.forEach((item, i) => {
-      if (item === this.element) {
-        currentIndex = i;
-      }
-    });
-
-    if (currentIndex === 0) {
+    if (this.getCurrentIndex(this.getFocusables()) === 0) {
       this.setState({ tabIndex: 0 });
     }
 
@@ -49,6 +37,48 @@ class Component extends React.Component {
     this.removeKeyDownHandler();
   }
 
+  getElement = () => {
+    if (!this.element) {
+      this.element = findDOMNode(this);
+    }
+    return this.element;
+  };
+
+  getToolbar = () => {
+    if (!this.toolbar) {
+      this.toolbar = this.element.closest(`.${Toolbar.styledComponentId}`);
+    }
+    return this.toolbar;
+  };
+
+  getFocusables = () =>
+    this.getToolbar().querySelectorAll(
+      `.${ToolbarFocusable.styledComponentId}`
+    );
+
+  getCurrentIndex = focusables => {
+    let currentIndex = -1;
+    focusables.forEach((item, i) => {
+      if (item === this.getElement()) {
+        currentIndex = i;
+      }
+    });
+    return currentIndex;
+  };
+
+  getNextFocusable = (focusables, currentIndex) => {
+    const index = currentIndex + 1;
+    return focusables.item(index) || focusables.item(0);
+  };
+
+  getPreviousFocusable = (focusables, currentIndex) => {
+    const index = currentIndex ? currentIndex - 1 : focusables.length - 1;
+    return focusables.item(index);
+  };
+
+  toolbarIsVertical = () =>
+    this.toolbar.getAttribute("aria-orientation") === "vertical";
+
   addKeyDownHandler = () => {
     this.element.addEventListener("keydown", this.handleKeyDown);
   };
@@ -58,35 +88,23 @@ class Component extends React.Component {
   };
 
   handleKeyDown = e => {
-    const allFocusable = this.toolbar.querySelectorAll(
-      `.${ToolbarFocusable.styledComponentId}`
-    );
-    let currentIndex = -1;
-    allFocusable.forEach((item, i) => {
-      if (item === this.element) {
-        currentIndex = i;
-      }
-    });
-
-    const isVertical =
-      this.toolbar.getAttribute("aria-orientation") === "vertical";
-    const previousKey = isVertical ? "ArrowUp" : "ArrowLeft";
+    const isVertical = this.toolbarIsVertical();
     const nextKey = isVertical ? "ArrowDown" : "ArrowRight";
+    const previousKey = isVertical ? "ArrowUp" : "ArrowLeft";
+    const willPerformEvent = [nextKey, previousKey].indexOf(e.key);
+
+    if (!willPerformEvent) return;
+
+    const focusables = this.getFocusables();
+    const currentIndex = this.getCurrentIndex(focusables);
+
+    e.preventDefault();
+    this.setState({ tabIndex: -1 });
 
     if (e.key === nextKey) {
-      e.preventDefault();
-      const nextIndex = currentIndex + 1;
-      const nextElement = allFocusable.item(nextIndex) || allFocusable.item(0);
-      this.setState({ tabIndex: -1 });
-      nextElement.focus();
-    } else if (e.key === previousKey) {
-      e.preventDefault();
-      const previousIndex = currentIndex
-        ? currentIndex - 1
-        : allFocusable.length - 1;
-      const previousElement = allFocusable.item(previousIndex);
-      this.setState({ tabIndex: -1 });
-      previousElement.focus();
+      this.getNextFocusable(focusables, currentIndex).focus();
+    } else {
+      this.getPreviousFocusable(focusables, currentIndex).focus();
     }
   };
 
