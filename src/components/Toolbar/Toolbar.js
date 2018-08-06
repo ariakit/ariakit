@@ -1,38 +1,48 @@
+import React from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
-import { prop } from "styled-tools";
+import { prop, withProp } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
-import ToolbarStart from "./ToolbarStart";
-import ToolbarEnd from "./ToolbarEnd";
-import ToolbarCenter from "./ToolbarCenter";
+import numberToPx from "../../utils/numberToPx";
 
-const Toolbar = styled(Base)`
+const Component = props => (
+  <Base
+    {...props}
+    aria-orientation={props.vertical ? "vertical" : "horizontal"}
+  />
+);
+
+const Toolbar = styled(Component)`
   position: relative;
   display: grid;
-  grid-template-areas: "start center end";
-  grid-auto-columns: 1fr;
-  padding: 1em;
-  grid-gap: 1em;
-  background: white;
   width: 100%;
-  @media (max-width: 768px) {
-    padding: 0.5em;
-    grid-gap: 0.5em;
+  padding: ${withProp("gap", numberToPx)};
+  grid-gap: ${withProp("gap", numberToPx)};
+  grid-template:
+    "start center end"
+    / 1fr auto 1fr;
+
+  &[aria-orientation="vertical"] {
+    width: min-content;
+    height: 100%;
+    grid-template:
+      "start" 1fr
+      "center" auto
+      "end" 1fr;
   }
-  ${ToolbarStart}, ${ToolbarEnd}, ${ToolbarCenter} {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: min-content;
-    grid-gap: 1em;
-    @media (max-width: 768px) {
-      grid-gap: 0.5em;
-    }
-  }
+
   ${prop("theme.Toolbar")};
 `;
 
+Toolbar.propTypes = {
+  gap: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  vertical: PropTypes.bool
+};
+
 Toolbar.defaultProps = {
-  role: "toolbar"
+  role: "toolbar",
+  gap: 8
 };
 
 export default as("div")(Toolbar);

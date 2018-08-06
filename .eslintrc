@@ -24,6 +24,7 @@
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
     "react/sort-comp": "off",
+    "react/no-find-dom-node": "off",
     "react/prop-types": ["error", { "skipUndeclared": true }]
   }
 }

@@ -1,12 +1,8 @@
 import Toolbar from "./Toolbar";
-import ToolbarItem from "./ToolbarItem";
-import ToolbarStart from "./ToolbarStart";
-import ToolbarCenter from "./ToolbarCenter";
-import ToolbarEnd from "./ToolbarEnd";
+import ToolbarFocusable from "./ToolbarFocusable";
+import ToolbarContent from "./ToolbarContent";
 
-Toolbar.Item = ToolbarItem;
-Toolbar.Start = ToolbarStart;
-Toolbar.Center = ToolbarCenter;
-Toolbar.End = ToolbarEnd;
+Toolbar.Focusable = ToolbarFocusable;
+Toolbar.Content = ToolbarContent;
 
 export default Toolbar;
