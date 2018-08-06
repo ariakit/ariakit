@@ -93,6 +93,10 @@ module.exports = {
           ]
         },
         {
+          name: "Bundle size",
+          content: "docs/bundle-size.md"
+        },
+        {
           name: "as",
           content: "docs/as.md"
         },

@@ -10,7 +10,6 @@ const Table = styled(Base)`
   background-color: white;
   border: 1px solid #bbb;
   line-height: 200%;
-  ${prop("theme.Table")};
 
   tbody,
   td,
@@ -22,7 +21,6 @@ const Table = styled(Base)`
   }
 
   caption {
-    display: table-caption;
     text-transform: uppercase;
     font-size: 0.9em;
     color: #999;
@@ -30,7 +28,6 @@ const Table = styled(Base)`
 
   td,
   th {
-    display: table-cell;
     padding: 0 8px;
     vertical-align: middle;
   }
@@ -40,29 +37,7 @@ const Table = styled(Base)`
     background-color: rgba(0, 0, 0, 0.05);
   }
 
-  tbody {
-    display: table-row-group;
-  }
-
-  col {
-    display: table-column;
-  }
-
-  colgroup {
-    display: table-column-group;
-  }
-
-  tfoot {
-    display: table-footer-group;
-  }
-
-  thead {
-    display: table-header-group;
-  }
-
-  tr {
-    display: table-row;
-  }
+  ${prop("theme.Table")};
 `;
 
 Table.defaultProps = {

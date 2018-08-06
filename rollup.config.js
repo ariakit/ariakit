@@ -1,16 +1,14 @@
-import babel from "rollup-plugin-babel";
-import resolve from "rollup-plugin-node-resolve";
-import replace from "rollup-plugin-replace";
-import commonjs from "rollup-plugin-commonjs";
-import filesize from "rollup-plugin-filesize";
-import { uglify } from "rollup-plugin-uglify";
-import ignore from "rollup-plugin-ignore";
-// @ts-ignore
-import pkg from "./package.json";
+const babel = require("rollup-plugin-babel");
+const resolve = require("rollup-plugin-node-resolve");
+const replace = require("rollup-plugin-replace");
+const commonjs = require("rollup-plugin-commonjs");
+const { uglify } = require("rollup-plugin-uglify");
+const ignore = require("rollup-plugin-ignore");
+const pkg = require("./package.json");
+const publicFiles = require("./scripts/publicFiles");
 
-const { name } = pkg;
-const external = Object.keys(pkg.peerDependencies).concat("prop-types");
-const allExternal = external.concat(Object.keys(pkg.dependencies));
+const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
+const allExternal = [...external, ...Object.keys(pkg.dependencies)];
 
 const resolveExtensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
@@ -31,11 +29,7 @@ const useLodashEs = () => ({
   }
 });
 
-const common = {
-  input: "src/index.js"
-};
-
-const createCommonPlugins = ({ es = true } = {}) => [
+const createCommonPlugins = es => [
   babel({
     exclude: "node_modules/**",
     plugins: [
@@ -43,25 +37,17 @@ const createCommonPlugins = ({ es = true } = {}) => [
       "@babel/external-helpers",
       es && useLodashEs
     ].filter(Boolean)
-  }),
-  commonjs({
-    include: /node_modules/,
-    ignoreGlobal: true,
-    namedExports: {
-      "react-is": ["isValidElementType"]
-    }
-  }),
-  filesize()
+  })
 ];
 
-const main = Object.assign({}, common, {
-  output: {
-    name,
-    file: pkg.main,
-    format: "cjs",
-    exports: "named"
+const es = {
+  experimentalCodeSplitting: true,
+  input: {
+    index: "src/index.js",
+    ...publicFiles
   },
   external: makeExternalPredicate(allExternal),
+<<<<<<< HEAD
   plugins: createCommonPlugins({ es: false }).concat([
     resolve({
       extensions: resolveExtensions
@@ -70,21 +56,33 @@ const main = Object.assign({}, common, {
 });
 
 const module = Object.assign({}, common, {
+  plugins: [...createCommonPlugins(true), resolve()],
   output: {
-    file: pkg.module,
-    format: "es"
+    format: "es",
+    dir: "es"
+  }
+};
+
+const cjs = {
+  experimentalCodeSplitting: true,
+  input: {
+    index: "src/index.js",
+    ...publicFiles
   },
   external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins().concat([
-    resolve({
-      extensions: resolveExtensions
-    })
-  ])
-});
-
-const unpkg = Object.assign({}, common, {
+  plugins: [...createCommonPlugins(), resolve()],
   output: {
-    name,
+    format: "cjs",
+    dir: "lib",
+    exports: "named"
+  }
+};
+
+const umd = {
+  input: "src/index.js",
+  external: makeExternalPredicate(external),
+  output: {
+    name: pkg.name,
     file: pkg.unpkg,
     format: "umd",
     exports: "named",
@@ -94,8 +92,14 @@ const unpkg = Object.assign({}, common, {
       "prop-types": "PropTypes"
     }
   },
-  external: makeExternalPredicate(external),
-  plugins: createCommonPlugins().concat([
+  plugins: [
+    ...createCommonPlugins(),
+    commonjs({
+      include: "node_modules/**",
+      namedExports: {
+        "react-is": ["isValidElementType"]
+      }
+    }),
     ignore(["stream"]),
     uglify(),
     replace({
@@ -105,7 +109,7 @@ const unpkg = Object.assign({}, common, {
       extensions: resolveExtensions,
       preferBuiltins: false
     })
-  ])
-});
+  ]
+};
 
-export default [main, module, unpkg];
+export default [es, cjs, umd];
