@@ -1,15 +1,26 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 import Toolbar from "./Toolbar";
+import callAll from "../../utils/callAll";
 
 class Component extends React.Component {
-  state = {
-    tabIndex: -1
+  static propTypes = {
+    tabIndex: PropTypes.number,
+    onFocus: PropTypes.func,
+    disabled: PropTypes.bool
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      tabIndex: this.getInitialTabIndex()
+    };
+  }
 
   componentDidMount() {
     if (this.getCurrentIndex(this.getFocusables()) === 0) {
@@ -46,7 +57,7 @@ class Component extends React.Component {
 
   getToolbar = () => {
     if (!this.toolbar) {
-      this.toolbar = this.element.closest(`.${Toolbar.styledComponentId}`);
+      this.toolbar = this.getElement().closest(`.${Toolbar.styledComponentId}`);
     }
     return this.toolbar;
   };
@@ -79,6 +90,11 @@ class Component extends React.Component {
   toolbarIsVertical = () =>
     this.toolbar.getAttribute("aria-orientation") === "vertical";
 
+  getInitialTabIndex = () => {
+    const { tabIndex } = this.props;
+    return typeof tabIndex !== "undefined" ? tabIndex : -1;
+  };
+
   addKeyDownHandler = () => {
     this.element.addEventListener("keydown", this.handleKeyDown);
   };
@@ -91,7 +107,7 @@ class Component extends React.Component {
     const isVertical = this.toolbarIsVertical();
     const nextKey = isVertical ? "ArrowDown" : "ArrowRight";
     const previousKey = isVertical ? "ArrowUp" : "ArrowLeft";
-    const willPerformEvent = [nextKey, previousKey].indexOf(e.key);
+    const willPerformEvent = [nextKey, previousKey].indexOf(e.key) >= 0;
 
     if (!willPerformEvent) return;
 
@@ -99,7 +115,7 @@ class Component extends React.Component {
     const currentIndex = this.getCurrentIndex(focusables);
 
     e.preventDefault();
-    this.setState({ tabIndex: -1 });
+    this.setState({ tabIndex: this.getInitialTabIndex() });
 
     if (e.key === nextKey) {
       this.getNextFocusable(focusables, currentIndex).focus();
@@ -116,8 +132,8 @@ class Component extends React.Component {
     return (
       <Base
         {...this.props}
+        onFocus={callAll(this.handleFocus, this.props.onFocus)}
         tabIndex={this.state.tabIndex}
-        onFocus={this.handleFocus}
       />
     );
   }

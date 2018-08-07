@@ -17,8 +17,8 @@ const Toolbar = styled(Component)`
   position: relative;
   display: grid;
   width: 100%;
-  padding: ${withProp("gap", numberToPx)};
-  grid-gap: ${withProp("gap", numberToPx)};
+  padding: ${withProp("gutter", numberToPx)};
+  grid-gap: ${withProp("gutter", numberToPx)};
   grid-template:
     "start center end"
     / 1fr auto 1fr;
@@ -36,13 +36,13 @@ const Toolbar = styled(Component)`
 `;
 
 Toolbar.propTypes = {
-  gap: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   vertical: PropTypes.bool
 };
 
 Toolbar.defaultProps = {
   role: "toolbar",
-  gap: 8
+  gutter: 8
 };
 
 export default as("div")(Toolbar);

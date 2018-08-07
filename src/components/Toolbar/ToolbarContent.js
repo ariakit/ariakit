@@ -3,13 +3,12 @@ import styled from "styled-components";
 import { prop, withProp } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
-import numberToPx from "../../utils/numberToPx";
 
 const ToolbarContent = styled(Base)`
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: min-content;
-  grid-gap: ${withProp("gap", numberToPx)};
+  grid-gap: inherit;
   grid-area: ${prop("area")};
   justify-content: ${prop("area")};
   align-items: center;
@@ -25,13 +24,11 @@ const ToolbarContent = styled(Base)`
 `;
 
 ToolbarContent.propTypes = {
-  area: PropTypes.oneOf(["start", "center", "end"]),
-  gap: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  area: PropTypes.oneOf(["start", "center", "end"])
 };
 
 ToolbarContent.defaultProps = {
-  area: "start",
-  gap: "inherit"
+  area: "start"
 };
 
 export default as("div")(ToolbarContent);
