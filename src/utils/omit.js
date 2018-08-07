@@ -1,14 +1,9 @@
 const omit = (target, undesired = []) => {
-  const targetKeys = Object.keys(target);
   let result = {};
-
-  for (let index = 0; index < targetKeys.length; index += 1) {
-    const element = targetKeys[index];
-    // eslint-disable-next-line no-continue
-    if (undesired.includes(element)) continue;
-    result = Object.assign(result, { [element]: target[element] });
-  }
-
+  Object.keys(target).forEach(key => {
+    if (!undesired.includes(key))
+      result = Object.assign(result, { [key]: target[key] });
+  });
   return result;
 };
 
