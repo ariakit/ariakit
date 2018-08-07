@@ -8,8 +8,8 @@ import numberToPx from "../../utils/numberToPx";
 
 const Component = props => (
   <Base
-    {...props}
     aria-orientation={props.vertical ? "vertical" : "horizontal"}
+    {...props}
   />
 );
 
