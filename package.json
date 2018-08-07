@@ -51,8 +51,6 @@
   "dependencies": {
     "constate": "^0.7.2",
     "hoist-non-react-statics": "^3.0.1",
-    "lodash": "^4.17.5",
-    "lodash-es": "^4.17.5",
     "popper.js": "^1.14.3",
     "prop-types": "^15.6.2",
     "react-known-props": "^2.3.1",
@@ -86,6 +84,7 @@
     "file-loader": "^1.1.11",
     "jest-cli": "^23.4.2",
     "jest-serializer-html": "^5.0.0",
+    "lodash": "^4.17.5",
     "markdown-to-jsx": "^6.7.0",
     "opn-cli": "^3.1.0",
     "parse-prop-types": "^0.3.0",

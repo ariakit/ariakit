@@ -1,5 +1,5 @@
 import React from "react";
-import uniqueId from "lodash/uniqueId";
+import uniqueId from "../../utils/uniqueId";
 import HiddenContainer from "../Hidden/HiddenContainer";
 import callAll from "../../utils/callAll";
 
