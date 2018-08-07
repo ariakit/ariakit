@@ -1,26 +1,21 @@
 `Toolbar` is a generic bar that works as a wrapper for titles and actions. It's usually positioned on the top of a page, but can be used in several ways, including vertically.
 
 ```jsx
-import { Button, Heading, Link } from "reakit";
+import { Heading, Avatar } from "reakit";
 import MenuIcon from "react-icons/lib/md/menu";
 
-<Toolbar background="white">
+<Toolbar background="white" gutter="8px 16px">
   <Toolbar.Content>
-    <Toolbar.Focusable as={Button}>
-      <MenuIcon />
-    </Toolbar.Focusable>
+    <Toolbar.Focusable as={MenuIcon} fontSize={20} />
   </Toolbar.Content>
   <Toolbar.Content align="center">
     <Heading fontSize={24} margin={0}>ReaKit</Heading>
   </Toolbar.Content>
   <Toolbar.Content align="end">
-    <Toolbar.Focusable 
-      as={[Button, Link]} 
-      href="https://github.com/reakit/reakit"
-      target="_blank"
-    >
-      GitHub
-    </Toolbar.Focusable>
+    <Toolbar.Focusable
+      as={Avatar}
+      src="https://placekitten.com/150/200"
+    />
   </Toolbar.Content>
 </Toolbar>
 ```
