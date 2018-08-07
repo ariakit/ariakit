@@ -6,7 +6,7 @@ import as from "../../enhancers/as";
 import Hidden from "../Hidden";
 
 class Component extends React.Component {
-  state = {wrapper: null};
+  state = { wrapper: null };
 
   componentDidMount() {
     const wrapper = document.createElement("div");
