@@ -9,26 +9,26 @@ const ToolbarContent = styled(Base)`
   grid-auto-flow: column;
   grid-auto-columns: min-content;
   grid-gap: inherit;
-  grid-area: ${prop("area")};
-  justify-content: ${prop("area")};
+  grid-area: ${prop("align")};
+  justify-content: ${prop("align")};
   align-items: center;
 
   [aria-orientation="vertical"] > & {
     grid-auto-flow: row;
     grid-auto-rows: min-content;
     justify-content: initial;
-    align-content: ${prop("area")};
+    align-content: ${prop("align")};
   }
 
   ${prop("theme.ToolbarContent")};
 `;
 
 ToolbarContent.propTypes = {
-  area: PropTypes.oneOf(["start", "center", "end"])
+  align: PropTypes.oneOf(["start", "center", "end"])
 };
 
 ToolbarContent.defaultProps = {
-  area: "start"
+  align: "start"
 };
 
 export default as("div")(ToolbarContent);

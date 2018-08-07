@@ -10,10 +10,10 @@ import MenuIcon from "react-icons/lib/md/menu";
       <MenuIcon />
     </Toolbar.Focusable>
   </Toolbar.Content>
-  <Toolbar.Content area="center">
+  <Toolbar.Content align="center">
     <Heading fontSize={24} margin={0}>ReaKit</Heading>
   </Toolbar.Content>
-  <Toolbar.Content area="end">
+  <Toolbar.Content align="end">
     <Toolbar.Focusable 
       as={[Button, Link]} 
       href="https://github.com/reakit/reakit"

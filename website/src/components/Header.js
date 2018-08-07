@@ -94,10 +94,9 @@ const Desktop = () => (
       </Toolbar.Focusable>
       <Navigation />
     </Toolbar.Content>
-    <Toolbar.Content area="end">
+    <Toolbar.Content align="end">
       <Toolbar.Focusable
         as={ExternalLink}
-        area="version"
         href={getRelease.url()}
         target="_blank"
       >
@@ -105,7 +104,6 @@ const Desktop = () => (
       </Toolbar.Focusable>
       <Toolbar.Focusable
         as={ExternalLink}
-        area="github"
         href="https://github.com/reakit/reakit"
         target="_blank"
       >
@@ -131,17 +129,16 @@ const Mobile = () => (
         </Toolbar.Content>
       )}
     </Sidebar.Container>
-    <Toolbar.Content area="center">
+    <Toolbar.Content align="center">
       <Toolbar.Focusable>
         <LogoLink to="/">
           <Logo />
         </LogoLink>
       </Toolbar.Focusable>
     </Toolbar.Content>
-    <Toolbar.Content area="end">
+    <Toolbar.Content align="end">
       <Toolbar.Focusable
         as={ExternalLink}
-        area="github"
         href="https://github.com/reakit/reakit"
         target="_blank"
       >

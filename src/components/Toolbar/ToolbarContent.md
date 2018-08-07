@@ -3,22 +3,22 @@
 ```jsx
 <Toolbar>
   <Toolbar.Content>Start</Toolbar.Content>
-  <Toolbar.Content area="center">Center</Toolbar.Content>
-  <Toolbar.Content area="end">End</Toolbar.Content>
+  <Toolbar.Content align="center">Center</Toolbar.Content>
+  <Toolbar.Content align="end">End</Toolbar.Content>
 </Toolbar>
 ```
 
-When using `area="center"`, the elements inside it will be centralized no matter the size of the end elements. That's true until it touches one of them:
+When using `align="center"`, the elements inside it will be centralized no matter the size of the end elements. That's true until it touches one of them:
 
 ```jsx
 <Toolbar>
   <Toolbar.Content background="white" width={500}>
     Start
   </Toolbar.Content>
-  <Toolbar.Content background="white" area="center">
+  <Toolbar.Content background="white" align="center">
     Center
   </Toolbar.Content>
-  <Toolbar.Content background="white" area="end">
+  <Toolbar.Content background="white" align="end">
     End
   </Toolbar.Content>
 </Toolbar>
