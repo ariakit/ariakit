@@ -15,7 +15,8 @@ test("arg string", () => {
 
 test("arg string[]", () => {
   const omitted = keys(omit(fixture, ["animal", "age"]));
-  expect(omitted.includes("animal") && omitted.includes("age")).toBeFalsy();
+  expect(omitted.includes("animal")).toBeFalsy();
+  expect(omitted.includes("age")).toBeFalsy();
 });
 
 test("returns empty if omits all", () => {

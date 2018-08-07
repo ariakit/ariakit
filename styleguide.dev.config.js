@@ -1,4 +1,4 @@
-const omit = require("./src/utils/omit");
+const omit = require("lodash/omit");
 const config = require("./styleguide.config");
 
 module.exports = Object.assign(

@@ -1,11 +1,11 @@
 import uniq from "../uniq";
 
 test("removes duplicates", () => {
-  expect(uniq([1, 1, 1, 1, 3, 1, 1, 1]).length).toEqual(2);
+  expect(uniq([1, 1, 1, 1, 3, 1, 1, 1])).toEqual([1, 3]);
 });
 
 test("removes duplicates, edge case", () => {
-  expect(uniq([1, 1, 1, 1, 1, 1, 1, 1]).length).toEqual(1);
+  expect(uniq([1, 1, 1, 1, 1, 1, 1, 1])).toEqual([1]);
 });
 
 test("[] returns []", () => {

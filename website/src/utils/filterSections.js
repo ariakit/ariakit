@@ -1,4 +1,4 @@
-import kebabCase from "../../../src/utils/kebabCase";
+import kebabCase from "lodash/kebabCase";
 
 const filterSections = (sections = [], input) => {
   const normalizedInput = kebabCase(input)

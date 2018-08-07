@@ -1,10 +1,10 @@
-import id from "../uniqueId";
+import uniqueId from "../uniqueId";
 
 test("multiple calls yield different numbers", () => {
   // eslint-disable-next-line no-self-compare
-  expect(id() !== id()).toBeTruthy();
+  expect(uniqueId() !== uniqueId()).toBeTruthy();
 });
 
 test("append args", () => {
-  expect(id("foo")).toMatch(/foo\d+/);
+  expect(uniqueId("foo")).toMatch(/foo\d+/);
 });

@@ -1,19 +1,19 @@
 import kebab from "../kebabCase";
 
 test("converts common cases", () => {
-  expect(kebab("foobar")).toEqual("foobar");
-  expect(kebab("fooBar")).toEqual("foo-bar");
-  expect(kebab("foo_bar")).toEqual("foo-bar");
-  expect(kebab("FooBar")).toEqual("foo-bar");
-  expect(kebab("fooBar")).toEqual("foo-bar");
-  expect(kebab("foo bar")).toEqual("foo-bar");
-  expect(kebab("FOO BAR")).toEqual("foo-bar");
-  expect(kebab("foo-bar")).toEqual("foo-bar");
+  expect(kebab("foobar")).toBe("foobar");
+  expect(kebab("fooBar")).toBe("foo-bar");
+  expect(kebab("foo_bar")).toBe("foo-bar");
+  expect(kebab("FooBar")).toBe("foo-bar");
+  expect(kebab("fooBar")).toBe("foo-bar");
+  expect(kebab("foo bar")).toBe("foo-bar");
+  expect(kebab("FOO BAR")).toBe("foo-bar");
+  expect(kebab("foo-bar")).toBe("foo-bar");
 });
 
 test("converts edge cases", () => {
-  expect(kebab("____").length).toEqual(0);
-  expect(kebab("----").length).toEqual(0);
-  expect(kebab("     ").length).toEqual(0);
+  expect(kebab("____")).toBe("");
+  expect(kebab("----")).toBe("");
+  expect(kebab("     ")).toBe("");
   expect(kebab("__a__d_")).toEqual("a-d");
 });
