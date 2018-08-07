@@ -1,4 +1,4 @@
-import kebabCase from "lodash/kebabCase";
+import kebabCase from "./kebabCase";
 import numberToPx from "./numberToPx";
 
 export const bool = (cssProp, validComponentProps) => props => {

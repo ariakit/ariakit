@@ -1,7 +1,7 @@
 let id = -1;
-const uniqueId = () => {
+const uniqueId = prefix => {
   id += 1;
-  return id;
+  return prefix ? `${prefix}${id}` : id;
 };
 
 export default uniqueId;
