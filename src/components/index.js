@@ -1,4 +1,5 @@
 export Arrow from "./Arrow";
+export Avatar from "./Avatar";
 export Backdrop from "./Backdrop";
 export Base from "./Base";
 export Block from "./Block";
