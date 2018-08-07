@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { prop, withProp } from "styled-tools";
+import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
