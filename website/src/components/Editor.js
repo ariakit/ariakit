@@ -15,6 +15,7 @@ import requireToImport from "../utils/requireToImport";
 
 const StyledCodeMirror = styled(CodeMirror)`
   margin-bottom: 2em;
+  max-width: 100vw;
 
   .CodeMirror {
     font-family: "Fira Code", monospace;
