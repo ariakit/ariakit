@@ -1,4 +1,4 @@
-/* eslint-disable react/no-find-dom-node, react/no-unused-state */
+/* eslint-disable react/no-unused-state */
 import React from "react";
 import { findDOMNode } from "react-dom";
 import styled from "styled-components";
