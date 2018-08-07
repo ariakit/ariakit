@@ -48,24 +48,31 @@ class Component extends React.Component {
     this.removeKeyDownHandler();
   }
 
+  getInitialTabIndex = () => {
+    const { tabIndex } = this.props;
+    return typeof tabIndex !== "undefined" ? tabIndex : -1;
+  };
+
   getElement = () => {
-    if (!this.element) {
+    if (typeof this.element === "undefined") {
       this.element = findDOMNode(this);
     }
     return this.element;
   };
 
   getToolbar = () => {
-    if (!this.toolbar) {
+    if (typeof this.toolbar === "undefined") {
       this.toolbar = this.getElement().closest(`.${Toolbar.styledComponentId}`);
     }
     return this.toolbar;
   };
 
-  getFocusables = () =>
-    this.getToolbar().querySelectorAll(
+  getFocusables = () => {
+    if (!this.getToolbar()) return [];
+    return this.getToolbar().querySelectorAll(
       `.${ToolbarFocusable.styledComponentId}`
     );
+  };
 
   getCurrentIndex = focusables => {
     let currentIndex = -1;
@@ -87,20 +94,19 @@ class Component extends React.Component {
     return focusables.item(index);
   };
 
-  toolbarIsVertical = () =>
-    this.toolbar.getAttribute("aria-orientation") === "vertical";
-
-  getInitialTabIndex = () => {
-    const { tabIndex } = this.props;
-    return typeof tabIndex !== "undefined" ? tabIndex : -1;
+  toolbarIsVertical = () => {
+    if (!this.getToolbar()) return false;
+    return this.getToolbar().getAttribute("aria-orientation") === "vertical";
   };
 
   addKeyDownHandler = () => {
-    this.element.addEventListener("keydown", this.handleKeyDown);
+    if (!this.getToolbar()) return;
+    this.getElement().addEventListener("keydown", this.handleKeyDown);
   };
 
   removeKeyDownHandler = () => {
-    this.element.removeEventListener("keydown", this.handleKeyDown);
+    if (!this.getToolbar()) return;
+    this.getElement().removeEventListener("keydown", this.handleKeyDown);
   };
 
   handleKeyDown = e => {
