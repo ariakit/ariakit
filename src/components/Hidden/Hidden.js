@@ -1,4 +1,5 @@
 import React from "react";
+import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
 import { prop, ifProp } from "styled-tools";
@@ -69,9 +70,10 @@ class Component extends React.Component {
   };
 
   handleClickOutside = e => {
-    const { className, hide, visible } = this.props;
+    const node = findDOMNode(this); // eslint-disable-line
+    const { hide, visible } = this.props;
 
-    if (!e.target.closest(`[class^='${className}']`) && visible && hide) {
+    if (!node.contains(e.target) && visible && hide) {
       hide();
     }
   };
