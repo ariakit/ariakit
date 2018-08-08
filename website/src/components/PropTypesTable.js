@@ -4,7 +4,7 @@ import isEmpty from "lodash/isEmpty";
 import ArrowDownIcon from "react-icons/lib/md/arrow-drop-down";
 import ArrowUpIcon from "react-icons/lib/md/arrow-drop-up";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
-import Icon from "../elements/Icon";
+import Icon from "./Icon";
 import TableWrapper from "../elements/TableWrapper";
 import findSectionPropTypes from "../utils/findSectionPropTypes";
 import isComponentSection from "../utils/isComponentSection";
@@ -83,38 +83,36 @@ const PropTypesTable = ({ section }) =>
                     {visible && (
                       <TableWrapper>
                         <Table>
-                          <Table.Head>
-                            <Table.Row>
-                              <Table.Cell as="th">Prop</Table.Cell>
-                              <Table.Cell as="th">Type</Table.Cell>
-                              <Table.Cell as="th">Required</Table.Cell>
-                              <Table.Cell as="th">Default</Table.Cell>
-                            </Table.Row>
-                          </Table.Head>
-                          <Table.Body>
+                          <thead>
+                            <tr>
+                              <th>Prop</th>
+                              <th>Type</th>
+                              <th>Required</th>
+                              <th>Default</th>
+                            </tr>
+                          </thead>
+                          <tbody>
                             {Object.entries(types).map(
                               ([name, { type, required, defaultValue }]) => (
-                                <Table.Row key={name}>
-                                  <Table.Cell>
+                                <tr key={name}>
+                                  <td>
                                     <StyledCode>{name}</StyledCode>
-                                  </Table.Cell>
-                                  <Table.Cell>
+                                  </td>
+                                  <td>
                                     <StyledCode>{renderType(type)}</StyledCode>
-                                  </Table.Cell>
-                                  <Table.Cell>
-                                    {required ? "Required" : ""}
-                                  </Table.Cell>
-                                  <Table.Cell>
+                                  </td>
+                                  <td>{required ? "Required" : ""}</td>
+                                  <td>
                                     {defaultValue && (
                                       <StyledCode>
                                         {JSON.stringify(defaultValue.value)}
                                       </StyledCode>
                                     )}
-                                  </Table.Cell>
-                                </Table.Row>
+                                  </td>
+                                </tr>
                               )
                             )}
-                          </Table.Body>
+                          </tbody>
                         </Table>
                       </TableWrapper>
                     )}

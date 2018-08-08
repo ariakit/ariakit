@@ -3,13 +3,12 @@ import { styled, Popover } from "reakit";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import StarIcon from "react-icons/lib/go/star";
 import ButtonRounded from "../elements/ButtonRounded";
-import Icon from "../elements/Icon";
+import Icon from "./Icon";
 import ButtonGray from "../elements/ButtonGray";
 import GitHubStarsContainer from "../containers/GitHubStarsContainer";
 import ViewportContainer from "../containers/ViewportContainer";
 
-const getPopoverPos = width => (width > 768 ? "right" : "bottom");
-const getArrowPos = width => (width > 768 ? "left" : "top");
+const getPopoverPlacement = width => (width > 768 ? "right" : "bottom");
 
 const Button = styled(ButtonGray)`
   padding: 0 20px 0 10px;
@@ -43,8 +42,8 @@ const HeroGitHubButton = props => (
       {({ width }) => (
         <GitHubStarsContainer context="github">
           {({ stars }) => (
-            <StarsPopover visible={stars > 0} pos={getPopoverPos(width)}>
-              <Popover.Arrow pos={getArrowPos(width)} />
+            <StarsPopover visible placement={getPopoverPlacement(width)}>
+              <Popover.Arrow />
               <StarIcon /> {stars}
             </StarsPopover>
           )}

@@ -1,13 +1,14 @@
-const getUnderlyingElement = props => {
-  const { as, nextAs = [] } = props;
-  const [lastElement] = nextAs.slice(-1);
+const getUnderlyingElement = ({ as, nextAs = [] }) => {
   if (typeof as === "string") {
     return as;
   }
-  if (nextAs.length && typeof lastElement === "string") {
-    return lastElement;
-  }
+  if (nextAs.length) {
+    const [lastElement] = nextAs.slice(-1);
 
+    if (typeof lastElement === "string") {
+      return lastElement;
+    }
+  }
   return "span";
 };
 

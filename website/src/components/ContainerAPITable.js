@@ -26,28 +26,28 @@ const ContainerAPITable = ({ section, ...props }) => {
         {api => (
           <TableWrapper>
             <Table>
-              <Table.Head>
-                <Table.Row>
-                  <Table.Cell as="th">Name</Table.Cell>
-                  <Table.Cell as="th">Type</Table.Cell>
-                  <Table.Cell as="th">Initial value</Table.Cell>
-                </Table.Row>
-              </Table.Head>
-              <Table.Body>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Initial value</th>
+                </tr>
+              </thead>
+              <tbody>
                 {Object.entries(api).map(([key, value]) => (
-                  <Table.Row key={key}>
-                    <Table.Cell>
+                  <tr key={key}>
+                    <td>
                       <Code>{key}</Code>
-                    </Table.Cell>
-                    <Table.Cell>
+                    </td>
+                    <td>
                       <Code>
                         {Array.isArray(value) ? "array" : typeof value}
                       </Code>
-                    </Table.Cell>
-                    <Table.Cell>{renderValue(value)}</Table.Cell>
-                  </Table.Row>
+                    </td>
+                    <td>{renderValue(value)}</td>
+                  </tr>
                 ))}
-              </Table.Body>
+              </tbody>
             </Table>
           </TableWrapper>
         )}

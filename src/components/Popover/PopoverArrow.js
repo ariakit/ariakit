@@ -1,34 +1,34 @@
-import React from "react";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import Perpendicular from "../Perpendicular";
 import Arrow from "../Arrow";
 import Box from "../Box";
 
-const PerpendicularArrowBox = Perpendicular.as([Arrow, Box]);
+const ArrowBox = Arrow.as(Box);
 
-const Component = props => (
-  <PerpendicularArrowBox
-    alignOffset={props.align !== "center" ? "0.5rem" : 0}
-    {...props}
-  />
-);
-
-const PopoverArrow = styled(Component)`
+const PopoverArrow = styled(ArrowBox)`
+  position: absolute;
   color: white;
   border: inherit;
   border-top: 0;
   font-size: 1.25em;
   border-radius: 0;
+  [data-placement^="top"] > & {
+    top: 100%;
+  }
+  [data-placement^="right"] > & {
+    right: 100%;
+    transform: rotateZ(90deg);
+  }
+  [data-placement^="bottom"] > & {
+    bottom: 100%;
+    transform: rotateZ(180deg);
+  }
+  [data-placement^="left"] > & {
+    left: 100%;
+    transform: rotateZ(-90deg);
+  }
   ${prop("theme.PopoverArrow")};
 `;
-
-PopoverArrow.defaultProps = {
-  pos: "top",
-  align: "center",
-  rotate: true,
-  angle: 180
-};
 
 export default as("div")(PopoverArrow);

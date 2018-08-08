@@ -1,33 +1,66 @@
+/* eslint-disable react/no-unused-state */
+import React from "react";
+import { findDOMNode } from "react-dom";
 import styled from "styled-components";
 import { prop } from "styled-tools";
 import as from "../../enhancers/as";
-import Perpendicular from "../Perpendicular";
+import Popover from "../Popover";
 
-const Tooltip = styled(Perpendicular)`
-  pointer-events: none;
-  opacity: 0;
-  white-space: nowrap;
-  text-transform: none;
-  font-size: 0.85em;
-  text-align: center;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.85);
-  border-radius: 0.15384em;
-  padding: 0.75em 1em;
+class Component extends React.Component {
+  state = {
+    visible: false
+  };
 
-  *:hover > &,
-  *:focus > & {
-    opacity: 1;
+  componentDidMount() {
+    const { parentNode } = this.getTooltip();
+    if (parentNode && !this.isControlled()) {
+      parentNode.addEventListener("mouseenter", this.show);
+      parentNode.addEventListener("focus", this.show);
+      parentNode.addEventListener("mouseleave", this.hide);
+      parentNode.addEventListener("blur", this.hide);
+    }
   }
 
+  componentWillUnmount() {
+    const { parentNode } = this.getTooltip();
+    if (parentNode) {
+      parentNode.removeEventListener("mouseenter", this.show);
+      parentNode.removeEventListener("focus", this.show);
+      parentNode.removeEventListener("mouseleave", this.hide);
+      parentNode.removeEventListener("blur", this.hide);
+    }
+  }
+
+  isControlled = () => typeof this.props.visible !== "undefined";
+
+  show = () => this.setState({ visible: true });
+
+  hide = () => this.setState({ visible: false });
+
+  getTooltip = () => findDOMNode(this);
+
+  render() {
+    const { visible } = this.isControlled() ? this.props : this.state;
+    return <Popover {...this.props} visible={visible} />;
+  }
+}
+
+const Tooltip = styled(Component)`
+  pointer-events: none;
+  white-space: nowrap;
+  text-transform: none;
+  font-size: 0.875em;
+  text-align: center;
+  color: white;
+  background-color: #222;
+  border-radius: 0.15384em;
+  padding: 0.75em 1em;
   ${prop("theme.Tooltip")};
 `;
 
 Tooltip.defaultProps = {
   role: "tooltip",
-  pos: "top",
-  align: "center",
-  gutter: "0.75rem"
+  placement: "top"
 };
 
 export default as("div")(Tooltip);

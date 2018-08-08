@@ -6,7 +6,13 @@ import { prop, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import as from "../../enhancers/as";
 import callAll from "../../utils/callAll";
-import { hasTransition, expand, slide, origin } from "../../utils/transitions";
+import {
+  hasTransition,
+  translateWithProps,
+  originWithProps,
+  scaleWithProps,
+  slideWithProps
+} from "../../utils/transform";
 import Base from "../Base";
 
 class Component extends React.Component {
@@ -100,10 +106,11 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Base);
 
 const Hidden = styled(Component)`
+  transform: ${translateWithProps};
   ${ifProp(
     hasTransition,
     css`
-      transform-origin: ${origin()};
+      transform-origin: ${originWithProps};
       transition: all ${prop("duration")} ${prop("timing")} ${prop("delay")};
     `
   )};
@@ -116,7 +123,7 @@ const Hidden = styled(Component)`
     ${ifProp(
       hasTransition,
       css`
-        transform: ${slide()} ${expand()};
+        transform: ${slideWithProps} ${scaleWithProps};
         visibility: hidden;
       `,
       "display: none !important"
@@ -126,11 +133,6 @@ const Hidden = styled(Component)`
   ${prop("theme.Hidden")};
 `;
 
-const movePropType = PropTypes.oneOfType([
-  PropTypes.bool,
-  PropTypes.oneOf(["top", "right", "bottom", "left"])
-]);
-
 Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,
@@ -138,8 +140,14 @@ Hidden.propTypes = {
   hideOnClickOutside: PropTypes.bool,
   unmount: PropTypes.bool,
   fade: PropTypes.bool,
-  expand: movePropType,
-  slide: movePropType,
+  expand: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.oneOf(["center", "top", "right", "bottom", "left"])
+  ]),
+  slide: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.oneOf(["top", "right", "bottom", "left"])
+  ]),
   duration: PropTypes.string,
   delay: PropTypes.string,
   timing: PropTypes.string,

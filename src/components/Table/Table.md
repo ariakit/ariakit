@@ -1,40 +1,32 @@
-`Table` is composed from [Base](/components/primitives/base) with minimal styles including collapsed borders. Table renders by default as a `<table>`.
-It comes with several sub components, one for each logical part of a table:
-
-- `Table.Body`
-- `Table.Caption`
-- `Table.Cell`
-- `Table.Column`
-- `Table.ColumnGroup`
-- `Table.Foot`
-- `Table.Head`
-- `Table.Row`
+`Table` is composed from [Base](/components/primitives/base) with minimal styles including collapsed borders.
+It applies a basic styling to its children to improve differentiation between headers and cells.
+Table renders by default as a `<table>`.
 
 ```jsx
 import { Block } from "reakit";
 
 <Block overflowX="auto">
   <Table>
-    <Table.Caption>A Basic table</Table.Caption>
-    <Table.Head>
-      <Table.Row>
-        <Table.Cell as="th"/>
-        <Table.Cell as="th">Chars</Table.Cell>
-        <Table.Cell as="th">Popularity</Table.Cell>
-      </Table.Row>
-    </Table.Head>
-    <Table.Body>
-      <Table.Row>
-        <Table.Cell as="th">Foo</Table.Cell>
-        <Table.Cell>3</Table.Cell>
-        <Table.Cell>0.7</Table.Cell>
-      </Table.Row>
-      <Table.Row>
-        <Table.Cell as="th">Bar</Table.Cell>
-        <Table.Cell>3</Table.Cell>
-        <Table.Cell>0.4</Table.Cell>
-      </Table.Row>
-    </Table.Body>
+    <caption>A Basic table</caption>
+    <thead>
+      <tr>
+        <th/>
+        <th>Chars</th>
+        <th>Popularity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Foo</th>
+        <td>3</td>
+        <td>0.7</td>
+      </tr>
+      <tr>
+        <th>Bar</th>
+        <td>3</td>
+        <td>0.4</td>
+      </tr>
+    </tbody>
   </Table>
 </Block>
 ```
@@ -46,38 +38,38 @@ import { Block } from "reakit";
 
 <Block overflowX="auto">
   <Table>
-    <Table.Caption>A test table with merged cells</Table.Caption>
-    <Table.ColumnGroup>
-      <Table.Column />
-      <Table.Column />
-      <Table.Column />
-      <Table.Column backgroundColor="bisque" />
-    </Table.ColumnGroup>
-    <Table.Head>
-      <Table.Row>
-        <Table.Cell rowSpan={2} />
-        <Table.Cell as="th" colSpan={2}>Average</Table.Cell>
-        <Table.Cell as="th" rowSpan={2}>Red eyes</Table.Cell>
-      </Table.Row>
-      <Table.Row>
-        <Table.Cell as="th">Height</Table.Cell>
-        <Table.Cell as="th">Weight</Table.Cell>
-      </Table.Row>
-    </Table.Head>
-    <Table.Body>
-      <Table.Row>
-        <Table.Cell as="th">Males</Table.Cell>
-        <Table.Cell>1.9</Table.Cell>
-        <Table.Cell>0.003</Table.Cell>
-        <Table.Cell>40%</Table.Cell>
-      </Table.Row>
-      <Table.Row>
-        <Table.Cell as="th">Females</Table.Cell>
-        <Table.Cell>1.7</Table.Cell>
-        <Table.Cell>0.002</Table.Cell>
-        <Table.Cell>43%</Table.Cell>
-      </Table.Row>
-    </Table.Body>
+    <caption>A test table with merged cells</caption>
+    <colgroup>
+      <col />
+      <col />
+      <col />
+      <col style={{backgroundColor: "bisque"}} />
+    </colgroup>
+    <thead>
+      <tr>
+        <td rowSpan={2} />
+        <th colSpan={2}>Average</th>
+        <th rowSpan={2}>Red eyes</th>
+      </tr>
+      <tr>
+        <th>Height</th>
+        <th>Weight</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Males</th>
+        <td>1.9</td>
+        <td>0.003</td>
+        <td>40%</td>
+      </tr>
+      <tr>
+        <th>Females</th>
+        <td>1.7</td>
+        <td>0.002</td>
+        <td>43%</td>
+      </tr>
+    </tbody>
   </Table>
 </Block>
 ```

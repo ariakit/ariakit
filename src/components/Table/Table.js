@@ -10,6 +10,33 @@ const Table = styled(Base)`
   background-color: white;
   border: 1px solid #bbb;
   line-height: 200%;
+
+  tbody,
+  td,
+  th,
+  tfoot,
+  thead,
+  tr {
+    border: inherit;
+  }
+
+  caption {
+    text-transform: uppercase;
+    font-size: 0.9em;
+    color: #999;
+  }
+
+  td,
+  th {
+    padding: 0 8px;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
   ${prop("theme.Table")};
 `;
 

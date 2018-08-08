@@ -9,6 +9,7 @@
     "import/ignore": ["^reakit"]
   },
   "rules": {
+    "no-use-before-define": "off",
     "jsx-a11y/accessible-emoji": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/extensions": "off",
@@ -24,6 +25,7 @@
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
     "react/sort-comp": "off",
+    "react/no-find-dom-node": "off",
     "react/prop-types": ["error", { "skipUndeclared": true }]
   }
 }

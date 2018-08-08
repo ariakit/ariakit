@@ -7,7 +7,6 @@ import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
 import pickHTMLProps from "../utils/pickHTMLProps";
 
-// eslint-disable-next-line no-use-before-define
 const As = ({ nextAs, ...props }) => render({ ...props, as: nextAs });
 
 const render = ({ as: t, ...props }) => {
