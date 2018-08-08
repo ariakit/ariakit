@@ -1,1 +1,3 @@
-export default from "./Avatar";
+import Avatar from "./Avatar";
+
+export default Avatar;
