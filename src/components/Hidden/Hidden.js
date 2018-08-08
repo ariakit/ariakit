@@ -76,11 +76,11 @@ class Component extends React.Component {
   };
 
   handleClickOutside = e => {
-    const node = findDOMNode(this); // eslint-disable-line
+    const node = findDOMNode(this);
     const { hide, visible } = this.props;
 
     if (!node.contains(e.target) && visible && hide) {
-      hide();
+      window.requestAnimationFrame(hide);
     }
   };
 

@@ -45,6 +45,7 @@ it("calls hide when press Escape", () => {
 });
 
 it("calls hide when click outside", () => {
+  jest.useFakeTimers();
   const props = {
     hide: jest.fn(),
     hideOnClickOutside: true,
@@ -54,9 +55,13 @@ it("calls hide when click outside", () => {
   const clickEvent = new MouseEvent("click");
 
   document.body.dispatchEvent(clickEvent);
+  jest.runAllTimers();
   expect(props.hide).toHaveBeenCalledTimes(0);
+
   wrapper.setProps({ visible: true });
   document.body.dispatchEvent(clickEvent);
+  expect(props.hide).toHaveBeenCalledTimes(0);
+  jest.runAllTimers();
   expect(props.hide).toHaveBeenCalledTimes(1);
 });
 
