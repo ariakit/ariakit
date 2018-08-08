@@ -78,9 +78,10 @@ class Component extends React.Component {
   handleClickOutside = e => {
     const node = findDOMNode(this);
     const { hide, visible } = this.props;
+    const shouldHide = node && !node.contains(e.target) && visible && hide;
 
-    if (!node.contains(e.target) && visible && hide) {
-      setTimeout(hide);
+    if (shouldHide) {
+      setTimeout(() => this.props.visible && hide());
     }
   };
 
