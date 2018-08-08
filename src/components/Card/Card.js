@@ -4,14 +4,14 @@ import { prop, withProp } from "styled-tools";
 import as from "../../enhancers/as";
 import numberToPx from "../../utils/numberToPx";
 import Base from "../Base";
-import CardCover from "./CardCover";
+import CardFit from "./CardFit";
 
 const Card = styled(Base)`
   position: relative;
   display: inline-block;
   background-color: white;
 
-  && > *:not(${CardCover}) {
+  && > *:not(${CardFit}) {
     margin: ${withProp("gutter", numberToPx)};
   }
 

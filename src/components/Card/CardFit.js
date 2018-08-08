@@ -3,8 +3,8 @@ import { prop } from "styled-tools";
 import as from "../../enhancers/as";
 import Base from "../Base";
 
-const CardCover = styled(Base)`
-  ${prop("theme.CardCover")};
+const CardFit = styled(Base)`
+  ${prop("theme.CardFit")};
 `;
 
-export default as("div")(CardCover);
+export default as("div")(CardFit);

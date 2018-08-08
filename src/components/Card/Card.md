@@ -5,7 +5,7 @@ import { Heading, Image, Paragraph } from "reakit";
 
 <Card>
   <Heading as="h3">Card Heading</Heading>
-  <Card.Cover
+  <Card.Fit
     as={Image}
     src="https://placekitten.com/300/300"
     alt="Kitten"
@@ -22,7 +22,7 @@ const { Grid, Image, Heading, Paragraph, Shadow } = require("reakit");
 <Grid column autoColumns="minmax(min-content, max-content)" gap={20} alignItems="start">
   <Card>
     <Heading as="h3">Card Heading</Heading>
-    <Card.Cover
+    <Card.Fit
       as={Image}
       src="https://placekitten.com/180/300"
       alt="Kitten"
@@ -32,7 +32,7 @@ const { Grid, Image, Heading, Paragraph, Shadow } = require("reakit");
     <Paragraph>Description for Card</Paragraph>
   </Card>
   <Card>
-    <Card.Cover 
+    <Card.Fit 
       as={Image}
       src="https://placekitten.com/300/200"
       alt="Kitten"

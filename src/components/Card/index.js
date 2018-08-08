@@ -1,6 +1,6 @@
 import Card from "./Card";
-import CardCover from "./CardCover";
+import CardFit from "./CardFit";
 
-Card.Cover = CardCover;
+Card.Fit = CardFit;
 
 export default Card;
