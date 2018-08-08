@@ -1,3 +1,20 @@
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/reakit/reakit/compare/v0.13.1...v0.13.2) (2018-08-08)
+
+
+### Bug Fixes
+
+* **Overlay:** DOM warning when wrapper haven't mounted yet ([#177](https://github.com/reakit/reakit/issues/177)) ([5f0e6ae](https://github.com/reakit/reakit/commit/5f0e6ae)), closes [#178](https://github.com/reakit/reakit/issues/178)
+
+
+### Features
+
+* Add Avatar component ([#175](https://github.com/reakit/reakit/issues/175)) ([66fb427](https://github.com/reakit/reakit/commit/66fb427))
+* Add hideOnClickOutside prop to Hidden ([#167](https://github.com/reakit/reakit/issues/167)) ([39d8f6a](https://github.com/reakit/reakit/commit/39d8f6a)), closes [#160](https://github.com/reakit/reakit/issues/160)
+* Add Toolbar component ([#174](https://github.com/reakit/reakit/issues/174)) ([b86cf0d](https://github.com/reakit/reakit/commit/b86cf0d))
+
+
+
 <a name="0.13.1"></a>
 ## [0.13.1](https://github.com/reakit/reakit/compare/v0.13.0...v0.13.1) (2018-08-05)
 
