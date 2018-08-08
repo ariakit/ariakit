@@ -1,27 +1,29 @@
 import styled from "styled-components";
-import { prop } from "styled-tools";
+import PropTypes from "prop-types";
+import { prop, withProp } from "styled-tools";
 import as from "../../enhancers/as";
+import numberToPx from "../../utils/numberToPx";
 import Base from "../Base";
+import CardFit from "./CardFit";
 
 const Card = styled(Base)`
   position: relative;
-  display: inline-grid;
+  display: inline-block;
   background-color: white;
-  grid-gap: 1rem;
-  padding: 1rem 0;
-  &&& > * {
-    margin: 0 1rem;
+
+  && > *:not(${CardFit}) {
+    margin: ${withProp("gutter", numberToPx)};
   }
-  &&& > img {
-    margin: 0;
-    &:first-child {
-      margin-top: -1rem;
-    }
-    &:last-child {
-      margin-bottom: -1rem;
-    }
-  }
+
   ${prop("theme.Card")};
 `;
+
+Card.propTypes = {
+  gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+};
+
+Card.defaultProps = {
+  gutter: "1rem"
+};
 
 export default as("div")(Card);
