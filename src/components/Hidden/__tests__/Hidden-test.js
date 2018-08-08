@@ -1,5 +1,6 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
+import sinon from 'sinon';
 import Hidden from "../Hidden";
 
 const wrap = comp => mount(shallow(comp).get(0));
@@ -47,23 +48,16 @@ it("calls hide when press Escape", () => {
 it("calls hide when click outside", () => {
   const props = {
     hide: jest.fn(),
-    hideonClickOutside: true
+    hideOnClickOutside: true,
+    visible: false
   };
+  const wrapper = mount(<Hidden {...props} />);
+  const clickEvent = new MouseEvent("click");
 
-  const wrapper = shallow(
-    <div>
-      <Hidden {...props} />
-      <button className="any-button" type="button" onClick={jest.fn}>
-        Any element
-      </button>
-    </div>
-  );
-  const component = wrapper.find(Hidden).dive();
-
-  wrapper.find(".any-button").simulate("click");
+  document.body.dispatchEvent(clickEvent);
   expect(props.hide).toHaveBeenCalledTimes(0);
-  component.setProps({ visible: true });
-  wrapper.find(".any-button").simulate("click");
+  wrapper.setProps({ visible: true });
+  document.body.dispatchEvent(clickEvent);
   expect(props.hide).toHaveBeenCalledTimes(1);
 });
 
