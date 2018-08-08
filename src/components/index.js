@@ -1,4 +1,5 @@
 export { default as Arrow } from "./Arrow";
+export { default as Avatar } from "./Avatar";
 export { default as Backdrop } from "./Backdrop";
 export { default as Base } from "./Base";
 export { default as Block } from "./Block";
@@ -32,4 +33,5 @@ export { default as Sidebar } from "./Sidebar";
 export { default as Step } from "./Step";
 export { default as Table } from "./Table";
 export { default as Tabs } from "./Tabs";
+export { default as Toolbar } from "./Toolbar";
 export { default as Tooltip } from "./Tooltip";

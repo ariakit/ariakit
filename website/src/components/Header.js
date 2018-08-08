@@ -1,121 +1,158 @@
 import React from "react";
-import { styled, Flex, Grid, Link, Sidebar } from "reakit";
+import { styled, Flex, Link, Sidebar, Toolbar } from "reakit";
 import { prop } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import ViewportContainer from "../containers/ViewportContainer";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "./Icon";
-import HeaderNavigation from "./HeaderNavigation";
 import MobileSidebar from "./MobileSidebar";
 import getRelease from "../utils/getRelease";
 
 const Wrapper = styled(Flex)`
   width: 100%;
+  height: 60px;
   justify-content: center;
   background-color: white;
   z-index: 9999;
-  padding: 0 55px;
+  padding: 0 36px;
   @media (max-width: 768px) {
     padding: 0 8px;
   }
 `;
 
-const Layout = styled(Grid)`
-  align-items: center;
-  grid-gap: 55px;
-  width: 100%;
-  grid-template: "logo nav . version github" 60px / auto auto 1fr auto;
+const StyledToolbar = styled(Toolbar)`
+  height: 100%;
+  grid-gap: 24px;
+  padding: 0 24px;
+  ${Toolbar.Focusable} {
+    /* temporary */
+    outline: none;
+  }
   @media (max-width: 768px) {
-    grid-template: "menu logo github" 60px / 40px auto 40px;
-    justify-content: space-between;
+    padding: 0;
   }
 `;
 
 const LogoLink = styled(RouterLink)`
-  display: grid;
-  grid-gap: 10px;
-  grid-auto-flow: column;
-  align-items: center;
-  text-decoration: none;
+  display: block;
+  width: 100px;
+  margin-right: 36px;
+  @media (max-width: 768px) {
+    margin-right: 0;
+  }
 `;
 
-const HeaderLink = styled(Link)`
+const NavigationLink = styled(RouterLink)`
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  height: 100%;
+  padding-top: 5px;
+  border-bottom: 5px solid transparent;
+  color: ${prop("theme.black")};
+  text-decoration: none;
+  &:hover {
+    border-color: ${prop("theme.pinkLight")};
+  }
+  &.active {
+    border-color: ${prop("theme.pinkDark")};
+  }
+`;
+
+const ExternalLink = styled(Link)`
   color: ${prop("theme.gray")};
   font-size: 18px;
   justify-self: flex-end;
 `;
 
+const Navigation = () => (
+  <StyleguidistContainer>
+    {({ sections }) =>
+      sections.map(section => (
+        <Toolbar.Focusable
+          as={NavigationLink}
+          key={section.name}
+          to={`/${section.slug}`}
+        >
+          {section.name}
+        </Toolbar.Focusable>
+      ))
+    }
+  </StyleguidistContainer>
+);
+
 const Desktop = () => (
-  <React.Fragment>
-    <Grid.Item area="logo">
-      <LogoLink to="/">
-        <Logo height={26} />
-      </LogoLink>
-    </Grid.Item>
-    <Grid.Item as={HeaderNavigation} area="nav" />
-    <Grid.Item
-      as={HeaderLink}
-      area="version"
-      href={getRelease.url()}
-      target="_blank"
-    >
-      {getRelease.version}
-    </Grid.Item>
-    <Grid.Item
-      as={HeaderLink}
-      area="github"
-      href="https://github.com/reakit/reakit"
-      target="_blank"
-    >
-      GitHub
-      <OpenInNewIcon />
-    </Grid.Item>
-  </React.Fragment>
+  <StyledToolbar>
+    <Toolbar.Content>
+      <Toolbar.Focusable as={LogoLink} to="/">
+        <Logo />
+      </Toolbar.Focusable>
+      <Navigation />
+    </Toolbar.Content>
+    <Toolbar.Content align="end">
+      <Toolbar.Focusable
+        as={ExternalLink}
+        href={getRelease.url()}
+        target="_blank"
+      >
+        {getRelease.version}
+      </Toolbar.Focusable>
+      <Toolbar.Focusable
+        as={ExternalLink}
+        href="https://github.com/reakit/reakit"
+        target="_blank"
+      >
+        GitHub
+        <OpenInNewIcon />
+      </Toolbar.Focusable>
+    </Toolbar.Content>
+  </StyledToolbar>
 );
 
 const Mobile = () => (
-  <React.Fragment>
+  <StyledToolbar>
     <Sidebar.Container context="sidebar">
       {sidebar => (
-        <React.Fragment>
-          <Grid.Item
+        <Toolbar.Content>
+          <Toolbar.Focusable
             as={[Sidebar.Toggle, ButtonTransparent]}
             {...sidebar}
-            area="menu"
           >
             <Icon as={MenuIcon} />
-          </Grid.Item>
+          </Toolbar.Focusable>
           <MobileSidebar />
-        </React.Fragment>
+        </Toolbar.Content>
       )}
     </Sidebar.Container>
-    <Grid.Item area="logo">
-      <LogoLink to="/">
-        <Logo height={26} />
-      </LogoLink>
-    </Grid.Item>
-    <Grid.Item
-      as={HeaderLink}
-      area="github"
-      href="https://github.com/reakit/reakit"
-      target="_blank"
-    >
-      <Icon as={GitHubIcon} />
-    </Grid.Item>
-  </React.Fragment>
+    <Toolbar.Content align="center">
+      <Toolbar.Focusable>
+        <LogoLink to="/">
+          <Logo />
+        </LogoLink>
+      </Toolbar.Focusable>
+    </Toolbar.Content>
+    <Toolbar.Content align="end">
+      <Toolbar.Focusable
+        as={ExternalLink}
+        href="https://github.com/reakit/reakit"
+        target="_blank"
+      >
+        <Icon as={GitHubIcon} />
+      </Toolbar.Focusable>
+    </Toolbar.Content>
+  </StyledToolbar>
 );
 
 const Header = props => (
   <Wrapper {...props}>
-    <Layout>
-      <ViewportContainer>
-        {({ width }) => (width > 768 ? <Desktop /> : <Mobile />)}
-      </ViewportContainer>
-    </Layout>
+    <ViewportContainer>
+      {({ width }) => (width > 768 ? <Desktop /> : <Mobile />)}
+    </ViewportContainer>
   </Wrapper>
 );
 
