@@ -6,7 +6,7 @@ import as from "../../enhancers/as";
 import Base from "../Base";
 
 class Component extends React.Component {
-  state = {};
+  state = { wrapper: null };
 
   componentDidMount() {
     const wrapper = document.createElement("div");
@@ -15,7 +15,10 @@ class Component extends React.Component {
   }
 
   componentWillUnmount() {
-    document.body.removeChild(this.state.wrapper);
+    const { wrapper } = this.state;
+    if (wrapper) {
+      document.body.removeChild(wrapper);
+    }
   }
 
   render() {
