@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
 import { isStyledComponent } from "styled-components";
-import omit from "lodash/omit";
+import omit from "../utils/omit";
 import pickCSSProps from "../utils/pickCSSProps";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";

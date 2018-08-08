@@ -1,5 +1,5 @@
-import kebabCase from "lodash/kebabCase";
 import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
 import flattenSections from "./flattenSections";
 
 const groups = {

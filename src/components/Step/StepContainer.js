@@ -1,8 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
 import React from "react";
 import PropTypes from "prop-types";
-import omit from "lodash/omit";
 import { Container } from "constate";
+import omit from "../../utils/omit";
 
 export const initialState = {
   loop: false,
