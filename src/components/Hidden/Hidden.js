@@ -80,7 +80,7 @@ class Component extends React.Component {
     const { hide, visible } = this.props;
 
     if (!node.contains(e.target) && visible && hide) {
-      window.requestAnimationFrame(hide);
+      setTimeout(hide);
     }
   };
 
