@@ -1,5 +1,5 @@
 {
-  "name": "reakit.io",
+  "name": "website",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -11,19 +11,20 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "prop-types": "^15.6.2",
-    "styled-tools": "^1.1.0",
     "codemirror": "^5.39.2",
     "lodash": "^4.17.5",
+    "markdown-to-jsx": "^6.7.0",
     "parse-prop-types": "^0.3.0",
     "pretty": "^2.0.0",
-    "markdown-to-jsx": "^6.7.0",
+    "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.4.2",
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
+    "reakit": "^0.14.0",
+    "styled-tools": "^1.1.0",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {

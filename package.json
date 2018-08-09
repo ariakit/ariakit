@@ -7,20 +7,8 @@
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint packages/**"
-  },
-  "jest": {
-    "setupFiles": [
-      "<rootDir>/test.config.js"
-    ],
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer",
-      "jest-serializer-html"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "<rootDir>/packages/reakit.io"
-    ]
+    "lint": "eslint packages/**",
+    "build": "lerna exec --scope reakit yarn run build"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
