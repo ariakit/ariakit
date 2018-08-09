@@ -1,8 +1,13 @@
 {
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/url-loader"
+    ]
+  },
   "scripts": {
     "test": "jest",
     "coverage": "npm test -- --coverage",
@@ -35,6 +40,9 @@
     "jest-serializer-html": "^5.0.0",
     "lerna": "^3.0.0-rc.0",
     "prettier": "1.14.0",
-    "raf": "^3.4.0"
+    "prop-types": "^15.6.2",
+    "raf": "^3.4.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2"
   }
 }
