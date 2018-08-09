@@ -23,10 +23,11 @@ it("adds event handler on mount", () => {
   const props = {
     hide: jest.fn(),
     visible: true,
-    hideOnEsc: true
+    hideOnEsc: true,
+    hideOnClickOutside: true
   };
   mount(<Hidden {...props} />);
-  expect(addEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListener).toHaveBeenCalledTimes(2);
 });
 
 it("calls hide when press Escape", () => {
@@ -40,6 +41,27 @@ it("calls hide when press Escape", () => {
   dispatchEvent("Enter");
   expect(props.hide).toHaveBeenCalledTimes(0);
   dispatchEvent("Escape");
+  expect(props.hide).toHaveBeenCalledTimes(1);
+});
+
+it("calls hide when click outside", () => {
+  jest.useFakeTimers();
+  const props = {
+    hide: jest.fn(),
+    hideOnClickOutside: true,
+    visible: false
+  };
+  const wrapper = mount(<Hidden {...props} />);
+  const clickEvent = new MouseEvent("click");
+
+  document.body.dispatchEvent(clickEvent);
+  jest.runAllTimers();
+  expect(props.hide).toHaveBeenCalledTimes(0);
+
+  wrapper.setProps({ visible: true });
+  document.body.dispatchEvent(clickEvent);
+  expect(props.hide).toHaveBeenCalledTimes(0);
+  jest.runAllTimers();
   expect(props.hide).toHaveBeenCalledTimes(1);
 });
 

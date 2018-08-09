@@ -14,7 +14,6 @@ const PreviewWrapper = styled(Block)`
   padding: 16px;
   background-color: rgba(0, 0, 0, 0.05);
   max-width: 100vw;
-  overflow: auto;
 `;
 
 const Playground = ({ code, evalInContext, ...props }) => (

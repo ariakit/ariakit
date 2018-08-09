@@ -19,11 +19,10 @@ import { InlineBlock, Popover } from "reakit";
 <Popover.Container>
   {popover => (
     <InlineBlock relative>
-      <Backdrop background="transparent" as={Popover.Hide} {...popover} />
       <Button as={Popover.Toggle} {...popover}>
         Toggle
       </Button>
-      <Popover fade slide expand {...popover}>
+      <Popover fade slide expand hideOnClickOutside {...popover}>
         <Popover.Arrow />
         Click outside to hide
       </Popover>

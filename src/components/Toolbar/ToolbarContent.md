@@ -11,7 +11,7 @@
 When using `align="center"`, the elements inside it will be centralized no matter the size of the end elements. That's true until it touches one of them:
 
 ```jsx
-<Toolbar>
+<Toolbar overflow="auto">
   <Toolbar.Content background="white" width={500}>
     Start
   </Toolbar.Content>

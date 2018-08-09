@@ -1,4 +1,5 @@
 import React from "react";
+import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
 import { prop, ifProp } from "styled-tools";
@@ -21,8 +22,14 @@ class Component extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props.hideOnEsc) {
+    const { hideOnEsc, hideOnClickOutside } = this.props;
+
+    if (hideOnEsc) {
       document.body.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    if (hideOnClickOutside) {
+      document.body.addEventListener("click", this.handleClickOutside);
     }
   }
 
@@ -51,6 +58,7 @@ class Component extends React.Component {
 
   componentWillUnmount() {
     document.body.removeEventListener("keydown", this.handleKeyDown);
+    document.body.removeEventListener("click", this.handleClickOutside);
   }
 
   handleTransitionEnd = () => {
@@ -64,6 +72,16 @@ class Component extends React.Component {
     const { visible, hide } = this.props;
     if (e.key === "Escape" && visible && hide) {
       hide();
+    }
+  };
+
+  handleClickOutside = e => {
+    const node = findDOMNode(this);
+    const { hide, visible } = this.props;
+    const shouldHide = node && !node.contains(e.target) && visible && hide;
+
+    if (shouldHide) {
+      setTimeout(() => this.props.visible && hide());
     }
   };
 
@@ -120,6 +138,7 @@ Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,
   hideOnEsc: PropTypes.bool,
+  hideOnClickOutside: PropTypes.bool,
   unmount: PropTypes.bool,
   fade: PropTypes.bool,
   expand: PropTypes.oneOfType([
