@@ -3792,9 +3792,9 @@ enzyme@^3.3.0:
     raf "^3.4.0"
     rst-selector-parser "^2.2.3"
 
-enzyme@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/enzyme/-/enzyme-3.4.0.tgz#085c66fe647d8c9c4becd1fee3042c040cda88a6"
+enzyme@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/enzyme/-/enzyme-3.4.1.tgz#d305af5bdb30b8aca56d199110421588c670ea0e"
   dependencies:
     array.prototype.flat "^1.2.1"
     cheerio "^1.0.0-rc.2"
@@ -6329,6 +6329,10 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
 
+kleur@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/kleur/-/kleur-2.0.1.tgz#7cc64b0d188d0dcbc98bdcdfdda2cc10619ddce8"
+
 known-css-properties@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.6.1.tgz#31b5123ad03d8d1a3f36bd4155459c981173478b"
@@ -8069,9 +8073,9 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier@1.14.0:
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.0.tgz#847c235522035fd988100f1f43cf20a7d24f9372"
+prettier@1.14.2:
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.2.tgz#0ac1c6e1a90baa22a62925f41963c841983282f9"
 
 pretty-error@^2.0.2:
   version "2.1.1"
@@ -8512,15 +8516,14 @@ react-side-effect@^1.1.0:
     exenv "^1.2.1"
     shallowequal "^1.0.1"
 
-react-styleguidist@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/react-styleguidist/-/react-styleguidist-7.2.0.tgz#f3fb0f8a1815697fe123ea5aecafaccbbc6cdcfc"
+react-styleguidist@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/react-styleguidist/-/react-styleguidist-7.2.1.tgz#2399b0451a37444931f0550a5a0c2990770bcdd5"
   dependencies:
     "@vxna/mini-html-webpack-template" "^0.1.7"
     acorn "^5.7.1"
     ast-types "^0.11.5"
     buble "^0.19.3"
-    chalk "^2.4.1"
     classnames "^2.2.6"
     clean-webpack-plugin "^0.1.19"
     clipboard-copy "^2.0.0"
@@ -8547,6 +8550,7 @@ react-styleguidist@^7.2.0:
     jss-global "^3.0.0"
     jss-isolate "^5.1.0"
     jss-nested "^6.0.1"
+    kleur "^2.0.1"
     leven "^2.1.0"
     listify "^1.0.0"
     loader-utils "^1.1.0"
@@ -9084,9 +9088,9 @@ rollup-plugin-babel@^3.0.7:
   dependencies:
     rollup-pluginutils "^1.5.0"
 
-rollup-plugin-commonjs@^9.1.4:
-  version "9.1.4"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-9.1.4.tgz#525b701adfd40e314b5bb6888d88edc28e10442f"
+rollup-plugin-commonjs@^9.1.5:
+  version "9.1.5"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-9.1.5.tgz#c167d545d0d01f273e632748bff56fe7487b0145"
   dependencies:
     estree-walker "^0.5.1"
     magic-string "^0.22.4"
