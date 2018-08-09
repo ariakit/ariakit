@@ -1,5 +1,5 @@
 import React from "react";
-import as from "../../src";
+import as from "../../../reakit/src";
 
 const Component = as("div")(({ as: T }) => <T />);
 

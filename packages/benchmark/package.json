@@ -1,0 +1,15 @@
+{
+  "name": "benchmark",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node .",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "react": "^16.4.2",
+    "react-benchmark": "^1.0.4",
+    "react-dom": "^16.4.2"
+  }
+}

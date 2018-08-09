@@ -1,4 +1,4 @@
 import React from "react";
-import { Base } from "../../src";
+import { Base } from "../../../reakit/src";
 
 export default () => <Base />;
