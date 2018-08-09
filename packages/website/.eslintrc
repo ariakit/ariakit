@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "import/ignore": ["^reakit"]
+  },
+  "rules": {
+    "import/no-unresolved": ["error", { "ignore": ["^reakit"] }]
+  }
+}
