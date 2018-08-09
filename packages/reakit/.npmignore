@@ -1,6 +1,4 @@
-.DS_Store
 coverage
-node_modules
 scripts
 src
 *.log
