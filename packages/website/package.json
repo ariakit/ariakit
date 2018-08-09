@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "styleguidist server",
-    "build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
+    "build": "styleguidist build && cp dist/index.html dist/404.html",
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
@@ -23,7 +23,6 @@
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
-    "reakit": "^0.14.0",
     "styled-tools": "^1.1.0",
     "whatwg-fetch": "^2.0.4"
   },

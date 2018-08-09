@@ -40,21 +40,6 @@
     "styled-components": "^3.4.2",
     "styled-tools": "^1.1.0"
   },
-  "devDependencies": {
-    "enzyme": "^3.4.0",
-    "enzyme-adapter-react-16": "^1.2.0",
-    "enzyme-to-json": "^3.3.1",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "rollup": "^0.64.1",
-    "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.1.4",
-    "rollup-plugin-ignore": "^1.0.3",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^4.0.0",
-    "singel": "^0.5.4"
-  },
   "peerDependencies": {
     "react": "^16.3.0",
     "react-dom": "^16.3.0"
