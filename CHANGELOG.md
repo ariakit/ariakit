@@ -1,3 +1,57 @@
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/reakit/reakit/compare/v0.13.2...v0.14.0) (2018-08-09)
+
+
+### Features
+
+* Add CardFit component ([#176](https://github.com/reakit/reakit/issues/176)) ([63ac954](https://github.com/reakit/reakit/commit/63ac954))
+* Add Portal component ([#169](https://github.com/reakit/reakit/issues/169)) ([d6c16f7](https://github.com/reakit/reakit/commit/d6c16f7))
+* Use div by default when none is passed to as ([b9053da](https://github.com/reakit/reakit/commit/b9053da))
+
+
+### Performance Improvements
+
+* Remove lodash and improved perfomance  ([#181](https://github.com/reakit/reakit/issues/181)) ([7296f69](https://github.com/reakit/reakit/commit/7296f69)), closes [#171](https://github.com/reakit/reakit/issues/171)
+
+
+### BREAKING CHANGES
+
+* `Card` styles have been changed. 
+
+  Instead of making `img` elements fit the card's width, it now exposes a `Card.Fit` component that can be used to achieve the same behavior.
+
+  Before:
+  ```jsx
+  <Card>
+    <img />
+  </Card>
+  ```
+
+  After:
+  ```jsx
+  <Card>
+    <Card.Fit as="img" />
+  </Card>
+  ```
+* When using `as` enhancer without passing any tag, it will use `div` instead of `span`.
+* `Overlay` and `Sidebar` no longer use React portals by default. Now it should be combined with `Portal` component in order to achieve the same behavior.
+
+  Before:
+
+  ```jsx
+  <Overlay />
+  <Sidebar />
+  ```
+
+  After:
+
+  ```jsx
+  <Overlay as={Portal} />
+  <Sidebar as={Portal} />
+  ```
+
+
+
 <a name="0.13.2"></a>
 ## [0.13.2](https://github.com/reakit/reakit/compare/v0.13.1...v0.13.2) (2018-08-08)
 
