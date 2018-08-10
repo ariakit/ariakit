@@ -6,8 +6,6 @@ script:
   - yarn singel
   - yarn test --coverage
   - yarn build
-cache:
-  - yarn
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.9.4
 after_success:
