@@ -19,11 +19,11 @@
     "lint": "eslint src scripts",
     "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{test,Container}.js'",
     "build:clean": "rimraf dist es lib && node scripts/cleanProxies",
-    "prebuild": "npm run build:clean",
+    "prebuild": "yarn build:clean",
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server --config styleguide.dev.config.js",
-    "preversion": "npm run lint && npm test && npm run build",
-    "postpublish": "npm run build:clean"
+    "preversion": "yarn lint && npm test && yarn build",
+    "postpublish": "yarn build:clean"
   },
   "keywords": [
     "reakit",

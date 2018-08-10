@@ -13,7 +13,11 @@
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint packages/**",
-    "build": "lerna exec --scope reakit yarn run build"
+    "build": "lerna exec --scope reakit -- yarn build",
+    "build:clean": "lerna exec --scope reakit -- yarn build:clean",
+    "website": "lerna exec --scope website -- yarn start",
+    "website:build": "lerna exec --scope website -- yarn build",
+    "benchmark": "lerna exec --scope benchmark -- yarn start"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
