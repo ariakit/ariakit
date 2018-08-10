@@ -21,7 +21,7 @@
     "build:clean": "rimraf dist es lib && node scripts/cleanProxies",
     "prebuild": "yarn build:clean",
     "build": "rollup -c && node scripts/makeProxies",
-    "dev": "styleguidist server --config styleguide.dev.config.js",
+    "dev": "styleguidist server",
     "preversion": "yarn lint && npm test && yarn build",
     "postpublish": "yarn build:clean"
   },
