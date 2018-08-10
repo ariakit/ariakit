@@ -3,7 +3,6 @@ const fs = require("fs");
 const {
   createConfig,
   babel,
-  resolve,
   match,
   url,
   file,
@@ -26,7 +25,6 @@ module.exports = {
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
       [url({ limit: 10000 })]
     ),
-    resolve({ alias: { reakit: path.join(__dirname, "../reakit/src") } }),
     env("development", [
       devServer({
         historyApiFallback: { index: "/" }

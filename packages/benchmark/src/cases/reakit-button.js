@@ -1,4 +1,4 @@
 import React from "react";
-import { Button } from "../../../reakit/src";
+import { Button } from "reakit";
 
 export default () => <Button />;
