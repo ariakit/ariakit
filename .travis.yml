@@ -2,18 +2,20 @@ language: node_js
 node_js:
   - v8
 script:
-  - npm run lint
-  - npm run singel
-  - npm test -- --coverage
-  - npm run build
+  - yarn lint
+  - yarn singel
+  - yarn test --coverage
+  - yarn build
 cache:
   - yarn
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.9.4
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 deploy:
   - provider: script
     skip_cleanup: true
-    script: npm run website:build
+    script: yarn website:build
     on:
       branch: master
   - provider: pages
