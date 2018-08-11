@@ -42,5 +42,8 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.16.5",
     "webpack-blocks": "^1.0.0-rc.2"
+  },
+  "resolutions": {
+    "../../**/babel-loader": "^8.0.0-beta"
   }
 }
