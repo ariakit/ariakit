@@ -1465,6 +1465,10 @@
   version "0.22.8"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.8.tgz#5702f74f78b73e13f1eb1bd435c2c9de61a250d4"
 
+"@types/codemirror@^0.0.58":
+  version "0.0.58"
+  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.58.tgz#48b23cc6179f143dc3a4eb175f3c1f2c11808529"
+
 "@types/enzyme-adapter-react-16@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.0.2.tgz#15ae37c64d6221a6f4b3a4aacc357cf773859de4"
