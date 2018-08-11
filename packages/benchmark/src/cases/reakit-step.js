@@ -1,5 +1,5 @@
 import React from "react";
-import { Step } from "../../src";
+import { Step } from "reakit";
 
 const Component = () => (
   <Step.Container>

@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Base } from "../../src";
+import { styled, Base } from "reakit";
 
 const Component = styled(Base)``;
 

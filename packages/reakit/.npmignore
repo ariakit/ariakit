@@ -1,0 +1,7 @@
+coverage
+scripts
+src
+/index.js
+*.log
+*.config.js
+*.lock

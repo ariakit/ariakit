@@ -3,7 +3,6 @@ const fs = require("fs");
 const {
   createConfig,
   babel,
-  resolve,
   match,
   url,
   file,
@@ -12,8 +11,8 @@ const {
   devServer,
   sourceMaps
 } = require("webpack-blocks");
-const importToRequire = require("./website/src/utils/importToRequire");
-const template = require("./website/src/template");
+const importToRequire = require("./src/utils/importToRequire");
+const template = require("./src/template");
 
 module.exports = {
   title: "ReaKit",
@@ -26,7 +25,6 @@ module.exports = {
       ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
       [url({ limit: 10000 })]
     ),
-    resolve({ alias: { reakit: path.join(__dirname, "src") } }),
     env("development", [
       devServer({
         historyApiFallback: { index: "/" }
@@ -52,10 +50,10 @@ module.exports = {
     warn: () => {}
   },
   template,
-  assetsDir: "website/public",
-  styleguideDir: "website/dist",
+  assetsDir: "public",
+  styleguideDir: "dist",
   styleguideComponents: {
-    StyleGuide: path.join(__dirname, "website/src")
+    StyleGuide: path.join(__dirname, "src")
   },
   compilerConfig: {
     transforms: {
@@ -70,46 +68,46 @@ module.exports = {
       sections: [
         {
           name: "Get Started",
-          content: "docs/get-started.md"
+          content: "../../docs/get-started.md"
         },
         {
           name: "Principles",
           sections: [
             {
               name: "Composability",
-              content: "docs/composability.md"
+              content: "../../docs/composability.md"
             },
             {
               name: "Accessibility",
-              content: "docs/accessibility.md"
+              content: "../../docs/accessibility.md"
             },
             {
               name: "Reliability",
-              content: "docs/reliability.md"
+              content: "../../docs/reliability.md"
             }
           ]
         },
         {
           name: "Bundle size",
-          content: "docs/bundle-size.md"
+          content: "../../docs/bundle-size.md"
         },
         {
           name: "as",
-          content: "docs/as.md"
+          content: "../../docs/as.md"
         },
         {
           name: "Styling",
-          content: "docs/styling.md"
+          content: "../../docs/styling.md"
         },
         {
           name: "State Containers",
-          content: "docs/state-containers.md"
+          content: "../../docs/state-containers.md"
         }
       ]
     },
     {
       name: "Components",
-      components: "src/components/**/*.js"
+      components: "../reakit/src/components/**/*.js"
     }
   ]
 };

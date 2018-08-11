@@ -1,4 +1,7 @@
-import { repository, version as pkgVersion } from "../../../package.json";
+import {
+  repository,
+  version as pkgVersion
+} from "../../../reakit/package.json";
 
 const version = `v${pkgVersion}`;
 

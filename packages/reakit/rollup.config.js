@@ -20,7 +20,7 @@ const makeExternalPredicate = externalArr => {
 
 const commonPlugins = [
   babel({
-    exclude: "node_modules/**",
+    exclude: ["node_modules/**", "../../node_modules/**"],
     plugins: ["styled-components", "external-helpers"]
   })
 ];
@@ -63,9 +63,9 @@ const umd = {
   plugins: [
     ...commonPlugins,
     commonjs({
-      include: "node_modules/**",
+      include: /node_modules/,
       namedExports: {
-        "react-is": ["isValidElementType"]
+        "../../node_modules/react-is/index.js": ["isValidElementType"]
       }
     }),
     ignore(["stream"]),
