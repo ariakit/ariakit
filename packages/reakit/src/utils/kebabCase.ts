@@ -1,4 +1,4 @@
-const kebabCase = str =>
+const kebabCase = (str: string) =>
   str
     .replace(/([a-z])([A-Z])/g, `$1-$2`) // fooBar -> foo-Bar
     .replace(/[_]/g, "-") // _ -> - to use \W later on, it includes _.
