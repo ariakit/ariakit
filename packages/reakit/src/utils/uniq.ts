@@ -1,5 +1,5 @@
-const uniq = (arr = []) => {
-  const used = {};
+const uniq = (arr: any[] = []) => {
+  const used: { [x: string]: any } = {};
 
   return arr.filter(el => {
     if (used[el]) return false;
