@@ -7,14 +7,14 @@ import as from "../../enhancers/as";
 
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-interface IComponentProps {
+interface ComponentProps {
   as: string | ComponentType;
 }
 
-const Component = ({ as: Type, ...props }: IComponentProps) =>
+const Component = ({ as: Type, ...props }: ComponentProps) =>
   React.createElement(Type, props);
 
-const Base = styled<IComponentProps>(Component)`
+const Base = styled<ComponentProps>(Component)`
   margin: 0;
   padding: 0;
   border: 0;

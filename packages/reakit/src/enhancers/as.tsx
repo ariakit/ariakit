@@ -36,13 +36,13 @@ export interface ReakitComponent<Props = any>
 const As = ({ nextAs, ...props }: { nextAs: AsComponent }) =>
   render({ ...props, as: nextAs });
 
-interface IRenderProps extends AsProps {
+interface RenderProps extends AsProps {
   className?: string;
   children?: ReactNode;
   elementRef?: Ref<any>;
 }
 
-const render = ({ as: t, ...props }: IRenderProps): React.ReactNode => {
+const render = ({ as: t, ...props }: RenderProps): React.ReactNode => {
   const T = parseTag(t);
 
   if (Array.isArray(T)) {
