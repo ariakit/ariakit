@@ -1,6 +1,6 @@
 import isComponentSection from "./isComponentSection";
 
-const repoUrl = "https://github.com/reakit/reakit/tree/master";
+const packagesUrl = "https://github.com/reakit/reakit/tree/master/packages";
 
 const getComponentGithubSrcUrl = (section, extension) => {
   if (!section.filepath) {
@@ -9,8 +9,8 @@ const getComponentGithubSrcUrl = (section, extension) => {
   if (extension === "js" && !isComponentSection(section)) {
     return null;
   }
-  const filePathWithoutExtension = section.filepath.split(".")[0];
-  return `${repoUrl}/${filePathWithoutExtension}.${extension}`;
+  const [, filePathWithoutExtension] = section.filepath.match(/\/(.+)\.[^.]+/);
+  return `${packagesUrl}/${filePathWithoutExtension}.${extension}`;
 };
 
 export default getComponentGithubSrcUrl;
