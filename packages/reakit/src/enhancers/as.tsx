@@ -96,7 +96,7 @@ const as = (asComponents: AsComponents) => <Props extends AsProps>(
     return defineProperties(WrappedComponent as ReakitComponent);
   }
 
-  const components = [WrappedComponent, asComponents].flat();
+  const components = [].concat(WrappedComponent, asComponents);
 
   const getComponentName = (component: ComponentType<any>): any =>
     // @ts-ignore
@@ -107,8 +107,8 @@ const as = (asComponents: AsComponents) => <Props extends AsProps>(
     nextAs: AsComponent;
   }): AsComponents => components.concat(props.as || [], props.nextAs || []);
 
-  const displayName = `${getComponentName(WrappedComponent)}.as(${[asComponents]
-    .flat()
+  const displayName = `${getComponentName(WrappedComponent)}.as(${[]
+    .concat(asComponents)
     .map(getComponentName)})`;
 
   let EnhancedComponent = (props: { as: AsComponents; nextAs: AsComponent }) =>

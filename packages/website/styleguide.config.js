@@ -1,40 +1,59 @@
 const path = require("path");
 const fs = require("fs");
-const {
-  createConfig,
-  babel,
-  resolve,
-  match,
-  url,
-  file,
-  css,
-  env,
-  devServer,
-  sourceMaps
-} = require("webpack-blocks");
+const webpack = require("webpack");
 const importToRequire = require("./src/utils/importToRequire");
 const template = require("./src/template");
 
+const webpackCommonConfig = {
+  module: {
+    rules: [
+      {
+        test: /\.(j|t)sx?$/,
+        exclude: /node_modules/,
+        use: { loader: "babel-loader", options: { cacheDirectory: true } }
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /\.(eot|ttf|woff2?)$/,
+        use: "file-loader"
+      },
+      {
+        test: /\.(gif|jpe?g|png|svg|webp)$/,
+        use: { loader: "url-loader", options: { limit: 10000 } }
+      }
+    ]
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".jsx", ".js"]
+  }
+};
+
+const webpackDevConfig = {
+  ...webpackCommonConfig,
+  devtool: "cheap-module-source-map",
+  devServer: {
+    hot: true,
+    hotOnly: true,
+    historyApiFallback: { index: "/" },
+    inline: true,
+    clientLogLevel: "error",
+    stats: "errors-only"
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin()
+  ]
+};
+
 module.exports = {
   title: "ReaKit",
-  webpackConfig: createConfig([
-    sourceMaps(),
-    match(["*.js", "*.jsx", "*.ts", "*.tsx"], [babel()]),
-    css(),
-    match(["*.eot", "*.ttf", "*.woff", "*.woff2"], [file()]),
-    match(
-      ["*.gif", "*.jpg", "*.jpeg", "*.png", "*.svg", "*.webp"],
-      [url({ limit: 10000 })]
-    ),
-    resolve({
-      extensions: [".ts", ".tsx", ".jsx", ".js"]
-    }),
-    env("development", [
-      devServer({
-        historyApiFallback: { index: "/" }
-      })
-    ])
-  ]),
+  webpackConfig:
+    process.env.NODE_ENV === "development"
+      ? webpackDevConfig
+      : webpackCommonConfig,
   updateDocs(docs, filePath) {
     const contents = fs.readFileSync(filePath, "utf8");
     const regex = /import ([a-z0-9]+) from "\.\.\/[^."]+"/gim;
@@ -111,7 +130,7 @@ module.exports = {
     },
     {
       name: "Components",
-      components: "../reakit/src/components/**/*.js"
+      components: "../reakit/src/components/**/*.{js,ts,jsx,tsx}"
     }
   ]
 };

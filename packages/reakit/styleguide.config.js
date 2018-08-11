@@ -10,7 +10,7 @@ module.exports = {
   title: "Dev Styleguide",
   serverPort: 6061,
   pagePerSection: true,
-  components: "src/components/**/*.js",
+  components: "src/components/**/*.{js,ts,jsx,tsx}",
   webpackConfig,
   skipComponentsWithoutExample,
   logger,
