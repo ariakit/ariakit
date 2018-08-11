@@ -20,7 +20,6 @@
     "build:clean": "lerna exec --scope reakit -- yarn build:clean",
     "website": "lerna exec --scope website -- yarn start",
     "website:build": "lerna exec --scope website -- yarn build",
-    "benchmark": "lerna exec --scope benchmark -- yarn start",
     "postversion": "git add **/CHANGELOG.md",
     "release": "lerna publish",
     "release:beta": "yarn release --npm-tag=beta --preid=beta"
