@@ -5,8 +5,7 @@ import {
 
 const version = `v${pkgVersion}`;
 
-const url = () =>
-  `https://github.com/${repository}/blob/master/packages/reakit/CHANGELOG.md`;
+const url = () => `https://github.com/${repository}/blob/master/CHANGELOG.md`;
 
 export default {
   url,
