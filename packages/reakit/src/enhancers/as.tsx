@@ -16,7 +16,7 @@ import pickHTMLProps from "../utils/pickHTMLProps";
 export type AsComponent = keyof JSX.IntrinsicElements | ComponentType<any>;
 export type AsComponents = AsComponent | AsComponent[];
 export interface AsProps {
-  as?: AsComponents;
+  as: AsComponents;
   nextAs?: AsComponent;
 }
 
@@ -43,7 +43,7 @@ interface IRenderProps extends AsProps {
 }
 
 const render = ({ as: t, ...props }: IRenderProps): React.ReactNode => {
-  const T = parseTag(t) as AsComponents;
+  const T = parseTag(t);
 
   if (Array.isArray(T)) {
     const [First, ...others] = T.filter(x => x !== As);

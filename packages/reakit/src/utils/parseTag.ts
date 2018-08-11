@@ -1,4 +1,6 @@
-const parseTag = tag => {
+import { AsComponents } from "../enhancers/as";
+
+const parseTag = (tag: AsComponents) => {
   if (Array.isArray(tag)) {
     const tags = tag.filter(
       (currentTag, i) => typeof currentTag !== "string" || i === tag.length - 1
