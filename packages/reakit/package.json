@@ -23,6 +23,7 @@
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",
     "preversion": "yarn lint && npm test && yarn build",
+    "postversion": "cp CHANGELOG.md ../../CHANGELOG.md",
     "postpublish": "yarn build:clean"
   },
   "keywords": [

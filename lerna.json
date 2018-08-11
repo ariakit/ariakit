@@ -1,8 +1,12 @@
 {
-  "lerna": "3.0.0-rc.0",
+  "lerna": "3.0.0",
   "version": "independent",
   "npmClient": "yarn",
   "useWorkspaces": true,
+  "ignoreChanges": [
+    "**/__tests__/**",
+    "**/*.md"
+  ],
   "command": {
     "publish": {
       "allowBranch": "master",
