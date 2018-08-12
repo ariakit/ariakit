@@ -1,18 +1,17 @@
 /* eslint-disable no-param-reassign */
-import React, {
-  ReactElement,
-  ComponentType,
-  CSSProperties,
-  HTMLProps,
-  Ref
-} from "react";
+import React, { ReactElement, ComponentType, HTMLProps, Ref } from "react";
 import { isStyledComponent } from "styled-components";
 import pickCSSProps from "../utils/pickCSSProps";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
 import pickHTMLProps from "../utils/pickHTMLProps";
+import cssProps from "../utils/cssProps";
 
-export type AllProps<T = any> = CSSProperties & HTMLProps<T> & ReaKitProps<T>;
+export type CSSProperties = {
+  [key in keyof typeof cssProps]?: string | number
+};
+
+export type AllProps<T = any> = HTMLProps<T> & ReaKitProps<T> & CSSProperties;
 
 export type SingleAsProp<T = any> =
   | keyof JSX.IntrinsicElements
