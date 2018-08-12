@@ -6,8 +6,9 @@ const getComponentGithubSrcUrl = (section, extension) => {
   if (!section.filepath) {
     return null;
   }
-  if (extension === "js" && !isComponentSection(section)) {
-    return null;
+  if (extension === "js") {
+    if (!isComponentSection(section)) return null;
+    return `${packagesUrl}/${section.filepath}`;
   }
   const [, filePathWithoutExtension] = section.filepath.match(/\/(.+)\.[^.]+/);
   return `${packagesUrl}/${filePathWithoutExtension}.${extension}`;
