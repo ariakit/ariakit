@@ -9,3 +9,5 @@ declare module "react-known-props" {
 }
 
 declare module "styled-tools";
+
+declare module "constate";

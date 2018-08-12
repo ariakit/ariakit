@@ -13,6 +13,7 @@ interface ArrowProps {
   angle?: number;
 }
 
+// @ts-ignore
 const Arrow = styled<ArrowProps>(Base)`
   display: inline-flex;
   width: 1em;

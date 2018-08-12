@@ -28,7 +28,7 @@ const commonPlugins = [
 const main = {
   experimentalCodeSplitting: true,
   input: {
-    index: "src/index.js",
+    index: "src/index.ts",
     ...publicFiles
   },
   external: makeExternalPredicate(allExternal),
@@ -47,7 +47,7 @@ const main = {
 };
 
 const umd = {
-  input: "src/index.js",
+  input: "src/index.ts",
   external: makeExternalPredicate(external),
   output: {
     name: pkg.name,
