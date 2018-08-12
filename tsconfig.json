@@ -4,9 +4,9 @@
   ],
   "compilerOptions": {
     "allowJs": true,
+    "checkJs": false,
     "allowSyntheticDefaultImports": true,
     "target": "esnext",
-    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
     "declaration": true,

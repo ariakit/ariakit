@@ -1,20 +1,29 @@
-import React, { ComponentType } from "react";
+import React, { SFC, ComponentClass } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
-import styled from "styled-components";
 import { bool } from "../../utils/styledProps";
-import as from "../../enhancers/as";
+import styled from "../../enhancers/styled";
+import as, { AsComponents } from "../../enhancers/as";
 
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-interface ComponentProps {
-  as: string | ComponentType;
+enum Position {
+  static,
+  absolute,
+  fixed,
+  relative,
+  sticky
 }
 
-const Component = ({ as: Type, ...props }: ComponentProps) =>
-  React.createElement(Type, props);
+interface ComponentProps {
+  as: SFC | ComponentClass | string;
+  nextAs: AsComponents;
+}
 
-const Base = styled<ComponentProps>(Component)`
+const Component = ({ as: T, nextAs, ...props }: ComponentProps) =>
+  React.createElement(T, props);
+
+const Base = styled(Component)`
   margin: 0;
   padding: 0;
   border: 0;
@@ -30,11 +39,9 @@ const Base = styled<ComponentProps>(Component)`
 
 const asTypes = [PropTypes.func, PropTypes.string];
 
+// @ts-ignore
 Base.propTypes = {
-  as: PropTypes.oneOfType([
-    ...asTypes,
-    PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
-  ]),
+  as: PropTypes.oneOfType(asTypes),
   ...positions.reduce(
     (obj, position) => ({
       ...obj,

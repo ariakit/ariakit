@@ -1,10 +1,9 @@
 /* eslint-disable no-param-reassign */
 import React, {
-  Component,
-  ComponentClass,
+  ReactElement,
   ComponentType,
   CSSProperties,
-  ReactNode,
+  HTMLProps,
   Ref
 } from "react";
 import { isStyledComponent } from "styled-components";
@@ -13,36 +12,30 @@ import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
 import pickHTMLProps from "../utils/pickHTMLProps";
 
-export type AsComponent = keyof JSX.IntrinsicElements | ComponentType<any>;
-export type AsComponents = AsComponent | AsComponent[];
-export interface AsProps {
-  as: AsComponents;
-  nextAs?: AsComponent;
+export type AllProps<T = any> = CSSProperties & HTMLProps<T> & ReaKitProps<T>;
+
+export type SingleAsProp<T = any> =
+  | keyof JSX.IntrinsicElements
+  | ComponentType<AllProps<T>>;
+
+export type AsProp<T = any> = SingleAsProp<T> | SingleAsProp<T>[];
+
+export interface ReaKitProps<T = any> {
+  as?: AsProp<T>;
+  nextAs?: SingleAsProp<T>;
+  elementRef?: Ref<T>;
 }
 
-export type ReakitComponentProps = CSSProperties & AsProps;
+export type ReaKitComponent<P extends AllProps = {}> = ComponentType<P> & {
+  asComponents: AsProp;
+  as: (asComponents: AsProp) => ReaKitComponent<P>;
+};
 
-export interface ReakitComponent<Props = any>
-  extends ComponentClass<Props & ReakitComponentProps> {
-  asComponents: AsComponents;
-  as: (
-    asComponents: AsComponents
-  ) => (
-    WrappedComponent: Component<AsProps>
-  ) => ReakitComponent<Props & ReakitComponentProps>;
-  displayName: string;
+function As({ nextAs, ...props }: AllProps) {
+  return render({ ...props, as: nextAs });
 }
 
-const As = ({ nextAs, ...props }: { nextAs: AsComponent }) =>
-  render({ ...props, as: nextAs });
-
-interface RenderProps extends AsProps {
-  className?: string;
-  children?: ReactNode;
-  elementRef?: Ref<any>;
-}
-
-const render = ({ as: t, ...props }: RenderProps): React.ReactNode => {
+function render({ as: t, ...props }: AllProps): ReactElement<any> | null {
   const T = parseTag(t);
 
   if (Array.isArray(T)) {
@@ -72,69 +65,55 @@ const render = ({ as: t, ...props }: RenderProps): React.ReactNode => {
   }
 
   return <T {...props} className={className} {...(style ? { style } : {})} />;
-};
+}
 
-function isWrappedWithAs(target: any): target is ReakitComponent<any> {
+function isWrappedWithAs(target: any): target is ReaKitComponent {
   return typeof target.asComponents !== "undefined";
 }
 
-const as = (asComponents: AsComponents) => <Props extends AsProps>(
-  WrappedComponent: ComponentType<Props>
-): ReakitComponent<Props> => {
-  const target = isStyledComponent(WrappedComponent)
-    ? WrappedComponent.target
-    : WrappedComponent;
+function as<P extends AllProps>(asComponents: AsProp) {
+  return (WrappedComponent: ComponentType<P>): ReaKitComponent<P> => {
+    const target = isStyledComponent(WrappedComponent)
+      ? WrappedComponent.target
+      : WrappedComponent;
 
-  const defineProperties = (scope: ReakitComponent) => {
-    scope.asComponents = asComponents;
-    // @ts-ignore
-    scope.as = otherComponents => as(otherComponents)(scope);
-    return scope;
+    const defineProperties = (scope: typeof WrappedComponent) => {
+      const xscope = scope as ReaKitComponent<P>;
+      xscope.asComponents = asComponents;
+      xscope.as = otherComponents => as(otherComponents)(xscope);
+      return xscope;
+    };
+
+    if (isWrappedWithAs(target) && asComponents === target.asComponents) {
+      return defineProperties(WrappedComponent);
+    }
+
+    const getComponentName = (component: typeof WrappedComponent): any =>
+      component.displayName || component.name || component;
+
+    const components = ([] as any[]).concat(WrappedComponent, asComponents);
+
+    const getAs = (props: AllProps): SingleAsProp[] =>
+      components.concat(props.as || [], props.nextAs || []);
+
+    const displayName = `${getComponentName(
+      WrappedComponent
+    )}.as(${([] as any[]).concat(asComponents).map(getComponentName)})`;
+
+    const EnhancedComponent: typeof WrappedComponent = (props: AllProps) =>
+      render({ ...props, as: getAs(props) });
+
+    EnhancedComponent.displayName = displayName;
+
+    if (isStyledComponent(WrappedComponent)) {
+      const StyledComponent = WrappedComponent.withComponent(EnhancedComponent);
+      StyledComponent.styledComponentId = WrappedComponent.styledComponentId;
+      StyledComponent.displayName = `Styled(${displayName})`;
+      return defineProperties(StyledComponent);
+    }
+
+    return defineProperties(EnhancedComponent);
   };
-
-  if (isWrappedWithAs(target) && asComponents === target.asComponents) {
-    return defineProperties(WrappedComponent as ReakitComponent);
-  }
-
-  const components = ([] as AsComponent[]).concat(
-    WrappedComponent,
-    asComponents
-  );
-
-  const getComponentName = (component: AsComponent): any =>
-    // @ts-ignore
-    component.displayName || component.name || component;
-
-  const getAs = (props: {
-    as: AsComponents;
-    nextAs: AsComponent;
-  }): AsComponents => components.concat(props.as || [], props.nextAs || []);
-
-  const displayName = `${getComponentName(
-    WrappedComponent
-  )}.as(${([] as AsComponent[]).concat(asComponents).map(getComponentName)})`;
-
-  let EnhancedComponent = (props: { as: AsComponents; nextAs: AsComponent }) =>
-    render({ ...props, as: getAs(props) });
-
-  // @ts-ignore
-  EnhancedComponent.displayName = displayName;
-
-  if (isStyledComponent(WrappedComponent)) {
-    // @ts-ignore
-    EnhancedComponent = WrappedComponent.withComponent(
-      // @ts-ignore
-      EnhancedComponent
-    ) as ReakitComponent;
-    // @ts-ignore
-    EnhancedComponent.styledComponentId = WrappedComponent.styledComponentId;
-    // @ts-ignore
-    EnhancedComponent.displayName = `Styled(${displayName})`;
-  }
-
-  return defineProperties(
-    (EnhancedComponent as any) as ReakitComponent
-  ) as ReakitComponent<Props>;
-};
+}
 
 export default as;

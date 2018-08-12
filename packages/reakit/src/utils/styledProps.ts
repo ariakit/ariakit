@@ -1,7 +1,7 @@
 import kebabCase from "./kebabCase";
 import numberToPx from "./numberToPx";
 
-export type PropsFn = (props: { [x: string]: any }) => any;
+export type PropsFn = (props: { [key: string]: any }) => any;
 
 export const bool = (
   cssProp: string,

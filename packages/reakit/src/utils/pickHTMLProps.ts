@@ -1,6 +1,6 @@
 import { getElementProps, getEventProps } from "react-known-props";
 
-const pickHTMLProps = (tagName: string, props: { [x: string]: any }) => {
+const pickHTMLProps = (tagName: string, props: { [key: string]: any }) => {
   const allowedProps = [
     ...getElementProps(tagName, { legacy: true }),
     ...getEventProps()
