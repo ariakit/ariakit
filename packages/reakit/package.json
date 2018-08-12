@@ -7,6 +7,7 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "unpkg": "dist/reakit.min.js",
+  "types": "dist/reakit.d.ts",
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
@@ -20,7 +21,7 @@
     "lint": "eslint src scripts",
     "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{test,Container}.js'",
     "build:clean": "rimraf dist es lib && node scripts/cleanProxies",
-    "build:ts": "tsc --emitDeclarationOnly --allowJs false --checkJs false",
+    "build:ts": "tsc --emitDeclarationOnly --allowJs false",
     "prebuild": "yarn build:clean && yarn build:ts",
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",
