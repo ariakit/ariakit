@@ -5,5 +5,4 @@ lib
 es
 dist
 ts
-build
 *.log
