@@ -2,5 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "ts"
-  }
+  },
+  "include": [
+    "build",
+    "types"
+  ]
 }

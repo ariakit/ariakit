@@ -1,7 +1,4 @@
 {
-  "include": [
-    "packages"
-  ],
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
