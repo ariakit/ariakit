@@ -1,6 +1,6 @@
-import { AsComponents } from "../enhancers/as";
+import { AsProp } from "../enhancers/as";
 
-const parseTag = (tag?: AsComponents) => {
+const parseTag = (tag?: AsProp) => {
   if (Array.isArray(tag)) {
     const tags = tag.filter(
       (currentTag, i) => typeof currentTag !== "string" || i === tag.length - 1

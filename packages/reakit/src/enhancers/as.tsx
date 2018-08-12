@@ -5,7 +5,7 @@ import pickCSSProps from "../utils/pickCSSProps";
 import parseTag from "../utils/parseTag";
 import parseClassName from "../utils/parseClassName";
 import pickHTMLProps from "../utils/pickHTMLProps";
-import cssProps from "../utils/cssProps";
+import CSSProps from "../utils/CSSProps";
 
 export type Omit<T, K extends keyof T> = Pick<
   T,
@@ -13,7 +13,7 @@ export type Omit<T, K extends keyof T> = Pick<
 >;
 
 export type CSSProperties = {
-  [key in keyof typeof cssProps]?: string | number
+  [key in keyof typeof CSSProps]?: string | number
 };
 
 export type AllProps<T = any> = Omit<HTMLProps<T>, "as"> &
@@ -70,7 +70,12 @@ function render({ as: t, ...props }: AllProps): ReactElement<any> | null {
     );
   }
 
-  return <T {...props} className={className} {...(style ? { style } : {})} />;
+  const allProps: AllProps = {
+    ...props,
+    className,
+    ...(style ? { style } : {})
+  };
+  return <T {...allProps} />;
 }
 
 function isWrappedWithAs(target: any): target is ReaKitComponent {

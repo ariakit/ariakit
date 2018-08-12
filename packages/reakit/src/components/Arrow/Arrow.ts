@@ -43,6 +43,7 @@ const Arrow = styled<ArrowProps>(Base)`
   ${prop("theme.Arrow")};
 `;
 
+// @ts-ignore
 Arrow.propTypes = {
   angle: PropTypes.number
 };

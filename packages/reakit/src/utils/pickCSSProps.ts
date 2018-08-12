@@ -1,4 +1,4 @@
-import cssProps from "./cssProps";
+import CSSProps from "./CSSProps";
 
 interface UnknownProps {
   [key: string]: any;
@@ -6,7 +6,7 @@ interface UnknownProps {
 
 const pickCSSProps = (props: UnknownProps) =>
   Object.keys(props).reduce((finalObject: {}, key) => {
-    if (key in cssProps) {
+    if (key in CSSProps) {
       return { ...finalObject, [key]: props[key] };
     }
     return finalObject;

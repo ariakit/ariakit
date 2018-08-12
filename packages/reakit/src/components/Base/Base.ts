@@ -1,11 +1,9 @@
-import React, { SFC, ComponentClass } from "react";
+import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
 import { bool } from "../../utils/styledProps";
 import styled from "../../enhancers/styled";
-import as, { AsComponents } from "../../enhancers/as";
-
-const positions = ["static", "absolute", "fixed", "relative", "sticky"];
+import as from "../../enhancers/as";
 
 enum Position {
   static,
@@ -15,15 +13,20 @@ enum Position {
   sticky
 }
 
-interface ComponentProps {
-  as: SFC | ComponentClass | string;
-  nextAs: AsComponents;
-}
+const positions = Object.keys(Position);
 
-const Component = ({ as: T, nextAs, ...props }: ComponentProps) =>
+type PositionProps = { [key in keyof typeof Position]?: boolean };
+
+type ComponentProps = {
+  as: keyof JSX.IntrinsicElements | ComponentType;
+};
+
+type BaseProps = PositionProps & ComponentProps;
+
+const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-const Base = styled(Component)`
+const Base = styled<BaseProps>(Component)`
   margin: 0;
   padding: 0;
   border: 0;
@@ -41,7 +44,10 @@ const asTypes = [PropTypes.func, PropTypes.string];
 
 // @ts-ignore
 Base.propTypes = {
-  as: PropTypes.oneOfType(asTypes),
+  as: PropTypes.oneOfType([
+    ...asTypes,
+    PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
+  ]),
   ...positions.reduce(
     (obj, position) => ({
       ...obj,

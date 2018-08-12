@@ -1,4 +1,4 @@
-enum cssProps {
+enum CSSProps {
   alignContent = "align-content",
   alignSelf = "align-self",
   alignItems = "align-items",
@@ -502,4 +502,4 @@ enum cssProps {
   zIndex = "z-index"
 }
 
-export default cssProps;
+export default CSSProps;
