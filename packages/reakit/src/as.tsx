@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 import React, { ReactElement, ComponentType, HTMLProps, Ref } from "react";
-import { isStyledComponent } from "styled-components";
 import pickCSSProps from "./_utils/pickCSSProps";
 import parseTag from "./_utils/parseTag";
 import parseClassName from "./_utils/parseClassName";
 import pickHTMLProps from "./_utils/pickHTMLProps";
 import CSSProps from "./_utils/CSSProps";
+import { isStyledComponent } from "./styled";
 
 export type Omit<T, K extends keyof T> = Pick<
   T,

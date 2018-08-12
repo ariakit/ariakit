@@ -14,7 +14,6 @@
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint packages/**",
-    "singel": "lerna exec --scope reakit -- yarn singel",
     "dev": "lerna exec --scope reakit -- yarn dev",
     "build": "lerna exec --scope reakit -- yarn build",
     "build:clean": "lerna exec --scope reakit -- yarn build:clean",
