@@ -1,11 +1,11 @@
 // https://developers.livechatinc.com/blog/how-to-create-javascript-libraries-in-2018-part-2/
 const { mkdirSync, writeFileSync } = require("fs");
-const { basename, dirname } = require("path");
+const { dirname } = require("path");
 const { name } = require("../package.json");
 const publicFiles = require("./publicFiles");
 
 const createProxyPackage = (module, file) => `{
-  "name": "${name}/${basename(module, ".js")}",
+  "name": "${name}/${module}",
   "private": true,
   "main": "../lib/${module}",
   "module": "../es/${module}",
@@ -21,9 +21,8 @@ const createDirPackage = () => `{
 `;
 
 Object.entries(publicFiles).forEach(([module, file]) => {
-  const proxyDir = basename(module, ".js");
-  mkdirSync(proxyDir);
-  writeFileSync(`${proxyDir}/package.json`, createProxyPackage(module, file));
+  mkdirSync(module);
+  writeFileSync(`${module}/package.json`, createProxyPackage(module, file));
 });
 
 ["lib", "es"].forEach(dir => {

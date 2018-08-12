@@ -10,7 +10,7 @@ const getIndex = dir =>
 
 const getFiles = dir =>
   readdirSync(dir)
-    .filter(file => !/^(index\.|__)/.test(file))
+    .filter(file => !/^_/.test(file))
     .reduce((acc, file) => {
       const path = join(dir, file);
       const finalPath = isDirectory(path) ? getIndex(path) : path;
@@ -20,7 +20,4 @@ const getFiles = dir =>
       };
     }, {});
 
-module.exports = {
-  ...getFiles("./src/components"),
-  ...getFiles("./src/enhancers")
-};
+module.exports = getFiles("./src");

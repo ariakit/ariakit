@@ -56,7 +56,7 @@ module.exports = {
       : webpackCommonConfig,
   updateDocs(docs, filePath) {
     const contents = fs.readFileSync(filePath, "utf8");
-    const regex = /import ([a-z0-9]+) from "\.\.\/[^."]+"/gim;
+    const regex = /import ([A-Z][a-z0-9]*) from "\.\.\/[A-Z][^."]*"/gm;
     const uses = (contents.match(regex) || []).map(x => x.replace(regex, "$1"));
     return {
       ...docs,
@@ -130,7 +130,7 @@ module.exports = {
     },
     {
       name: "Components",
-      components: "../reakit/src/components/**/*.{js,ts,jsx,tsx}"
+      components: "../reakit/src/[A-Z]*/*.{js,ts,jsx,tsx}"
     }
   ]
 };

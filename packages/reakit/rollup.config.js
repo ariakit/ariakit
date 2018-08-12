@@ -27,10 +27,7 @@ const commonPlugins = [
 
 const main = {
   experimentalCodeSplitting: true,
-  input: {
-    index: "src/index.ts",
-    ...publicFiles
-  },
+  input: publicFiles,
   external: makeExternalPredicate(allExternal),
   plugins: [...commonPlugins, resolve({ extensions })],
   output: [
