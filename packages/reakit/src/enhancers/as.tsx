@@ -7,27 +7,34 @@ import parseClassName from "../utils/parseClassName";
 import pickHTMLProps from "../utils/pickHTMLProps";
 import cssProps from "../utils/cssProps";
 
+export type Omit<T, K extends keyof T> = Pick<
+  T,
+  ({ [P in keyof T]: P } & { [P in K]: never })[keyof T]
+>;
+
 export type CSSProperties = {
   [key in keyof typeof cssProps]?: string | number
 };
 
-export type AllProps<T = any> = HTMLProps<T> & ReaKitProps<T> & CSSProperties;
+export type AllProps<T = any> = Omit<HTMLProps<T>, "as"> &
+  ReaKitProps<T> &
+  CSSProperties;
 
-export type SingleAsProp<T = any> =
+export type SingleAsProp =
   | keyof JSX.IntrinsicElements
-  | ComponentType<AllProps<T>>;
+  | ComponentType<AllProps>;
 
-export type AsProp<T = any> = SingleAsProp<T> | SingleAsProp<T>[];
+export type AsProp = SingleAsProp | SingleAsProp[];
 
 export interface ReaKitProps<T = any> {
-  as?: AsProp<T>;
-  nextAs?: SingleAsProp<T>;
+  as?: AsProp;
+  nextAs?: SingleAsProp;
   elementRef?: Ref<T>;
 }
 
 export type ReaKitComponent<P extends AllProps = {}> = ComponentType<P> & {
-  asComponents: AsProp;
-  as: (asComponents: AsProp) => ReaKitComponent<P>;
+  asComponents?: AsProp;
+  as?: (asComponents: AsProp) => ReaKitComponent<P>;
 };
 
 function As({ nextAs, ...props }: AllProps) {
@@ -70,7 +77,7 @@ function isWrappedWithAs(target: any): target is ReaKitComponent {
   return typeof target.asComponents !== "undefined";
 }
 
-function as<P extends AllProps>(asComponents: AsProp) {
+function as<P extends AllProps = any>(asComponents: AsProp) {
   return (WrappedComponent: ComponentType<P>): ReaKitComponent<P> => {
     const target = isStyledComponent(WrappedComponent)
       ? WrappedComponent.target
@@ -79,7 +86,7 @@ function as<P extends AllProps>(asComponents: AsProp) {
     const defineProperties = (scope: typeof WrappedComponent) => {
       const xscope = scope as ReaKitComponent<P>;
       xscope.asComponents = asComponents;
-      xscope.as = otherComponents => as(otherComponents)(xscope);
+      xscope.as = otherComponents => as(otherComponents)(scope);
       return xscope;
     };
 
