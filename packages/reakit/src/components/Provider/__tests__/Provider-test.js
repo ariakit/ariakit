@@ -8,6 +8,9 @@ import Adapter from "./ReactSixteenAdapter";
 import "jest-styled-components";
 
 configure({ adapter: new Adapter() });
+// Fix incoming in next React version: https://github.com/facebook/react/issues/13150#issuecomment-411134477
+// eslint-disable-next-line
+console.error = () => null;
 
 test("works as ThemeProvider", () => {
   const theme = { color: "purple" };
