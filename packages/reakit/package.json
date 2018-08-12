@@ -7,7 +7,7 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "unpkg": "dist/reakit.min.js",
-  "types": "dist/reakit.d.ts",
+  "types": "ts",
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",

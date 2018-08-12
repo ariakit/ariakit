@@ -7,7 +7,7 @@
     "checkJs": false,
     "allowSyntheticDefaultImports": true,
     "target": "esnext",
-    "module": "amd",
+    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
     "declaration": true,
