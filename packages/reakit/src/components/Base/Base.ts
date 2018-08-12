@@ -6,11 +6,11 @@ import styled from "../../enhancers/styled";
 import as from "../../enhancers/as";
 
 enum Position {
-  static,
-  absolute,
-  fixed,
-  relative,
-  sticky
+  static = "static",
+  absolute = "absolute",
+  fixed = "fixed",
+  relative = "relative",
+  sticky = "sticky"
 }
 
 const positions = Object.keys(Position);
