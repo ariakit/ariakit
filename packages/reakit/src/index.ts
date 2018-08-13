@@ -1,4 +1,4 @@
-export { Container, Provider, Consumer } from "constate";
+export { Container, Consumer } from "constate";
 
 export { default as as } from "./as";
 
@@ -36,6 +36,7 @@ export { default as Overlay } from "./Overlay";
 export { default as Paragraph } from "./Paragraph";
 export { default as Popover } from "./Popover";
 export { default as Portal } from "./Portal";
+export { default as Provider } from "./Provider";
 export { default as Shadow } from "./Shadow";
 export { default as Sidebar } from "./Sidebar";
 export { default as Step } from "./Step";
