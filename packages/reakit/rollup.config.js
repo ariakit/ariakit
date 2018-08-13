@@ -9,6 +9,7 @@ const publicFiles = require("./scripts/publicFiles");
 
 const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
 const allExternal = [...external, ...Object.keys(pkg.dependencies)];
+const extensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
 const makeExternalPredicate = externalArr => {
   if (!externalArr.length) {
@@ -20,19 +21,15 @@ const makeExternalPredicate = externalArr => {
 
 const commonPlugins = [
   babel({
-    exclude: ["node_modules/**", "../../node_modules/**"],
-    plugins: ["styled-components", "external-helpers"]
+    exclude: ["node_modules/**", "../../node_modules/**"]
   })
 ];
 
 const main = {
   experimentalCodeSplitting: true,
-  input: {
-    index: "src/index.js",
-    ...publicFiles
-  },
+  input: publicFiles,
   external: makeExternalPredicate(allExternal),
-  plugins: [...commonPlugins, resolve()],
+  plugins: [...commonPlugins, resolve({ extensions })],
   output: [
     {
       format: "es",
@@ -47,7 +44,7 @@ const main = {
 };
 
 const umd = {
-  input: "src/index.js",
+  input: "src/index.ts",
   external: makeExternalPredicate(external),
   output: {
     name: pkg.name,
@@ -74,6 +71,7 @@ const umd = {
       "process.env.NODE_ENV": JSON.stringify("production")
     }),
     resolve({
+      extensions,
       preferBuiltins: false
     })
   ]

@@ -7,6 +7,7 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "unpkg": "dist/reakit.min.js",
+  "types": "ts",
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
@@ -14,12 +15,13 @@
   },
   "scripts": {
     "test": "jest",
+    "type-check": "tsc --noEmit",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint src scripts",
-    "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{test,Container}.js'",
-    "build:clean": "rimraf dist es lib && node scripts/cleanProxies",
-    "prebuild": "yarn build:clean",
+    "build:clean": "rimraf dist es lib ts && node scripts/cleanProxies",
+    "build:ts": "tsc --emitDeclarationOnly --allowJs false",
+    "prebuild": "yarn build:clean && yarn build:ts",
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",
     "preversion": "yarn lint && npm test && yarn build",
@@ -42,6 +44,8 @@
     "styled-tools": "^1.1.0"
   },
   "devDependencies": {
+    "@types/prop-types": "^15.5.5",
+    "@types/react": "^16.4.6",
     "enzyme": "^3.4.1",
     "eslint": "^5.3.0",
     "jest-cli": "^23.5.0",
@@ -52,13 +56,12 @@
     "react-test-renderer": "^16.4.2",
     "rimraf": "^2.6.1",
     "rollup": "^0.64.1",
-    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-babel": "^4.0.0-beta.7",
     "rollup-plugin-commonjs": "^9.1.5",
     "rollup-plugin-ignore": "^1.0.3",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^4.0.0",
-    "singel": "^0.5.4"
+    "rollup-plugin-uglify": "^4.0.0"
   },
   "peerDependencies": {
     "react": "^16.3.0",
