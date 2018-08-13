@@ -3,7 +3,7 @@ node_js:
   - v8
 script:
   - yarn lint
-  - yarn singel
+  - yarn type-check
   - yarn test --coverage
   - yarn build
 cache:

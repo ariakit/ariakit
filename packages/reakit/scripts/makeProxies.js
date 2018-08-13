@@ -1,19 +1,35 @@
 // https://developers.livechatinc.com/blog/how-to-create-javascript-libraries-in-2018-part-2/
 const { mkdirSync, writeFileSync } = require("fs");
-const { basename } = require("path");
+const { dirname } = require("path");
 const { name } = require("../package.json");
 const publicFiles = require("./publicFiles");
 
-const createProxyContent = file => `{
-  "name": "${name}/${basename(file, ".js")}",
+const getTSPath = (module, file) =>
+  dirname(file.replace(/^src\//, "")).replace(/^\.$/, module);
+
+const createProxyPackage = (module, file) => `{
+  "name": "${name}/${module}",
   "private": true,
-  "main": "../lib/${file}",
-  "module": "../es/${file}"
+  "main": "../lib/${module}",
+  "module": "../es/${module}",
+  "types": "../ts/${getTSPath(module, file)}"
 }
 `;
 
-Object.keys(publicFiles).forEach(file => {
-  const proxyDir = basename(file, ".js");
-  mkdirSync(proxyDir);
-  writeFileSync(`${proxyDir}/package.json`, createProxyContent(file));
+const createDirPackage = () => `{
+  "name": "${name}",
+  "private": true,
+  "types": "../ts"
+}
+`;
+
+Object.entries(publicFiles)
+  .filter(([module]) => module !== "index")
+  .forEach(([module, file]) => {
+    mkdirSync(module);
+    writeFileSync(`${module}/package.json`, createProxyPackage(module, file));
+  });
+
+["lib", "es"].forEach(dir => {
+  writeFileSync(`${dir}/package.json`, createDirPackage());
 });
