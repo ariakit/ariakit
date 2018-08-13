@@ -27,14 +27,14 @@ export type SingleAsProp =
 export type AsProp = SingleAsProp | SingleAsProp[];
 
 export interface ReaKitProps<T = any> {
-  as?: AsProp;
-  nextAs?: SingleAsProp;
+  as?: AsProp | null;
+  nextAs?: SingleAsProp | null;
   elementRef?: Ref<T>;
 }
 
 export type ReaKitComponent<P extends AllProps = {}> = ComponentType<P> & {
-  asComponents?: AsProp;
-  as?: (asComponents: AsProp) => ReaKitComponent<P>;
+  asComponents: AsProp;
+  as: (asComponents: AsProp) => ReaKitComponent<P>;
 };
 
 function As({ nextAs, ...props }: AllProps) {
@@ -87,7 +87,7 @@ type Foo<T extends AllProps> = Omit<T, "as"> & AllProps;
 
 function as(asComponents: AsProp) {
   // RENAME
-  return function lol<P>(
+  return function lol<P extends AllProps>(
     WrappedComponent: ComponentType<P>
   ): ReaKitComponent<Foo<P>> {
     const target = isStyledComponent(WrappedComponent)

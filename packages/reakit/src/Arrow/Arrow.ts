@@ -1,5 +1,7 @@
+import { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
+import globalPropTypes from "../_utils/globalPropTypes";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -10,11 +12,10 @@ interface ArrowProps {
   /**
    * Rotation (in degrees) of the arrow - default 0
    */
-  angle?: number;
+  angle?: number | null;
 }
 
-// @ts-ignore
-const Arrow = styled<ArrowProps>(Base)`
+const Arrow = styled<ArrowProps>(Base as ComponentType<ArrowProps>)`
   display: inline-flex;
   width: 1em;
   height: 1em;
@@ -44,13 +45,14 @@ const Arrow = styled<ArrowProps>(Base)`
   ${prop("theme.Arrow")};
 `;
 
-// @ts-ignore
 Arrow.propTypes = {
+  ...globalPropTypes,
   angle: PropTypes.number
 };
 
 Arrow.defaultProps = {
-  angle: 0
+  angle: 0,
+  innerRef: () => {}
 };
 
 export default as("div")(Arrow);

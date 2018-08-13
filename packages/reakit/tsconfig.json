@@ -5,6 +5,6 @@
   },
   "include": [
     "src",
-    "types"
+    "../../types"
   ]
 }

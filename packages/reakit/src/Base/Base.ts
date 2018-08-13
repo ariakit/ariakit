@@ -4,6 +4,7 @@ import { prop } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
+import globalPropTypes from "../_utils/globalPropTypes";
 
 enum Position {
   static = "static",
@@ -13,18 +14,18 @@ enum Position {
   sticky = "sticky"
 }
 
-const positions = Object.keys(Position);
-
-type PositionProps = { [key in keyof typeof Position]?: boolean };
+type PositionProps = { [key in keyof typeof Position]?: boolean | null };
 
 type ComponentProps = {
   as: keyof JSX.IntrinsicElements | ComponentType;
 };
 
-type BaseProps = PositionProps & ComponentProps;
+const positions = Object.keys(Position);
 
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
+
+type BaseProps = PositionProps & ComponentProps;
 
 const Base = styled<BaseProps>(Component)`
   margin: 0;
@@ -40,21 +41,14 @@ const Base = styled<BaseProps>(Component)`
   }
 `;
 
-const asTypes = [PropTypes.func, PropTypes.string];
-
-// @ts-ignore
 Base.propTypes = {
-  as: PropTypes.oneOfType([
-    ...asTypes,
-    PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
-  ]),
-  ...positions.reduce(
-    (obj, position) => ({
-      ...obj,
-      [position]: PropTypes.bool
-    }),
-    {}
-  )
+  ...globalPropTypes,
+  as: PropTypes.any,
+  static: PropTypes.bool,
+  absolute: PropTypes.bool,
+  fixed: PropTypes.bool,
+  relative: PropTypes.bool,
+  sticky: PropTypes.bool
 };
 
 export default as("div")(Base);

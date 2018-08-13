@@ -1,6 +1,6 @@
 import { AsProp } from "../as";
 
-const parseTag = (tag?: AsProp) => {
+const parseTag = (tag?: AsProp | null) => {
   if (Array.isArray(tag)) {
     const tags = tag.filter(
       (currentTag, i) => typeof currentTag !== "string" || i === tag.length - 1
