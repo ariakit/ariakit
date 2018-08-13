@@ -1,15 +1,14 @@
 const fastMap = (func, list) => {
-  let i = 0;
-  const result = [];
+  let index = 0;
   const { length } = list;
+  const result = new Array(length);
 
-  while (i < length) {
-    const returned = func.call(null, list[i], i, list);
-    result.push(returned);
-    i += 1;
+  while (index < length) {
+    result[index] = func.call(null, list[index], index, list);
+    index += 1;
   }
 
   return result;
 };
 
-export default fastMap;
+module.exports = fastMap;

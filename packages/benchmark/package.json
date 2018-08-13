@@ -1,0 +1,11 @@
+{
+  "name": "benchmark",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "@babel/node": "^7.0.0-rc.1",
+    "benchmark": "^2.1.4"
+  },
+  "devDependencies": {}
+}
