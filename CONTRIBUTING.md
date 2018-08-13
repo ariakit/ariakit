@@ -89,7 +89,7 @@ If you haven't already done so, [install yarn](https://yarnpkg.com/en/docs/insta
 
 ### Creating components
 
-The best way to understand how to create new components is looking at the other ones located in [`packages/reakit/src/components`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/components).
+The best way to understand how to create new components is looking at the other ones located in [`packages/reakit/src`](https://github.com/reakit/reakit/blob/master/packages/reakit/src).
 
 A simple component folder is composed by three files:
 
@@ -97,7 +97,7 @@ A simple component folder is composed by three files:
  - `Component.md` with the docs.
  - `index.js` exporting the component as default.
 
-Also, an entry should be added to [`packages/reakit/src/components/index.js`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/components).
+Also, an entry should be added to [`packages/reakit/src/index.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/index.ts).
 
 Some other components have sub components and containers. You should understand the requirements of the component you're creating so you can find a similar one to use as a base.
 
@@ -111,7 +111,7 @@ We have replaced all the default components from `react-styleguidist` by just ov
 
 ### Working on docs
 
-You can find guide docs in the [`docs`](https://github.com/reakit/reakit/tree/master/docs) folder. While component docs are placed together with its component in the `reakit` package: [`packages/reakit/src/components`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/components).
+You can find guide docs in the [`docs`](https://github.com/reakit/reakit/tree/master/docs) folder. While component docs are placed together with its component in the `reakit` package: [`packages/reakit/src`](https://github.com/reakit/reakit/blob/master/packages/reakit/src).
 
 While working on docs, make sure to run `yarn website` to see the changes. If the browser doesn't refresh automatically, you should do that manually.
 
