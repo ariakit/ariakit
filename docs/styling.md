@@ -38,10 +38,10 @@ import { Box } from "reakit";
 </Box>
 ```
 
-Finally, you can pass a `theme` object to `ThemeProvider` and style ReaKit elements directly:
+Finally, you can pass a `theme` object to `Provider` and style ReaKit elements directly:
 
 ```jsx
-import { ThemeProvider, Button } from "reakit";
+import { Provider, Button } from "reakit";
 
 const theme = {
   Button: `
@@ -49,7 +49,7 @@ const theme = {
   `
 };
 
-<ThemeProvider theme={theme}>
+<Provider theme={theme}>
   <Button>Button</Button>
-</ThemeProvider>
+</Provider>
 ```

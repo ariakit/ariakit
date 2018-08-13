@@ -1,6 +1,6 @@
 import as from "./enhancers/as";
 
-export { Container, Provider, Consumer } from "constate";
+export { Container, Consumer } from "constate";
 
 export styled, {
   css,
