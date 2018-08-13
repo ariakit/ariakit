@@ -9,9 +9,6 @@ import Base from "../Base";
 const SQRT2 = 1.41421356237;
 
 interface ArrowProps {
-  /**
-   * Rotation (in degrees) of the arrow - default 0
-   */
   angle?: number | null;
 }
 
@@ -51,8 +48,7 @@ Arrow.propTypes = {
 };
 
 Arrow.defaultProps = {
-  angle: 0,
-  innerRef: () => {}
+  angle: 0
 };
 
 export default as("div")(Arrow);

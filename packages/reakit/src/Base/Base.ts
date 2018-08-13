@@ -2,9 +2,9 @@ import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
 import { bool } from "../_utils/styledProps";
+import globalPropTypes from "../_utils/globalPropTypes";
 import styled from "../styled";
 import as from "../as";
-import globalPropTypes from "../_utils/globalPropTypes";
 
 enum Position {
   static = "static",
@@ -41,9 +41,15 @@ const Base = styled<BaseProps>(Component)`
   }
 `;
 
+const asTypes = [PropTypes.func, PropTypes.string];
+
+// @ts-ignore
 Base.propTypes = {
   ...globalPropTypes,
-  as: PropTypes.any,
+  as: PropTypes.oneOfType([
+    ...asTypes,
+    PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
+  ]),
   static: PropTypes.bool,
   absolute: PropTypes.bool,
   fixed: PropTypes.bool,
