@@ -4,12 +4,15 @@ const { dirname } = require("path");
 const { name } = require("../package.json");
 const publicFiles = require("./publicFiles");
 
+const getTSPath = (module, file) =>
+  dirname(file.replace(/^src\//, "")).replace(/^\.$/, module);
+
 const createProxyPackage = (module, file) => `{
   "name": "${name}/${module}",
   "private": true,
   "main": "../lib/${module}",
   "module": "../es/${module}",
-  "types": "../ts/${dirname(file.replace(/^src\//, "")).replace(/^\.$/, "")}"
+  "types": "../ts/${getTSPath(module, file)}"
 }
 `;
 
