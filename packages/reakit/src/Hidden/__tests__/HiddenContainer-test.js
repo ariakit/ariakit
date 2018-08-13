@@ -11,10 +11,8 @@ test("toggle", () => {
 
 test("show", () => {
   expect(show()()).toEqual({ visible: true });
-  expect(show()()).toEqual({ visible: true });
 });
 
 test("hide", () => {
-  expect(hide()()).toEqual({ visible: false });
   expect(hide()()).toEqual({ visible: false });
 });

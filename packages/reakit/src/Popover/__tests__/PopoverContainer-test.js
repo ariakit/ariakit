@@ -6,7 +6,6 @@ const Base = () => null;
 
 const wrap = (Container, props = {}) =>
   mount(
-    // @ts-ignore
     <Container {...props}>{popover => <Base popover={popover} />}</Container>
   );
 

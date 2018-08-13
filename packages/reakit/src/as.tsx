@@ -82,20 +82,18 @@ function isWrappedWithAs(target: any): target is ReaKitComponent {
   return typeof target.asComponents !== "undefined";
 }
 
-// RENAME
-type Foo<T extends AllProps> = Omit<T, "as"> & AllProps;
+type AllPropsWithAs<T extends AllProps> = Omit<T, "as"> & AllProps;
 
 function as(asComponents: AsProp) {
-  // RENAME
-  return function lol<P extends AllProps>(
+  return <P extends AllProps>(
     WrappedComponent: ComponentType<P>
-  ): ReaKitComponent<Foo<P>> {
+  ): ReaKitComponent<AllPropsWithAs<P>> => {
     const target = isStyledComponent(WrappedComponent)
       ? WrappedComponent.target
       : WrappedComponent;
 
     const defineProperties = (scope: typeof WrappedComponent) => {
-      const xscope = scope as ReaKitComponent<Foo<P>>;
+      const xscope = scope as ReaKitComponent<AllPropsWithAs<P>>;
       xscope.asComponents = asComponents;
       xscope.as = otherComponents => as(otherComponents)(scope);
       return xscope;

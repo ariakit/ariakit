@@ -12,7 +12,7 @@ interface ArrowProps {
   angle?: number | null;
 }
 
-const Arrow = styled<ArrowProps>(Base as ComponentType<ArrowProps>)`
+const Arrow = styled(Base as ComponentType<ArrowProps>)`
   display: inline-flex;
   width: 1em;
   height: 1em;

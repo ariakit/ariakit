@@ -3,17 +3,7 @@ export { Container, Provider, Consumer } from "constate";
 export { default as as } from "./as";
 
 export { default as styled } from "./styled";
-export {
-  css,
-  keyframes,
-  injectGlobal,
-  isStyledComponent,
-  consolidateStreamedStyles,
-  ThemeProvider,
-  withTheme,
-  ServerStyleSheet,
-  StyleSheetManager
-} from "./styled";
+export * from "./styled";
 
 export { default as Arrow } from "./Arrow";
 export { default as Avatar } from "./Avatar";
