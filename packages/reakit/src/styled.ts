@@ -10,8 +10,6 @@ import styled, {
   StyleSheetManager
 } from "styled-components";
 
-export * from "styled-components";
-
 export {
   css,
   keyframes,
