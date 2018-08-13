@@ -27,6 +27,7 @@ const webpackCommonConfig = {
     ]
   },
   resolve: {
+    alias: { reakit: path.join(__dirname, "../reakit/src") },
     extensions: [".ts", ".tsx", ".jsx", ".js"]
   }
 };

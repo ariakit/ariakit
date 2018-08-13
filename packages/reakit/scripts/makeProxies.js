@@ -9,7 +9,7 @@ const createProxyPackage = (module, file) => `{
   "private": true,
   "main": "../lib/${module}",
   "module": "../es/${module}",
-  "types": "../ts/${dirname(file.replace(/^src\//, ""))}"
+  "types": "../ts/${dirname(file.replace(/^src\//, "")).replace(/^\.$/, "")}"
 }
 `;
 
@@ -20,10 +20,12 @@ const createDirPackage = () => `{
 }
 `;
 
-Object.entries(publicFiles).forEach(([module, file]) => {
-  mkdirSync(module);
-  writeFileSync(`${module}/package.json`, createProxyPackage(module, file));
-});
+Object.entries(publicFiles)
+  .filter(([module]) => module !== "index")
+  .forEach(([module, file]) => {
+    mkdirSync(module);
+    writeFileSync(`${module}/package.json`, createProxyPackage(module, file));
+  });
 
 ["lib", "es"].forEach(dir => {
   writeFileSync(`${dir}/package.json`, createDirPackage());
