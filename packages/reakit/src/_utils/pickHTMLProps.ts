@@ -3,7 +3,7 @@ import validAttr from "styled-components/lib/utils/validAttr";
 function pickHTMLProps<P extends object>(props: P): Partial<P> {
   const filteredProps = {};
   const keys = Object.keys(props);
-  for (let key of keys) {
+  for (const key of keys) {
     if (validAttr(key)) {
       filteredProps[key] = props[key];
     }
