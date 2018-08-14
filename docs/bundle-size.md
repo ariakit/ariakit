@@ -8,7 +8,7 @@ If you're using modern tooling, such as [webpack](https://webpack.js.org/), [cre
 
 > [Learn more](https://medium.com/@netxm/what-is-tree-shaking-de7c6be5cadd)
 
-In the below example, only [as](as.md), [Button](../packages/reakit/src/Button/Button.md), [Popover](/../packages/reakit/src/Popover/Popover.md) and their dependencies will be included in your final bundle:
+In the below example, only [as](as.md), [Button](../packages/reakit/src/Button/Button.md), [Popover](../packages/reakit/src/Popover/Popover.md) and their dependencies will be included in your final bundle:
 
 ```js static
 import { as, Button, Popover } from "reakit";
