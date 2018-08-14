@@ -42,7 +42,10 @@ const HeroGitHubButton = props => (
       {({ width }) => (
         <GitHubStarsContainer context="github">
           {({ stars }) => (
-            <StarsPopover visible placement={getPopoverPlacement(width)}>
+            <StarsPopover
+              visible={stars > 0}
+              placement={getPopoverPlacement(width)}
+            >
               <Popover.Arrow />
               <StarIcon /> {stars}
             </StarsPopover>
