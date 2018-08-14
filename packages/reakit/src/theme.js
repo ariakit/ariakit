@@ -1,4 +1,6 @@
 import { css } from "styled-components";
+import { switchProp } from "styled-tools";
+import getUnderlyingElement from "./_utils/getUnderlyingElement";
 
 export const Arrow = css`
   color: rgba(0, 0, 0, 0.85);
@@ -58,22 +60,63 @@ export const Field = css`
   }
 `;
 export const Flex = css``;
-export const Grid = css``;
 export const Group = css``;
 export const GroupItem = css`
   ${generic.neutralRoundedBorder};
 `;
-export const Heading = css``;
-export const Hidden = css``;
-export const Image = css``;
+export const Heading = css`
+  margin: 0.5em 0 0.3em;
+  font-size: ${switchProp(getUnderlyingElement, {
+    h1: "2em",
+    h2: "1.75em",
+    h3: "1.5em",
+    h4: "1.25em",
+    h5: "1em",
+    h6: "0.75em"
+  })};
+`;
+export const Image = css`
+  max-width: 100%;
+`;
 export const Inline = css``;
 export const InlineBlock = css``;
 export const InlineFlex = css``;
 export const Input = css`
   ${generic.neutralRoundedBorder};
+  display: block;
+  width: 100%;
+  padding: 0 0.5em;
+  height: 2.5em;
+  background-color: white;
+  &::placeholder {
+    color: currentcolor;
+    opacity: 0.5;
+  }
+  textarea& {
+    padding: 0.5em;
+    height: auto;
+  }
+  &[type="checkbox"],
+  &[type="radio"] {
+    width: auto;
+    height: auto;
+    padding: 0;
+  }
 `;
 export const Label = css``;
-export const Link = css``;
+export const Link = css`
+  display: inline-grid;
+  grid-gap: 0.25em;
+  align-items: center;
+  grid-auto-flow: column;
+  color: #0366d6;
+  text-decoration: none;
+
+  &:hover {
+    outline-width: 0;
+    text-decoration: underline;
+  }
+`;
 export const List = css``;
 export const Navigation = css``;
 export const Overlay = css``;
@@ -113,10 +156,8 @@ export default {
   Divider,
   Field,
   Flex,
-  Grid,
   Group,
   Heading,
-  Hidden,
   Image,
   Inline,
   InlineBlock,
