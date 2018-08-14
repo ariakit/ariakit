@@ -8,10 +8,10 @@ const Field = styled(Base)`
   flex-direction: column;
   flex: 1;
   label {
-    padding-bottom: 0.5em;
+    ${"" /* padding-bottom: 0.5em; */};
   }
   > *:not(label):not(:last-child) {
-    margin-bottom: 0.5em;
+    ${"" /* margin-bottom: 0.5em; */};
   }
 
   ${prop("theme.Field")};

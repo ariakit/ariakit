@@ -1,9 +1,9 @@
 import { prop } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Base from "../Base";
 
-const Input = styled(Box)`
+const Input = styled(Base)`
   display: block;
   width: 100%;
   padding: 0 0.5em;

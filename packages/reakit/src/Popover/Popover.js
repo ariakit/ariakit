@@ -6,10 +6,10 @@ import Popper from "popper.js";
 import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
-import Box from "../Box";
+import Base from "../Base";
 import PopoverArrow from "./PopoverArrow";
 
-const HiddenBox = Hidden.as(Box);
+const HiddenBox = Hidden.as(Base);
 
 class Component extends React.Component {
   state = {

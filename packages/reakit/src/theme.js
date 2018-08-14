@@ -20,11 +20,8 @@ export const Backdrop = css`
 export const Base = css``;
 export const Block = css``;
 export const Blockquote = css``;
-export const Box = css`
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 0.25em;
-`;
 export const Button = css`
+  ${generic.neutralRoundedBorder};
   background-color: rgba(0, 0, 0, 0.03);
   padding: 0 0.68em;
   &:hover,
@@ -52,25 +49,41 @@ export const Code = css`
   background-color: rgba(0, 0, 0, 0.05);
 `;
 export const Divider = css``;
-export const Field = css``;
-export const Fit = css``;
+export const Field = css`
+  label {
+    padding-bottom: 0.5em;
+  }
+  > *:not(label):not(:last-child) {
+    margin-bottom: 0.5em;
+  }
+`;
 export const Flex = css``;
 export const Grid = css``;
 export const Group = css``;
+export const GroupItem = css`
+  ${generic.neutralRoundedBorder};
+`;
 export const Heading = css``;
 export const Hidden = css``;
 export const Image = css``;
 export const Inline = css``;
 export const InlineBlock = css``;
 export const InlineFlex = css``;
-export const Input = css``;
+export const Input = css`
+  ${generic.neutralRoundedBorder};
+`;
 export const Label = css``;
 export const Link = css``;
 export const List = css``;
 export const Navigation = css``;
 export const Overlay = css``;
 export const Paragraph = css``;
-export const Popover = css``;
+export const Popover = css`
+  ${generic.neutralRoundedBorder};
+`;
+export const PopoverArrow = css`
+  ${generic.neutralRoundedBorder};
+`;
 export const Portal = css``;
 export const Shadow = css``;
 export const Sidebar = css``;
@@ -80,6 +93,13 @@ export const Tabs = css``;
 export const Toolbar = css``;
 export const Tooltip = css``;
 
+export const generic = {
+  neutralRoundedBorder: css`
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 0.25em;
+  `
+};
+
 export default {
   Arrow,
   Avatar,
@@ -87,13 +107,11 @@ export default {
   Base,
   Block,
   Blockquote,
-  Box,
   Button,
   Card,
   Code,
   Divider,
   Field,
-  Fit,
   Flex,
   Grid,
   Group,
@@ -118,5 +136,6 @@ export default {
   Table,
   Tabs,
   Toolbar,
-  Tooltip
+  Tooltip,
+  generic
 };

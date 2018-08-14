@@ -1,7 +1,7 @@
 import { prop } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Base from "../Base";
 
 const handleKeyPress = e => {
   if (e.charCode === 32 || e.charCode === 13) {
@@ -10,7 +10,7 @@ const handleKeyPress = e => {
   }
 };
 
-const Button = styled(Box)`
+const Button = styled(Base)`
   display: inline-flex;
   position: relative;
   flex: none;
@@ -23,7 +23,7 @@ const Button = styled(Box)`
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  ${'' /* background-color: rgba(0, 0, 0, 0.03); */}
+  ${"" /* background-color: rgba(0, 0, 0, 0.03); */}
   height: 2.5em;
   min-width: 2.5em;
   ${"" /* padding: 0 0.68em; */}
@@ -53,10 +53,10 @@ const Button = styled(Box)`
     }
   }
   &:not(button):not(select):not(input) {
-    ${'' /* display: inline-grid; */}
-    ${'' /* grid-gap: 0.68em; */}
-    ${'' /* grid-auto-flow: column; */}
-    ${'' /* align-content: center; */}
+    ${"" /* display: inline-grid; */}
+    ${"" /* grid-gap: 0.68em; */}
+    ${"" /* grid-auto-flow: column; */}
+    ${"" /* align-content: center; */}
   }
   ${prop("theme.Button")};
 `;

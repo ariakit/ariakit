@@ -2,9 +2,9 @@ import { prop } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Arrow from "../Arrow";
-import Box from "../Box";
+import Base from "../Base";
 
-const ArrowBox = Arrow.as(Box);
+const ArrowBox = Arrow.as(Base);
 
 const PopoverArrow = styled(ArrowBox)`
   position: absolute;
