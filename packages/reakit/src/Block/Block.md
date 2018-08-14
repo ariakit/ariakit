@@ -1,4 +1,4 @@
-`Block` is [Base](/components/primitives/base) with `display: block`. By default it renders as a `<div>`.
+`Block` is [Base](../Base/Base.md) with `display: block`. By default it renders as a `<div>`.
 
 ```jsx
 <React.Fragment>

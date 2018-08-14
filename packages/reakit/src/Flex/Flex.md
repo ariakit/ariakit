@@ -1,4 +1,4 @@
-This component consists of [Base](/components/primitives/base) with `display: flex`. Several flex properties can be passed directly as props for convenience.
+This component consists of [Base](../Base/Base.md) with `display: flex`. Several flex properties can be passed directly as props for convenience.
 
 ```jsx
 import { Paragraph } from "reakit";

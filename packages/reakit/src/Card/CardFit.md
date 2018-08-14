@@ -1,4 +1,4 @@
-You can use `CardFit` to bypass the `gutter` prop on [Card](/components/card):
+You can use `CardFit` to bypass the `gutter` prop on [Card](../Card/Card.md):
 
 ```jsx
 <Card>

@@ -1,4 +1,4 @@
-`Step` is composed from [Hidden](/components/hidden) as an interactive UI with one or more steps to complete. By default `Step` renders as a `<div>`.
+`Step` is composed from [Hidden](../Hidden/Hidden.md) as an interactive UI with one or more steps to complete. By default `Step` renders as a `<div>`.
 
 ```jsx
 import { Block, Group, Button } from "reakit";

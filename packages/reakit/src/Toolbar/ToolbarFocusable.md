@@ -1,4 +1,4 @@
-You should use `ToolbarFocusable` on elements within your [Toolbar](/components/toolbar) that you want to add to the focus sequence.
+You should use `ToolbarFocusable` on elements within your [Toolbar](Toolbar.md) that you want to add to the focus sequence.
 
 ```jsx
 <Toolbar>

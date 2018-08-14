@@ -11,7 +11,7 @@ import { InlineBlock, Button } from "reakit";
 </InlineBlock>
 ```
 
-You can use [PopoverContainer](/components/popover/popovercontainer) in combination with [PopoverHide](/components/popover/popoverhide) and [PopoverToggle](/components/popover/popovertoggle) to easily create an animated popover:
+You can use [PopoverContainer](PopoverContainer.md) in combination with [PopoverHide](PopoverHide.md) and [PopoverToggle](PopoverToggle.md) to easily create an animated popover:
 
 ```jsx
 import { InlineBlock, Popover } from "reakit";

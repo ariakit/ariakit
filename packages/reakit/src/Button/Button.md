@@ -1,4 +1,4 @@
-`Button` is built from [Box](/components/primitives/box) with minimal default styles to support the many possible uses a button has.
+`Button` is built from [Box](../Box/Box.md) with minimal default styles to support the many possible uses a button has.
 
 It renders a `<div>` by default since that's more flexible than `<button>`. Proper ARIA attributes and event handlers are applied in order to guarantee accessibility (see the `HTML` tab below).
 

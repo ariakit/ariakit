@@ -1,4 +1,4 @@
-Here's a destructured version of the example you saw on [Step](/components/step):
+Here's a destructured version of the example you saw on [Step](Step.md):
 
 ```jsx
 import { Block, Group, Button } from "reakit";

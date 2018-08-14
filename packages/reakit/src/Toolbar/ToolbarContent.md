@@ -1,4 +1,4 @@
-`ToolbarContent` is a wrapper for your [Toolbar](/components/toolbar) items. It helps you to align and space your elements correctly within the toolbar.
+`ToolbarContent` is a wrapper for your [Toolbar](Toolbar.md) items. It helps you to align and space your elements correctly within the toolbar.
 
 ```jsx
 <Toolbar>

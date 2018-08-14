@@ -5,6 +5,8 @@ import { compiler } from "markdown-to-jsx";
 import { styled, Paragraph, Link, Heading, List, Code } from "reakit";
 import { Link as RouterLink } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
+import getSectionUrl from "../utils/getSectionUrl";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Editor from "./Editor";
 import Blockquote from "../elements/Blockquote";
 
@@ -36,6 +38,25 @@ const Anchor = ({ href, ...props }) => {
         {props.children}
         <OpenInNewIcon />
       </Link>
+    );
+  }
+  if (/\.md$/.test(href)) {
+    return (
+      <StyleguidistContainer>
+        {({ sections }) => (
+          <Link
+            as={RouterLink}
+            to={getSectionUrl(
+              sections,
+              href
+                .split("/")
+                .pop()
+                .replace(".md", "")
+            )}
+            {...props}
+          />
+        )}
+      </StyleguidistContainer>
     );
   }
   return <Link as={RouterLink} to={href} {...props} />;
