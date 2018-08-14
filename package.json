@@ -14,14 +14,14 @@
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint packages/**",
-    "dev": "lerna exec --scope reakit -- yarn dev",
-    "build": "lerna exec --scope reakit -- yarn build",
-    "build:clean": "lerna exec --scope reakit -- yarn build:clean",
-    "website": "lerna exec --scope website -- yarn start",
-    "website:build": "lerna exec --scope website -- yarn build",
+    "dev": "lerna exec --scope reakit -- npm run dev",
+    "build": "lerna exec --scope reakit -- npm run build",
+    "build:clean": "lerna exec --scope reakit -- npm run build:clean",
+    "website": "lerna exec --scope website -- npm run start",
+    "website:build": "lerna exec --scope website -- npm run build",
     "postversion": "git add **/CHANGELOG.md",
     "release": "lerna publish",
-    "release:beta": "yarn release --npm-tag=beta --preid=beta"
+    "release:beta": "npm run release --npm-tag=beta --preid=beta"
   },
   "devDependencies": {
     "@babel/cli": "7.0.0-rc.1",

@@ -21,12 +21,12 @@
     "lint": "eslint src scripts",
     "build:clean": "rimraf dist es lib ts && node scripts/cleanProxies",
     "build:ts": "tsc --emitDeclarationOnly --allowJs false",
-    "prebuild": "yarn build:clean && yarn build:ts",
+    "prebuild": "npm run build:clean && npm run build:ts",
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",
-    "preversion": "yarn lint && npm test && yarn build",
+    "preversion": "npm run lint && npm test && npm run build",
     "postversion": "cp CHANGELOG.md ../../CHANGELOG.md",
-    "postpublish": "yarn build:clean"
+    "postpublish": "npm run build:clean"
   },
   "keywords": [
     "reakit",
