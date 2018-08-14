@@ -1,21 +1,14 @@
-import { getElementProps, getEventProps } from "react-known-props";
+import validAttr from "styled-components/lib/utils/validAttr";
 
-const pickHTMLProps = (tagName: string, props: { [key: string]: any }) => {
-  const allowedProps = [
-    ...getElementProps(tagName, { legacy: true }),
-    ...getEventProps()
-  ];
-
-  const testProp = (prop: string) =>
-    allowedProps.indexOf(prop) >= 0 || /^data-.+/.test(prop);
-
-  return Object.keys(props).reduce(
-    (finalProps, key) => ({
-      ...finalProps,
-      ...(testProp(key) ? { [key]: props[key] } : {})
-    }),
-    {}
-  );
-};
+function pickHTMLProps<P extends object>(props: P): Partial<P> {
+  const filteredProps = {};
+  const keys = Object.keys(props);
+  for (let key of keys) {
+    if (validAttr(key)) {
+      filteredProps[key] = props[key];
+    }
+  }
+  return filteredProps;
+}
 
 export default pickHTMLProps;
