@@ -1,4 +1,4 @@
-By default, `Sidebar` is a fixed [Overlay](/components/overlay) that appears on the left side of the screen.
+By default, `Sidebar` is a fixed [Overlay](../Overlay/Overlay.md) that appears on the left side of the screen.
 
 ```jsx
 import { Block, Button, Backdrop } from "reakit";
@@ -34,7 +34,7 @@ import { Block, Button, Backdrop } from "reakit";
 </Sidebar.Container>
 ```
 
-This is usually combined with [Portal](/components/portal):
+This is usually combined with [Portal](../Portal/Portal.md):
 
 ```jsx
 import { Block, Button, Backdrop, Portal } from "reakit";

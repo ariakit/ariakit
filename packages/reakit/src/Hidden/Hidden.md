@@ -4,7 +4,7 @@
 <Hidden visible>Hidden</Hidden>
 ```
 
-You can use [HiddenContainer](/components/hidden/hiddencontainer) to control its state with ease, and combine it with [HiddenShow](/components/hidden/hiddenshow), [HiddenHide](/components/hidden/hiddenhide) and [HiddenToggle](/components/hidden/hiddentoggle) to get event handlers (`onClick`) out of the box.
+You can use [HiddenContainer](HiddenContainer.md) to control its state with ease, and combine it with [HiddenShow](HiddenShow.md), [HiddenHide](HiddenHide.md) and [HiddenToggle](HiddenToggle.md) to get event handlers (`onClick`) out of the box.
 
 > **Tip:**
 

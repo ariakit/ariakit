@@ -1,4 +1,4 @@
-Here's a destructured version of the example you saw on [Tabs](/components/tabs):
+Here's a destructured version of the example you saw on [Tabs](Tabs.md):
 
 ```jsx
 import { Block, Group, Button } from "reakit";

@@ -1,4 +1,4 @@
-Grid is [Base](/components/primitives/base) with `display: grid`. It pairs with the Grid.Item component. Both take props to set several `grid-*` related properties.
+Grid is [Base](../Base/Base.md) with `display: grid`. It pairs with the Grid.Item component. Both take props to set several `grid-*` related properties.
 
 ```jsx
 <Grid columns="repeat(2, 1fr)" autoRows="auto" gap="3vw">

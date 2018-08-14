@@ -44,5 +44,5 @@ import CreateIcon from "react-icons/lib/md/create";
 `Toolbar` follows all the rules of [WAI-ARIA Practices 1.1](https://www.w3.org/TR/wai-aria-practices-1.1/#toolbar), which means
 
 - It has `role="toolbar"`.
-- You can use the arrow keys to change focus between [ToolbarFocusable](/components/toolbar/toolbarfocusable) components.
+- You can use the arrow keys to change focus between [ToolbarFocusable](ToolbarFocusable.md) components.
 - It'll remember the last focused element. That is, when moving focus back to Toolbar, it'll select the element that was focused before you left.

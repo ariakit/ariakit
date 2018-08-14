@@ -2,7 +2,7 @@ import isComponentSection from "./isComponentSection";
 
 const packagesUrl = "https://github.com/reakit/reakit/tree/master/packages";
 
-const getComponentGithubSrcUrl = (section, extension) => {
+const getSectionGitHubUrl = (section, extension) => {
   if (!section.filepath) {
     return null;
   }
@@ -14,4 +14,4 @@ const getComponentGithubSrcUrl = (section, extension) => {
   return `${packagesUrl}/${filePathWithoutExtension}.${extension}`;
 };
 
-export default getComponentGithubSrcUrl;
+export default getSectionGitHubUrl;

@@ -1,4 +1,4 @@
-`Inline` is [Base](/components/primitives/base) with `display: inline`.
+`Inline` is [Base](../Base/Base.md) with `display: inline`.
 
 ```jsx
 <div>
