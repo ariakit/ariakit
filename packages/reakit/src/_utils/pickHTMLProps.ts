@@ -1,21 +1,14 @@
-import { getElementProps, getEventProps } from "react-known-props";
+import validAttr from "./validAttr";
 
-const pickHTMLProps = (tagName: string, props: { [key: string]: any }) => {
-  const allowedProps = [
-    ...getElementProps(tagName, { legacy: true }),
-    ...getEventProps()
-  ];
-
-  const testProp = (prop: string) =>
-    allowedProps.indexOf(prop) >= 0 || /^data-.+/.test(prop);
-
-  return Object.keys(props).reduce(
-    (finalProps, key) => ({
-      ...finalProps,
-      ...(testProp(key) ? { [key]: props[key] } : {})
-    }),
-    {}
-  );
-};
+function pickHTMLProps<P extends object>(props: P): Partial<P> {
+  const filteredProps: Partial<P> = {};
+  // eslint-disable-next-line no-restricted-syntax
+  for (const prop in props) {
+    if (validAttr(prop)) {
+      filteredProps[prop] = props[prop];
+    }
+  }
+  return filteredProps;
+}
 
 export default pickHTMLProps;

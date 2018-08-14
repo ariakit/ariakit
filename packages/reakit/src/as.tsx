@@ -59,7 +59,7 @@ function render({ as: t, ...props }: AllProps): ReactElement<any> | null {
       ...(style ? { style } : {})
     };
     const allProps = {
-      ...pickHTMLProps(T, propsWithStyle),
+      ...pickHTMLProps(propsWithStyle),
       className
     };
 
