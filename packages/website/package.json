@@ -11,7 +11,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
+    "@babel/polyfill": "^7.0.0-rc.1",
     "codemirror": "^5.39.2",
     "lodash": "^4.17.5",
     "markdown-to-jsx": "^6.7.0",
@@ -40,6 +40,6 @@
     "react-styleguidist": "^7.2.1",
     "style-loader": "^0.22.1",
     "url-loader": "^1.0.1",
-    "webpack": "^3.0.0"
+    "webpack": "^3.12.0"
   }
 }
