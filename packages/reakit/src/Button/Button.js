@@ -23,17 +23,17 @@ const Button = styled(Box)`
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.03);
+  ${'' /* background-color: rgba(0, 0, 0, 0.03); */}
   height: 2.5em;
   min-width: 2.5em;
-  padding: 0 0.68em;
+  ${"" /* padding: 0 0.68em; */}
   &:hover,
   &:focus {
-    box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.1);
+    ${"" /* box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.1); */};
   }
   &:active,
   &.active {
-    box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.2);
+    ${"" /* box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.2); */};
   }
   &:after {
     display: none;
@@ -44,7 +44,7 @@ const Button = styled(Box)`
     bottom: 0;
     left: 0;
     border-radius: inherit;
-    background-color: rgba(255, 255, 255, 0.35);
+    ${"" /* background-color: rgba(255, 255, 255, 0.35); */};
   }
   &[disabled] {
     pointer-events: none;
@@ -53,10 +53,10 @@ const Button = styled(Box)`
     }
   }
   &:not(button):not(select):not(input) {
-    display: inline-grid;
-    grid-gap: 0.68em;
-    grid-auto-flow: column;
-    align-content: center;
+    ${'' /* display: inline-grid; */}
+    ${'' /* grid-gap: 0.68em; */}
+    ${'' /* grid-auto-flow: column; */}
+    ${'' /* align-content: center; */}
   }
   ${prop("theme.Button")};
 `;
