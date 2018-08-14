@@ -5,7 +5,7 @@ You can use ReaKit completely or only some of its modules according to your need
 If you're using modern tooling, such as [webpack](https://webpack.js.org/), [create-react-app](https://github.com/facebook/create-react-app) and similars, you already have tree shaking set up.
 
 > Tree shaking or dead code elimination means that unused modules will not be included in the bundle during the build process.
-
+>
 > [Learn more](https://medium.com/@netxm/what-is-tree-shaking-de7c6be5cadd)
 
 In the below example, only [as](as.md), [Button](../packages/reakit/src/Button/Button.md), [Popover](../packages/reakit/src/Popover/Popover.md) and their dependencies will be included in your final bundle:
