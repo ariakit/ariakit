@@ -19,7 +19,6 @@
     "build:clean": "lerna exec --scope reakit -- npm run build:clean",
     "website": "lerna exec --scope website -- npm run start",
     "website:build": "lerna exec --scope website -- npm run build",
-    "postversion": "git add **/CHANGELOG.md",
     "release": "lerna publish",
     "release:beta": "npm run release --npm-tag=beta --preid=beta"
   },

@@ -25,7 +25,6 @@
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",
     "preversion": "npm run lint && npm test && npm run build",
-    "postversion": "cp CHANGELOG.md ../../CHANGELOG.md",
     "postpublish": "npm run build:clean"
   },
   "keywords": [
