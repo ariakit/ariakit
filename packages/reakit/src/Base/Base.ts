@@ -13,8 +13,6 @@ const positions = {
   sticky: "sticky"
 };
 
-type PositionProps = { [key in keyof typeof positions]?: boolean };
-
 type ComponentProps = {
   as: keyof JSX.IntrinsicElements | ComponentType;
 };
@@ -22,11 +20,11 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-export type BaseProps = PositionProps & ComponentProps;
+type BaseProps = { [key in keyof typeof positions]?: boolean };
 
 const positionsKeys = Object.keys(positions);
 
-const Base = styled<BaseProps>(Component)`
+const Base = styled(Component)<BaseProps>`
   margin: 0;
   padding: 0;
   border: 0;
