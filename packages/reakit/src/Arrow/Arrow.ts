@@ -1,17 +1,16 @@
-import { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base, { BaseProps } from "../Base";
+import Base from "../Base";
 
 const SQRT2 = 1.41421356237;
 
-export interface ArrowProps extends BaseProps {
+interface ArrowProps {
   angle?: number;
 }
 
-const Arrow = styled(Base as ComponentType<ArrowProps>)`
+const Arrow = styled(Base)<ArrowProps>`
   display: inline-flex;
   width: 1em;
   height: 1em;

@@ -5,12 +5,10 @@ import parseTag from "./_utils/parseTag";
 import parseClassName from "./_utils/parseClassName";
 import pickHTMLProps from "./_utils/pickHTMLProps";
 import CSSProps from "./_utils/CSSProps";
+import getComponentName from "./_utils/getComponentName";
 import { isStyledComponent } from "./styled";
 
-export type Omit<T, K extends keyof T> = Pick<
-  T,
-  ({ [P in keyof T]: P } & { [P in K]: never })[keyof T]
->;
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 export type CSSProperties = {
   [key in keyof typeof CSSProps]?: string | number
@@ -82,18 +80,16 @@ function isWrappedWithAs(target: any): target is ReaKitComponent {
   return typeof target.asComponents !== "undefined";
 }
 
-type AllPropsWithAs<T extends AllProps> = Omit<T, "as"> & AllProps;
+type AllPropsReplaceAs<P extends AllProps> = Omit<P, "as"> & AllProps;
 
 function as(asComponents: AsProp) {
-  return <P extends AllProps>(
-    WrappedComponent: ComponentType<P>
-  ): ReaKitComponent<AllPropsWithAs<P>> => {
+  return <P extends AllProps>(WrappedComponent: ComponentType<P>) => {
     const target = isStyledComponent(WrappedComponent)
       ? WrappedComponent.target
       : WrappedComponent;
 
     const defineProperties = (scope: typeof WrappedComponent) => {
-      const xscope = scope as ReaKitComponent<AllPropsWithAs<P>>;
+      const xscope = scope as ReaKitComponent<AllPropsReplaceAs<P>>;
       xscope.asComponents = asComponents;
       xscope.as = otherComponents => as(otherComponents)(scope);
       return xscope;
@@ -103,17 +99,19 @@ function as(asComponents: AsProp) {
       return defineProperties(WrappedComponent);
     }
 
-    const getComponentName = (component: typeof WrappedComponent): any =>
-      component.displayName || component.name || component;
-
-    const components = ([] as any[]).concat(WrappedComponent, asComponents);
-
     const getAs = (props: AllProps): SingleAsProp[] =>
-      components.concat(props.as || [], props.nextAs || []);
+      ([] as any[]).concat(
+        WrappedComponent,
+        asComponents,
+        props.as || [],
+        props.nextAs || []
+      );
 
-    const displayName = `${getComponentName(
-      WrappedComponent
-    )}.as(${([] as any[]).concat(asComponents).map(getComponentName)})`;
+    const componentName = getComponentName(WrappedComponent);
+    const commaSeparatedAs = ([] as any[])
+      .concat(asComponents)
+      .map(getComponentName);
+    const displayName = `${componentName}.as(${commaSeparatedAs})`;
 
     const EnhancedComponent: typeof WrappedComponent = (props: AllProps) =>
       render({ ...props, as: getAs(props) });
