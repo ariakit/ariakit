@@ -6,9 +6,11 @@ export { default as styled } from "./styled";
 export * from "./styled";
 
 export { default as Arrow } from "./Arrow";
+export * from "./Arrow";
 export { default as Avatar } from "./Avatar";
 export { default as Backdrop } from "./Backdrop";
 export { default as Base } from "./Base";
+export * from "./Base";
 export { default as Block } from "./Block";
 export { default as Blockquote } from "./Blockquote";
 export { default as Box } from "./Box";
