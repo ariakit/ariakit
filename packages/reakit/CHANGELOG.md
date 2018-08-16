@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.2"></a>
+## [0.14.2](https://github.com/reakit/reakit/compare/reakit@0.14.1...reakit@0.14.2) (2018-08-16)
+
+
+### Bug Fixes
+
+* `Arrow` and JS files typings not working ([#192](https://github.com/reakit/reakit/issues/192)) ([ce88103](https://github.com/reakit/reakit/commit/ce88103))
+
+
+
+
+
 <a name="0.14.1"></a>
 ## 0.14.1 (2018-08-15)
 
