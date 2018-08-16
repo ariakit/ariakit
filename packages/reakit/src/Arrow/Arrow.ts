@@ -1,15 +1,14 @@
 import { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
-import globalPropTypes from "../_utils/globalPropTypes";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Base, { BaseProps } from "../Base";
 
 const SQRT2 = 1.41421356237;
 
-interface ArrowProps {
-  angle?: number | null;
+export interface ArrowProps extends BaseProps {
+  angle?: number;
 }
 
 const Arrow = styled(Base as ComponentType<ArrowProps>)`
@@ -42,8 +41,8 @@ const Arrow = styled(Base as ComponentType<ArrowProps>)`
   ${prop("theme.Arrow")};
 `;
 
+// @ts-ignore
 Arrow.propTypes = {
-  ...globalPropTypes,
   angle: PropTypes.number
 };
 

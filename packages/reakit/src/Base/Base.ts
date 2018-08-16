@@ -2,30 +2,29 @@ import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import { prop } from "styled-tools";
 import { bool } from "../_utils/styledProps";
-import globalPropTypes from "../_utils/globalPropTypes";
 import styled from "../styled";
 import as from "../as";
 
-enum Position {
-  static = "static",
-  absolute = "absolute",
-  fixed = "fixed",
-  relative = "relative",
-  sticky = "sticky"
-}
+const positions = {
+  static: "static",
+  absolute: "absolute",
+  fixed: "fixed",
+  relative: "relative",
+  sticky: "sticky"
+};
 
-type PositionProps = { [key in keyof typeof Position]?: boolean | null };
+type PositionProps = { [key in keyof typeof positions]?: boolean };
 
 type ComponentProps = {
   as: keyof JSX.IntrinsicElements | ComponentType;
 };
 
-const positions = Object.keys(Position);
-
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BaseProps = PositionProps & ComponentProps;
+export type BaseProps = PositionProps & ComponentProps;
+
+const positionsKeys = Object.keys(positions);
 
 const Base = styled<BaseProps>(Component)`
   margin: 0;
@@ -37,7 +36,7 @@ const Base = styled<BaseProps>(Component)`
   box-sizing: border-box;
   ${prop("theme.Base")};
   &&& {
-    ${bool("position", positions)};
+    ${bool("position", positionsKeys)};
   }
 `;
 
@@ -45,7 +44,6 @@ const asTypes = [PropTypes.func, PropTypes.string];
 
 // @ts-ignore
 Base.propTypes = {
-  ...globalPropTypes,
   as: PropTypes.oneOfType([
     ...asTypes,
     PropTypes.arrayOf(PropTypes.oneOfType(asTypes))

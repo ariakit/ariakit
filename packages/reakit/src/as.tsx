@@ -32,7 +32,7 @@ export interface ReaKitProps<T = any> {
   elementRef?: Ref<T>;
 }
 
-export type ReaKitComponent<P extends AllProps = {}> = ComponentType<P> & {
+export type ReaKitComponent<P extends AllProps = object> = ComponentType<P> & {
   asComponents: AsProp;
   as: (asComponents: AsProp) => ReaKitComponent<P>;
 };
