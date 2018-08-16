@@ -6,7 +6,7 @@ import Base from "../Base";
 
 const SQRT2 = 1.41421356237;
 
-export interface ArrowProps {
+interface ArrowProps {
   angle?: number;
 }
 
