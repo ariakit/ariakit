@@ -9,7 +9,6 @@ import CardFit from "./CardFit";
 const Card = styled(Base)`
   position: relative;
   display: inline-block;
-  ${"" /* background-color: white; */};
 
   && > *:not(${CardFit}) {
     margin: ${withProp("gutter", numberToPx)};

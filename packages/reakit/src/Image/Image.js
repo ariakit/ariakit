@@ -5,7 +5,7 @@ import Base from "../Base";
 
 const Image = styled(Base)`
   display: block;
-  ${"" /* max-width: 100%; */};
+  max-width: 100%;
   ${prop("theme.Image")};
 `;
 

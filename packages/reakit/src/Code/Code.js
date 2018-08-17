@@ -20,7 +20,6 @@ const Component = props => {
 };
 
 const Code = styled(Base)`
-  ${"" /* background-color: rgba(0, 0, 0, 0.05); */};
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;

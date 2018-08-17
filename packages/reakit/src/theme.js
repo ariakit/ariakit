@@ -1,7 +1,12 @@
 import { css } from "styled-components";
-import { switchProp, prop } from "styled-tools";
-import getUnderlyingElement from "./_utils/getUnderlyingElement";
+import { prop } from "styled-tools";
 
+export const generic = {
+  neutralRoundedBorder: css`
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 0.25em;
+  `
+};
 export const Arrow = css`
   color: rgba(0, 0, 0, 0.85);
 
@@ -21,9 +26,16 @@ export const Backdrop = css`
 `;
 
 export const Button = css`
-  ${generic.neutralRoundedBorder};
   background-color: rgba(0, 0, 0, 0.03);
   padding: 0 0.68em;
+  position: relative;
+  flex: none;
+  appearance: none;
+  user-select: none;
+  outline: none;
+  white-space: nowrap;
+  text-decoration: none;
+  height: 2.5em;
   &:hover,
   &:focus {
     box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.1);
@@ -61,39 +73,12 @@ export const GroupItem = css`
 `;
 export const Heading = css`
   margin: 0.5em 0 0.3em;
-  font-size: ${switchProp(getUnderlyingElement, {
-    h1: "2em",
-    h2: "1.75em",
-    h3: "1.5em",
-    h4: "1.25em",
-    h5: "1em",
-    h6: "0.75em"
-  })};
-`;
-export const Image = css`
-  max-width: 100%;
 `;
 export const Input = css`
   ${generic.neutralRoundedBorder};
-  display: block;
-  width: 100%;
   padding: 0 0.5em;
   height: 2.5em;
   background-color: white;
-  &::placeholder {
-    color: currentcolor;
-    opacity: 0.5;
-  }
-  textarea& {
-    padding: 0.5em;
-    height: auto;
-  }
-  &[type="checkbox"],
-  &[type="radio"] {
-    width: auto;
-    height: auto;
-    padding: 0;
-  }
 `;
 export const Link = css`
   display: inline-grid;
@@ -114,11 +99,6 @@ export const List = css`
   li {
     margin-bottom: 0.35em;
   }
-`;
-export const Overlay = css`
-  background-color: white;
-  left: 50%;
-  top: 50%;
 `;
 export const Paragraph = css`
   &:not(:last-child) {
@@ -189,13 +169,6 @@ export const TooltipArrow = css`
   border: none;
 `;
 
-export const generic = {
-  neutralRoundedBorder: css`
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 0.25em;
-  `
-};
-
 export default {
   Arrow,
   Avatar,
@@ -206,11 +179,9 @@ export default {
   Field,
   GroupItem,
   Heading,
-  Image,
   Input,
   Link,
   List,
-  Overlay,
   Paragraph,
   Popover,
   PopoverArrow,
