@@ -1,4 +1,4 @@
-const fastFilter = (func, list) => {
+const fastFilter = (list, func) => {
   let index = 0;
   let tempIndex = 0;
   const { length } = list;
@@ -23,4 +23,4 @@ const fastFilter = (func, list) => {
   return result;
 };
 
-module.exports = fastFilter;
+export default fastFilter;

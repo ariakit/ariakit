@@ -1,4 +1,4 @@
-const fastMap = (func, list) => {
+const fastMap = (list, func) => {
   let index = 0;
   const { length } = list;
   const result = new Array(length);
@@ -11,4 +11,4 @@ const fastMap = (func, list) => {
   return result;
 };
 
-module.exports = fastMap;
+export default fastMap;

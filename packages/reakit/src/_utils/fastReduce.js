@@ -1,4 +1,4 @@
-const fastReduce = (func, initial, list) => {
+const fastReduce = (list, func, initial) => {
   let accumulator = initial != null && initial !== false ? initial : list[0];
   let index = 0;
   const { length } = list;
@@ -11,4 +11,4 @@ const fastReduce = (func, initial, list) => {
   return accumulator;
 };
 
-module.exports = fastReduce;
+export default fastReduce;
