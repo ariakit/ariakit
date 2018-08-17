@@ -2,6 +2,7 @@ import React from "react";
 import { Input, Block, Link, styled } from "reakit";
 import ButtonPrimary from "../elements/ButtonPrimary";
 import ContentWrapper from "../elements/ContentWrapper";
+import track from "../utils/track";
 
 const action =
   "https://reakit.us18.list-manage.com/subscribe/post?u=cf382e48d5d8ed7178cb22060&id=941e41af27";
@@ -44,6 +45,7 @@ const NewsletterForm = props => (
       aria-label="Email address"
       name="EMAIL"
       type="email"
+      onBlur={track("reakit.newsletterEmailBlur")}
     />
     <Input
       gridArea="name"

@@ -9,6 +9,7 @@ import LogoSymbol from "../elements/LogoSymbol";
 import ContentWrapper from "../elements/ContentWrapper";
 import ButtonRounded from "../elements/ButtonRounded";
 import HeroGitHubButton from "./HeroGitHubButton";
+import track from "../utils/track";
 
 const Wrapper = styled(ContentWrapper)`
   display: grid;
@@ -59,11 +60,19 @@ const Hero = props => (
       Toolkit for building interactive UIs with React
     </Headline>
     <Buttons gridArea="buttons">
-      <ButtonPrimary as={[ButtonRounded, Link]} to="/guide">
+      <ButtonPrimary
+        as={[ButtonRounded, Link]}
+        to="/guide"
+        onClick={track("reakit.heroGuideClick")}
+      >
         <LibraryBooksIcon />
         Get Started
       </ButtonPrimary>
-      <ButtonSecondary as={[ButtonRounded, Link]} to="/components">
+      <ButtonSecondary
+        as={[ButtonRounded, Link]}
+        to="/components"
+        onClick={track("reakit.heroComponentsClick")}
+      >
         <CodeIcon />
         Components
       </ButtonSecondary>
