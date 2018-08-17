@@ -20,6 +20,7 @@ const Wrapper = styled(ContentWrapper)`
     / 250px 250px min-content;
   justify-content: center;
   align-items: center;
+  height: auto;
 
   @media (max-width: 768px) {
     grid-template:
