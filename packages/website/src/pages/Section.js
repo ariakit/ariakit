@@ -3,6 +3,7 @@ import { styled, Block } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import NewsletterForm from "website/src/components/NewsletterForm";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
@@ -20,6 +21,10 @@ const Content = styled(Block)`
   border-top: 1px solid ${prop("theme.grayLightest")};
   margin-top: 1em;
   padding-top: 1em;
+`;
+
+const StyledNewsletterForm = styled(NewsletterForm)`
+  margin: 20px 0 10px;
 `;
 
 const sectionMap = {
@@ -57,6 +62,7 @@ const Section = ({ location, ...props }) => (
             </Content>
             <ContainerAPITable section={section} />
             <PropTypesTable section={section} />
+            <StyledNewsletterForm />
             <SectionNavigation section={section} />
           </Block>
         );
