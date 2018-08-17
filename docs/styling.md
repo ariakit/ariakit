@@ -12,11 +12,11 @@ const Box = styled(Base)`
 <Box>Box</Box>
 ```
 
-You can easily extend `Box` and apply new styles:
+You can easily extend `Base` and apply new styles:
 ```jsx
-import { styled, Box } from "reakit";
+import { styled, Base } from "reakit";
 
-const MyBox = styled(Box)`
+const MyBox = styled(Base)`
   background-color: palevioletred;
   padding: 8px;
 `;
@@ -27,15 +27,15 @@ const MyBox = styled(Box)`
 Another way to style your enhanced components is by passing style props. Those styles will be converted into `style={{ ... }}` and applied as inline styles. Check the `HTML` tab to see the output.
 
 ```jsx
-import { Box } from "reakit";
+import { Base } from "reakit";
 
-<Box
+<Base
   backgroundColor="palevioletred"
   color="white"
   padding={8}
 >
   Box
-</Box>
+</Base>
 ```
 
 Finally, you can pass a `theme` object to `Provider` and style ReaKit elements directly:
