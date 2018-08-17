@@ -2,6 +2,7 @@ coverage
 scripts
 src
 /index.js
+/test.tsx
 *.log
 *.config.js
 *.lock
