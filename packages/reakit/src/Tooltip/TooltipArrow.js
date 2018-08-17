@@ -4,8 +4,6 @@ import as from "../as";
 import PopoverArrow from "../Popover/PopoverArrow";
 
 const TooltipArrow = styled(PopoverArrow)`
-  color: #222;
-  border: none;
   ${prop("theme.TooltipArrow")};
 `;
 

@@ -5,9 +5,6 @@ import Hidden from "../Hidden";
 
 const Overlay = styled(Hidden)`
   position: fixed;
-  background-color: white;
-  left: 50%;
-  top: 50%;
   z-index: 19900410;
   ${prop("theme.Overlay")};
 `;

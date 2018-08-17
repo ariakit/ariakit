@@ -126,18 +126,8 @@ const Popover = styled(Component)`
   left: 0;
   user-select: auto;
   cursor: auto;
-  color: inherit;
-  background-color: white;
-  padding: 1em;
   z-index: 999;
-  outline: 0;
   will-change: transform;
-  &[aria-hidden="false"] {
-    transition-timing-function: ${prop(
-      "timing",
-      "cubic-bezier(0.25, 0.1, 0.25, 1.5)"
-    )};
-  }
   ${prop("theme.Popover")};
 `;
 

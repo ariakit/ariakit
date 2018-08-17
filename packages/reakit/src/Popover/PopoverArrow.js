@@ -8,11 +8,7 @@ const ArrowBox = Arrow.as(Base);
 
 const PopoverArrow = styled(ArrowBox)`
   position: absolute;
-  color: white;
   border: inherit;
-  border-top: 0;
-  font-size: 1.25em;
-  border-radius: 0;
   [data-placement^="top"] > & {
     top: 100%;
   }

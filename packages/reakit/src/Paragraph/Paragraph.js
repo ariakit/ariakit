@@ -4,9 +4,6 @@ import as from "../as";
 import Base from "../Base";
 
 const Paragraph = styled(Base)`
-  &:not(:last-child) {
-    margin-bottom: 1rem;
-  }
   ${prop("theme.Paragraph")};
 `;
 

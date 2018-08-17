@@ -48,13 +48,6 @@ class Component extends React.Component {
 const Tooltip = styled(Component)`
   pointer-events: none;
   white-space: nowrap;
-  text-transform: none;
-  font-size: 0.875em;
-  text-align: center;
-  color: white;
-  background-color: #222;
-  border-radius: 0.15384em;
-  padding: 0.75em 1em;
   ${prop("theme.Tooltip")};
 `;
 

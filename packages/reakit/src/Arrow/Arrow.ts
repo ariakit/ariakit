@@ -17,7 +17,6 @@ const Arrow = styled(Base as ComponentType<ArrowProps>)`
   width: 1em;
   height: 1em;
   overflow: hidden;
-  /* color: rgba(0, 0, 0, 0.85); */
   align-items: center;
   justify-content: center;
   border-bottom-width: 0 !important;
@@ -30,9 +29,6 @@ const Arrow = styled(Base as ComponentType<ArrowProps>)`
     content: "";
     background-color: currentcolor;
     border: inherit;
-    /* border-width: 1px; */
-    /* border-top-width: 0;
-    border-left-width: 0; */
     margin-bottom: 100%;
     width: calc(100% / ${SQRT2});
     height: calc(100% / ${SQRT2});

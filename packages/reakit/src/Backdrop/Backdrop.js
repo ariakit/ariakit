@@ -9,7 +9,6 @@ const Backdrop = styled(Hidden)`
   left: 0;
   width: 100%;
   height: 100%;
-  ${"" /* background-color: rgba(0, 0, 0, 0.3); */};
   z-index: 998;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -moz-tap-highlight-color: rgba(0, 0, 0, 0);

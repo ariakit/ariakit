@@ -1,5 +1,5 @@
 import { css } from "styled-components";
-import { switchProp } from "styled-tools";
+import { switchProp, prop } from "styled-tools";
 import getUnderlyingElement from "./_utils/getUnderlyingElement";
 
 export const Arrow = css`
@@ -19,9 +19,7 @@ export const Avatar = css`
 export const Backdrop = css`
   background-color: rgba(0, 0, 0, 0.3);
 `;
-export const Base = css``;
-export const Block = css``;
-export const Blockquote = css``;
+
 export const Button = css`
   ${generic.neutralRoundedBorder};
   background-color: rgba(0, 0, 0, 0.03);
@@ -50,7 +48,6 @@ export const Card = css`
 export const Code = css`
   background-color: rgba(0, 0, 0, 0.05);
 `;
-export const Divider = css``;
 export const Field = css`
   label {
     padding-bottom: 0.5em;
@@ -59,8 +56,6 @@ export const Field = css`
     margin-bottom: 0.5em;
   }
 `;
-export const Flex = css``;
-export const Group = css``;
 export const GroupItem = css`
   ${generic.neutralRoundedBorder};
 `;
@@ -78,9 +73,6 @@ export const Heading = css`
 export const Image = css`
   max-width: 100%;
 `;
-export const Inline = css``;
-export const InlineBlock = css``;
-export const InlineFlex = css``;
 export const Input = css`
   ${generic.neutralRoundedBorder};
   display: block;
@@ -103,7 +95,6 @@ export const Input = css`
     padding: 0;
   }
 `;
-export const Label = css``;
 export const Link = css`
   display: inline-grid;
   grid-gap: 0.25em;
@@ -117,24 +108,86 @@ export const Link = css`
     text-decoration: underline;
   }
 `;
-export const List = css``;
-export const Navigation = css``;
-export const Overlay = css``;
-export const Paragraph = css``;
+export const List = css`
+  list-style: none;
+
+  li {
+    margin-bottom: 0.35em;
+  }
+`;
+export const Overlay = css`
+  background-color: white;
+  left: 50%;
+  top: 50%;
+`;
+export const Paragraph = css`
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`;
 export const Popover = css`
   ${generic.neutralRoundedBorder};
+  color: inherit;
+  padding: 1em;
+  background-color: white;
+  outline: 0;
+  &[aria-hidden="false"] {
+    transition-timing-function: ${prop(
+      "timing",
+      "cubic-bezier(0.25, 0.1, 0.25, 1.5)"
+    )};
+  }
 `;
 export const PopoverArrow = css`
   ${generic.neutralRoundedBorder};
+  color: white;
+  border-top: 0;
+  font-size: 1.25em;
+  border-radius: 0;
 `;
-export const Portal = css``;
-export const Shadow = css``;
-export const Sidebar = css``;
-export const Step = css``;
-export const Table = css``;
-export const Tabs = css``;
-export const Toolbar = css``;
-export const Tooltip = css``;
+export const Table = css`
+  table-layout: fixed;
+  border-collapse: collapse;
+  background-color: white;
+  border: 1px solid #bbb;
+  line-height: 200%;
+
+  caption {
+    text-transform: uppercase;
+    font-size: 0.9em;
+    color: #999;
+  }
+
+  td,
+  th {
+    padding: 0 8px;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+`;
+export const Tabs = css`
+  display: flex;
+  align-items: center;
+  list-style: none;
+`;
+export const Tooltip = css`
+  text-transform: none;
+  font-size: 0.875em;
+  text-align: center;
+  color: white;
+  background-color: #222;
+  border-radius: 0.15384em;
+  padding: 0.75em 1em;
+`;
+
+export const TooltipArrow = css`
+  color: #222;
+  border: none;
+`;
 
 export const generic = {
   neutralRoundedBorder: css`
@@ -147,36 +200,23 @@ export default {
   Arrow,
   Avatar,
   Backdrop,
-  Base,
-  Block,
-  Blockquote,
   Button,
   Card,
   Code,
-  Divider,
   Field,
-  Flex,
-  Group,
+  GroupItem,
   Heading,
   Image,
-  Inline,
-  InlineBlock,
-  InlineFlex,
   Input,
-  Label,
   Link,
   List,
-  Navigation,
   Overlay,
   Paragraph,
   Popover,
-  Portal,
-  Shadow,
-  Sidebar,
-  Step,
+  PopoverArrow,
   Table,
   Tabs,
-  Toolbar,
   Tooltip,
+  TooltipArrow,
   generic
 };
