@@ -8,7 +8,12 @@ import ButtonTransparent from "../elements/ButtonTransparent";
 import SectionContentWrapper from "../elements/SectionContentWrapper";
 
 const Name = styled(Heading)`
+  font-size: 40px;
+  margin: 0;
   margin-right: auto;
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
 `;
 
 const GithubSrcButtonText = styled(Base)`
@@ -17,11 +22,16 @@ const GithubSrcButtonText = styled(Base)`
   }
 `;
 
-const SectionGitHubButtons = ({ section, ...props }) => {
+const SectionHeader = ({ section, ...props }) => {
   const githubDocUrl = getSectionGitHubUrl(section, "md");
   const githubSrcUrl = getSectionGitHubUrl(section, "js");
   return (
-    <SectionContentWrapper alignItems="center" {...props}>
+    <SectionContentWrapper
+      alignItems="center"
+      paddingTop={12}
+      paddingBottom={12}
+      {...props}
+    >
       <Name>{section.name}</Name>
       <Flex>
         {githubSrcUrl && (
@@ -51,4 +61,4 @@ const SectionGitHubButtons = ({ section, ...props }) => {
   );
 };
 
-export default SectionGitHubButtons;
+export default SectionHeader;

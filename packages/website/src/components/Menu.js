@@ -25,7 +25,7 @@ const SectionLink = styled(Link)`
   line-height: 1.75;
   font-weight: 400;
   margin: 0;
-  font-size: 1em;
+  font-size: 18px;
   color: ${prop("theme.black")};
   border-left: 5px solid transparent;
   padding-left: 20px;

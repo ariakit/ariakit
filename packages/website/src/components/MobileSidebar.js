@@ -9,7 +9,7 @@ import getRelease from "../utils/getRelease";
 import Menu from "./Menu";
 
 const StyledSidebar = styled(Sidebar)`
-  padding: 1em;
+  padding: 1em 1em 3em;
   min-width: 250px;
   -webkit-overflow-scrolling: touch;
 `;
