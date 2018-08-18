@@ -13,7 +13,7 @@
     "type-check": "tsc --noEmit",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint packages/**",
+    "lint": "eslint packages/** --ext js,ts,tsx",
     "dev": "lerna exec --scope reakit -- npm run dev",
     "build": "lerna exec --scope reakit -- npm run build",
     "build:clean": "lerna exec --scope reakit -- npm run build:clean",

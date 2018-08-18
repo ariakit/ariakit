@@ -8,7 +8,7 @@
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint src"
+    "lint": "eslint src --ext js,ts,tsx"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.1",

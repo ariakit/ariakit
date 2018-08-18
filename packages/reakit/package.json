@@ -18,7 +18,7 @@
     "type-check": "tsc --noEmit",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint src scripts",
+    "lint": "eslint src scripts --ext js,ts,tsx",
     "build:clean": "rimraf dist es lib ts && node scripts/cleanProxies",
     "build:ts": "tsc --emitDeclarationOnly --allowJs false",
     "prebuild": "npm run build:clean && npm run build:ts",
