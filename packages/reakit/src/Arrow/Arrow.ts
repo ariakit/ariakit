@@ -29,6 +29,8 @@ const Arrow = styled(Base as ComponentType<ArrowProps>)`
     content: "";
     background-color: currentcolor;
     border: inherit;
+    border-top-width: 0;
+    border-left-width: 0;
     margin-bottom: 100%;
     width: calc(100% / ${SQRT2});
     height: calc(100% / ${SQRT2});

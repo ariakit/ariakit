@@ -1,19 +1,15 @@
 import { css } from "styled-components";
 import { prop } from "styled-tools";
 
-export const generic = {
-  neutralRoundedBorder: css`
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 0.25em;
-  `
-};
+export const neutralRoundedBorder = css`
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0.25em;
+`;
 export const Arrow = css`
   color: rgba(0, 0, 0, 0.85);
 
   &:after {
     border-width: 1px;
-    border-top-width: 0;
-    border-left-width: 0;
   }
 `;
 export const Avatar = css`
@@ -69,13 +65,13 @@ export const Field = css`
   }
 `;
 export const GroupItem = css`
-  ${generic.neutralRoundedBorder};
+  ${neutralRoundedBorder};
 `;
 export const Heading = css`
   margin: 0.5em 0 0.3em;
 `;
 export const Input = css`
-  ${generic.neutralRoundedBorder};
+  ${neutralRoundedBorder};
   padding: 0 0.5em;
   height: 2.5em;
   background-color: white;
@@ -106,7 +102,7 @@ export const Paragraph = css`
   }
 `;
 export const Popover = css`
-  ${generic.neutralRoundedBorder};
+  ${neutralRoundedBorder};
   color: inherit;
   padding: 1em;
   background-color: white;
@@ -119,7 +115,7 @@ export const Popover = css`
   }
 `;
 export const PopoverArrow = css`
-  ${generic.neutralRoundedBorder};
+  ${neutralRoundedBorder};
   color: white;
   border-top: 0;
   font-size: 1.25em;
@@ -189,5 +185,5 @@ export default {
   Tabs,
   Tooltip,
   TooltipArrow,
-  generic
+  neutralRoundedBorder
 };

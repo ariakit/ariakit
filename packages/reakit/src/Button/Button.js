@@ -3,13 +3,6 @@ import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
-const handleKeyPress = e => {
-  if (e.charCode === 32 || e.charCode === 13) {
-    e.preventDefault();
-    e.target.click();
-  }
-};
-
 const Button = styled(Base)`
   display: inline-flex;
   align-items: center;
@@ -38,8 +31,7 @@ const Button = styled(Base)`
 
 Button.defaultProps = {
   role: "button",
-  tabIndex: 0,
-  onKeyPress: handleKeyPress
+  tabIndex: 0
 };
 
-export default as("div")(Button);
+export default as("button")(Button);
