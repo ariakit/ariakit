@@ -39,7 +39,8 @@
     "popper.js": "^1.14.4",
     "prop-types": "^15.6.2",
     "styled-components": "^3.4.2",
-    "styled-tools": "^1.1.0"
+    "styled-tools": "^1.1.0",
+    "reakit-theme-default": "^0.0.1"
   },
   "devDependencies": {
     "eslint": "^5.3.0",

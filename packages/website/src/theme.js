@@ -6,7 +6,7 @@ import defaultTheme, {
   Heading,
   Link,
   Table
-} from "../../reakit/src/reakit-theme-default";
+} from "reakit-theme-default";
 
 export default {
   ...defaultTheme,

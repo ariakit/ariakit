@@ -1,5 +1,5 @@
 import { prop } from "styled-tools";
-import { css } from "./styled";
+import { css } from "reakit";
 
 export const neutralRoundedBorder = css`
   border: 1px solid rgba(0, 0, 0, 0.3);
