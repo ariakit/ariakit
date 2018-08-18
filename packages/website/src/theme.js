@@ -1,6 +1,12 @@
 import { css } from "reakit";
 import { prop } from "styled-tools";
-import defaultTheme from "../../reakit/src/reakit-theme-default";
+import defaultTheme, {
+  Button,
+  Code,
+  Heading,
+  Link,
+  Table
+} from "../../reakit/src/reakit-theme-default";
 
 export default {
   ...defaultTheme,
@@ -15,7 +21,7 @@ export default {
   grayDark: "#333",
 
   Button: css`
-    ${defaultTheme.Button};
+    ${Button};
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -23,7 +29,7 @@ export default {
   `,
 
   Code: css`
-    ${defaultTheme.Code};
+    ${Code};
     font-family: "Fira Code", monospace;
     font-size: 14px;
     white-space: pre;
@@ -35,19 +41,19 @@ export default {
   `,
 
   Heading: css`
-    ${defaultTheme.Heading};
+    ${Heading};
     line-height: 1.15;
     letter-spacing: -0.015em;
   `,
 
   Link: css`
-    ${defaultTheme.Link};
+    ${Link};
     color: ${prop("theme.pinkDark")};
     font-weight: 600;
   `,
 
   Table: css`
-    ${defaultTheme.Table};
+    ${Table};
     table-layout: auto;
     border: 0;
     width: 100%;
