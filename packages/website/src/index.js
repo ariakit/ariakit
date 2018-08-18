@@ -2,7 +2,7 @@ import "@babel/polyfill";
 import "parse-prop-types";
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { ThemeProvider, Provider } from "reakit";
+import { Provider } from "reakit";
 import "./globalStyles";
 import theme from "./theme";
 import getEvalInContext from "./utils/getEvalInContext";
@@ -20,17 +20,15 @@ const getInitialState = ({ allSections, ...props }) => ({
 });
 
 const App = props => (
-  <Provider initialState={getInitialState(props)} devtools>
-    <ThemeProvider theme={theme}>
-      <Router>
-        <ScrollToTop>
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/" component={Sections} />
-          </Switch>
-        </ScrollToTop>
-      </Router>
-    </ThemeProvider>
+  <Provider initialState={getInitialState(props)} devtools theme={theme}>
+    <Router>
+      <ScrollToTop>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/" component={Sections} />
+        </Switch>
+      </ScrollToTop>
+    </Router>
   </Provider>
 );
 
