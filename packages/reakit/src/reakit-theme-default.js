@@ -1,5 +1,5 @@
-import { css } from "styled-components";
 import { prop } from "styled-tools";
+import { css } from "./styled";
 
 const neutralRoundedBorder = css`
   border: 1px solid rgba(0, 0, 0, 0.3);
