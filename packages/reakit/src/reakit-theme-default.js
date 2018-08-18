@@ -1,27 +1,27 @@
 import { css } from "styled-components";
 import { prop } from "styled-tools";
 
-export const neutralRoundedBorder = css`
+const neutralRoundedBorder = css`
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 0.25em;
 `;
-export const Arrow = css`
+const Arrow = css`
   color: rgba(0, 0, 0, 0.85);
 
   &:after {
     border-width: 1px;
   }
 `;
-export const Avatar = css`
+const Avatar = css`
   border-radius: 50%;
   width: 1.5em;
   height: 1.5em;
 `;
-export const Backdrop = css`
+const Backdrop = css`
   background-color: rgba(0, 0, 0, 0.3);
 `;
 
-export const Button = css`
+const Button = css`
   background-color: rgba(0, 0, 0, 0.03);
   padding: 0 0.68em;
   position: relative;
@@ -50,13 +50,13 @@ export const Button = css`
     align-content: center;
   }
 `;
-export const Card = css`
+const Card = css`
   background-color: white;
 `;
-export const Code = css`
+const Code = css`
   background-color: rgba(0, 0, 0, 0.05);
 `;
-export const Field = css`
+const Field = css`
   label {
     padding-bottom: 0.5em;
   }
@@ -64,19 +64,19 @@ export const Field = css`
     margin-bottom: 0.5em;
   }
 `;
-export const GroupItem = css`
+const GroupItem = css`
   ${neutralRoundedBorder};
 `;
-export const Heading = css`
+const Heading = css`
   margin: 0.5em 0 0.3em;
 `;
-export const Input = css`
+const Input = css`
   ${neutralRoundedBorder};
   padding: 0 0.5em;
   height: 2.5em;
   background-color: white;
 `;
-export const Link = css`
+const Link = css`
   display: inline-grid;
   grid-gap: 0.25em;
   align-items: center;
@@ -89,19 +89,19 @@ export const Link = css`
     text-decoration: underline;
   }
 `;
-export const List = css`
+const List = css`
   list-style: none;
 
   li {
     margin-bottom: 0.35em;
   }
 `;
-export const Paragraph = css`
+const Paragraph = css`
   &:not(:last-child) {
     margin-bottom: 1rem;
   }
 `;
-export const Popover = css`
+const Popover = css`
   ${neutralRoundedBorder};
   color: inherit;
   padding: 1em;
@@ -114,14 +114,14 @@ export const Popover = css`
     )};
   }
 `;
-export const PopoverArrow = css`
+const PopoverArrow = css`
   ${neutralRoundedBorder};
   color: white;
   border-top: 0;
   font-size: 1.25em;
   border-radius: 0;
 `;
-export const Table = css`
+const Table = css`
   table-layout: fixed;
   border-collapse: collapse;
   background-color: white;
@@ -145,12 +145,12 @@ export const Table = css`
     background-color: rgba(0, 0, 0, 0.05);
   }
 `;
-export const Tabs = css`
+const Tabs = css`
   display: flex;
   align-items: center;
   list-style: none;
 `;
-export const Tooltip = css`
+const Tooltip = css`
   text-transform: none;
   font-size: 0.875em;
   text-align: center;
@@ -160,7 +160,7 @@ export const Tooltip = css`
   padding: 0.75em 1em;
 `;
 
-export const TooltipArrow = css`
+const TooltipArrow = css`
   color: #222;
   border: none;
 `;
