@@ -25,21 +25,21 @@
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
     "reakit": "^0.14.2",
-    "styled-tools": "^1.1.0",
+    "styled-tools": "^1.2.0",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
-    "@types/codemirror": "^0.0.58",
+    "@types/codemirror": "^0.0.59",
     "babel-loader": "^8.0.0-beta",
     "css-loader": "^0.28.11",
-    "eslint": "^5.3.0",
+    "eslint": "^5.4.0",
     "file-loader": "^1.1.11",
     "jest-cli": "^23.5.0",
     "opn-cli": "^3.1.0",
     "raw-loader": "^0.5.1",
-    "react-styleguidist": "^7.2.2",
+    "react-styleguidist": "^7.2.3",
     "style-loader": "^0.22.1",
-    "url-loader": "^1.0.1",
+    "url-loader": "^1.1.1",
     "webpack": "^3.12.0"
   }
 }
