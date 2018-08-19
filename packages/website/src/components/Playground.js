@@ -17,15 +17,15 @@ const PreviewWrapper = styled(Block)`
 `;
 
 const Playground = ({ code, evalInContext, ...props }) => (
-  <StateContainer initialState={{ state: code }}>
-    {({ state, setState }) => (
+  <StateContainer initialState={{ ownCode: code, theme: "themeDefault" }}>
+    {({ ownCode, theme, setState }) => (
       <Wrapper {...props}>
         <PreviewWrapper>
-          <Preview code={state} evalInContext={evalInContext} />
+          <Preview code={ownCode} evalInContext={evalInContext} theme={theme} />
         </PreviewWrapper>
         <EditorWithTabs
-          code={state}
-          onChange={c => setState({ state: c.trim() })}
+          code={ownCode}
+          onChange={newCode => setState({ ownCode: newCode })}
           evalInContext={evalInContext}
         />
       </Wrapper>
