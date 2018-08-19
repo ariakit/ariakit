@@ -5,6 +5,23 @@ import { Block } from "reakit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import compileComponent from "../utils/compileComponent";
 
+const processCode = (code, ...fns) =>
+  fns.reduce((acc, fn) => {
+    acc = fn(acc); // eslint-disable-line no-param-reassign
+    return acc;
+  }, code);
+
+const addImports = string =>
+  string.replace(
+    /^(.*)$/m,
+    `const { Provider } = require("reakit");\nconst theme = require("reakit-theme-default");\n$1`
+  );
+
+const addProviderWrapper = string =>
+  string
+    .replace(/(<[A-Z].*>)/m, "<Provider theme={theme}>\n$1")
+    .replace(/(<[/][A-Z]\w+>)[^<]*$/, "$1\n</Provider>");
+
 class Preview extends React.Component {
   static propTypes = {
     code: PropTypes.string.isRequired,
@@ -48,10 +65,12 @@ class Preview extends React.Component {
     this.setState({ error: null });
     const { code, config, evalInContext } = this.props;
     if (!code) return;
+    const processedCode = processCode(code, addImports, addProviderWrapper);
+    console.log(processedCode);
 
     try {
       const exampleComponent = compileComponent(
-        code,
+        processedCode,
         config.compilerConfig,
         evalInContext
       );
