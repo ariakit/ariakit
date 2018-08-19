@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.3"></a>
+## [0.14.3](https://github.com/reakit/reakit/compare/reakit@0.14.2...reakit@0.14.3) (2018-08-19)
+
+
+### Features
+
+* Add `shift` and `flip` props to `Popover` ([#196](https://github.com/reakit/reakit/issues/196)) ([9ee52ed](https://github.com/reakit/reakit/commit/9ee52ed))
+* Add more TypeScript typings ([#193](https://github.com/reakit/reakit/issues/193)) ([b6c08fe](https://github.com/reakit/reakit/commit/b6c08fe))
+
+
+
+
+
 <a name="0.14.2"></a>
 ## [0.14.2](https://github.com/reakit/reakit/compare/reakit@0.14.1...reakit@0.14.2) (2018-08-16)
 
