@@ -4,7 +4,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider } from "reakit";
 import "./globalStyles";
-import theme from "./theme";
+import themeWebsite from "./theme";
 import getEvalInContext from "./utils/getEvalInContext";
 import parseSections from "./utils/parseSections";
 import Home from "./pages/Home";
@@ -20,7 +20,7 @@ const getInitialState = ({ allSections, ...props }) => ({
 });
 
 const App = props => (
-  <Provider initialState={getInitialState(props)} devtools>
+  <Provider initialState={getInitialState(props)} devtools theme={themeWebsite}>
     <Router>
       <ScrollToTop>
         <Switch>

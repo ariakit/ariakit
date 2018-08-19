@@ -8,12 +8,17 @@ import compileComponent from "../utils/compileComponent";
 const processCode = (code, ...fns) => fns.reduce((acc, fn) => fn(acc), code);
 
 const addProviderWrapper = string =>
-  string
-    .replace(
-      /(<[A-Z].*>)/m,
-      "<Provider.default theme={themeDefault.default}>\n$1"
-    )
-    .replace(/(<[/][A-Z]\w+>)[^<]*$/, "$1\n</Provider.default>");
+  /<Provider/.test(string)
+    ? string
+    : string
+        .replace(
+          /(<[A-Za-z][^>]+>)/m,
+          "<Provider theme={themeDefault.default}>\n$1"
+        )
+        .replace(/(<[/]?[A-Za-z][^>]+>)[^<]*$/, "$1\n</Provider>");
+
+const ProviderToProviderDotDefault = string =>
+  string.replace(/Provider/g, "Provider.default");
 
 class Preview extends React.Component {
   static propTypes = {
@@ -58,12 +63,15 @@ class Preview extends React.Component {
     this.setState({ error: null });
     if (!this.props.code) return;
     const { code, config, evalInContext } = this.props;
-    const processedCode = processCode(code, addProviderWrapper);
+    const processedCode = processCode(
+      code,
+      addProviderWrapper,
+      ProviderToProviderDotDefault
+    );
 
     try {
       const exampleComponent = compileComponent(
-        code,
-        // processedCode,
+        processedCode,
         config.compilerConfig,
         evalInContext
       );
