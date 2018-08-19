@@ -5,10 +5,15 @@ import { Block } from "reakit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import compileComponent from "../utils/compileComponent";
 
+const themeNameMap = {
+  Default: "themeDefault",
+  None: null
+};
+
 const processCode = (code, ...fns) => fns.reduce((acc, fn) => fn(acc), code);
 
-const addProviderWrapper = theme => string =>
-  /<Provider/.test(string)
+const addThemeWrapper = theme => string =>
+  /<Provider/.test(string) || !theme
     ? string
     : string
         .replace(
@@ -25,7 +30,7 @@ class Preview extends React.Component {
     code: PropTypes.string.isRequired,
     evalInContext: PropTypes.func.isRequired,
     config: PropTypes.object.isRequired,
-    theme: PropTypes.string.isRequired
+    theme: PropTypes.string
   };
 
   state = {
@@ -38,12 +43,17 @@ class Preview extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      this.state.error !== nextState.error || this.props.code !== nextProps.code
+      this.props.theme !== nextProps.theme ||
+      this.state.error !== nextState.error ||
+      this.props.code !== nextProps.code
     );
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.code !== prevProps.code) {
+    if (
+      this.props.code !== prevProps.code ||
+      this.props.theme !== prevProps.theme
+    ) {
       this.executeCode();
     }
   }
@@ -66,7 +76,7 @@ class Preview extends React.Component {
     const { code, config, evalInContext, theme } = this.props;
     const processedCode = processCode(
       code,
-      addProviderWrapper(theme),
+      addThemeWrapper(themeNameMap[theme]),
       ProviderToProviderDotDefault
     );
 
