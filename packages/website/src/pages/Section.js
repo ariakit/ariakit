@@ -15,7 +15,7 @@ import SectionUses from "../components/SectionUses";
 import PropTypesTable from "../components/PropTypesTable";
 import SectionNavigation from "../components/SectionNavigation";
 import ContainerAPITable from "../components/ContainerAPITable";
-import SectionGitHubButtons from "../components/SectionGitHubButtons";
+import SectionHeader from "../components/SectionHeader";
 
 const Content = styled(Block)`
   border-top: 1px solid ${prop("theme.grayLightest")};
@@ -24,7 +24,7 @@ const Content = styled(Block)`
 `;
 
 const StyledNewsletterForm = styled(NewsletterForm)`
-  margin: 20px 0 10px;
+  margin: 40px 0 20px;
 `;
 
 const sectionMap = {
@@ -45,7 +45,7 @@ const Section = ({ location, ...props }) => (
             <Helmet>
               <title>{section.name} - ReaKit</title>
             </Helmet>
-            <SectionGitHubButtons section={section} />
+            <SectionHeader section={section} />
             {section.name !== "Base" && (
               <React.Fragment>
                 <SectionUses section={section} />
