@@ -79,6 +79,10 @@ module.exports = {
   styleguideComponents: {
     StyleGuide: path.join(__dirname, "src")
   },
+  context: {
+    Provider: "reakit/Provider",
+    themeDefault: path.join(__dirname, "../reakit-theme-default")
+  },
   compilerConfig: {
     transforms: {
       dangerousTaggedTemplateString: true

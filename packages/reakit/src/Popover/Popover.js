@@ -6,10 +6,7 @@ import Popper from "popper.js";
 import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
-import Base from "../Base";
 import PopoverArrow from "./PopoverArrow";
-
-const HiddenBox = Hidden.as(Base);
 
 class Component extends React.Component {
   state = {
@@ -107,7 +104,7 @@ class Component extends React.Component {
 
   render() {
     return (
-      <HiddenBox
+      <Hidden
         id={this.props.popoverId}
         {...this.state}
         data-placement={this.state.placement}

@@ -1,4 +1,4 @@
-import { prop } from "styled-tools";
+import { prop, ifProp } from "styled-tools";
 import { css } from "reakit";
 
 export const neutralRoundedBorder = css`
@@ -23,6 +23,12 @@ export const Backdrop = css`
 
 export const Button = css`
   ${neutralRoundedBorder};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  cursor: pointer;
+  min-width: 2.5em;
   background-color: rgba(0, 0, 0, 0.03);
   padding: 0 0.68em;
   position: relative;
@@ -33,6 +39,12 @@ export const Button = css`
   white-space: nowrap;
   text-decoration: none;
   height: 2.5em;
+  &[disabled] {
+    pointer-events: none;
+    &:after {
+      display: block;
+    }
+  }
   &:hover,
   &:focus {
     box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.1);
@@ -43,6 +55,14 @@ export const Button = css`
   }
   &:after {
     background-color: rgba(255, 255, 255, 0.35);
+    display: none;
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
   }
   &:not(button):not(select):not(input) {
     display: inline-grid;
@@ -56,8 +76,20 @@ export const Card = css`
 `;
 export const Code = css`
   background-color: rgba(0, 0, 0, 0.05);
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: ${ifProp("block", "0", "0.25em 0.35em")};
+
+  code {
+    display: block;
+    padding: 1em;
+  }
 `;
 export const Field = css`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   label {
     padding-bottom: 0.5em;
   }
@@ -73,8 +105,25 @@ export const Heading = css`
 `;
 export const Input = css`
   ${neutralRoundedBorder};
+  display: block;
+  width: 100%;
   padding: 0 0.5em;
   height: 2.5em;
+  &[type="checkbox"],
+  &[type="radio"] {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    padding: 0;
+  }
+  &::placeholder {
+    color: currentcolor;
+    opacity: 0.5;
+  }
+  textarea & {
+    padding: 0.5em;
+    height: auto;
+  }
 `;
 export const Link = css`
   display: inline-grid;
@@ -128,6 +177,16 @@ export const Table = css`
   background-color: white;
   border: 1px solid #bbb;
   line-height: 200%;
+  display: table;
+
+  tbody,
+  td,
+  th,
+  tfoot,
+  thead,
+  tr {
+    border: inherit;
+  }
 
   caption {
     text-transform: uppercase;

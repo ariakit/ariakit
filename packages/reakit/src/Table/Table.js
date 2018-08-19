@@ -4,16 +4,6 @@ import as from "../as";
 import Base from "../Base";
 
 const Table = styled(Base)`
-  display: table;
-
-  tbody,
-  td,
-  th,
-  tfoot,
-  thead,
-  tr {
-    border: inherit;
-  }
   ${prop("theme.Table")};
 `;
 

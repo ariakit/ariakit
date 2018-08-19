@@ -20,7 +20,7 @@ const getInitialState = ({ allSections, ...props }) => ({
 });
 
 const App = props => (
-  <Provider initialState={getInitialState(props)} devtools theme={theme}>
+  <Provider initialState={getInitialState(props)} devtools>
     <Router>
       <ScrollToTop>
         <Switch>

@@ -2,11 +2,8 @@ import { prop } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Arrow from "../Arrow";
-import Base from "../Base";
 
-const ArrowBox = Arrow.as(Base);
-
-const PopoverArrow = styled(ArrowBox)`
+const PopoverArrow = styled(Arrow)`
   position: absolute;
   border: inherit;
   [data-placement^="top"] > & {
