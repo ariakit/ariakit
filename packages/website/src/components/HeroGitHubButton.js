@@ -47,6 +47,7 @@ const HeroGitHubButton = props => (
             <StarsPopover
               visible={stars > 0}
               placement={getPopoverPlacement(width)}
+              flip={false}
             >
               <Popover.Arrow />
               <StarIcon /> {stars}
