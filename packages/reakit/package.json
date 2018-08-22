@@ -34,6 +34,7 @@
     "toolkit"
   ],
   "dependencies": {
+    "@emotion/is-prop-valid": "^0.6.6",
     "constate": "^0.7.2",
     "hoist-non-react-statics": "^3.0.1",
     "popper.js": "^1.14.4",
