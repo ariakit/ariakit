@@ -17,7 +17,7 @@ const Wrapper = styled(ContentWrapper)`
     "text text text"
     "email name button"
     "footer footer footer"
-    / 250px 250px min-content;
+    / minmax(auto, 250px) minmax(auto, 250px) min-content;
   justify-content: center;
   align-items: center;
   height: auto;
