@@ -11,10 +11,10 @@
     "lint": "eslint src --ext js,ts,tsx"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0-rc.1",
+    "@babel/polyfill": "^7.0.0-rc.2",
     "codemirror": "^5.39.2",
     "lodash": "^4.17.5",
-    "markdown-to-jsx": "^6.7.0",
+    "markdown-to-jsx": "^6.7.1",
     "parse-prop-types": "^0.3.0",
     "pretty": "^2.0.0",
     "prop-types": "^15.6.2",
@@ -25,7 +25,7 @@
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
     "reakit": "^0.14.3",
-    "styled-tools": "^1.2.0",
+    "styled-tools": "^1.3.1",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
@@ -33,11 +33,11 @@
     "babel-loader": "^8.0.0-beta",
     "css-loader": "^0.28.11",
     "eslint": "^5.4.0",
-    "file-loader": "^1.1.11",
+    "file-loader": "^2.0.0",
     "jest-cli": "^23.5.0",
     "opn-cli": "^3.1.0",
     "raw-loader": "^0.5.1",
-    "react-styleguidist": "^7.2.3",
+    "react-styleguidist": "^7.2.5",
     "style-loader": "^0.22.1",
     "url-loader": "^1.1.1",
     "webpack": "^3.12.0"
