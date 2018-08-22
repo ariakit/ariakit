@@ -1,6 +1,5 @@
 coverage
 scripts
-src
 /index.js
 /test.tsx
 *.log
