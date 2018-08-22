@@ -1,5 +1,7 @@
 `Popover` is a component that displays floating content relative to its parent component.
 
+You can change the visiblity of the popover in the example below by removing `visible`.
+
 ```jsx
 import { InlineBlock, Button } from "reakit";
 
