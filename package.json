@@ -29,7 +29,6 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.2",
     "@babel/preset-env": "^7.0.0-rc.2",
     "@babel/preset-react": "^7.0.0-rc.2",
-    "@babel/preset-stage-1": "^7.0.0-rc.2",
     "@babel/preset-typescript": "^7.0.0-rc.2",
     "@types/jest": "^23.1.6",
     "@types/prop-types": "^15.5.5",
