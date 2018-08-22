@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { ReactElement, ComponentType, HTMLProps, Ref } from "react";
+import * as React from "react";
 import pickCSSProps from "./_utils/pickCSSProps";
 import parseTag from "./_utils/parseTag";
 import parseClassName from "./_utils/parseClassName";
@@ -14,23 +14,25 @@ export type CSSProperties = {
   [key in keyof typeof CSSProps]?: string | number
 };
 
-export type AllProps<T = any> = Omit<HTMLProps<T>, "as"> &
+export type AllProps<T = any> = Omit<React.HTMLProps<T>, "as"> &
   ReaKitProps<T> &
   CSSProperties;
 
 export type SingleAsProp =
   | keyof JSX.IntrinsicElements
-  | ComponentType<AllProps>;
+  | React.ComponentType<AllProps>;
 
 export type AsProp = SingleAsProp | SingleAsProp[];
 
 export interface ReaKitProps<T = any> {
   as?: AsProp | null;
   nextAs?: SingleAsProp | null;
-  elementRef?: Ref<T>;
+  elementRef?: React.Ref<T>;
 }
 
-export type ReaKitComponent<P extends AllProps = object> = ComponentType<P> & {
+export type ReaKitComponent<P extends AllProps = object> = React.ComponentType<
+  P
+> & {
   asComponents: AsProp;
   as: (asComponents: AsProp) => ReaKitComponent<P>;
 };
@@ -39,7 +41,7 @@ function As({ nextAs, ...props }: AllProps) {
   return render({ ...props, as: nextAs });
 }
 
-function render({ as: t, ...props }: AllProps): ReactElement<any> | null {
+function render({ as: t, ...props }: AllProps): JSX.Element {
   const T = parseTag(t);
 
   if (Array.isArray(T)) {
@@ -83,7 +85,7 @@ function isWrappedWithAs(target: any): target is ReaKitComponent {
 type AllPropsReplaceAs<P extends AllProps> = Omit<P, "as"> & AllProps;
 
 function as(asComponents: AsProp) {
-  return <P extends AllProps>(WrappedComponent: ComponentType<P>) => {
+  return <P extends AllProps>(WrappedComponent: React.ComponentType<P>) => {
     const target = isStyledComponent(WrappedComponent)
       ? WrappedComponent.target
       : WrappedComponent;

@@ -20,7 +20,7 @@
     "postcoverage": "opn coverage/lcov-report/index.html",
     "lint": "eslint src scripts --ext js,ts,tsx",
     "build:clean": "rimraf dist es lib ts && node scripts/cleanProxies",
-    "build:ts": "tsc --emitDeclarationOnly --allowJs false",
+    "build:ts": "tsc --emitDeclarationOnly --allowJs false && node scripts/createDefinitions",
     "prebuild": "npm run build:clean && npm run build:ts",
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",

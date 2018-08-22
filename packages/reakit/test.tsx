@@ -1,10 +1,14 @@
 /* eslint-disable no-unused-expressions */
-import React from "react";
+import * as React from "react";
 import { styled, Base, Arrow } from "./src";
 
+interface Props {
+  foo: string;
+}
+
 {
-  const Test = styled(Base)<{ foo: string }>`
-    color: ${props => props.foo};
+  const Test = styled(Base)<Props>`
+    color: ${(props: Props) => props.foo};
   `;
 
   <Base />;
@@ -13,8 +17,8 @@ import { styled, Base, Arrow } from "./src";
 }
 
 {
-  const Test = styled(Arrow)<{ foo: string }>`
-    color: ${props => props.foo};
+  const Test = styled(Arrow)<Props>`
+    color: ${(props: Props) => props.foo};
   `;
 
   <Arrow />;
