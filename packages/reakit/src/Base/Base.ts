@@ -1,5 +1,5 @@
-import React, { ComponentType } from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { prop } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
@@ -14,7 +14,7 @@ const positions = {
 };
 
 type ComponentProps = {
-  as: keyof JSX.IntrinsicElements | ComponentType;
+  as: keyof JSX.IntrinsicElements | React.ComponentType;
 };
 
 const Component = ({ as: T, ...props }: ComponentProps) =>
