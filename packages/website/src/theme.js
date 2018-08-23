@@ -25,9 +25,13 @@ export default {
   Code: css`
     ${themeDefault.Code};
     font-family: "Fira Code", monospace;
-    font-size: 14px;
+    font-size: 16px;
     white-space: pre;
     overflow: auto;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
 
     code {
       font-family: inherit;

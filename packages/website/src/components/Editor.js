@@ -9,6 +9,7 @@ import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import "codemirror/theme/oceanic-next.css";
+import track from "../utils/track";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import ViewportContainer from "../containers/ViewportContainer";
 import requireToImport from "../utils/requireToImport";
@@ -68,6 +69,7 @@ class Editor extends React.Component {
                 {...props}
                 value={requireToImport(code)}
                 onChange={this.handleChange}
+                onBlur={track("reakit.codeMirrorBlur")}
                 options={{
                   ...config.editorConfig,
                   tabSize: 2,

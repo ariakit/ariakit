@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "0.14.1",
+  "version": "0.14.4",
   "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
   "license": "MIT",
   "repository": "reakit/reakit",
@@ -15,12 +15,12 @@
   },
   "scripts": {
     "test": "jest",
-    "type-check": "tsc --noEmit",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint src scripts",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src scripts --ext js,ts,tsx",
     "build:clean": "rimraf dist es lib ts && node scripts/cleanProxies",
-    "build:ts": "tsc --emitDeclarationOnly --allowJs false",
+    "build:ts": "tsc --emitDeclarationOnly --allowJs false && node scripts/createDefinitions",
     "prebuild": "npm run build:clean && npm run build:ts",
     "build": "rollup -c && node scripts/makeProxies",
     "dev": "styleguidist server",
@@ -34,18 +34,19 @@
     "toolkit"
   ],
   "dependencies": {
-    "constate": "^0.7.2",
+    "@emotion/is-prop-valid": "^0.6.6",
+    "constate": "^0.8.0",
     "hoist-non-react-statics": "^3.0.1",
     "popper.js": "^1.14.4",
     "prop-types": "^15.6.2",
-    "styled-components": "^3.4.2",
-    "styled-tools": "^1.1.0"
+    "styled-components": "^3.4.4",
+    "styled-tools": "^1.3.1"
   },
   "devDependencies": {
-    "eslint": "^5.3.0",
+    "eslint": "^5.4.0",
     "jest-cli": "^23.5.0",
     "opn-cli": "^3.1.0",
-    "react-styleguidist": "^7.2.2",
+    "react-styleguidist": "^7.2.5",
     "rimraf": "^2.6.1",
     "rollup": "^0.64.1",
     "typescript": "^3.0.1",

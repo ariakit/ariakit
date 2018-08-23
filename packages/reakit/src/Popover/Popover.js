@@ -49,16 +49,18 @@ class Component extends React.Component {
   };
 
   getOptions = () => {
-    const { placement } = this.props;
+    const { placement, flip, shift } = this.props;
     const popover = this.getPopover();
     const arrowClassName = `.${PopoverArrow.styledComponentId}`;
     const arrow = popover.querySelector(arrowClassName);
     return {
       placement,
       modifiers: {
+        hide: { enabled: false },
         applyStyle: { enabled: false },
         arrow: { enabled: !!arrow, element: arrow },
-        flip: { padding: 16 },
+        flip: { enabled: flip, padding: 16 },
+        shift: { enabled: shift },
         offset: { offset: `0, ${this.props.gutter}` },
         setState: {
           enabled: true,
@@ -144,6 +146,8 @@ Popover.propTypes = {
     "bottom-end",
     "left-end"
   ]),
+  flip: PropTypes.bool,
+  shift: PropTypes.bool,
   gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   popoverId: PropTypes.string
 };
@@ -152,6 +156,8 @@ Popover.defaultProps = {
   role: "group",
   placement: "bottom",
   hideOnEsc: true,
+  flip: true,
+  shift: true,
   gutter: 12
 };
 

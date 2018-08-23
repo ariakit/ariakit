@@ -5,6 +5,7 @@ import FacebookIcon from "react-icons/lib/fa/facebook-official";
 import TwitterIcon from "react-icons/lib/fa/twitter";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import ContentWrapper from "../elements/ContentWrapper";
+import track from "../utils/track";
 
 const year = new Date().getFullYear();
 
@@ -40,17 +41,29 @@ const Credits = props => (
     <ContentWrapper column>
       <Icons as={List}>
         <li>
-          <Link href="https://facebook.com/reakitjs" target="_blank">
+          <Link
+            href="https://facebook.com/reakitjs"
+            target="_blank"
+            onClick={track("reakit.footerFacebookClick")}
+          >
             <FacebookIcon />
           </Link>
         </li>
         <li>
-          <Link href="https://twitter.com/reakitjs" target="_blank">
+          <Link
+            href="https://twitter.com/reakitjs"
+            target="_blank"
+            onClick={track("reakit.footerTwitterClick")}
+          >
             <TwitterIcon />
           </Link>
         </li>
         <li>
-          <Link href="https://github.com/reakit/reakit" target="_blank">
+          <Link
+            href="https://github.com/reakit/reakit"
+            target="_blank"
+            onClick={track("reakit.footerGithubClick")}
+          >
             <GitHubIcon />
           </Link>
         </li>

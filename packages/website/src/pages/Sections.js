@@ -38,7 +38,7 @@ const StyledMenu = styled(Menu)`
   bottom: 0;
   overflow: auto;
   max-height: calc(100% - 60px);
-  padding: 16px;
+  padding: 16px 16px 48px;
   width: 220px;
   background-color: #f6f6f6;
   z-index: 999;

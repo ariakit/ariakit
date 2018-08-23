@@ -3,6 +3,7 @@ import { styled, Block } from "reakit";
 import { prop } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import NewsletterForm from "website/src/components/NewsletterForm";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
@@ -14,12 +15,16 @@ import SectionUses from "../components/SectionUses";
 import PropTypesTable from "../components/PropTypesTable";
 import SectionNavigation from "../components/SectionNavigation";
 import ContainerAPITable from "../components/ContainerAPITable";
-import SectionGitHubButtons from "../components/SectionGitHubButtons";
+import SectionHeader from "../components/SectionHeader";
 
 const Content = styled(Block)`
   border-top: 1px solid ${prop("theme.grayLightest")};
   margin-top: 1em;
   padding-top: 1em;
+`;
+
+const StyledNewsletterForm = styled(NewsletterForm)`
+  margin: 40px 0 20px;
 `;
 
 const sectionMap = {
@@ -40,7 +45,7 @@ const Section = ({ location, ...props }) => (
             <Helmet>
               <title>{section.name} - ReaKit</title>
             </Helmet>
-            <SectionGitHubButtons section={section} />
+            <SectionHeader section={section} />
             {section.name !== "Base" && (
               <React.Fragment>
                 <SectionUses section={section} />
@@ -57,6 +62,7 @@ const Section = ({ location, ...props }) => (
             </Content>
             <ContainerAPITable section={section} />
             <PropTypesTable section={section} />
+            <StyledNewsletterForm />
             <SectionNavigation section={section} />
           </Block>
         );

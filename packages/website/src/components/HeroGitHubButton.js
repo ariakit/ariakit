@@ -7,6 +7,7 @@ import Icon from "./Icon";
 import ButtonGray from "../elements/ButtonGray";
 import GitHubStarsContainer from "../containers/GitHubStarsContainer";
 import ViewportContainer from "../containers/ViewportContainer";
+import track from "../utils/track";
 
 const getPopoverPlacement = width => (width > 768 ? "right" : "bottom");
 
@@ -34,6 +35,7 @@ const HeroGitHubButton = props => (
     as={[ButtonRounded, "a"]}
     href="https://github.com/reakit/reakit"
     target="_blank"
+    onClick={track("reakit.heroGithubClick")}
     {...props}
   >
     <Icon as={GitHubIcon} />
@@ -45,6 +47,7 @@ const HeroGitHubButton = props => (
             <StarsPopover
               visible={stars > 0}
               placement={getPopoverPlacement(width)}
+              flip={false}
             >
               <Popover.Arrow />
               <StarIcon /> {stars}

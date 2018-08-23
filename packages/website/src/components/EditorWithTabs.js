@@ -7,6 +7,7 @@ import pretty from "pretty";
 import Editor from "./Editor";
 import compileComponent from "../utils/compileComponent";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
+import track from "../utils/track";
 
 const Wrapper = styled(Block)`
   position: relative;
@@ -54,10 +55,20 @@ const EditorWithTabs = props => (
     {tabs => (
       <Wrapper>
         <Tabs as={Group}>
-          <Tabs.Tab as={Button} tab="jsx" {...tabs}>
+          <Tabs.Tab
+            as={Button}
+            tab="jsx"
+            onClick={track("reakit.editorTabsJSXClick")}
+            {...tabs}
+          >
             <StyledPencilIcon /> JSX
           </Tabs.Tab>
-          <Tabs.Tab as={Button} tab="html" {...tabs}>
+          <Tabs.Tab
+            as={Button}
+            tab="html"
+            onClick={track("reakit.editorTabsHTMLClick")}
+            {...tabs}
+          >
             HTML
           </Tabs.Tab>
         </Tabs>

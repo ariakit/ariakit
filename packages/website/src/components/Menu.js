@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { styled, Grid, List, Link, Input } from "reakit";
 import { prop, ifProp } from "styled-tools";
 import MenuContainer from "../containers/MenuContainer";
+import track from "../utils/track";
 
 const Wrapper = styled(Grid)`
   grid-gap: 16px;
@@ -24,7 +25,7 @@ const SectionLink = styled(Link)`
   line-height: 1.75;
   font-weight: 400;
   margin: 0;
-  font-size: 1em;
+  font-size: 18px;
   color: ${prop("theme.black")};
   border-left: 5px solid transparent;
   padding-left: 20px;
@@ -84,6 +85,7 @@ const Menu = ({ section, showFilter, ...props }) => (
             <Input
               placeholder="Filter..."
               onChange={e => filter(e.target.value)}
+              onBlur={track("reakit.filterBlur")}
             />
             {renderList(rest)}
           </React.Fragment>

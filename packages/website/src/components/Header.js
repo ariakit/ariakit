@@ -12,6 +12,7 @@ import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "./Icon";
 import MobileSidebar from "./MobileSidebar";
 import getRelease from "../utils/getRelease";
+import track from "../utils/track";
 
 const Wrapper = styled(Flex)`
   width: 100%;
@@ -99,6 +100,7 @@ const Desktop = () => (
         as={ExternalLink}
         href={getRelease.url()}
         target="_blank"
+        onClick={track("reakit.headerVersionClick")}
       >
         {getRelease.version}
       </Toolbar.Focusable>
@@ -106,6 +108,7 @@ const Desktop = () => (
         as={ExternalLink}
         href="https://github.com/reakit/reakit"
         target="_blank"
+        onClick={track("reakit.headerGithubClick")}
       >
         GitHub
         <OpenInNewIcon />
@@ -141,6 +144,7 @@ const Mobile = () => (
         as={ExternalLink}
         href="https://github.com/reakit/reakit"
         target="_blank"
+        onClick={track("reakit.headerGithubClick")}
       >
         <Icon as={GitHubIcon} />
       </Toolbar.Focusable>

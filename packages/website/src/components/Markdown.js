@@ -12,12 +12,15 @@ import Blockquote from "../elements/Blockquote";
 
 const StyledParagraph = styled(Paragraph)`
   line-height: 1.5;
+  font-size: 18px;
   @media (max-width: 768px) {
+    font-size: 16px;
     padding: 0 16px;
   }
 `;
 
 const StyledHeading = styled(Heading)`
+  margin: 1.5em 0 1em;
   @media (max-width: 768px) {
     padding: 0 16px;
   }
