@@ -14,15 +14,16 @@
   <a href="https://reakit.io/components"><strong>Components</strong></a>
 </p>
 
-<br>
+#
 
-# ReaKit
-
-<a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
-<a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
-<a href="https://travis-ci.org/reakit/reakit"><img alt="Build Status" src="https://img.shields.io/travis/reakit/reakit/master.svg?style=flat-square" /></a>
-<a href="https://codecov.io/gh/reakit/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/reakit/reakit/master.svg?style=flat-square" /></a>
-<a href="https://spectrum.chat/reakit"><img src="https://img.shields.io/badge/join_the_community-on_spectrum-7A2DFB.svg?style=flat-square" alt="Join the community on Spectrum" /></a>
+<p align="center">
+  <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
+  <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
+  <a href="https://travis-ci.org/reakit/reakit"><img alt="Build Status" src="https://img.shields.io/travis/reakit/reakit/master.svg?style=flat-square" /></a>
+  <a href="https://codecov.io/gh/reakit/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/reakit/reakit/master.svg?style=flat-square" /></a>
+  <a href="https://spectrum.chat/reakit"><img src="https://img.shields.io/badge/join_the_community-on_spectrum-7A2DFB.svg?style=flat-square" alt="Join the community on Spectrum" /></a>
+  <a href="https://join.slack.com/t/reakit/shared_invite/enQtNDExMDcwNTk2MTMwLWI1Mzk1Y2YzMTAzZGUyMGIzMjQxZGU4OGM3MDI0OTcyYWU0NzZjZmIxNDcxZTVlODZiODA3YjE5N2FiOWMxZWQ"><img src="https://img.shields.io/badge/chat-slack-DE215B.svg?style=flat-square" alt="Join the community on Spectrum" /></a>
+</p>
 
 ## Installation
 
