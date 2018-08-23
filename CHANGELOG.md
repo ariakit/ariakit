@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.4"></a>
+## [0.14.4](https://github.com/reakit/reakit/compare/reakit@0.14.3...reakit@0.14.4) (2018-08-23)
+
+
+### Bug Fixes
+
+* TypeScript definition errors ([#201](https://github.com/reakit/reakit/issues/201)) ([f16de0f](https://github.com/reakit/reakit/commit/f16de0f)), closes [#198](https://github.com/reakit/reakit/issues/198)
+
+
+### Performance Improvements
+
+* Replace `validAttr` by `@emotion/is-prop-valid` ([#200](https://github.com/reakit/reakit/issues/200)) ([4a708a0](https://github.com/reakit/reakit/commit/4a708a0)), closes [#173](https://github.com/reakit/reakit/issues/173)
+
+
+
+
+
 <a name="0.14.3"></a>
 ## [0.14.3](https://github.com/reakit/reakit/compare/reakit@0.14.2...reakit@0.14.3) (2018-08-19)
 

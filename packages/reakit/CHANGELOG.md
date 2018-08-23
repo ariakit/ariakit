@@ -14,7 +14,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Performance Improvements
 
-* Replace `validAttr` by `[@emotion](https://github.com/emotion)/is-prop-valid` ([#200](https://github.com/reakit/reakit/issues/200)) ([4a708a0](https://github.com/reakit/reakit/commit/4a708a0)), closes [#173](https://github.com/reakit/reakit/issues/173)
+* Replace `validAttr` by `@emotion/is-prop-valid` ([#200](https://github.com/reakit/reakit/issues/200)) ([4a708a0](https://github.com/reakit/reakit/commit/4a708a0)), closes [#173](https://github.com/reakit/reakit/issues/173)
 
 
 
