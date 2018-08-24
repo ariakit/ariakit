@@ -31,6 +31,10 @@
     "*.{js,ts,tsx}": [
       "npm run lint -- --fix",
       "git add"
+    ],
+    "*":[
+      "source scripts/copy-statics.sh",
+      "copyIfChanaafged"
     ]
   },
   "devDependencies": {
