@@ -31,7 +31,7 @@
 npm i reakit
 ```
 
-> Thanks to [@nosebit](https://github.com/nosebit) for the package name on npm.
+> Thanks to [@nosebit](https://github.com/nosebit) for the npm package name.
 
 ## Example
 
