@@ -12,9 +12,8 @@
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "precommit": "lint-staged",
     "type-check": "tsc --noEmit",
-    "lint": "eslint packages/** --ext js,ts,tsx",
+    "lint": "eslint --ext js,ts,tsx",
     "dev": "lerna exec --scope reakit -- npm run dev",
     "build": "lerna exec --scope reakit -- npm run build",
     "build:clean": "lerna exec --scope reakit -- npm run build:clean",
@@ -23,9 +22,14 @@
     "release": "lerna publish",
     "release:beta": "npm run release --npm-tag=beta --preid=beta"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "prettier --write",
+      "npm run lint -- --fix",
       "git add"
     ]
   },
@@ -57,7 +61,7 @@
     "eslint-plugin-prettier": "^2.6.2",
     "eslint-plugin-react": "^7.11.1",
     "eslint-plugin-typescript": "^0.12.0",
-    "husky": "^0.14.3",
+    "husky": "^1.0.0-rc.13",
     "jest-cli": "^23.5.0",
     "jest-serializer-html": "^5.0.0",
     "lerna": "^3.1.4",
