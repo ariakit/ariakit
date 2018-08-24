@@ -121,9 +121,9 @@ function as(asComponents: AsProp) {
     EnhancedComponent.displayName = displayName;
 
     if (isStyledComponent(WrappedComponent)) {
-      const StyledComponent = WrappedComponent.withComponent(EnhancedComponent);
+      const StyledComponent = EnhancedComponent as typeof WrappedComponent;
       StyledComponent.styledComponentId = WrappedComponent.styledComponentId;
-      StyledComponent.displayName = `Styled(${displayName})`;
+      StyledComponent.target = EnhancedComponent;
       return defineProperties(StyledComponent);
     }
 
