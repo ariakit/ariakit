@@ -32,7 +32,7 @@
       "npm run lint -- --fix",
       "git add"
     ],
-    "*.md":[
+    "{README,CHANGELOG}.md":[
       "scripts/copy-statics.sh"
     ]
   },
