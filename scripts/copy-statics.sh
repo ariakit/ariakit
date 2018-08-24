@@ -1,12 +1,24 @@
 #! /usr/bin/env bash
 
-function copyIfChanged() {
-  local args="$*"
-  # if [[ "$args" =~ ]]; then
+#########################################################################
+#### Keeps changelog and readme at root in sync with packages/reakit ####
+#########################################################################
 
-  # fi
-  echo asdfs
-}
+for file in CHANGELOG.md README.md; do
+  rootFile="${PWD}/$file"
+  reakitFile="packages/reakit/$file"
+  if [[ "$*" =~ $rootFile ]] && [[ "$*" =~ $reakitFile ]]; then
+    # If both staged do nothing and let commit continue
+    exit 0
+  fi
 
-copyIfChanged
-echo adfs
+  if [[ "$*" =~ $rootFile ]]; then
+    cp "$rootFile" "$reakitFile"
+    git add "$reakitFile"
+  fi
+
+  if [[ "$*" =~ $reakitFile ]]; then
+    cp "$reakitFile" "$rootFile"
+    git add "$rootFile"
+  fi
+done

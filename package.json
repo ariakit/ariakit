@@ -32,9 +32,8 @@
       "npm run lint -- --fix",
       "git add"
     ],
-    "*":[
-      "source scripts/copy-statics.sh",
-      "copyIfChanaafged"
+    "*.md":[
+      "scripts/copy-statics.sh"
     ]
   },
   "devDependencies": {
