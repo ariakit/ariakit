@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.5"></a>
+## [0.14.5](https://github.com/reakit/reakit/compare/reakit@0.14.4...reakit@0.14.5) (2018-08-24)
+
+
+### Bug Fixes
+
+* Dedupe classNames with identical styles ([#210](https://github.com/reakit/reakit/issues/210)) ([cbc3cb0](https://github.com/reakit/reakit/commit/cbc3cb0)), closes [#208](https://github.com/reakit/reakit/issues/208)
+* Increase styled-components range version to avoid conflicts ([47480da](https://github.com/reakit/reakit/commit/47480da)), closes [#198](https://github.com/reakit/reakit/issues/198)
+
+
+
+
+
 <a name="0.14.4"></a>
 ## [0.14.4](https://github.com/reakit/reakit/compare/reakit@0.14.3...reakit@0.14.4) (2018-08-23)
 
