@@ -31,6 +31,9 @@
     "*.{js,ts,tsx}": [
       "npm run lint -- --fix",
       "git add"
+    ],
+    "{README,CHANGELOG}.md":[
+      "scripts/copy-statics.sh"
     ]
   },
   "devDependencies": {
