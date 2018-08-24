@@ -44,7 +44,6 @@ exports[`creates component 3`] = `
 
 exports[`creates component by extending another one with styled 1`] = `
 Array [
-  "Styled(Derivative.as(div))",
   "Derivative.as(div)",
   "Derivative",
   "Base.as(span)",
@@ -55,61 +54,56 @@ Array [
 `;
 
 exports[`creates component by extending another one with styled 2`] = `
-<Styled(Derivative.as(div))>
-  <Derivative.as(div)
-    className="as-test__Derivative-cQWxNw gcSFEM"
+<Derivative.as(div)>
+  <Derivative
+    as={[Function]}
+    nextAs={
+      Array [
+        "div",
+      ]
+    }
   >
-    <Derivative
+    <Base.as(span)
       as={[Function]}
-      className="as-test__Derivative-cQWxNw gcSFEM"
+      className="as-test__Derivative-cQWxNw gxwxdP"
       nextAs={
         Array [
           "div",
         ]
       }
     >
-      <Base.as(span)
+      <Base
         as={[Function]}
-        className="as-test__Derivative-cQWxNw gcSFEM as-test__Derivative-cQWxNw gxwxdP"
+        className="as-test__Derivative-cQWxNw gxwxdP"
         nextAs={
           Array [
             "div",
           ]
         }
       >
-        <Base
-          as={[Function]}
-          className="as-test__Derivative-cQWxNw gcSFEM as-test__Derivative-cQWxNw gxwxdP"
+        <As
+          className="as-test__Derivative-cQWxNw gxwxdP"
+          id="Base"
           nextAs={
             Array [
               "div",
             ]
           }
         >
-          <As
-            className="as-test__Derivative-cQWxNw gcSFEM as-test__Derivative-cQWxNw gxwxdP"
+          <div
+            className="as-test__Derivative-cQWxNw gxwxdP"
             id="Base"
-            nextAs={
-              Array [
-                "div",
-              ]
-            }
-          >
-            <div
-              className="as-test__Derivative-cQWxNw gcSFEM gxwxdP"
-              id="Base"
-            />
-          </As>
-        </Base>
-      </Base.as(span)>
-    </Derivative>
-  </Derivative.as(div)>
-</Styled(Derivative.as(div))>
+          />
+        </As>
+      </Base>
+    </Base.as(span)>
+  </Derivative>
+</Derivative.as(div)>
 `;
 
 exports[`creates component by extending another one with styled 3`] = `
 
-<div class="as-test__Derivative-cQWxNw gcSFEM gxwxdP"
+<div class="as-test__Derivative-cQWxNw gxwxdP"
      id="Base"
 >
 </div>
