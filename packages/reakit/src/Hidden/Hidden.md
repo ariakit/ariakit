@@ -1,14 +1,14 @@
-`Hidden` is a highly generic yet powerful ReaKit components. It simply hides away itself and wait for a `visible` prop to be passed in so it shows up.
+`Hidden` is a highly generic yet powerful ReaKit component. It simply hides itself away and waits for a `visible` prop to show up.
 
 ```jsx
 <Hidden visible>Hidden</Hidden>
 ```
 
-You can use [HiddenContainer](HiddenContainer.md) to control its state with ease, and combine it with [HiddenShow](HiddenShow.md), [HiddenHide](HiddenHide.md) and [HiddenToggle](HiddenToggle.md) to get event handlers (`onClick`) out of the box.
+You can use [HiddenContainer](HiddenContainer.md) to control its state with ease, and combine it with [HiddenShow](HiddenShow.md), [HiddenHide](HiddenHide.md) and [HiddenToggle](HiddenToggle.md) to get event handlers, like (`onClick`), out of the box.
 
 > **Tip:**
 
-> Unless you're doing something different with the state, it's highly recommended to pass the whole state down to components (`{...hidden}` below). If something changes in the library in the future, even breaking changes, you most likely will not need to change your code, since the state details will be encapsulated.
+> Unless you're doing something different with state, it's highly recommended to pass the whole state down to components, the `{...hidden}` below. If something changes in the library in the future, even breaking changes, you most likely will not need to change your code, since the state details will be encapsulated.
 
 ```jsx
 import { Block, Group, Button } from "reakit";
