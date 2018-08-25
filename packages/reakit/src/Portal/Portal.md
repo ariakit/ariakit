@@ -11,7 +11,7 @@
 In the example below, while **not** a good example of usage, you can understand most of what you should expect when using portals alone or combined with other components. If you click on `Backdrop` or `Overlay`, you can see that, even though they aren't children of `Button` in the DOM (because of `Portal`), they keep bubbling up events, such as `onClick`, which triggers `Overlay.Toggle`.
 
 ```jsx
-import { Button, Overlay } from "reakit";
+import { Backdrop, Button, Overlay, Portal } from "reakit";
 
 <Overlay.Container>
   {overlay => (
