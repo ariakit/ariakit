@@ -1,7 +1,7 @@
 `Step` is composed from [Hidden](../Hidden/Hidden.md) as an interactive UI with one or more steps to complete. By default `Step` renders as a `<div>`.
 
 ```jsx
-import { Block, Group, Button } from "reakit";
+import { Block, Group, Button, Step } from "reakit";
 
 <Step.Container initialState={{ current: 0 }}>
   {step => (
