@@ -1,5 +1,5 @@
-import createConfig from "../../rollup.config";
-import pkg from "./package.json";
+const createConfig = require("../../rollup.config");
+const pkg = require("./package.json");
 
 export default [
   createConfig({ pkg, input: "src/index.ts" }),

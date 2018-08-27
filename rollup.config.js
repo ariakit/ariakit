@@ -1,9 +1,9 @@
-import babel from "rollup-plugin-babel";
-import resolve from "rollup-plugin-node-resolve";
-import replace from "rollup-plugin-replace";
-import commonjs from "rollup-plugin-commonjs";
-import { uglify } from "rollup-plugin-uglify";
-import ignore from "rollup-plugin-ignore";
+const babel = require("rollup-plugin-babel");
+const resolve = require("rollup-plugin-node-resolve");
+const replace = require("rollup-plugin-replace");
+const commonjs = require("rollup-plugin-commonjs");
+const { uglify } = require("rollup-plugin-uglify");
+const ignore = require("rollup-plugin-ignore");
 
 const extensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
@@ -18,7 +18,7 @@ const makeExternalPredicate = externalArr => {
 const getExternal = (umd, pkg) => {
   const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
   const allExternal = [...external, ...Object.keys(pkg.dependencies)];
-  return makeExternalPredicate(umd ? allExternal : external);
+  return makeExternalPredicate(umd ? external : allExternal);
 };
 
 const commonPlugins = [
@@ -54,6 +54,7 @@ const getOutput = (umd, pkg) =>
         format: "umd",
         exports: "named",
         globals: {
+          reakit: "reakit",
           react: "React",
           "react-dom": "ReactDOM",
           "prop-types": "PropTypes"
@@ -71,11 +72,11 @@ const getOutput = (umd, pkg) =>
         }
       ];
 
-const createConfig = ({ umd, pkg, plugins, ...config }) => ({
+const createConfig = ({ umd, pkg, plugins = [], ...config }) => ({
   external: getExternal(umd, pkg),
   plugins: [...getPlugins(umd), ...plugins],
   output: getOutput(umd, pkg),
   ...config
 });
 
-export default createConfig;
+module.exports = createConfig;

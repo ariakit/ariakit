@@ -1,6 +1,6 @@
-import createConfig from "../../rollup.config";
-import publicFiles from "./scripts/publicFiles";
-import pkg from "./package.json";
+const createConfig = require("../../rollup.config");
+const publicFiles = require("./scripts/publicFiles");
+const pkg = require("./package.json");
 
 export default [
   createConfig({
