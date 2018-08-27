@@ -13,6 +13,13 @@
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "ts",
+    "src"
+  ],
   "scripts": {
     "test": "jest",
     "coverage": "npm test -- --coverage",
