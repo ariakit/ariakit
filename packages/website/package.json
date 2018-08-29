@@ -11,10 +11,10 @@
     "lint": "eslint src --ext js,ts,tsx"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0-rc.2",
-    "codemirror": "^5.39.2",
+    "@babel/polyfill": "^7.0.0",
+    "codemirror": "^5.40.0",
     "lodash": "^4.17.5",
-    "markdown-to-jsx": "^6.7.1",
+    "markdown-to-jsx": "^6.7.2",
     "parse-prop-types": "^0.3.0",
     "pretty": "^2.0.0",
     "prop-types": "^15.6.2",
@@ -26,21 +26,21 @@
     "react-router-dom": "^4.2.2",
     "reakit": "^0.14.5",
     "reakit-theme-default": "^0.0.1",
-    "styled-tools": "^1.3.1",
+    "styled-tools": "^1.4.1",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.59",
-    "babel-loader": "^8.0.0-beta",
-    "css-loader": "^0.28.11",
+    "babel-loader": "^8.0.0",
+    "css-loader": "^1.0.0",
     "eslint": "^5.4.0",
     "file-loader": "^2.0.0",
     "jest-cli": "^23.5.0",
     "opn-cli": "^3.1.0",
     "raw-loader": "^0.5.1",
-    "react-styleguidist": "^7.2.5",
-    "style-loader": "^0.22.1",
+    "react-styleguidist": "^7.3.0",
+    "style-loader": "^0.23.0",
     "url-loader": "^1.1.1",
-    "webpack": "^3.12.0"
+    "webpack": "^4.17.1"
   }
 }

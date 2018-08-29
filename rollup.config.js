@@ -23,6 +23,7 @@ const getExternal = (umd, pkg) => {
 
 const commonPlugins = [
   babel({
+    extensions,
     exclude: ["node_modules/**", "../../node_modules/**"]
   }),
   resolve({ extensions, preferBuiltins: false })
