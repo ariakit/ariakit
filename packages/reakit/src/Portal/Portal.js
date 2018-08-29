@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { prop } from "styled-tools";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -29,6 +30,8 @@ class Component extends React.Component {
     return null;
   }
 }
+
+hoistNonReactStatics(Component, Base);
 
 const Portal = styled(Component)`
   ${prop("theme.Portal")};

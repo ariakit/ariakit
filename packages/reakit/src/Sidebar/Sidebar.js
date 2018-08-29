@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { prop, ifProp } from "styled-tools";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Overlay from "../Overlay";
@@ -11,6 +12,8 @@ const Component = props => (
     {...props}
   />
 );
+
+hoistNonReactStatics(Component, Overlay);
 
 const Sidebar = styled(Component)`
   top: 0;

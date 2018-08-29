@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
 import * as React from "react";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import pickCSSProps from "./_utils/pickCSSProps";
 import parseTag from "./_utils/parseTag";
 import parseClassName from "./_utils/parseClassName";
 import pickHTMLProps from "./_utils/pickHTMLProps";
 import CSSProps from "./_utils/CSSProps";
 import getComponentName from "./_utils/getComponentName";
-import { isStyledComponent } from "./styled";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -86,10 +86,7 @@ type AllPropsReplaceAs<P extends AllProps> = Omit<P, "as"> & AllProps;
 
 function as(asComponents: AsProp) {
   return <P extends AllProps>(WrappedComponent: React.ComponentType<P>) => {
-    const target = isStyledComponent(WrappedComponent)
-      ? WrappedComponent.target
-      : WrappedComponent;
-
+    // Transform WrappedComponent into ReaKitComponent
     const defineProperties = (scope: typeof WrappedComponent) => {
       const xscope = scope as ReaKitComponent<AllPropsReplaceAs<P>>;
       xscope.asComponents = asComponents;
@@ -97,7 +94,11 @@ function as(asComponents: AsProp) {
       return xscope;
     };
 
-    if (isWrappedWithAs(target) && asComponents === target.asComponents) {
+    // WrappedComponent was already enhanced with the same arguments
+    if (
+      isWrappedWithAs(WrappedComponent) &&
+      asComponents === WrappedComponent.asComponents
+    ) {
       return defineProperties(WrappedComponent);
     }
 
@@ -119,13 +120,9 @@ function as(asComponents: AsProp) {
       render({ ...props, as: getAs(props) });
 
     EnhancedComponent.displayName = displayName;
-
-    if (isStyledComponent(WrappedComponent)) {
-      const StyledComponent = EnhancedComponent as typeof WrappedComponent;
-      StyledComponent.styledComponentId = WrappedComponent.styledComponentId;
-      StyledComponent.target = EnhancedComponent;
-      return defineProperties(StyledComponent);
-    }
+    EnhancedComponent.propTypes = WrappedComponent.propTypes;
+    EnhancedComponent.defaultProps = WrappedComponent.defaultProps;
+    hoistNonReactStatics(EnhancedComponent, WrappedComponent);
 
     return defineProperties(EnhancedComponent);
   };
