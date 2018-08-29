@@ -10,8 +10,4 @@ declare module "styled-components" {
     target: ComponentType<P>;
     styledComponentId: string;
   }
-
-  export function isStyledComponent<Props>(
-    target: ComponentType<Props> | StyledComponentClass<Props, any>
-  ): target is StyledComponentClass<Props, any>;
 }

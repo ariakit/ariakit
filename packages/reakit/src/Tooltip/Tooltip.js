@@ -2,6 +2,7 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import { prop } from "styled-tools";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Popover from "../Popover";
@@ -44,6 +45,8 @@ class Component extends React.Component {
     return <Popover {...this.props} visible={visible} />;
   }
 }
+
+hoistNonReactStatics(Component, Popover);
 
 const Tooltip = styled(Component)`
   pointer-events: none;
