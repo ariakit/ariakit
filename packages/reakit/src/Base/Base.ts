@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
@@ -20,19 +20,17 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BaseProps = { [key in keyof typeof positions]?: boolean };
+type BaseProps = { variant?: string } & {
+  [key in keyof typeof positions]?: boolean
+};
 
 const positionsKeys = Object.keys(positions);
 
 const Base = styled(Component)<BaseProps>`
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
+  all: unset;
   font-family: inherit;
-  vertical-align: baseline;
   box-sizing: border-box;
-  ${prop("theme.Base")};
+  ${theme("Base")};
   &&& {
     ${bool("position", positionsKeys)};
   }
@@ -46,6 +44,7 @@ Base.propTypes = {
     ...asTypes,
     PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
   ]),
+  variant: PropTypes.string,
   static: PropTypes.bool,
   absolute: PropTypes.bool,
   fixed: PropTypes.bool,

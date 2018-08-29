@@ -1,35 +1,82 @@
-import { prop, ifProp } from "styled-tools";
 import { css } from "reakit";
+import { theme, prop, ifProp } from "styled-tools";
+
+// const palette = {
+//   primary: ["#1976d2", "#2196f3", "#71bcf7", "#c2e2fb"],
+//   secondary: ["#c2185b", "#e91e63", "#f06292", "#f8bbd0"],
+//   danger: ["#d32f2f", "#f44336", "#f8877f", "#ffcdd2"],
+//   alert: ["#ffa000", "#ffc107", "#ffd761", "#ffecb3"],
+//   success: ["#388e3c", "#4caf50", "#7cc47f", "#c8e6c9"],
+//   white: ["#fff", "#fff", "#eee"],
+//   grayscale: [
+//     "#212121",
+//     "#414141",
+//     "#616161",
+//     "#9e9e9e",
+//     "#bdbdbd",
+//     "#e0e0e0",
+//     "#eeeeee",
+//     "#ffffff"
+//   ],
+//   text: theme("black"),
+//   reverseText: palette("primary", 1, "#aaa")
+// };
+
+// palette(1, "#aaa")({ palette: "primary" });
+// palette("primary", -1, "#aaa")();
+
+export const values = {
+  primary: "blue",
+  primaryDark: "darkblue",
+  black: "#222",
+  white: "#fff",
+  grayLightest: "#eee",
+  grayLighter: "#ccc",
+  grayLight: "#aaa",
+  gray: "#888",
+  grayDark: "#666",
+  grayDarker: "#444",
+  grayDarkest: "#222",
+  primaryTextColor: theme("white"),
+  borderColor: theme("grayLighter"),
+  borderDisabledColor: theme("grayLightest"),
+  textColor: theme("black"),
+  borderWidth: "1px",
+  borderRadius: "0.25em"
+};
+
+const t = (key: keyof typeof values) => theme(key, values[key]);
 
 export const neutralRoundedBorder = css`
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 0.25em;
+  border: ${t("borderWidth")} solid ${t("borderColor")};
+  border-radius: ${t("borderRadius")};
 `;
-export const Arrow = css`
-  color: rgba(0, 0, 0, 0.85);
 
+export const Arrow = css`
+  color: ${t("black")};
   &:after {
-    border-width: 1px;
+    border-width: ${t("borderWidth")};
   }
 `;
+
 export const Avatar = css`
   border-radius: 50%;
   width: 1.5em;
   height: 1.5em;
+  overflow: hidden;
+  object-fit: cover;
 `;
+
 export const Backdrop = css`
   background-color: rgba(0, 0, 0, 0.3);
 `;
 
 export const Button = css`
-  ${neutralRoundedBorder};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: inherit;
   cursor: pointer;
   min-width: 2.5em;
-  background-color: rgba(0, 0, 0, 0.03);
   padding: 0 0.68em;
   position: relative;
   flex: none;
@@ -45,35 +92,12 @@ export const Button = css`
       display: block;
     }
   }
-  &:hover,
-  &:focus {
-    box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.1);
-  }
-  &:active,
-  &.active {
-    box-shadow: inset 0 0 999em rgba(0, 0, 0, 0.2);
-  }
-  &:after {
-    background-color: rgba(255, 255, 255, 0.35);
-    display: none;
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: inherit;
-  }
-  &:not(button):not(select):not(input) {
-    display: inline-grid;
-    grid-gap: 0.68em;
-    grid-auto-flow: column;
-    align-content: center;
-  }
 `;
+
 export const Card = css`
   background-color: white;
 `;
+
 export const Code = css`
   background-color: rgba(0, 0, 0, 0.05);
   font-family: monospace;
@@ -86,6 +110,7 @@ export const Code = css`
     padding: 1em;
   }
 `;
+
 export const Field = css`
   display: flex;
   flex-direction: column;
@@ -97,6 +122,7 @@ export const Field = css`
     margin-bottom: 0.5em;
   }
 `;
+
 export const GroupItem = css`
   ${neutralRoundedBorder};
 `;
@@ -226,6 +252,8 @@ export const TooltipArrow = css`
 `;
 
 export default {
+  ...values,
+  neutralRoundedBorder,
   Arrow,
   Avatar,
   Backdrop,
@@ -244,6 +272,5 @@ export default {
   Table,
   Tabs,
   Tooltip,
-  TooltipArrow,
-  neutralRoundedBorder
+  TooltipArrow
 };

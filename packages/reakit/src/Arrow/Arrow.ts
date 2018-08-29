@@ -1,5 +1,5 @@
 import * as PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { prop, theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -35,7 +35,7 @@ const Arrow = styled(Base)<ArrowProps>`
     transform: rotateZ(45deg);
   }
 
-  ${prop("theme.Arrow")};
+  ${theme("Arrow")};
 `;
 
 // @ts-ignore

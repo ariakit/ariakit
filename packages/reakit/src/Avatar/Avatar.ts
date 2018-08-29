@@ -4,8 +4,6 @@ import as from "../as";
 import Base from "../Base";
 
 const Avatar = styled(Base)`
-  overflow: hidden;
-  object-fit: cover;
   ${prop("theme.Avatar")};
 `;
 

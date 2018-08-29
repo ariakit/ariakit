@@ -1,10 +1,10 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
 const Button = styled(Base)`
-  ${prop("theme.Button")};
+  ${theme("Button")};
 `;
 
 Button.defaultProps = {
