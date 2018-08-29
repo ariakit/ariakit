@@ -29,7 +29,7 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "npm run lint -- --fix",
+      "eslint --ext js,ts,tsx --fix",
       "git add"
     ],
     "{README,CHANGELOG}.md":[
