@@ -21,6 +21,7 @@ const makeExternalPredicate = externalArr => {
 
 const commonPlugins = [
   babel({
+    extensions,
     exclude: ["node_modules/**", "../../node_modules/**"]
   })
 ];

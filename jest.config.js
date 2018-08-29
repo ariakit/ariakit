@@ -4,7 +4,7 @@ module.exports = {
   rootDir: __dirname,
   snapshotSerializers: ["enzyme-to-json/serializer", "jest-serializer-html"],
   coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/packages/website"],
-  projects: ["<rootDir>/packages/*"],
+  projects: ["<rootDir>/packages/*/jest.config.js"],
   setupFiles: ["<rootDir>/test.config.js"],
   moduleFileExtensions: [...defaults.moduleFileExtensions, "ts", "tsx"],
   transform: {
