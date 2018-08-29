@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { prop, withProp } from "styled-tools";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
 import as from "../as";
@@ -12,6 +13,8 @@ const Component = props => (
     {...props}
   />
 );
+
+hoistNonReactStatics(Component, Base);
 
 const Toolbar = styled(Component)`
   position: relative;
