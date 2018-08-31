@@ -2,7 +2,7 @@ import React from "react";
 import { Sidebar, Link, Backdrop, Block } from "reakit";
 import styled from "styled-components";
 import { Link as RouterLink } from "react-router-dom";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import getSectionUrl from "../utils/getSectionUrl";
 import getRelease from "../utils/getRelease";
@@ -16,12 +16,12 @@ const StyledSidebar = styled(Sidebar)`
 
 const VersionLink = styled(Link)`
   font-size: 16px;
-  color: ${prop("theme.grayLight")};
+  color: ${theme("grayLight")};
 `;
 
 const SectionLink = styled(Link.as(RouterLink))`
   font-size: 22px;
-  color: ${prop("theme.black")};
+  color: ${theme("black")};
   font-weight: 600;
   line-height: 2;
   margin: 1em 0 0.5em;

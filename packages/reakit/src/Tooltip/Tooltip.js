@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React from "react";
 import { findDOMNode } from "react-dom";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -51,7 +51,7 @@ hoistNonReactStatics(Component, Popover);
 const Tooltip = styled(Component)`
   pointer-events: none;
   white-space: nowrap;
-  ${prop("theme.Tooltip")};
+  ${theme("Tooltip")};
 `;
 
 Tooltip.defaultProps = {

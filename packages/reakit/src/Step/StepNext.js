@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
@@ -15,7 +15,7 @@ const Component = ({ onClick, ...props }) => (
 );
 
 const StepNext = styled(Component)`
-  ${prop("theme.StepNext")};
+  ${theme("StepNext")};
 `;
 
 StepNext.propTypes = {

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { styled, Flex } from "reakit";
-import { prop, ifProp } from "styled-tools";
+import { theme, ifProp } from "styled-tools";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ScrollContainer from "../containers/ScrollContainer";
@@ -9,7 +9,7 @@ import ScrollContainer from "../containers/ScrollContainer";
 const Wrapper = styled(Flex)`
   flex-direction: column;
   background-color: white;
-  color: ${prop("theme.black")};
+  color: ${theme("black")};
   align-items: center;
   min-height: 100vh;
   width: 100%;

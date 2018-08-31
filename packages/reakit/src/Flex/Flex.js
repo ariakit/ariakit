@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
@@ -15,7 +15,7 @@ const Flex = styled(Base)`
     ${bool("flex-wrap", wraps)};
   }
 
-  ${prop("theme.Flex")};
+  ${theme("Flex")};
 `;
 
 Flex.propTypes = {

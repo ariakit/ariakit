@@ -1,13 +1,13 @@
 import React from "react";
 import { styled, Block, Flex } from "reakit";
 import { Link as RouterLink } from "react-router-dom";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import getSectionUrl from "../utils/getSectionUrl";
 import findNonEmptySiblingSection from "../utils/findNonEmptySiblingSection";
 
 const Wrapper = styled(Flex)`
-  border-top: 1px solid ${prop("theme.grayLightest")};
+  border-top: 1px solid ${theme("grayLightest")};
   margin-top: 2em;
   padding-top: 1em;
   justify-content: space-between;
@@ -23,7 +23,7 @@ const Wrapper = styled(Flex)`
 const NavLink = styled(RouterLink)`
   line-height: 1;
   text-decoration: none;
-  color: ${prop("theme.black")};
+  color: ${theme("black")};
   &:last-child {
     margin-left: auto;
     text-align: right;

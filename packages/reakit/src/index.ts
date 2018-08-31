@@ -5,7 +5,6 @@ export { default as as } from "./as";
 export { default as styled } from "./styled";
 export * from "./styled";
 
-export { default as Arrow } from "./Arrow";
 export { default as Avatar } from "./Avatar";
 // @ts-ignore
 export { default as Backdrop } from "./Backdrop";

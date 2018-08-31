@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { ifProp, prop } from "styled-tools";
+import { ifProp, theme } from "styled-tools";
 import styled, { css } from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -23,7 +23,7 @@ const Divider = styled(Base)`
     `
   )};
 
-  ${prop("theme.Divider")};
+  ${theme("Divider")};
 `;
 
 Divider.propTypes = {

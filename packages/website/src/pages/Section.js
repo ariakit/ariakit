@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Block } from "reakit";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import NewsletterForm from "website/src/components/NewsletterForm";
@@ -18,7 +18,7 @@ import ContainerAPITable from "../components/ContainerAPITable";
 import SectionHeader from "../components/SectionHeader";
 
 const Content = styled(Block)`
-  border-top: 1px solid ${prop("theme.grayLightest")};
+  border-top: 1px solid ${theme("grayLightest")};
   margin-top: 1em;
   padding-top: 1em;
 `;

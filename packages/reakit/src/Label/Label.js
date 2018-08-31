@@ -1,11 +1,11 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
 const Label = styled(Base)`
   display: inline-block;
-  ${prop("theme.Label")};
+  ${theme("Label")};
 `;
 
 export default as("label")(Label);

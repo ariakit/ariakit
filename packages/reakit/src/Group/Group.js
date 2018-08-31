@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { ifProp, prop, withProp } from "styled-tools";
+import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -65,7 +65,7 @@ const Group = styled(Base)`
     )};
   }
 
-  ${prop("theme.Group")};
+  ${theme("Group")};
 `;
 
 Group.propTypes = {

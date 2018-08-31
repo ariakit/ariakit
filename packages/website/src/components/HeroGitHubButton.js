@@ -26,7 +26,7 @@ const StarsPopover = styled(Popover)`
   place-items: center;
   cursor: inherit;
   ${Popover.Arrow} {
-    font-size: 14px;
+    font-size: 26px;
   }
 `;
 

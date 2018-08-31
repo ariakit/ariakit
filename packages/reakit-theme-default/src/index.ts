@@ -1,62 +1,42 @@
 import { css } from "reakit";
-import { theme, prop, ifProp } from "styled-tools";
-
-// const palette = {
-//   primary: ["#1976d2", "#2196f3", "#71bcf7", "#c2e2fb"],
-//   secondary: ["#c2185b", "#e91e63", "#f06292", "#f8bbd0"],
-//   danger: ["#d32f2f", "#f44336", "#f8877f", "#ffcdd2"],
-//   alert: ["#ffa000", "#ffc107", "#ffd761", "#ffecb3"],
-//   success: ["#388e3c", "#4caf50", "#7cc47f", "#c8e6c9"],
-//   white: ["#fff", "#fff", "#eee"],
-//   grayscale: [
-//     "#212121",
-//     "#414141",
-//     "#616161",
-//     "#9e9e9e",
-//     "#bdbdbd",
-//     "#e0e0e0",
-//     "#eeeeee",
-//     "#ffffff"
-//   ],
-//   text: theme("black"),
-//   reverseText: palette("primary", 1, "#aaa")
-// };
-
-// palette(1, "#aaa")({ palette: "primary" });
-// palette("primary", -1, "#aaa")();
+import { prop, palette, theme, ifProp } from "styled-tools";
 
 export const values = {
-  primary: "blue",
-  primaryDark: "darkblue",
-  black: "#222",
-  white: "#fff",
-  grayLightest: "#eee",
-  grayLighter: "#ccc",
-  grayLight: "#aaa",
-  gray: "#888",
-  grayDark: "#666",
-  grayDarker: "#444",
-  grayDarkest: "#222",
-  primaryTextColor: theme("white"),
-  borderColor: theme("grayLighter"),
-  borderDisabledColor: theme("grayLightest"),
-  textColor: theme("black"),
   borderWidth: "1px",
   borderRadius: "0.25em"
 };
 
-const t = (key: keyof typeof values) => theme(key, values[key]);
+export const $palette = {
+  primary: ["#1976d2", "#2196f3", "#71bcf7", "#c2e2fb"],
+  secondary: ["#c2185b", "#e91e63", "#f06292", "#f8bbd0"],
+  danger: ["#d32f2f", "#f44336", "#f8877f", "#ffcdd2"],
+  alert: ["#ffa000", "#ffc107", "#ffd761", "#ffecb3"],
+  success: ["#388e3c", "#4caf50", "#7cc47f", "#c8e6c9"],
+  white: "#ffffff",
+  black: "#212121",
+  grayscale: [
+    palette("black"),
+    "#414141",
+    "#616161",
+    "#9e9e9e",
+    "#bdbdbd",
+    "#e0e0e0",
+    "#eeeeee",
+    palette("white")
+  ],
+  text: [
+    palette("white"),
+    palette("white"),
+    palette("white"),
+    palette("black")
+  ],
+  border: [palette("grayscale", -4), palette("grayscale", -3)],
+  shadow: "rgba(0, 0, 0, 0.16)"
+};
 
 export const neutralRoundedBorder = css`
-  border: ${t("borderWidth")} solid ${t("borderColor")};
-  border-radius: ${t("borderRadius")};
-`;
-
-export const Arrow = css`
-  color: ${t("black")};
-  &:after {
-    border-width: ${t("borderWidth")};
-  }
+  border: ${theme("borderWidth")} solid ${palette("border")};
+  border-radius: ${theme("borderRadius")};
 `;
 
 export const Avatar = css`
@@ -164,6 +144,7 @@ export const Link = css`
     text-decoration: underline;
   }
 `;
+
 export const List = css`
   list-style: none;
 
@@ -171,17 +152,19 @@ export const List = css`
     margin-bottom: 0.35em;
   }
 `;
+
 export const Paragraph = css`
   &:not(:last-child) {
     margin-bottom: 1rem;
   }
 `;
+
 export const Popover = css`
-  ${neutralRoundedBorder};
-  color: inherit;
   padding: 1em;
-  background-color: white;
-  outline: 0;
+  border-radius: ${theme("borderRadius")};
+  box-shadow: 0 0 0 1px ${palette("shadow")}, 0 2px 4px ${palette("shadow")},
+    0 8px 24px ${palette("shadow")};
+
   &[aria-hidden="false"] {
     transition-timing-function: ${prop(
       "timing",
@@ -189,13 +172,13 @@ export const Popover = css`
     )};
   }
 `;
+
 export const PopoverArrow = css`
-  ${neutralRoundedBorder};
-  color: white;
-  border-top: 0;
-  font-size: 1.25em;
-  border-radius: 0;
+  & .stroke {
+    fill: ${palette("shadow")};
+  }
 `;
+
 export const Table = css`
   ${neutralRoundedBorder};
   table-layout: fixed;
@@ -253,8 +236,8 @@ export const TooltipArrow = css`
 
 export default {
   ...values,
+  palette: $palette,
   neutralRoundedBorder,
-  Arrow,
   Avatar,
   Backdrop,
   Button,

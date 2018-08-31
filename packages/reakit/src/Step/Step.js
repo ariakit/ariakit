@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -36,7 +36,7 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Hidden);
 
 const Step = styled(Component)`
-  ${prop("theme.Step")};
+  ${theme("Step")};
 `;
 
 Step.propTypes = {

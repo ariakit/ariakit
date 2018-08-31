@@ -1,4 +1,4 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
@@ -9,7 +9,7 @@ const Overlay = styled(Hidden)`
   left: 50%;
   top: 50%;
   background-color: white;
-  ${prop("theme.Overlay")};
+  ${theme("Overlay")};
 `;
 
 Overlay.defaultProps = {

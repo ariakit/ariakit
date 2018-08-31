@@ -26,7 +26,7 @@
     "react-router-dom": "^4.2.2",
     "reakit": "^0.14.5",
     "reakit-theme-default": "^0.0.1",
-    "styled-tools": "^1.4.1",
+    "styled-tools": "^1.4.2",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {

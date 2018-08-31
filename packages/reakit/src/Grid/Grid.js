@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import { bool, value } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
@@ -17,7 +17,7 @@ const Grid = styled(Base)`
     ${value("grid-auto-columns", "autoColumns")}
     ${value("grid-auto-rows", "autoRows")}
   }
-  ${prop("theme.Grid")};
+  ${theme("Grid")};
 `;
 
 const valueType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);

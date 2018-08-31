@@ -1,7 +1,7 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme, palette } from "styled-tools";
 import Popper from "popper.js";
 import styled from "../styled";
 import as from "../as";
@@ -127,7 +127,8 @@ const Popover = styled(Component)`
   cursor: auto;
   z-index: 999;
   will-change: transform;
-  ${prop("theme.Popover")};
+  background-color: ${palette("white")};
+  ${theme("Popover")};
 `;
 
 Popover.propTypes = {

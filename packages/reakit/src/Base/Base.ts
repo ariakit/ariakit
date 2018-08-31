@@ -20,15 +20,18 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BaseProps = { variant?: string } & {
-  [key in keyof typeof positions]?: boolean
-};
+type BaseProps = { [key in keyof typeof positions]?: boolean };
 
 const positionsKeys = Object.keys(positions);
 
 const Base = styled(Component)<BaseProps>`
-  all: unset;
+  margin: unset;
+  padding: unset;
+  outline: unset;
+  border: unset;
+  background: unset;
   font-family: inherit;
+  font-size: 100%;
   box-sizing: border-box;
   ${theme("Base")};
   &&& {
@@ -44,7 +47,6 @@ Base.propTypes = {
     ...asTypes,
     PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
   ]),
-  variant: PropTypes.string,
   static: PropTypes.bool,
   absolute: PropTypes.bool,
   fixed: PropTypes.bool,

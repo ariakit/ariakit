@@ -1,4 +1,4 @@
-import { prop, switchProp } from "styled-tools";
+import { theme, switchProp } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -14,7 +14,7 @@ const Heading = styled(Base)`
     h5: "1em",
     h6: "0.75em"
   })};
-  ${prop("theme.Heading")};
+  ${theme("Heading")};
 `;
 
 export default as("h1")(Heading);

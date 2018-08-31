@@ -1,5 +1,5 @@
 import { css } from "reakit";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import themeDefault from "reakit-theme-default";
 
 export default {
@@ -46,7 +46,7 @@ export default {
 
   Link: css`
     ${themeDefault.Link};
-    color: ${prop("theme.pinkDark")};
+    color: ${theme("pinkDark")};
     font-weight: 600;
   `,
 

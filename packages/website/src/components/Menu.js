@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { styled, Grid, List, Link, Input } from "reakit";
-import { prop, ifProp } from "styled-tools";
+import { theme, ifProp } from "styled-tools";
 import MenuContainer from "../containers/MenuContainer";
 import track from "../utils/track";
 
@@ -26,19 +26,19 @@ const SectionLink = styled(Link)`
   font-weight: 400;
   margin: 0;
   font-size: 18px;
-  color: ${prop("theme.black")};
+  color: ${theme("black")};
   border-left: 5px solid transparent;
   padding-left: 20px;
   margin-left: -16px;
 
   &:hover {
-    border-color: ${prop("theme.pinkLight")};
+    border-color: ${theme("pinkLight")};
     text-decoration: none;
   }
 
   &.active {
     font-weight: 600;
-    border-color: ${prop("theme.pinkDark")};
+    border-color: ${theme("pinkDark")};
 
     & + ${MenuList} {
       display: block;

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { prop, withProp } from "styled-tools";
+import { theme, withProp } from "styled-tools";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
 import as from "../as";
@@ -14,7 +14,7 @@ const Card = styled(Base)`
     margin: ${withProp("gutter", numberToPx)};
   }
 
-  ${prop("theme.Card")};
+  ${theme("Card")};
 `;
 
 Card.propTypes = {

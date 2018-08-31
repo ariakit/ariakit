@@ -1,4 +1,4 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
@@ -12,7 +12,7 @@ const Backdrop = styled(Hidden)`
   z-index: 998;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -moz-tap-highlight-color: rgba(0, 0, 0, 0);
-  ${prop("theme.Backdrop")};
+  ${theme("Backdrop")};
 `;
 
 Backdrop.defaultProps = {
