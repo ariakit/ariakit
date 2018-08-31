@@ -38,7 +38,16 @@ export const palette = {
     "#eeeeee",
     p("white")
   ],
-  grayscaleText: [p("white"), p("white"), p("white"), p("black")],
+  grayscaleText: [
+    p("white"),
+    p("white"),
+    p("white"),
+    p("black"),
+    p("black"),
+    p("black"),
+    p("black"),
+    p("black")
+  ],
 
   shadow: [
     "rgba(0, 0, 0, 0.9)",
@@ -48,7 +57,14 @@ export const palette = {
     "rgba(0, 0, 0, 0.15)",
     "rgba(0, 0, 0, 0.075)"
   ],
-  shadowText: [p("white"), p("white"), p("white"), p("black")],
+  shadowText: [
+    p("white"),
+    p("white"),
+    p("white"),
+    p("black"),
+    p("black"),
+    p("black")
+  ],
 
   transparent: [p("shadow", -2), "transparent", p("shadow", -1)],
   transparentText: p("black"),
@@ -101,7 +117,8 @@ export const Card = css`
 `;
 
 export const Code = css`
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: ${p("grayscale", -2)};
+  color: ${p("grayscaleText", -2)};
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -130,7 +147,25 @@ export const GroupItem = css`
 `;
 
 export const Heading = css`
-  margin: 0.5em 0 0.3em;
+  margin: 1em 0 0.5em;
+  h1& {
+    font-size: 2em;
+  }
+  h2& {
+    font-size: 1.75em;
+  }
+  h3& {
+    font-size: 1.5em;
+  }
+  h4& {
+    font-size: 1.25em;
+  }
+  h5& {
+    font-size: 1em;
+  }
+  h6& {
+    font-size: 0.75em;
+  }
 `;
 
 export const Input = css`
