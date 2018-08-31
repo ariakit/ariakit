@@ -40,7 +40,7 @@
     "toolkit"
   ],
   "dependencies": {
-    "styled-tools": "^1.4.2"
+    "styled-tools": "^1.4.3"
   },
   "devDependencies": {
     "eslint": "^5.4.0",

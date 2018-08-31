@@ -27,7 +27,6 @@ const positionsKeys = Object.keys(positions);
 const Base = styled(Component)<BaseProps>`
   margin: unset;
   padding: unset;
-  outline: unset;
   border: unset;
   background: unset;
   font-family: inherit;

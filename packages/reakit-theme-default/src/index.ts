@@ -1,42 +1,64 @@
 import { css } from "reakit";
-import { prop, palette, theme, ifProp } from "styled-tools";
+import { prop, palette as p, theme as t, ifProp } from "styled-tools";
 
 export const values = {
   borderWidth: "1px",
   borderRadius: "0.25em"
 };
 
-export const $palette = {
-  primary: ["#1976d2", "#2196f3", "#71bcf7", "#c2e2fb"],
-  secondary: ["#c2185b", "#e91e63", "#f06292", "#f8bbd0"],
-  danger: ["#d32f2f", "#f44336", "#f8877f", "#ffcdd2"],
-  alert: ["#ffa000", "#ffc107", "#ffd761", "#ffecb3"],
-  success: ["#388e3c", "#4caf50", "#7cc47f", "#c8e6c9"],
+export const palette = {
   white: "#ffffff",
+  whiteText: p("black"),
+
   black: "#212121",
+  blackText: p("white"),
+
+  primary: ["#1976d2", "#2196f3", "#71bcf7", "#c2e2fb"],
+  primaryText: [p("white"), p("white"), p("white"), p("black")],
+
+  secondary: ["#c2185b", "#e91e63", "#f06292", "#f8bbd0"],
+  secondaryText: [p("white"), p("white"), p("white"), p("black")],
+
+  danger: ["#d32f2f", "#f44336", "#f8877f", "#ffcdd2"],
+  dangerText: [p("white"), p("white"), p("white"), p("black")],
+
+  alert: ["#ffa000", "#ffc107", "#ffd761", "#ffecb3"],
+  alertText: [p("white"), p("black"), p("black"), p("black")],
+
+  success: ["#388e3c", "#4caf50", "#7cc47f", "#c8e6c9"],
+  successText: [p("white"), p("white"), p("white"), p("black")],
+
   grayscale: [
-    palette("black"),
+    p("black"),
     "#414141",
     "#616161",
     "#9e9e9e",
     "#bdbdbd",
     "#e0e0e0",
     "#eeeeee",
-    palette("white")
+    p("white")
   ],
-  text: [
-    palette("white"),
-    palette("white"),
-    palette("white"),
-    palette("black")
+  grayscaleText: [p("white"), p("white"), p("white"), p("black")],
+
+  shadow: [
+    "rgba(0, 0, 0, 0.9)",
+    "rgba(0, 0, 0, 0.7)",
+    "rgba(0, 0, 0, 0.5)",
+    "rgba(0, 0, 0, 0.3)",
+    "rgba(0, 0, 0, 0.15)",
+    "rgba(0, 0, 0, 0.075)"
   ],
-  border: [palette("grayscale", -4), palette("grayscale", -3)],
-  shadow: "rgba(0, 0, 0, 0.16)"
+  shadowText: [p("white"), p("white"), p("white"), p("black")],
+
+  transparent: [p("shadow", -2), "transparent", p("shadow", -1)],
+  transparentText: p("black"),
+
+  border: [p("grayscale", -4), p("grayscale", -3)]
 };
 
 export const neutralRoundedBorder = css`
-  border: ${theme("borderWidth")} solid ${palette("border")};
-  border-radius: ${theme("borderRadius")};
+  border: ${t("borderWidth")} solid ${p("border")};
+  border-radius: ${t("borderRadius")};
 `;
 
 export const Avatar = css`
@@ -48,7 +70,13 @@ export const Avatar = css`
 `;
 
 export const Backdrop = css`
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: ${p("shadow", 1)};
+`;
+
+export const Blockquote = css`
+  border-left: 5px solid ${p("grayscale", -3)};
+  padding: 0.5em 0 0.5em 1em;
+  font-style: italic;
 `;
 
 export const Button = css`
@@ -62,7 +90,6 @@ export const Button = css`
   flex: none;
   appearance: none;
   user-select: none;
-  outline: none;
   white-space: nowrap;
   text-decoration: none;
   height: 2.5em;
@@ -106,9 +133,11 @@ export const Field = css`
 export const GroupItem = css`
   ${neutralRoundedBorder};
 `;
+
 export const Heading = css`
   margin: 0.5em 0 0.3em;
 `;
+
 export const Input = css`
   ${neutralRoundedBorder};
   display: block;
@@ -131,6 +160,7 @@ export const Input = css`
     height: auto;
   }
 `;
+
 export const Link = css`
   display: inline-grid;
   grid-gap: 0.25em;
@@ -161,9 +191,9 @@ export const Paragraph = css`
 
 export const Popover = css`
   padding: 1em;
-  border-radius: ${theme("borderRadius")};
-  box-shadow: 0 0 0 1px ${palette("shadow")}, 0 2px 4px ${palette("shadow")},
-    0 8px 24px ${palette("shadow")};
+  border-radius: ${t("borderRadius")};
+  box-shadow: 0 0 0 1px ${p("shadow", -2)}, 0 2px 4px ${p("shadow", -1)},
+    0 8px 24px ${p("shadow", -1)};
 
   &[aria-hidden="false"] {
     transition-timing-function: ${prop(
@@ -175,7 +205,7 @@ export const Popover = css`
 
 export const PopoverArrow = css`
   & .stroke {
-    fill: ${palette("shadow")};
+    fill: ${p("shadow", -3)};
   }
 `;
 
@@ -214,11 +244,13 @@ export const Table = css`
     background-color: rgba(0, 0, 0, 0.05);
   }
 `;
+
 export const Tabs = css`
   display: flex;
   align-items: center;
   list-style: none;
 `;
+
 export const Tooltip = css`
   text-transform: none;
   font-size: 0.875em;
@@ -236,10 +268,11 @@ export const TooltipArrow = css`
 
 export default {
   ...values,
-  palette: $palette,
+  palette,
   neutralRoundedBorder,
   Avatar,
   Backdrop,
+  Blockquote,
   Button,
   Card,
   Code,
