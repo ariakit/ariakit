@@ -70,7 +70,7 @@ export const Avatar = css`
 `;
 
 export const Backdrop = css`
-  background-color: ${p("shadow", 1)};
+  background-color: ${p("shadow", 2)};
 `;
 
 export const Blockquote = css`
@@ -85,6 +85,7 @@ export const Button = css`
   justify-content: center;
   cursor: pointer;
   min-width: 2.5em;
+  height: 2.5em;
   padding: 0 0.68em;
   position: relative;
   flex: none;
@@ -92,17 +93,11 @@ export const Button = css`
   user-select: none;
   white-space: nowrap;
   text-decoration: none;
-  height: 2.5em;
-  &[disabled] {
-    pointer-events: none;
-    &:after {
-      display: block;
-    }
-  }
 `;
 
 export const Card = css`
-  background-color: white;
+  background-color: ${p("white")};
+  color: ${p("whiteText")};
 `;
 
 export const Code = css`

@@ -12,6 +12,7 @@ const textColor = (index: number) =>
   withProp("palette", p => palette(`${p}Text`, index, "inherit"));
 
 const Button = styled(Base)<ButtonProps>`
+  border-radius: ${theme("borderRadius")};
   background-color: ${palette(1)};
   color: ${textColor(1)};
 
@@ -23,6 +24,11 @@ const Button = styled(Base)<ButtonProps>`
   &:active {
     background-color: ${palette(0)};
     color: ${textColor(1)};
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    background-color: ${palette(3)};
   }
 
   ${theme("Button")};

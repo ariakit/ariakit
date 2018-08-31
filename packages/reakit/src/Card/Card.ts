@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { theme, withProp } from "styled-tools";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
@@ -6,10 +6,14 @@ import as from "../as";
 import Base from "../Base";
 import CardFit from "./CardFit";
 
-const Card = styled(Base)`
-  position: relative;
+interface CardProps {
+  gutter?: number | string;
+}
+
+const Card = styled(Base)<CardProps>`
   display: inline-block;
 
+  // @ts-ignore
   && > *:not(${CardFit}) {
     margin: ${withProp("gutter", numberToPx)};
   }
@@ -17,6 +21,7 @@ const Card = styled(Base)`
   ${theme("Card")};
 `;
 
+// @ts-ignore
 Card.propTypes = {
   gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };
