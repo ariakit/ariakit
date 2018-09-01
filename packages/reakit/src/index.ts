@@ -16,7 +16,9 @@ export { default as Card } from "./Card";
 export { default as Code } from "./Code";
 export { default as Divider } from "./Divider";
 export { default as Field } from "./Field";
+// @ts-ignore
 export { default as Flex } from "./Flex";
+// @ts-ignore
 export { default as Grid } from "./Grid";
 // @ts-ignore
 export { default as Group } from "./Group";
