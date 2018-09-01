@@ -3,9 +3,8 @@ import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
-const Navigation = styled(Base)`
-  width: 100%;
-  ${theme("Navigation")};
+const List = styled(Base)`
+  ${theme("List")};
 `;
 
-export default as("nav")(Navigation);
+export default as("ul")(List);

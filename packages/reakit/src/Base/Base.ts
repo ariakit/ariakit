@@ -29,6 +29,7 @@ const Base = styled(Component)<BaseProps>`
   padding: unset;
   border: unset;
   background: unset;
+  font: unset;
   font-family: inherit;
   font-size: 100%;
   box-sizing: border-box;

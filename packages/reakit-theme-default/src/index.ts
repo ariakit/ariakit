@@ -3,7 +3,8 @@ import { prop, palette as p, theme as t, ifProp } from "styled-tools";
 
 export const values = {
   borderWidth: "1px",
-  borderRadius: "0.25em"
+  borderRadius: "0.25em",
+  rowHeight: "2.5em"
 };
 
 export const palette = {
@@ -100,8 +101,8 @@ export const Button = css`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  min-width: 2.5em;
-  height: 2.5em;
+  min-width: ${t("rowHeight")};
+  height: ${t("rowHeight")};
   padding: 0 0.68em;
   position: relative;
   flex: none;
@@ -147,33 +148,42 @@ export const GroupItem = css`
 `;
 
 export const Heading = css`
+  font-weight: bold;
   margin: 1em 0 0.5em;
+  &:first-child {
+    margin-top: 0;
+  }
   h1& {
-    font-size: 2em;
+    font-size: 2.5em;
   }
   h2& {
-    font-size: 1.75em;
+    font-size: 2em;
   }
   h3& {
-    font-size: 1.5em;
+    font-size: 1.75em;
   }
   h4& {
-    font-size: 1.25em;
+    font-size: 1.5em;
   }
   h5& {
-    font-size: 1em;
+    font-size: 1.25em;
   }
   h6& {
-    font-size: 0.75em;
+    font-size: 1em;
   }
 `;
 
+export const Image = css`
+  display: block;
+  max-width: 100%;
+`;
+
 export const Input = css`
-  ${neutralRoundedBorder};
   display: block;
   width: 100%;
   padding: 0 0.5em;
-  height: 2.5em;
+  height: ${t("rowHeight")};
+
   &[type="checkbox"],
   &[type="radio"] {
     display: inline-block;
@@ -181,10 +191,12 @@ export const Input = css`
     height: auto;
     padding: 0;
   }
+
   &::placeholder {
     color: currentcolor;
     opacity: 0.5;
   }
+
   textarea & {
     padding: 0.5em;
     height: auto;
@@ -309,6 +321,7 @@ export default {
   Field,
   GroupItem,
   Heading,
+  Image,
   Input,
   Link,
   List,

@@ -3,12 +3,8 @@ import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
-const List = styled(Base)`
-  ${theme("List")};
+const Navigation = styled(Base)`
+  ${theme("Navigation")};
 `;
 
-List.defaultProps = {
-  role: "list"
-};
-
-export default as("ul")(List);
+export default as("nav")(Navigation);
