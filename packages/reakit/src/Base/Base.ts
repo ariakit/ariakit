@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { theme } from "styled-tools";
+import { theme, palette } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
@@ -29,6 +29,7 @@ const Base = styled(Component)<BaseProps>`
   padding: unset;
   border: unset;
   background: unset;
+  color: inherit;
   font: unset;
   font-family: inherit;
   font-size: 100%;

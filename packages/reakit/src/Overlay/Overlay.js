@@ -8,7 +8,6 @@ const Overlay = styled(Hidden)`
   z-index: 19900410;
   left: 50%;
   top: 50%;
-  background-color: white;
   ${theme("Overlay")};
 `;
 

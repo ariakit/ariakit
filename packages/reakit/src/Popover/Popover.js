@@ -127,7 +127,7 @@ const Popover = styled(Component)`
   cursor: auto;
   z-index: 999;
   will-change: transform;
-  background-color: ${palette("white")};
+  background-color: ${palette("background", -1)};
   ${theme("Popover")};
 `;
 

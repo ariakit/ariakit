@@ -50,6 +50,14 @@ export const palette = {
     p("black")
   ],
 
+  background: [
+    p("grayscale", -4),
+    p("grayscale", -3),
+    p("grayscale", -2),
+    p("grayscale", -1)
+  ],
+  text: p("grayscale"),
+
   shadow: [
     "rgba(0, 0, 0, 0.9)",
     "rgba(0, 0, 0, 0.7)",
@@ -113,13 +121,13 @@ export const Button = css`
 `;
 
 export const Card = css`
-  background-color: ${p("white")};
-  color: ${p("whiteText")};
+  background-color: ${p("background", -1)};
+  color: ${p("text", -1)};
 `;
 
 export const Code = css`
-  background-color: ${p("grayscale", -2)};
-  color: ${p("grayscaleText", -2)};
+  background-color: ${p("background", -2)};
+  color: ${p("text", -2)};
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -144,7 +152,8 @@ export const Field = css`
 `;
 
 export const GroupItem = css`
-  ${neutralRoundedBorder};
+  border: ${t("borderWidth")} solid ${p("border")};
+  border-radius: ${t("borderRadius")};
 `;
 
 export const Heading = css`
@@ -208,11 +217,10 @@ export const Link = css`
   grid-gap: 0.25em;
   align-items: center;
   grid-auto-flow: column;
-  color: #0366d6;
   text-decoration: none;
+  color: ${p("primary", 1)};
 
   &:hover {
-    outline-width: 0;
     text-decoration: underline;
   }
 `;
@@ -223,6 +231,14 @@ export const List = css`
   li {
     margin-bottom: 0.35em;
   }
+`;
+
+export const Overlay = css`
+  padding: 1em;
+  border-radius: ${t("borderRadius")};
+  box-shadow: 0 0 0 1px ${p("shadow", -2)}, 0 4px 8px ${p("shadow", -2)},
+    0 16px 48px ${p("shadow", -2)};
+  background-color: ${p("background", -1)};
 `;
 
 export const Paragraph = css`
@@ -249,6 +265,10 @@ export const PopoverArrow = css`
   & .stroke {
     fill: ${p("shadow", -3)};
   }
+`;
+
+export const Sidebar = css`
+  border-radius: 0;
 `;
 
 export const Table = css`
@@ -325,9 +345,11 @@ export default {
   Input,
   Link,
   List,
+  Overlay,
   Paragraph,
   Popover,
   PopoverArrow,
+  Sidebar,
   Table,
   Tabs,
   Tooltip,

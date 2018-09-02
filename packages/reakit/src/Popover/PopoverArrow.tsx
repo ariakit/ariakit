@@ -41,7 +41,7 @@ const PopoverArrow = styled(Component)`
   }
 
   & .fill {
-    fill: ${theme("fillColor", palette("white"))};
+    fill: ${theme("fillColor", palette("background", -1))};
   }
 
   [data-placement^="top"] > & {
