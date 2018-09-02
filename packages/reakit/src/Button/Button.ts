@@ -14,9 +14,6 @@ const textColor = (index: number) =>
 
 const Button = styled(Base)<ButtonProps>`
   border-radius: ${theme("borderRadius")};
-  &[disabled] {
-    pointer-events: none;
-  }
 
   ${ifProp(
     "outlined",

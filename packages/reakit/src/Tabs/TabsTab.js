@@ -8,7 +8,6 @@ import as from "../as";
 import Step from "../Step";
 
 class Component extends React.Component {
-  /** @type {HTMLElement | undefined} */
   element = undefined;
 
   componentDidUpdate(prevProps) {
@@ -74,24 +73,6 @@ class Component extends React.Component {
 }
 
 const TabsTab = styled(Component)`
-  display: inline-flex;
-  position: relative;
-  flex: 1;
-  user-select: none;
-  outline: none;
-  align-items: center;
-  white-space: nowrap;
-  justify-content: center;
-  text-decoration: none;
-  height: 2.5em;
-  padding: 0 0.5em;
-  min-width: 2.5em;
-  &.active {
-    font-weight: bold;
-  }
-  &[disabled] {
-    pointer-events: none;
-  }
   ${theme("TabsTab")};
 `;
 

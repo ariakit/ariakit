@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { theme, palette } from "styled-tools";
+import { prop, theme, palette } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -37,11 +37,11 @@ const PopoverArrow = styled(Component)`
   pointer-events: none;
 
   & .stroke {
-    fill: ${theme("strokeColor")};
+    fill: ${prop("strokeColor")};
   }
 
   & .fill {
-    fill: ${theme("fillColor", palette("background", -1))};
+    fill: ${prop("fillColor", palette("background", -1))};
   }
 
   [data-placement^="top"] > & {

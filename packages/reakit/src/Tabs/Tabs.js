@@ -4,9 +4,6 @@ import as from "../as";
 import Base from "../Base";
 
 const Tabs = styled(Base)`
-  @media screen and (max-width: 640px) {
-    overflow-x: auto;
-  }
   ${theme("Tabs")};
 `;
 

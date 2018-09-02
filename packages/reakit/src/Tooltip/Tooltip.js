@@ -49,8 +49,6 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Popover);
 
 const Tooltip = styled(Component)`
-  pointer-events: none;
-  white-space: nowrap;
   ${theme("Tooltip")};
 `;
 

@@ -81,11 +81,6 @@ export const palette = {
   border: [p("grayscale", -4), p("grayscale", -3)]
 };
 
-export const neutralRoundedBorder = css`
-  border: ${t("borderWidth")} solid ${p("border")};
-  border-radius: ${t("borderRadius")};
-`;
-
 export const Avatar = css`
   border-radius: 50%;
   width: 1.5em;
@@ -118,6 +113,9 @@ export const Button = css`
   user-select: none;
   white-space: nowrap;
   text-decoration: none;
+  &[disabled] {
+    pointer-events: none;
+  }
 `;
 
 export const Card = css`
@@ -272,13 +270,11 @@ export const Sidebar = css`
 `;
 
 export const Table = css`
-  ${neutralRoundedBorder};
+  border: ${t("borderWidth")} solid ${p("border")};
   table-layout: fixed;
   border-collapse: collapse;
-  background-color: white;
-  border: 1px solid #bbb;
+  background-color: ${p("background", -1)};
   line-height: 200%;
-  display: table;
 
   tbody,
   td,
@@ -292,7 +288,7 @@ export const Table = css`
   caption {
     text-transform: uppercase;
     font-size: 0.9em;
-    color: #999;
+    color: ${p("grayscale", 3)};
   }
 
   td,
@@ -303,7 +299,7 @@ export const Table = css`
 
   th {
     font-weight: bold;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${p("shadow", -1)};
   }
 `;
 
@@ -313,25 +309,52 @@ export const Tabs = css`
   list-style: none;
 `;
 
+export const TabsTab = css`
+  display: inline-flex;
+  position: relative;
+  flex: 1;
+  user-select: none;
+  outline: none;
+  align-items: center;
+  white-space: nowrap;
+  justify-content: center;
+  text-decoration: none;
+  height: ${t("rowHeight")};
+  padding: 0 0.5em;
+  min-width: ${t("rowHeight")};
+  &.active {
+    font-weight: bold;
+  }
+  &[disabled] {
+    pointer-events: none;
+  }
+`;
+
 export const Tooltip = css`
   text-transform: none;
+  pointer-events: none;
+  white-space: nowrap;
   font-size: 0.875em;
   text-align: center;
-  color: white;
-  background-color: #222;
-  border-radius: 0.15384em;
+  background-color: ${p("grayscale")};
+  color: ${p("grayscaleText")};
+  box-shadow: none;
+  border-radius: ${t("borderRadius")};
   padding: 0.75em 1em;
 `;
 
 export const TooltipArrow = css`
-  color: #222;
-  border: none;
+  & .stroke {
+    fill: none;
+  }
+  & .fill {
+    fill: ${p("grayscale")};
+  }
 `;
 
 export default {
   ...values,
   palette,
-  neutralRoundedBorder,
   Avatar,
   Backdrop,
   Blockquote,
@@ -352,6 +375,7 @@ export default {
   Sidebar,
   Table,
   Tabs,
+  TabsTab,
   Tooltip,
   TooltipArrow
 };
