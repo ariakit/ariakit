@@ -1,14 +1,18 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { prop, theme, palette } from "styled-tools";
+import { prop, theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
+import { bgColorWithProps } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
-interface PopoverArrowProps {
+export interface PopoverArrowProps {
   fillColor?: string;
   strokeColor?: string;
+  opaque?: boolean;
+  palette?: string;
+  tone?: number;
 }
 
 const Component = (props: PopoverArrowProps) => (
@@ -35,13 +39,14 @@ const PopoverArrow = styled(Component)`
   width: 1em;
   height: 1em;
   pointer-events: none;
+  background-color: transparent;
 
   & .stroke {
     fill: ${prop("strokeColor")};
   }
 
   & .fill {
-    fill: ${prop("fillColor", palette("background", -1))};
+    fill: ${prop("fillColor", bgColorWithProps)};
   }
 
   [data-placement^="top"] > & {
@@ -73,7 +78,10 @@ PopoverArrow.propTypes = {
 };
 
 PopoverArrow.defaultProps = {
-  strokeColor: "transparent"
+  strokeColor: "transparent",
+  opaque: true,
+  palette: "background",
+  tone: -1
 };
 
 export default as("div")(PopoverArrow);

@@ -4,12 +4,10 @@ import as from "../as";
 import Base from "../Base";
 
 const Input = styled(Base)`
-  background-color: ${palette("white")};
-  color: ${palette("whiteText")};
   border-radius: ${theme("borderRadius")};
 
   ${ifProp(
-    palette("border"),
+    theme("borderWidth"),
     css`
       border: ${theme("borderWidth")} solid ${palette("border")};
     `
@@ -19,7 +17,10 @@ const Input = styled(Base)`
 `;
 
 Input.defaultProps = {
-  type: "text"
+  type: "text",
+  opaque: true,
+  palette: "background",
+  tone: -1
 };
 
 export default as("input")(Input);

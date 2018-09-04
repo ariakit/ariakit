@@ -7,8 +7,4 @@ const Table = styled(Base)`
   ${theme("Table")};
 `;
 
-Table.defaultProps = {
-  role: "table"
-};
-
 export default as("table")(Table);

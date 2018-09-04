@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Input, Block, Link, styled } from "reakit";
-import ButtonPrimary from "../elements/ButtonPrimary";
+import { Input, Block, Link, Button, styled } from "reakit";
 import ContentWrapper from "../elements/ContentWrapper";
 import track from "../utils/track";
 
@@ -64,9 +63,9 @@ const NewsletterForm = (props: any) => (
         value=""
       />
     </Block>
-    <ButtonPrimary as="button" type="submit" gridArea="button">
+    <Button type="submit" gridArea="button">
       Subscribe
-    </ButtonPrimary>
+    </Button>
     <Block gridArea="footer" fontSize={14} color="gray" textAlign="center">
       Emails will be sent by{" "}
       <Link

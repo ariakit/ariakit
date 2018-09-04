@@ -1,9 +1,8 @@
 import React from "react";
-import { styled, Grid, Heading } from "reakit";
+import { styled, Grid, Heading, Button } from "reakit";
 import { Link } from "react-router-dom";
 import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/go/code";
-import ButtonPrimary from "../elements/ButtonPrimary";
 import ButtonSecondary from "../elements/ButtonSecondary";
 import LogoSymbol from "../elements/LogoSymbol";
 import ContentWrapper from "../elements/ContentWrapper";
@@ -60,14 +59,15 @@ const Hero = props => (
       Toolkit for building interactive UIs with React
     </Headline>
     <Buttons gridArea="buttons">
-      <ButtonPrimary
+      <Button
+        palette="primary"
         as={[ButtonRounded, Link]}
         to="/guide"
         onClick={track("reakit.heroGuideClick")}
       >
         <LibraryBooksIcon />
         Get Started
-      </ButtonPrimary>
+      </Button>
       <ButtonSecondary
         as={[ButtonRounded, Link]}
         to="/components"

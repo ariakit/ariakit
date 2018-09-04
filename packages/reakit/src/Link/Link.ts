@@ -7,4 +7,8 @@ const Link = styled(Base)`
   ${theme("Link")};
 `;
 
+Link.defaultProps = {
+  palette: "primary"
+};
+
 export default as("a")(Link);

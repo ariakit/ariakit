@@ -1,7 +1,7 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
-import { theme, palette } from "styled-tools";
+import { theme } from "styled-tools";
 import Popper from "popper.js";
 import styled from "../styled";
 import as from "../as";
@@ -127,7 +127,6 @@ const Popover = styled(Component)`
   cursor: auto;
   z-index: 999;
   will-change: transform;
-  background-color: ${palette("background", -1)};
   ${theme("Popover")};
 `;
 
@@ -159,7 +158,10 @@ Popover.defaultProps = {
   hideOnEsc: true,
   flip: true,
   shift: true,
-  gutter: 12
+  gutter: 12,
+  opaque: true,
+  palette: "background",
+  tone: -1
 };
 
 export default as("div")(Popover);

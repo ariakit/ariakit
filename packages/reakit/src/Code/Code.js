@@ -28,4 +28,10 @@ Code.propTypes = {
   codeClassName: PropTypes.string
 };
 
+Code.defaultProps = {
+  opaque: true,
+  palette: "background",
+  tone: -2
+};
+
 export default as(Component)(Code);

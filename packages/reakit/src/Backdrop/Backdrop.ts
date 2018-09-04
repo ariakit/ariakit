@@ -18,7 +18,10 @@ const Backdrop = styled(Hidden)`
 
 Backdrop.defaultProps = {
   role: "button",
-  tabIndex: -1
+  tabIndex: -1,
+  opaque: true,
+  palette: "shadow",
+  tone: 2
 };
 
 export default as("div")(Backdrop);

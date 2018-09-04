@@ -9,7 +9,7 @@ import {
   originWithProps,
   scaleWithProps,
   slideWithProps
-} from "../_utils/transform";
+} from "../_utils/styledProps";
 import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
 import as from "../as";

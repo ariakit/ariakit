@@ -1,72 +1,66 @@
-import { css } from "reakit";
-import { theme } from "styled-tools";
-import themeDefault from "reakit-theme-default";
+import theme from "reakit-theme-default";
 
-export default {
-  ...themeDefault,
-  pinkLight: "#fd88ce",
-  pink: "#fd6099",
-  pinkDark: "#fc4577",
-  black: "#282b36",
-  grayLightest: "#eee",
-  grayLighter: "#ccc",
-  grayLight: "#999",
-  gray: "#666",
-  grayDark: "#333",
+export default theme;
 
-  Button: css`
-    ${themeDefault.Button};
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: #444;
-  `,
+// export default {
+//   pinkLight: "#fd88ce",
+//   pink: "#fd6099",
+//   pinkDark: "#fc4577",
+//   black: "#282b36",
+//   grayLightest: "#eee",
+//   grayLighter: "#ccc",
+//   grayLight: "#999",
+//   gray: "#666",
+//   grayDark: "#333",
 
-  Code: css`
-    ${themeDefault.Code};
-    font-family: "Fira Code", monospace;
-    font-size: 16px;
-    white-space: pre;
-    overflow: auto;
+//   Button: css`
+//     text-transform: uppercase;
+//     font-weight: 600;
+//     letter-spacing: 0.05em;
+//     color: #444;
+//   `,
 
-    @media (max-width: 768px) {
-      font-size: 14px;
-    }
+//   Code: css`
+//     font-family: "Fira Code", monospace;
+//     font-size: 16px;
+//     white-space: pre;
+//     overflow: auto;
 
-    code {
-      font-family: inherit;
-    }
-  `,
+//     @media (max-width: 768px) {
+//       font-size: 14px;
+//     }
 
-  Heading: css`
-    ${themeDefault.Heading};
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-  `,
+//     code {
+//       font-family: inherit;
+//     }
+//   `,
 
-  Link: css`
-    ${themeDefault.Link};
-    color: ${theme("pinkDark")};
-    font-weight: 600;
-  `,
+//   Heading: css`
+//     line-height: 1.15;
+//     letter-spacing: -0.015em;
+//   `,
 
-  Table: css`
-    ${themeDefault.Table};
-    table-layout: auto;
-    border: 0;
-    width: 100%;
-    margin-bottom: 1em;
-    td {
-      vertical-align: top;
-      padding: 0.5em;
-    }
-    th {
-      padding: 0.5em;
-      text-align: left;
-      background-color: white;
-    }
-    tr:nth-child(odd) {
-      background-color: #f6f6f6;
-    }
-  `
-};
+//   Link: css`
+//     color: ${theme("pinkDark")};
+//     font-weight: 600;
+//   `,
+
+//   Table: css`
+//     table-layout: auto;
+//     border: 0;
+//     width: 100%;
+//     margin-bottom: 1em;
+//     td {
+//       vertical-align: top;
+//       padding: 0.5em;
+//     }
+//     th {
+//       padding: 0.5em;
+//       text-align: left;
+//       background-color: white;
+//     }
+//     tr:nth-child(odd) {
+//       background-color: #f6f6f6;
+//     }
+//   `
+// };

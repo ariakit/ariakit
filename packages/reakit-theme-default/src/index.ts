@@ -1,11 +1,9 @@
 import { css } from "reakit";
 import { prop, palette as p, theme as t, ifProp } from "styled-tools";
 
-export const values = {
-  borderWidth: "1px",
-  borderRadius: "0.25em",
-  rowHeight: "2.5em"
-};
+export const borderWidth = "1px";
+export const borderRadius = "0.25em";
+export const rowHeight = "2.5em";
 
 export const palette = {
   white: "#ffffff",
@@ -14,20 +12,20 @@ export const palette = {
   black: "#212121",
   blackText: p("white"),
 
-  primary: ["#1976d2", "#2196f3", "#71bcf7", "#c2e2fb"],
-  primaryText: [p("white"), p("white"), p("white"), p("black")],
+  primary: ["#2196f3", "#64b5f6", "#bbdefb"],
+  primaryText: [p("white"), p("black"), p("black")],
 
-  secondary: ["#c2185b", "#e91e63", "#f06292", "#f8bbd0"],
-  secondaryText: [p("white"), p("white"), p("white"), p("black")],
+  secondary: ["#e91e63", "#f06292", "#f8bbd0"],
+  secondaryText: [p("white"), p("black"), p("black")],
 
-  danger: ["#d32f2f", "#f44336", "#f8877f", "#ffcdd2"],
-  dangerText: [p("white"), p("white"), p("white"), p("black")],
+  danger: ["#f44336", "#e57373", "#ffcdd2"],
+  dangerText: [p("white"), p("black"), p("black")],
 
-  alert: ["#ffa000", "#ffc107", "#ffd761", "#ffecb3"],
-  alertText: [p("white"), p("black"), p("black"), p("black")],
+  alert: ["#ffc107", "#ffd54f", "#ffecb3"],
+  alertText: [p("black"), p("black"), p("black")],
 
-  success: ["#388e3c", "#4caf50", "#7cc47f", "#c8e6c9"],
-  successText: [p("white"), p("white"), p("white"), p("black")],
+  success: ["#4caf50", "#81c784", "#c8e6c9"],
+  successText: [p("white"), p("black"), p("black")],
 
   grayscale: [
     p("black"),
@@ -56,7 +54,7 @@ export const palette = {
     p("grayscale", -2),
     p("grayscale", -1)
   ],
-  text: p("grayscale"),
+  backgroundText: p("grayscale", 0),
 
   shadow: [
     "rgba(0, 0, 0, 0.9)",
@@ -75,7 +73,7 @@ export const palette = {
     p("black")
   ],
 
-  transparent: [p("shadow", -2), "transparent", p("shadow", -1)],
+  transparent: "transparent",
   transparentText: p("black"),
 
   border: [p("grayscale", -4), p("grayscale", -3)]
@@ -89,10 +87,6 @@ export const Avatar = css`
   object-fit: cover;
 `;
 
-export const Backdrop = css`
-  background-color: ${p("shadow", 2)};
-`;
-
 export const Blockquote = css`
   border-left: 5px solid ${p("grayscale", -3)};
   padding: 0.5em 0 0.5em 1em;
@@ -100,6 +94,7 @@ export const Blockquote = css`
 `;
 
 export const Button = css`
+  appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -109,7 +104,6 @@ export const Button = css`
   padding: 0 0.68em;
   position: relative;
   flex: none;
-  appearance: none;
   user-select: none;
   white-space: nowrap;
   text-decoration: none;
@@ -118,14 +112,7 @@ export const Button = css`
   }
 `;
 
-export const Card = css`
-  background-color: ${p("background", -1)};
-  color: ${p("text", -1)};
-`;
-
 export const Code = css`
-  background-color: ${p("background", -2)};
-  color: ${p("text", -2)};
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -216,7 +203,6 @@ export const Link = css`
   align-items: center;
   grid-auto-flow: column;
   text-decoration: none;
-  color: ${p("primary", 1)};
 
   &:hover {
     text-decoration: underline;
@@ -236,7 +222,6 @@ export const Overlay = css`
   border-radius: ${t("borderRadius")};
   box-shadow: 0 0 0 1px ${p("shadow", -2)}, 0 4px 8px ${p("shadow", -2)},
     0 16px 48px ${p("shadow", -2)};
-  background-color: ${p("background", -1)};
 `;
 
 export const Paragraph = css`
@@ -336,8 +321,6 @@ export const Tooltip = css`
   white-space: nowrap;
   font-size: 0.875em;
   text-align: center;
-  background-color: ${p("grayscale")};
-  color: ${p("grayscaleText")};
   box-shadow: none;
   border-radius: ${t("borderRadius")};
   padding: 0.75em 1em;
@@ -347,19 +330,16 @@ export const TooltipArrow = css`
   & .stroke {
     fill: none;
   }
-  & .fill {
-    fill: ${p("grayscale")};
-  }
 `;
 
 export default {
-  ...values,
+  borderWidth,
+  borderRadius,
+  rowHeight,
   palette,
   Avatar,
-  Backdrop,
   Blockquote,
   Button,
-  Card,
   Code,
   Field,
   GroupItem,

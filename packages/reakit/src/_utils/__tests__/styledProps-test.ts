@@ -1,4 +1,8 @@
 import {
+  bool,
+  value,
+  textColorWithProps,
+  bgColorWithProps,
   hasTransition,
   translate3d,
   origin,
@@ -10,9 +14,12 @@ import {
   originWithProps,
   translateWithProps,
   slideWithProps
-} from "../transform";
+} from "../styledProps";
 
-const render = (props = {}) => (strings, ...interpolations) =>
+const render = (props = {}) => (
+  strings: TemplateStringsArray,
+  ...interpolations: any[]
+): string =>
   strings.reduce(
     (acc, curr, i) =>
       `${acc}${curr}${
@@ -22,6 +29,83 @@ const render = (props = {}) => (strings, ...interpolations) =>
       }`,
     ""
   );
+
+describe("bool", () => {
+  test("fulfilled", () => {
+    const props = { foo: true, barBaz: true, baz: false, qux: true };
+    const values = ["foo", "barBaz", "baz"];
+    expect(bool("a", values)(props)).toBe("a: foo bar-baz;");
+  });
+
+  test("empty", () => {
+    const props = {};
+    const values: any[] = [];
+    expect(bool("a", values)(props)).toBe("");
+  });
+});
+
+describe("value", () => {
+  test("undefined value", () => {
+    const props = {};
+    expect(value("foo-bar", "fooBar")(props)).toBe("");
+  });
+
+  test("number value", () => {
+    const props = { fooBar: 2 };
+    expect(value("foo-bar", "fooBar")(props)).toBe("foo-bar: 2px;");
+  });
+
+  test("other value", () => {
+    const props = { fooBar: "4rem" };
+    expect(value("foo-bar", "fooBar")(props)).toBe("foo-bar: 4rem;");
+  });
+});
+
+test("textColorWithProps", () => {
+  const palette = {
+    primary: ["red", "green", "blue"],
+    primaryText: ["blue", "yellow", "red"]
+  };
+  expect(render({ theme: {} })`${textColorWithProps}`).toBe("inherit");
+  expect(render({ theme: { palette } })`${textColorWithProps}`).toBe("inherit");
+  expect(
+    render({ theme: { palette }, palette: "primary" })`${textColorWithProps}`
+  ).toBe("red");
+  expect(
+    render({
+      theme: { palette },
+      palette: "primary",
+      tone: -1
+    })`${textColorWithProps}`
+  ).toBe("blue");
+  expect(
+    render({
+      theme: { palette },
+      palette: "primary",
+      opaque: true
+    })`${textColorWithProps}`
+  ).toBe("blue");
+});
+
+test("bgColorWithProps", () => {
+  const palette = {
+    primary: ["red", "green", "blue"]
+  };
+  expect(render({ theme: {} })`${bgColorWithProps}`).toBe("transparent");
+  expect(render({ theme: { palette } })`${bgColorWithProps}`).toBe(
+    "transparent"
+  );
+  expect(
+    render({ theme: { palette }, palette: "primary" })`${bgColorWithProps}`
+  ).toBe("transparent");
+  expect(
+    render({
+      theme: { palette },
+      palette: "primary",
+      opaque: true
+    })`${bgColorWithProps}`
+  ).toBe("red");
+});
 
 test("hasTransition", () => {
   expect(hasTransition({})).toBe(false);

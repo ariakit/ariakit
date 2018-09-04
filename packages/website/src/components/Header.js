@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Flex, Link, Sidebar, Toolbar } from "reakit";
-import { theme } from "styled-tools";
+import { palette } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
@@ -55,18 +55,18 @@ const NavigationLink = styled(RouterLink)`
   height: 100%;
   padding-top: 5px;
   border-bottom: 5px solid transparent;
-  color: ${theme("black")};
+  color: ${palette("black")};
   text-decoration: none;
   &:hover {
-    border-color: ${theme("pinkLight")};
+    border-color: ${palette("primary", -3)};
   }
   &.active {
-    border-color: ${theme("pinkDark")};
+    border-color: ${palette("primary", 2)};
   }
 `;
 
 const ExternalLink = styled(Link)`
-  color: ${theme("gray")};
+  color: ${palette("grayscale", 2)};
   font-size: 18px;
   justify-self: flex-end;
 `;

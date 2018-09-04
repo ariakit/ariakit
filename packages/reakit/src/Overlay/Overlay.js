@@ -17,7 +17,10 @@ Overlay.defaultProps = {
   hideOnEsc: true,
   translateX: "-50%",
   translateY: "-50%",
-  defaultSlide: "top"
+  defaultSlide: "top",
+  opaque: true,
+  palette: "background",
+  tone: -1
 };
 
 export default as("div")(Overlay);

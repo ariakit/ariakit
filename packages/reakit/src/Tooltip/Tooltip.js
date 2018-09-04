@@ -54,7 +54,9 @@ const Tooltip = styled(Component)`
 
 Tooltip.defaultProps = {
   role: "tooltip",
-  placement: "top"
+  placement: "top",
+  opaque: true,
+  palette: "black"
 };
 
 export default as("div")(Tooltip);

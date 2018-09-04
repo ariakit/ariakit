@@ -27,7 +27,10 @@ Card.propTypes = {
 };
 
 Card.defaultProps = {
-  gutter: "1rem"
+  gutter: "1rem",
+  opaque: true,
+  palette: "background",
+  tone: -1
 };
 
 export default as("div")(Card);
