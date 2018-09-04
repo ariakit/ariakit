@@ -91,13 +91,11 @@ test("bgColorWithProps", () => {
   const palette = {
     primary: ["red", "green", "blue"]
   };
-  expect(render({ theme: {} })`${bgColorWithProps}`).toBe("transparent");
-  expect(render({ theme: { palette } })`${bgColorWithProps}`).toBe(
-    "transparent"
-  );
+  expect(render({ theme: {} })`${bgColorWithProps}`).toBe("unset");
+  expect(render({ theme: { palette } })`${bgColorWithProps}`).toBe("unset");
   expect(
     render({ theme: { palette }, palette: "primary" })`${bgColorWithProps}`
-  ).toBe("transparent");
+  ).toBe("unset");
   expect(
     render({
       theme: { palette },

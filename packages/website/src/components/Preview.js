@@ -5,26 +5,6 @@ import { Block } from "reakit";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import compileComponent from "../utils/compileComponent";
 
-const themeNameMap = {
-  Default: "themeDefault",
-  None: null
-};
-
-const processCode = (code, ...fns) => fns.reduce((acc, fn) => fn(acc), code);
-
-const addThemeWrapper = theme => string =>
-  /<Provider/.test(string) || !theme
-    ? string
-    : string
-        .replace(
-          /(<[A-Za-z][^>]+>)/m,
-          `<Provider theme={${theme}.default}>\n$1`
-        )
-        .replace(/(<[/]?[A-Za-z][^>]+>)[^<]*$/, "$1\n</Provider>");
-
-const ProviderToProviderDotDefault = string =>
-  string.replace(/Provider/g, "Provider.default");
-
 class Preview extends React.Component {
   static propTypes = {
     code: PropTypes.string.isRequired,
@@ -72,19 +52,15 @@ class Preview extends React.Component {
 
   executeCode() {
     this.setState({ error: null });
-    if (!this.props.code) return;
     const { code, config, evalInContext, theme } = this.props;
-    const processedCode = processCode(
-      code,
-      addThemeWrapper(themeNameMap[theme]),
-      ProviderToProviderDotDefault
-    );
+    if (!code) return;
 
     try {
       const exampleComponent = compileComponent(
-        processedCode,
+        code,
         config.compilerConfig,
-        evalInContext
+        evalInContext,
+        theme
       );
 
       window.requestAnimationFrame(() => {

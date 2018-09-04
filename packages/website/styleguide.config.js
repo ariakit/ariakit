@@ -80,8 +80,7 @@ module.exports = {
     StyleGuide: path.join(__dirname, "src")
   },
   context: {
-    Provider: "reakit/Provider",
-    themeDefault: path.join(__dirname, "../reakit-theme-default")
+    defaultTheme: "reakit-theme-default"
   },
   compilerConfig: {
     transforms: {

@@ -26,7 +26,7 @@ const ButtonRounded = styled(Button)`
 `;
 
 const ButtonLarge = styled(Button)`
-  font-size: 22px;
+  font-size: 20px;
 `;
 
 const ButtonPrimary = styled(Button)`

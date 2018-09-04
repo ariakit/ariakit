@@ -69,6 +69,7 @@
     "jest-serializer-html": "^5.0.0",
     "lerna": "^3.2.1",
     "lint-staged": "^7.2.2",
+    "lodash": "^4.17.5",
     "prettier": "1.14.2",
     "raf": "^3.4.0",
     "react": "^16.4.2",

@@ -4,6 +4,7 @@ const replace = require("rollup-plugin-replace");
 const commonjs = require("rollup-plugin-commonjs");
 const { uglify } = require("rollup-plugin-uglify");
 const ignore = require("rollup-plugin-ignore");
+const { camelCase } = require("lodash");
 
 const extensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
@@ -50,7 +51,7 @@ const getPlugins = umd =>
 const getOutput = (umd, pkg) =>
   umd
     ? {
-        name: pkg.name,
+        name: camelCase(pkg.name),
         file: pkg.unpkg,
         format: "umd",
         exports: "named",

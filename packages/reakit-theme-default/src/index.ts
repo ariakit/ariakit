@@ -12,20 +12,25 @@ export const palette = {
   black: "#212121",
   blackText: p("white"),
 
-  primary: ["#2196f3", "#64b5f6", "#bbdefb"],
-  primaryText: [p("white"), p("black"), p("black")],
+  // https://coolors.co/2196f3-42a5f5-64b5f6-90caf9-bbdefb
+  primary: ["#2196f3", "#42a5f5", "#64b5f6", "#90caf9", "#bbdefb"],
+  primaryText: [p("white"), p("white"), p("black"), p("black"), p("black")],
 
-  secondary: ["#e91e63", "#f06292", "#f8bbd0"],
-  secondaryText: [p("white"), p("black"), p("black")],
+  // https://coolors.co/e91e63-ec407a-f06292-f48fb1-f8bbd0
+  secondary: ["#e91e63", "#ec407a", "#f06292", "#f48fb1", "#f8bbd0"],
+  secondaryText: [p("white"), p("white"), p("black"), p("black"), p("black")],
 
-  danger: ["#f44336", "#e57373", "#ffcdd2"],
-  dangerText: [p("white"), p("black"), p("black")],
+  // https://coolors.co/f44336-ef5350-e57373-ef9a9a-ffcdd2
+  danger: ["#f44336", "#ef5350", "#e57373", "#ef9a9a", "#ffcdd2"],
+  dangerText: [p("white"), p("white"), p("black"), p("black"), p("black")],
 
-  alert: ["#ffc107", "#ffd54f", "#ffecb3"],
-  alertText: [p("black"), p("black"), p("black")],
+  // https://coolors.co/ffc107-ffca28-ffd54f-ffe082-ffecb3
+  alert: ["#ffc107", "#ffca28", "#ffd54f", "#ffe082", "#ffecb3"],
+  alertText: [p("black"), p("black"), p("black"), p("black"), p("black")],
 
-  success: ["#4caf50", "#81c784", "#c8e6c9"],
-  successText: [p("white"), p("black"), p("black")],
+  // https://coolors.co/4caf50-66bb6a-81c784-a5d6a7-c8e6c9
+  success: ["#4caf50", "#66bb6a", "#81c784", "#a5d6a7", "#c8e6c9"],
+  successText: [p("white"), p("white"), p("white"), p("black"), p("black")],
 
   grayscale: [
     p("black"),
@@ -34,7 +39,7 @@ export const palette = {
     "#9e9e9e",
     "#bdbdbd",
     "#e0e0e0",
-    "#eeeeee",
+    "#f5f5f5",
     p("white")
   ],
   grayscaleText: [
@@ -54,7 +59,7 @@ export const palette = {
     p("grayscale", -2),
     p("grayscale", -1)
   ],
-  backgroundText: p("grayscale", 0),
+  backgroundText: p("black"),
 
   shadow: [
     "rgba(0, 0, 0, 0.9)",
@@ -76,7 +81,7 @@ export const palette = {
   transparent: "transparent",
   transparentText: p("black"),
 
-  border: [p("grayscale", -4), p("grayscale", -3)]
+  border: p("shadow", -2)
 };
 
 export const Avatar = css`
@@ -94,21 +99,44 @@ export const Blockquote = css`
 `;
 
 export const Button = css`
-  appearance: none;
   display: inline-flex;
+  position: relative;
+  appearance: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   min-width: ${t("rowHeight")};
   height: ${t("rowHeight")};
   padding: 0 0.68em;
-  position: relative;
   flex: none;
   user-select: none;
   white-space: nowrap;
   text-decoration: none;
+  outline: none;
+  &:hover,
+  &:focus {
+    box-shadow: inset 0 0 999em ${p("shadow", -2)};
+  }
+  &:active,
+  &.active {
+    box-shadow: inset 0 0 999em ${p("shadow", -3)};
+  }
+  &:after {
+    display: none;
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
+    background-color: rgba(255, 255, 255, 0.35);
+  }
   &[disabled] {
     pointer-events: none;
+    &:after {
+      display: block;
+    }
   }
 `;
 
@@ -117,6 +145,7 @@ export const Code = css`
   white-space: pre-wrap;
   word-wrap: break-word;
   padding: ${ifProp("block", "0", "0.25em 0.35em")};
+  border-radius: ${t("borderRadius")};
 
   code {
     display: block;
@@ -246,7 +275,7 @@ export const Popover = css`
 
 export const PopoverArrow = css`
   & .stroke {
-    fill: ${p("shadow", -3)};
+    fill: ${p("shadow", -2)};
   }
 `;
 
@@ -255,7 +284,7 @@ export const Sidebar = css`
 `;
 
 export const Table = css`
-  border: ${t("borderWidth")} solid ${p("border")};
+  border: ${t("borderWidth")} solid ${p("grayscale", 4)};
   table-layout: fixed;
   border-collapse: collapse;
   background-color: ${p("background", -1)};

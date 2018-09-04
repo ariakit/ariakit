@@ -18,9 +18,5 @@ import { Flex, Block } from "reakit";
   <Block>Apples</Block>
   <Divider vertical />
   <Block>Oranges</Block>
-  <Divider vertical />
-  <Block>Grapes</Block>
-  <Divider vertical />
-  <Block>Strawberries</Block>
 </Flex>
 ```

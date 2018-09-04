@@ -37,9 +37,9 @@ export const bgColorWithProps = withProp(
   ["opaque", "palette", "tone"],
   (opaque, paletteProp, tone = 0) => {
     if (!opaque) {
-      return "transparent";
+      return "unset";
     }
-    return palette(paletteProp, tone, "transparent");
+    return palette(paletteProp, tone, "unset");
   }
 );
 
