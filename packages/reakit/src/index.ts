@@ -33,7 +33,6 @@ export { default as Grid } from "./Grid";
 export { default as Group } from "./Group";
 // @ts-ignore
 export { default as Heading } from "./Heading";
-// @ts-ignore
 export { default as Hidden } from "./Hidden";
 // @ts-ignore
 export { default as Image } from "./Image";

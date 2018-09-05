@@ -1,6 +1,6 @@
-import React from "react";
+import * as React from "react";
 import { findDOMNode } from "react-dom";
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { prop, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
@@ -15,7 +15,33 @@ import styled, { css } from "../styled";
 import as from "../as";
 import Base from "../Base";
 
-class Component extends React.Component {
+interface MouseClickEvent extends MouseEvent {
+  target: Node;
+}
+
+type ComponentProps = {
+  visible?: boolean;
+  hide?: () => void;
+  onTransitionEnd?: () => void;
+  hideOnEsc?: boolean;
+  hideOnClickOutside?: boolean;
+  unmount?: boolean;
+  fade?: boolean;
+  expand?: boolean | "center" | "top" | "right" | "bottom" | "left";
+  slide?: boolean | "top" | "right" | "bottom" | "left";
+  duration?: string;
+  delay?: string;
+  timing?: string;
+  animated?: boolean;
+  transitioning?: boolean;
+};
+
+type ComponentState = {
+  visible?: boolean;
+  transitioning?: boolean;
+};
+
+class Component extends React.Component<ComponentProps, ComponentState> {
   state = {
     visible: this.props.visible,
     transitioning: this.props.transitioning
@@ -50,7 +76,7 @@ class Component extends React.Component {
     }
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: ComponentProps) {
     if (prevProps.visible !== this.props.visible) {
       this.applyState();
     }
@@ -68,20 +94,21 @@ class Component extends React.Component {
     }
   };
 
-  handleKeyDown = e => {
+  handleKeyDown = (e: KeyboardEvent) => {
     const { visible, hide } = this.props;
     if (e.key === "Escape" && visible && hide) {
       hide();
     }
   };
 
-  handleClickOutside = e => {
+  handleClickOutside = (e: MouseEvent) => {
     const node = findDOMNode(this);
     const { hide, visible } = this.props;
-    const shouldHide = node && !node.contains(e.target) && visible && hide;
+    const shouldHide =
+      node && !node.contains((e as MouseClickEvent).target) && visible && hide;
 
     if (shouldHide) {
-      setTimeout(() => this.props.visible && hide());
+      setTimeout(() => this.props.visible && hide && hide());
     }
   };
 
@@ -104,6 +131,7 @@ class Component extends React.Component {
   }
 }
 
+// @ts-ignore
 hoistNonReactStatics(Component, Base);
 
 const Hidden = styled(Component)`
@@ -134,6 +162,7 @@ const Hidden = styled(Component)`
   ${prop("theme.Hidden")};
 `;
 
+// @ts-ignore
 Hidden.propTypes = {
   visible: PropTypes.bool,
   hide: PropTypes.func,

@@ -1,16 +1,22 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Container } from "constate";
+import * as React from "react";
+import * as PropTypes from "prop-types";
+import { Container, ContainerProps } from "constate";
 
-export const initialState = { visible: false };
+type ContainerState = {
+  visible: boolean;
+};
 
-export const toggle = () => state => ({ visible: !state.visible });
+export const initialState: ContainerState = { visible: false };
+
+export const toggle = () => (state: ContainerState) => ({
+  visible: !state.visible
+});
 
 export const show = () => () => ({ visible: true });
 
 export const hide = () => () => ({ visible: false });
 
-const HiddenContainer = props => (
+const HiddenContainer = (props: ContainerProps<ContainerState>) => (
   <Container
     {...props}
     initialState={{ ...initialState, ...props.initialState }}
@@ -18,6 +24,7 @@ const HiddenContainer = props => (
   />
 );
 
+// @ts-ignore
 HiddenContainer.propTypes = {
   initialState: PropTypes.object,
   actions: PropTypes.objectOf(PropTypes.func)
