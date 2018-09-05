@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { styled, Flex } from "reakit";
-import { theme, ifProp } from "styled-tools";
+import { styled, css, Flex } from "reakit";
+import { palette, ifProp } from "styled-tools";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ScrollContainer from "../containers/ScrollContainer";
@@ -9,7 +9,7 @@ import ScrollContainer from "../containers/ScrollContainer";
 const Wrapper = styled(Flex)`
   flex-direction: column;
   background-color: white;
-  color: ${theme("black")};
+  color: ${palette("backgroundText", -1)};
   align-items: center;
   min-height: 100vh;
   width: 100%;
@@ -20,7 +20,12 @@ const StyledHeader = styled(Header)`
   top: 0;
   left: 0;
   height: 60px;
-  ${ifProp("shadowed", "box-shadow: 0 0 1px rgba(0, 0, 0, 0.25)")};
+  ${ifProp(
+    "shadowed",
+    css`
+      box-shadow: 0 0 1px ${palette("shadow", -3)};
+    `
+  )};
 `;
 
 const Content = styled(Flex)`

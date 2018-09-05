@@ -18,7 +18,7 @@ const Wrapper = styled(Flex)`
   width: 100%;
   height: 60px;
   justify-content: center;
-  background-color: white;
+  background-color: ${palette("background", -1)};
   z-index: 9999;
   padding: 0 36px;
   @media (max-width: 768px) {
@@ -55,13 +55,13 @@ const NavigationLink = styled(RouterLink)`
   height: 100%;
   padding-top: 5px;
   border-bottom: 5px solid transparent;
-  color: ${palette("black")};
+  color: ${palette("backgroundText", -1)};
   text-decoration: none;
   &:hover {
-    border-color: ${palette("primary", -3)};
+    border-color: ${palette("primary", 2)};
   }
   &.active {
-    border-color: ${palette("primary", 2)};
+    border-color: ${palette("primary", 1)};
   }
 `;
 

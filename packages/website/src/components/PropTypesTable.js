@@ -5,7 +5,6 @@ import ArrowDownIcon from "react-icons/lib/md/arrow-drop-down";
 import ArrowUpIcon from "react-icons/lib/md/arrow-drop-up";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Icon from "./Icon";
-import TableWrapper from "../elements/TableWrapper";
 import findSectionPropTypes from "../utils/findSectionPropTypes";
 import isComponentSection from "../utils/isComponentSection";
 
@@ -67,11 +66,10 @@ const PropTypesTable = ({ section }) =>
                 {({ visible, toggle }) => (
                   <React.Fragment>
                     <Button
-                      borderColor="white"
-                      backgroundColor="#eee"
+                      palette="background"
+                      tone={-3}
                       onClick={toggle}
                       width="100%"
-                      borderRadius={0}
                     >
                       {compName}
                       {visible ? (
@@ -81,7 +79,7 @@ const PropTypesTable = ({ section }) =>
                       )}
                     </Button>
                     {visible && (
-                      <TableWrapper>
+                      <Table.Wrapper>
                         <Table>
                           <thead>
                             <tr>
@@ -114,7 +112,7 @@ const PropTypesTable = ({ section }) =>
                             )}
                           </tbody>
                         </Table>
-                      </TableWrapper>
+                      </Table.Wrapper>
                     )}
                   </React.Fragment>
                 )}

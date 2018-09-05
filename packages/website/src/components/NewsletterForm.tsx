@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Input, Block, Link, Button, styled } from "reakit";
+import { palette } from "styled-tools";
 import ContentWrapper from "../elements/ContentWrapper";
 import track from "../utils/track";
 
@@ -7,11 +8,11 @@ const action =
   "https://reakit.us18.list-manage.com/subscribe/post?u=cf382e48d5d8ed7178cb22060&id=941e41af27";
 
 const Wrapper = styled(ContentWrapper)`
-  background-color: rgba(255, 229, 100, 0.2);
+  background-color: ${palette("alert", -1)};
   width: 100%;
   padding: 2rem;
   display: grid;
-  grid-gap: 16px;
+  grid-gap: 32px 16px;
   grid-template:
     "text text text"
     "email name button"
@@ -34,7 +35,7 @@ const Wrapper = styled(ContentWrapper)`
 
 const NewsletterForm = (props: any) => (
   <Wrapper as="form" action={action} method="post" {...props}>
-    <Block gridArea="text" fontSize={20} lineHeight={1.5} textAlign="center">
+    <Block gridArea="text" fontSize={20} lineHeight={1.75} textAlign="center">
       ReaKit is evolving and big announcements are coming.
       <br />
       Subscribe below to be notified about <strong>important</strong> updates.
@@ -66,7 +67,13 @@ const NewsletterForm = (props: any) => (
     <Button type="submit" gridArea="button">
       Subscribe
     </Button>
-    <Block gridArea="footer" fontSize={14} color="gray" textAlign="center">
+    <Block
+      gridArea="footer"
+      fontSize={14}
+      palette="shadow"
+      tone={-4}
+      textAlign="center"
+    >
       Emails will be sent by{" "}
       <Link
         href="https://twitter.com/diegohaz"

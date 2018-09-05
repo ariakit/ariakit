@@ -26,19 +26,19 @@ const SectionLink = styled(Link)`
   font-weight: 400;
   margin: 0;
   font-size: 18px;
-  color: ${palette("black")};
+  color: ${palette("backgroundText", -1)};
   border-left: 5px solid transparent;
   padding-left: 20px;
   margin-left: -16px;
 
   &:hover {
-    border-color: ${palette("primary", -3)};
+    border-color: ${palette("primary", 2)};
     text-decoration: none;
   }
 
   &.active {
     font-weight: 600;
-    border-color: ${palette("primary", 2)};
+    border-color: ${palette("primary", 1)};
 
     & + ${MenuList} {
       display: block;

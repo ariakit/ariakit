@@ -4,15 +4,6 @@ import as from "../as";
 import Base from "../Base";
 
 const Input = styled(Base)`
-  border-radius: ${theme("borderRadius")};
-
-  ${ifProp(
-    theme("borderWidth"),
-    css`
-      border: ${theme("borderWidth")} solid ${palette("border")};
-    `
-  )};
-
   ${theme("Input")};
 `;
 

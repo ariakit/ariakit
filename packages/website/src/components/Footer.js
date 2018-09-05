@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Flex, Link, Paragraph, Grid, List } from "reakit";
-import { theme } from "styled-tools";
+import { palette } from "styled-tools";
 import FacebookIcon from "react-icons/lib/fa/facebook-official";
 import TwitterIcon from "react-icons/lib/fa/twitter";
 import GitHubIcon from "react-icons/lib/go/mark-github";
@@ -13,10 +13,10 @@ const Wrapper = styled(Flex)`
   justify-content: center;
   width: 100%;
   padding: 40px 0;
-  color: ${theme("gray")};
+  color: ${palette("grayscale", 2)};
 
   ${Link} {
-    color: ${theme("gray")};
+    color: ${palette("grayscale", 2)};
   }
 
   ${Paragraph} {
@@ -32,7 +32,7 @@ const Icons = styled(Grid)`
   margin-bottom: 16px;
 
   ${Link}:hover {
-    color: ${theme("grayDark")};
+    color: ${palette("grayscale", 1)};
   }
 `;
 

@@ -6,6 +6,7 @@ import track from "../utils/track";
 import getSectionGitHubUrl from "../utils/getSectionGitHubUrl";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import SectionContentWrapper from "../elements/SectionContentWrapper";
+import IconOnLeft from "../elements/IconOnLeft";
 
 const Name = styled(Heading)`
   font-size: 40px;
@@ -36,7 +37,7 @@ const SectionHeader = ({ section, ...props }) => {
       <Flex>
         {githubSrcUrl && (
           <ButtonTransparent
-            as="a"
+            as={[IconOnLeft, "a"]}
             href={githubSrcUrl}
             target="_blank"
             onClick={track("reakit.sectionSourceClick")}
@@ -47,7 +48,7 @@ const SectionHeader = ({ section, ...props }) => {
         )}
         {githubDocUrl && (
           <ButtonTransparent
-            as="a"
+            as={[IconOnLeft, "a"]}
             href={githubDocUrl}
             target="_blank"
             onClick={track("reakit.sectionMarkdownClick")}

@@ -2,7 +2,6 @@ import React from "react";
 import { Block, Table, Heading, Code, Paragraph } from "reakit";
 import isComponentSection from "../utils/isComponentSection";
 import SectionContentWrapper from "../elements/SectionContentWrapper";
-import TableWrapper from "../elements/TableWrapper";
 
 const renderValue = value => {
   if (typeof value === "function") return null;
@@ -24,7 +23,7 @@ const ContainerAPITable = ({ section, ...props }) => {
       </SectionContentWrapper>
       <Container>
         {api => (
-          <TableWrapper>
+          <Table.Wrapper>
             <Table>
               <thead>
                 <tr>
@@ -49,7 +48,7 @@ const ContainerAPITable = ({ section, ...props }) => {
                 ))}
               </tbody>
             </Table>
-          </TableWrapper>
+          </Table.Wrapper>
         )}
       </Container>
     </Block>

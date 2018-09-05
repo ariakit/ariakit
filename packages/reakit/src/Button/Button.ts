@@ -4,7 +4,6 @@ import as from "../as";
 import Base from "../Base";
 
 const Button = styled(Base)`
-  border-radius: ${theme("borderRadius")};
   ${theme("Button")};
 `;
 

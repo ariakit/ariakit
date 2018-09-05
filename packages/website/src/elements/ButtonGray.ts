@@ -1,9 +1,9 @@
 import { styled, Button } from "reakit";
 import { palette } from "styled-tools";
 
-const ButtonTransparent = styled(Button)`
-  background-color: transparent;
+const ButtonGray = styled(Button)`
   color: ${palette("grayscale", 1)};
+  background-color: ${palette("grayscale", -3)};
 `;
 
-export default ButtonTransparent;
+export default ButtonGray;

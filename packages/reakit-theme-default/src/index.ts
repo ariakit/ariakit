@@ -1,10 +1,6 @@
 import { css } from "reakit";
 import { prop, palette as p, theme as t, ifProp } from "styled-tools";
 
-export const borderWidth = "1px";
-export const borderRadius = "0.25em";
-export const rowHeight = "2.5em";
-
 export const palette = {
   white: "#ffffff",
   whiteText: p("black"),
@@ -105,9 +101,10 @@ export const Button = css`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  min-width: ${t("rowHeight")};
-  height: ${t("rowHeight")};
+  min-width: 2.5em;
+  height: 2.5em;
   padding: 0 0.68em;
+  border-radius: 0.25em;
   flex: none;
   user-select: none;
   white-space: nowrap;
@@ -145,7 +142,7 @@ export const Code = css`
   white-space: pre-wrap;
   word-wrap: break-word;
   padding: ${ifProp("block", "0", "0.25em 0.35em")};
-  border-radius: ${t("borderRadius")};
+  border-radius: 0.25em;
 
   code {
     display: block;
@@ -166,8 +163,8 @@ export const Field = css`
 `;
 
 export const GroupItem = css`
-  border: ${t("borderWidth")} solid ${p("border")};
-  border-radius: ${t("borderRadius")};
+  border: 1px solid ${p("border")};
+  border-radius: 0.25em;
 `;
 
 export const Heading = css`
@@ -205,7 +202,8 @@ export const Input = css`
   display: block;
   width: 100%;
   padding: 0 0.5em;
-  height: ${t("rowHeight")};
+  height: 2.5em;
+  border-radius: 0.25em;
 
   &[type="checkbox"],
   &[type="radio"] {
@@ -248,7 +246,7 @@ export const List = css`
 
 export const Overlay = css`
   padding: 1em;
-  border-radius: ${t("borderRadius")};
+  border-radius: 0.25em;
   box-shadow: 0 0 0 1px ${p("shadow", -2)}, 0 4px 8px ${p("shadow", -2)},
     0 16px 48px ${p("shadow", -2)};
 `;
@@ -261,7 +259,7 @@ export const Paragraph = css`
 
 export const Popover = css`
   padding: 1em;
-  border-radius: ${t("borderRadius")};
+  border-radius: 0.25em;
   box-shadow: 0 0 0 1px ${p("shadow", -2)}, 0 2px 4px ${p("shadow", -1)},
     0 8px 24px ${p("shadow", -1)};
 
@@ -284,7 +282,7 @@ export const Sidebar = css`
 `;
 
 export const Table = css`
-  border: ${t("borderWidth")} solid ${p("grayscale", 4)};
+  border: 1px solid ${p("grayscale", 4)};
   table-layout: fixed;
   border-collapse: collapse;
   background-color: ${p("background", -1)};
@@ -333,9 +331,9 @@ export const TabsTab = css`
   white-space: nowrap;
   justify-content: center;
   text-decoration: none;
-  height: ${t("rowHeight")};
+  height: 2.5em;
   padding: 0 0.5em;
-  min-width: ${t("rowHeight")};
+  min-width: 2.5em;
   &.active {
     font-weight: bold;
   }
@@ -351,7 +349,7 @@ export const Tooltip = css`
   font-size: 0.875em;
   text-align: center;
   box-shadow: none;
-  border-radius: ${t("borderRadius")};
+  border-radius: 0.25em;
   padding: 0.75em 1em;
 `;
 
@@ -362,9 +360,6 @@ export const TooltipArrow = css`
 `;
 
 export default {
-  borderWidth,
-  borderRadius,
-  rowHeight,
   palette,
   Avatar,
   Blockquote,

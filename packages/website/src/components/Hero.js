@@ -1,14 +1,16 @@
 import React from "react";
-import { styled, Grid, Heading, Button } from "reakit";
+import { styled, Grid, Heading } from "reakit";
 import { Link } from "react-router-dom";
 import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/go/code";
-import ButtonSecondary from "../elements/ButtonSecondary";
+import ButtonPrimary from "../elements/ButtonPrimary";
+import ButtonOutline from "../elements/ButtonOutline";
 import LogoSymbol from "../elements/LogoSymbol";
 import ContentWrapper from "../elements/ContentWrapper";
 import ButtonRounded from "../elements/ButtonRounded";
 import HeroGitHubButton from "./HeroGitHubButton";
 import track from "../utils/track";
+import IconOnLeft from "../elements/IconOnLeft";
 
 const Wrapper = styled(ContentWrapper)`
   display: grid;
@@ -33,10 +35,10 @@ const Wrapper = styled(ContentWrapper)`
 
 const Headline = styled(Heading)`
   margin: 0;
-  font-size: 50px;
+  font-size: 50px !important;
   font-weight: 300;
   @media (max-width: 768px) {
-    font-size: 30px;
+    font-size: 30px !important;
     text-align: center;
   }
 `;
@@ -59,23 +61,22 @@ const Hero = props => (
       Toolkit for building interactive UIs with React
     </Headline>
     <Buttons gridArea="buttons">
-      <Button
-        palette="primary"
-        as={[ButtonRounded, Link]}
+      <ButtonPrimary
+        as={[ButtonRounded, IconOnLeft, Link]}
         to="/guide"
         onClick={track("reakit.heroGuideClick")}
       >
         <LibraryBooksIcon />
         Get Started
-      </Button>
-      <ButtonSecondary
-        as={[ButtonRounded, Link]}
+      </ButtonPrimary>
+      <ButtonOutline
+        as={[ButtonRounded, IconOnLeft, Link]}
         to="/components"
         onClick={track("reakit.heroComponentsClick")}
       >
         <CodeIcon />
         Components
-      </ButtonSecondary>
+      </ButtonOutline>
       <HeroGitHubButton />
     </Buttons>
   </Wrapper>
