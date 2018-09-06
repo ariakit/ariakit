@@ -1,12 +1,25 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { prop } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
 
-class Component extends React.Component {
+type ComponentProps = {
+  as?: keyof JSX.IntrinsicElements | React.ComponentType;
+  static?: boolean;
+  absolute?: boolean;
+  fixed?: boolean;
+  relative?: boolean;
+  sticky?: boolean;
+};
+
+type ComponentState = {
+  wrapper?: React.ReactNode;
+};
+
+class Component extends React.Component<ComponentProps, ComponentState> {
   state = { wrapper: null };
 
   componentDidMount() {
