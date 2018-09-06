@@ -1,5 +1,5 @@
 import { css } from "reakit";
-import { prop, palette as p, theme as t, ifProp } from "styled-tools";
+import { prop, palette as p, ifProp } from "styled-tools";
 
 export const palette = {
   white: "#ffffff",
