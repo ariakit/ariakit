@@ -4,7 +4,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider } from "reakit";
 import "./globalStyles";
-import theme from "./theme/dark";
+import theme from "./theme/light";
 import getEvalInContext from "./utils/getEvalInContext";
 import parseSections from "./utils/parseSections";
 import Home from "./pages/Home";

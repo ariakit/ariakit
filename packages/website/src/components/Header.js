@@ -133,10 +133,8 @@ const Mobile = () => (
       )}
     </Sidebar.Container>
     <Toolbar.Content align="center">
-      <Toolbar.Focusable>
-        <LogoLink to="/">
-          <Logo />
-        </LogoLink>
+      <Toolbar.Focusable as={LogoLink} to="/">
+        <Logo />
       </Toolbar.Focusable>
     </Toolbar.Content>
     <Toolbar.Content align="end">
