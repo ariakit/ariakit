@@ -1,7 +1,15 @@
-import React from "react";
-import { Image } from "reakit";
-import logo from "../../../../logo/logo.svg";
+import * as React from "react";
+import { Base, styled } from "reakit";
+import logo from "!raw-loader!../../../../logo/logo.svg";
 
-const Logo = props => <Image src={logo} alt="ReaKit" {...props} />;
+const Component = props => (
+  <Base {...props} dangerouslySetInnerHTML={{ __html: logo }} />
+);
+
+const Logo = styled(Component)`
+  .cls-1 {
+    fill: currentColor !important;
+  }
+`;
 
 export default Logo;

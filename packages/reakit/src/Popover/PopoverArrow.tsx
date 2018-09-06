@@ -81,8 +81,7 @@ PopoverArrow.propTypes = {
 PopoverArrow.defaultProps = {
   strokeColor: "transparent",
   opaque: true,
-  palette: "background",
-  tone: -1
+  palette: "white"
 };
 
 export default as("div")(PopoverArrow);

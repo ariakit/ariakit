@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { renderToStaticMarkup } from "react-dom/server";
 import { styled, Block, Tabs, Group, Button } from "reakit";
 import PencilIcon from "react-icons/lib/md/create";
-import pretty from "pretty";
+import diffableHtml from "diffable-html";
 import Editor from "./Editor";
 import compileComponent from "../utils/compileComponent";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
@@ -47,7 +47,7 @@ const StyledPencilIcon = styled(PencilIcon)`
 const getHTML = (code, config, evalInContext) => {
   const component = compileComponent(code, config, evalInContext);
   const markup = renderToStaticMarkup(component);
-  return pretty(markup.replace(/ class="[^"]+"/g, ""));
+  return diffableHtml(markup).trim();
 };
 
 const EditorWithTabs = props => (

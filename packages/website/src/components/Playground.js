@@ -17,7 +17,8 @@ const Wrapper = styled(Flex)`
 
 const PreviewWrapper = styled(Block)`
   padding: 16px;
-  background-color: ${palette("background", -2)};
+  color: ${palette("black")};
+  background-color: #f5f5f5;
   max-width: 100vw;
   min-height: 3.5em;
 `;
@@ -50,7 +51,9 @@ const Playground = ({ code, evalInContext, ...props }) => (
               </Block>
             </PreviewWrapper>
             <ThemeWrapper>
-              <Label htmlFor="themeSelect">Theme</Label>
+              <Label htmlFor="themeSelect" color="#666">
+                Theme
+              </Label>
               <ThemeInput
                 id="themeSelect"
                 value={theme}

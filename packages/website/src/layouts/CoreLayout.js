@@ -8,7 +8,7 @@ import ScrollContainer from "../containers/ScrollContainer";
 
 const Wrapper = styled(Flex)`
   flex-direction: column;
-  background-color: white;
+  background-color: ${palette("background", -1)};
   color: ${palette("backgroundText", -1)};
   align-items: center;
   min-height: 100vh;

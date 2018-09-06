@@ -10,8 +10,7 @@ const Input = styled(Base)`
 Input.defaultProps = {
   type: "text",
   opaque: true,
-  palette: "background",
-  tone: -1
+  palette: "white"
 };
 
 export default as("input")(Input);

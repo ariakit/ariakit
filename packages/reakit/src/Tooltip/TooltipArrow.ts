@@ -8,8 +8,7 @@ const TooltipArrow = styled(PopoverArrow)`
 `;
 
 TooltipArrow.defaultProps = {
-  palette: "grayscale",
-  tone: 0
+  palette: "grayscale"
 };
 
 export default as("div")(TooltipArrow);

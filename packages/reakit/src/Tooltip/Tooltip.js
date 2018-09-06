@@ -56,7 +56,7 @@ Tooltip.defaultProps = {
   role: "tooltip",
   placement: "top",
   opaque: true,
-  palette: "black"
+  palette: "grayscale"
 };
 
 export default as("div")(Tooltip);

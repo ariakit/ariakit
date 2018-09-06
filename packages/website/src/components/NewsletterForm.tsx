@@ -9,6 +9,7 @@ const action =
 
 const Wrapper = styled(ContentWrapper)`
   background-color: ${palette("alert", -1)};
+  color: ${palette("alertText", -1)};
   width: 100%;
   padding: 2rem;
   display: grid;
@@ -67,13 +68,7 @@ const NewsletterForm = (props: any) => (
     <Button type="submit" gridArea="button">
       Subscribe
     </Button>
-    <Block
-      gridArea="footer"
-      fontSize={14}
-      palette="shadow"
-      tone={-4}
-      textAlign="center"
-    >
+    <Block gridArea="footer" fontSize={14} textAlign="center">
       Emails will be sent by{" "}
       <Link
         href="https://twitter.com/diegohaz"

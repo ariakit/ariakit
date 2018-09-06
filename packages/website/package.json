@@ -13,10 +13,10 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "codemirror": "^5.40.0",
+    "diffable-html": "^3.0.0",
     "lodash": "^4.17.5",
     "markdown-to-jsx": "^6.7.2",
     "parse-prop-types": "^0.3.0",
-    "pretty": "^2.0.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-codemirror2": "^5.1.0",

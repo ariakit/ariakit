@@ -57,7 +57,7 @@ module.exports = {
       : webpackCommonConfig,
   updateDocs(docs, filePath) {
     const contents = fs.readFileSync(filePath, "utf8");
-    const regex = /import ([A-Z][a-z0-9]*) from "\.\.\/[A-Z][^."]*"/gm;
+    const regex = /import ([A-Z][A-Za-z0-9]*) from "\.\.\/[A-Z][^."]*"/gm;
     const uses = (contents.match(regex) || []).map(x => x.replace(regex, "$1"));
     return {
       ...docs,

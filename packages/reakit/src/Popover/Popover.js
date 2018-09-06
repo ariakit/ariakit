@@ -160,8 +160,7 @@ Popover.defaultProps = {
   shift: true,
   gutter: 12,
   opaque: true,
-  palette: "background",
-  tone: -1
+  palette: "white"
 };
 
 export default as("div")(Popover);
