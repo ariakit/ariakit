@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
@@ -11,7 +11,7 @@ const Component = ({ onClick, ...props }) => (
 );
 
 const HiddenHide = styled(Component)`
-  ${prop("theme.HiddenHide")};
+  ${theme("HiddenHide")};
 `;
 
 HiddenHide.propTypes = {

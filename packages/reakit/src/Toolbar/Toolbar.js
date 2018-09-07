@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop, withProp } from "styled-tools";
+import { theme, withProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
@@ -35,7 +35,7 @@ const Toolbar = styled(Component)`
       "end" 1fr;
   }
 
-  ${prop("theme.Toolbar")};
+  ${theme("Toolbar")};
 `;
 
 Toolbar.propTypes = {

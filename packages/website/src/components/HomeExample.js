@@ -53,7 +53,7 @@ const HomeExample = props => (
             onChange={c => setState({ code: c.trim() })}
           />
           <HomeExamplePreview>
-            <Preview code={code} />
+            <Preview code={code} theme="default" />
           </HomeExamplePreview>
         </Content>
       )}

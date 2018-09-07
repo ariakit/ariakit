@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Block } from "reakit";
-import { prop } from "styled-tools";
+import { palette } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import NewsletterForm from "website/src/components/NewsletterForm";
@@ -18,13 +18,13 @@ import ContainerAPITable from "../components/ContainerAPITable";
 import SectionHeader from "../components/SectionHeader";
 
 const Content = styled(Block)`
-  border-top: 1px solid ${prop("theme.grayLightest")};
+  border-top: 1px solid ${palette("border")};
   margin-top: 1em;
-  padding-top: 1em;
+  padding-top: 4em;
 `;
 
 const StyledNewsletterForm = styled(NewsletterForm)`
-  margin: 40px 0 20px;
+  margin: 70px 0 60px;
 `;
 
 const sectionMap = {

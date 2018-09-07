@@ -1,15 +1,12 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import Popper from "popper.js";
 import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
-import Box from "../Box";
 import PopoverArrow from "./PopoverArrow";
-
-const HiddenBox = Hidden.as(Box);
 
 class Component extends React.Component {
   state = {
@@ -109,7 +106,7 @@ class Component extends React.Component {
 
   render() {
     return (
-      <HiddenBox
+      <Hidden
         id={this.props.popoverId}
         {...this.state}
         data-placement={this.state.placement}
@@ -128,19 +125,9 @@ const Popover = styled(Component)`
   left: 0;
   user-select: auto;
   cursor: auto;
-  color: inherit;
-  background-color: white;
-  padding: 1em;
   z-index: 999;
-  outline: 0;
   will-change: transform;
-  &[aria-hidden="false"] {
-    transition-timing-function: ${prop(
-      "timing",
-      "cubic-bezier(0.25, 0.1, 0.25, 1.5)"
-    )};
-  }
-  ${prop("theme.Popover")};
+  ${theme("Popover")};
 `;
 
 Popover.propTypes = {
@@ -171,7 +158,9 @@ Popover.defaultProps = {
   hideOnEsc: true,
   flip: true,
   shift: true,
-  gutter: 12
+  gutter: 12,
+  opaque: true,
+  palette: "white"
 };
 
 export default as("div")(Popover);

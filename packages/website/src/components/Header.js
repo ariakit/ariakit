@@ -1,12 +1,14 @@
 import React from "react";
-import { styled, Flex, Link, Sidebar, Toolbar } from "reakit";
-import { prop } from "styled-tools";
+import { styled, Flex, Link, Sidebar, Toolbar, Tooltip } from "reakit";
+import { palette } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import GitHubIcon from "react-icons/lib/go/mark-github";
+import MoonIcon from "react-icons/lib/io/ios-moon";
 import ViewportContainer from "../containers/ViewportContainer";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
+import ThemeContainer from "../containers/ThemeContainer";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "./Icon";
@@ -18,7 +20,7 @@ const Wrapper = styled(Flex)`
   width: 100%;
   height: 60px;
   justify-content: center;
-  background-color: white;
+  background-color: ${palette("background", -1)};
   z-index: 9999;
   padding: 0 36px;
   @media (max-width: 768px) {
@@ -55,18 +57,18 @@ const NavigationLink = styled(RouterLink)`
   height: 100%;
   padding-top: 5px;
   border-bottom: 5px solid transparent;
-  color: ${prop("theme.black")};
+  color: ${palette("backgroundText", -1)};
   text-decoration: none;
   &:hover {
-    border-color: ${prop("theme.pinkLight")};
+    border-color: ${palette("primary", 2)};
   }
   &.active {
-    border-color: ${prop("theme.pinkDark")};
+    border-color: ${palette("primary", 1)};
   }
 `;
 
 const ExternalLink = styled(Link)`
-  color: ${prop("theme.gray")};
+  color: ${palette("grayscale", 2)};
   font-size: 18px;
   justify-self: flex-end;
 `;
@@ -87,6 +89,25 @@ const Navigation = () => (
   </StyleguidistContainer>
 );
 
+const DarkModeToggle = () => (
+  <ThemeContainer>
+    {({ mode, toggleMode }) => (
+      <ButtonTransparent
+        onClick={() => {
+          toggleMode();
+          track(`reakit.${mode}ModeClick`);
+        }}
+      >
+        <Icon as={MoonIcon} />
+        <Tooltip fade>
+          <Tooltip.Arrow />
+          {mode === "dark" ? "Disable" : "Enable"} dark mode
+        </Tooltip>
+      </ButtonTransparent>
+    )}
+  </ThemeContainer>
+);
+
 const Desktop = () => (
   <StyledToolbar>
     <Toolbar.Content>
@@ -96,6 +117,7 @@ const Desktop = () => (
       <Navigation />
     </Toolbar.Content>
     <Toolbar.Content align="end">
+      <Toolbar.Focusable as={DarkModeToggle} />
       <Toolbar.Focusable
         as={ExternalLink}
         href={getRelease.url()}
@@ -133,13 +155,12 @@ const Mobile = () => (
       )}
     </Sidebar.Container>
     <Toolbar.Content align="center">
-      <Toolbar.Focusable>
-        <LogoLink to="/">
-          <Logo />
-        </LogoLink>
+      <Toolbar.Focusable as={LogoLink} to="/">
+        <Logo />
       </Toolbar.Focusable>
     </Toolbar.Content>
     <Toolbar.Content align="end">
+      <Toolbar.Focusable as={DarkModeToggle} />
       <Toolbar.Focusable
         as={ExternalLink}
         href="https://github.com/reakit/reakit"

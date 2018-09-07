@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop, ifProp } from "styled-tools";
+import { theme, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -22,7 +22,7 @@ const Sidebar = styled(Component)`
   overflow: auto;
   left: ${ifProp({ align: "right" }, "auto", 0)};
   right: ${ifProp({ align: "right" }, 0, "auto")};
-  ${prop("theme.Sidebar")};
+  ${theme("Sidebar")};
 `;
 
 Sidebar.propTypes = {

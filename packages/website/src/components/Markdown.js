@@ -2,16 +2,22 @@ import React from "react";
 import PropTypes from "prop-types";
 import unescape from "lodash/unescape";
 import { compiler } from "markdown-to-jsx";
-import { styled, Paragraph, Link, Heading, List, Code } from "reakit";
+import {
+  styled,
+  Paragraph,
+  Link,
+  Heading,
+  List,
+  Code,
+  Blockquote
+} from "reakit";
 import { Link as RouterLink } from "react-router-dom";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import getSectionUrl from "../utils/getSectionUrl";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Editor from "./Editor";
-import Blockquote from "../elements/Blockquote";
 
 const StyledParagraph = styled(Paragraph)`
-  line-height: 1.5;
   font-size: 18px;
   @media (max-width: 768px) {
     font-size: 16px;
@@ -29,6 +35,11 @@ const StyledHeading = styled(Heading)`
 const StyledList = styled(List)`
   list-style: initial;
   padding-left: 2em;
+  font-size: 18px;
+  margin-bottom: 1em;
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
   li {
     line-height: 1.5;
   }

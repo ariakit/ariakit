@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -34,7 +34,7 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Base);
 
 const Portal = styled(Component)`
-  ${prop("theme.Portal")};
+  ${theme("Portal")};
 `;
 
 export default as("div")(Portal);

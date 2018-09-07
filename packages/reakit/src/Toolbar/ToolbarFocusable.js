@@ -1,7 +1,7 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
@@ -149,7 +149,7 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Base);
 
 const ToolbarFocusable = styled(Component)`
-  ${prop("theme.ToolbarFocusable")};
+  ${theme("ToolbarFocusable")};
 `;
 
 export default as("div")(ToolbarFocusable);

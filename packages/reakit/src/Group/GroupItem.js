@@ -1,10 +1,10 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Base from "../Base";
 
-const GroupItem = styled(Box)`
-  ${prop("theme.GroupItem")};
+const GroupItem = styled(Base)`
+  ${theme("GroupItem")};
 `;
 
 export default as("div")(GroupItem);

@@ -8,7 +8,6 @@ import "codemirror/mode/jsx/jsx";
 import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
-import "codemirror/theme/oceanic-next.css";
 import track from "../utils/track";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import ViewportContainer from "../containers/ViewportContainer";
@@ -25,6 +24,10 @@ const StyledCodeMirror = styled(CodeMirror)`
 
     @media (max-width: 768px) {
       padding: 1em 8px;
+    }
+
+    .CodeMirror-scroll {
+      overflow: unset !important;
     }
 
     .CodeMirror-cursors {
@@ -73,7 +76,7 @@ class Editor extends React.Component {
                 options={{
                   ...config.editorConfig,
                   tabSize: 2,
-                  theme: readOnly && width > 768 ? "oceanic-next" : "dracula",
+                  theme: "dracula",
                   readOnly: width <= 768 ? "nocursor" : readOnly
                 }}
               />

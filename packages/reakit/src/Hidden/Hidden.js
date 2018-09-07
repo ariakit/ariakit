@@ -1,7 +1,7 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
-import { prop, ifProp } from "styled-tools";
+import { prop, theme, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   hasTransition,
@@ -9,7 +9,7 @@ import {
   originWithProps,
   scaleWithProps,
   slideWithProps
-} from "../_utils/transform";
+} from "../_utils/styledProps";
 import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
 import as from "../as";
@@ -131,7 +131,7 @@ const Hidden = styled(Component)`
     )};
   }
 
-  ${prop("theme.Hidden")};
+  ${theme("Hidden")};
 `;
 
 Hidden.propTypes = {

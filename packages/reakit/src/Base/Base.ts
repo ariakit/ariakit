@@ -1,7 +1,11 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { prop } from "styled-tools";
-import { bool } from "../_utils/styledProps";
+import { theme } from "styled-tools";
+import {
+  bool,
+  bgColorWithProps,
+  textColorWithProps
+} from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
 
@@ -20,19 +24,26 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BaseProps = { [key in keyof typeof positions]?: boolean };
+type BaseProps = { [key in keyof typeof positions]?: boolean } & {
+  opaque?: boolean;
+  palette?: string;
+  tone?: number;
+};
 
 const positionsKeys = Object.keys(positions);
 
 const Base = styled(Component)<BaseProps>`
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
   font-family: inherit;
-  vertical-align: baseline;
+  font-size: 100%;
   box-sizing: border-box;
-  ${prop("theme.Base")};
+  background-color: ${bgColorWithProps};
+  color: ${textColorWithProps};
+  ${theme("Base")};
   &&& {
     ${bool("position", positionsKeys)};
   }
@@ -46,6 +57,9 @@ Base.propTypes = {
     ...asTypes,
     PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
   ]),
+  opaque: PropTypes.bool,
+  palette: PropTypes.string,
+  tone: PropTypes.number,
   static: PropTypes.bool,
   absolute: PropTypes.bool,
   fixed: PropTypes.bool,

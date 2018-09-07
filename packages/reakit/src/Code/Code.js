@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { ifProp, prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Base from "../Base";
@@ -20,23 +20,18 @@ const Component = props => {
 };
 
 const Code = styled(Base)`
-  background-color: rgba(0, 0, 0, 0.05);
-  font-family: monospace;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  padding: ${ifProp("block", "0", "0.25em 0.35em")};
-
-  code {
-    display: block;
-    padding: 1em;
-  }
-
-  ${prop("theme.Code")};
+  ${theme("Code")};
 `;
 
 Code.propTypes = {
   block: PropTypes.bool,
   codeClassName: PropTypes.string
+};
+
+Code.defaultProps = {
+  opaque: true,
+  palette: "background",
+  tone: -2
 };
 
 export default as(Component)(Code);
