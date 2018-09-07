@@ -3,14 +3,14 @@ import { theme, withProp } from "styled-tools";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 import CardFit from "./CardFit";
 
 interface CardProps {
   gutter?: number | string;
 }
 
-const Card = styled(Base)<CardProps>`
+const Card = styled(Box)<CardProps>`
   display: inline-block;
 
   // @ts-ignore

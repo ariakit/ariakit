@@ -65,20 +65,6 @@ const App = () => (
 render(<App />, document.getElementById("root"));
 ```
 
-## Performance
-
-Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark) with MacBook Pro (Retina, 13-inch, Late 2013). Clone the repository and run `yarn && yarn benchmark` to see the results.
-
-| Library | ops/sec |
-| ------- | -------:|
-| [react](benchmark/cases/react.js) | 103,029 |
-| [reakit (`as`)](benchmark/cases/reakit-as.js) | 45,975 |
-| [antd](https://github.com/ant-design/ant-design) | 29,122 |
-| [reakit (`Base`)](benchmark/cases/reakit-base.js) | 17,071 |
-| [reakit (`Button`)](benchmark/cases/reakit-button.js) | 12,107 |
-| [material-ui](https://github.com/mui-org/material-ui) | 9,840 |
-| [rebass](https://github.com/jxnblk/rebass) | 7,989 |
-
 
 ## Contributors
 

@@ -3,9 +3,9 @@ import { theme } from "styled-tools";
 import { value } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const GridItem = styled(Base)`
+const GridItem = styled(Box)`
   &&& {
     ${value("grid-area", "area")};
     ${value("grid-column", "column")};

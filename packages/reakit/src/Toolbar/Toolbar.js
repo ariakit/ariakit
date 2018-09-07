@@ -5,16 +5,16 @@ import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 const Component = props => (
-  <Base
+  <Box
     aria-orientation={props.vertical ? "vertical" : "horizontal"}
     {...props}
   />
 );
 
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const Toolbar = styled(Component)`
   position: relative;

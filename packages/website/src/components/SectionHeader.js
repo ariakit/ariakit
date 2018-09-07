@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Heading, Flex, Base } from "reakit";
+import { styled, Heading, Flex, Box } from "reakit";
 import CodeIcon from "react-icons/lib/md/code";
 import EditIcon from "react-icons/lib/md/edit";
 import track from "../utils/track";
@@ -17,7 +17,7 @@ const Name = styled(Heading)`
   }
 `;
 
-const GithubSrcButtonText = styled(Base)`
+const GithubSrcButtonText = styled(Box)`
   @media (max-width: 768px) {
     display: none;
   }

@@ -1,9 +1,9 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const InlineBlock = styled(Base)`
+const InlineBlock = styled(Box)`
   display: inline-block;
   ${theme("InlineBlock")};
 `;

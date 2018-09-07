@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 import GroupItem from "./GroupItem";
 
 const verticalAt = (pass, fail) =>
@@ -19,7 +19,7 @@ const verticalAt = (pass, fail) =>
     fail
   );
 
-const Group = styled(Base)`
+const Group = styled(Box)`
   display: flex;
   flex-direction: ${ifProp("vertical", "column", "row")};
   ${verticalAt("flex-direction: column")};

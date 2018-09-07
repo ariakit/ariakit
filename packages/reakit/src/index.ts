@@ -7,9 +7,9 @@ export * from "./styled";
 
 export { default as Avatar } from "./Avatar";
 export { default as Backdrop } from "./Backdrop";
-export { default as Base } from "./Base";
 export { default as Block } from "./Block";
 export { default as Blockquote } from "./Blockquote";
+export { default as Box } from "./Box";
 export { default as Button } from "./Button";
 export { default as Card } from "./Card";
 // @ts-ignore

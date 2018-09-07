@@ -24,7 +24,7 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BaseProps = { [key in keyof typeof positions]?: boolean } & {
+type BoxProps = { [key in keyof typeof positions]?: boolean } & {
   opaque?: boolean;
   palette?: string;
   tone?: number;
@@ -32,7 +32,7 @@ type BaseProps = { [key in keyof typeof positions]?: boolean } & {
 
 const positionsKeys = Object.keys(positions);
 
-const Base = styled(Component)<BaseProps>`
+const Box = styled(Component)<BoxProps>`
   margin: unset;
   padding: unset;
   border: unset;
@@ -43,7 +43,7 @@ const Base = styled(Component)<BaseProps>`
   box-sizing: border-box;
   background-color: ${bgColorWithProps};
   color: ${textColorWithProps};
-  ${theme("Base")};
+  ${theme("Box")};
   &&& {
     ${bool("position", positionsKeys)};
   }
@@ -52,7 +52,7 @@ const Base = styled(Component)<BaseProps>`
 const asTypes = [PropTypes.func, PropTypes.string];
 
 // @ts-ignore
-Base.propTypes = {
+Box.propTypes = {
   as: PropTypes.oneOfType([
     ...asTypes,
     PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
@@ -67,4 +67,4 @@ Base.propTypes = {
   sticky: PropTypes.bool
 };
 
-export default as("div")(Base);
+export default as("div")(Box);

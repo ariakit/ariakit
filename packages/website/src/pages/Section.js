@@ -46,7 +46,7 @@ const Section = ({ location, ...props }) => (
               <title>{section.name} - ReaKit</title>
             </Helmet>
             <SectionHeader section={section} />
-            {section.name !== "Base" && (
+            {section.name !== "Box" && (
               <React.Fragment>
                 <SectionUses section={section} />
                 <SectionUses usedBy section={section} />

@@ -5,7 +5,7 @@ import hoistNonReactStatics from "hoist-non-react-statics";
 import { bgColorWithProps } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 export interface PopoverArrowProps {
   fillColor?: string;
@@ -16,7 +16,7 @@ export interface PopoverArrowProps {
 }
 
 const Component = (props: PopoverArrowProps) => (
-  <Base {...props}>
+  <Box {...props}>
     <svg viewBox="0 0 30 30">
       <path
         className="stroke"
@@ -28,11 +28,11 @@ const Component = (props: PopoverArrowProps) => (
         d="M23,27.8c1.1,1.2,3.4,2.2,5,2.2h2H0h2c1.7,0,3.9-1,5-2.2l6.6-7.2c0.7-0.8,2-0.8,2.7,0L23,27.8L23,27.8z"
       />
     </svg>
-  </Base>
+  </Box>
 );
 
 // @ts-ignore
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const PopoverArrow = styled(Component)`
   position: absolute;
