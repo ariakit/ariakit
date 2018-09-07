@@ -50,23 +50,25 @@ const Playground = ({ code, evalInContext, ...props }) => (
                 />
               </Block>
             </PreviewWrapper>
-            <ThemeWrapper>
-              <Label htmlFor="themeSelect" color="#666">
-                Theme
-              </Label>
-              <ThemeInput
-                id="themeSelect"
-                value={theme}
-                onChange={e => {
-                  setTheme(e.target.value);
-                  track(`reakit.${camelCase(theme)}ThemeSelect`);
-                }}
-              >
-                {themes.map(name => (
-                  <option key={name}>{name}</option>
-                ))}
-              </ThemeInput>
-            </ThemeWrapper>
+            {!/<Provider/g.test(ownCode) && (
+              <ThemeWrapper>
+                <Label htmlFor="themeSelect" color="#666">
+                  Theme
+                </Label>
+                <ThemeInput
+                  id="themeSelect"
+                  value={theme}
+                  onChange={e => {
+                    setTheme(e.target.value);
+                    track(`reakit.${camelCase(theme)}ThemeSelect`);
+                  }}
+                >
+                  {themes.map(name => (
+                    <option key={name}>{name}</option>
+                  ))}
+                </ThemeInput>
+              </ThemeWrapper>
+            )}
             <EditorWithTabs
               code={ownCode}
               onChange={newCode => setState({ ownCode: newCode })}

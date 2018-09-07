@@ -127,6 +127,10 @@ module.exports = {
           content: "../../docs/styling.md"
         },
         {
+          name: "Theming",
+          content: "../../docs/theming.md"
+        },
+        {
           name: "State Containers",
           content: "../../docs/state-containers.md"
         }

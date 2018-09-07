@@ -92,7 +92,12 @@ const Navigation = () => (
 const DarkModeToggle = () => (
   <ThemeContainer>
     {({ mode, toggleMode }) => (
-      <ButtonTransparent onClick={toggleMode}>
+      <ButtonTransparent
+        onClick={() => {
+          toggleMode();
+          track(`reakit.${mode}ModeClick`);
+        }}
+      >
         <Icon as={MoonIcon} />
         <Tooltip fade>
           <Tooltip.Arrow />
