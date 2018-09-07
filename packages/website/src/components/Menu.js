@@ -49,12 +49,18 @@ const SectionLink = styled(Link)`
     display: none;
   }
 
+  &.divider {
+    font-size: 1.3em;
+    font-weight: bolder;
+    margin-top: 1em;
+  }
+
   &.divider + ${MenuList} {
     display: block;
   }
 
-  & + ${MenuList} & {
-    padding-left: 40px;
+  &.divider ~ ${MenuList} {
+    margin-bottom: 1em;
   }
 `;
 

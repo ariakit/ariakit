@@ -3,7 +3,8 @@ import kebabCase from "lodash/kebabCase";
 import flattenSections from "./flattenSections";
 
 const groups = {
-  Primitives: ["Box", "Block", "Flex", "Inline", "InlineBlock", "InlineFlex"]
+  Primitives: ["Box", "Block", "Flex", "Inline", "InlineBlock", "InlineFlex"],
+  Containers: ["Hidden", "Overlay", "Popover", "Sidebar", "Step", "Tabs"]
 };
 
 const getGroupName = sectionName =>
