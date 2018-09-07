@@ -6,7 +6,7 @@ import { palette } from "styled-tools";
 import Preview from "./Preview";
 import track from "../utils/track";
 import StateContainer from "../containers/StateContainer";
-import ThemeContainer from "../containers/ThemeContainer";
+import PlaygroundThemeContainer from "../containers/PlaygroundThemeContainer";
 import EditorWithTabs from "./EditorWithTabs";
 
 const Wrapper = styled(Flex)`
@@ -38,7 +38,7 @@ const ThemeInput = styled(Input.as("select"))``;
 const Playground = ({ code, evalInContext, ...props }) => (
   <StateContainer initialState={{ ownCode: code }}>
     {({ ownCode, setState }) => (
-      <ThemeContainer>
+      <PlaygroundThemeContainer>
         {({ themes, theme, setTheme }) => (
           <Wrapper {...props}>
             <PreviewWrapper>
@@ -74,7 +74,7 @@ const Playground = ({ code, evalInContext, ...props }) => (
             />
           </Wrapper>
         )}
-      </ThemeContainer>
+      </PlaygroundThemeContainer>
     )}
   </StateContainer>
 );

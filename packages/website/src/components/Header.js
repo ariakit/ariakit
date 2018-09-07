@@ -1,12 +1,14 @@
 import React from "react";
-import { styled, Flex, Link, Sidebar, Toolbar } from "reakit";
+import { styled, Flex, Link, Sidebar, Toolbar, Tooltip } from "reakit";
 import { palette } from "styled-tools";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
 import GitHubIcon from "react-icons/lib/go/mark-github";
+import MoonIcon from "react-icons/lib/io/ios-moon";
 import ViewportContainer from "../containers/ViewportContainer";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
+import ThemeContainer from "../containers/ThemeContainer";
 import Logo from "../elements/Logo";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import Icon from "./Icon";
@@ -87,6 +89,20 @@ const Navigation = () => (
   </StyleguidistContainer>
 );
 
+const DarkModeToggle = () => (
+  <ThemeContainer>
+    {({ mode, toggleMode }) => (
+      <ButtonTransparent onClick={toggleMode}>
+        <Icon as={MoonIcon} />
+        <Tooltip fade>
+          <Tooltip.Arrow />
+          {mode === "dark" ? "Disable" : "Enable"} dark mode
+        </Tooltip>
+      </ButtonTransparent>
+    )}
+  </ThemeContainer>
+);
+
 const Desktop = () => (
   <StyledToolbar>
     <Toolbar.Content>
@@ -96,6 +112,7 @@ const Desktop = () => (
       <Navigation />
     </Toolbar.Content>
     <Toolbar.Content align="end">
+      <Toolbar.Focusable as={DarkModeToggle} />
       <Toolbar.Focusable
         as={ExternalLink}
         href={getRelease.url()}
@@ -138,6 +155,7 @@ const Mobile = () => (
       </Toolbar.Focusable>
     </Toolbar.Content>
     <Toolbar.Content align="end">
+      <Toolbar.Focusable as={DarkModeToggle} />
       <Toolbar.Focusable
         as={ExternalLink}
         href="https://github.com/reakit/reakit"

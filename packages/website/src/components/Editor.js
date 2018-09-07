@@ -26,6 +26,10 @@ const StyledCodeMirror = styled(CodeMirror)`
       padding: 1em 8px;
     }
 
+    .CodeMirror-scroll {
+      overflow: unset !important;
+    }
+
     .CodeMirror-cursors {
       ${ifProp("options.readOnly", "display: none")};
     }

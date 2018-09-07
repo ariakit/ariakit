@@ -1,30 +1,34 @@
 import * as React from "react";
-import { Container, ActionMap, ComposableContainer } from "reakit";
+import { Container, EffectMap, ComposableContainer } from "reakit";
 
 interface State {
-  themes: string[];
-  theme: string;
+  mode: "light" | "dark";
 }
 
-interface Actions {
-  setTheme: (theme: string) => void;
+interface Effects {
+  toggleMode: () => void;
 }
 
 const initialState: State = {
-  themes: ["none", "default"],
-  theme: "default"
+  mode: (localStorage.getItem("reakit.theme.mode") || "light") as State["mode"]
 };
 
-const actions: ActionMap<State, Actions> = {
-  setTheme: theme => ({ theme })
+const effects: EffectMap<State, Effects> = {
+  toggleMode: () => ({ setState }) => {
+    setState(state => {
+      const mode = state.mode === "dark" ? "light" : "dark";
+      localStorage.setItem("reakit.theme.mode", mode);
+      return { mode };
+    });
+  }
 };
 
-const ThemeContainer: ComposableContainer<State, Actions> = props => (
+const ThemeContainer: ComposableContainer<State, {}, {}, Effects> = props => (
   <Container
     context="theme"
     {...props}
     initialState={{ ...initialState, ...props.initialState }}
-    actions={actions}
+    effects={effects}
   />
 );
 
