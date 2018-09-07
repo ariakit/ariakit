@@ -4,7 +4,7 @@ import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 class Component extends React.Component {
   state = { wrapper: null };
@@ -25,13 +25,13 @@ class Component extends React.Component {
   render() {
     const { wrapper } = this.state;
     if (wrapper) {
-      return ReactDOM.createPortal(<Base {...this.props} />, wrapper);
+      return ReactDOM.createPortal(<Box {...this.props} />, wrapper);
     }
     return null;
   }
 }
 
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const Portal = styled(Component)`
   ${theme("Portal")};

@@ -3,23 +3,23 @@ import PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 const Component = props => {
   if (props.block) {
     return (
-      <Base as="pre" {...props}>
+      <Box as="pre" {...props}>
         <code className={props.codeClassName}>{props.children}</code>
-      </Base>
+      </Box>
     );
   }
   const className = props.codeClassName
     ? `${props.className} ${props.codeClassName}`.trim()
     : `${props.className}`.trim();
-  return <Base as="code" {...props} className={className} />;
+  return <Box as="code" {...props} className={className} />;
 };
 
-const Code = styled(Base)`
+const Code = styled(Box)`
   ${theme("Code")};
 `;
 

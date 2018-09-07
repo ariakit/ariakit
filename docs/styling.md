@@ -5,9 +5,9 @@ There are 3 ways to style your components using ReaKit.
 The most common way to style your components is using the `styled` method. It uses [styled-components](https://www.styled-components.com) internally, so refer to their docs to learn more.
 
 ```jsx
-import { styled, Base } from "reakit";
+import { styled, Box } from "reakit";
 
-const Component = styled(Base)`
+const Component = styled(Box)`
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 0.25em;
 `;
@@ -20,15 +20,15 @@ const Component = styled(Base)`
 You can pass style props to ReaKit components. Those will be converted into `style={{ ... }}` and applied as inline styles. Check the `HTML` tab below to see the output.
 
 ```jsx
-import { Base } from "reakit";
+import { Box } from "reakit";
 
-<Base
+<Box
   backgroundColor="palevioletred"
   color="white"
   padding={8}
 >
   Component
-</Base>
+</Box>
 ```
 
 ## Theming

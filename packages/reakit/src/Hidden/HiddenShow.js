@@ -4,10 +4,10 @@ import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 const Component = ({ onClick, ...props }) => (
-  <Base onClick={callAll(props.show, onClick)} {...props} />
+  <Box onClick={callAll(props.show, onClick)} {...props} />
 );
 
 const HiddenShow = styled(Component)`

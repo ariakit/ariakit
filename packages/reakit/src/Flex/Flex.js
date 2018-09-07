@@ -3,12 +3,12 @@ import { theme } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 const directions = ["row", "column", "rowReverse", "columnReverse"];
 const wraps = ["nowrap", "wrap", "wrapReverse"];
 
-const Flex = styled(Base)`
+const Flex = styled(Box)`
   display: flex;
   &&& {
     ${bool("flex-direction", directions)};

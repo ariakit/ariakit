@@ -1,9 +1,9 @@
 Group applies styling to its direct children, but in case the component isn't a direct child, you can use `GroupItem`:
 
 ```jsx
-import { Field, Label, Input, Button } from "reakit";
+import { Box, Field, Label, Input, Button } from "reakit";
 
-<Base relative border={0}>
+<Box relative border={0}>
   <Group vertical>
     <Group verticalAt={800}>
       <Field as={Group.Item} padding={8}>
@@ -21,5 +21,5 @@ import { Field, Label, Input, Button } from "reakit";
     </Group>
     <Button>Ok</Button>
   </Group>
-</Base>
+</Box>
 ```

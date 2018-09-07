@@ -62,10 +62,10 @@ const theme = {
 Within styles, you can use `styled-tools`' [theme](https://github.com/diegohaz/styled-tools#theme) and [palette](https://github.com/diegohaz/styled-tools#palette) methods to access theme values:
 
 ```jsx
-import { styled, Base } from "reakit";
+import { styled, Box } from "reakit";
 import { theme, palette } from "styled-tools";
 
-const Component = styled(Base)`
+const Component = styled(Box)`
   background-color: ${palette("primary", "red")};
   color: ${palette("primaryText", "blue")};
   padding: ${theme("innerSpacing", "16px")};

@@ -13,7 +13,7 @@ import {
 import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 class Component extends React.Component {
   state = {
@@ -94,7 +94,7 @@ class Component extends React.Component {
     }
 
     return (
-      <Base
+      <Box
         aria-hidden={!visible}
         {...this.props}
         {...this.state}
@@ -104,7 +104,7 @@ class Component extends React.Component {
   }
 }
 
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const Hidden = styled(Component)`
   transform: ${translateWithProps};

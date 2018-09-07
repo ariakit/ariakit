@@ -1,9 +1,9 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const TableWrapper = styled(Base)`
+const TableWrapper = styled(Box)`
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Base, styled } from "reakit";
+import { Box, styled } from "reakit";
 import logo from "!raw-loader!../../../../logo/logo.svg";
 
 const Component = props => (
-  <Base {...props} dangerouslySetInnerHTML={{ __html: logo }} />
+  <Box {...props} dangerouslySetInnerHTML={{ __html: logo }} />
 );
 
 const Logo = styled(Component)`

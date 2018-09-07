@@ -2,13 +2,13 @@ import * as PropTypes from "prop-types";
 import { ifProp, theme } from "styled-tools";
 import styled, { css } from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 interface DividerProps {
   vertical?: boolean;
 }
 
-const Divider = styled(Base)<DividerProps>`
+const Divider = styled(Box)<DividerProps>`
   border-color: currentColor;
   border-style: solid;
   opacity: 0.2;
