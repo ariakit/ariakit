@@ -1,7 +1,7 @@
 <br><br>
 
 <p align="center">
-  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.png" alt="reakit" width="320" />
+  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.jpg" alt="reakit" width="320" />
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@ npm i reakit
   <img
     src="https://user-images.githubusercontent.com/3068563/35465289-0cb7fe96-02e2-11e8-8bc5-60abcb6e92ac.gif"
     width="200"
-  /><br />
+  /><br>
   See and edit full source code on <a href="https://codesandbox.io/s/m4n32vjkoj">CodeSandbox</a>
 </p>
 
@@ -95,7 +95,11 @@ Thank you to all our backers! 🙏
 
 ## Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website.<br>
+
+Browser testing provided by the awesome
+<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png"></a>
+<br>
 
 <a href="https://opencollective.com/reakit/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/1/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
