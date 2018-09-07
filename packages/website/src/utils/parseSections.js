@@ -6,8 +6,8 @@ const groups = {
   Primitives: ["Box", "Block", "Flex", "Inline", "InlineBlock", "InlineFlex"]
 };
 
-const getGroupName = sectioName =>
-  Object.keys(groups).find(key => groups[key].includes(sectioName));
+const getGroupName = sectionName =>
+  Object.keys(groups).find(key => groups[key].includes(sectionName));
 
 const findUses = (sections, name) =>
   sections
@@ -38,7 +38,8 @@ const parseSections = (sections, rootSections = sections) => {
       const group = acc.find(x => x.name === groupName) || {
         name: groupName,
         slug: kebabCase(groupName),
-        sections: []
+        sections: [],
+        isDivider: true
       };
       return [
         { ...group, sections: [...(group.sections || []), finalSection] },
