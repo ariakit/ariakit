@@ -49,17 +49,17 @@ const SectionLink = styled(Link)`
     display: none;
   }
 
-  &.divider {
+  &.label {
     font-size: 1.3em;
     font-weight: bolder;
     margin-top: 1em;
   }
 
-  &.divider + ${MenuList} {
+  &.label + ${MenuList} {
     display: block;
   }
 
-  &.divider ~ ${MenuList} {
+  &.label ~ ${MenuList} {
     margin-bottom: 1em;
   }
 `;
@@ -79,7 +79,7 @@ const renderList = (section, prevSlug = "") => {
           <SectionLink
             as={NavLink}
             to={`${slug}/${s.slug}`}
-            className={s.isDivider && "divider"}
+            className={s.isLabel && "label"}
           >
             {s.name}
           </SectionLink>

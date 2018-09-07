@@ -40,7 +40,7 @@ const parseSections = (sections, rootSections = sections) => {
         name: groupName,
         slug: kebabCase(groupName),
         sections: [],
-        isDivider: true
+        isLabel: true
       };
       return [
         { ...group, sections: [...(group.sections || []), finalSection] },
