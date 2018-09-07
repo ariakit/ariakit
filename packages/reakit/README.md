@@ -1,7 +1,7 @@
 <br><br>
 
 <p align="center">
-  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.png" alt="reakit" width="320" />
+  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.jpg" alt="reakit" width="320" />
 </p>
 
 <p align="center">
