@@ -1,26 +1,30 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { Container, ContainerProps } from "constate";
+import { Container, ContainerProps, ActionMap, StateUpdater } from "constate";
 
-type ContainerState = {
+interface State {
   visible: boolean;
+}
+
+interface Actions {
+  show: StateUpdater<State>;
+  hide: StateUpdater<State>;
+  toggle: StateUpdater<State>;
+}
+
+export const initialState: State = { visible: false };
+
+const actions: ActionMap<State, Actions> = {
+  show: () => () => ({ visible: true }),
+  hide: () => () => ({ visible: false }),
+  toggle: () => (state: State) => ({ visible: !state.visible })
 };
 
-export const initialState: ContainerState = { visible: false };
-
-export const toggle = () => (state: ContainerState) => ({
-  visible: !state.visible
-});
-
-export const show = () => () => ({ visible: true });
-
-export const hide = () => () => ({ visible: false });
-
-const HiddenContainer = (props: ContainerProps<ContainerState>) => (
+const HiddenContainer = (props: ContainerProps<State, Actions>) => (
   <Container
     {...props}
     initialState={{ ...initialState, ...props.initialState }}
-    actions={{ toggle, show, hide, ...props.actions }}
+    actions={{ ...actions, ...props.actions }}
   />
 );
 
