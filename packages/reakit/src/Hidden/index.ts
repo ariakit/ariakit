@@ -4,13 +4,18 @@ import HiddenHide from "./HiddenHide";
 import HiddenShow from "./HiddenShow";
 import HiddenToggle from "./HiddenToggle";
 
-// @ts-ignore
-Hidden.Container = HiddenContainer;
-// @ts-ignore
-Hidden.Hide = HiddenHide;
-// @ts-ignore
-Hidden.Show = HiddenShow;
-// @ts-ignore
-Hidden.Toggle = HiddenToggle;
+interface HiddenComponents {
+  Container: typeof HiddenContainer;
+  Hide: typeof HiddenHide;
+  Show: typeof HiddenShow;
+  Toggle: typeof HiddenToggle;
+}
 
-export default Hidden;
+const H = Hidden as typeof Hidden & HiddenComponents;
+
+H.Container = HiddenContainer;
+H.Hide = HiddenHide;
+H.Show = HiddenShow;
+H.Toggle = HiddenToggle;
+
+export default H;
