@@ -15,7 +15,7 @@ export type CSSProperties = {
 };
 
 export type AllProps<T = any> = Omit<React.HTMLProps<T>, "as"> &
-  ReaKitProps<T> &
+  ReakitProps<T> &
   CSSProperties;
 
 export type SingleAsProp =
@@ -24,17 +24,17 @@ export type SingleAsProp =
 
 export type AsProp = SingleAsProp | SingleAsProp[];
 
-export interface ReaKitProps<T = any> {
+export interface ReakitProps<T = any> {
   as?: AsProp | null;
   nextAs?: SingleAsProp | null;
   elementRef?: React.Ref<T>;
 }
 
-export type ReaKitComponent<P extends AllProps = object> = React.ComponentType<
+export type ReakitComponent<P extends AllProps = object> = React.ComponentType<
   P
 > & {
   asComponents: AsProp;
-  as: (asComponents: AsProp) => ReaKitComponent<P>;
+  as: (asComponents: AsProp) => ReakitComponent<P>;
 };
 
 function As({ nextAs, ...props }: AllProps) {
@@ -78,7 +78,7 @@ function render({ as: t, ...props }: AllProps): JSX.Element {
   return <T {...allProps} />;
 }
 
-function isWrappedWithAs(target: any): target is ReaKitComponent {
+function isWrappedWithAs(target: any): target is ReakitComponent {
   return typeof target.asComponents !== "undefined";
 }
 
@@ -86,9 +86,9 @@ type AllPropsReplaceAs<P extends AllProps> = Omit<P, "as"> & AllProps;
 
 function as(asComponents: AsProp) {
   return <P extends AllProps>(WrappedComponent: React.ComponentType<P>) => {
-    // Transform WrappedComponent into ReaKitComponent
+    // Transform WrappedComponent into ReakitComponent
     const defineProperties = (scope: typeof WrappedComponent) => {
-      const xscope = scope as ReaKitComponent<AllPropsReplaceAs<P>>;
+      const xscope = scope as ReakitComponent<AllPropsReplaceAs<P>>;
       xscope.asComponents = asComponents;
       xscope.as = otherComponents => as(otherComponents)(scope);
       return xscope;

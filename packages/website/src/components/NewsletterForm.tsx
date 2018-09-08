@@ -36,7 +36,7 @@ const Wrapper = styled(ContentWrapper)`
 const NewsletterForm = (props: any) => (
   <Wrapper as="form" action={action} method="post" {...props}>
     <Block gridArea="text" fontSize={20} lineHeight={1.5} textAlign="center">
-      ReaKit is evolving and big announcements are coming.
+      Reakit is evolving and big announcements are coming.
       <br />
       Subscribe below to be notified about <strong>important</strong> updates.
     </Block>

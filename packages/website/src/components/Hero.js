@@ -5,7 +5,6 @@ import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/go/code";
 import ButtonPrimary from "../elements/ButtonPrimary";
 import ButtonSecondary from "../elements/ButtonSecondary";
-import LogoSymbol from "../elements/LogoSymbol";
 import ContentWrapper from "../elements/ContentWrapper";
 import ButtonRounded from "../elements/ButtonRounded";
 import HeroGitHubButton from "./HeroGitHubButton";
@@ -14,8 +13,8 @@ import track from "../utils/track";
 const Wrapper = styled(ContentWrapper)`
   display: grid;
   grid-template:
-    "logo text" 160px
-    "buttons buttons" auto / 160px 1fr;
+    "text" 160px
+    "buttons" auto / min-content;
   grid-gap: 50px 30px;
   max-width: 768px;
   padding: 0 100px;
@@ -26,7 +25,6 @@ const Wrapper = styled(ContentWrapper)`
     padding: 0 20px;
     grid-gap: 30px;
     grid-template:
-      "logo" 100px
       "text"
       "buttons";
   }
@@ -55,7 +53,6 @@ const Buttons = styled(Grid)`
 
 const Hero = props => (
   <Wrapper {...props}>
-    <LogoSymbol height="100%" gridArea="logo" />
     <Headline gridArea="text">
       Toolkit for building interactive UIs with React
     </Headline>

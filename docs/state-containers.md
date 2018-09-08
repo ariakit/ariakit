@@ -1,6 +1,6 @@
-> ReaKit uses [Constate](https://github.com/diegohaz/constate) to provide a state management system.
+> Reakit uses [Constate](https://github.com/diegohaz/constate) to provide a state management system.
 
-Besides containers, all ReaKit components are stateless, which means that they need props to be passed in so as to modify their state.
+Besides containers, all Reakit components are stateless, which means that they need props to be passed in so as to modify their state.
 
 [Hidden](../packages/reakit/src/Hidden/Hidden.md), for example, is a generic component that can be hidden or visible, and that's controlled by props:
 ```jsx
@@ -37,7 +37,7 @@ class Example extends React.Component {
 <Example />
 ```
 
-As a convenience, ReaKit provides handful containers so you don't need to worry about it. Here's the same as above but using [HiddenContainer](../packages/reakit/src/Hidden/HiddenContainer.md):
+As a convenience, Reakit provides handful containers so you don't need to worry about it. Here's the same as above but using [HiddenContainer](../packages/reakit/src/Hidden/HiddenContainer.md):
 ```jsx
 import { Hidden } from "reakit";
 

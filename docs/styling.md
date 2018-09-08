@@ -1,4 +1,4 @@
-> ReaKit uses [styled-components](https://www.styled-components.com) to style components.
+> Reakit uses [styled-components](https://www.styled-components.com) to style components.
 
 This is an example of how a component is defined in the library:
 ```jsx
@@ -38,7 +38,7 @@ import { Box } from "reakit";
 </Box>
 ```
 
-Finally, you can pass a `theme` object to `Provider` and style ReaKit elements directly:
+Finally, you can pass a `theme` object to `Provider` and style Reakit elements directly:
 
 ```jsx
 import { Provider, Button } from "reakit";

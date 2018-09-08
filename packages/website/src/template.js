@@ -17,9 +17,9 @@ module.exports = ({ title, css, js, publicPath }) => `
       <link rel="icon" type="image/x-icon" href="/icon.png">
       <base href="/">
       <meta name="description" content="${description}">
-      <meta property="og:title" content="ReaKit">
+      <meta property="og:title" content="Reakit">
       <meta property="og:description" content="${description}">
-      <meta property="og:site_name" content="ReaKit">
+      <meta property="og:site_name" content="Reakit">
       <meta property="og:url" content="https://reakit.io">
       <meta property="og:image" content="https://reakit.io/thumbnail.png">
       <meta property="og:image:type" content="image/png">

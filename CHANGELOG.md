@@ -218,7 +218,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   </List>
   ```
 
-  If you were using some enhanced feature of ReaKit components, like inline styles, you can use `<Base as="li">`:
+  If you were using some enhanced feature of Reakit components, like inline styles, you can use `<Base as="li">`:
 
   ```jsx
   <List>

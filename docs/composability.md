@@ -1,4 +1,4 @@
-React components are inherently composable. ReaKit makes them even more so with [as](as.md).
+React components are inherently composable. Reakit makes them even more so with [as](as.md).
 
 You can use the `as` prop just to change the underlying HTML element of a component. A common example is rendering a [Button](../packages/reakit/src/Button/Button.md) as a link:
 
