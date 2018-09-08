@@ -4,7 +4,8 @@ import { prop } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Base, { BaseProps } from "../Base";
+import Base from "../Base";
+import { BaseProps } from "../Base/Base";
 
 type ComponentState = {
   wrapper?: React.ReactNode;
