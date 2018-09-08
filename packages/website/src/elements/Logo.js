@@ -7,7 +7,7 @@ const Component = props => (
 );
 
 const Logo = styled(Component)`
-  .cls-1 {
+  .cls-3 {
     fill: currentColor !important;
   }
 `;
