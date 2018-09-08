@@ -1,6 +1,6 @@
-# Contributing to ReaKit
+# Contributing to Reakit
 
-We would love for you to contribute to ReaKit and help make it even better. By contributing to ReaKit, you agree to abide by the [code of conduct](https://github.com/reakit/reakit/blob/master/CODE_OF_CONDUCT.md)
+We would love for you to contribute to Reakit and help make it even better. By contributing to Reakit, you agree to abide by the [code of conduct](https://github.com/reakit/reakit/blob/master/CODE_OF_CONDUCT.md)
 
 - [Ownership](#ownership)
   - [Why do we give out push access?](#why-do-we-give-out-push-access)

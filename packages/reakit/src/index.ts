@@ -39,7 +39,6 @@ export { default as Overlay } from "./Overlay";
 export { default as Paragraph } from "./Paragraph";
 // @ts-ignore
 export { default as Popover } from "./Popover";
-// @ts-ignore
 export { default as Portal } from "./Portal";
 // @ts-ignore
 export { default as Provider } from "./Provider";

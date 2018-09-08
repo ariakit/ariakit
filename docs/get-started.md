@@ -39,11 +39,11 @@ ReactDOM.render(<App />, document.getElementById("root"));
   <script src="https://unpkg.com/react@16.4.1/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16.4.1/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/prop-types@15.6.2/prop-types.js"></script>
-  <!-- ReaKit UMD package -->
+  <!-- Reakit UMD package -->
   <script src="https://unpkg.com/reakit"></script>
   <!-- Usage -->
   <script>
-    const { Button } = reakit;
+    const { Button } = Reakit;
     const App = React.createElement(Button, {}, "Button");
     ReactDOM.render(App, document.getElementById("root"));
   </script>

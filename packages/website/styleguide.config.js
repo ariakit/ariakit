@@ -50,7 +50,7 @@ const webpackDevConfig = {
 };
 
 module.exports = {
-  title: "ReaKit",
+  title: "Reakit",
   webpackConfig:
     process.env.NODE_ENV === "development"
       ? webpackDevConfig

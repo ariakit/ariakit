@@ -1,4 +1,4 @@
-There are 3 ways to style your components using ReaKit.
+There are 3 ways to style your components using Reakit.
 
 ## Styled
 
@@ -33,7 +33,7 @@ import { Box } from "reakit";
 
 ## Theming
 
-Finally, you can pass a `theme` object to `Provider` and style ReaKit elements directly:
+Finally, you can pass a `theme` object to `Provider` and style Reakit elements directly:
 
 ```jsx
 import { Provider, Button } from "reakit";

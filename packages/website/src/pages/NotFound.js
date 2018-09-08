@@ -13,7 +13,7 @@ const StyledWrapper = styled(ContentWrapper)`
 const NotFound = () => (
   <CoreLayout>
     <Helmet>
-      <title>Not Found - ReaKit</title>
+      <title>Not Found - Reakit</title>
     </Helmet>
     <StyledWrapper>
       <Image src={svg404} alt="404" />

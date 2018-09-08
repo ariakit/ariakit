@@ -1,12 +1,17 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
+import { BoxProps } from "../Box/Box";
 
-class Component extends React.Component {
+type ComponentState = {
+  wrapper?: React.ReactNode;
+};
+
+class Component extends React.Component<BoxProps, ComponentState> {
   state = { wrapper: null };
 
   componentDidMount() {

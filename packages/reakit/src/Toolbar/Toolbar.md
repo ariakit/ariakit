@@ -9,7 +9,7 @@ import MenuIcon from "react-icons/lib/md/menu";
     <Toolbar.Focusable as={MenuIcon} fontSize={20} />
   </Toolbar.Content>
   <Toolbar.Content align="center">
-    <Heading fontSize={24} margin={0}>ReaKit</Heading>
+    <Heading fontSize={24} margin={0}>Reakit</Heading>
   </Toolbar.Content>
   <Toolbar.Content align="end">
     <Toolbar.Focusable

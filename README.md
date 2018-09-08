@@ -4,9 +4,13 @@
   <img src="https://github.com/reakit/reakit/blob/master/logo/logo.jpg" alt="reakit" width="320" />
 </p>
 
+<br>
+
 <p align="center">
   Toolkit for building <a href="https://reakit.io/guide/principles/composability">composable</a>, <a href="https://reakit.io/guide/principles/accessibility">accessible</a> and <a href="https://reakit.io/guide/principles/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
 </p>
+
+<br>
 
 <p align="center">
   <a href="https://reakit.io"><strong>Website</strong></a> ·
@@ -14,7 +18,7 @@
   <a href="https://reakit.io/components"><strong>Components</strong></a>
 </p>
 
-#
+<br>
 
 <p align="center">
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
@@ -83,10 +87,6 @@ Thank you to all our backers! 🙏
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website.<br>
 
-Browser testing provided by the awesome
-<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png"></a>
-<br>
-
 <a href="https://opencollective.com/reakit/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/1/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/2/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/2/avatar.svg"></a>
@@ -97,6 +97,8 @@ Browser testing provided by the awesome
 <a href="https://opencollective.com/reakit/sponsor/7/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/8/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/9/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
+
+<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" width="200"></a>
 
 ## License
 

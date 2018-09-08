@@ -24,7 +24,7 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BoxProps = { [key in keyof typeof positions]?: boolean } & {
+export type BoxProps = { [key in keyof typeof positions]?: boolean } & {
   opaque?: boolean;
   palette?: string;
   tone?: number;

@@ -1,6 +1,6 @@
 > There's nothing more reliable than a `<div>`.
 
-Except [containers](state-containers.md), all components exported by ReaKit follow the [Single Element Pattern](https://medium.freecodecamp.org/introducing-the-single-element-pattern-dfbd2c295c5d), which makes them resemble native HTML elements.
+Except [containers](state-containers.md), all components exported by Reakit follow the [Single Element Pattern](https://medium.freecodecamp.org/introducing-the-single-element-pattern-dfbd2c295c5d), which makes them resemble native HTML elements.
 
 ## Render only one element
 
@@ -18,7 +18,7 @@ import { Popover } from "reakit";
 
 ## Never break the app
 
-Even if you don't pass a required prop, ReaKit components will be rendered without critical errors. You'll just see a warning on the browser's console:
+Even if you don't pass a required prop, Reakit components will be rendered without critical errors. You'll just see a warning on the browser's console:
 
 > Warning: Failed prop type: The prop `hide` is marked as required in `HiddenHide`, but its value is `undefined`.
 
@@ -45,7 +45,7 @@ import { Input } from "reakit";
 
 ## Always merge the styles passed as props
 
-You can pass `style` and `className` props to change the style of ReaKit components. Your styles will be merged into the internal style. Learn more on the [Styling](styling.md) section.
+You can pass `style` and `className` props to change the style of Reakit components. Your styles will be merged into the internal style. Learn more on the [Styling](styling.md) section.
 
 ```jsx
 import { Button } from "reakit";
