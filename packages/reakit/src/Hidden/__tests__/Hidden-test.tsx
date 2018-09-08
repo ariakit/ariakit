@@ -1,8 +1,8 @@
-import React from "react";
+import * as React from "react";
 import { mount, shallow } from "enzyme";
-import Hidden from "../Hidden";
+import Hidden from "reakit/src/Hidden/Hidden";
 
-const wrap = comp => mount(shallow(comp).get(0));
+const wrap = (comp: React.ReactElement<any>) => mount(shallow(comp).get(0));
 
 const addEventListener = jest.spyOn(document.body, "addEventListener");
 
@@ -10,7 +10,7 @@ const raf = jest
   .spyOn(window, "requestAnimationFrame")
   .mockImplementation(cb => setTimeout(cb, 200));
 
-const dispatchEvent = key => {
+const dispatchEvent = (key: string) => {
   const event = new KeyboardEvent("keydown", { key });
   document.body.dispatchEvent(event);
 };
