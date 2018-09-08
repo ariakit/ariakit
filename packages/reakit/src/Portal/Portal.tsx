@@ -4,21 +4,13 @@ import { prop } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Base, { ComponentProps as BaseComponentProps } from "../Base";
-
-interface ComponentProps extends BaseComponentProps {
-  static?: boolean;
-  absolute?: boolean;
-  fixed?: boolean;
-  relative?: boolean;
-  sticky?: boolean;
-}
+import Base, { BaseProps } from "../Base";
 
 type ComponentState = {
   wrapper?: React.ReactNode;
 };
 
-class Component extends React.Component<ComponentProps, ComponentState> {
+class Component extends React.Component<BaseProps, ComponentState> {
   state = { wrapper: null };
 
   componentDidMount() {
@@ -43,7 +35,6 @@ class Component extends React.Component<ComponentProps, ComponentState> {
   }
 }
 
-// @ts-ignore
 hoistNonReactStatics(Component, Base);
 
 const Portal = styled(Component)`
