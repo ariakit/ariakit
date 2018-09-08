@@ -14,10 +14,14 @@ interface Actions {
 
 export const initialState: State = { visible: false };
 
+export const show = () => () => ({ visible: true });
+export const hide = () => () => ({ visible: false });
+export const toggle = () => (state: State) => ({ visible: !state.visible });
+
 const actions: ActionMap<State, Actions> = {
-  show: () => () => ({ visible: true }),
-  hide: () => () => ({ visible: false }),
-  toggle: () => (state: State) => ({ visible: !state.visible })
+  show,
+  hide,
+  toggle
 };
 
 const HiddenContainer = (props: ContainerProps<State, Actions>) => (
