@@ -13,7 +13,7 @@ const positions = {
   sticky: "sticky"
 };
 
-type ComponentProps = {
+export type ComponentProps = {
   as: keyof JSX.IntrinsicElements | React.ComponentType;
 };
 

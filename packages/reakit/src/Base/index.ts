@@ -1,3 +1,4 @@
-import Base from "./Base";
+import Base, { ComponentProps } from "./Base";
 
 export default Base;
+export { ComponentProps };
