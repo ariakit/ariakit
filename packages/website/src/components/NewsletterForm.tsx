@@ -61,7 +61,7 @@ const NewsletterForm = (props: any) => (
         name="b_cf382e48d5d8ed7178cb22060_941e41af27"
         aria-hidden="true"
         tabIndex={-1}
-        value=""
+        defaultValue=""
       />
     </Block>
     <ButtonPrimary as="button" type="submit" gridArea="button">
