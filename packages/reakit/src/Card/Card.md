@@ -17,7 +17,7 @@ import { Heading, Image, Paragraph } from "reakit";
 ```
 
 ```jsx
-const { Grid, Image, Heading, Paragraph, Shadow } = require("reakit");
+const { Grid, Image, Heading, Paragraph } = require("reakit");
 
 <Grid column autoColumns="minmax(min-content, max-content)" gap={20} alignItems="start">
   <Card>
@@ -32,7 +32,7 @@ const { Grid, Image, Heading, Paragraph, Shadow } = require("reakit");
     <Paragraph>Description for Card</Paragraph>
   </Card>
   <Card>
-    <Card.Fit 
+    <Card.Fit
       as={Image}
       src="https://placekitten.com/300/200"
       alt="Kitten"

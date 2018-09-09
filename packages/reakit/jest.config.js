@@ -5,8 +5,5 @@ const pkg = require("./package.json");
 module.exports = {
   ...baseConfig,
   displayName: pkg.name,
-  testMatch: [
-    join(__dirname, "src/**/*-test.js?(x)"),
-    join(__dirname, "src/**/*-test.ts?(x)")
-  ]
+  testMatch: [join(__dirname, "src/**/*-test.{js,ts,tsx}")]
 };

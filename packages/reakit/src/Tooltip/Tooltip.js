@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React from "react";
 import { findDOMNode } from "react-dom";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -49,21 +49,14 @@ class Component extends React.Component {
 hoistNonReactStatics(Component, Popover);
 
 const Tooltip = styled(Component)`
-  pointer-events: none;
-  white-space: nowrap;
-  text-transform: none;
-  font-size: 0.875em;
-  text-align: center;
-  color: white;
-  background-color: #222;
-  border-radius: 0.15384em;
-  padding: 0.75em 1em;
-  ${prop("theme.Tooltip")};
+  ${theme("Tooltip")};
 `;
 
 Tooltip.defaultProps = {
   role: "tooltip",
-  placement: "top"
+  placement: "top",
+  opaque: true,
+  palette: "grayscale"
 };
 
 export default as("div")(Tooltip);

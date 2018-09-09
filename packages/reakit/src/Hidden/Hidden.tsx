@@ -1,7 +1,7 @@
 import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
-import { prop, ifProp } from "styled-tools";
+import { prop, theme, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   hasTransition,
@@ -9,11 +9,11 @@ import {
   originWithProps,
   scaleWithProps,
   slideWithProps
-} from "../_utils/transform";
+} from "../_utils/styledProps";
 import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 interface MouseClickEvent extends MouseEvent {
   target: Node;
@@ -121,7 +121,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     }
 
     return (
-      <Base
+      <Box
         aria-hidden={!visible}
         {...this.props}
         {...this.state}
@@ -132,7 +132,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
 }
 
 // @ts-ignore
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const Hidden = styled(Component)`
   transform: ${translateWithProps};
@@ -159,7 +159,7 @@ const Hidden = styled(Component)`
     )};
   }
 
-  ${prop("theme.Hidden")};
+  ${theme("Hidden")};
 `;
 
 // @ts-ignore

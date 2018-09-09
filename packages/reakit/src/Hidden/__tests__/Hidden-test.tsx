@@ -1,6 +1,6 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import Hidden from "reakit/src/Hidden/Hidden";
+import Hidden from "../Hidden";
 
 const wrap = (comp: React.ReactElement<any>) => mount(shallow(comp).get(0));
 

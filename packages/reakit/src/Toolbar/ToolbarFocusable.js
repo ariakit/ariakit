@@ -1,12 +1,12 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 import Toolbar from "./Toolbar";
 
 class Component extends React.Component {
@@ -137,7 +137,7 @@ class Component extends React.Component {
 
   render() {
     return (
-      <Base
+      <Box
         {...this.props}
         onFocus={callAll(this.handleFocus, this.props.onFocus)}
         tabIndex={this.state.tabIndex}
@@ -146,10 +146,10 @@ class Component extends React.Component {
   }
 }
 
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const ToolbarFocusable = styled(Component)`
-  ${prop("theme.ToolbarFocusable")};
+  ${theme("ToolbarFocusable")};
 `;
 
 export default as("div")(ToolbarFocusable);

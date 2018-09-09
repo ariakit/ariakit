@@ -3,11 +3,12 @@ import PropTypes from "prop-types";
 import { renderToStaticMarkup } from "react-dom/server";
 import { styled, Block, Tabs, Group, Button } from "reakit";
 import PencilIcon from "react-icons/lib/md/create";
-import pretty from "pretty";
+import diffableHtml from "diffable-html";
 import Editor from "./Editor";
 import compileComponent from "../utils/compileComponent";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import track from "../utils/track";
+import IconOnLeft from "../elements/IconOnLeft";
 
 const Wrapper = styled(Block)`
   position: relative;
@@ -25,11 +26,10 @@ const Wrapper = styled(Block)`
     ${Button} {
       color: white;
       background-color: rgba(255, 255, 255, 0.1);
-      border-color: rgba(0, 0, 0, 0.5);
       text-transform: uppercase;
       font-size: 0.85em;
       font-weight: 400;
-      grid-gap: 2px;
+      flex: none;
       padding: 0 8px;
       &.active {
         background-color: transparent;
@@ -47,7 +47,7 @@ const StyledPencilIcon = styled(PencilIcon)`
 const getHTML = (code, config, evalInContext) => {
   const component = compileComponent(code, config, evalInContext);
   const markup = renderToStaticMarkup(component);
-  return pretty(markup.replace(/ class="[^"]+"/g, ""));
+  return diffableHtml(markup).trim();
 };
 
 const EditorWithTabs = props => (
@@ -56,7 +56,7 @@ const EditorWithTabs = props => (
       <Wrapper>
         <Tabs as={Group}>
           <Tabs.Tab
-            as={Button}
+            as={[IconOnLeft, Button]}
             tab="jsx"
             onClick={track("reakit.editorTabsJSXClick")}
             {...tabs}
@@ -64,7 +64,7 @@ const EditorWithTabs = props => (
             <StyledPencilIcon /> JSX
           </Tabs.Tab>
           <Tabs.Tab
-            as={Button}
+            as={[IconOnLeft, Button]}
             tab="html"
             onClick={track("reakit.editorTabsHTMLClick")}
             {...tabs}

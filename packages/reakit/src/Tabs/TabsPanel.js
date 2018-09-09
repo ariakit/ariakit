@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
@@ -22,7 +22,7 @@ const Component = props => {
 hoistNonReactStatics(Component, Hidden);
 
 const TabsPanel = styled(Component)`
-  ${prop("theme.TabsPanel")};
+  ${theme("TabsPanel")};
 `;
 
 TabsPanel.propTypes = {

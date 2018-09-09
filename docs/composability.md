@@ -13,7 +13,7 @@ import { Button } from "reakit";
 However, we can leverage it even more by combining atomic components created with [styled](styling.md):
 
 ```jsx
-import { styled, Base, Button as BaseButton, Grid } from "reakit";
+import { styled, Button as BaseButton, Grid } from "reakit";
 
 const Button = styled(BaseButton)`
   text-transform: uppercase;
@@ -26,7 +26,7 @@ const ButtonRounded = styled(Button)`
 `;
 
 const ButtonLarge = styled(Button)`
-  font-size: 22px;
+  font-size: 20px;
 `;
 
 const ButtonPrimary = styled(Button)`

@@ -2,17 +2,17 @@ import React from "react";
 import { mount } from "enzyme";
 import PopoverContainer from "../PopoverContainer";
 
-const Base = () => null;
+const Box = () => null;
 
 const wrap = (Container, props = {}) =>
   mount(
-    <Container {...props}>{popover => <Base popover={popover} />}</Container>
+    <Container {...props}>{popover => <Box popover={popover} />}</Container>
   );
 
 const getState = wrapper =>
   wrapper
     .update()
-    .find(Base)
+    .find(Box)
     .prop("popover");
 
 const ensureState = wrapper => {

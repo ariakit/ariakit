@@ -1,11 +1,11 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const Block = styled(Base)`
+const Block = styled(Box)`
   display: block;
-  ${prop("theme.Block")};
+  ${theme("Block")};
 `;
 
 export default as("div")(Block);

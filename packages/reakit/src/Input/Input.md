@@ -1,4 +1,4 @@
-`Input` is built from [Box](../Box/Box.md) with minimal default styles to support the many possible uses an input has. By default renders as an `<input>` of `type="text"`.
+By default renders as an `<input>` of `type="text"`.
 
 ```jsx
 <Input />

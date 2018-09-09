@@ -1,0 +1,56 @@
+{
+  "name": "reakit-theme-default",
+  "version": "0.1.0",
+  "description": "ReaKit default theme",
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "unpkg": "dist/reakit-theme-default.min.js",
+  "types": "ts",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "ts",
+    "src"
+  ],
+  "scripts": {
+    "test": "jest",
+    "coverage": "npm test -- --coverage",
+    "postcoverage": "opn coverage/lcov-report/index.html",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext js,ts,tsx",
+    "build:clean": "rimraf dist es lib ts",
+    "build:ts": "tsc --emitDeclarationOnly --allowJs false",
+    "prebuild": "npm run build:clean && npm run build:ts",
+    "build": "rollup -c",
+    "preversion": "npm run lint && npm test && npm run build",
+    "postpublish": "npm run build:clean"
+  },
+  "keywords": [
+    "reakit",
+    "react",
+    "ui",
+    "toolkit"
+  ],
+  "dependencies": {
+    "styled-tools": "^1.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "jest-cli": "^23.5.0",
+    "opn-cli": "^3.1.0",
+    "rimraf": "^2.6.1",
+    "rollup": "^0.64.1",
+    "typescript": "^3.0.1"
+  },
+  "peerDependencies": {
+    "reakit": "^0.14.4"
+  }
+}

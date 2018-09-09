@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 type ComponentProps = {
   show: () => void;
@@ -12,11 +12,11 @@ type ComponentProps = {
 };
 
 const Component = ({ onClick, ...props }: ComponentProps) => (
-  <Base onClick={callAll(props.show, onClick)} {...props} />
+  <Box onClick={callAll(props.show, onClick)} {...props} />
 );
 
 const HiddenShow = styled(Component)`
-  ${prop("theme.HiddenShow")};
+  ${theme("HiddenShow")};
 `;
 
 // @ts-ignore

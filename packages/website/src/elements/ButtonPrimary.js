@@ -1,10 +1,9 @@
 import { styled, Button } from "reakit";
-import { prop } from "styled-tools";
+import { palette } from "styled-tools";
 
 const ButtonPrimary = styled(Button)`
-  background-color: ${prop("theme.pinkDark")};
-  border: none;
-  color: white;
+  background-color: ${palette("primary")};
+  color: ${palette("primaryText")};
 `;
 
 export default ButtonPrimary;

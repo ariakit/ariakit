@@ -1,30 +1,23 @@
-> Reakit uses [styled-components](https://www.styled-components.com) to style components.
+There are 3 ways to style your components using Reakit.
 
-This is an example of how a component is defined in the library:
+## Styled
+
+The most common way to style your components is using the `styled` method. It uses [styled-components](https://www.styled-components.com) internally, so refer to their docs to learn more.
+
 ```jsx
-import { styled, Base } from "reakit";
+import { styled, Box } from "reakit";
 
-const Box = styled(Base)`
+const Component = styled(Box)`
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 0.25em;
 `;
 
-<Box>Box</Box>
+<Component>Component</Component>
 ```
 
-You can easily extend `Box` and apply new styles:
-```jsx
-import { styled, Box } from "reakit";
+## Inline styles
 
-const MyBox = styled(Box)`
-  background-color: palevioletred;
-  padding: 8px;
-`;
-
-<MyBox>MyBox</MyBox>
-```
-
-Another way to style your enhanced components is by passing style props. Those styles will be converted into `style={{ ... }}` and applied as inline styles. Check the `HTML` tab to see the output.
+You can pass style props to ReaKit components. Those will be converted into `style={{ ... }}` and applied as inline styles. Check the `HTML` tab below to see the output.
 
 ```jsx
 import { Box } from "reakit";
@@ -34,9 +27,11 @@ import { Box } from "reakit";
   color="white"
   padding={8}
 >
-  Box
+  Component
 </Box>
 ```
+
+## Theming
 
 Finally, you can pass a `theme` object to `Provider` and style Reakit elements directly:
 

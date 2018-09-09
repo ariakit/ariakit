@@ -1,20 +1,20 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop, withProp } from "styled-tools";
+import { theme, withProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 const Component = props => (
-  <Base
+  <Box
     aria-orientation={props.vertical ? "vertical" : "horizontal"}
     {...props}
   />
 );
 
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const Toolbar = styled(Component)`
   position: relative;
@@ -35,7 +35,7 @@ const Toolbar = styled(Component)`
       "end" 1fr;
   }
 
-  ${prop("theme.Toolbar")};
+  ${theme("Toolbar")};
 `;
 
 Toolbar.propTypes = {

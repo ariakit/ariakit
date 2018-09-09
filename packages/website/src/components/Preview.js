@@ -9,7 +9,8 @@ class Preview extends React.Component {
   static propTypes = {
     code: PropTypes.string.isRequired,
     evalInContext: PropTypes.func.isRequired,
-    config: PropTypes.object.isRequired
+    config: PropTypes.object.isRequired,
+    theme: PropTypes.string
   };
 
   state = {
@@ -22,12 +23,17 @@ class Preview extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      this.state.error !== nextState.error || this.props.code !== nextProps.code
+      this.props.theme !== nextProps.theme ||
+      this.state.error !== nextState.error ||
+      this.props.code !== nextProps.code
     );
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.code !== prevProps.code) {
+    if (
+      this.props.code !== prevProps.code ||
+      this.props.theme !== prevProps.theme
+    ) {
       this.executeCode();
     }
   }
@@ -46,14 +52,15 @@ class Preview extends React.Component {
 
   executeCode() {
     this.setState({ error: null });
-    const { code, config, evalInContext } = this.props;
+    const { code, config, evalInContext, theme } = this.props;
     if (!code) return;
 
     try {
       const exampleComponent = compileComponent(
         code,
         config.compilerConfig,
-        evalInContext
+        evalInContext,
+        theme
       );
 
       window.requestAnimationFrame(() => {
