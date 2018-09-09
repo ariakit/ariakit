@@ -18,7 +18,7 @@
   <a href="https://reakit.io/components"><strong>Components</strong></a>
 </p>
 
-<br>
+<br><br>
 
 <p align="center">
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>

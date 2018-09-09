@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.6"></a>
+## [0.14.6](https://github.com/reakit/reakit/compare/website@0.14.5...website@0.14.6) (2018-09-09)
+
+
+### Bug Fixes
+
+* **website:** Remove warning about value on NewsletterForm ([b990b8c](https://github.com/reakit/reakit/commit/b990b8c))
+
+
+
+
+
 <a name="0.14.5"></a>
 ## [0.14.5](https://github.com/reakit/reakit/compare/website@0.14.4...website@0.14.5) (2018-08-24)
 

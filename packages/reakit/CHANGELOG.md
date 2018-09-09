@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.6"></a>
+## [0.14.6](https://github.com/reakit/reakit/compare/reakit@0.14.5...reakit@0.14.6) (2018-09-09)
+
+
+### Bug Fixes
+
+* Explicitly remove unsupported unmount prop on Popover ([5ed3acf](https://github.com/reakit/reakit/commit/5ed3acf))
+* Hoist propTypes and defaultProps on enhanced components ([#218](https://github.com/reakit/reakit/issues/218)) ([b178d0e](https://github.com/reakit/reakit/commit/b178d0e))
+
+
+### Features
+
+* Add typescript support to Portal component ([#223](https://github.com/reakit/reakit/issues/223)) ([c18bba0](https://github.com/reakit/reakit/commit/c18bba0))
+
+
+
+
+
 <a name="0.14.5"></a>
 ## [0.14.5](https://github.com/reakit/reakit/compare/reakit@0.14.4...reakit@0.14.5) (2018-08-24)
 

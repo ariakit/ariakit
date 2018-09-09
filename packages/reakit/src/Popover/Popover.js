@@ -114,6 +114,7 @@ class Component extends React.Component {
         defaultExpand={this.state.placement.replace(/-.+$/, "")}
         slideOffset={this.props.gutter}
         {...this.props}
+        unmount={false}
       />
     );
   }

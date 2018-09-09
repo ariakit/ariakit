@@ -44,8 +44,8 @@ exports[`creates component 3`] = `
 
 exports[`creates component by extending another one with styled 1`] = `
 Array [
-  "Derivative.as(div)",
-  "Derivative",
+  "as-test__Derivative.as(div)",
+  "as-test__Derivative",
   "Base.as(span)",
   "Base",
   "As",
@@ -54,8 +54,8 @@ Array [
 `;
 
 exports[`creates component by extending another one with styled 2`] = `
-<Derivative.as(div)>
-  <Derivative
+<as-test__Derivative.as(div)>
+  <as-test__Derivative
     as={[Function]}
     nextAs={
       Array [
@@ -97,8 +97,8 @@ exports[`creates component by extending another one with styled 2`] = `
         </As>
       </Base>
     </Base.as(span)>
-  </Derivative>
-</Derivative.as(div)>
+  </as-test__Derivative>
+</as-test__Derivative.as(div)>
 `;
 
 exports[`creates component by extending another one with styled 3`] = `
