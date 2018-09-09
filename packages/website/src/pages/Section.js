@@ -43,7 +43,7 @@ const Section = ({ location, ...props }) => (
         return (
           <Block {...props}>
             <Helmet>
-              <title>{section.name} - ReaKit</title>
+              <title>{section.name} - Reakit</title>
             </Helmet>
             <SectionHeader section={section} />
             {section.name !== "Base" && (

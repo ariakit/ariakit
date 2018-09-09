@@ -1,4 +1,4 @@
-You can use ReaKit completely or only some of its modules according to your needs. Either way, your final bundle will include only the parts you're using.
+You can use Reakit completely or only some of its modules according to your needs. Either way, your final bundle will include only the parts you're using.
 
 ## Tree shaking
 
@@ -16,7 +16,7 @@ import { as, Button, Popover } from "reakit";
 
 ## Separate files
 
-ReaKit also exposes separate files for each module. If you can't do tree shaking and/or are building an open source library based on ReaKit, you should import files directly:
+Reakit also exposes separate files for each module. If you can't do tree shaking and/or are building an open source library based on Reakit, you should import files directly:
 
 ```js static
 import as from "reakit/as";

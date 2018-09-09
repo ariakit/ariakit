@@ -1,6 +1,6 @@
-# Contributing to ReaKit
+# Contributing to Reakit
 
-We would love for you to contribute to ReaKit and help make it even better. By contributing to ReaKit, you agree to abide by the [code of conduct](https://github.com/reakit/reakit/blob/master/CODE_OF_CONDUCT.md)
+We would love for you to contribute to Reakit and help make it even better. By contributing to Reakit, you agree to abide by the [code of conduct](https://github.com/reakit/reakit/blob/master/CODE_OF_CONDUCT.md)
 
 - [Ownership](#ownership)
   - [Why do we give out push access?](#why-do-we-give-out-push-access)
@@ -93,9 +93,9 @@ The best way to understand how to create new components is looking at the other 
 
 A simple component folder is composed by three files:
 
- - `Component.js` with the source code.
+ - `Component.tsx` with the source code.
  - `Component.md` with the docs.
- - `index.js` exporting the component as default.
+ - `index.ts` exporting the component as default.
 
 Also, an entry should be added to [`packages/reakit/src/index.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/index.ts).
 

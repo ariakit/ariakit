@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "0.14.5",
+  "version": "0.14.6",
   "private": true,
   "scripts": {
     "start": "styleguidist server",
@@ -24,12 +24,12 @@
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
-    "reakit": "^0.14.5",
+    "reakit": "^0.14.6",
     "styled-tools": "^1.4.1",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
-    "@types/codemirror": "^0.0.59",
+    "@types/codemirror": "^0.0.60",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
     "eslint": "^5.4.0",
@@ -37,7 +37,7 @@
     "jest-cli": "^23.5.0",
     "opn-cli": "^3.1.0",
     "raw-loader": "^0.5.1",
-    "react-styleguidist": "^7.3.0",
+    "react-styleguidist": "^7.3.6",
     "style-loader": "^0.23.0",
     "url-loader": "^1.1.1",
     "webpack": "^4.17.1"

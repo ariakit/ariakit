@@ -33,7 +33,6 @@ it("creates component", () => {
 it("creates component by extending another one with styled", () => {
   const Base = createComponent();
   const Derivative = styled(Base)``;
-  Derivative.displayName = "Derivative";
   const Div = as("div")(Derivative);
   const wrapper = mount(<Div />);
 

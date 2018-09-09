@@ -1,4 +1,4 @@
-This is the abstract layout component that all other ReaKit components are built on top of. By default it renders a `div` tag with basic reset styles.
+This is the abstract layout component that all other Reakit components are built on top of. By default it renders a `div` tag with basic reset styles.
 
 ```jsx
 <Base>Base</Base>

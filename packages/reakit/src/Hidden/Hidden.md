@@ -1,4 +1,4 @@
-`Hidden` is a highly generic yet powerful ReaKit component. It simply hides itself away and waits for a `visible` prop to show up.
+`Hidden` is a highly generic yet powerful Reakit component. It simply hides itself away and waits for a `visible` prop to show up.
 
 ```jsx
 <Hidden visible>Hidden</Hidden>

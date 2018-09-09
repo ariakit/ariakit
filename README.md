@@ -1,12 +1,16 @@
 <br><br>
 
 <p align="center">
-  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.png" alt="reakit" width="320" />
+  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.jpg" alt="reakit" width="320" />
 </p>
+
+<br>
 
 <p align="center">
   Toolkit for building <a href="https://reakit.io/guide/principles/composability">composable</a>, <a href="https://reakit.io/guide/principles/accessibility">accessible</a> and <a href="https://reakit.io/guide/principles/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
 </p>
+
+<br>
 
 <p align="center">
   <a href="https://reakit.io"><strong>Website</strong></a> ·
@@ -14,7 +18,7 @@
   <a href="https://reakit.io/components"><strong>Components</strong></a>
 </p>
 
-#
+<br><br>
 
 <p align="center">
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
@@ -39,7 +43,7 @@ npm i reakit
   <img
     src="https://user-images.githubusercontent.com/3068563/35465289-0cb7fe96-02e2-11e8-8bc5-60abcb6e92ac.gif"
     width="200"
-  /><br />
+  /><br>
   See and edit full source code on <a href="https://codesandbox.io/s/m4n32vjkoj">CodeSandbox</a>
 </p>
 
@@ -65,20 +69,6 @@ const App = () => (
 render(<App />, document.getElementById("root"));
 ```
 
-## Performance
-
-Benchmark done using [react-benchmark](https://github.com/Rowno/react-benchmark) with MacBook Pro (Retina, 13-inch, Late 2013). Clone the repository and run `yarn && yarn benchmark` to see the results.
-
-| Library | ops/sec |
-| ------- | -------:|
-| [react](benchmark/cases/react.js) | 103,029 |
-| [reakit (`as`)](benchmark/cases/reakit-as.js) | 45,975 |
-| [antd](https://github.com/ant-design/ant-design) | 29,122 |
-| [reakit (`Base`)](benchmark/cases/reakit-base.js) | 17,071 |
-| [reakit (`Button`)](benchmark/cases/reakit-button.js) | 12,107 |
-| [material-ui](https://github.com/mui-org/material-ui) | 9,840 |
-| [rebass](https://github.com/jxnblk/rebass) | 7,989 |
-
 
 ## Contributors
 
@@ -95,7 +85,7 @@ Thank you to all our backers! 🙏
 
 ## Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website.<br>
 
 <a href="https://opencollective.com/reakit/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/1/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
@@ -107,6 +97,8 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/reakit/sponsor/7/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/8/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/9/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
+
+<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" width="200"></a>
 
 ## License
 

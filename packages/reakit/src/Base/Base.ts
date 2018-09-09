@@ -20,7 +20,7 @@ type ComponentProps = {
 const Component = ({ as: T, ...props }: ComponentProps) =>
   React.createElement(T, props);
 
-type BaseProps = { [key in keyof typeof positions]?: boolean };
+export type BaseProps = { [key in keyof typeof positions]?: boolean };
 
 const positionsKeys = Object.keys(positions);
 

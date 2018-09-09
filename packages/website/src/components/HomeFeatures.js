@@ -29,14 +29,14 @@ const HomeFeatures = props => (
     <Feature>
       <Title>Composable</Title>
       <Paragraph>
-        ReaKit is built with composition in mind. You can leverage any component
+        Reakit is built with composition in mind. You can leverage any component
         or container to create something new.
       </Paragraph>
     </Feature>
     <Feature>
       <Title>Accessible</Title>
       <Paragraph>
-        All components are WAI-ARIA compliant by default. ReaKit adds proper
+        All components are WAI-ARIA compliant by default. Reakit adds proper
         roles and interactions to the components out of the box.
       </Paragraph>
     </Feature>
