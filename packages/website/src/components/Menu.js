@@ -54,7 +54,8 @@ const SectionLink = styled(Link)`
     font-weight: bolder;
     opacity: 0.35;
 
-    &:hover {
+    &:hover,
+    &.active {
       border-color: transparent;
     }
   }
