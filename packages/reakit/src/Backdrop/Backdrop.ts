@@ -18,7 +18,6 @@ const Backdrop = styled(Hidden)`
 Backdrop.defaultProps = {
   role: "button",
   tabIndex: -1,
-  // @ts-ignore
   opaque: true,
   palette: "shadow",
   tone: 2

@@ -9,4 +9,6 @@ const C = Card as typeof Card & CardComponents;
 
 C.Fit = CardFit;
 
+export * from "./Card";
+
 export default C;

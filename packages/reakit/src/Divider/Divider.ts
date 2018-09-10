@@ -4,7 +4,7 @@ import styled, { css } from "../styled";
 import as from "../as";
 import Box from "../Box";
 
-interface DividerProps {
+export interface DividerProps {
   vertical?: boolean;
 }
 

@@ -6,12 +6,12 @@ import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
 
-type ComponentProps = {
+export interface HiddenHideProps {
   hide: () => void;
   onClick?: (...args: any[]) => void;
-};
+}
 
-const Component = ({ onClick, ...props }: ComponentProps) => (
+const Component = ({ onClick, ...props }: HiddenHideProps) => (
   <Box onClick={callAll(props.hide, onClick)} {...props} />
 );
 
@@ -25,4 +25,4 @@ HiddenHide.propTypes = {
   onClick: PropTypes.func
 };
 
-export default as("button")<ComponentProps>(HiddenHide);
+export default as("button")(HiddenHide);

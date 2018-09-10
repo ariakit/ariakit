@@ -1,15 +1,15 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { Container, ContainerProps, ActionMap, StateUpdater } from "constate";
+import { Container, ComposableContainer, ActionMap } from "constate";
 
 interface State {
   visible: boolean;
 }
 
 interface Actions {
-  show: StateUpdater<State>;
-  hide: StateUpdater<State>;
-  toggle: StateUpdater<State>;
+  show: () => void;
+  hide: () => void;
+  toggle: () => void;
 }
 
 export const initialState: State = { visible: false };
@@ -24,11 +24,11 @@ const actions: ActionMap<State, Actions> = {
   toggle
 };
 
-const HiddenContainer = (props: ContainerProps<State, Actions>) => (
+const HiddenContainer: ComposableContainer<State, Actions> = props => (
   <Container
     {...props}
     initialState={{ ...initialState, ...props.initialState }}
-    actions={{ ...actions, ...props.actions }}
+    actions={actions}
   />
 );
 

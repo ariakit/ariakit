@@ -6,12 +6,12 @@ import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
 
-type ComponentProps = {
+export interface HiddenToggleProps {
   toggle: () => void;
   onClick?: (...args: any[]) => void;
-};
+}
 
-const Component = ({ onClick, ...props }: ComponentProps) => (
+const Component = ({ onClick, ...props }: HiddenToggleProps) => (
   <Box onClick={callAll(props.toggle, onClick)} {...props} />
 );
 
@@ -25,4 +25,4 @@ HiddenToggle.propTypes = {
   onClick: PropTypes.func
 };
 
-export default as("button")<ComponentProps>(HiddenToggle);
+export default as("button")(HiddenToggle);

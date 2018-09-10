@@ -5,9 +5,9 @@ import hoistNonReactStatics from "hoist-non-react-statics";
 import { bgColorWithProps } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-export interface PopoverArrowProps {
+export interface PopoverArrowProps extends BoxProps {
   fillColor?: string;
   strokeColor?: string;
   opaque?: boolean;
@@ -31,7 +31,6 @@ const Component = (props: PopoverArrowProps) => (
   </Box>
 );
 
-// @ts-ignore
 hoistNonReactStatics(Component, Box);
 
 const PopoverArrow = styled(Component)`

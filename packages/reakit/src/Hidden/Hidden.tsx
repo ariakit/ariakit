@@ -13,13 +13,13 @@ import {
 import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
 interface MouseClickEvent extends MouseEvent {
   target: Node;
 }
 
-type ComponentProps = {
+export interface HiddenProps extends BoxProps {
   visible?: boolean;
   hide?: () => void;
   onTransitionEnd?: () => void;
@@ -34,14 +34,14 @@ type ComponentProps = {
   timing?: string;
   animated?: boolean;
   transitioning?: boolean;
-};
+}
 
-type ComponentState = {
+interface HiddenState {
   visible?: boolean;
   transitioning?: boolean;
-};
+}
 
-class Component extends React.Component<ComponentProps, ComponentState> {
+class Component extends React.Component<HiddenProps, HiddenState> {
   state = {
     visible: this.props.visible,
     transitioning: this.props.transitioning
@@ -76,7 +76,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     }
   };
 
-  componentDidUpdate(prevProps: ComponentProps) {
+  componentDidUpdate(prevProps: HiddenProps) {
     if (prevProps.visible !== this.props.visible) {
       this.applyState();
     }
@@ -131,7 +131,6 @@ class Component extends React.Component<ComponentProps, ComponentState> {
   }
 }
 
-// @ts-ignore
 hoistNonReactStatics(Component, Box);
 
 const Hidden = styled(Component)`

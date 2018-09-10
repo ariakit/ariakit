@@ -6,7 +6,7 @@ import as from "../as";
 import Box from "../Box";
 import CardFit from "./CardFit";
 
-interface CardProps {
+export interface CardProps {
   gutter?: number | string;
 }
 
