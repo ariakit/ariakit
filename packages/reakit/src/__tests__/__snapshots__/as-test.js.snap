@@ -1,0 +1,559 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates component 1`] = `
+Array [
+  "Base.as(span)",
+  "Base",
+  "As",
+  "span",
+]
+`;
+
+exports[`creates component 2`] = `
+<Base.as(span)>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        "span",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          "span",
+        ]
+      }
+    >
+      <span
+        id="Base"
+      />
+    </As>
+  </Base>
+</Base.as(span)>
+`;
+
+exports[`creates component 3`] = `
+
+<span id="Base">
+</span>
+
+`;
+
+exports[`creates component by extending another one with styled 1`] = `
+Array [
+  "as-test__Derivative.as(div)",
+  "as-test__Derivative",
+  "Base.as(span)",
+  "Base",
+  "As",
+  "div",
+]
+`;
+
+exports[`creates component by extending another one with styled 2`] = `
+<as-test__Derivative.as(div)>
+  <as-test__Derivative
+    as={[Function]}
+    nextAs={
+      Array [
+        "div",
+      ]
+    }
+  >
+    <Base.as(span)
+      as={[Function]}
+      className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+      nextAs={
+        Array [
+          "div",
+        ]
+      }
+    >
+      <Base
+        as={[Function]}
+        className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+        nextAs={
+          Array [
+            "div",
+          ]
+        }
+      >
+        <As
+          className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+          id="Base"
+          nextAs={
+            Array [
+              "div",
+            ]
+          }
+        >
+          <div
+            className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+            id="Base"
+          />
+        </As>
+      </Base>
+    </Base.as(span)>
+  </as-test__Derivative>
+</as-test__Derivative.as(div)>
+`;
+
+exports[`creates component by extending another one with styled 3`] = `
+
+<div class="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+     id="Base"
+>
+</div>
+
+`;
+
+exports[`creates component passing property as 1`] = `
+Array [
+  "Base.as(span)",
+  "Base",
+  "As",
+  "div",
+]
+`;
+
+exports[`creates component passing property as 2`] = `
+<Base.as(span)
+  as="div"
+>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        "div",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          "div",
+        ]
+      }
+    >
+      <div
+        id="Base"
+      />
+    </As>
+  </Base>
+</Base.as(span)>
+`;
+
+exports[`creates component passing property as 3`] = `
+
+<div id="Base">
+</div>
+
+`;
+
+exports[`creates component passing property as with another component 1`] = `
+Array [
+  "Base.as(span)",
+  "Base",
+  "As",
+  "Derivative",
+  "div",
+]
+`;
+
+exports[`creates component passing property as with another component 2`] = `
+<Base.as(span)
+  as={[Function]}
+>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        [Function],
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          [Function],
+        ]
+      }
+    >
+      <Derivative
+        id="Base"
+      >
+        <div
+          id="Base"
+        />
+      </Derivative>
+    </As>
+  </Base>
+</Base.as(span)>
+`;
+
+exports[`creates component passing property as with another component 3`] = `
+
+<div id="Base">
+</div>
+
+`;
+
+exports[`creates component passing property as with array of components 1`] = `
+Array [
+  "Base.as(span)",
+  "Base",
+  "As",
+  "Derivative",
+  "As",
+  "p",
+]
+`;
+
+exports[`creates component passing property as with array of components 2`] = `
+<Base.as(span)
+  as={
+    Array [
+      [Function],
+      "p",
+    ]
+  }
+>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        [Function],
+        "p",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          [Function],
+          "p",
+        ]
+      }
+    >
+      <Derivative
+        as={[Function]}
+        id="Base"
+        nextAs={
+          Array [
+            "p",
+          ]
+        }
+      >
+        <As
+          id="Derivative"
+          nextAs={
+            Array [
+              "p",
+            ]
+          }
+        >
+          <p
+            id="Derivative"
+          />
+        </As>
+      </Derivative>
+    </As>
+  </Base>
+</Base.as(span)>
+`;
+
+exports[`creates component passing property as with array of components 3`] = `
+
+<p id="Derivative">
+</p>
+
+`;
+
+exports[`creates component using as static method 1`] = `
+Array [
+  "Base.as(span).as(p)",
+  "Base.as(span)",
+  "Base",
+  "As",
+  "p",
+]
+`;
+
+exports[`creates component using as static method 2`] = `
+<Base.as(span).as(p)>
+  <Base.as(span)
+    as={[Function]}
+    nextAs={
+      Array [
+        "p",
+      ]
+    }
+  >
+    <Base
+      as={[Function]}
+      nextAs={
+        Array [
+          "p",
+        ]
+      }
+    >
+      <As
+        id="Base"
+        nextAs={
+          Array [
+            "p",
+          ]
+        }
+      >
+        <p
+          id="Base"
+        />
+      </As>
+    </Base>
+  </Base.as(span)>
+</Base.as(span).as(p)>
+`;
+
+exports[`creates component using as static method 3`] = `
+
+<p id="Base">
+</p>
+
+`;
+
+exports[`creates component using as static method with array of components 1`] = `
+Array [
+  "Base.as(span).as(Derivative,p)",
+  "Base.as(span)",
+  "Base",
+  "As",
+  "Derivative",
+  "As",
+  "p",
+]
+`;
+
+exports[`creates component using as static method with array of components 2`] = `
+<Base.as(span).as(Derivative,p)>
+  <Base.as(span)
+    as={[Function]}
+    nextAs={
+      Array [
+        [Function],
+        "p",
+      ]
+    }
+  >
+    <Base
+      as={[Function]}
+      nextAs={
+        Array [
+          [Function],
+          "p",
+        ]
+      }
+    >
+      <As
+        id="Base"
+        nextAs={
+          Array [
+            [Function],
+            "p",
+          ]
+        }
+      >
+        <Derivative
+          as={[Function]}
+          id="Base"
+          nextAs={
+            Array [
+              "p",
+            ]
+          }
+        >
+          <As
+            id="Derivative"
+            nextAs={
+              Array [
+                "p",
+              ]
+            }
+          >
+            <p
+              id="Derivative"
+            />
+          </As>
+        </Derivative>
+      </As>
+    </Base>
+  </Base.as(span)>
+</Base.as(span).as(Derivative,p)>
+`;
+
+exports[`creates component using as static method with array of components 3`] = `
+
+<p id="Derivative">
+</p>
+
+`;
+
+exports[`creates component with array of components 1`] = `
+Array [
+  "Base.as(Derivative,p)",
+  "Base",
+  "As",
+  "Derivative",
+  "As",
+  "p",
+]
+`;
+
+exports[`creates component with array of components 2`] = `
+<Base.as(Derivative,p)>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        [Function],
+        "p",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          [Function],
+          "p",
+        ]
+      }
+    >
+      <Derivative
+        as={[Function]}
+        id="Base"
+        nextAs={
+          Array [
+            "p",
+          ]
+        }
+      >
+        <As
+          id="Derivative"
+          nextAs={
+            Array [
+              "p",
+            ]
+          }
+        >
+          <p
+            id="Derivative"
+          />
+        </As>
+      </Derivative>
+    </As>
+  </Base>
+</Base.as(Derivative,p)>
+`;
+
+exports[`creates component with array of components 3`] = `
+
+<p id="Derivative">
+</p>
+
+`;
+
+exports[`does not create another component if asComponents are equal 1`] = `
+Array [
+  "Base.as(div)",
+  "Base",
+  "As",
+  "div",
+]
+`;
+
+exports[`does not create another component if asComponents are equal 2`] = `
+<Base.as(div)>
+  <Base
+    as={[Function]}
+    nextAs={
+      Array [
+        "div",
+      ]
+    }
+  >
+    <As
+      id="Base"
+      nextAs={
+        Array [
+          "div",
+        ]
+      }
+    >
+      <div
+        id="Base"
+      />
+    </As>
+  </Base>
+</Base.as(div)>
+`;
+
+exports[`does not create another component if asComponents are equal 3`] = `
+
+<div id="Base">
+</div>
+
+`;
+
+exports[`passes down elementRef 1`] = `
+<span
+  id="Base"
+/>
+`;
+
+exports[`passes down elementRef when extended 1`] = `
+<span
+  class="as-test__BaseComponent-sc-1mujb6x-1 frxHGN"
+  id="Base"
+/>
+`;
+
+exports[`renders SVG element 1`] = `
+
+<circle id="Base">
+</circle>
+
+`;
+
+exports[`renders with dangerouslySetInnerHTML 1`] = `
+
+<span id="Base">
+  <b>
+    Hello
+  </b>
+</span>
+
+`;
+
+exports[`renders with style 1`] = `
+
+<span id="Base"
+      style="position:absolute"
+>
+</span>
+
+`;
+
+exports[`renders with style passing property as with another component 1`] = `
+
+<div id="Derivate"
+     style="position:absolute"
+>
+</div>
+
+`;

@@ -1,17 +1,17 @@
-`as` is one of the most powerful functions of ReaKit. This leverages composability in React and provides a nice way to create new components by composing many others.
+`as` is one of the most powerful functions of Reakit. This leverages composability in React and provides a nice way to create new components by composing many others.
 
 Your first contact with `as` will be most probably with the prop, changing the underlying element of a component:
 ```jsx
 import { Button } from "reakit";
 
-<Button as="a" href="https://github.com/diegohaz/reakit" target="_blank">
+<Button as="a" href="https://github.com/reakit/reakit" target="_blank">
   Go to GitHub
 </Button>
 ```
 
 You can pass HTML string elements, other React components or an array of both.
 
-You can use the `as` enhancer to create new components and take advantage of all ReaKit features:
+You can use the `as` enhancer to create new components and take advantage of all Reakit features:
 
 ```jsx
 import { as, Button } from 'reakit'
@@ -22,21 +22,21 @@ const MyComponent = as("span")(
 
 <MyComponent 
   as={[Button, "a"]} 
-  href="https://github.com/diegohaz/reakit" 
+  href="https://github.com/reakit/reakit" 
   target="_blank"
 >
   GitHub
 </MyComponent>
 ```
 
-That means you can also use it to enhance a ReaKit component with `as` and change what it renders:
+That means you can also use it to enhance a Reakit component with `as` and change what it renders:
 
 ```jsx
 import { as, Button } from 'reakit'
 
 const LinkButton = as("a")(Button);
 
-<LinkButton href="https://github.com/diegohaz/reakit" target="_blank">
+<LinkButton href="https://github.com/reakit/reakit" target="_blank">
   GitHub
 </LinkButton>
 ```
@@ -48,7 +48,7 @@ import { Button } from "reakit";
 
 const LinkButton = Button.as("a");
 
-<LinkButton href="https://github.com/diegohaz/reakit" target="_blank">
+<LinkButton href="https://github.com/reakit/reakit" target="_blank">
   GitHub
 </LinkButton>
 ```

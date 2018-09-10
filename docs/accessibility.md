@@ -1,4 +1,4 @@
-All ReaKit components are [WAI-ARIA](https://en.wikipedia.org/wiki/WAI-ARIA) compliant by default. This means that you don't need to worry about adding `role` and `aria-*` props to components unless you're using them for different purposes.
+All Reakit components are [WAI-ARIA](https://en.wikipedia.org/wiki/WAI-ARIA) compliant by default. This means that you don't need to worry about adding `role` and `aria-*` props to components unless you're using them for different purposes.
 
 Besides adding props, it also implements accessible interactions, such as navigating between tabs through arrow keys:
 
@@ -21,4 +21,4 @@ import { Block, Tabs } from "reakit";
 </Tabs.Container>
 ```
 
-> If you find some accessibility issue or something that could be improved regarding accessibility, don't hesitate to [open an issue](https://github.com/diegohaz/reakit/issues/new) or [send a PR](https://github.com/diegohaz/reakit/compare).
+> If you find some accessibility issue or something that could be improved regarding accessibility, don't hesitate to [open an issue](https://github.com/reakit/reakit/issues/new) or [send a PR](https://github.com/reakit/reakit/compare).

@@ -1,0 +1,7 @@
+coverage
+scripts
+/index.js
+/test.tsx
+*.log
+*.config.js
+*.lock

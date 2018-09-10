@@ -1,5 +1,8 @@
 .DS_Store
 node_modules
 coverage
+lib
+es
 dist
+ts
 *.log
