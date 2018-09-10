@@ -1,7 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-// @ts-ignore
 import Hidden from "../Hidden";
 
 const Backdrop = styled(Hidden)`

@@ -4,14 +4,13 @@ import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
-import { BoxProps } from "../Box/Box";
+import Box, { BoxProps } from "../Box";
 
-type ComponentState = {
+interface PortalState {
   wrapper?: React.ReactNode;
-};
+}
 
-class Component extends React.Component<BoxProps, ComponentState> {
+class Component extends React.Component<BoxProps, PortalState> {
   state = { wrapper: null };
 
   componentDidMount() {

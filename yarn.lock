@@ -1165,9 +1165,20 @@
   dependencies:
     any-observable "^0.3.0"
 
+"@types/cheerio@*":
+  version "0.22.9"
+  resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.9.tgz#b5990152604c2ada749b7f88cab3476f21f39d7b"
+
 "@types/codemirror@^0.0.60":
   version "0.0.60"
   resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.60.tgz#178f69f2b87253aedb03518b99c20298420a3aa3"
+
+"@types/enzyme@^3.1.13":
+  version "3.1.13"
+  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.1.13.tgz#4bbc5c81fa40c9fc7efee25c4a23cb37119a33ea"
+  dependencies:
+    "@types/cheerio" "*"
+    "@types/react" "*"
 
 "@types/estree@0.0.39":
   version "0.0.39"
