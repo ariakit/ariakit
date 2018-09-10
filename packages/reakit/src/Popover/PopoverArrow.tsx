@@ -61,6 +61,7 @@ const PopoverArrow = styled(Component)`
 
   [data-placement^="bottom"] > & {
     bottom: 100%;
+    transform: rotateZ(360deg);
   }
 
   [data-placement^="left"] > & {
