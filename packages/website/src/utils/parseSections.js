@@ -3,11 +3,12 @@ import kebabCase from "lodash/kebabCase";
 import flattenSections from "./flattenSections";
 
 const groups = {
-  Primitives: ["Box", "Block", "Flex", "Inline", "InlineBlock", "InlineFlex"]
+  Primitives: ["Box", "Block", "Flex", "Inline", "InlineBlock", "InlineFlex"],
+  Containers: ["Hidden", "Overlay", "Popover", "Sidebar", "Step", "Tabs"]
 };
 
-const getGroupName = sectioName =>
-  Object.keys(groups).find(key => groups[key].includes(sectioName));
+const getGroupName = sectionName =>
+  Object.keys(groups).find(key => groups[key].includes(sectionName));
 
 const findUses = (sections, name) =>
   sections
@@ -38,7 +39,8 @@ const parseSections = (sections, rootSections = sections) => {
       const group = acc.find(x => x.name === groupName) || {
         name: groupName,
         slug: kebabCase(groupName),
-        sections: []
+        sections: [],
+        isGroupLabel: true
       };
       return [
         { ...group, sections: [...(group.sections || []), finalSection] },

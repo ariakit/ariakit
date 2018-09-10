@@ -98,21 +98,16 @@ module.exports = {
           content: "../../docs/get-started.md"
         },
         {
-          name: "Principles",
-          sections: [
-            {
-              name: "Composability",
-              content: "../../docs/composability.md"
-            },
-            {
-              name: "Accessibility",
-              content: "../../docs/accessibility.md"
-            },
-            {
-              name: "Reliability",
-              content: "../../docs/reliability.md"
-            }
-          ]
+          name: "Composability",
+          content: "../../docs/composability.md"
+        },
+        {
+          name: "Accessibility",
+          content: "../../docs/accessibility.md"
+        },
+        {
+          name: "Reliability",
+          content: "../../docs/reliability.md"
         },
         {
           name: "Bundle size",

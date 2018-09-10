@@ -12,7 +12,7 @@ const Wrapper = styled(Grid)`
 
 const MenuList = styled(List)`
   ${List} {
-    ${ifProp("alwaysVisible", "display: block !important")};
+    ${ifProp("contentsVisible", "display: block !important")};
   }
 
   li {
@@ -49,8 +49,24 @@ const SectionLink = styled(Link)`
     display: none;
   }
 
-  & + ${MenuList} & {
-    padding-left: 40px;
+  &.label {
+    font-size: 1.3em;
+    font-weight: bolder;
+    opacity: 0.35;
+
+    &:hover,
+    &.active {
+      border-color: transparent;
+    }
+  }
+
+  &.label + ${MenuList} {
+    display: block;
+  }
+
+  &.label ~ ${MenuList} {
+    padding-bottom: 0.75em;
+    margin-bottom: 0.75em;
   }
 `;
 
@@ -59,14 +75,18 @@ const renderList = (section, prevSlug = "") => {
   if (!sections.length) return null;
   const slug = `${prevSlug}/${section.slug}`;
 
-  const alwaysVisible =
+  const contentsVisible =
     prevSlug === "" && (sections.length <= 5 || section.filtered);
 
   return (
-    <MenuList alwaysVisible={alwaysVisible}>
+    <MenuList contentsVisible={contentsVisible}>
       {sections.map(s => (
         <li key={s.slug}>
-          <SectionLink as={NavLink} to={`${slug}/${s.slug}`}>
+          <SectionLink
+            className={s.isGroupLabel && "label"}
+            as={s.isGroupLabel ? "span" : NavLink}
+            to={`${slug}/${s.slug}`}
+          >
             {s.name}
           </SectionLink>
           {renderList(s, slug)}
