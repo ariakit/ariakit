@@ -82,9 +82,9 @@ const renderList = (section, prevSlug = "") => {
       {sections.map(s => (
         <li key={s.slug}>
           <SectionLink
-            as={s.isLabel ? "span" : NavLink}
+            className={s.isGroupLabel && "label"}
+            as={s.isGroupLabel ? "span" : NavLink}
             to={`${slug}/${s.slug}`}
-            className={s.isLabel && "label"}
           >
             {s.name}
           </SectionLink>
