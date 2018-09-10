@@ -8,8 +8,8 @@ const action =
   "https://reakit.us18.list-manage.com/subscribe/post?u=cf382e48d5d8ed7178cb22060&id=941e41af27";
 
 const Wrapper = styled(ContentWrapper)`
-  background-color: ${palette("alert", -1)};
-  color: ${palette("alertText", -1)};
+  background-color: ${palette("alert", -2)};
+  color: ${palette("alertText", -2)};
   width: 100%;
   padding: 2rem;
   display: grid;
