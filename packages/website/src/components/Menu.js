@@ -64,10 +64,8 @@ const SectionLink = styled(Link)`
   }
 
   &.label ~ ${MenuList} {
-    padding-bottom: 0.5em;
-    margin-bottom: 0.5em;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+    padding-bottom: 0.75em;
+    margin-bottom: 0.75em;
   }
 `;
 
