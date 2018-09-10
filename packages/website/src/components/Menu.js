@@ -52,7 +52,11 @@ const SectionLink = styled(Link)`
   &.label {
     font-size: 1.3em;
     font-weight: bolder;
-    margin-top: 1em;
+    opacity: 0.35;
+
+    &:hover {
+      border-color: transparent;
+    }
   }
 
   &.label + ${MenuList} {
@@ -60,7 +64,10 @@ const SectionLink = styled(Link)`
   }
 
   &.label ~ ${MenuList} {
-    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
   }
 `;
 
@@ -77,7 +84,7 @@ const renderList = (section, prevSlug = "") => {
       {sections.map(s => (
         <li key={s.slug}>
           <SectionLink
-            as={NavLink}
+            as={s.isLabel ? "span" : NavLink}
             to={`${slug}/${s.slug}`}
             className={s.isLabel && "label"}
           >
