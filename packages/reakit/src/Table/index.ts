@@ -9,4 +9,5 @@ const T = Table as typeof Table & TableComponents;
 
 T.Wrapper = TableWrapper;
 
-export default Table;
+export * from "./Table";
+export default T;
