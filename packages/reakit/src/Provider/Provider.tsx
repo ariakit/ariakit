@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function */
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import {
@@ -6,17 +7,26 @@ import {
 } from "constate";
 import { ThemeProvider, ThemeProviderProps } from "../styled";
 
-interface ComponentProps
-  extends ConstateProps<{ [key: string]: any }>,
+export interface ProviderProps<S extends { [key: string]: any }>
+  extends ConstateProps<S>,
     ThemeProviderProps<Object> {
   children: React.ReactNode;
 }
 
-const Provider: React.SFC<ComponentProps> = ({ theme, children, ...props }) => (
-  <ConstateProvider {...props}>
-    {theme ? <ThemeProvider theme={theme}>{children}</ThemeProvider> : children}
-  </ConstateProvider>
-);
+class Provider<S> extends React.Component<ProviderProps<S>> {
+  render() {
+    const { theme, children, ...props } = this.props;
+    return (
+      <ConstateProvider {...props}>
+        {theme ? (
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        ) : (
+          children
+        )}
+      </ConstateProvider>
+    );
+  }
+}
 
 // @ts-ignore
 Provider.propTypes = {
