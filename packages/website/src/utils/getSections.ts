@@ -1,4 +1,6 @@
-const getSections = section => [
+import { Section } from "./types";
+
+const getSections = (section: Section) => [
   ...(section.sections || []),
   ...(section.components || [])
 ];

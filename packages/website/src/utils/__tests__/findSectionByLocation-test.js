@@ -8,7 +8,9 @@ test("findSectionByLocation", () => {
       slug: "foo",
       sections: [
         { slug: "baz", sections: [{ slug: "foo" }] },
-        { slug: "bar", sections: [{ slug: "baz" }] }
+        {
+          sections: [{ slug: "bar", sections: [{ slug: "baz" }] }]
+        }
       ]
     }
   ];

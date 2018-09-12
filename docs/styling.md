@@ -17,7 +17,7 @@ const Component = styled(Box)`
 
 ## Inline styles
 
-You can pass style props to ReaKit components. Those will be converted into `style={{ ... }}` and applied as inline styles. Check the `HTML` tab below to see the output.
+You can pass style props to Reakit components. Those will be converted into `style={{ ... }}` and applied as inline styles. Check the `HTML` tab below to see the output.
 
 ```jsx
 import { Box } from "reakit";
