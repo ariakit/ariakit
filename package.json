@@ -20,7 +20,7 @@
     "website": "lerna exec --scope website -- npm run start",
     "website:build": "lerna exec --scope website -- npm run build",
     "release": "lerna publish",
-    "release:beta": "npm run release --npm-tag=beta --preid=beta"
+    "release:beta": "npm run release -- --npm-tag=beta --preid=beta"
   },
   "husky": {
     "hooks": {

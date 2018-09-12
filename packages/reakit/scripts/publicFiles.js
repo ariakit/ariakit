@@ -20,4 +20,4 @@ const getFiles = dir =>
       };
     }, {});
 
-module.exports = getFiles("./src");
+module.exports = getFiles(join(__dirname, "../src"));

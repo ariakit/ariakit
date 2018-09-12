@@ -1,4 +1,4 @@
-export * from "constate";
+export { Consumer, Container } from "constate";
 
 export { default as as } from "./as";
 

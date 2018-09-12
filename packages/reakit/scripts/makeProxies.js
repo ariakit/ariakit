@@ -16,8 +16,8 @@ const createProxyPackage = (module, file) => `{
 }
 `;
 
-const createDirPackage = () => `{
-  "name": "${name}",
+const createDirPackage = dir => `{
+  "name": "${name}/${dir}",
   "private": true,
   "types": "../ts"
 }
@@ -31,5 +31,5 @@ Object.entries(publicFiles)
   });
 
 ["lib", "es"].forEach(dir => {
-  writeFileSync(`${dir}/package.json`, createDirPackage());
+  writeFileSync(`${dir}/package.json`, createDirPackage(dir));
 });
