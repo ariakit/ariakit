@@ -100,9 +100,9 @@ const renderList = (
 
 const Menu = ({ section, showFilter, ...props }) => (
   <Wrapper {...props}>
-    {showFilter ? (
-      <StyleguidistContainer>
-        {({ sections }) => (
+    <StyleguidistContainer>
+      {({ sections }) =>
+        showFilter ? (
           <MenuContainer initialState={section} key={section.name}>
             {({ filter, filtered }) => (
               <React.Fragment>
@@ -115,11 +115,11 @@ const Menu = ({ section, showFilter, ...props }) => (
               </React.Fragment>
             )}
           </MenuContainer>
-        )}
-      </StyleguidistContainer>
-    ) : (
-      renderList(section.sections)
-    )}
+        ) : (
+          renderList(sections, section.sections)
+        )
+      }
+    </StyleguidistContainer>
   </Wrapper>
 );
 
