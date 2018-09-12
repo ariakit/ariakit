@@ -1,4 +1,4 @@
-ReaKit components have very few styles. Most of them, actually, don't apply any style. This makes it easier for building UIs from scratch.
+Reakit components have very few styles. Most of them, actually, don't apply any style. This makes it easier for building UIs from scratch.
 
 But if you don't want to style everything by yourself, you can also install a theme package, like `reakit-theme-default`, and pass it to [Provider](../packages/reakit/src/Provider/Provider.md):
 
@@ -15,7 +15,7 @@ That `theme` object is passed to `styled-components`' [ThemeProvider](https://ww
 
 ## Creating a theme
 
-You can create a theme object with a `palette` and customize any ReaKit component:
+You can create a theme object with a `palette` and customize any Reakit component:
 
 ```js static
 const theme = {

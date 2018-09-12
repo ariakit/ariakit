@@ -2,6 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { styled, Grid, List, Link, Input } from "reakit";
 import { palette, ifProp } from "styled-tools";
+import getSectionUrl from "../utils/getSectionUrl";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import MenuContainer from "../containers/MenuContainer";
 import track from "../utils/track";
 
@@ -49,10 +51,15 @@ const SectionLink = styled(Link)`
     display: none;
   }
 
-  &.label {
-    font-size: 1.3em;
-    font-weight: bolder;
-    opacity: 0.35;
+  &:not(label) + ${MenuList} & {
+    padding-left: 40px;
+  }
+
+  label& {
+    font-size: 1.1em;
+    text-transform: uppercase;
+    font-weight: 400;
+    opacity: 0.4;
 
     &:hover,
     &.active {
@@ -60,36 +67,31 @@ const SectionLink = styled(Link)`
     }
   }
 
-  &.label + ${MenuList} {
+  label& + ${MenuList} {
     display: block;
-  }
-
-  &.label ~ ${MenuList} {
     padding-bottom: 0.75em;
     margin-bottom: 0.75em;
   }
 `;
 
-const renderList = (section, prevSlug = "") => {
-  const sections = (section.filtered || section.sections).filter(Boolean);
-  if (!sections.length) return null;
-  const slug = `${prevSlug}/${section.slug}`;
-
-  const contentsVisible =
-    prevSlug === "" && (sections.length <= 5 || section.filtered);
+const renderList = (
+  rootSections,
+  sections = rootSections,
+  contentsVisible = sections.length <= 5
+) => {
+  if (!sections || !sections.length) return null;
 
   return (
     <MenuList contentsVisible={contentsVisible}>
       {sections.map(s => (
-        <li key={s.slug}>
+        <li key={s.name}>
           <SectionLink
-            className={s.isGroupLabel && "label"}
-            as={s.isGroupLabel ? "span" : NavLink}
-            to={`${slug}/${s.slug}`}
+            as={s.slug ? NavLink : "label"}
+            to={getSectionUrl(rootSections, s)}
           >
             {s.name}
           </SectionLink>
-          {renderList(s, slug)}
+          {renderList(rootSections, s.sections)}
         </li>
       ))}
     </MenuList>
@@ -98,22 +100,26 @@ const renderList = (section, prevSlug = "") => {
 
 const Menu = ({ section, showFilter, ...props }) => (
   <Wrapper {...props}>
-    {showFilter ? (
-      <MenuContainer initialState={section} key={section.name}>
-        {({ filter, ...rest }) => (
-          <React.Fragment>
-            <Input
-              placeholder="Filter..."
-              onChange={e => filter(e.target.value)}
-              onBlur={track("reakit.filterBlur")}
-            />
-            {renderList(rest)}
-          </React.Fragment>
-        )}
-      </MenuContainer>
-    ) : (
-      renderList(section)
-    )}
+    <StyleguidistContainer>
+      {({ sections }) =>
+        showFilter ? (
+          <MenuContainer initialState={section} key={section.name}>
+            {({ filter, filtered }) => (
+              <React.Fragment>
+                <Input
+                  placeholder="Filter..."
+                  onChange={e => filter(e.target.value)}
+                  onBlur={track("reakit.filterBlur")}
+                />
+                {renderList(sections, filtered || section.sections, !!filtered)}
+              </React.Fragment>
+            )}
+          </MenuContainer>
+        ) : (
+          renderList(sections, section.sections)
+        )
+      }
+    </StyleguidistContainer>
   </Wrapper>
 );
 

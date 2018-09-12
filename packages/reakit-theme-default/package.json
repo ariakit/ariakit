@@ -1,7 +1,7 @@
 {
   "name": "reakit-theme-default",
   "version": "0.1.0",
-  "description": "ReaKit default theme",
+  "description": "Reakit default theme",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default",
   "main": "lib/index.js",

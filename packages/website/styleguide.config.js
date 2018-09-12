@@ -4,6 +4,18 @@ const webpack = require("webpack");
 const importToRequire = require("./src/utils/importToRequire");
 const template = require("./src/template");
 
+const primitives = [
+  "Box",
+  "Block",
+  "Flex",
+  "Grid",
+  "Inline",
+  "InlineBlock",
+  "InlineFlex"
+];
+const containers = ["Hidden", "Overlay", "Popover", "Sidebar", "Step", "Tabs"];
+const allGrouped = [...primitives, ...containers];
+
 const webpackCommonConfig = {
   module: {
     rules: [
@@ -133,7 +145,17 @@ module.exports = {
     },
     {
       name: "Components",
-      components: "../reakit/src/[A-Z]*/*.{js,ts,jsx,tsx}"
+      components: `../reakit/src/!(${allGrouped.join("|")})/*.{js,ts,jsx,tsx}`,
+      sections: [
+        {
+          name: "Primitives",
+          components: `../reakit/src/{${primitives.join(",")}}/*.{js,ts,tsx}`
+        },
+        {
+          name: "Containers",
+          components: `../reakit/src/{${containers.join(",")}}/*.{js,ts,tsx}`
+        }
+      ]
     }
   ]
 };
