@@ -24,10 +24,6 @@ const NavLink = styled(RouterLink)`
   line-height: 1;
   text-decoration: none;
   color: ${palette("backgroundText", -1)};
-  &:last-child {
-    margin-left: auto;
-    text-align: right;
-  }
 `;
 
 const NavSectionName = styled(Block)`
@@ -56,7 +52,13 @@ const SectionNavigation = ({ section, ...props }) => (
             </NavLink>
           )}
           {next && (
-            <NavLink to={getSectionUrl(sections, next)}>
+            <NavLink
+              style={{
+                marginLeft: "auto",
+                textAlign: "right"
+              }}
+              to={getSectionUrl(sections, next)}
+            >
               Next article
               <NavSectionName>{next.name}</NavSectionName>
             </NavLink>
