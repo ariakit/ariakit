@@ -2,8 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { styled, Grid, List, Link, Input } from "reakit";
 import { palette, ifProp } from "styled-tools";
-import getSectionUrl from "website/src/utils/getSectionUrl";
-import StyleguidistContainer from "website/src/containers/StyleguidistContainer";
+import getSectionUrl from "../utils/getSectionUrl";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import MenuContainer from "../containers/MenuContainer";
 import track from "../utils/track";
 
