@@ -3,7 +3,19 @@ import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
 
-const Overlay = styled(Hidden)`
+export interface OverlayProps {
+  role: string;
+  "aria-modal": boolean;
+  hideOnEsc: boolean;
+  translateX: string;
+  translateY: string;
+  defaultSlide: string;
+  opaque: boolean;
+  palette: string;
+  tone: number;
+}
+
+const Overlay = styled(Hidden)<OverlayProps>`
   position: fixed;
   z-index: 19900410;
   left: 50%;
