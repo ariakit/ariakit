@@ -2,7 +2,7 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as, { SingleAsProp } from "../as";
+import as from "../as";
 import Box, { BoxProps } from "../Box";
 
 export interface CodeProps extends BoxProps {
@@ -42,4 +42,4 @@ Code.defaultProps = {
   tone: -2
 };
 
-export default as(Component as SingleAsProp)(Code);
+export default as(Component)(Code);
