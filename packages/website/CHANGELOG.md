@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.0"></a>
+# [0.15.0](https://github.com/reakit/reakit/compare/website@0.15.0-beta.0...website@0.15.0) (2018-09-13)
+
+
+### Bug Fixes
+
+* **website:** Container typings ([8c2efb6](https://github.com/reakit/reakit/commit/8c2efb6))
+
+
+
+
+
 <a name="0.15.0-beta.0"></a>
 # [0.15.0-beta.0](https://github.com/reakit/reakit/compare/website@0.14.6...website@0.15.0-beta.0) (2018-09-13)
 
