@@ -1,11 +1,25 @@
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import { bool, value } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
 
-const Grid = styled(Box)`
+export interface GridProps {
+  Item: React.ReactType;
+  row: boolean;
+  column: boolean;
+  dense: boolean;
+  gap: string | number;
+  template: string | number;
+  areas: string | number;
+  columns: string | number;
+  rows: string | number;
+  autoColumns: string | number;
+  autoRows: string | number;
+}
+
+const Grid = styled(Box)<GridProps>`
   display: grid;
   &&& {
     ${bool("grid-auto-flow", ["row", "column", "dense"])}
@@ -22,6 +36,7 @@ const Grid = styled(Box)`
 
 const valueType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
 
+// @ts-ignore
 Grid.propTypes = {
   row: PropTypes.bool,
   column: PropTypes.bool,
