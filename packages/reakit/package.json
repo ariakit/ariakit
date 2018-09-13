@@ -44,13 +44,13 @@
   },
   "devDependencies": {
     "eslint": "^5.4.0",
-    "jest-cli": "^23.5.0",
+    "jest-cli": "^23.6.0",
     "opn-cli": "^3.1.0",
-    "react-styleguidist": "^7.3.6",
+    "react-styleguidist": "^7.3.7",
     "rimraf": "^2.6.1",
     "rollup": "^0.65.0",
     "typescript": "^3.0.1",
-    "webpack": "^4.17.1"
+    "webpack": "^4.18.0"
   },
   "peerDependencies": {
     "react": "^16.3.0",
