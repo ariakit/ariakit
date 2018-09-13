@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "private": true,
   "scripts": {
     "start": "styleguidist server",
@@ -25,7 +25,7 @@
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
     "reakit": "^0.15.0",
-    "reakit-theme-default": "^0.1.0",
+    "reakit-theme-default": "^0.1.1",
     "styled-tools": "^1.5.1",
     "whatwg-fetch": "^2.0.4"
   },
