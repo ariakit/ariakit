@@ -36,6 +36,8 @@
   "keywords": [
     "reakit",
     "react",
+    "theme",
+    "default",
     "ui",
     "toolkit"
   ],
@@ -52,6 +54,6 @@
     "typescript": "^3.0.1"
   },
   "peerDependencies": {
-    "reakit": "^0.14.6"
+    "reakit": "^0.15.0"
   }
 }

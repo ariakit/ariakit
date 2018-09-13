@@ -1,6 +1,6 @@
 # reakit-theme-default
 
-<a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit-theme-default.svg?style=flat-square" /></a>
+<a href="https://npmjs.org/package/reakit-theme-default"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit-theme-default.svg?style=flat-square" /></a>
 
 ## Installation
 
