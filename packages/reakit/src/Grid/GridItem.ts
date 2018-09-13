@@ -6,16 +6,16 @@ import as from "../as";
 import Box from "../Box";
 
 export interface GridItemProps {
-  area: string | number;
-  column: string | number;
-  row: string | number;
-  columnStart: string | number;
-  columnEnd: string | number;
-  rowStart: string | number;
-  rowEnd: string | number;
+  area?: string | number;
+  column?: string | number;
+  row?: string | number;
+  columnStart?: string | number;
+  columnEnd?: string | number;
+  rowStart?: string | number;
+  rowEnd?: string | number;
 }
 
-const GridItem = styled(Box)`
+const GridItem = styled(Box)<GridItemProps>`
   &&& {
     ${value("grid-area", "area")};
     ${value("grid-column", "column")};
@@ -30,8 +30,8 @@ const GridItem = styled(Box)`
 
 const valueType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
 
+// @ts-ignore
 GridItem.propTypes = {
-  // @ts-ignore
   area: valueType,
   column: valueType,
   row: valueType,
