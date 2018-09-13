@@ -1,7 +1,12 @@
 import Grid from "./Grid";
 import GridItem from "./GridItem";
 
-// @ts-ignore
-Grid.Item = GridItem;
+export interface GridComponents {
+  Item: typeof GridItem;
+}
 
-export default Grid;
+const G = Grid as typeof Grid & GridComponents;
+
+G.Item = GridItem;
+
+export * from "./Grid";
