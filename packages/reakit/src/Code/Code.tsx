@@ -2,13 +2,15 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as, { AllProps } from "../as";
-import Box from "../Box";
+import as, { SingleAsProp } from "../as";
+import Box, { BoxProps } from "../Box";
 
-export type CodeProps = AllProps & {
+export interface CodeProps extends BoxProps {
   block?: boolean;
   codeClassName?: string;
-};
+  className?: string;
+  children: React.ReactNode;
+}
 
 const Component = (props: CodeProps) => {
   if (props.block) {
@@ -40,4 +42,4 @@ Code.defaultProps = {
   tone: -2
 };
 
-export default as(Component)(Code);
+export default as(Component as SingleAsProp)(Code);
