@@ -4,13 +4,18 @@ import OverlayToggle from "./OverlayToggle";
 import OverlayShow from "./OverlayShow";
 import OverlayHide from "./OverlayHide";
 
-// @ts-ignore
-Overlay.Container = OverlayContainer;
-// @ts-ignore
-Overlay.Toggle = OverlayToggle;
-// @ts-ignore
-Overlay.Show = OverlayShow;
-// @ts-ignore
-Overlay.Hide = OverlayHide;
+export interface OverlayComponents {
+  Container: typeof OverlayContainer;
+  Toggle: typeof OverlayToggle;
+  Show: typeof OverlayShow;
+  Hide: typeof OverlayHide;
+}
 
-export default Overlay;
+const O = Overlay as typeof Overlay & OverlayComponents;
+
+O.Container = OverlayContainer;
+O.Toggle = OverlayToggle;
+O.Show = OverlayShow;
+O.Hide = OverlayHide;
+
+export default O;
