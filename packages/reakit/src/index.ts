@@ -101,9 +101,7 @@ export * from "./Popover";
 export { default as Portal } from "./Portal";
 export * from "./Portal";
 
-// @ts-ignore
 export { default as Provider } from "./Provider";
-// @ts-ignore
 export * from "./Provider";
 
 // @ts-ignore

@@ -13,19 +13,11 @@ exports[`creates component 2`] = `
 <Base.as(span)>
   <Base
     as={[Function]}
-    nextAs={
-      Array [
-        "span",
-      ]
-    }
+    nextAs="span"
   >
     <As
       id="Base"
-      nextAs={
-        Array [
-          "span",
-        ]
-      }
+      nextAs="span"
     >
       <span
         id="Base"
@@ -57,38 +49,22 @@ exports[`creates component by extending another one with styled 2`] = `
 <as-test__Derivative.as(div)>
   <as-test__Derivative
     as={[Function]}
-    nextAs={
-      Array [
-        "div",
-      ]
-    }
+    nextAs="div"
   >
     <Base.as(span)
       as={[Function]}
       className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
-      nextAs={
-        Array [
-          "div",
-        ]
-      }
+      nextAs="div"
     >
       <Base
         as={[Function]}
         className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
-        nextAs={
-          Array [
-            "div",
-          ]
-        }
+        nextAs="div"
       >
         <As
           className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
           id="Base"
-          nextAs={
-            Array [
-              "div",
-            ]
-          }
+          nextAs="div"
         >
           <div
             className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
@@ -125,19 +101,11 @@ exports[`creates component passing property as 2`] = `
 >
   <Base
     as={[Function]}
-    nextAs={
-      Array [
-        "div",
-      ]
-    }
+    nextAs="div"
   >
     <As
       id="Base"
-      nextAs={
-        Array [
-          "div",
-        ]
-      }
+      nextAs="div"
     >
       <div
         id="Base"
@@ -170,19 +138,11 @@ exports[`creates component passing property as with another component 2`] = `
 >
   <Base
     as={[Function]}
-    nextAs={
-      Array [
-        [Function],
-      ]
-    }
+    nextAs={[Function]}
   >
     <As
       id="Base"
-      nextAs={
-        Array [
-          [Function],
-        ]
-      }
+      nextAs={[Function]}
     >
       <Derivative
         id="Base"
@@ -244,19 +204,11 @@ exports[`creates component passing property as with array of components 2`] = `
       <Derivative
         as={[Function]}
         id="Base"
-        nextAs={
-          Array [
-            "p",
-          ]
-        }
+        nextAs="p"
       >
         <As
           id="Derivative"
-          nextAs={
-            Array [
-              "p",
-            ]
-          }
+          nextAs="p"
         >
           <p
             id="Derivative"
@@ -289,27 +241,15 @@ exports[`creates component using as static method 2`] = `
 <Base.as(span).as(p)>
   <Base.as(span)
     as={[Function]}
-    nextAs={
-      Array [
-        "p",
-      ]
-    }
+    nextAs="p"
   >
     <Base
       as={[Function]}
-      nextAs={
-        Array [
-          "p",
-        ]
-      }
+      nextAs="p"
     >
       <As
         id="Base"
-        nextAs={
-          Array [
-            "p",
-          ]
-        }
+        nextAs="p"
       >
         <p
           id="Base"
@@ -371,19 +311,11 @@ exports[`creates component using as static method with array of components 2`] =
         <Derivative
           as={[Function]}
           id="Base"
-          nextAs={
-            Array [
-              "p",
-            ]
-          }
+          nextAs="p"
         >
           <As
             id="Derivative"
-            nextAs={
-              Array [
-                "p",
-              ]
-            }
+            nextAs="p"
           >
             <p
               id="Derivative"
@@ -437,19 +369,11 @@ exports[`creates component with array of components 2`] = `
       <Derivative
         as={[Function]}
         id="Base"
-        nextAs={
-          Array [
-            "p",
-          ]
-        }
+        nextAs="p"
       >
         <As
           id="Derivative"
-          nextAs={
-            Array [
-              "p",
-            ]
-          }
+          nextAs="p"
         >
           <p
             id="Derivative"
@@ -481,19 +405,11 @@ exports[`does not create another component if asComponents are equal 2`] = `
 <Base.as(div)>
   <Base
     as={[Function]}
-    nextAs={
-      Array [
-        "div",
-      ]
-    }
+    nextAs="div"
   >
     <As
       id="Base"
-      nextAs={
-        Array [
-          "div",
-        ]
-      }
+      nextAs="div"
     >
       <div
         id="Base"
