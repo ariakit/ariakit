@@ -9,13 +9,13 @@ const directions = ["row", "column", "rowReverse", "columnReverse"];
 const wraps = ["nowrap", "wrap", "wrapReverse"];
 
 export interface FlexProps {
-  row: boolean;
-  column: boolean;
-  rowReverse: boolean;
-  columnReverse: boolean;
-  nowrap: boolean;
-  wrap: boolean;
-  wrapReverse: boolean;
+  row?: boolean;
+  column?: boolean;
+  rowReverse?: boolean;
+  columnReverse?: boolean;
+  nowrap?: boolean;
+  wrap?: boolean;
+  wrapReverse?: boolean;
 }
 
 const Flex = styled(Box)<FlexProps>`
