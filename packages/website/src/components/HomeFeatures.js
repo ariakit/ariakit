@@ -11,7 +11,7 @@ const Wrapper = styled(ContentWrapper)`
   align-content: baseline;
 
   @media (max-width: 768px) {
-    grid-gap: 20px;
+    grid-gap: 40px;
     grid-template-columns: 1fr;
   }
 `;

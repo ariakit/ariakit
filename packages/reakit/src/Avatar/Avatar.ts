@@ -1,15 +1,10 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const Avatar = styled(Base)`
-  border-radius: 50%;
-  width: 1.5em;
-  height: 1.5em;
-  overflow: hidden;
-  object-fit: cover;
-  ${prop("theme.Avatar")};
+const Avatar = styled(Box)`
+  ${theme("Avatar")};
 `;
 
 export default as("img")(Avatar);

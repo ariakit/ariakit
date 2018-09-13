@@ -1,4 +1,4 @@
-`Inline` is [Base](../Base/Base.md) with `display: inline`.
+`Inline` is [Box](../Box/Box.md) with `display: inline`.
 
 ```jsx
 <div>

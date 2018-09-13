@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenToggle from "../Hidden/HiddenToggle";
@@ -9,7 +9,7 @@ const toggle = props => () => props.toggle && props.toggle(props.step);
 const Component = props => <HiddenToggle {...props} toggle={toggle(props)} />;
 
 const StepToggle = styled(Component)`
-  ${prop("theme.StepToggle")};
+  ${theme("StepToggle")};
 `;
 
 StepToggle.propTypes = {

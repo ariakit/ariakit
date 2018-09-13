@@ -2,7 +2,7 @@
 It renders by default as a `<div>`.
 
 ```jsx
-<Table.Wrapper>
+<Table.Wrapper maxWidth={300}>
   <Table>
     <tr>
       <td>Nonproidentduiscupidatatveniamea.Loremesseullamcodovelitvoluptateanimeiusmodpariaturauteullamcoest.</td>

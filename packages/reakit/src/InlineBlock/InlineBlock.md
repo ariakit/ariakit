@@ -1,4 +1,4 @@
-`InlineBlock` is [Base](../Base/Base.md) with `display: inline-block`.
+`InlineBlock` is [Box](../Box/Box.md) with `display: inline-block`.
 
 ```jsx
 <div>

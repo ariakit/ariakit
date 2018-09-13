@@ -1,6 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import { styled, Grid } from "reakit";
+import { palette } from "styled-tools";
 import Menu from "../components/Menu";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import CoreLayout from "../layouts/CoreLayout";
@@ -40,7 +41,7 @@ const StyledMenu = styled(Menu)`
   max-height: calc(100% - 60px);
   padding: 16px 16px 48px;
   width: 220px;
-  background-color: #f6f6f6;
+  background-color: ${palette("background", -2)};
   z-index: 999;
   @media (max-width: 768px) {
     display: none;

@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.0"></a>
+# [0.15.0](https://github.com/reakit/reakit/compare/reakit@0.14.6...reakit@0.15.0) (2018-09-13)
+
+
+### Bug Fixes
+
+* Fix PopoverArrow gutter on mobile ([eb4d22d](https://github.com/reakit/reakit/commit/eb4d22d))
+
+
+### Code Refactoring
+
+* Rename Base to Box ([#225](https://github.com/reakit/reakit/issues/225)) ([3be19d0](https://github.com/reakit/reakit/commit/3be19d0)), closes [#186](https://github.com/reakit/reakit/issues/186)
+
+
+### Features
+
+* Add `reakit-theme-default` package ([#188](https://github.com/reakit/reakit/issues/188)) ([f9f16ad](https://github.com/reakit/reakit/commit/f9f16ad)), closes [#154](https://github.com/reakit/reakit/issues/154)
+* **typescript:** Add typescript support to Hidden ([#220](https://github.com/reakit/reakit/issues/220)) ([143eeb1](https://github.com/reakit/reakit/commit/143eeb1))
+* **typescript:** Convert Provider to typescript ([#230](https://github.com/reakit/reakit/issues/230)) ([4ab6694](https://github.com/reakit/reakit/commit/4ab6694))
+* **typescript:** Convert Table components into typescript ([#231](https://github.com/reakit/reakit/issues/231)) ([7ece839](https://github.com/reakit/reakit/commit/7ece839))
+
+
+### BREAKING CHANGES
+
+* `Hidden.Container` doesn't support overwriting its `actions` anymore.
+* `Base` has been renamed to `Box`.
+
+  Before:
+  ```jsx
+  import { Base } from "reakit";
+  <Base />
+  ```
+
+  After:
+  ```jsx
+  import { Box } from "reakit";
+  <Box />
+  ```
+* `Arrow`, `Box`, `Shadow` and `Fit` were removed.
+
+  If you need their styles, look at the [source code before this commit](https://github.com/reakit/reakit/tree/100a833940b65284958988b888c0172ea5468d35/packages/reakit/src) and copy them.
+* Almost all styles have been removed from components.
+
+  If you need some basic styles, you should install `reakit-theme-default`. But, since they were rewritten, they may be slightly different from the old styles.
+
+  To learn more, see [Theming](https://reakit.io/guide/theming).
+
+
+
+
+
 <a name="0.14.6"></a>
 ## [0.14.6](https://github.com/reakit/reakit/compare/reakit@0.14.5...reakit@0.14.6) (2018-09-09)
 

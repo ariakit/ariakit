@@ -3,11 +3,12 @@ import { styled, Popover } from "reakit";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import StarIcon from "react-icons/lib/go/star";
 import ButtonRounded from "../elements/ButtonRounded";
-import Icon from "./Icon";
 import ButtonGray from "../elements/ButtonGray";
+import Icon from "./Icon";
 import GitHubStarsContainer from "../containers/GitHubStarsContainer";
 import ViewportContainer from "../containers/ViewportContainer";
 import track from "../utils/track";
+import IconOnLeft from "../elements/IconOnLeft";
 
 const getPopoverPlacement = width => (width > 768 ? "right" : "bottom");
 
@@ -26,13 +27,13 @@ const StarsPopover = styled(Popover)`
   place-items: center;
   cursor: inherit;
   ${Popover.Arrow} {
-    font-size: 14px;
+    font-size: 26px;
   }
 `;
 
 const HeroGitHubButton = props => (
   <Button
-    as={[ButtonRounded, "a"]}
+    as={[ButtonRounded, IconOnLeft, "a"]}
     href="https://github.com/reakit/reakit"
     target="_blank"
     onClick={track("reakit.heroGithubClick")}

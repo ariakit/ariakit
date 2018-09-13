@@ -1,9 +1,10 @@
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const Blockquote = styled(Base)`
-  padding: 0.5em 1em;
+const Blockquote = styled(Box)`
+  ${theme("Blockquote")};
 `;
 
 export default as("blockquote")(Blockquote);

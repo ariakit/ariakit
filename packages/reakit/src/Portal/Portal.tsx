@@ -1,17 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
-import { BaseProps } from "../Base/Base";
+import Box, { BoxProps } from "../Box";
 
-type ComponentState = {
+interface PortalState {
   wrapper?: React.ReactNode;
-};
+}
 
-class Component extends React.Component<BaseProps, ComponentState> {
+class Component extends React.Component<BoxProps, PortalState> {
   state = { wrapper: null };
 
   componentDidMount() {
@@ -30,16 +29,16 @@ class Component extends React.Component<BaseProps, ComponentState> {
   render() {
     const { wrapper } = this.state;
     if (wrapper) {
-      return ReactDOM.createPortal(<Base {...this.props} />, wrapper);
+      return ReactDOM.createPortal(<Box {...this.props} />, wrapper);
     }
     return null;
   }
 }
 
-hoistNonReactStatics(Component, Base);
+hoistNonReactStatics(Component, Box);
 
 const Portal = styled(Component)`
-  ${prop("theme.Portal")};
+  ${theme("Portal")};
 `;
 
 export default as("div")(Portal);

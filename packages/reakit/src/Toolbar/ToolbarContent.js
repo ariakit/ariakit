@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { prop, theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const ToolbarContent = styled(Base)`
+const ToolbarContent = styled(Box)`
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: min-content;
@@ -20,7 +20,7 @@ const ToolbarContent = styled(Base)`
     align-content: ${prop("align")};
   }
 
-  ${prop("theme.ToolbarContent")};
+  ${theme("ToolbarContent")};
 `;
 
 ToolbarContent.propTypes = {

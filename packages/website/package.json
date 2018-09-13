@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "0.14.6",
+  "version": "0.15.1",
   "private": true,
   "scripts": {
     "start": "styleguidist server",
@@ -13,10 +13,10 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "codemirror": "^5.40.0",
-    "lodash": "^4.17.5",
+    "diffable-html": "^3.0.0",
+    "lodash": "^4.17.11",
     "markdown-to-jsx": "^6.7.2",
     "parse-prop-types": "^0.3.0",
-    "pretty": "^2.0.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-codemirror2": "^5.1.0",
@@ -24,22 +24,24 @@
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
-    "reakit": "^0.14.6",
-    "styled-tools": "^1.4.1",
-    "whatwg-fetch": "^2.0.4"
+    "reakit": "^0.15.0",
+    "reakit-theme-default": "^0.1.1",
+    "styled-tools": "^1.5.1",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.60",
+    "@types/lodash": "^4.14.116",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
     "eslint": "^5.4.0",
     "file-loader": "^2.0.0",
-    "jest-cli": "^23.5.0",
+    "jest-cli": "^23.6.0",
     "opn-cli": "^3.1.0",
     "raw-loader": "^0.5.1",
-    "react-styleguidist": "^7.3.6",
+    "react-styleguidist": "^7.3.7",
     "style-loader": "^0.23.0",
     "url-loader": "^1.1.1",
-    "webpack": "^4.17.1"
+    "webpack": "^4.18.0"
   }
 }

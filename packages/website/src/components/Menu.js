@@ -1,7 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { styled, Grid, List, Link, Input } from "reakit";
-import { prop, ifProp } from "styled-tools";
+import { palette, ifProp } from "styled-tools";
+import getSectionUrl from "../utils/getSectionUrl";
+import StyleguidistContainer from "../containers/StyleguidistContainer";
 import MenuContainer from "../containers/MenuContainer";
 import track from "../utils/track";
 
@@ -12,7 +14,7 @@ const Wrapper = styled(Grid)`
 
 const MenuList = styled(List)`
   ${List} {
-    ${ifProp("alwaysVisible", "display: block !important")};
+    ${ifProp("contentsVisible", "display: block !important")};
   }
 
   li {
@@ -26,19 +28,19 @@ const SectionLink = styled(Link)`
   font-weight: 400;
   margin: 0;
   font-size: 18px;
-  color: ${prop("theme.black")};
+  color: ${palette("backgroundText", -1)};
   border-left: 5px solid transparent;
   padding-left: 20px;
   margin-left: -16px;
 
   &:hover {
-    border-color: ${prop("theme.pinkLight")};
+    border-color: ${palette("primary", 2)};
     text-decoration: none;
   }
 
   &.active {
     font-weight: 600;
-    border-color: ${prop("theme.pinkDark")};
+    border-color: ${palette("primary", 1)};
 
     & + ${MenuList} {
       display: block;
@@ -49,27 +51,47 @@ const SectionLink = styled(Link)`
     display: none;
   }
 
-  & + ${MenuList} & {
+  &:not(label) + ${MenuList} & {
     padding-left: 40px;
+  }
+
+  label& {
+    font-size: 1.1em;
+    text-transform: uppercase;
+    font-weight: 400;
+    opacity: 0.4;
+
+    &:hover,
+    &.active {
+      border-color: transparent;
+    }
+  }
+
+  label& + ${MenuList} {
+    display: block;
+    padding-bottom: 0.75em;
+    margin-bottom: 0.75em;
   }
 `;
 
-const renderList = (section, prevSlug = "") => {
-  const sections = (section.filtered || section.sections).filter(Boolean);
-  if (!sections.length) return null;
-  const slug = `${prevSlug}/${section.slug}`;
-
-  const alwaysVisible =
-    prevSlug === "" && (sections.length <= 5 || section.filtered);
+const renderList = (
+  rootSections,
+  sections = rootSections,
+  contentsVisible = sections.length <= 5
+) => {
+  if (!sections || !sections.length) return null;
 
   return (
-    <MenuList alwaysVisible={alwaysVisible}>
+    <MenuList contentsVisible={contentsVisible}>
       {sections.map(s => (
-        <li key={s.slug}>
-          <SectionLink as={NavLink} to={`${slug}/${s.slug}`}>
+        <li key={s.name}>
+          <SectionLink
+            as={s.slug ? NavLink : "label"}
+            to={getSectionUrl(rootSections, s)}
+          >
             {s.name}
           </SectionLink>
-          {renderList(s, slug)}
+          {renderList(rootSections, s.sections)}
         </li>
       ))}
     </MenuList>
@@ -78,22 +100,26 @@ const renderList = (section, prevSlug = "") => {
 
 const Menu = ({ section, showFilter, ...props }) => (
   <Wrapper {...props}>
-    {showFilter ? (
-      <MenuContainer initialState={section} key={section.name}>
-        {({ filter, ...rest }) => (
-          <React.Fragment>
-            <Input
-              placeholder="Filter..."
-              onChange={e => filter(e.target.value)}
-              onBlur={track("reakit.filterBlur")}
-            />
-            {renderList(rest)}
-          </React.Fragment>
-        )}
-      </MenuContainer>
-    ) : (
-      renderList(section)
-    )}
+    <StyleguidistContainer>
+      {({ sections }) =>
+        showFilter ? (
+          <MenuContainer initialState={section} key={section.name}>
+            {({ filter, filtered }) => (
+              <React.Fragment>
+                <Input
+                  placeholder="Filter..."
+                  onChange={e => filter(e.target.value)}
+                  onBlur={track("reakit.filterBlur")}
+                />
+                {renderList(sections, filtered || section.sections, !!filtered)}
+              </React.Fragment>
+            )}
+          </MenuContainer>
+        ) : (
+          renderList(sections, section.sections)
+        )
+      }
+    </StyleguidistContainer>
   </Wrapper>
 );
 

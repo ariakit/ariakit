@@ -1,16 +1,10 @@
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
-const Tabs = styled(Base)`
-  display: flex;
-  align-items: center;
-  list-style: none;
-  @media screen and (max-width: 640px) {
-    overflow-x: auto;
-  }
-  ${prop("theme.Tabs")};
+const Tabs = styled(Box)`
+  ${theme("Tabs")};
 `;
 
 Tabs.defaultProps = {

@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 
 const Component = ({ onClick, ...props }) => (
-  <Base
+  <Box
     onClick={callAll(props.next, onClick)}
     disabled={!props.loop && props.hasNext && !props.hasNext()}
     {...props}
@@ -15,7 +15,7 @@ const Component = ({ onClick, ...props }) => (
 );
 
 const StepNext = styled(Component)`
-  ${prop("theme.StepNext")};
+  ${theme("StepNext")};
 `;
 
 StepNext.propTypes = {

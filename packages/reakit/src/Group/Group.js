@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import { ifProp, prop, withProp } from "styled-tools";
+import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
 import as from "../as";
-import Base from "../Base";
+import Box from "../Box";
 import GroupItem from "./GroupItem";
 
 const verticalAt = (pass, fail) =>
@@ -19,15 +19,11 @@ const verticalAt = (pass, fail) =>
     fail
   );
 
-const Group = styled(Base)`
+const Group = styled(Box)`
   display: flex;
   flex-direction: ${ifProp("vertical", "column", "row")};
   ${verticalAt("flex-direction: column")};
-  > *,
-  > * ${GroupItem} {
-    min-height: 2.5em;
-    height: auto;
-  }
+
   > *:not(:first-child):not(:last-child),
   > *:not(:first-child):not(:last-child) ${GroupItem} {
     border-radius: 0;
@@ -40,6 +36,7 @@ const Group = styled(Base)`
       `
     )};
   }
+
   > *:first-child,
   > *:first-child ${GroupItem} {
     border-bottom-right-radius: 0;
@@ -50,6 +47,7 @@ const Group = styled(Base)`
       css`border-${ifProp("vertical", "bottom-left", "top-right")}-radius: 0;`
     )};
   }
+
   > *:last-child,
   > *:last-child ${GroupItem} {
     border-top-left-radius: 0;
@@ -65,7 +63,7 @@ const Group = styled(Base)`
     )};
   }
 
-  ${prop("theme.Group")};
+  ${theme("Group")};
 `;
 
 Group.propTypes = {

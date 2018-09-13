@@ -4,6 +4,18 @@ const webpack = require("webpack");
 const importToRequire = require("./src/utils/importToRequire");
 const template = require("./src/template");
 
+const primitives = [
+  "Box",
+  "Block",
+  "Flex",
+  "Grid",
+  "Inline",
+  "InlineBlock",
+  "InlineFlex"
+];
+const containers = ["Hidden", "Overlay", "Popover", "Sidebar", "Step", "Tabs"];
+const allGrouped = [...primitives, ...containers];
+
 const webpackCommonConfig = {
   module: {
     rules: [
@@ -57,7 +69,7 @@ module.exports = {
       : webpackCommonConfig,
   updateDocs(docs, filePath) {
     const contents = fs.readFileSync(filePath, "utf8");
-    const regex = /import ([A-Z][a-z0-9]*) from "\.\.\/[A-Z][^."]*"/gm;
+    const regex = /import ([A-Z][A-Za-z0-9]*)(, \{[^}]+\})? from "\.\.\/[A-Z][^."]*"/gm;
     const uses = (contents.match(regex) || []).map(x => x.replace(regex, "$1"));
     return {
       ...docs,
@@ -79,6 +91,9 @@ module.exports = {
   styleguideComponents: {
     StyleGuide: path.join(__dirname, "src")
   },
+  context: {
+    defaultTheme: "reakit-theme-default"
+  },
   compilerConfig: {
     transforms: {
       dangerousTaggedTemplateString: true
@@ -95,33 +110,32 @@ module.exports = {
           content: "../../docs/get-started.md"
         },
         {
-          name: "Principles",
-          sections: [
-            {
-              name: "Composability",
-              content: "../../docs/composability.md"
-            },
-            {
-              name: "Accessibility",
-              content: "../../docs/accessibility.md"
-            },
-            {
-              name: "Reliability",
-              content: "../../docs/reliability.md"
-            }
-          ]
+          name: "Composability",
+          content: "../../docs/composability.md"
+        },
+        {
+          name: "Accessibility",
+          content: "../../docs/accessibility.md"
+        },
+        {
+          name: "Reliability",
+          content: "../../docs/reliability.md"
         },
         {
           name: "Bundle size",
           content: "../../docs/bundle-size.md"
         },
         {
-          name: "as",
+          name: "As",
           content: "../../docs/as.md"
         },
         {
           name: "Styling",
           content: "../../docs/styling.md"
+        },
+        {
+          name: "Theming",
+          content: "../../docs/theming.md"
         },
         {
           name: "State Containers",
@@ -131,7 +145,17 @@ module.exports = {
     },
     {
       name: "Components",
-      components: "../reakit/src/[A-Z]*/*.{js,ts,jsx,tsx}"
+      components: `../reakit/src/!(${allGrouped.join("|")})/*.{js,ts,jsx,tsx}`,
+      sections: [
+        {
+          name: "Primitives",
+          components: `../reakit/src/{${primitives.join(",")}}/*.{js,ts,tsx}`
+        },
+        {
+          name: "Containers",
+          components: `../reakit/src/{${containers.join(",")}}/*.{js,ts,tsx}`
+        }
+      ]
     }
   ]
 };

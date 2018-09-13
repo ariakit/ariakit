@@ -25,8 +25,8 @@ export type SingleAsProp =
 export type AsProp = SingleAsProp | SingleAsProp[];
 
 export interface ReakitProps<T = any> {
-  as?: AsProp | null;
-  nextAs?: SingleAsProp | null;
+  as?: AsProp;
+  nextAs?: AsProp;
   elementRef?: React.Ref<T>;
 }
 
@@ -46,7 +46,8 @@ function render({ as: t, ...props }: AllProps): JSX.Element {
 
   if (Array.isArray(T)) {
     const [First, ...others] = T.filter(x => x !== As);
-    return <First {...props} as={As} nextAs={others} />;
+    const other = others.length === 1 ? others[0] : others;
+    return <First {...props} as={As} nextAs={other} />;
   }
 
   const style = pickCSSProps(props);

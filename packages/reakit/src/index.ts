@@ -1,79 +1,135 @@
-export { Container, Consumer } from "constate";
+export { Consumer, Container } from "constate";
 
 export { default as as } from "./as";
 
 export { default as styled } from "./styled";
 export * from "./styled";
 
-export { default as Arrow } from "./Arrow";
 export { default as Avatar } from "./Avatar";
-// @ts-ignore
+export * from "./Avatar";
+
 export { default as Backdrop } from "./Backdrop";
-export { default as Base } from "./Base";
+export * from "./Backdrop";
+
 export { default as Block } from "./Block";
+export * from "./Block";
+
 export { default as Blockquote } from "./Blockquote";
+export * from "./Blockquote";
+
 export { default as Box } from "./Box";
-// @ts-ignore
+export * from "./Box";
+
 export { default as Button } from "./Button";
-// @ts-ignore
+export * from "./Button";
+
 export { default as Card } from "./Card";
+export * from "./Card";
+
 // @ts-ignore
 export { default as Code } from "./Code";
 // @ts-ignore
+export * from "./Code";
+
 export { default as Divider } from "./Divider";
-// @ts-ignore
+export * from "./Divider";
+
 export { default as Field } from "./Field";
-// @ts-ignore
-export { default as Fit } from "./Fit";
+export * from "./Field";
+
 // @ts-ignore
 export { default as Flex } from "./Flex";
 // @ts-ignore
+export * from "./Flex";
+
+// @ts-ignore
 export { default as Grid } from "./Grid";
+// @ts-ignore
+export * from "./Grid";
+
 // @ts-ignore
 export { default as Group } from "./Group";
 // @ts-ignore
+export * from "./Group";
+
 export { default as Heading } from "./Heading";
-// @ts-ignore
+export * from "./Heading";
+
 export { default as Hidden } from "./Hidden";
-// @ts-ignore
+export * from "./Hidden";
+
 export { default as Image } from "./Image";
-// @ts-ignore
+export * from "./Image";
+
 export { default as Inline } from "./Inline";
-// @ts-ignore
+export * from "./Inline";
+
 export { default as InlineBlock } from "./InlineBlock";
-// @ts-ignore
+export * from "./InlineBlock";
+
 export { default as InlineFlex } from "./InlineFlex";
-// @ts-ignore
+export * from "./InlineFlex";
+
 export { default as Input } from "./Input";
-// @ts-ignore
+export * from "./Input";
+
 export { default as Label } from "./Label";
-// @ts-ignore
+export * from "./Label";
+
 export { default as Link } from "./Link";
-// @ts-ignore
+export * from "./Link";
+
 export { default as List } from "./List";
-// @ts-ignore
+export * from "./List";
+
 export { default as Navigation } from "./Navigation";
+export * from "./Navigation";
+
 // @ts-ignore
 export { default as Overlay } from "./Overlay";
 // @ts-ignore
+export * from "./Overlay";
+
 export { default as Paragraph } from "./Paragraph";
+export * from "./Paragraph";
+
 // @ts-ignore
 export { default as Popover } from "./Popover";
 // @ts-ignore
+export * from "./Popover";
+
 export { default as Portal } from "./Portal";
-// @ts-ignore
+export * from "./Portal";
+
 export { default as Provider } from "./Provider";
-// @ts-ignore
-export { default as Shadow } from "./Shadow";
+export * from "./Provider";
+
 // @ts-ignore
 export { default as Sidebar } from "./Sidebar";
 // @ts-ignore
+export * from "./Sidebar";
+
+// @ts-ignore
 export { default as Step } from "./Step";
+// @ts-ignore
+export * from "./Step";
+
 // @ts-ignore
 export { default as Table } from "./Table";
 // @ts-ignore
+export * from "./Table";
+
+// @ts-ignore
 export { default as Tabs } from "./Tabs";
+// @ts-ignore
+export * from "./Tabs";
+
 // @ts-ignore
 export { default as Toolbar } from "./Toolbar";
 // @ts-ignore
+export * from "./Toolbar";
+
+// @ts-ignore
 export { default as Tooltip } from "./Tooltip";
+// @ts-ignore
+export * from "./Tooltip";

@@ -3,6 +3,7 @@
 Except [containers](state-containers.md), all components exported by Reakit follow the [Single Element Pattern](https://medium.freecodecamp.org/introducing-the-single-element-pattern-dfbd2c295c5d), which makes them resemble native HTML elements.
 
 ## Render only one element
+
 Every component is a single HTML element. Even the ones that are composed by others, like [Popover](../packages/reakit/src/Popover/Popover.md) and [PopoverArrow](../packages/reakit/src/Popover/PopoverArrow.md), are exported separately so you have full control over them.
 
 Switch to `HTML` tab on the code block below to see the generated markup.

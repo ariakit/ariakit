@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { prop } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenHide from "../Hidden/HiddenHide";
@@ -15,7 +15,7 @@ const Component = props => (
 );
 
 const PopoverHide = styled(Component)`
-  ${prop("theme.PopoverHide")};
+  ${theme("PopoverHide")};
 `;
 
 PopoverHide.propTypes = {

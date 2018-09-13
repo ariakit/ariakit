@@ -1,4 +1,4 @@
-`InlineFlex` is [Base](../Base/Base.md) with `display: inline-flex`.
+`InlineFlex` is [Box](../Box/Box.md) with `display: inline-flex`.
 
 ```jsx
 <InlineFlex justifyContent="space-evenly" width="100%">

@@ -1,4 +1,4 @@
-`Table` is composed from [Base](../Base/Base.md) with minimal styles including collapsed borders.
+`Table` is composed from [Box](../Box/Box.md) with minimal styles including collapsed borders.
 It applies a basic styling to its children to improve differentiation between headers and cells.
 Table renders by default as a `<table>`.
 

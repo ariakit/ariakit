@@ -1,11 +1,12 @@
 import React from "react";
-import { styled, Heading, Flex, Base } from "reakit";
+import { styled, Heading, Flex, Box } from "reakit";
 import CodeIcon from "react-icons/lib/md/code";
 import EditIcon from "react-icons/lib/md/edit";
 import track from "../utils/track";
 import getSectionGitHubUrl from "../utils/getSectionGitHubUrl";
 import ButtonTransparent from "../elements/ButtonTransparent";
 import SectionContentWrapper from "../elements/SectionContentWrapper";
+import IconOnLeft from "../elements/IconOnLeft";
 
 const Name = styled(Heading)`
   font-size: 40px;
@@ -16,7 +17,7 @@ const Name = styled(Heading)`
   }
 `;
 
-const GithubSrcButtonText = styled(Base)`
+const GithubSrcButtonText = styled(Box)`
   @media (max-width: 768px) {
     display: none;
   }
@@ -36,7 +37,7 @@ const SectionHeader = ({ section, ...props }) => {
       <Flex>
         {githubSrcUrl && (
           <ButtonTransparent
-            as="a"
+            as={[IconOnLeft, "a"]}
             href={githubSrcUrl}
             target="_blank"
             onClick={track("reakit.sectionSourceClick")}
@@ -47,7 +48,7 @@ const SectionHeader = ({ section, ...props }) => {
         )}
         {githubDocUrl && (
           <ButtonTransparent
-            as="a"
+            as={[IconOnLeft, "a"]}
             href={githubDocUrl}
             target="_blank"
             onClick={track("reakit.sectionMarkdownClick")}
