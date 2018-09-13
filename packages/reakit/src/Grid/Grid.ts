@@ -6,17 +6,16 @@ import as from "../as";
 import Box from "../Box";
 
 export interface GridProps {
-  Item: React.ReactType;
-  row: boolean;
-  column: boolean;
-  dense: boolean;
-  gap: string | number;
-  template: string | number;
-  areas: string | number;
-  columns: string | number;
-  rows: string | number;
-  autoColumns: string | number;
-  autoRows: string | number;
+  row?: boolean;
+  column?: boolean;
+  dense?: boolean;
+  gap?: string | number;
+  template?: string | number;
+  areas?: string | number;
+  columns?: string | number;
+  rows?: string | number;
+  autoColumns?: string | number;
+  autoRows?: string | number;
 }
 
 const Grid = styled(Box)<GridProps>`
