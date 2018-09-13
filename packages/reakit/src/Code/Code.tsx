@@ -1,11 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
+import as, { AllProps } from "../as";
 import Box from "../Box";
 
-const Component = props => {
+export type CodeProps = AllProps & {
+  block?: boolean;
+  codeClassName?: string;
+};
+
+const Component = (props: CodeProps) => {
   if (props.block) {
     return (
       <Box as="pre" {...props}>
@@ -19,10 +24,11 @@ const Component = props => {
   return <Box as="code" {...props} className={className} />;
 };
 
-const Code = styled(Box)`
+const Code = styled(Box)<CodeProps>`
   ${theme("Code")};
 `;
 
+// @ts-ignore
 Code.propTypes = {
   block: PropTypes.bool,
   codeClassName: PropTypes.string

@@ -26,9 +26,7 @@ export * from "./Button";
 export { default as Card } from "./Card";
 export * from "./Card";
 
-// @ts-ignore
 export { default as Code } from "./Code";
-// @ts-ignore
 export * from "./Code";
 
 export { default as Divider } from "./Divider";
