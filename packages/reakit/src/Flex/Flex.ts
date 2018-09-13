@@ -8,7 +8,7 @@ import Box from "../Box";
 const directions = ["row", "column", "rowReverse", "columnReverse"];
 const wraps = ["nowrap", "wrap", "wrapReverse"];
 
-export interface F {
+export interface FlexProps {
   row: boolean;
   column: boolean;
   rowReverse: boolean;
@@ -18,7 +18,7 @@ export interface F {
   wrapReverse: boolean;
 }
 
-const Flex = styled(Box)<F>`
+const Flex = styled(Box)<FlexProps>`
   display: flex;
   &&& {
     ${bool("flex-direction", directions)};
