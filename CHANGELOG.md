@@ -4,16 +4,7 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 <a name="0.15.0"></a>
-# [0.15.0](https://github.com/reakit/reakit/compare/reakit@0.15.0-beta.0...reakit@0.15.0) (2018-09-13)
-
-**Note:** Version bump only for package reakit
-
-
-
-
-
-<a name="0.15.0-beta.0"></a>
-# [0.15.0-beta.0](https://github.com/reakit/reakit/compare/reakit@0.14.6...reakit@0.15.0-beta.0) (2018-09-13)
+# [0.15.0](https://github.com/reakit/reakit/compare/reakit@0.14.6...reakit@0.15.0.0) (2018-09-13)
 
 
 ### Bug Fixes
@@ -29,7 +20,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 * Add `reakit-theme-default` package ([#188](https://github.com/reakit/reakit/issues/188)) ([f9f16ad](https://github.com/reakit/reakit/commit/f9f16ad)), closes [#154](https://github.com/reakit/reakit/issues/154)
-* Add typescript support to Hidden ([#220](https://github.com/reakit/reakit/issues/220)) ([143eeb1](https://github.com/reakit/reakit/commit/143eeb1))
+* **typescript:** Add typescript support to Hidden ([#220](https://github.com/reakit/reakit/issues/220)) ([143eeb1](https://github.com/reakit/reakit/commit/143eeb1))
 * **typescript:** Convert Provider to typescript ([#230](https://github.com/reakit/reakit/issues/230)) ([4ab6694](https://github.com/reakit/reakit/commit/4ab6694))
 * **typescript:** Convert Table components into typescript ([#231](https://github.com/reakit/reakit/issues/231)) ([7ece839](https://github.com/reakit/reakit/commit/7ece839))
 
