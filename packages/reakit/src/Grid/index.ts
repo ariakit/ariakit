@@ -9,4 +9,6 @@ const G = Grid as typeof Grid & GridComponents;
 
 G.Item = GridItem;
 
-export * from "./Grid";
+export * from "./GridItem";
+
+export default G;
