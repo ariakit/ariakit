@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Container, EffectMap, ComposableContainer } from "reakit";
+import { EffectMap, ComposableContainer } from "constate";
+import { Container } from "reakit";
 
 interface State {
   mode: "light" | "dark";

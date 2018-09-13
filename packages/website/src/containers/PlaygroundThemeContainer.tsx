@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Container, ActionMap, ComposableContainer } from "reakit";
+import { ActionMap, ComposableContainer } from "constate";
+import { Container } from "reakit";
 
 interface State {
   themes: string[];
