@@ -1,12 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme, ifProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Overlay from "../Overlay";
+import Overlay, { OverlayProps } from "../Overlay";
 
-const Component = props => (
+export interface SidebarProps extends OverlayProps {
+  align?: "left" | "right";
+}
+
+const Component = (props: SidebarProps) => (
   <Overlay
     defaultSlide={props.align === "right" ? "left" : "right"}
     {...props}
@@ -15,7 +19,7 @@ const Component = props => (
 
 hoistNonReactStatics(Component, Overlay);
 
-const Sidebar = styled(Component)`
+const Sidebar = styled<SidebarProps>(Component)`
   top: 0;
   height: 100vh;
   transform: none;
@@ -25,6 +29,7 @@ const Sidebar = styled(Component)`
   ${theme("Sidebar")};
 `;
 
+// @ts-ignore
 Sidebar.propTypes = {
   align: PropTypes.oneOf(["left", "right"])
 };
