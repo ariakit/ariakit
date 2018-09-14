@@ -8,7 +8,7 @@ module.exports = {
     "!**/*-test.{js,ts,tsx}"
   ],
   projects: ["<rootDir>/packages/*/jest.config.js"],
-  setupFiles: ["<rootDir>/test.config.js"],
+  setupTestFrameworkScriptFile: "<rootDir>/jest.setup.js",
   moduleFileExtensions: [...defaults.moduleFileExtensions, "ts", "tsx"],
   transform: {
     "^.+\\.(j|t)sx?$": "babel-jest"

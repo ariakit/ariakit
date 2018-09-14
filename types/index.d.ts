@@ -1,1 +1,1 @@
-declare const dataLayer: object[];
+import "jest-dom/extend-expect";
