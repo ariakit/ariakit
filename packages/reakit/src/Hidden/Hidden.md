@@ -59,7 +59,7 @@ import { styled, keyframes, Block } from "reakit";
 import { prop } from "styled-tools";
 
 const bounce = keyframes`
-  0%, 50%, 75%, 87.5% { transform: translateY(0) }
+  0%, 50%, 75%, 87.5%, 100% { transform: translateY(0) }
   30% { transform: translateY(-100%) }
   65% { transform: translateY(-50%) }
   82.5% { transform: translateY(-25%) }
