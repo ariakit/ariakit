@@ -18,4 +18,10 @@ O.Toggle = OverlayToggle;
 O.Show = OverlayShow;
 O.Hide = OverlayHide;
 
+export { OverlayProps } from "./Overlay";
+export * from "./OverlayContainer";
+export * from "./OverlayToggle";
+export * from "./OverlayShow";
+export * from "./OverlayHide";
+
 export default Overlay;
