@@ -36,8 +36,8 @@ export interface HiddenProps extends BoxProps {
   timing?: string;
   animated?: boolean;
   transitioning?: boolean;
-  translateX?: string;
-  translateY?: string;
+  translateX?: number | string;
+  translateY?: number | string;
   defaultSlide?: boolean | Position;
 }
 
