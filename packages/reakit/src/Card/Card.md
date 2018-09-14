@@ -24,9 +24,9 @@ const { Grid, Image, Heading, Paragraph } = require("reakit");
     <Heading as="h3">Card Heading</Heading>
     <Card.Fit
       as={Image}
-      src="https://placekitten.com/180/300"
+      src="https://placekitten.com/200/300"
       alt="Kitten"
-      width={180}
+      width={200}
       height={300}
     />
     <Paragraph>Description for Card</Paragraph>

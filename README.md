@@ -1,24 +1,24 @@
 <br><br>
 
 <p align="center">
-  <img src="https://github.com/reakit/reakit/blob/master/logo/logo.jpg" alt="reakit" width="320" />
+  <img src="https://raw.githubusercontent.com/reakit/reakit/master/logo/logo.png" alt="reakit" width="320" />
 </p>
 
 <br>
 
 <p align="center">
-  Toolkit for building <a href="https://reakit.io/guide/principles/composability">composable</a>, <a href="https://reakit.io/guide/principles/accessibility">accessible</a> and <a href="https://reakit.io/guide/principles/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
+  Toolkit for building <a href="https://reakit.io/guide/composability">composable</a>, <a href="https://reakit.io/guide/accessibility">accessible</a> and <a href="https://reakit.io/guide/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
 </p>
 
 <br>
 
 <p align="center">
-  <a href="https://reakit.io"><strong>Website</strong></a> ·
-  <a href="https://reakit.io/guide"><strong>Guide</strong></a> ·
-  <a href="https://reakit.io/components"><strong>Components</strong></a>
+  <a href="https://reakit.io"><strong>🌎 Website</strong></a> ·
+  <a href="https://reakit.io/guide"><strong>📚 Guide</strong></a> ·
+  <a href="https://reakit.io/components"><strong>🏗 Components</strong></a>
 </p>
 
-<br><br>
+<br>
 
 <p align="center">
   <a href="https://github.com/diegohaz/nod"><img alt="Generated with nod" src="https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square" /></a>
