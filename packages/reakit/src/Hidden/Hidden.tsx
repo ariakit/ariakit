@@ -19,6 +19,8 @@ interface MouseClickEvent extends MouseEvent {
   target: Node;
 }
 
+type Position = "top" | "right" | "bottom" | "left";
+
 export interface HiddenProps extends BoxProps {
   visible?: boolean;
   hide?: () => void;
@@ -27,13 +29,16 @@ export interface HiddenProps extends BoxProps {
   hideOnClickOutside?: boolean;
   unmount?: boolean;
   fade?: boolean;
-  expand?: boolean | "center" | "top" | "right" | "bottom" | "left";
-  slide?: boolean | "top" | "right" | "bottom" | "left";
+  expand?: boolean | "center" | Position;
+  slide?: boolean | Position;
   duration?: string;
   delay?: string;
   timing?: string;
   animated?: boolean;
   transitioning?: boolean;
+  translateX?: number | string;
+  translateY?: number | string;
+  defaultSlide?: boolean | Position;
 }
 
 interface HiddenState {

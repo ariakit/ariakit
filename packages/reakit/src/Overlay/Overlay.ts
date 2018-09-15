@@ -1,7 +1,9 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Hidden from "../Hidden";
+import Hidden, { HiddenProps } from "../Hidden";
+
+export interface OverlayProps extends HiddenProps {}
 
 const Overlay = styled(Hidden)`
   position: fixed;
