@@ -19,7 +19,7 @@ const Component = (props: SidebarProps) => (
 
 hoistNonReactStatics(Component, Overlay);
 
-const Sidebar = styled<SidebarProps>(Component)`
+const Sidebar = styled(Component)`
   top: 0;
   height: 100vh;
   transform: none;
