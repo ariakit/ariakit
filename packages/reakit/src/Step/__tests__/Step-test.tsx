@@ -1,14 +1,15 @@
-import React from "react";
+import * as React from "react";
 import { mount } from "enzyme";
-import Step from "../Step";
+import Step, { StepProps } from "../Step";
 import Hidden from "../../Hidden";
 
-const props = {
+const props: StepProps = {
   step: "foo",
   order: 0,
   register: jest.fn(),
   update: jest.fn(),
-  unregister: jest.fn()
+  unregister: jest.fn(),
+  isCurrent: jest.fn()
 };
 
 beforeEach(() => {

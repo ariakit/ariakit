@@ -16,7 +16,7 @@ import {
   update
 } from "../StepContainer";
 
-const state = obj => ({ ...initialState, ...obj });
+const state = (obj?: object) => ({ ...initialState, ...obj });
 
 test("initialState", () => {
   expect(state()).toEqual({
