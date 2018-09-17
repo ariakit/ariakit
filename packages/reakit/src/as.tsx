@@ -10,37 +10,8 @@ import toArray from "./_utils/toArray";
 import omit from "./_utils/omit";
 import { AsProps, Dictionary, AsElement, AsComponent } from "./_utils/types";
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-export type CSSProperties = {
-  [key in keyof typeof CSSProps]?: string | number
-};
-
-export type AllProps<T = any> = Omit<React.HTMLProps<T>, "as"> &
-  ReakitProps<T> &
-  CSSProperties;
-
-export type SingleAsProp =
-  | keyof JSX.IntrinsicElements
-  | React.ComponentType<any>;
-
-export type AsProp = SingleAsProp | SingleAsProp[];
-
-export interface ReakitProps<T = any> {
-  as?: AsProp | null;
-  nextAs?: SingleAsProp | null;
-  elementRef?: React.Ref<T>;
-}
-
-export type ReakitComponent<P extends AllProps = object> = React.ComponentType<
-  P
-> & {
-  asComponents: AsProp;
-  as: (asComponents: AsProp) => ReakitComponent<P>;
-};
-
-function As({ nextAs, ...props }: AllProps) {
-  return render({ ...props, as: nextAs });
+function As<T extends AsElement>(props: AsProps<T>) {
+  return render(Object.assign({}, omit(props, "nextAs"), { as: props.nextAs }));
 }
 
 function render<T extends AsElement>(props: AsProps<T>) {
