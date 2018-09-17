@@ -5,48 +5,22 @@ import pickCSSProps from "./_utils/pickCSSProps";
 import parseTag from "./_utils/parseTag";
 import parseClassName from "./_utils/parseClassName";
 import pickHTMLProps from "./_utils/pickHTMLProps";
-import CSSProps from "./_utils/CSSProps";
 import getComponentName from "./_utils/getComponentName";
+import toArray from "./_utils/toArray";
+import omit from "./_utils/omit";
+import { AsProps, Dictionary, AsElement, AsComponent } from "./_utils/types";
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-export type CSSProperties = {
-  [key in keyof typeof CSSProps]?: string | number
-};
-
-export type AllProps<T = any> = Omit<React.HTMLProps<T>, "as"> &
-  ReakitProps<T> &
-  CSSProperties;
-
-export type SingleAsProp =
-  | keyof JSX.IntrinsicElements
-  | React.ComponentType<AllProps>;
-
-export type AsProp = SingleAsProp | SingleAsProp[];
-
-export interface ReakitProps<T = any> {
-  as?: AsProp;
-  nextAs?: AsProp;
-  elementRef?: React.Ref<T>;
+function As<T extends AsElement>(props: AsProps<T>) {
+  return render(Object.assign({}, omit(props, "nextAs"), { as: props.nextAs }));
 }
 
-export type ReakitComponent<P extends AllProps = object> = React.ComponentType<
-  P
-> & {
-  asComponents: AsProp;
-  as: (asComponents: AsProp) => ReakitComponent<P>;
-};
-
-function As({ nextAs, ...props }: AllProps) {
-  return render({ ...props, as: nextAs });
-}
-
-function render({ as: t, ...props }: AllProps): JSX.Element {
-  const T = parseTag(t);
+function render<T extends AsElement>(props: AsProps<T>) {
+  const T = parseTag(props.as);
 
   if (Array.isArray(T)) {
     const [First, ...others] = T.filter(x => x !== As);
     const other = others.length === 1 ? others[0] : others;
+    // @ts-ignore: We can't be sure if First accepts `as` or `nextAs`
     return <First {...props} as={As} nextAs={other} />;
   }
 
@@ -54,62 +28,47 @@ function render({ as: t, ...props }: AllProps): JSX.Element {
   const className = parseClassName(props.className);
 
   if (typeof T === "string") {
-    const { children } = props;
-    const propsWithStyle = {
-      ...props,
-      ...(style ? { style } : {})
-    };
-    const allProps = {
-      ...pickHTMLProps(propsWithStyle),
+    const propsWithStyle = Object.assign({}, props, style ? { style } : {});
+    const allProps = Object.assign(pickHTMLProps(propsWithStyle), {
       className
-    };
+    });
 
-    return (
-      <T {...allProps} ref={props.elementRef}>
-        {children}
-      </T>
-    );
+    return <T {...allProps} ref={props.elementRef} />;
   }
 
-  const allProps: AllProps = {
-    ...props,
-    className,
-    ...(style ? { style } : {})
-  };
+  const allProps = Object.assign(
+    {},
+    omit(props, "as"),
+    { className },
+    style ? { style } : {}
+  );
+
   return <T {...allProps} />;
 }
 
-function isWrappedWithAs(target: any): target is ReakitComponent {
+function isAsComponent(target: any): target is AsComponent<any, any> {
   return typeof target.asComponents !== "undefined";
 }
 
-type AllPropsReplaceAs<P extends AllProps> = Omit<P, "as"> & AllProps;
-
-function as(asComponents: AsProp) {
-  return <P extends AllProps>(WrappedComponent: React.ComponentType<P>) => {
+function as<T extends AsElement>(asComponents: T | T[]) {
+  return <P extends Dictionary = {}>(
+    WrappedComponent: React.ComponentType<P>
+  ) => {
     // Transform WrappedComponent into ReakitComponent
-    const defineProperties = (scope: typeof WrappedComponent) => {
-      const xscope = scope as ReakitComponent<AllPropsReplaceAs<P>>;
-      xscope.asComponents = asComponents;
-      xscope.as = otherComponents => as(otherComponents)(scope);
-      return xscope;
+    const defineProperties = (scope: AsComponent<T, P>) => {
+      scope.asComponents = asComponents;
+      // @ts-ignore
+      scope.as = otherComponents => as(otherComponents)(scope);
+      return scope;
     };
 
     // WrappedComponent was already enhanced with the same arguments
     if (
-      isWrappedWithAs(WrappedComponent) &&
+      isAsComponent(WrappedComponent) &&
       asComponents === WrappedComponent.asComponents
     ) {
-      return defineProperties(WrappedComponent);
+      return defineProperties(WrappedComponent as AsComponent<T, P>);
     }
-
-    const getAs = (props: AllProps): SingleAsProp[] =>
-      ([] as any[]).concat(
-        WrappedComponent,
-        asComponents,
-        props.as || [],
-        props.nextAs || []
-      );
 
     const componentName = getComponentName(WrappedComponent);
     const commaSeparatedAs = ([] as any[])
@@ -117,12 +76,24 @@ function as(asComponents: AsProp) {
       .map(getComponentName);
     const displayName = `${componentName}.as(${commaSeparatedAs})`;
 
-    const EnhancedComponent: typeof WrappedComponent = (props: AllProps) =>
-      render({ ...props, as: getAs(props) });
+    const EnhancedComponent = (props =>
+      render(
+        Object.assign({}, props, {
+          as: [
+            WrappedComponent,
+            ...toArray(asComponents),
+            ...toArray(props.as || []),
+            ...toArray(props.nextAs || [])
+          ]
+        })
+      )) as AsComponent<T, P>;
 
     EnhancedComponent.displayName = displayName;
+    // @ts-ignore: Only docs
     EnhancedComponent.propTypes = WrappedComponent.propTypes;
+    // @ts-ignore: Only docs
     EnhancedComponent.defaultProps = WrappedComponent.defaultProps;
+    // @ts-ignore
     hoistNonReactStatics(EnhancedComponent, WrappedComponent);
 
     return defineProperties(EnhancedComponent);
