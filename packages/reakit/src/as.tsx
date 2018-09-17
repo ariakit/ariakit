@@ -51,7 +51,7 @@ function isAsComponent(target: any): target is AsComponent<any, any> {
 }
 
 function as<T extends AsElement>(asComponents: T | T[]) {
-  return <P extends Dictionary = {}>(
+  return <P extends Dictionary = any>(
     WrappedComponent: React.ComponentType<P>
   ) => {
     // Transform WrappedComponent into ReakitComponent

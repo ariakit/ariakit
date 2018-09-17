@@ -40,7 +40,7 @@ export type ComponentToProps<T> = T extends
  * `<Foo as={Bar} />`
  * @template P Element props
  */
-export type AsElement<P = {}> =
+export type AsElement<P = any> =
   | keyof JSX.IntrinsicElements
   | React.ComponentType<P>;
 
