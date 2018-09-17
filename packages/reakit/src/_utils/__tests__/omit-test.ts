@@ -14,13 +14,13 @@ test("arg string", () => {
 });
 
 test("arg string[]", () => {
-  const omitted = keys(omit(fixture, ["animal", "age"]));
+  const omitted = keys(omit(fixture, "animal", "age"));
   expect(omitted.includes("animal")).toBeFalsy();
   expect(omitted.includes("age")).toBeFalsy();
 });
 
 test("returns empty if omits all", () => {
-  const omitted = omit(fixture, ["animal", "age", "season", "food"]);
+  const omitted = omit(fixture, "animal", "age", "season", "food");
   expect(omitted).toEqual({});
 });
 
