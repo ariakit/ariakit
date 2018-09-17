@@ -9,7 +9,7 @@ export interface CodeProps extends BoxProps {
   block?: boolean;
   codeClassName?: string;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const Component = (props: CodeProps) => {

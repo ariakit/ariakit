@@ -10,11 +10,11 @@ import toArray from "./_utils/toArray";
 import omit from "./_utils/omit";
 import { AsProps, Dictionary, AsElement, AsComponent } from "./_utils/types";
 
-function As<T extends AsElement>(props: AsProps<T>) {
+function As(props: AsProps<any>) {
   return render(Object.assign({}, omit(props, "nextAs"), { as: props.nextAs }));
 }
 
-function render<T extends AsElement>(props: AsProps<T>) {
+function render(props: AsProps<any>) {
   const T = parseTag(props.as);
 
   if (Array.isArray(T)) {
@@ -50,10 +50,8 @@ function isAsComponent(target: any): target is AsComponent<any, any> {
   return typeof target.asComponents !== "undefined";
 }
 
-function as<T extends AsElement>(asComponents: T | T[]) {
-  return <P extends Dictionary = any>(
-    WrappedComponent: React.ComponentType<P>
-  ) => {
+function as<T extends AsElement<any>>(asComponents: T | T[]) {
+  return <P extends Dictionary>(WrappedComponent: React.ComponentType<P>) => {
     // Transform WrappedComponent into ReakitComponent
     const defineProperties = (scope: AsComponent<T, P>) => {
       scope.asComponents = asComponents;
