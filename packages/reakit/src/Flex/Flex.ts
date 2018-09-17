@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
@@ -8,7 +8,17 @@ import Box from "../Box";
 const directions = ["row", "column", "rowReverse", "columnReverse"];
 const wraps = ["nowrap", "wrap", "wrapReverse"];
 
-const Flex = styled(Box)`
+export interface FlexProps {
+  row?: boolean;
+  column?: boolean;
+  rowReverse?: boolean;
+  columnReverse?: boolean;
+  nowrap?: boolean;
+  wrap?: boolean;
+  wrapReverse?: boolean;
+}
+
+const Flex = styled(Box)<FlexProps>`
   display: flex;
   &&& {
     ${bool("flex-direction", directions)};
@@ -18,6 +28,7 @@ const Flex = styled(Box)`
   ${theme("Flex")};
 `;
 
+// @ts-ignore
 Flex.propTypes = {
   row: PropTypes.bool,
   column: PropTypes.bool,

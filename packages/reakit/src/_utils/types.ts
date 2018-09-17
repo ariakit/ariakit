@@ -82,7 +82,7 @@ export interface AsComponent<T extends AsElement, P> {
 
   displayName: string;
 
-  as: <TT extends AsElement>(
+  as: <TT extends AsElement<any>>(
     otherComponents: TT | TT[]
   ) => AsComponent<T & TT, ComponentToProps<AsComponent<T & TT, P>>>;
 
