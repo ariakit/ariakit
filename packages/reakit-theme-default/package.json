@@ -1,6 +1,6 @@
 {
   "name": "reakit-theme-default",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Reakit default theme",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default",
@@ -48,7 +48,7 @@
     "eslint": "^5.4.0",
     "jest-cli": "^23.6.0",
     "opn-cli": "^3.1.0",
-    "reakit": "^0.15.0",
+    "reakit": "^0.15.1",
     "rimraf": "^2.6.1",
     "rollup": "^0.65.2",
     "typescript": "^3.0.1"
