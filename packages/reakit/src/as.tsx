@@ -3,7 +3,7 @@ import * as React from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import pickCSSProps from "./_utils/pickCSSProps";
 import parseTag from "./_utils/parseTag";
-import uniqueClassName from "./_utils/uniqueClassName";
+import dedupeClassName from "./_utils/dedupeClassName";
 import pickHTMLProps from "./_utils/pickHTMLProps";
 import getComponentName from "./_utils/getComponentName";
 import toArray from "./_utils/toArray";
@@ -27,7 +27,7 @@ function render(props: AsProps<any>) {
   const style = pickCSSProps(props);
 
   if (typeof T === "string") {
-    const className = uniqueClassName(props.className);
+    const className = dedupeClassName(props.className);
     const allProps = Object.assign(
       pickHTMLProps(props),
       { className },
