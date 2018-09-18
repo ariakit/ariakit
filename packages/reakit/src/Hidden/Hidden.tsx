@@ -116,7 +116,7 @@ class Component extends React.Component<HiddenProps, HiddenState> {
       node && !node.contains((e as MouseClickEvent).target) && visible && hide;
 
     if (shouldHide) {
-      // it's possible that the outisde click was on a toggle button
+      // it's possible that the outside click was on a toggle button
       // in that case, we should "wait" before hiding it
       // otherwise it could hide before and then toggle, showing it again
       setTimeout(() => this.props.visible && hide && hide());
