@@ -1,15 +1,18 @@
 import CSSProps from "./CSSProps";
 
-interface UnknownProps {
-  [key: string]: any;
-}
+function pickCSSProps<P extends object>(props: P) {
+  let filteredProps: Partial<P> | undefined;
 
-const pickCSSProps = (props: UnknownProps) =>
-  Object.keys(props).reduce((finalObject: {}, key) => {
-    if (key in CSSProps) {
-      return { ...finalObject, [key]: props[key] };
+  for (const prop in props) {
+    if (prop in CSSProps) {
+      if (!filteredProps) {
+        filteredProps = {};
+      }
+      filteredProps[prop] = props[prop];
     }
-    return finalObject;
-  }, "");
+  }
+
+  return filteredProps;
+}
 
 export default pickCSSProps;

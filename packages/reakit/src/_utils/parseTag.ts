@@ -1,6 +1,6 @@
-import { AsProp } from "../as";
+import { AsElement } from "./types";
 
-const parseTag = (tag?: AsProp | null) => {
+function parseTag(tag?: AsElement | AsElement[] | null) {
   if (Array.isArray(tag)) {
     const tags = tag.filter(
       (currentTag, i) => typeof currentTag !== "string" || i === tag.length - 1
@@ -8,6 +8,6 @@ const parseTag = (tag?: AsProp | null) => {
     return tags.length <= 1 ? tags[0] || "div" : tags;
   }
   return tag || "div";
-};
+}
 
 export default parseTag;

@@ -17,6 +17,7 @@
   },
   "rules": {
     "no-use-before-define": "off",
+    "no-restricted-syntax": "off",
     "jsx-a11y/accessible-emoji": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/export": "off",

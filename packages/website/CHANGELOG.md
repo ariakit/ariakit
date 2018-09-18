@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/reakit/reakit/compare/website@0.15.1...website@0.15.2) (2018-09-18)
+
+
+### Bug Fixes
+
+* **website:** Internal guide links ([76f52b9](https://github.com/reakit/reakit/commit/76f52b9))
+
+
+
+
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/reakit/reakit/compare/website@0.15.0...website@0.15.1) (2018-09-13)
 

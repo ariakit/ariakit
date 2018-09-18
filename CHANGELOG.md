@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.1"></a>
+## [0.15.1](https://github.com/reakit/reakit/compare/reakit@0.15.0...reakit@0.15.1) (2018-09-18)
+
+
+### Bug Fixes
+
+* **typescript:** Fix `as` types ([#238](https://github.com/reakit/reakit/issues/238)) ([10feae1](https://github.com/reakit/reakit/commit/10feae1))
+
+
+### Features
+
+* **typescript:** Add typescript support to `Code` and `Flex` ([#233](https://github.com/reakit/reakit/issues/233)) ([4deb935](https://github.com/reakit/reakit/commit/4deb935))
+* **typescript:** Add typescript support to Grid ([#234](https://github.com/reakit/reakit/issues/234)) ([4b214be](https://github.com/reakit/reakit/commit/4b214be))
+* **typescript:** Add typescript support to Overlay and Sidebar ([#236](https://github.com/reakit/reakit/issues/236)) ([8386dcd](https://github.com/reakit/reakit/commit/8386dcd))
+
+
+### Performance Improvements
+
+* Pass the first value to nextAs when it's the only one ([50a525e](https://github.com/reakit/reakit/commit/50a525e))
+
+
+
+
+
 <a name="0.15.0"></a>
 # [0.15.0](https://github.com/reakit/reakit/compare/reakit@0.14.6...reakit@0.15.0) (2018-09-13)
 

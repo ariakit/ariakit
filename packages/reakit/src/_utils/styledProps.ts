@@ -1,5 +1,4 @@
 import { withProp, palette, switchProp, ifProp, prop } from "styled-tools";
-import kebabCase from "./kebabCase";
 import numberToPx from "./numberToPx";
 
 export type PropsFn = (props: { [key: string]: any }) => any;
@@ -9,9 +8,8 @@ export const bool = (
   validComponentProps: string[]
 ): PropsFn => props => {
   const keys = Object.keys(props)
-    .filter(k => validComponentProps.indexOf(k) >= 0)
-    .filter(k => !!props[k])
-    .map(kebabCase);
+    .filter(k => props[k] && validComponentProps.indexOf(k) >= 0)
+    .map(k => k.replace(/([A-Z])/g, "-$1").toLowerCase());
   if (keys.length) {
     return `${cssProp}: ${keys.join(" ")};`;
   }

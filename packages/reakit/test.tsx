@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as React from "react";
-import { styled, Box } from "./src";
+import { styled, Box, Code } from "./src";
 
 interface Props {
   foo: string;
@@ -14,4 +14,6 @@ interface Props {
   <Box />;
   <Box absolute />;
   <Test as="div" foo="" absolute />;
+  <Code />;
+  <Code block />;
 }

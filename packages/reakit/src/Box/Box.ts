@@ -9,28 +9,21 @@ import {
 import styled from "../styled";
 import as from "../as";
 
-const positions = {
-  static: "static",
-  absolute: "absolute",
-  fixed: "fixed",
-  relative: "relative",
-  sticky: "sticky"
-};
+const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-type ComponentProps = {
-  as: keyof JSX.IntrinsicElements | React.ComponentType;
-};
-
-const Component = ({ as: T, ...props }: ComponentProps) =>
+const Component = ({ as: T, ...props }: { as: React.ComponentType }) =>
   React.createElement(T, props);
 
-export type BoxProps = { [key in keyof typeof positions]?: boolean } & {
+export type BoxProps = {
+  static?: boolean;
+  absolute?: boolean;
+  fixed?: boolean;
+  relative?: boolean;
+  sticky?: boolean;
   opaque?: boolean;
   palette?: string;
   tone?: number;
 };
-
-const positionsKeys = Object.keys(positions);
 
 const Box = styled(Component)<BoxProps>`
   margin: unset;
@@ -45,7 +38,7 @@ const Box = styled(Component)<BoxProps>`
   color: ${textColorWithProps};
   ${theme("Box")};
   &&& {
-    ${bool("position", positionsKeys)};
+    ${bool("position", positions)};
   }
 `;
 
