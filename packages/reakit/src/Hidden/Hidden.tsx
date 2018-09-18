@@ -70,7 +70,9 @@ class Component extends React.Component<HiddenProps, HiddenState> {
     if (typeof window !== "undefined" && unmount && hasTransition(this.props)) {
       if (visible) {
         this.setState({ transitioning: true });
-        window.requestAnimationFrame(() =>
+        requestAnimationFrame(() =>
+          // it may be still transitioning, but it doesn't matter
+          // we just need to set it to false in another loop
           this.setState({ transitioning: false, visible: true })
         );
       } else {
@@ -94,7 +96,8 @@ class Component extends React.Component<HiddenProps, HiddenState> {
 
   handleTransitionEnd = () => {
     const { visible, unmount } = this.props;
-    if (!visible && unmount) {
+    if (unmount && !visible) {
+      // at this point, this is the last state left to return null on render
       this.setState({ transitioning: false });
     }
   };
@@ -113,6 +116,9 @@ class Component extends React.Component<HiddenProps, HiddenState> {
       node && !node.contains((e as MouseClickEvent).target) && visible && hide;
 
     if (shouldHide) {
+      // it's possible that the outside click was on a toggle button
+      // in that case, we should "wait" before hiding it
+      // otherwise it could hide before and then toggle, showing it again
       setTimeout(() => this.props.visible && hide && hide());
     }
   };
