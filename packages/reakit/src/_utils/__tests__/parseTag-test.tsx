@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import parseTag from "../parseTag";
 
 it("returns string tag when string is passed in", () => {

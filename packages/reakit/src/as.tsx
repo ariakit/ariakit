@@ -3,7 +3,7 @@ import * as React from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import pickCSSProps from "./_utils/pickCSSProps";
 import parseTag from "./_utils/parseTag";
-import parseClassName from "./_utils/parseClassName";
+import uniqueClassName from "./_utils/uniqueClassName";
 import pickHTMLProps from "./_utils/pickHTMLProps";
 import getComponentName from "./_utils/getComponentName";
 import toArray from "./_utils/toArray";
@@ -25,24 +25,19 @@ function render(props: AsProps<any>) {
   }
 
   const style = pickCSSProps(props);
-  const className = parseClassName(props.className);
 
   if (typeof T === "string") {
-    const propsWithStyle = Object.assign({}, props, style ? { style } : {});
-    const allProps = Object.assign(pickHTMLProps(propsWithStyle), {
-      className
-    });
+    const className = uniqueClassName(props.className);
+    const allProps = Object.assign(
+      pickHTMLProps(props),
+      { className },
+      style ? { style } : {}
+    );
 
     return <T {...allProps} ref={props.elementRef} />;
   }
 
-  const allProps = Object.assign(
-    {},
-    omit(props, "as"),
-    { className },
-    style ? { style } : {}
-  );
-
+  const allProps = Object.assign(omit(props, "as"), style ? { style } : {});
   return <T {...allProps} />;
 }
 
