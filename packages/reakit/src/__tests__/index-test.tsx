@@ -41,11 +41,8 @@ const componentsToTest = [
   c.List,
   c.Navigation,
   c.Overlay,
-  // @ts-ignore
   c.Overlay.Hide,
-  // @ts-ignore
   c.Overlay.Show,
-  // @ts-ignore
   c.Overlay.Toggle,
   c.Paragraph,
   c.Popover,
@@ -59,11 +56,8 @@ const componentsToTest = [
   c.Popover.Toggle,
   c.Portal,
   c.Sidebar,
-  // @ts-ignore
   c.Sidebar.Hide,
-  // @ts-ignore
   c.Sidebar.Show,
-  // @ts-ignore
   c.Sidebar.Toggle,
   c.Step,
   // @ts-ignore

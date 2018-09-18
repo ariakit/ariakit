@@ -66,6 +66,7 @@ exports[`Backdrop 1`] = `
 <div
   aria-hidden="true"
   class="c0 c1 c2"
+  hidden=""
   role="button"
   tabindex="-1"
 />
@@ -510,6 +511,7 @@ exports[`Hidden 1`] = `
 <div
   aria-hidden="true"
   class="c0 c1"
+  hidden=""
 />
 `;
 
@@ -856,6 +858,7 @@ exports[`Overlay 1`] = `
   aria-hidden="true"
   aria-modal="true"
   class="c0 c1 c2"
+  hidden=""
   role="dialog"
 />
 `;
@@ -998,6 +1001,7 @@ exports[`Popover.as(div) 1`] = `
   aria-hidden="true"
   class="c0 c1 c2"
   data-placement="bottom"
+  hidden=""
   role="group"
 />
 `;
@@ -1208,6 +1212,7 @@ exports[`Sidebar 1`] = `
   aria-hidden="true"
   aria-modal="true"
   class="c0 c1 c2 c3"
+  hidden=""
   role="dialog"
 />
 `;
@@ -1724,6 +1729,7 @@ exports[`Tooltip 1`] = `
   aria-hidden="true"
   class="c0 c1 c2"
   data-placement="top"
+  hidden=""
   role="tooltip"
 />
 `;
