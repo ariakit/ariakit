@@ -128,6 +128,7 @@ class Component extends React.Component<HiddenProps, HiddenState> {
     return (
       <Box
         aria-hidden={!visible}
+        hidden={!visible && !hasTransition(this.props)}
         {...this.props}
         {...this.state}
         onTransitionEnd={callAll(this.handleTransitionEnd, onTransitionEnd)}
