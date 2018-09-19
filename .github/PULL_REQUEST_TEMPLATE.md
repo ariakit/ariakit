@@ -12,7 +12,7 @@
 **Did you add tests for your changes?**
 
 <!-- Note that if your changes decrease coverage, we won't merge them without tests -->
-<!-- This also applies to big or important PR's -->
+<!-- Also note that tests are required for big or important PR's -->
 
 **Does this PR introduce a breaking change?**
 
