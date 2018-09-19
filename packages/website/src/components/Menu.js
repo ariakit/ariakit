@@ -1,11 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { styled, Grid, List, Link, Input } from "reakit";
+import { styled, Grid, List, Link } from "reakit";
 import { palette, ifProp } from "styled-tools";
 import getSectionUrl from "../utils/getSectionUrl";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import MenuContainer from "../containers/MenuContainer";
 import track from "../utils/track";
+import Filter from "./Filter";
 
 const Wrapper = styled(Grid)`
   grid-gap: 16px;
@@ -106,8 +107,7 @@ const Menu = ({ section, showFilter, ...props }) => (
           <MenuContainer initialState={section} key={section.name}>
             {({ filter, filtered }) => (
               <React.Fragment>
-                <Input
-                  placeholder="Filter..."
+                <Filter
                   onChange={e => filter(e.target.value)}
                   onBlur={track("reakit.filterBlur")}
                 />
