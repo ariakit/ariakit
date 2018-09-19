@@ -11,7 +11,8 @@
 
 **Did you add tests for your changes?**
 
-<!-- Note that we won't merge your changes if you don't add tests -->
+<!-- Note that if your changes decrease coverage, we won't merge them without tests -->
+<!-- Also note that tests are required for big or important PR's -->
 
 **Does this PR introduce a breaking change?**
 
