@@ -95,7 +95,7 @@ const DarkModeToggle = () => (
       <ButtonTransparent
         onClick={() => {
           toggleMode();
-          track(`reakit.${mode}ModeClick`);
+          track(`reakit.${mode}ModeClick`)();
         }}
       >
         <Icon as={MoonIcon} />
