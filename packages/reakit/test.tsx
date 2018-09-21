@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as React from "react";
-import { styled, Box, Code } from "./src";
+import { styled, Box, Code, Card } from "./src";
 
 interface Props {
   foo: string;
@@ -16,4 +16,5 @@ interface Props {
   <Test as="div" foo="" absolute />;
   <Code />;
   <Code block />;
+  <Card gutter={8} />;
 }

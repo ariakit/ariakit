@@ -1,9 +1,12 @@
 import PropTypes from "prop-types";
 import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
+import getSelector from "../_utils/getSelector";
 import as from "../as";
 import Box from "../Box";
 import GroupItem from "./GroupItem";
+
+const groupItemSelector = getSelector(GroupItem);
 
 const verticalAt = (pass, fail) =>
   ifProp(
@@ -25,7 +28,7 @@ const Group = styled(Box)`
   ${verticalAt("flex-direction: column")};
 
   > *:not(:first-child):not(:last-child),
-  > *:not(:first-child):not(:last-child) ${GroupItem} {
+  > *:not(:first-child):not(:last-child) ${groupItemSelector} {
     border-radius: 0;
     ${verticalAt(
       css`
@@ -38,7 +41,7 @@ const Group = styled(Box)`
   }
 
   > *:first-child,
-  > *:first-child ${GroupItem} {
+  > *:first-child ${groupItemSelector} {
     border-bottom-right-radius: 0;
     ${verticalAt(
       css`
@@ -49,7 +52,7 @@ const Group = styled(Box)`
   }
 
   > *:last-child,
-  > *:last-child ${GroupItem} {
+  > *:last-child ${groupItemSelector} {
     border-top-left-radius: 0;
     ${verticalAt(
       css`
