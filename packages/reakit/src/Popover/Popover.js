@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import Popper from "popper.js";
 import styled from "../styled";
+import getSelector from "../_utils/getSelector";
 import as from "../as";
 import Hidden from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
@@ -51,8 +52,8 @@ class Component extends React.Component {
   getOptions = () => {
     const { placement, flip, shift } = this.props;
     const popover = this.getPopover();
-    const arrowClassName = `.${PopoverArrow.styledComponentId}`;
-    const arrow = popover.querySelector(arrowClassName);
+    const arrowSelector = getSelector(PopoverArrow);
+    const arrow = popover.querySelector(arrowSelector);
     return {
       placement,
       modifiers: {

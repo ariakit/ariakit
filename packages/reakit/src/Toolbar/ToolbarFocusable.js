@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import callAll from "../_utils/callAll";
+import getSelector from "../_utils/getSelector";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
@@ -63,16 +64,14 @@ class Component extends React.Component {
 
   getToolbar = () => {
     if (typeof this.toolbar === "undefined") {
-      this.toolbar = this.getElement().closest(`.${Toolbar.styledComponentId}`);
+      this.toolbar = this.getElement().closest(getSelector(Toolbar));
     }
     return this.toolbar;
   };
 
   getFocusables = () => {
     if (!this.getToolbar()) return [];
-    return this.getToolbar().querySelectorAll(
-      `.${ToolbarFocusable.styledComponentId}`
-    );
+    return this.getToolbar().querySelectorAll(getSelector(ToolbarFocusable));
   };
 
   getCurrentIndex = focusables => {
