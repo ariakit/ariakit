@@ -1,7 +1,7 @@
 {
   "name": "reakit",
   "version": "0.15.2",
-  "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
+  "description": "Toolkit for building really interactive UIs with React",
   "license": "MIT",
   "repository": "reakit/reakit",
   "main": "lib/index.js",

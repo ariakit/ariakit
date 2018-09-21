@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Grid, Heading } from "reakit";
+import { styled, Grid, Heading, Inline } from "reakit";
 import { Link } from "react-router-dom";
 import LibraryBooksIcon from "react-icons/lib/md/library-books";
 import CodeIcon from "react-icons/lib/go/code";
@@ -55,7 +55,11 @@ const Buttons = styled(Grid)`
 const Hero = props => (
   <Wrapper {...props}>
     <Headline gridArea="text">
-      Toolkit for building interactive UIs with React
+      Toolkit for building{" "}
+      <Inline as="strong" fontWeight={400}>
+        really
+      </Inline>{" "}
+      interactive UIs with React
     </Headline>
     <Buttons gridArea="buttons">
       <ButtonPrimary
