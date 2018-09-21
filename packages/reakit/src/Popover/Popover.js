@@ -52,8 +52,7 @@ class Component extends React.Component {
   getOptions = () => {
     const { placement, flip, shift } = this.props;
     const popover = this.getPopover();
-    const arrowSelector = getSelector(PopoverArrow);
-    const arrow = popover.querySelector(arrowSelector);
+    const arrow = popover.querySelector(getSelector(PopoverArrow));
     return {
       placement,
       modifiers: {
