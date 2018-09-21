@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.3"></a>
+## [0.15.3](https://github.com/reakit/reakit/compare/website@0.15.2...website@0.15.3) (2018-09-21)
+
+
+### Features
+
+* **website:** Add `Filter` component with keydown `/` focus ([#242](https://github.com/reakit/reakit/issues/242)) ([974126e](https://github.com/reakit/reakit/commit/974126e))
+
+
+
+
+
 <a name="0.15.2"></a>
 ## [0.15.2](https://github.com/reakit/reakit/compare/website@0.15.1...website@0.15.2) (2018-09-18)
 

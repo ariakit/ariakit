@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/reakit/reakit/compare/reakit@0.15.1...reakit@0.15.2) (2018-09-21)
+
+
+### Bug Fixes
+
+* **typescript:** Stop using csstype for CSS properties ([#246](https://github.com/reakit/reakit/issues/246)) ([0a0465c](https://github.com/reakit/reakit/commit/0a0465c)), closes [#245](https://github.com/reakit/reakit/issues/245)
+* **typescript:** Use `getSelector` when interpolating styled components ([#247](https://github.com/reakit/reakit/issues/247)) ([2167a80](https://github.com/reakit/reakit/commit/2167a80))
+
+
+### Features
+
+* Add `hidden` attribute to `Hidden` ([#240](https://github.com/reakit/reakit/issues/240)) ([2d157f9](https://github.com/reakit/reakit/commit/2d157f9))
+
+
+### Performance Improvements
+
+* Only dedupe class names when rendering HTML elements ([#239](https://github.com/reakit/reakit/issues/239)) ([1ec72be](https://github.com/reakit/reakit/commit/1ec72be))
+
+
+
+
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/reakit/reakit/compare/reakit@0.15.0...reakit@0.15.1) (2018-09-18)
 
