@@ -1,7 +1,11 @@
-/* eslint-disable react/no-unused-prop-types */
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { Container, ContainerProps, SelectorMap } from "constate";
+import {
+  Container,
+  SelectorMap,
+  ActionMap,
+  ComposableContainer
+} from "constate";
 import omit from "../_utils/omit";
 
 export const initialState = {
@@ -16,7 +20,7 @@ export interface StepContainerState {
   ids: Array<string>;
   current: number;
   ordered: {
-    [key: string]: string;
+    [key: string]: number;
   };
 }
 
@@ -27,27 +31,20 @@ export type HasNext = () => boolean;
 export type IndexOf = (idOrIndex: string | number) => number;
 export type IsCurrent = (idOrIndex: string | number) => boolean;
 
-// Action types
-export type Show = (
-  idOrIndex: string | number
-) => (state: StepContainerState) => { current: number };
+// Actions Type definitions
+export type Show = (idOrIndex: string | number) => { current: number };
 
-export type Hide = () => (state: StepContainerState) => { current: number };
+export type Hide = () => { current: number };
 
-export type Toggle = (
-  idOrIndex: string | number
-) => (state: StepContainerState) => { current: number };
+export type Toggle = (idOrIndex: string | number) => { current: number };
 
-export type Previous = () => (
-  state: StepContainerState
-) => { current?: number };
+export type Previous = () => { current?: number };
 
-export type Next = () => (state: StepContainerState) => { current?: number };
+export type Next = () => { current?: number };
+
 export type Reorder = (
-  id: string | number,
+  id: string,
   order?: number
-) => (
-  state: StepContainerState
 ) => {
   ordered: object;
   ids: Array<string>;
@@ -55,10 +52,8 @@ export type Reorder = (
 };
 
 export type Register = (
-  id: string | number,
+  id: string,
   order?: number
-) => (
-  state: StepContainerState
 ) => {
   ordered: object;
   ids: Array<string>;
@@ -67,18 +62,23 @@ export type Register = (
 
 export type Unregister = (
   id: string
-) => (
-  state: StepContainerState
-) => Partial<StepContainerState> & { current?: number };
+) => {
+  ordered: object;
+  ids: Array<string>;
+  current?: number;
+};
 
 export type Update = (
   id: string,
   nextId: string,
   orderArg?: number
-) => (
-  state: StepContainerState
-) => Partial<StepContainerState & { current?: number }>;
+) => {
+  ordered: object;
+  ids: Array<string>;
+  current?: number;
+};
 
+// selectors
 export const getCurrentId = () => (state: StepContainerState) =>
   state.ids[state.current];
 
@@ -96,6 +96,7 @@ export const isCurrent = (idOrIndex: string | number) => (
   state: StepContainerState
 ) => state.current >= 0 && state.current === indexOf(idOrIndex)(state);
 
+// actions
 export const show = (idOrIndex: string | number) => (
   state: StepContainerState
 ) => ({
@@ -155,7 +156,7 @@ export const unregister = (id: string) => (state: StepContainerState) => {
     return {};
   }
 
-  const ordered = omit(state.ordered, state.ids[index]);
+  const ordered = omit(state.ordered, [state.ids[index]]);
   const ids = [...state.ids.slice(0, index), ...state.ids.slice(index + 1)];
 
   if (isCurrent(id)(state) && !hasNext()(state)) {
@@ -193,10 +194,11 @@ export const update = (id: string, nextId: string, orderArg?: number) => (
     nextId,
     ...state.ids.slice(index + 1)
   ];
+
   return reorder(nextId, order)({ ...state, ids });
 };
 
-interface Selectors {
+interface StepSelectors {
   getCurrentId: GetCurrentId;
   hasPrevious: HasPrevious;
   hasNext: HasNext;
@@ -204,19 +206,19 @@ interface Selectors {
   isCurrent: IsCurrent;
 }
 
-// interface Actions {
-//   show;
-//   hide;
-//   toggle;
-//   previous;
-//   next;
-//   reorder;
-//   register;
-//   unregister;
-//   update;
-// }
+export interface StepActions {
+  show: Show;
+  hide: Hide;
+  toggle: Toggle;
+  previous: Previous;
+  next: Next;
+  reorder: Reorder;
+  register: Register;
+  unregister: Unregister;
+  update: Update;
+}
 
-const selectors: SelectorMap<StepContainerState, Selectors> = {
+const selectors: SelectorMap<StepContainerState, StepSelectors> = {
   getCurrentId,
   hasPrevious,
   hasNext,
@@ -224,7 +226,7 @@ const selectors: SelectorMap<StepContainerState, Selectors> = {
   isCurrent
 };
 
-const actions = {
+const actions: ActionMap<StepContainerState, StepActions> = {
   show,
   hide,
   toggle,
@@ -237,20 +239,22 @@ const actions = {
 };
 
 // istanbul ignore next
-const StepContainer: React.SFC<ContainerProps<StepContainerState>> = props => (
+const StepContainer: ComposableContainer<
+  StepContainerState,
+  StepActions,
+  StepSelectors
+> = props => (
   <Container
     {...props}
     initialState={{ ...initialState, ...props.initialState }}
-    selectors={{ ...selectors, ...props.selectors }}
-    actions={{ ...actions, ...props.actions }}
+    selectors={{ ...selectors }}
+    actions={{ ...actions }}
   />
 );
 
 // @ts-ignore
 StepContainer.propTypes = {
-  initialState: PropTypes.object,
-  actions: PropTypes.objectOf(PropTypes.func),
-  selectors: PropTypes.objectOf(PropTypes.func)
+  initialState: PropTypes.object
 };
 
 export default StepContainer;

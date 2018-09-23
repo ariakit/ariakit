@@ -9,7 +9,7 @@ const props: StepProps = {
   register: jest.fn(),
   update: jest.fn(),
   unregister: jest.fn(),
-  isCurrent: jest.fn()
+  isCurrent: jest.fn().mockReturnValue(true)
 };
 
 beforeEach(() => {
@@ -55,6 +55,6 @@ it("has truthy visible property when it is current", () => {
 });
 
 it("has falsy visible property when it is not current", () => {
-  const wrapper = mount(<Step {...props} />);
+  const wrapper = mount(<Step {...props} isCurrent={() => false} />);
   expect(wrapper.find(Hidden).prop("visible")).toBe(false);
 });
