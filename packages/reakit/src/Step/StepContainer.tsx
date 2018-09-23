@@ -8,7 +8,7 @@ import {
 } from "constate";
 import omit from "../_utils/omit";
 
-export const initialState = {
+export const initialState: StepContainerState = {
   loop: false,
   ids: [],
   current: -1,
@@ -241,8 +241,7 @@ const actions: ActionMap<StepContainerState, StepActions> = {
 // istanbul ignore next
 const StepContainer: ComposableContainer<
   StepContainerState,
-  StepActions,
-  StepSelectors
+  StepActions
 > = props => (
   <Container
     {...props}
