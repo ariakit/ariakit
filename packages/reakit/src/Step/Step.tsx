@@ -8,7 +8,6 @@ import Hidden, { HiddenProps } from "../Hidden";
 import { Register, Update, Unregister, IsCurrent } from "./StepContainer";
 
 export interface StepProps extends HiddenProps {
-  [key: string]: any;
   step: string;
   register: Register;
   update: Update;
