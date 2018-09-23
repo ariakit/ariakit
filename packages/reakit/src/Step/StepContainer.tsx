@@ -156,7 +156,7 @@ export const unregister = (id: string) => (state: StepContainerState) => {
     return {};
   }
 
-  const ordered = omit(state.ordered, [state.ids[index]]);
+  const ordered = omit(state.ordered, state.ids[index]);
   const ids = [...state.ids.slice(0, index), ...state.ids.slice(index + 1)];
 
   if (isCurrent(id)(state) && !hasNext()(state)) {
