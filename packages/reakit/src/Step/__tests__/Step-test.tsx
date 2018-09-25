@@ -13,9 +13,9 @@ const props: StepProps = {
 };
 
 beforeEach(() => {
-  Object.keys(props).forEach(key => {
-    if (props[key].mockClear) {
-      props[key].mockClear();
+  Object.values(props).forEach(value => {
+    if (value.mockClear) {
+      value.mockClear();
     }
   });
 });

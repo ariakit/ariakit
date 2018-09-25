@@ -4,15 +4,17 @@ import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenShow from "../Hidden/HiddenShow";
-import { Show } from "./StepContainer";
+import { StepContainerActions } from "./StepContainer";
 
-interface ShowProps {
-  show: Show;
+export interface StepShowProps {
+  show: StepContainerActions["show"];
   step: string;
 }
 
-const show = (props: ShowProps) => () => props.show && props.show(props.step);
-const Component = (props: ShowProps) => (
+const show = (props: StepShowProps) => () =>
+  props.show && props.show(props.step);
+
+const Component = (props: StepShowProps) => (
   <HiddenShow {...props} show={show(props)} />
 );
 

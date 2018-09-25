@@ -4,17 +4,17 @@ import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenToggle from "../Hidden/HiddenToggle";
-import { Toggle } from "./StepContainer";
+import { StepContainerActions } from "./StepContainer";
 
-interface ToggleProps {
-  toggle?: Toggle;
+export interface StepToggleProps {
   step: string;
+  toggle?: StepContainerActions["toggle"];
 }
 
-const toggle = (props: ToggleProps) => () =>
+const toggle = (props: StepToggleProps) => () =>
   props.toggle && props.toggle(props.step);
 
-const Component = (props: ToggleProps) => (
+const Component = (props: StepToggleProps) => (
   <HiddenToggle {...props} toggle={toggle(props)} />
 );
 

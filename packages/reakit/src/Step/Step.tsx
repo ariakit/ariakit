@@ -5,15 +5,14 @@ import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Hidden, { HiddenProps } from "../Hidden";
-import { Register, Update, Unregister, IsCurrent } from "./StepContainer";
+import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
 export interface StepProps extends HiddenProps {
-  [key: string]: any;
   step: string;
-  register: Register;
-  update: Update;
-  unregister: Unregister;
-  isCurrent: IsCurrent;
+  isCurrent: StepContainerSelectors["isCurrent"];
+  register: StepContainerActions["register"];
+  update: StepContainerActions["update"];
+  unregister: StepContainerActions["unregister"];
   order?: number;
 }
 
@@ -42,7 +41,6 @@ class Component extends React.Component<StepProps> {
   }
 }
 
-// @ts-ignore
 hoistNonReactStatics(Component, Hidden);
 
 const Step = styled(Component)`

@@ -5,16 +5,16 @@ import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
-import { Next, HasNext } from "./StepContainer";
+import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
-interface StepNext {
-  next: Next;
-  hasNext?: HasNext;
+export interface StepNextProps {
+  next: StepContainerActions["next"];
+  hasNext?: StepContainerSelectors["hasNext"];
   loop?: boolean;
   onClick?: () => any;
 }
 
-const Component: React.SFC<StepNext> = ({ onClick, ...props }) => (
+const Component = ({ onClick, ...props }: StepNextProps) => (
   <Box
     onClick={callAll(props.next, onClick)}
     disabled={!props.loop && props.hasNext && !props.hasNext()}
