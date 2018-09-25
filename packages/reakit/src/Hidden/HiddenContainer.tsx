@@ -35,8 +35,7 @@ const HiddenContainer: ComposableContainer<
 
 // @ts-ignore
 HiddenContainer.propTypes = {
-  initialState: PropTypes.object,
-  actions: PropTypes.objectOf(PropTypes.func)
+  initialState: PropTypes.object
 };
 
 export default Object.assign(HiddenContainer, {
