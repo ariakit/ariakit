@@ -165,6 +165,7 @@ const Hidden = styled(Component)`
       css`
         transform: ${slideWithProps} ${scaleWithProps};
         visibility: hidden;
+        will-change: transform opacity;
       `,
       "display: none !important"
     )};
