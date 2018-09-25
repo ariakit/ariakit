@@ -12,21 +12,14 @@ export interface HiddenContainerActions {
   toggle: () => void;
 }
 
-export const initialState: HiddenContainerState = { visible: false };
+const initialState: HiddenContainerState = { visible: false };
 
-export const show = () => () => ({ visible: true });
-export const hide = () => () => ({ visible: false });
-export const toggle = () => (state: HiddenContainerState) => ({
-  visible: !state.visible
-});
-
-export const actions: ActionMap<
-  HiddenContainerState,
-  HiddenContainerActions
-> = {
-  show,
-  hide,
-  toggle
+const actions: ActionMap<HiddenContainerState, HiddenContainerActions> = {
+  show: () => ({ visible: true }),
+  hide: () => ({ visible: false }),
+  toggle: () => state => ({
+    visible: !state.visible
+  })
 };
 
 const HiddenContainer: ComposableContainer<
@@ -46,4 +39,7 @@ HiddenContainer.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func)
 };
 
-export default HiddenContainer;
+export default Object.assign(HiddenContainer, {
+  initialState,
+  actions
+});

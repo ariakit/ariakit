@@ -4,8 +4,8 @@ node_js:
 script:
   - yarn lint
   - yarn type-check
-  - yarn test --coverage
   - yarn build
+  - yarn test --coverage
 cache:
   - yarn
 before_install:
