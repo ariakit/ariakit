@@ -1,9 +1,7 @@
-import {
-  stepContainerState as initialState,
-  stepContainerSelectors as s,
-  stepContainerActions as a
-} from "../StepContainer";
+import StepContainer from "../StepContainer";
 import c from "../../_utils/callMeMaybe";
+
+const { initialState, selectors: s, actions: a } = StepContainer;
 
 const state = (obj?: object) => ({ ...initialState, ...obj });
 

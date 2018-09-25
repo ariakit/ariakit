@@ -181,8 +181,8 @@ StepContainer.propTypes = {
   initialState: PropTypes.object
 };
 
-export const stepContainerState = initialState;
-export const stepContainerActions = actions;
-export const stepContainerSelectors = selectors;
-
-export default StepContainer;
+export default Object.assign(StepContainer, {
+  initialState,
+  actions,
+  selectors
+});
