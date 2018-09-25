@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.4"></a>
+## [0.15.4](https://github.com/reakit/reakit/compare/website@0.15.3...website@0.15.4) (2018-09-25)
+
+
+### Bug Fixes
+
+* **website:** Fix `DarkModeToggle` tracking ([00e8545](https://github.com/reakit/reakit/commit/00e8545))
+
+
+
+
+
 <a name="0.15.3"></a>
 ## [0.15.3](https://github.com/reakit/reakit/compare/website@0.15.2...website@0.15.3) (2018-09-21)
 
