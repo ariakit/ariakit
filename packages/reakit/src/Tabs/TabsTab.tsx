@@ -80,7 +80,6 @@ class Component extends React.Component<TabsTabProps> {
       <Step
         id={`${tab}Tab`}
         step={tab}
-        active={active}
         aria-selected={active}
         aria-controls={`${tab}Panel`}
         tabIndex={active ? 0 : -1}
@@ -119,13 +118,12 @@ TabsTab.propTypes = {
 
 const noop = () => {};
 
-// @ts-ignore
 TabsTab.defaultProps = {
   role: "tab",
   register: noop,
   update: noop,
   unregister: noop,
-  isCurrent: noop,
+  isCurrent: _ => false,
   show: noop,
   next: noop,
   previous: noop

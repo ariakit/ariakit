@@ -38,7 +38,6 @@ TabsPanel.propTypes = {
   isCurrent: PropTypes.func.isRequired
 };
 
-// @ts-ignore
 TabsPanel.defaultProps = {
   role: "tabpanel"
 };

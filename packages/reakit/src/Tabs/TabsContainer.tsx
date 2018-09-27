@@ -7,12 +7,7 @@ import StepContainer, {
   StepContainerState
 } from "../Step/StepContainer";
 
-interface TabsContainerInitialState {
-  loop: boolean;
-  current: number;
-}
-
-export const initialState: TabsContainerInitialState = {
+export const initialState: Partial<StepContainerState> = {
   loop: true,
   current: 0
 };
