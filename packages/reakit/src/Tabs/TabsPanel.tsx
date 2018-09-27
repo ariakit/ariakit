@@ -1,12 +1,19 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
 import Hidden from "../Hidden";
+import { StepContainerSelectors } from "../Step";
 
-const Component = props => {
+export interface TabsPanelProps {
+  isCurrent: StepContainerSelectors["isCurrent"];
+  tab: string;
+  role?: string;
+}
+
+const Component: React.SFC<TabsPanelProps> = props => {
   const { isCurrent, tab } = props;
   return (
     <Hidden
@@ -25,11 +32,13 @@ const TabsPanel = styled(Component)`
   ${theme("TabsPanel")};
 `;
 
+// @ts-ignore
 TabsPanel.propTypes = {
   tab: PropTypes.string.isRequired,
   isCurrent: PropTypes.func.isRequired
 };
 
+// @ts-ignore
 TabsPanel.defaultProps = {
   role: "tabpanel"
 };
