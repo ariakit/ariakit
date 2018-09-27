@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as React from "react";
-import { styled, Box, Code, Card, Step, Tabs } from "./src";
+import { styled, Box, Code, Card, Step } from "./src";
 
 interface Props {
   foo: string;

@@ -14,7 +14,7 @@ export interface StepProps extends HiddenProps {
   update: StepContainerActions["update"];
   unregister: StepContainerActions["unregister"];
   order?: number;
-  active: boolean;
+  active?: boolean;
 }
 
 class Component extends React.Component<StepProps> {
