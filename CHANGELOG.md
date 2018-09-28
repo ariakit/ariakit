@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.3"></a>
+## [0.15.3](https://github.com/reakit/reakit/compare/reakit@0.15.2...reakit@0.15.3) (2018-09-25)
+
+
+### Features
+
+* **typescript:** Add typescript support to `Group` components ([#251](https://github.com/reakit/reakit/issues/251)) ([7973cac](https://github.com/reakit/reakit/commit/7973cac))
+* **typescript:** Add typescript support to `Step` components ([#237](https://github.com/reakit/reakit/issues/237)) ([636f2cb](https://github.com/reakit/reakit/commit/636f2cb))
+* Attach `initialState`, `selectors` and `actions` to containers ([#253](https://github.com/reakit/reakit/issues/253)) ([b7869a2](https://github.com/reakit/reakit/commit/b7869a2))
+
+
+
+
+
 <a name="0.15.2"></a>
 ## [0.15.2](https://github.com/reakit/reakit/compare/reakit@0.15.1...reakit@0.15.2) (2018-09-21)
 

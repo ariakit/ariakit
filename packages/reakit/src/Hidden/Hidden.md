@@ -4,11 +4,11 @@
 <Hidden visible>Hidden</Hidden>
 ```
 
-You can use [HiddenContainer](HiddenContainer.md) to control its state with ease, and combine it with [HiddenShow](HiddenShow.md), [HiddenHide](HiddenHide.md) and [HiddenToggle](HiddenToggle.md) to get event handlers, like (`onClick`), out of the box.
+You can use [HiddenContainer](HiddenContainer.md) to control its state with ease, and combine it with [HiddenShow](HiddenShow.md), [HiddenHide](HiddenHide.md) and [HiddenToggle](HiddenToggle.md) to get event handlers, like `onClick`, out of the box.
 
-> **Tip:**
+> **Pro tip:**
 
-> Unless you're doing something different with state, it's highly recommended to pass the whole state down to components, the `{...hidden}` below. If something changes in the library in the future, even breaking changes, you most likely will not need to change your code, since the state details will be encapsulated.
+> Unless you're doing something different with state, it's highly recommended to pass the whole state down to components (`{...hidden}` in the example below). If something changes in the library in the future, even breaking changes, you most likely will not need to change your code, since the state details will be encapsulated.
 
 ```jsx
 import { Block, Group, Button } from "reakit";
@@ -21,6 +21,25 @@ import { Block, Group, Button } from "reakit";
         <Hidden.Hide as={Button} {...hidden}>Hide</Hidden.Hide>
         <Hidden.Toggle as={Button} {...hidden}>Toggle</Hidden.Toggle>
       </Group>
+      <Hidden {...hidden}>Hidden</Hidden>
+    </Block>
+  )}
+</Hidden.Container>
+```
+
+If you want to show or hide the `Hidden` component on events other than `onClick`, you should use the methods provided by [HiddenContainer](HiddenContainer.md). Please, note that the `hideOnClickOutside` prop shouldn't be used in this case.
+
+```jsx
+import { Block, Input, Button } from "reakit";
+
+<Hidden.Container>
+  {hidden => (
+    <Block>
+      <Input
+        onFocus={hidden.show}
+        onBlur={hidden.hide}
+        placeholder={hidden.visible ? "Blur me" : "Focus me"}
+      />
       <Hidden {...hidden}>Hidden</Hidden>
     </Block>
   )}

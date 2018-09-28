@@ -127,7 +127,6 @@ const Popover = styled(Component)`
   user-select: auto;
   cursor: auto;
   z-index: 999;
-  will-change: transform;
   ${theme("Popover")};
 `;
 
