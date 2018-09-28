@@ -166,7 +166,6 @@ class ToolbarFocusableComponent extends React.Component<
   }
 }
 
-// @ts-ignore
 hoistNonReactStatics(ToolbarFocusableComponent, Box);
 
 const ToolbarFocusable = styled(ToolbarFocusableComponent)`
