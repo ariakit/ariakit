@@ -16,7 +16,6 @@ export interface TabsTabProps extends StepContainerActions {
   isCurrent: StepContainerSelectors["isCurrent"];
   current: number;
   tab: string;
-  active: boolean;
   role?: string;
 }
 
