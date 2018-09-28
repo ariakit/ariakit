@@ -10,12 +10,31 @@ export interface SidebarProps extends OverlayProps {
   align?: "left" | "right";
 }
 
-const Component = (props: SidebarProps) => (
-  <Overlay
-    defaultSlide={props.align === "right" ? "left" : "right"}
-    {...props}
-  />
-);
+class Component extends React.Component<SidebarProps> {
+  handleTouchStart = () => {
+    const { hide, visible } = this.props;
+    if (hide && visible) hide();
+  };
+
+  componentDidMount() {
+    window.addEventListener("touchstart", () => this.handleTouchStart());
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("touchstart", () => this.handleTouchStart());
+  }
+
+  render() {
+    const { align, ...otherProps } = this.props;
+
+    return (
+      <Overlay
+        defaultSlide={align === "right" ? "left" : "right"}
+        {...otherProps}
+      />
+    );
+  }
+}
 
 hoistNonReactStatics(Component, Overlay);
 
