@@ -4,6 +4,7 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import callAll from "../_utils/callAll";
+import getSelector from "../_utils/getSelector";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
@@ -78,16 +79,14 @@ class ToolbarFocusableComponent extends React.Component<
 
   getToolbar = () => {
     if (typeof this.toolbar === "undefined") {
-      this.toolbar = this.getElement().closest(`.${Toolbar.styledComponentId}`);
+      this.toolbar = this.getElement().closest(getSelector(Toolbar));
     }
     return this.toolbar;
   };
 
   getFocusables = (): NodeListOf<Focusable> => {
     if (!this.getToolbar()) return new NodeList() as NodeListOf<Focusable>;
-    return this.getToolbar().querySelectorAll(
-      `.${(ToolbarFocusable as ToolbarFocusableType).styledComponentId}`
-    );
+    return this.getToolbar().querySelectorAll(getSelector(ToolbarFocusable));
   };
 
   getCurrentIndex = (focusables: NodeListOf<Focusable>) => {
@@ -183,9 +182,4 @@ ToolbarFocusableStyled.propTypes = {
 
 const ToolbarFocusable = as("div")(ToolbarFocusableStyled);
 
-// we need to augment type, because styled-components typings misses "styledComponentId" property
-type ToolbarFocusableType = typeof ToolbarFocusable & {
-  styledComponentId: string;
-};
-
-export default ToolbarFocusable as ToolbarFocusableType;
+export default ToolbarFocusable;

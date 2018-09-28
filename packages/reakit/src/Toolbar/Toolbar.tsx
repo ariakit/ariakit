@@ -57,9 +57,4 @@ Toolbar.defaultProps = {
 
 const ToolbarComponent = as("div")(Toolbar);
 
-// we need to augment type, because styled-components typings misses "styledComponentId" property
-type ToolbarComponentType = typeof ToolbarComponent & {
-  styledComponentId: string;
-};
-
-export default ToolbarComponent as ToolbarComponentType;
+export default ToolbarComponent;
