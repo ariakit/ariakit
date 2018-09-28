@@ -89,10 +89,11 @@ const Navigation = () => (
   </StyleguidistContainer>
 );
 
-const DarkModeToggle = () => (
+const DarkModeToggle = props => (
   <ThemeContainer>
     {({ mode, toggleMode }) => (
       <ButtonTransparent
+        {...props}
         onClick={() => {
           toggleMode();
           track(`reakit.${mode}ModeClick`)();
