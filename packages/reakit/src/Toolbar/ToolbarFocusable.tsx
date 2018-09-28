@@ -14,9 +14,9 @@ type Focusable = (Element | Text) & {
 };
 
 export interface ToolbarFocusableProps {
-  disabled?: boolean | null;
-  tabIndex: number | null;
-  onFocus: () => void;
+  disabled?: boolean;
+  tabIndex?: number;
+  onFocus?: () => void;
 }
 
 export interface ToolbarFocusableState {
@@ -30,12 +30,6 @@ class ToolbarFocusableComponent extends React.Component<
   private element: any;
 
   private toolbar: any;
-
-  static propTypes = {
-    tabIndex: PropTypes.number,
-    onFocus: PropTypes.func,
-    disabled: PropTypes.bool
-  };
 
   constructor(props: ToolbarFocusableProps) {
     super(props);
@@ -85,7 +79,7 @@ class ToolbarFocusableComponent extends React.Component<
   getToolbar = () => {
     if (typeof this.toolbar === "undefined") {
       this.toolbar = this.getElement().closest(
-        `.${(Toolbar as any).styledComponentId}`
+        `.${Toolbar.styledComponentId}`
       );
     }
     return this.toolbar;
@@ -176,10 +170,17 @@ class ToolbarFocusableComponent extends React.Component<
 }
 
 // @ts-ignore
-hoistNonReactStatics(Component, Box);
+hoistNonReactStatics(ToolbarFocusableComponent, Box);
 
 const ToolbarFocusable = styled(ToolbarFocusableComponent)`
   ${theme("ToolbarFocusable")};
 `;
+
+// @ts-ignore
+ToolbarFocusable.propTypes = {
+  tabIndex: PropTypes.number,
+  onFocus: PropTypes.func,
+  disabled: PropTypes.bool
+}
 
 export default as("div")(ToolbarFocusable);

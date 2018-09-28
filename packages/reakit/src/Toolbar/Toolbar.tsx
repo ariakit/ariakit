@@ -3,7 +3,7 @@ import * as PropTypes from "prop-types";
 import { theme, withProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
-import styled, { StyledComponentClass } from "../styled";
+import styled from "../styled";
 import as from "../as";
 import Box, { BoxProps } from "../Box";
 
@@ -44,12 +44,6 @@ const Toolbar = styled(Component)`
   ${theme("Toolbar")};
 `;
 
-type ToolbarComponentType = typeof Toolbar;
-
-type ToolbarComponentTypeAugmented = ToolbarComponentType & {
-  styledComponentId: string;
-};
-
 // @ts-ignore
 Toolbar.propTypes = {
   gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -61,6 +55,11 @@ Toolbar.defaultProps = {
   gutter: 8
 };
 
-const t = as("div")(Toolbar as ToolbarComponentTypeAugmented);
+const ToolbarComponent = as("div")(Toolbar);
 
-export default t;
+// we have to augment type, because styled-components typings misses "styledComponentId" property
+type ToolbarComponentType = typeof ToolbarComponent & {
+  styledComponentId: string;
+};
+
+export default ToolbarComponent as ToolbarComponentType;
