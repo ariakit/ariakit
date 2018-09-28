@@ -169,17 +169,15 @@ class ToolbarFocusableComponent extends React.Component<
 // @ts-ignore
 hoistNonReactStatics(ToolbarFocusableComponent, Box);
 
-const ToolbarFocusableStyled = styled(ToolbarFocusableComponent)`
+const ToolbarFocusable = styled(ToolbarFocusableComponent)`
   ${theme("ToolbarFocusable")};
 `;
 
 // @ts-ignore
-ToolbarFocusableStyled.propTypes = {
+ToolbarFocusable.propTypes = {
   tabIndex: PropTypes.number,
   onFocus: PropTypes.func,
   disabled: PropTypes.bool
 };
 
-const ToolbarFocusable = as("div")(ToolbarFocusableStyled);
-
-export default ToolbarFocusable;
+export default as("div")(ToolbarFocusable);

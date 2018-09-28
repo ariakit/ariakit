@@ -55,6 +55,4 @@ Toolbar.defaultProps = {
   gutter: 8
 };
 
-const ToolbarComponent = as("div")(Toolbar);
-
-export default ToolbarComponent;
+export default as("div")(Toolbar);
