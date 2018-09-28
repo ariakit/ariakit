@@ -20,8 +20,7 @@ export interface TabsTabProps extends StepContainerActions {
   role?: string;
 }
 
-interface Keymap {
-  [key: string]: () => void;
+interface KeyMap {
   ArrowLeft: StepContainerActions["previous"];
   ArrowRight: StepContainerActions["next"];
 }
@@ -50,11 +49,14 @@ class Component extends React.Component<TabsTabProps> {
   };
 
   keyDown = (e: KeyboardEvent) => {
-    const keyMap: Keymap = {
+    const keyMap: KeyMap = {
       ArrowLeft: this.props.previous,
       ArrowRight: this.props.next
     };
-    if (keyMap[e.key]) {
+
+    const inKeyMap = (key: string): key is keyof KeyMap => key in keyMap;
+
+    if (inKeyMap(e.key)) {
       e.preventDefault();
       keyMap[e.key]();
     }
