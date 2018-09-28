@@ -1,6 +1,6 @@
-import React from "react";
+import * as React from "react";
 import { findDOMNode } from "react-dom";
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import callAll from "../_utils/callAll";
@@ -10,14 +10,29 @@ import as from "../as";
 import Box from "../Box";
 import Toolbar from "./Toolbar";
 
-class Component extends React.Component {
-  static propTypes = {
-    tabIndex: PropTypes.number,
-    onFocus: PropTypes.func,
-    disabled: PropTypes.bool
-  };
+type Focusable = (Element | Text) & {
+  focus(): void;
+};
 
-  constructor(props) {
+export interface ToolbarFocusableProps {
+  disabled?: boolean;
+  tabIndex?: number;
+  onFocus?: () => void;
+}
+
+export interface ToolbarFocusableState {
+  tabIndex: number;
+}
+
+class ToolbarFocusableComponent extends React.Component<
+  ToolbarFocusableProps,
+  ToolbarFocusableState
+> {
+  private element: any;
+
+  private toolbar: any;
+
+  constructor(props: ToolbarFocusableProps) {
     super(props);
     this.state = {
       tabIndex: this.getInitialTabIndex()
@@ -34,7 +49,7 @@ class Component extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: ToolbarFocusableProps) {
     const { disabled } = this.props;
 
     if (prevProps.disabled !== disabled) {
@@ -69,14 +84,14 @@ class Component extends React.Component {
     return this.toolbar;
   };
 
-  getFocusables = () => {
-    if (!this.getToolbar()) return [];
+  getFocusables = (): NodeListOf<Focusable> => {
+    if (!this.getToolbar()) return new NodeList() as NodeListOf<Focusable>;
     return this.getToolbar().querySelectorAll(getSelector(ToolbarFocusable));
   };
 
-  getCurrentIndex = focusables => {
+  getCurrentIndex = (focusables: NodeListOf<Focusable>) => {
     let currentIndex = -1;
-    focusables.forEach((item, i) => {
+    focusables.forEach((item: Element | Text | null, i: number) => {
       if (item === this.getElement()) {
         currentIndex = i;
       }
@@ -84,12 +99,18 @@ class Component extends React.Component {
     return currentIndex;
   };
 
-  getNextFocusable = (focusables, currentIndex) => {
+  getNextFocusable = (
+    focusables: NodeListOf<Focusable>,
+    currentIndex: number
+  ) => {
     const index = currentIndex + 1;
     return focusables.item(index) || focusables.item(0);
   };
 
-  getPreviousFocusable = (focusables, currentIndex) => {
+  getPreviousFocusable = (
+    focusables: NodeListOf<Focusable>,
+    currentIndex: number
+  ) => {
     const index = currentIndex ? currentIndex - 1 : focusables.length - 1;
     return focusables.item(index);
   };
@@ -109,7 +130,7 @@ class Component extends React.Component {
     this.getElement().removeEventListener("keydown", this.handleKeyDown);
   };
 
-  handleKeyDown = e => {
+  handleKeyDown = (e: KeyboardEvent) => {
     const isVertical = this.toolbarIsVertical();
     const nextKey = isVertical ? "ArrowDown" : "ArrowRight";
     const previousKey = isVertical ? "ArrowUp" : "ArrowLeft";
@@ -145,10 +166,18 @@ class Component extends React.Component {
   }
 }
 
-hoistNonReactStatics(Component, Box);
+// @ts-ignore
+hoistNonReactStatics(ToolbarFocusableComponent, Box);
 
-const ToolbarFocusable = styled(Component)`
+const ToolbarFocusable = styled(ToolbarFocusableComponent)`
   ${theme("ToolbarFocusable")};
 `;
+
+// @ts-ignore
+ToolbarFocusable.propTypes = {
+  tabIndex: PropTypes.number,
+  onFocus: PropTypes.func,
+  disabled: PropTypes.bool
+};
 
 export default as("div")(ToolbarFocusable);
