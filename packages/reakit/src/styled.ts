@@ -9,8 +9,7 @@ export {
   ThemeProvider,
   withTheme,
   ServerStyleSheet,
-  StyleSheetManager,
-  StyledComponentClass
+  StyleSheetManager
 } from "styled-components";
 
 export default styled;
