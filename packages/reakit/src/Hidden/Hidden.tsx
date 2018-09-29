@@ -113,7 +113,10 @@ class Component extends React.Component<HiddenProps, HiddenState> {
     const node = findDOMNode(this);
     const { hide, visible } = this.props;
     const shouldHide =
-      node && !node.contains((e as MouseClickEvent).target) && visible && hide;
+      node instanceof Element &&
+      !node.contains((e as MouseClickEvent).target) &&
+      visible &&
+      hide;
 
     if (shouldHide) {
       // it's possible that the outside click was on a toggle button
@@ -165,6 +168,7 @@ const Hidden = styled(Component)`
       css`
         transform: ${slideWithProps} ${scaleWithProps};
         visibility: hidden;
+        will-change: transform opacity;
       `,
       "display: none !important"
     )};

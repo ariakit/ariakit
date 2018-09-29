@@ -1,13 +1,19 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme, withProp } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const Component = props => (
+export interface ToolbarProps extends BoxProps {
+  role?: string;
+  gutter?: number | string;
+  vertical?: boolean;
+}
+
+const Component = (props: ToolbarProps) => (
   <Box
     aria-orientation={props.vertical ? "vertical" : "horizontal"}
     {...props}
@@ -38,6 +44,7 @@ const Toolbar = styled(Component)`
   ${theme("Toolbar")};
 `;
 
+// @ts-ignore
 Toolbar.propTypes = {
   gutter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   vertical: PropTypes.bool

@@ -28,7 +28,7 @@ const StyledNewsletterForm = styled(NewsletterForm)`
 const Home = () => (
   <CoreLayout>
     <Helmet>
-      <title>Reakit</title>
+      <title>Reakit: React UI Toolkit</title>
     </Helmet>
     <StyledHero />
     <HomeExample />

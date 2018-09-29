@@ -9,10 +9,6 @@
 
 <!-- E.g. a bugfix, feature, refactoring, build related change, etc… -->
 
-**Did you add tests for your changes?**
-
-<!-- Note that we won't merge your changes if you don't add tests -->
-
 **Does this PR introduce a breaking change?**
 
 <!-- If this PR introduces a breaking change, please describe the impact and a migration path for existing applications. -->

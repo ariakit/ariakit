@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StandardProperties } from "csstype";
+import CSSProps from "./CSSProps";
 
 export type Dictionary<T = any> = { [key: string]: T };
 
@@ -58,6 +58,8 @@ export type InheritedAsProps<T> = WithoutAsProp<
   UnionToIntersection<ComponentToProps<T>>
 >;
 
+export type CSSProperties = { [K in keyof typeof CSSProps]?: string | number };
+
 /**
  * Props of a component enhanced with `as()`
  * @template T The type of the `as` prop
@@ -67,7 +69,7 @@ export type AsProps<T extends AsElement> = {
   nextAs?: T | T[];
   elementRef?: React.Ref<any>;
 } & InheritedAsProps<T> &
-  StandardProperties<string | number> &
+  CSSProperties &
   Omit<React.HTMLProps<any>, "as">;
 
 /**

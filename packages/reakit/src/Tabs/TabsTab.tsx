@@ -1,20 +1,42 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import createElementRef from "../_utils/createElementRef";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Step from "../Step";
+import Step, { StepContainerActions, StepContainerSelectors } from "../Step";
 
-class Component extends React.Component {
-  element = undefined;
+export interface TabsTabProps extends StepContainerActions {
+  className?: string;
+  disabled?: boolean;
+  onClick?: () => any;
+  onFocus?: () => any;
+  onKeyDown?: () => any;
+  isCurrent: StepContainerSelectors["isCurrent"];
+  current: number;
+  tab: string;
+  role?: string;
+}
 
-  componentDidUpdate(prevProps) {
+interface KeyMap {
+  ArrowLeft: StepContainerActions["previous"];
+  ArrowRight: StepContainerActions["next"];
+}
+
+class Component extends React.Component<TabsTabProps> {
+  element = React.createRef<HTMLElement>();
+
+  componentDidUpdate(prevProps: TabsTabProps) {
     const { current, isCurrent, tab } = this.props;
 
-    if (prevProps.current !== current && isCurrent(tab) && this.element) {
-      this.element.focus();
+    if (
+      prevProps.current !== current &&
+      isCurrent(tab) &&
+      this.element &&
+      this.element.current
+    ) {
+      this.element.current.focus();
     }
   }
 
@@ -25,12 +47,15 @@ class Component extends React.Component {
     }
   };
 
-  keyDown = e => {
-    const keyMap = {
+  keyDown = (e: KeyboardEvent) => {
+    const keyMap: KeyMap = {
       ArrowLeft: this.props.previous,
       ArrowRight: this.props.next
     };
-    if (keyMap[e.key]) {
+
+    const inKeyMap = (key: string): key is keyof KeyMap => key in keyMap;
+
+    if (inKeyMap(e.key)) {
       e.preventDefault();
       keyMap[e.key]();
     }
@@ -56,7 +81,6 @@ class Component extends React.Component {
       <Step
         id={`${tab}Tab`}
         step={tab}
-        active={active}
         aria-selected={active}
         aria-controls={`${tab}Panel`}
         tabIndex={active ? 0 : -1}
@@ -76,6 +100,7 @@ const TabsTab = styled(Component)`
   ${theme("TabsTab")};
 `;
 
+// @ts-ignore
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
@@ -99,7 +124,7 @@ TabsTab.defaultProps = {
   register: noop,
   update: noop,
   unregister: noop,
-  isCurrent: noop,
+  isCurrent: _ => false,
   show: noop,
   next: noop,
   previous: noop

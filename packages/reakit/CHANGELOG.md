@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.4"></a>
+## [0.15.4](https://github.com/reakit/reakit/compare/reakit@0.15.3...reakit@0.15.4) (2018-09-28)
+
+
+### Features
+
+* **typescript:** Add typescript support to `Tabs` components ([#255](https://github.com/reakit/reakit/issues/255)) ([1f97572](https://github.com/reakit/reakit/commit/1f97572))
+* **typescript:** Add typescript support to `Toolbar` components ([#257](https://github.com/reakit/reakit/issues/257)) ([c7fc33b](https://github.com/reakit/reakit/commit/c7fc33b))
+
+
+### Performance Improvements
+
+* Optimize `Hidden` animations with `will-change` ([cee366b](https://github.com/reakit/reakit/commit/cee366b))
+
+
+
+
+
+<a name="0.15.3"></a>
+## [0.15.3](https://github.com/reakit/reakit/compare/reakit@0.15.2...reakit@0.15.3) (2018-09-25)
+
+
+### Features
+
+* **typescript:** Add typescript support to `Group` components ([#251](https://github.com/reakit/reakit/issues/251)) ([7973cac](https://github.com/reakit/reakit/commit/7973cac))
+* **typescript:** Add typescript support to `Step` components ([#237](https://github.com/reakit/reakit/issues/237)) ([636f2cb](https://github.com/reakit/reakit/commit/636f2cb))
+* Attach `initialState`, `selectors` and `actions` to containers ([#253](https://github.com/reakit/reakit/issues/253)) ([b7869a2](https://github.com/reakit/reakit/commit/b7869a2))
+
+
+
+
+
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/reakit/reakit/compare/reakit@0.15.1...reakit@0.15.2) (2018-09-21)
+
+
+### Bug Fixes
+
+* **typescript:** Stop using csstype for CSS properties ([#246](https://github.com/reakit/reakit/issues/246)) ([0a0465c](https://github.com/reakit/reakit/commit/0a0465c)), closes [#245](https://github.com/reakit/reakit/issues/245)
+* **typescript:** Use `getSelector` when interpolating styled components ([#247](https://github.com/reakit/reakit/issues/247)) ([2167a80](https://github.com/reakit/reakit/commit/2167a80))
+
+
+### Features
+
+* Add `hidden` attribute to `Hidden` ([#240](https://github.com/reakit/reakit/issues/240)) ([2d157f9](https://github.com/reakit/reakit/commit/2d157f9))
+
+
+### Performance Improvements
+
+* Only dedupe class names when rendering HTML elements ([#239](https://github.com/reakit/reakit/issues/239)) ([1ec72be](https://github.com/reakit/reakit/commit/1ec72be))
+
+
+
+
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/reakit/reakit/compare/reakit@0.15.0...reakit@0.15.1) (2018-09-18)
 

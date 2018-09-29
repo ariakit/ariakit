@@ -1,7 +1,7 @@
 import { ComponentType } from "react";
 
-function getComponentName<P>(
-  component: ComponentType<P> | keyof JSX.IntrinsicElements
+function getComponentName(
+  component: ComponentType<any> | keyof JSX.IntrinsicElements
 ) {
   if (typeof component === "string") {
     return component;

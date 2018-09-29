@@ -1,11 +1,14 @@
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
+import getSelector from "../_utils/getSelector";
 import as from "../as";
 import Box from "../Box";
 import GroupItem from "./GroupItem";
 
-const verticalAt = (pass, fail) =>
+const groupItemSelector = getSelector(GroupItem);
+
+const verticalAt = (pass: any, fail?: any) =>
   ifProp(
     "verticalAt",
     css`
@@ -19,13 +22,18 @@ const verticalAt = (pass, fail) =>
     fail
   );
 
-const Group = styled(Box)`
+export interface GroupProps {
+  vertical: boolean;
+  verticalAt: number;
+}
+
+const Group = styled(Box)<GroupProps>`
   display: flex;
   flex-direction: ${ifProp("vertical", "column", "row")};
   ${verticalAt("flex-direction: column")};
 
   > *:not(:first-child):not(:last-child),
-  > *:not(:first-child):not(:last-child) ${GroupItem} {
+  > *:not(:first-child):not(:last-child) ${groupItemSelector} {
     border-radius: 0;
     ${verticalAt(
       css`
@@ -38,7 +46,7 @@ const Group = styled(Box)`
   }
 
   > *:first-child,
-  > *:first-child ${GroupItem} {
+  > *:first-child ${groupItemSelector} {
     border-bottom-right-radius: 0;
     ${verticalAt(
       css`
@@ -49,7 +57,7 @@ const Group = styled(Box)`
   }
 
   > *:last-child,
-  > *:last-child ${GroupItem} {
+  > *:last-child ${groupItemSelector} {
     border-top-left-radius: 0;
     ${verticalAt(
       css`
@@ -66,6 +74,7 @@ const Group = styled(Box)`
   ${theme("Group")};
 `;
 
+// @ts-ignore
 Group.propTypes = {
   vertical: PropTypes.bool,
   verticalAt: PropTypes.number

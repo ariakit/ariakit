@@ -89,13 +89,14 @@ const Navigation = () => (
   </StyleguidistContainer>
 );
 
-const DarkModeToggle = () => (
+const DarkModeToggle = props => (
   <ThemeContainer>
     {({ mode, toggleMode }) => (
       <ButtonTransparent
+        {...props}
         onClick={() => {
           toggleMode();
-          track(`reakit.${mode}ModeClick`);
+          track(`reakit.${mode}ModeClick`)();
         }}
       >
         <Icon as={MoonIcon} />

@@ -1,7 +1,7 @@
 {
   "name": "reakit",
-  "version": "0.15.1",
-  "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
+  "version": "0.15.4",
+  "description": "Toolkit for building really interactive UIs with React",
   "license": "MIT",
   "repository": "reakit/reakit",
   "main": "lib/index.js",
@@ -34,7 +34,7 @@
     "toolkit"
   ],
   "dependencies": {
-    "@emotion/is-prop-valid": "^0.6.6",
+    "@emotion/is-prop-valid": "^0.6.0",
     "constate": "^0.8.2",
     "hoist-non-react-statics": "^3.0.1",
     "popper.js": "^1.14.4",
@@ -43,14 +43,14 @@
     "styled-tools": "^1.5.1"
   },
   "devDependencies": {
-    "eslint": "^5.6.0",
+    "eslint": "^5.6.1",
     "jest-cli": "^23.6.0",
     "opn-cli": "^3.1.0",
     "react-styleguidist": "^7.3.8",
     "rimraf": "^2.6.1",
-    "rollup": "^0.66.0",
+    "rollup": "^0.66.2",
     "typescript": "^3.0.1",
-    "webpack": "^4.19.0"
+    "webpack": "^4.20.2"
   },
   "peerDependencies": {
     "react": "^16.3.0",

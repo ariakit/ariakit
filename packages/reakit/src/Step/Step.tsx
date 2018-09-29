@@ -1,21 +1,29 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Hidden from "../Hidden";
+import Hidden, { HiddenProps } from "../Hidden";
+import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
-const noop = () => false;
+export interface StepProps extends HiddenProps {
+  step: string;
+  isCurrent: StepContainerSelectors["isCurrent"];
+  register: StepContainerActions["register"];
+  update: StepContainerActions["update"];
+  unregister: StepContainerActions["unregister"];
+  order?: number;
+}
 
-class Component extends React.Component {
-  constructor(props) {
+class Component extends React.Component<StepProps> {
+  constructor(props: StepProps) {
     super(props);
     const { register, step, order } = this.props;
     register(step, order);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: StepProps) {
     const { step, update, order } = this.props;
     if (prevProps.step !== step || prevProps.order !== order) {
       update(prevProps.step, step, order);
@@ -39,6 +47,7 @@ const Step = styled(Component)`
   ${theme("Step")};
 `;
 
+// @ts-ignore
 Step.propTypes = {
   step: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
@@ -46,13 +55,6 @@ Step.propTypes = {
   unregister: PropTypes.func.isRequired,
   isCurrent: PropTypes.func.isRequired,
   order: PropTypes.number
-};
-
-Step.defaultProps = {
-  register: noop,
-  update: noop,
-  unregister: noop,
-  isCurrent: noop
 };
 
 export default as("div")(Step);

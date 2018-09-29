@@ -1,6 +1,7 @@
 import * as PropTypes from "prop-types";
 import { theme, withProp } from "styled-tools";
 import numberToPx from "../_utils/numberToPx";
+import getSelector from "../_utils/getSelector";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
@@ -13,8 +14,7 @@ export interface CardProps {
 const Card = styled(Box)<CardProps>`
   display: inline-block;
 
-  // @ts-ignore
-  && > *:not(${CardFit}) {
+  && > *:not(${getSelector(CardFit)}) {
     margin: ${withProp("gutter", numberToPx)};
   }
 
