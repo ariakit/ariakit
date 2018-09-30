@@ -6,7 +6,9 @@ const Box = (props: any) => null;
 
 const wrap = (Container: React.StatelessComponent<any>, props = {}) =>
   mount(
-    <Container {...props}>{(popover: any) => <Box popover={popover} />}</Container>
+    <Container {...props}>
+      {(popover: any) => <Box popover={popover} />}
+    </Container>
   );
 
 const getState = (wrapper: ReactWrapper) =>
