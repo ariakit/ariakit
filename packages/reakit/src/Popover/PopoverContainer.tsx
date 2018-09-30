@@ -1,13 +1,13 @@
-import React from "react";
+import * as React from "react";
 import callAll from "../_utils/callAll";
 import uniqueId from "../_utils/uniqueId";
-import HiddenContainer from "../Hidden/HiddenContainer";
+import HiddenContainer, { HiddenContainerProps } from "../Hidden/HiddenContainer";
 
-const onMount = ({ setState }) => {
+const onMount = ({ setState }: { setState: any }) => {
   setState({ popoverId: uniqueId("popover") });
 };
 
-const PopoverContainer = props => (
+const PopoverContainer = (props: HiddenContainerProps) => (
   <HiddenContainer {...props} onMount={callAll(onMount, props.onMount)} />
 );
 
