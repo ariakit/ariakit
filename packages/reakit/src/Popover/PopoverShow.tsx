@@ -4,15 +4,10 @@ import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenShow, { HiddenShowProps } from "../Hidden/HiddenShow";
+import { PopoverComponentProps, ExcludedHiddenProps } from "./types";
 
-export interface PopoverShowProps extends Exclude<HiddenShowProps, {
-  'aria-expanded'?: boolean;
-  'aria-controls'?: string;
-  'aria-haspopup'?: boolean;
-}> {
-  visible?: boolean;
-  popoverId?: string;
-}
+export type PopoverShowProps = Exclude<HiddenShowProps, ExcludedHiddenProps> &
+  PopoverComponentProps;
 
 const PopoverShowComponent = (props: PopoverShowProps) => (
   <HiddenShow

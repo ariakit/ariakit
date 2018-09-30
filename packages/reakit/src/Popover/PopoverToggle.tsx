@@ -3,16 +3,14 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenToggle, {HiddenToggleProps} from "../Hidden/HiddenToggle";
+import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
+import { PopoverComponentProps, ExcludedHiddenProps } from "./types";
 
-export interface PopoverToggleProps extends Exclude<HiddenToggleProps, {
-  'aria-expanded'?: boolean;
-  'aria-controls'?: string;
-  'aria-haspopup'?: boolean;
-}> {
-  visible?: boolean;
-  popoverId?: string;
-}
+export type PopoverToggleProps = Exclude<
+  HiddenToggleProps,
+  ExcludedHiddenProps
+> &
+  PopoverComponentProps;
 
 const PopoverToggleComponent = (props: PopoverToggleProps) => (
   <HiddenToggle
