@@ -43,7 +43,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 
   private getPopover = () => findDOMNode(this) as NodeSelector & Node & Element;
 
-  private modifier = (data: Popper.Data, options: Object) => {
+  private modifier = (data: Popper.Data) => {
     const { placement, offsets, arrowElement, arrowStyles } = data;
     const { reference, popper } = offsets;
     const [position] = placement.split("-");

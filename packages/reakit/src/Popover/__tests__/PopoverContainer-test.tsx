@@ -2,6 +2,7 @@ import * as React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import PopoverContainer from "../PopoverContainer";
 
+// @ts-ignore
 const Box = (props: any) => null;
 
 const wrap = (Container: React.StatelessComponent<any>, props = {}) =>
