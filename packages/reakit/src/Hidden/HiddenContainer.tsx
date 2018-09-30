@@ -1,6 +1,11 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { Container, ComposableContainer, ActionMap, ContainerProps } from "constate";
+import {
+  Container,
+  ComposableContainer,
+  ActionMap,
+  ContainerProps
+} from "constate";
 
 export interface HiddenContainerState {
   visible: boolean;
@@ -22,7 +27,10 @@ const actions: ActionMap<HiddenContainerState, HiddenContainerActions> = {
   })
 };
 
-export type HiddenContainerProps = ContainerProps<HiddenContainerState, HiddenContainerActions>;
+export type HiddenContainerProps = ContainerProps<
+  HiddenContainerState,
+  HiddenContainerActions
+>;
 
 const HiddenContainer: ComposableContainer<
   HiddenContainerState,
