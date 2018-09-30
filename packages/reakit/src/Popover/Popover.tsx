@@ -9,7 +9,7 @@ import as from "../as";
 import Hidden, { Position } from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
 
-export interface PopoverComponentProps {
+export interface PopoverProps {
   role?: string;
   hideOnEsc?: boolean;
   placement?: Popper.Placement;
@@ -22,7 +22,7 @@ export interface PopoverComponentProps {
   visible?: boolean;
 }
 
-export interface PopoverComponentState {
+export interface PopoverState {
   placement?: Popper.Placement;
   translateX?: number | string;
   translateY?: number | string;
@@ -30,10 +30,7 @@ export interface PopoverComponentState {
   originY?: number | string;
 }
 
-class PopoverComponent extends React.Component<
-  PopoverComponentProps,
-  PopoverComponentState
-> {
+class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
   state = {
     placement: this.props.placement,
     translateX: undefined,
@@ -126,7 +123,7 @@ class PopoverComponent extends React.Component<
   }
 
   componentDidUpdate(
-    prevProps: PopoverComponentProps & Readonly<{ children?: React.ReactNode }>
+    prevProps: PopoverProps & Readonly<{ children?: React.ReactNode }>
   ) {
     if (
       prevProps.visible !== this.props.visible ||
