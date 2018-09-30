@@ -1,10 +1,14 @@
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { prop, theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import Box from "../Box";
 
-const ToolbarContent = styled(Box)`
+export interface ToolbarContentProps {
+  align?: "start" | "center" | "end";
+}
+
+const ToolbarContent = styled(Box)<ToolbarContentProps>`
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: min-content;
@@ -23,6 +27,7 @@ const ToolbarContent = styled(Box)`
   ${theme("ToolbarContent")};
 `;
 
+// @ts-ignore
 ToolbarContent.propTypes = {
   align: PropTypes.oneOf(["start", "center", "end"])
 };

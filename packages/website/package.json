@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "0.15.4",
+  "version": "0.15.5",
   "private": true,
   "scripts": {
     "start": "styleguidist server",
@@ -24,17 +24,17 @@
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.5",
     "react-router-dom": "^4.2.2",
-    "reakit": "^0.15.3",
-    "reakit-theme-default": "^0.1.4",
+    "reakit": "^0.15.4",
+    "reakit-theme-default": "^0.1.5",
     "styled-tools": "^1.5.1",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@types/codemirror": "^0.0.60",
+    "@types/codemirror": "^0.0.61",
     "@types/lodash": "^4.14.116",
-    "babel-loader": "^8.0.0",
+    "babel-loader": "^8.0.4",
     "css-loader": "^1.0.0",
-    "eslint": "^5.6.0",
+    "eslint": "^5.6.1",
     "file-loader": "^2.0.0",
     "jest-cli": "^23.6.0",
     "opn-cli": "^3.1.0",
@@ -42,6 +42,6 @@
     "react-styleguidist": "^7.3.8",
     "style-loader": "^0.23.0",
     "url-loader": "^1.1.1",
-    "webpack": "^4.19.1"
+    "webpack": "^4.20.2"
   }
 }
