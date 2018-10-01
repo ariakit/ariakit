@@ -1,13 +1,19 @@
 /* eslint-disable react/no-unused-state */
-import React from "react";
+import * as React from "react";
 import { findDOMNode } from "react-dom";
 import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Popover from "../Popover";
+import Popover, { PopoverProps } from "../Popover";
 
-class Component extends React.Component {
+export type TooltipProps = PopoverProps;
+
+export interface TooltipState {
+  visible?: boolean;
+}
+
+class TooltipComponent extends React.Component<TooltipProps, TooltipState> {
   state = {
     visible: false
   };
@@ -38,7 +44,7 @@ class Component extends React.Component {
 
   hide = () => this.setState({ visible: false });
 
-  getTooltip = () => findDOMNode(this);
+  getTooltip = () => findDOMNode(this) as Element & { parentNode: Node };
 
   render() {
     const { visible } = this.isControlled() ? this.props : this.state;
@@ -46,9 +52,9 @@ class Component extends React.Component {
   }
 }
 
-hoistNonReactStatics(Component, Popover);
+hoistNonReactStatics(TooltipComponent, Popover);
 
-const Tooltip = styled(Component)`
+const Tooltip = styled(TooltipComponent)`
   ${theme("Tooltip")};
 `;
 

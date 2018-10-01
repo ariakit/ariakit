@@ -1,26 +1,29 @@
-import React from "react";
-import { mount } from "enzyme";
+import * as React from "react";
+import { mount, ReactWrapper } from "enzyme";
 import PopoverContainer from "../PopoverContainer";
 
-const Box = () => null;
+// @ts-ignore
+const Box = (props: any) => null;
 
-const wrap = (Container, props = {}) =>
+const wrap = (Container: React.StatelessComponent<any>, props = {}) =>
   mount(
-    <Container {...props}>{popover => <Box popover={popover} />}</Container>
+    <Container {...props}>
+      {(popover: any) => <Box popover={popover} />}
+    </Container>
   );
 
-const getState = wrapper =>
+const getState = (wrapper: ReactWrapper) =>
   wrapper
     .update()
     .find(Box)
     .prop("popover");
 
-const ensureState = wrapper => {
+const ensureState = (wrapper: ReactWrapper) => {
   const state = getState(wrapper);
   expect(state).toHaveProperty("popoverId", expect.any(String));
 };
 
-const createTests = Container => {
+const createTests = (Container: React.StatelessComponent<any>) => {
   test("state", () => {
     ensureState(wrap(Container));
   });

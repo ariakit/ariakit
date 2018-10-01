@@ -1,6 +1,6 @@
 import Tooltip from "./Tooltip";
 import TooltipArrow from "./TooltipArrow";
 
-Tooltip.Arrow = TooltipArrow;
-
-export default Tooltip;
+export default Object.assign(Tooltip, {
+  Arrow: TooltipArrow
+});
