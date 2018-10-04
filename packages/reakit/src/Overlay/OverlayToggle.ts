@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenToggle from "../Hidden/HiddenToggle";
+import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
 
-const OverlayToggle = styled(HiddenToggle)`
+export interface OverlayToggleProps extends HiddenToggleProps {}
+
+const OverlayToggle = styled(HiddenToggle)<OverlayToggleProps>`
   ${theme("OverlayToggle")};
 `;
 

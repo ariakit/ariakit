@@ -7,17 +7,17 @@ import callAll from "../_utils/callAll";
 import getSelector from "../_utils/getSelector";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 import Toolbar from "./Toolbar";
 
 type Focusable = (Element | Text) & {
   focus(): void;
 };
 
-export interface ToolbarFocusableProps {
+export interface ToolbarFocusableProps extends BoxProps {
   disabled?: boolean;
   tabIndex?: number;
-  onFocus?: () => void;
+  onFocus?: React.FocusEventHandler;
 }
 
 export interface ToolbarFocusableState {

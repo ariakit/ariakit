@@ -1,10 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-// @ts-ignore
-import Flex from "../Flex";
+import Flex, { FlexProps } from "../Flex";
 
-const InlineFlex = styled(Flex)`
+export interface InlineFlexProps extends FlexProps {}
+
+const InlineFlex = styled(Flex)<InlineFlexProps>`
   display: inline-flex;
   ${theme("InlineFlex")};
 `;

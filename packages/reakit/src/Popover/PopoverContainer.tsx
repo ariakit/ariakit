@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ComposableContainer } from "constate/dist/ts/src";
+import { ComposableContainer, OnMount } from "constate";
 import callAll from "../_utils/callAll";
 import uniqueId from "../_utils/uniqueId";
 import HiddenContainer, {
@@ -7,12 +7,16 @@ import HiddenContainer, {
   HiddenContainerActions
 } from "../Hidden/HiddenContainer";
 
-const onMount = ({ setState }: { setState: any }) => {
+export interface PopoverContainerState extends HiddenContainerState {
+  popoverId?: string;
+}
+
+const onMount: OnMount<PopoverContainerState> = ({ setState }) => {
   setState({ popoverId: uniqueId("popover") });
 };
 
 const PopoverContainer: ComposableContainer<
-  HiddenContainerState,
+  PopoverContainerState,
   HiddenContainerActions
 > = props => (
   <HiddenContainer {...props} onMount={callAll(onMount, props.onMount)} />

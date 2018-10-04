@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const GroupItem = styled(Box)`
+export interface GroupItemProps extends BoxProps {}
+
+const GroupItem = styled(Box)<GroupItemProps>`
   ${theme("GroupItem")};
 `;
 

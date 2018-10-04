@@ -14,6 +14,7 @@ import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
 import as from "../as";
 import Box, { BoxProps } from "../Box";
+import { HiddenContainerActions } from "./HiddenContainer";
 
 interface MouseClickEvent extends MouseEvent {
   target: Node;
@@ -23,8 +24,8 @@ export type Position = "top" | "right" | "bottom" | "left";
 
 export interface HiddenProps extends BoxProps {
   visible?: boolean;
-  hide?: () => void;
-  onTransitionEnd?: () => void;
+  hide?: HiddenContainerActions["hide"];
+  onTransitionEnd?: React.TransitionEventHandler;
   hideOnEsc?: boolean;
   hideOnClickOutside?: boolean;
   unmount?: boolean;
@@ -48,7 +49,7 @@ interface HiddenState {
   transitioning?: boolean;
 }
 
-class Component extends React.Component<HiddenProps, HiddenState> {
+class HiddenComponent extends React.Component<HiddenProps, HiddenState> {
   state = {
     visible: this.props.visible,
     transitioning: this.props.transitioning
@@ -148,9 +149,9 @@ class Component extends React.Component<HiddenProps, HiddenState> {
   }
 }
 
-hoistNonReactStatics(Component, Box);
+hoistNonReactStatics(HiddenComponent, Box);
 
-const Hidden = styled(Component)`
+const Hidden = styled(HiddenComponent)`
   transform: ${translateWithProps};
   ${ifProp(
     hasTransition,

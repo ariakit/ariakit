@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenHide from "../Hidden/HiddenHide";
+import HiddenHide, { HiddenHideProps } from "../Hidden/HiddenHide";
 
-const StepHide = styled(HiddenHide)`
+export interface StepHideProps extends HiddenHideProps {}
+
+const StepHide = styled(HiddenHide)<StepHideProps>`
   ${theme("StepHide")};
 `;
 

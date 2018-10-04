@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const Blockquote = styled(Box)`
+export interface BlockquoteProps extends BoxProps {}
+
+const Blockquote = styled(Box)<BlockquoteProps>`
   ${theme("Blockquote")};
 `;
 

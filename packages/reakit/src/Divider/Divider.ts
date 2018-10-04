@@ -2,9 +2,9 @@ import * as PropTypes from "prop-types";
 import { ifProp, theme } from "styled-tools";
 import styled, { css } from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-export interface DividerProps {
+export interface DividerProps extends BoxProps {
   vertical?: boolean;
 }
 

@@ -4,18 +4,19 @@ import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
+import { HiddenContainerActions } from "./HiddenContainer";
 
-export interface HiddenHideProps {
-  hide: () => void;
-  onClick?: (...args: any[]) => void;
+export interface HiddenHideProps extends BoxProps {
+  hide: HiddenContainerActions["hide"];
+  onClick?: React.MouseEventHandler;
 }
 
-const Component = ({ onClick, ...props }: HiddenHideProps) => (
+const HiddenHideComponent = ({ onClick, ...props }: HiddenHideProps) => (
   <Box onClick={callAll(props.hide, onClick)} {...props} />
 );
 
-const HiddenHide = styled(Component)`
+const HiddenHide = styled(HiddenHideComponent)`
   ${theme("HiddenHide")};
 `;
 

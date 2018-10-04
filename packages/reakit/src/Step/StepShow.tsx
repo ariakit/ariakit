@@ -3,10 +3,11 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenShow from "../Hidden/HiddenShow";
+import { Omit } from "../_utils/types";
+import HiddenShow, { HiddenShowProps } from "../Hidden/HiddenShow";
 import { StepContainerActions } from "./StepContainer";
 
-export interface StepShowProps {
+export interface StepShowProps extends Omit<HiddenShowProps, "show"> {
   show: StepContainerActions["show"];
   step: string;
 }

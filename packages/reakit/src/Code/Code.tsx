@@ -12,7 +12,7 @@ export interface CodeProps extends BoxProps {
   children?: React.ReactNode;
 }
 
-const Component = (props: CodeProps) => {
+const CodeComponent = (props: CodeProps) => {
   if (props.block) {
     return (
       <Box as="pre" {...props}>
@@ -42,4 +42,4 @@ Code.defaultProps = {
   tone: -2
 };
 
-export default as(Component)(Code);
+export default as(CodeComponent)(Code);

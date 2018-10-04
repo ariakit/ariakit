@@ -4,10 +4,11 @@ import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenShow, { HiddenShowProps } from "../Hidden/HiddenShow";
-import { PopoverComponentProps, ExcludedHiddenProps } from "./types";
 
-export type PopoverShowProps = Exclude<HiddenShowProps, ExcludedHiddenProps> &
-  PopoverComponentProps;
+export interface PopoverShowProps extends HiddenShowProps {
+  popoverId?: string;
+  visible?: boolean;
+}
 
 const PopoverShowComponent = (props: PopoverShowProps) => (
   <HiddenShow

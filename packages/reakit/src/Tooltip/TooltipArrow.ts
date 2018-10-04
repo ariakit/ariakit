@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import PopoverArrow from "../Popover/PopoverArrow";
+import PopoverArrow, { PopoverArrowProps } from "../Popover/PopoverArrow";
 
-const TooltipArrow = styled(PopoverArrow)`
+export interface TooltipArrowProps extends PopoverArrowProps {}
+
+const TooltipArrow = styled(PopoverArrow)<TooltipArrowProps>`
   ${theme("TooltipArrow")};
 `;
 

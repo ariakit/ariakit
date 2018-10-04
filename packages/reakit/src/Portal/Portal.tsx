@@ -6,11 +6,13 @@ import styled from "../styled";
 import as from "../as";
 import Box, { BoxProps } from "../Box";
 
+export interface PortalProps extends BoxProps {}
+
 interface PortalState {
   wrapper?: React.ReactNode;
 }
 
-class Component extends React.Component<BoxProps, PortalState> {
+class PortalComponent extends React.Component<PortalProps, PortalState> {
   state = { wrapper: null };
 
   componentDidMount() {
@@ -35,9 +37,9 @@ class Component extends React.Component<BoxProps, PortalState> {
   }
 }
 
-hoistNonReactStatics(Component, Box);
+hoistNonReactStatics(PortalComponent, Box);
 
-const Portal = styled(Component)`
+const Portal = styled(PortalComponent)`
   ${theme("Portal")};
 `;
 

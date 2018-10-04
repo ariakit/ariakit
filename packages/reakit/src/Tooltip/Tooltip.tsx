@@ -7,9 +7,9 @@ import styled from "../styled";
 import as from "../as";
 import Popover, { PopoverProps } from "../Popover";
 
-export type TooltipProps = PopoverProps;
+export interface TooltipProps extends PopoverProps {}
 
-export interface TooltipState {
+interface TooltipState {
   visible?: boolean;
 }
 

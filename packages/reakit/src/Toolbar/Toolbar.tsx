@@ -13,16 +13,16 @@ export interface ToolbarProps extends BoxProps {
   vertical?: boolean;
 }
 
-const Component = (props: ToolbarProps) => (
+const ToolbarComponent = (props: ToolbarProps) => (
   <Box
     aria-orientation={props.vertical ? "vertical" : "horizontal"}
     {...props}
   />
 );
 
-hoistNonReactStatics(Component, Box);
+hoistNonReactStatics(ToolbarComponent, Box);
 
-const Toolbar = styled(Component)`
+const Toolbar = styled(ToolbarComponent)`
   position: relative;
   display: grid;
   width: 100%;
