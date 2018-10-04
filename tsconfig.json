@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "jsx": "react",
     "strict": true,
-    "allowJs": true,
     "declaration": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,

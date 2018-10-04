@@ -27,7 +27,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext js,ts,tsx",
     "build:clean": "rimraf dist es lib ts",
-    "build:ts": "tsc --emitDeclarationOnly --allowJs false",
+    "build:ts": "tsc --emitDeclarationOnly",
     "prebuild": "npm run build:clean && npm run build:ts",
     "build": "rollup -c",
     "preversion": "npm run lint && npm test && npm run build",
