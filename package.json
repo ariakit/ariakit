@@ -84,7 +84,7 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^6.0.0",
-    "typescript": "^3.0.1",
+    "typescript": "3.0.3",
     "typescript-eslint-parser": "^19.0.2"
   }
 }

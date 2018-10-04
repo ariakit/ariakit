@@ -51,7 +51,7 @@
     "reakit": "^0.15.4",
     "rimraf": "^2.6.1",
     "rollup": "^0.66.3",
-    "typescript": "^3.0.1"
+    "typescript": "3.0.3"
   },
   "peerDependencies": {
     "reakit": "^0.15.0"
