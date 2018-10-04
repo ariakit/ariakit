@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as React from "react";
-import { styled, Box, Code, Card, Step, Tabs } from "./src";
+import { styled, Box, Code, Card, Step, Tabs, Popover } from "./src";
 
 interface Props {
   foo: string;
@@ -47,4 +47,13 @@ interface Props {
       </div>
     )}
   </Tabs.Container>;
+
+  <Popover.Container>
+    {popover => (
+      <div>
+        <Popover.Toggle {...popover}>Toggle</Popover.Toggle>
+        <Popover {...popover}>Popover</Popover>
+      </div>
+    )}
+  </Popover.Container>;
 }
