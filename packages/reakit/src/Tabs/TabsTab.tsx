@@ -3,16 +3,23 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import createElementRef from "../_utils/createElementRef";
 import callAll from "../_utils/callAll";
+import { Omit } from "../_utils/types";
 import styled from "../styled";
 import as from "../as";
-import Step, { StepContainerActions, StepContainerSelectors } from "../Step";
+import Step, {
+  StepContainerActions,
+  StepContainerSelectors,
+  StepProps
+} from "../Step";
 
-export interface TabsTabProps extends StepContainerActions {
+export interface TabsTabProps
+  extends Omit<StepProps, "hide" | "step">,
+    StepContainerActions {
   className?: string;
   disabled?: boolean;
-  onClick?: () => any;
-  onFocus?: () => any;
-  onKeyDown?: () => any;
+  onClick?: React.MouseEventHandler;
+  onFocus?: React.MouseEventHandler;
+  onKeyDown?: React.KeyboardEventHandler;
   isCurrent: StepContainerSelectors["isCurrent"];
   current: number;
   tab: string;
@@ -24,7 +31,7 @@ interface KeyMap {
   ArrowRight: StepContainerActions["next"];
 }
 
-class Component extends React.Component<TabsTabProps> {
+class TabsTabComponent extends React.Component<TabsTabProps> {
   element = React.createRef<HTMLElement>();
 
   componentDidUpdate(prevProps: TabsTabProps) {
@@ -96,7 +103,7 @@ class Component extends React.Component<TabsTabProps> {
   }
 }
 
-const TabsTab = styled(Component)`
+const TabsTab = styled(TabsTabComponent)`
   ${theme("TabsTab")};
 `;
 
@@ -124,7 +131,7 @@ TabsTab.defaultProps = {
   register: noop,
   update: noop,
   unregister: noop,
-  isCurrent: _ => false,
+  isCurrent: () => false,
   show: noop,
   next: noop,
   previous: noop

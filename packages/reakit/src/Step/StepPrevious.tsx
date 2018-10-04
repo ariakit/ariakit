@@ -4,17 +4,17 @@ import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
-export interface StepPreviousProps {
+export interface StepPreviousProps extends BoxProps {
   previous: StepContainerActions["previous"];
   hasPrevious?: StepContainerSelectors["hasPrevious"];
   loop?: boolean;
-  onClick?: () => any;
+  onClick?: React.MouseEventHandler;
 }
 
-const Component = ({ onClick, ...props }: StepPreviousProps) => (
+const StepPreviousComponent = ({ onClick, ...props }: StepPreviousProps) => (
   <Box
     onClick={callAll(props.previous, onClick)}
     disabled={!props.loop && props.hasPrevious && !props.hasPrevious()}
@@ -22,7 +22,7 @@ const Component = ({ onClick, ...props }: StepPreviousProps) => (
   />
 );
 
-const StepPrevious = styled(Component)`
+const StepPrevious = styled(StepPreviousComponent)`
   ${theme("StepPrevious")};
 `;
 

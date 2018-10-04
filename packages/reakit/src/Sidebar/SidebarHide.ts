@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import OverlayHide from "../Overlay/OverlayHide";
+import OverlayHide, { OverlayHideProps } from "../Overlay/OverlayHide";
 
-const SidebarHide = styled(OverlayHide)`
+export interface SidebarHideProps extends OverlayHideProps {}
+
+const SidebarHide = styled(OverlayHide)<SidebarHideProps>`
   ${theme("SidebarHide")};
 `;
 

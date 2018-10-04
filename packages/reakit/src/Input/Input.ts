@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const Input = styled(Box)`
+export interface InputProps extends BoxProps {}
+
+const Input = styled(Box)<InputProps>`
   ${theme("Input")};
 `;
 

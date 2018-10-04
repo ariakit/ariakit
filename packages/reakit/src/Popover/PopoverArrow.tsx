@@ -10,9 +10,6 @@ import Box, { BoxProps } from "../Box";
 export interface PopoverArrowProps extends BoxProps {
   fillColor?: string;
   strokeColor?: string;
-  opaque?: boolean;
-  palette?: string;
-  tone?: number;
 }
 
 const PopoverArrowComponent = (props: PopoverArrowProps) => (

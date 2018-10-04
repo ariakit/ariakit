@@ -4,17 +4,17 @@ import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
-export interface StepNextProps {
+export interface StepNextProps extends BoxProps {
   next: StepContainerActions["next"];
   hasNext?: StepContainerSelectors["hasNext"];
   loop?: boolean;
-  onClick?: () => any;
+  onClick?: React.MouseEventHandler;
 }
 
-const Component = ({ onClick, ...props }: StepNextProps) => (
+const StepNextComponent = ({ onClick, ...props }: StepNextProps) => (
   <Box
     onClick={callAll(props.next, onClick)}
     disabled={!props.loop && props.hasNext && !props.hasNext()}
@@ -22,7 +22,7 @@ const Component = ({ onClick, ...props }: StepNextProps) => (
   />
 );
 
-const StepNext = styled(Component)`
+const StepNext = styled(StepNextComponent)`
   ${theme("StepNext")};
 `;
 

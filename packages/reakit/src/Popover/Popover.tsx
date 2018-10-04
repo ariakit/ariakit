@@ -6,10 +6,10 @@ import Popper from "popper.js";
 import styled from "../styled";
 import getSelector from "../_utils/getSelector";
 import as from "../as";
-import Hidden, { Position } from "../Hidden";
+import Hidden, { Position, HiddenProps } from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
 
-export interface PopoverProps {
+export interface PopoverProps extends HiddenProps {
   role?: string;
   hideOnEsc?: boolean;
   placement?: Popper.Placement;
@@ -17,9 +17,6 @@ export interface PopoverProps {
   shift?: boolean;
   gutter?: number | string;
   popoverId?: string;
-  opaque?: boolean;
-  palette?: string;
-  visible?: boolean;
 }
 
 export interface PopoverState {

@@ -4,13 +4,11 @@ import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
 import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
-import { PopoverComponentProps, ExcludedHiddenProps } from "./types";
 
-export type PopoverToggleProps = Exclude<
-  HiddenToggleProps,
-  ExcludedHiddenProps
-> &
-  PopoverComponentProps;
+export interface PopoverToggleProps extends HiddenToggleProps {
+  popoverId?: string;
+  visible?: boolean;
+}
 
 const PopoverToggleComponent = (props: PopoverToggleProps) => (
   <HiddenToggle

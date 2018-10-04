@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Hidden from "../Hidden";
+import Hidden, { HiddenProps } from "../Hidden";
 
-const Backdrop = styled(Hidden)`
+export interface BackdropProps extends HiddenProps {}
+
+const Backdrop = styled(Hidden)<BackdropProps>`
   position: fixed;
   top: 0;
   left: 0;

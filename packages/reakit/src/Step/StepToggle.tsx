@@ -3,12 +3,13 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenToggle from "../Hidden/HiddenToggle";
+import { Omit } from "../_utils/types";
+import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
 import { StepContainerActions } from "./StepContainer";
 
-export interface StepToggleProps {
-  step: string;
+export interface StepToggleProps extends Omit<HiddenToggleProps, "toggle"> {
   toggle?: StepContainerActions["toggle"];
+  step: string;
 }
 
 const toggle = (props: StepToggleProps) => () =>

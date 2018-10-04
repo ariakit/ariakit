@@ -3,9 +3,9 @@ import { theme } from "styled-tools";
 import { bool, value } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-export interface GridProps {
+export interface GridProps extends BoxProps {
   row?: boolean;
   column?: boolean;
   dense?: boolean;

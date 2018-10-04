@@ -3,12 +3,9 @@ import { theme } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const directions = ["row", "column", "rowReverse", "columnReverse"];
-const wraps = ["nowrap", "wrap", "wrapReverse"];
-
-export interface FlexProps {
+export interface FlexProps extends BoxProps {
   row?: boolean;
   column?: boolean;
   rowReverse?: boolean;
@@ -17,6 +14,9 @@ export interface FlexProps {
   wrap?: boolean;
   wrapReverse?: boolean;
 }
+
+const directions = ["row", "column", "rowReverse", "columnReverse"];
+const wraps = ["nowrap", "wrap", "wrapReverse"];
 
 const Flex = styled(Box)<FlexProps>`
   display: flex;

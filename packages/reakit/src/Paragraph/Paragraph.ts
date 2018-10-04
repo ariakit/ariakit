@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const Paragraph = styled(Box)`
+export interface ParagraphProps extends BoxProps {}
+
+const Paragraph = styled(Box)<ParagraphProps>`
   ${theme("Paragraph")};
 `;
 

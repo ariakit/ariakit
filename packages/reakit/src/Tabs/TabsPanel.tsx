@@ -4,16 +4,16 @@ import { theme } from "styled-tools";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
 import as from "../as";
-import Hidden from "../Hidden";
+import Hidden, { HiddenProps } from "../Hidden";
 import { StepContainerSelectors } from "../Step";
 
-export interface TabsPanelProps {
+export interface TabsPanelProps extends HiddenProps {
   isCurrent: StepContainerSelectors["isCurrent"];
   tab: string;
   role?: string;
 }
 
-const Component: React.SFC<TabsPanelProps> = props => {
+const Component = (props: TabsPanelProps) => {
   const { isCurrent, tab } = props;
   return (
     <Hidden

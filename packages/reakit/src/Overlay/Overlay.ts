@@ -5,7 +5,7 @@ import Hidden, { HiddenProps } from "../Hidden";
 
 export interface OverlayProps extends HiddenProps {}
 
-const Overlay = styled(Hidden)`
+const Overlay = styled(Hidden)<OverlayProps>`
   position: fixed;
   z-index: 19900410;
   left: 50%;

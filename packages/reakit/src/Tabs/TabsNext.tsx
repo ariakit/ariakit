@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import StepNext from "../Step/StepNext";
+import StepNext, { StepNextProps } from "../Step/StepNext";
 
-const TabsNext = styled(StepNext)`
+export interface TabsNextProps extends StepNextProps {}
+
+const TabsNext = styled(StepNext)<TabsNextProps>`
   ${theme("TabsNext")};
 `;
 
