@@ -1,5 +1,4 @@
 import StepContainer from "../StepContainer";
-import c from "../../_utils/callMeMaybe";
 
 const { initialState, selectors: s, actions: a } = StepContainer;
 
@@ -52,80 +51,78 @@ test("isCurrent", () => {
 });
 
 test("show", () => {
-  expect(c(a.show(0), state())).toEqual({ current: 0 });
-  expect(c(a.show(1), state())).toEqual({ current: 1 });
-  expect(c(a.show("b"), state({ ids: ["a", "b"] }))).toEqual({
+  expect(a.show(0)(state())).toEqual({ current: 0 });
+  expect(a.show(1)(state())).toEqual({ current: 1 });
+  expect(a.show("b")(state({ ids: ["a", "b"] }))).toEqual({
     current: 1
   });
-  expect(c(a.show("a"), state({ ids: ["a", "b"] }))).toEqual({
+  expect(a.show("a")(state({ ids: ["a", "b"] }))).toEqual({
     current: 0
   });
 });
 
 test("hide", () => {
-  expect(c(a.hide(), state())).toEqual({ current: -1 });
+  expect(a.hide()(state())).toEqual({ current: -1 });
 });
 
 test("toggle", () => {
-  expect(c(a.toggle(0), state())).toEqual({ current: 0 });
-  expect(c(a.toggle(0), state({ current: 0 }))).toEqual({ current: -1 });
-  expect(c(a.toggle("a"), state({ ids: ["a", "b"], current: 0 }))).toEqual({
+  expect(a.toggle(0)(state())).toEqual({ current: 0 });
+  expect(a.toggle(0)(state({ current: 0 }))).toEqual({ current: -1 });
+  expect(a.toggle("a")(state({ ids: ["a", "b"], current: 0 }))).toEqual({
     current: -1
   });
-  expect(c(a.toggle("b"), state({ ids: ["a", "b"], current: 0 }))).toEqual({
+  expect(a.toggle("b")(state({ ids: ["a", "b"], current: 0 }))).toEqual({
     current: 1
   });
 });
 
 test("previous", () => {
-  expect(c(a.previous(), state())).toEqual({});
-  expect(c(a.previous(), state({ ids: ["a", "b"] }))).toEqual({});
-  expect(c(a.previous(), state({ ids: ["a", "b"], current: 0 }))).toEqual({});
-  expect(c(a.previous(), state({ ids: ["a", "b"], current: 1 }))).toEqual({
+  expect(a.previous()(state())).toEqual({});
+  expect(a.previous()(state({ ids: ["a", "b"] }))).toEqual({});
+  expect(a.previous()(state({ ids: ["a", "b"], current: 0 }))).toEqual({});
+  expect(a.previous()(state({ ids: ["a", "b"], current: 1 }))).toEqual({
     current: 0
   });
-  expect(c(a.previous(), state({ ids: ["a", "b"], loop: true }))).toEqual({
+  expect(a.previous()(state({ ids: ["a", "b"], loop: true }))).toEqual({
     current: 1
   });
   expect(
-    c(a.previous(), state({ ids: ["a", "b"], loop: true, current: 1 }))
+    a.previous()(state({ ids: ["a", "b"], loop: true, current: 1 }))
   ).toEqual({
     current: 0
   });
 });
 
 test("next", () => {
-  expect(c(a.next(), state())).toEqual({});
-  expect(c(a.next(), state({ ids: ["a", "b"] }))).toEqual({ current: 0 });
-  expect(c(a.next(), state({ ids: ["a", "b"], current: 0 }))).toEqual({
+  expect(a.next()(state())).toEqual({});
+  expect(a.next()(state({ ids: ["a", "b"] }))).toEqual({ current: 0 });
+  expect(a.next()(state({ ids: ["a", "b"], current: 0 }))).toEqual({
     current: 1
   });
-  expect(c(a.next(), state({ ids: ["a", "b"], current: 1 }))).toEqual({});
-  expect(c(a.next(), state({ ids: ["a", "b"], loop: true }))).toEqual({
+  expect(a.next()(state({ ids: ["a", "b"], current: 1 }))).toEqual({});
+  expect(a.next()(state({ ids: ["a", "b"], loop: true }))).toEqual({
     current: 0
   });
-  expect(
-    c(a.next(), state({ ids: ["a", "b"], loop: true, current: 1 }))
-  ).toEqual({
+  expect(a.next()(state({ ids: ["a", "b"], loop: true, current: 1 }))).toEqual({
     current: 0
   });
 });
 
 test("reorder", () => {
-  expect(c(a.reorder("a", 1), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.reorder("a", 1)(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["b", "c", "a"],
     ordered: { a: 1 }
   });
-  expect(c(a.reorder("c", -1), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.reorder("c", -1)(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["c", "a", "b"],
     ordered: { c: -1 }
   });
-  expect(c(a.reorder("a", 0), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.reorder("a", 0)(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["a", "b", "c"],
     ordered: { a: 0 }
   });
   expect(
-    c(a.reorder("a", 1), state({ ids: ["a", "b", "c"], current: 0 }))
+    a.reorder("a", 1)(state({ ids: ["a", "b", "c"], current: 0 }))
   ).toEqual({
     ids: ["b", "c", "a"],
     ordered: { a: 1 },
@@ -134,34 +131,34 @@ test("reorder", () => {
 });
 
 test("register", () => {
-  expect(c(a.register("a"), state())).toEqual({
+  expect(a.register("a")(state())).toEqual({
     ids: ["a"],
     ordered: { a: 0 }
   });
-  expect(c(a.register("b"), state({ ids: ["a"], ordered: { a: 0 } }))).toEqual({
+  expect(a.register("b")(state({ ids: ["a"], ordered: { a: 0 } }))).toEqual({
     ids: ["a", "b"],
     ordered: { a: 0, b: 0 }
   });
   expect(
-    c(a.register("b"), state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
+    a.register("b")(state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
   ).toEqual({
     ids: ["a", "b"],
     ordered: { a: 0, b: 0 }
   });
   expect(
-    c(a.register("b"), state({ ids: ["a", "b"], ordered: { a: 0 } }))
+    a.register("b")(state({ ids: ["a", "b"], ordered: { a: 0 } }))
   ).toEqual({
     ids: ["a", "b"],
     ordered: { a: 0, b: 0 }
   });
   expect(
-    c(a.register("b", -1), state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
+    a.register("b", -1)(state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
   ).toEqual({
     ids: ["b", "a"],
     ordered: { a: 0, b: -1 }
   });
   expect(
-    c(a.register("c", -1), state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
+    a.register("c", -1)(state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
   ).toEqual({
     ids: ["c", "a", "b"],
     ordered: { a: 0, b: 0, c: -1 }
@@ -169,36 +166,36 @@ test("register", () => {
 });
 
 test("unregister", () => {
-  expect(c(a.unregister("a"), state())).toEqual({});
-  expect(c(a.unregister("a"), state({ ids: ["a", "b"] }))).toEqual({
+  expect(a.unregister("a")(state())).toEqual({});
+  expect(a.unregister("a")(state({ ids: ["a", "b"] }))).toEqual({
     ids: ["b"],
     ordered: {}
   });
-  expect(c(a.unregister("a"), state({ ids: ["a", "b"], current: 0 }))).toEqual({
+  expect(a.unregister("a")(state({ ids: ["a", "b"], current: 0 }))).toEqual({
     ids: ["b"],
     ordered: {}
   });
   expect(
-    c(a.unregister("c"), state({ ids: ["a", "b", "c"], current: 2 }))
+    a.unregister("c")(state({ ids: ["a", "b", "c"], current: 2 }))
   ).toEqual({
     ids: ["a", "b"],
     current: 1,
     ordered: {}
   });
-  expect(c(a.unregister("a"), state({ ids: ["a"], current: 0 }))).toEqual({
+  expect(a.unregister("a")(state({ ids: ["a"], current: 0 }))).toEqual({
     ids: [],
     current: -1,
     ordered: {}
   });
   expect(
-    c(a.unregister("a"), state({ ids: ["a", "b", "c"], current: 2 }))
+    a.unregister("a")(state({ ids: ["a", "b", "c"], current: 2 }))
   ).toEqual({
     ids: ["b", "c"],
     current: 1,
     ordered: {}
   });
   expect(
-    c(a.unregister("a"), state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
+    a.unregister("a")(state({ ids: ["a", "b"], ordered: { a: 0, b: 0 } }))
   ).toEqual({
     ids: ["b"],
     ordered: { b: 0 }
@@ -206,20 +203,20 @@ test("unregister", () => {
 });
 
 test("update", () => {
-  expect(c(a.update("a", "a"), state({ ids: ["a", "b", "c"] }))).toEqual({});
-  expect(c(a.update("a", "d"), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.update("a", "a")(state({ ids: ["a", "b", "c"] }))).toEqual({});
+  expect(a.update("a", "d")(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["d", "b", "c"],
     ordered: { d: 0 }
   });
-  expect(c(a.update("a", "d", 99), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.update("a", "d", 99)(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["b", "c", "d"],
     ordered: { d: 99 }
   });
-  expect(c(a.update("a", "b"), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.update("a", "b")(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["b", "c"],
     ordered: {}
   });
-  expect(c(a.update("a", "b", 99), state({ ids: ["a", "b", "c"] }))).toEqual({
+  expect(a.update("a", "b", 99)(state({ ids: ["a", "b", "c"] }))).toEqual({
     ids: ["c", "b"],
     ordered: { b: 99 }
   });

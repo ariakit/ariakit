@@ -20,8 +20,8 @@ export interface HiddenContainerActions {
 const initialState: HiddenContainerState = { visible: false };
 
 const actions: ActionMap<HiddenContainerState, HiddenContainerActions> = {
-  show: () => ({ visible: true }),
-  hide: () => ({ visible: false }),
+  show: () => () => ({ visible: true }),
+  hide: () => () => ({ visible: false }),
   toggle: () => state => ({
     visible: !state.visible
   })
