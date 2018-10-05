@@ -6,9 +6,12 @@ If a component has subcomponents, e.g `Step` component, which has:
 - `StepPrevious`
 - ...
 
-It is prefered to use Object.assign
+It is prefered to use Object.assign to attach them to the main component in the index.ts file:
 
 ```tsx
+import Step from "./Step";
+
+export * from "./Step";
 export * from "./StepContainer";
 export * from "./StepNext";
 export * from "./StepPrevious";
