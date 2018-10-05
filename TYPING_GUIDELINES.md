@@ -1,23 +1,22 @@
 # Guidelines When adding types 
 
-When you have scenarios like: 
-```tsx
-const C = Card as typeof Card & CardComponents;
+If a component has subcomponents, e.g `Step` component, which has:
+- `StepContainer`
+- `StepNext`
+- `StepPrevious`
+- ...
 
-C.Fit = CardFit;
-
-export * from "./Card";
-
-export default C;
-```
-It is prefered to use the following:
+It is prefered to use Object.assign
 
 ```tsx
-export * from "./Card";
-export * from "./CardFit";
+export * from "./StepContainer";
+export * from "./StepNext";
+export * from "./StepPrevious";
 
-export default Object.assign(Card, {
-  Fit: CardFit
+export default Object.assign(Step, {
+  Container: StepContainer,
+  Next: StepNext,
+  Previous: StepPrevious
 });
 ```
 ---
