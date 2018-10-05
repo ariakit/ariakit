@@ -52,12 +52,17 @@ const DividerComponent = (props: DividerProps) => <Box {...props} />;
 ```
 ---
 
-When you have: 
+If a styled component needs another component declared in the same file (for lifecycles, computed props etc.)
+
 ```js
-const component = (props: CodeProps) => {...}
+const component = (props: HiddenProps) => {...}
+
+const Hidden = styled(component)
 ```
 
-Properly name the variable as ` ${ComponentName}Component`:
+Properly name the variable as `${ComponentName}Component`:
 ```js
-const CodeComponent = (props: CodeProps) => {...}
+const HiddenComponent = (props: HiddenProps) => {...}
+
+const Hidden = styled(HiddenComponent)``
 ```
