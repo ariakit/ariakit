@@ -24,7 +24,7 @@ export default Object.assign(Step, {
 ```
 ---
 
-Always export prop types:
+Prop types should be exported `interfaces` named as `${ComponentName}Props` 
 ```ts
 export interface DividerProps {
   vertical?: boolean;
