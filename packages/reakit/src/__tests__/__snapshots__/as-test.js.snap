@@ -36,8 +36,8 @@ exports[`creates component 3`] = `
 
 exports[`creates component by extending another one with styled 1`] = `
 Array [
-  "as-test__Derivative.as(div)",
-  "as-test__Derivative",
+  "Styled(Base.as(span)).as(div)",
+  "Styled(Base.as(span))",
   "Base.as(span)",
   "Base",
   "As",
@@ -46,40 +46,40 @@ Array [
 `;
 
 exports[`creates component by extending another one with styled 2`] = `
-<as-test__Derivative.as(div)>
-  <as-test__Derivative
+<Styled(Base.as(span)).as(div)>
+  <Styled(Base.as(span))
     as={[Function]}
     nextAs="div"
   >
     <Base.as(span)
       as={[Function]}
-      className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+      className="sc-bdVaJa bDWFJH"
       nextAs="div"
     >
       <Base
         as={[Function]}
-        className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+        className="sc-bdVaJa bDWFJH"
         nextAs="div"
       >
         <As
-          className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+          className="sc-bdVaJa bDWFJH"
           id="Base"
           nextAs="div"
         >
           <div
-            className="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+            className="sc-bdVaJa bDWFJH"
             id="Base"
           />
         </As>
       </Base>
     </Base.as(span)>
-  </as-test__Derivative>
-</as-test__Derivative.as(div)>
+  </Styled(Base.as(span))>
+</Styled(Base.as(span)).as(div)>
 `;
 
 exports[`creates component by extending another one with styled 3`] = `
 
-<div class="as-test__Derivative-sc-1mujb6x-0 hfMyXC"
+<div class="sc-bdVaJa bDWFJH"
      id="Base"
 >
 </div>
@@ -434,7 +434,7 @@ exports[`passes down elementRef 1`] = `
 
 exports[`passes down elementRef when extended 1`] = `
 <span
-  class="as-test__BaseComponent-sc-1mujb6x-1 frxHGN"
+  class="sc-bwzfXH uTxCW"
   id="Base"
 />
 `;

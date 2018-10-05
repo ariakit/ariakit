@@ -25,14 +25,3 @@ it("calls next and onClick on click", () => {
   expect(props.next).toHaveBeenCalledTimes(1);
   expect(props.onClick).toHaveBeenCalledTimes(1);
 });
-
-it("wrapper should be disabled", () => {
-  const props = {
-    next: jest.fn(),
-    onClick: jest.fn(),
-    loop: false,
-    hasNext: jest.fn().mockReturnValue(false)
-  };
-  const wrapper = mount(<StepNext {...props} />);
-  expect(wrapper.find("Box").props().disabled).toEqual(true);
-});
