@@ -2,18 +2,22 @@
 
 We would love for you to contribute to Reakit and help make it even better. By contributing to Reakit, you agree to abide by the [code of conduct](https://github.com/reakit/reakit/blob/master/CODE_OF_CONDUCT.md)
 
-- [Ownership](#ownership)
-  - [Why do we give out push access?](#why-do-we-give-out-push-access)
-  - [How can we help you get comfortable contributing?](#how-can-we-help-you-get-comfortable-contributing)
-  - [Our expectations on you as a contributor](#our-expectations-on-you-as-a-contributor)
-  - [What about if you have problems that cannot be discussed in a public issue?](#what-about-if-you-have-problems-that-cannot-be-discussed-in-a-public-issue)
-- [How to start contributing?](how-to-start-contributing)
-- [Contributing with code](#contributing-with-code)
-  - [Scripts](#scripts)
-  - [Creating components](#creating-components)
-  - [Working on website](#working-on-website)
-  - [Working on docs](#working-on-docs)
-- [Credits](#credits)
+- [Contributing to Reakit](#contributing-to-reakit)
+  - [Ownership](#ownership)
+    - [Why do we give out push access?](#why-do-we-give-out-push-access)
+    - [How can we help you get comfortable contributing?](#how-can-we-help-you-get-comfortable-contributing)
+    - [Our expectations on you as a contributor](#our-expectations-on-you-as-a-contributor)
+    - [What about if you have problems that cannot be discussed in a public issue?](#what-about-if-you-have-problems-that-cannot-be-discussed-in-a-public-issue)
+  - [How to start contributing?](#how-to-start-contributing)
+  - [Contributing with code](#contributing-with-code)
+    - [Scripts](#scripts)
+    - [Creating components](#creating-components)
+    - [Working on website](#working-on-website)
+    - [Working on docs](#working-on-docs)
+  - [Credits](#credits)
+    - [Contributors](#contributors)
+    - [Backers](#backers)
+    - [Sponsors](#sponsors)
 
 ## Ownership
 
@@ -102,6 +106,8 @@ Also, an entry should be added to [`packages/reakit/src/index.ts`](https://githu
 Some other components have sub components and containers. You should understand the requirements of the component you're creating so you can find a similar one to use as a base.
 
 Don't forget to use `yarn dev` while working on the component and, in the end, `yarn website` to ensure that it's displaying correctly on the website.
+
+Also don't forget to check our [typing guidelines](./TYPING_GUIDELINES.md), which will guide you through the practices that we have adopted.
 
 ### Working on website
 
