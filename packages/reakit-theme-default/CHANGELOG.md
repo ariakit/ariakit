@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default/compare/reakit-theme-default@0.1.5...reakit-theme-default@0.1.6) (2018-10-05)
+
+**Note:** Version bump only for package reakit-theme-default
+
+
+
+
+
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default/compare/reakit-theme-default@0.1.4...reakit-theme-default@0.1.5) (2018-09-28)
 
