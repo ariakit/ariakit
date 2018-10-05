@@ -103,6 +103,8 @@ Some other components have sub components and containers. You should understand 
 
 Don't forget to use `yarn dev` while working on the component and, in the end, `yarn website` to ensure that it's displaying correctly on the website.
 
+Also don't forget to check our [typing guidelines](./TYPING_GUIDELINES.md), which will guide you through the practices that we have adopted.
+
 ### Working on website
 
 The `website` package is built with [react-styleguidist](https://react-styleguidist.js.org/). You can find its configuration file on [`packages/website/styleguide.config.js`](https://github.com/reakit/reakit/blob/master/packages/website/styleguide.config.js).
@@ -144,3 +146,4 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/reakit/sponsor/7/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/8/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/reakit/sponsor/9/website" target="_blank"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
+
