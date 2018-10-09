@@ -7,8 +7,8 @@ import Box, { BoxProps } from "../Box";
 import GroupItem from "./GroupItem";
 
 export interface GroupProps extends BoxProps {
-  vertical: boolean;
-  verticalAt: number;
+  vertical?: boolean;
+  verticalAt?: number;
 }
 
 const groupItemSelector = getSelector(GroupItem);
