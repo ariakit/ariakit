@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.7](https://github.com/reakit/reakit/compare/reakit@0.15.6...reakit@0.15.7) (2018-10-09)
+
+
+### Bug Fixes
+
+* **typescript:** Remove `hide` from `TabsTab` prop types ([b551e41](https://github.com/reakit/reakit/commit/b551e41))
+
+
+
+
+
 ## [0.15.6](https://github.com/reakit/reakit/compare/reakit@0.15.5...reakit@0.15.6) (2018-10-09)
 
 
