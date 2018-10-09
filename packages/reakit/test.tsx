@@ -31,7 +31,17 @@ interface Props {
     {tabs => (
       <div>
         <Tabs>
-          <Tabs.Tab tab="tab1" {...tabs}>
+          <Tabs.Tab
+            tab="tab1"
+            isCurrent={tabs.isCurrent}
+            register={tabs.register}
+            update={tabs.update}
+            unregister={tabs.unregister}
+            show={tabs.show}
+            previous={tabs.previous}
+            next={tabs.next}
+            current={tabs.current}
+          >
             Tab 1
           </Tabs.Tab>
           <Tabs.Tab tab="tab2" {...tabs}>
