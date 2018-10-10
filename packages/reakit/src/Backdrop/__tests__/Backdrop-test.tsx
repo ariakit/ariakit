@@ -3,18 +3,20 @@ import { render } from "react-testing-library";
 import Backdrop from "../Backdrop";
 
 test("Backdrop unmount", () => {
-  const { container, rerender } = render(<Backdrop unmount />);
-  expect(container.firstChild).toBeNull();
-  rerender(<Backdrop unmount visible />);
-  expect(container.firstChild).not.toBeNull();
+  const { getByTestId, rerender } = render(
+    <Backdrop data-testid="test" unmount />
+  );
+  expect(() => getByTestId("test")).toThrow();
+  rerender(<Backdrop data-testid="test" unmount visible />);
+  expect(getByTestId("test")).not.toBeNull();
 });
 
 test("Backdrop html attrs", () => {
-  const { container } = render(
-    <Backdrop id="Backdrop" aria-label="Backdrop" />
+  const { getByTestId } = render(
+    <Backdrop id="test" aria-label="test" data-testid="test" />
   );
-  expect(container.firstChild).toHaveAttribute("id", "Backdrop");
-  expect(container.firstChild).toHaveAttribute("aria-label", "Backdrop");
+  expect(getByTestId("test")).toHaveAttribute("id", "test");
+  expect(getByTestId("test")).toHaveAttribute("aria-label", "test");
 });
 
 test("Backdrop styled", () => {

@@ -1,21 +1,18 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "react-testing-library";
 import HiddenShow from "../HiddenShow";
 
-it("calls show on click", () => {
-  const props = { show: jest.fn() };
-  const wrapper = mount(<HiddenShow {...props} />);
-  expect(props.show).toHaveBeenCalledTimes(0);
-  wrapper.simulate("click");
-  expect(props.show).toHaveBeenCalledTimes(1);
-});
-
 it("calls show and onClick on click", () => {
-  const props = { show: jest.fn(), onClick: jest.fn() };
-  const wrapper = mount(<HiddenShow {...props} />);
-  expect(props.show).toHaveBeenCalledTimes(0);
-  expect(props.onClick).toHaveBeenCalledTimes(0);
-  wrapper.simulate("click");
-  expect(props.show).toHaveBeenCalledTimes(1);
-  expect(props.onClick).toHaveBeenCalledTimes(1);
+  const show = jest.fn();
+  const onClick = jest.fn();
+  const { getByText } = render(
+    <HiddenShow show={show} onClick={onClick}>
+      test
+    </HiddenShow>
+  );
+  expect(show).toHaveBeenCalledTimes(0);
+  expect(onClick).toHaveBeenCalledTimes(0);
+  fireEvent.click(getByText("test"));
+  expect(show).toHaveBeenCalledTimes(1);
+  expect(onClick).toHaveBeenCalledTimes(1);
 });

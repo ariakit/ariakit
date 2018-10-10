@@ -3,9 +3,13 @@ import { render } from "react-testing-library";
 import Block from "../Block";
 
 test("Block html attrs", () => {
-  const { container } = render(<Block id="Block" aria-label="Block" />);
-  expect(container.firstChild).toHaveAttribute("id", "Block");
-  expect(container.firstChild).toHaveAttribute("aria-label", "Block");
+  const { getByText } = render(
+    <Block id="test" aria-label="test">
+      test
+    </Block>
+  );
+  expect(getByText("test")).toHaveAttribute("id", "test");
+  expect(getByText("test")).toHaveAttribute("aria-label", "test");
 });
 
 test("Block styled", () => {
