@@ -2,7 +2,7 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import Block from "../Block";
 
-test("Block html attrs", () => {
+test("html attrs", () => {
   const { getByText } = render(
     <Block id="test" aria-label="test">
       test
@@ -12,7 +12,7 @@ test("Block html attrs", () => {
   expect(getByText("test")).toHaveAttribute("aria-label", "test");
 });
 
-test("Block styled", () => {
+test("styled", () => {
   const { container } = render(<Block />);
   expect(container.firstChild).toMatchInlineSnapshot(`
 .c1 {

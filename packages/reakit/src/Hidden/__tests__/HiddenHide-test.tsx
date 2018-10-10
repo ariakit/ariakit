@@ -2,7 +2,17 @@ import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
 import HiddenHide from "../HiddenHide";
 
-it("calls hide and onClick on click", () => {
+test("html attrs", () => {
+  const { getByText } = render(
+    <HiddenHide id="test" aria-label="test" hide={jest.fn()}>
+      test
+    </HiddenHide>
+  );
+  expect(getByText("test")).toHaveAttribute("id", "test");
+  expect(getByText("test")).toHaveAttribute("aria-label", "test");
+});
+
+test("call hide and onClick on click", () => {
   const hide = jest.fn();
   const onClick = jest.fn();
   const { getByText } = render(

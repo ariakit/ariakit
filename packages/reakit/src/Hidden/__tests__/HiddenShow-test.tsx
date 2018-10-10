@@ -2,7 +2,17 @@ import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
 import HiddenShow from "../HiddenShow";
 
-it("calls show and onClick on click", () => {
+test("html attrs", () => {
+  const { getByText } = render(
+    <HiddenShow id="test" aria-label="test" show={jest.fn()}>
+      test
+    </HiddenShow>
+  );
+  expect(getByText("test")).toHaveAttribute("id", "test");
+  expect(getByText("test")).toHaveAttribute("aria-label", "test");
+});
+
+test("call show and onClick on click", () => {
   const show = jest.fn();
   const onClick = jest.fn();
   const { getByText } = render(

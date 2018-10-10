@@ -2,7 +2,7 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import Avatar from "../Avatar";
 
-test("Avatar html attrs", () => {
+test("html attrs", () => {
   const { getByAltText } = render(
     <Avatar id="test" aria-label="test" alt="test" />
   );
@@ -10,7 +10,7 @@ test("Avatar html attrs", () => {
   expect(getByAltText("test")).toHaveAttribute("aria-label", "test");
 });
 
-test("Avatar styled", () => {
+test("styled", () => {
   const { container } = render(<Avatar />);
   expect(container.firstChild).toMatchInlineSnapshot(`
 .c0 {

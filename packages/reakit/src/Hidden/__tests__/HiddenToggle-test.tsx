@@ -2,7 +2,17 @@ import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
 import HiddenToggle from "../HiddenToggle";
 
-it("calls toggle and onClick on click", () => {
+test("html attrs", () => {
+  const { getByText } = render(
+    <HiddenToggle id="test" aria-label="test" toggle={jest.fn()}>
+      test
+    </HiddenToggle>
+  );
+  expect(getByText("test")).toHaveAttribute("id", "test");
+  expect(getByText("test")).toHaveAttribute("aria-label", "test");
+});
+
+test("call toggle and onClick on click", () => {
   const toggle = jest.fn();
   const onClick = jest.fn();
   const { getByText } = render(
