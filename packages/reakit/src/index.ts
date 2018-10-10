@@ -35,19 +35,13 @@ export * from "./Divider";
 export { default as Field } from "./Field";
 export * from "./Field";
 
-// @ts-ignore
 export { default as Flex } from "./Flex";
-// @ts-ignore
 export * from "./Flex";
 
-// @ts-ignore
 export { default as Grid } from "./Grid";
-// @ts-ignore
 export * from "./Grid";
 
-// @ts-ignore
 export { default as Group } from "./Group";
-// @ts-ignore
 export * from "./Group";
 
 export { default as Heading } from "./Heading";
@@ -83,17 +77,13 @@ export * from "./List";
 export { default as Navigation } from "./Navigation";
 export * from "./Navigation";
 
-// @ts-ignore
 export { default as Overlay } from "./Overlay";
-// @ts-ignore
 export * from "./Overlay";
 
 export { default as Paragraph } from "./Paragraph";
 export * from "./Paragraph";
 
-// @ts-ignore
 export { default as Popover } from "./Popover";
-// @ts-ignore
 export * from "./Popover";
 
 export { default as Portal } from "./Portal";
@@ -102,32 +92,20 @@ export * from "./Portal";
 export { default as Provider } from "./Provider";
 export * from "./Provider";
 
-// @ts-ignore
 export { default as Sidebar } from "./Sidebar";
-// @ts-ignore
 export * from "./Sidebar";
 
-// @ts-ignore
 export { default as Step } from "./Step";
-// @ts-ignore
 export * from "./Step";
 
-// @ts-ignore
 export { default as Table } from "./Table";
-// @ts-ignore
 export * from "./Table";
 
-// @ts-ignore
 export { default as Tabs } from "./Tabs";
-// @ts-ignore
 export * from "./Tabs";
 
-// @ts-ignore
 export { default as Toolbar } from "./Toolbar";
-// @ts-ignore
 export * from "./Toolbar";
 
-// @ts-ignore
 export { default as Tooltip } from "./Tooltip";
-// @ts-ignore
 export * from "./Tooltip";

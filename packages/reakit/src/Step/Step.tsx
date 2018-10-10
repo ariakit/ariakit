@@ -16,7 +16,7 @@ export interface StepProps extends HiddenProps {
   order?: number;
 }
 
-class Component extends React.Component<StepProps> {
+class StepComponent extends React.Component<StepProps> {
   constructor(props: StepProps) {
     super(props);
     const { register, step, order } = this.props;
@@ -41,9 +41,9 @@ class Component extends React.Component<StepProps> {
   }
 }
 
-hoistNonReactStatics(Component, Hidden);
+hoistNonReactStatics(StepComponent, Hidden);
 
-const Step = styled(Component)`
+const Step = styled(StepComponent)`
   ${theme("Step")};
 `;
 

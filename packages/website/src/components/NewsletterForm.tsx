@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Input, Block, Link, Button, styled } from "reakit";
 import { palette } from "styled-tools";
+// @ts-ignore
 import ContentWrapper from "../elements/ContentWrapper";
 import track from "../utils/track";
 

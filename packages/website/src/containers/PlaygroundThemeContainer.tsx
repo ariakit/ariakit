@@ -17,7 +17,7 @@ const initialState: State = {
 };
 
 const actions: ActionMap<State, Actions> = {
-  setTheme: theme => ({ theme })
+  setTheme: theme => () => ({ theme })
 };
 
 const PlaygroundThemeContainer: ComposableContainer<State, Actions> = props => (

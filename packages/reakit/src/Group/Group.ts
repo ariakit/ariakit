@@ -3,8 +3,13 @@ import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
 import getSelector from "../_utils/getSelector";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 import GroupItem from "./GroupItem";
+
+export interface GroupProps extends BoxProps {
+  vertical?: boolean;
+  verticalAt?: number;
+}
 
 const groupItemSelector = getSelector(GroupItem);
 
@@ -21,11 +26,6 @@ const verticalAt = (pass: any, fail?: any) =>
     `,
     fail
   );
-
-export interface GroupProps {
-  vertical: boolean;
-  verticalAt: number;
-}
 
 const Group = styled(Box)<GroupProps>`
   display: flex;

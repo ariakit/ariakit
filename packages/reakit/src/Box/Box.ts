@@ -11,7 +11,7 @@ import as from "../as";
 
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-const Component = ({ as: T, ...props }: { as: React.ComponentType }) =>
+const BoxComponent = ({ as: T, ...props }: { as: React.ComponentType }) =>
   React.createElement(T, props);
 
 export type BoxProps = {
@@ -25,7 +25,7 @@ export type BoxProps = {
   tone?: number;
 };
 
-const Box = styled(Component)<BoxProps>`
+const Box = styled(BoxComponent)<BoxProps>`
   margin: unset;
   padding: unset;
   border: unset;

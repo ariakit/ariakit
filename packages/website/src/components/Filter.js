@@ -5,8 +5,13 @@ class Filter extends React.Component {
   node = React.createRef();
 
   handleKeyDown = e => {
+    const activeElementTagName = document.activeElement.tagName.toLowerCase();
+    const notFocusElements = ["textarea", "input"];
     const shouldFocus =
-      e.key === "/" && document.activeElement !== this.node.current;
+      e.key === "/" &&
+      document.activeElement !== this.node.current &&
+      !notFocusElements.includes(activeElementTagName);
+
     if (shouldFocus) {
       e.preventDefault();
       this.node.current.focus();

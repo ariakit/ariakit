@@ -3,20 +3,31 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import createElementRef from "../_utils/createElementRef";
 import callAll from "../_utils/callAll";
+import { Omit } from "../_utils/types";
 import styled from "../styled";
 import as from "../as";
-import Step, { StepContainerActions, StepContainerSelectors } from "../Step";
+import Step, {
+  StepContainerActions,
+  StepContainerSelectors,
+  StepProps
+} from "../Step";
 
-export interface TabsTabProps extends StepContainerActions {
+export interface TabsTabProps extends Omit<StepProps, "step"> {
+  tab: string;
+  current: number;
+  register: StepContainerActions["register"];
+  update: StepContainerActions["update"];
+  unregister: StepContainerActions["unregister"];
+  show: StepContainerActions["show"];
+  next: StepContainerActions["next"];
+  previous: StepContainerActions["previous"];
+  isCurrent: StepContainerSelectors["isCurrent"];
+  role?: string;
   className?: string;
   disabled?: boolean;
-  onClick?: () => any;
-  onFocus?: () => any;
-  onKeyDown?: () => any;
-  isCurrent: StepContainerSelectors["isCurrent"];
-  current: number;
-  tab: string;
-  role?: string;
+  onClick?: React.MouseEventHandler;
+  onFocus?: React.MouseEventHandler;
+  onKeyDown?: React.KeyboardEventHandler;
 }
 
 interface KeyMap {
@@ -24,7 +35,7 @@ interface KeyMap {
   ArrowRight: StepContainerActions["next"];
 }
 
-class Component extends React.Component<TabsTabProps> {
+class TabsTabComponent extends React.Component<TabsTabProps> {
   element = React.createRef<HTMLElement>();
 
   componentDidUpdate(prevProps: TabsTabProps) {
@@ -96,13 +107,14 @@ class Component extends React.Component<TabsTabProps> {
   }
 }
 
-const TabsTab = styled(Component)`
+const TabsTab = styled(TabsTabComponent)`
   ${theme("TabsTab")};
 `;
 
 // @ts-ignore
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
+  current: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired,
   unregister: PropTypes.func.isRequired,
@@ -124,7 +136,7 @@ TabsTab.defaultProps = {
   register: noop,
   update: noop,
   unregister: noop,
-  isCurrent: _ => false,
+  isCurrent: () => false,
   show: noop,
   next: noop,
   previous: noop

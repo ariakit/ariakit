@@ -6,7 +6,6 @@ import {
   SelectorMap,
   ComposableContainer
 } from "constate";
-import callMeMaybe from "../_utils/callMeMaybe";
 import omit from "../_utils/omit";
 
 export interface StepContainerState {
@@ -66,12 +65,12 @@ const actions: ActionMap<StepContainerState, StepContainerActions> = {
     current: selectors.indexOf(idOrIndex)(state)
   }),
 
-  hide: () => ({ current: -1 }),
+  hide: () => () => ({ current: -1 }),
 
   toggle: (idOrIndex: string | number) => state =>
     selectors.isCurrent(idOrIndex)(state)
-      ? callMeMaybe(actions.hide(), state)
-      : callMeMaybe(actions.show(idOrIndex), state),
+      ? actions.hide()(state)
+      : actions.show(idOrIndex)(state),
 
   previous: () => state => {
     if (selectors.hasPrevious()(state)) {
@@ -102,14 +101,14 @@ const actions: ActionMap<StepContainerState, StepContainerActions> = {
       ordered,
       ids,
       ...(selectors.isCurrent(id)(state)
-        ? callMeMaybe(actions.show(id), { ...state, ids })
+        ? actions.show(id)({ ...state, ids })
         : {})
     };
   },
 
   register: (id: string, order = 0) => state => {
     const ids = state.ids.indexOf(id) >= 0 ? state.ids : [...state.ids, id];
-    return callMeMaybe(actions.reorder(id, order), { ...state, ids });
+    return actions.reorder(id, order)({ ...state, ids });
   },
 
   unregister: (id: string) => state => {
@@ -123,9 +122,9 @@ const actions: ActionMap<StepContainerState, StepContainerActions> = {
 
     if (selectors.isCurrent(id)(state) && !selectors.hasNext()(state)) {
       if (selectors.hasPrevious()(state)) {
-        return { ...callMeMaybe(actions.previous(), state), ids, ordered };
+        return { ...actions.previous()(state), ids, ordered };
       }
-      return { ...callMeMaybe(actions.hide(), state), ids, ordered };
+      return { ...actions.hide()(state), ids, ordered };
     }
     if (state.current >= ids.length) {
       return { current: ids.length - 1, ids, ordered };
@@ -146,9 +145,9 @@ const actions: ActionMap<StepContainerState, StepContainerActions> = {
     if (overridingId) {
       const nextOrderChanged = order !== state.ordered[nextId];
       const nextState = nextOrderChanged
-        ? callMeMaybe(actions.reorder(nextId, order), state)
+        ? actions.reorder(nextId, order)(state)
         : {};
-      return callMeMaybe(actions.unregister(id), { ...state, ...nextState });
+      return actions.unregister(id)({ ...state, ...nextState });
     }
 
     const index = selectors.indexOf(id)(state);
@@ -158,7 +157,7 @@ const actions: ActionMap<StepContainerState, StepContainerActions> = {
       ...state.ids.slice(index + 1)
     ];
 
-    return callMeMaybe(actions.reorder(nextId, order), { ...state, ids });
+    return actions.reorder(nextId, order)({ ...state, ids });
   }
 };
 

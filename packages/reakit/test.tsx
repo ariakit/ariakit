@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import * as React from "react";
-import { styled, Box, Code, Card, Step, Tabs } from "./src";
+import { styled, Box, Code, Card, Step, Tabs, Popover } from "./src";
 
 interface Props {
   foo: string;
@@ -31,7 +31,17 @@ interface Props {
     {tabs => (
       <div>
         <Tabs>
-          <Tabs.Tab tab="tab1" {...tabs}>
+          <Tabs.Tab
+            tab="tab1"
+            isCurrent={tabs.isCurrent}
+            register={tabs.register}
+            update={tabs.update}
+            unregister={tabs.unregister}
+            show={tabs.show}
+            previous={tabs.previous}
+            next={tabs.next}
+            current={tabs.current}
+          >
             Tab 1
           </Tabs.Tab>
           <Tabs.Tab tab="tab2" {...tabs}>
@@ -47,4 +57,13 @@ interface Props {
       </div>
     )}
   </Tabs.Container>;
+
+  <Popover.Container>
+    {popover => (
+      <div>
+        <Popover.Toggle {...popover}>Toggle</Popover.Toggle>
+        <Popover {...popover}>Popover</Popover>
+      </div>
+    )}
+  </Popover.Container>;
 }

@@ -1,11 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenToggle from "../Hidden/HiddenToggle";
+import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
 
-const Component = props => (
+export interface PopoverToggleProps extends HiddenToggleProps {
+  popoverId?: string;
+  visible?: boolean;
+}
+
+const PopoverToggleComponent = (props: PopoverToggleProps) => (
   <HiddenToggle
     aria-expanded={props.visible}
     aria-controls={props.popoverId}
@@ -14,10 +19,11 @@ const Component = props => (
   />
 );
 
-const PopoverToggle = styled(Component)`
+const PopoverToggle = styled(PopoverToggleComponent)`
   ${theme("PopoverToggle")};
 `;
 
+// @ts-ignore
 PopoverToggle.propTypes = {
   popoverId: PropTypes.string,
   visible: PropTypes.bool

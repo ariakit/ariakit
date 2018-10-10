@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const InlineBlock = styled(Box)`
+export interface InlineBlockProps extends BoxProps {}
+
+const InlineBlock = styled(Box)<InlineBlockProps>`
   display: inline-block;
   ${theme("InlineBlock")};
 `;

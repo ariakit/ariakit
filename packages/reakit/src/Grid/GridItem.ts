@@ -3,9 +3,9 @@ import { theme } from "styled-tools";
 import { value } from "../_utils/styledProps";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-export interface GridItemProps {
+export interface GridItemProps extends BoxProps {
   area?: string | number;
   column?: string | number;
   row?: string | number;

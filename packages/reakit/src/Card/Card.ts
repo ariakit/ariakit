@@ -4,10 +4,10 @@ import numberToPx from "../_utils/numberToPx";
 import getSelector from "../_utils/getSelector";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 import CardFit from "./CardFit";
 
-export interface CardProps {
+export interface CardProps extends BoxProps {
   gutter?: number | string;
 }
 

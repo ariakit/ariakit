@@ -1,9 +1,11 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const Table = styled(Box)`
+export interface TableProps extends BoxProps {}
+
+const Table = styled(Box)<TableProps>`
   ${theme("Table")};
 `;
 

@@ -1,15 +1,15 @@
 > Reakit uses [Constate](https://github.com/diegohaz/constate) to provide a state management system.
 
-Besides containers, all Reakit components are stateless, which means that they need props to be passed in so as to modify their state.
+Reakit components are generally stateless, which means that they need props to be passed in so as to modify their state.
 
-[Hidden](../packages/reakit/src/Hidden/Hidden.md), for example, is a generic component that can be hidden or visible, and that's controlled by props:
+[Hidden](../packages/reakit/src/Hidden/Hidden.md), for example, is a generic component that can be hidden or visible based on props:
 ```jsx
 import { Hidden } from "reakit";
 
 <Hidden visible>Hidden</Hidden>
 ```
 
-If you pass in a `hideOnEsc` or `hideOnClickOutside` props, you will need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed or when you click outside the component.
+If you pass in a `hideOnEsc` or `hideOnClickOutside` prop, you'll need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed or when you click outside the component.
 ```jsx
 import { Hidden } from "reakit";
 

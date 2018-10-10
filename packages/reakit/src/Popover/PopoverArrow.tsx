@@ -10,12 +10,9 @@ import Box, { BoxProps } from "../Box";
 export interface PopoverArrowProps extends BoxProps {
   fillColor?: string;
   strokeColor?: string;
-  opaque?: boolean;
-  palette?: string;
-  tone?: number;
 }
 
-const Component = (props: PopoverArrowProps) => (
+const PopoverArrowComponent = (props: PopoverArrowProps) => (
   <Box {...props}>
     <svg viewBox="0 0 30 30">
       <path
@@ -31,9 +28,9 @@ const Component = (props: PopoverArrowProps) => (
   </Box>
 );
 
-hoistNonReactStatics(Component, Box);
+hoistNonReactStatics(PopoverArrowComponent, Box);
 
-const PopoverArrow = styled(Component)`
+const PopoverArrow = styled(PopoverArrowComponent)`
   position: absolute;
   font-size: 30px;
   width: 1em;

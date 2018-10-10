@@ -3,7 +3,7 @@ module.exports = {
     [
       "@babel/preset-env",
       {
-        modules: false,
+        modules: process.env.NODE_ENV === "test" ? "commonjs" : false,
         loose: true,
         targets: {
           browsers: "defaults"
@@ -16,11 +16,6 @@ module.exports = {
   plugins: [
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-proposal-object-rest-spread",
-    "styled-components"
-  ],
-  env: {
-    test: {
-      plugins: ["@babel/plugin-transform-modules-commonjs"]
-    }
-  }
+    process.env.NODE_ENV !== "test" && "styled-components"
+  ].filter(Boolean)
 };

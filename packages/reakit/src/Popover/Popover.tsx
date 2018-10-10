@@ -1,15 +1,33 @@
-import React from "react";
+import * as React from "react";
 import { findDOMNode } from "react-dom";
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import Popper from "popper.js";
 import styled from "../styled";
 import getSelector from "../_utils/getSelector";
 import as from "../as";
-import Hidden from "../Hidden";
+import Hidden, { Position, HiddenProps } from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
 
-class Component extends React.Component {
+export interface PopoverProps extends HiddenProps {
+  role?: string;
+  hideOnEsc?: boolean;
+  placement?: Popper.Placement;
+  flip?: boolean;
+  shift?: boolean;
+  gutter?: number | string;
+  popoverId?: string;
+}
+
+export interface PopoverState {
+  placement?: Popper.Placement;
+  translateX?: number | string;
+  translateY?: number | string;
+  originX?: number | string;
+  originY?: number | string;
+}
+
+class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
   state = {
     placement: this.props.placement,
     translateX: undefined,
@@ -18,9 +36,11 @@ class Component extends React.Component {
     originY: undefined
   };
 
-  getPopover = () => findDOMNode(this);
+  private popper?: Popper;
 
-  modifier = data => {
+  private getPopover = () => findDOMNode(this) as NodeSelector & Node & Element;
+
+  private modifier = (data: Popper.Data) => {
     const { placement, offsets, arrowElement, arrowStyles } = data;
     const { reference, popper } = offsets;
     const [position] = placement.split("-");
@@ -34,8 +54,8 @@ class Component extends React.Component {
 
     if (arrowElement) {
       const { top, left } = arrowStyles;
-      arrowElement.style.top = isVertical ? "" : `${top}px`;
-      arrowElement.style.left = isVertical ? `${left}px` : "";
+      (arrowElement as any).style.top = isVertical ? "" : `${top}px`;
+      (arrowElement as any).style.left = isVertical ? `${left}px` : "";
     }
 
     this.setState({
@@ -49,7 +69,7 @@ class Component extends React.Component {
     return data;
   };
 
-  getOptions = () => {
+  getOptions = (): Popper.PopperOptions => {
     const { placement, flip, shift } = this.props;
     const popover = this.getPopover();
     const arrow = popover.querySelector(getSelector(PopoverArrow));
@@ -58,13 +78,13 @@ class Component extends React.Component {
       modifiers: {
         hide: { enabled: false },
         applyStyle: { enabled: false },
-        arrow: { enabled: !!arrow, element: arrow },
+        arrow: arrow ? { enabled: !!arrow, element: arrow } : undefined,
         flip: { enabled: flip, padding: 16 },
         shift: { enabled: shift },
         offset: { offset: `0, ${this.props.gutter}` },
         setState: {
-          enabled: true,
           order: 900,
+          enabled: true,
           fn: this.modifier
         }
       }
@@ -74,7 +94,13 @@ class Component extends React.Component {
   initPopper = () => {
     if (!this.popper) {
       const popover = this.getPopover();
-      this.popper = new Popper(popover.parentNode, popover, this.getOptions());
+      if (popover.parentNode) {
+        this.popper = new Popper(
+          popover.parentNode as Element,
+          popover,
+          this.getOptions()
+        );
+      }
     }
   };
 
@@ -93,7 +119,9 @@ class Component extends React.Component {
     this.destroyPopper();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(
+    prevProps: PopoverProps & Readonly<{ children?: React.ReactNode }>
+  ) {
     if (
       prevProps.visible !== this.props.visible ||
       prevProps.placement !== this.props.placement ||
@@ -104,14 +132,23 @@ class Component extends React.Component {
     }
   }
 
+  private getDefaultPlacement() {
+    const { placement } = this.state;
+    if (placement) {
+      return placement.replace(/-.+$/, "") as Position;
+    }
+    return undefined;
+  }
+
   render() {
+    const defaultPlacement = this.getDefaultPlacement();
     return (
       <Hidden
         id={this.props.popoverId}
         {...this.state}
         data-placement={this.state.placement}
-        defaultSlide={this.state.placement.replace(/-.+$/, "")}
-        defaultExpand={this.state.placement.replace(/-.+$/, "")}
+        defaultSlide={defaultPlacement}
+        defaultExpand={defaultPlacement}
         slideOffset={this.props.gutter}
         {...this.props}
         unmount={false}
@@ -120,7 +157,7 @@ class Component extends React.Component {
   }
 }
 
-const Popover = styled(Component)`
+const Popover = styled(PopoverComponent)`
   position: absolute;
   top: 0;
   left: 0;
@@ -130,6 +167,7 @@ const Popover = styled(Component)`
   ${theme("Popover")};
 `;
 
+// @ts-ignore
 Popover.propTypes = {
   placement: PropTypes.oneOf([
     "auto",

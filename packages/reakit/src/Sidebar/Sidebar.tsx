@@ -10,16 +10,16 @@ export interface SidebarProps extends OverlayProps {
   align?: "left" | "right";
 }
 
-const Component = (props: SidebarProps) => (
+const SidebarComponent = (props: SidebarProps) => (
   <Overlay
     defaultSlide={props.align === "right" ? "left" : "right"}
     {...props}
   />
 );
 
-hoistNonReactStatics(Component, Overlay);
+hoistNonReactStatics(SidebarComponent, Overlay);
 
-const Sidebar = styled(Component)`
+const Sidebar = styled(SidebarComponent)`
   top: 0;
   height: 100vh;
   transform: none;

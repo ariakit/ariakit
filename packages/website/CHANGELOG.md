@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.8](https://github.com/reakit/reakit/compare/website@0.15.7...website@0.15.8) (2018-10-09)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+## [0.15.7](https://github.com/reakit/reakit/compare/website@0.15.6...website@0.15.7) (2018-10-09)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+## [0.15.6](https://github.com/reakit/reakit/compare/website@0.15.5...website@0.15.6) (2018-10-05)
+
+
+### Bug Fixes
+
+* **website:** Fix keypress focus when user is on a textarea or input ([#265](https://github.com/reakit/reakit/issues/265)) ([3b13e4c](https://github.com/reakit/reakit/commit/3b13e4c)), closes [#263](https://github.com/reakit/reakit/issues/263)
+
+
+
+
+
 <a name="0.15.5"></a>
 ## [0.15.5](https://github.com/reakit/reakit/compare/website@0.15.4...website@0.15.5) (2018-09-28)
 

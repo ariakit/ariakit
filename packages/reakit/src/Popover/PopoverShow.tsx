@@ -1,11 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
 import as from "../as";
-import HiddenShow from "../Hidden/HiddenShow";
+import HiddenShow, { HiddenShowProps } from "../Hidden/HiddenShow";
 
-const Component = props => (
+export interface PopoverShowProps extends HiddenShowProps {
+  popoverId?: string;
+  visible?: boolean;
+}
+
+const PopoverShowComponent = (props: PopoverShowProps) => (
   <HiddenShow
     aria-expanded={props.visible}
     aria-controls={props.popoverId}
@@ -14,10 +19,11 @@ const Component = props => (
   />
 );
 
-const PopoverShow = styled(Component)`
+const PopoverShow = styled(PopoverShowComponent)`
   ${theme("PopoverShow")};
 `;
 
+// @ts-ignore
 PopoverShow.propTypes = {
   popoverId: PropTypes.string,
   visible: PropTypes.bool
