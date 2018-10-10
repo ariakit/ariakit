@@ -3,7 +3,22 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import Backdrop from "../Backdrop";
 
-test("Backdrop", () => {
+test("Backdrop unmount", () => {
+  const { container, rerender } = render(<Backdrop unmount />);
+  expect(container.firstChild).toBeNull();
+  rerender(<Backdrop unmount visible />);
+  expect(container.firstChild).not.toBeNull();
+});
+
+test("Backdrop html attrs", () => {
+  const { container } = render(
+    <Backdrop id="Backdrop" aria-label="Backdrop" />
+  );
+  expect(container.firstChild).toHaveAttribute("id", "Backdrop");
+  expect(container.firstChild).toHaveAttribute("aria-label", "Backdrop");
+});
+
+test("Backdrop styled", () => {
   const { container } = render(<Backdrop />);
   expect(container.firstChild).toMatchInlineSnapshot(`
 .c2 {
@@ -51,7 +66,7 @@ test("Backdrop", () => {
 `);
 });
 
-test("Backdrop visible", () => {
+test("Backdrop styled visible", () => {
   const { container } = render(<Backdrop visible />);
   expect(container.firstChild).toMatchInlineSnapshot(`
 .c2 {
