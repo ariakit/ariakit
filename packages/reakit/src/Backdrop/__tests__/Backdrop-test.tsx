@@ -3,12 +3,10 @@ import { render } from "react-testing-library";
 import Backdrop from "../Backdrop";
 
 test("unmount", () => {
-  const { getByTestId, rerender } = render(
-    <Backdrop data-testid="test" unmount />
-  );
-  expect(() => getByTestId("test")).toThrow();
-  rerender(<Backdrop data-testid="test" unmount visible />);
-  expect(getByTestId("test")).not.toBeNull();
+  const { container, rerender } = render(<Backdrop unmount />);
+  expect(container.firstChild).toBeNull();
+  rerender(<Backdrop unmount visible />);
+  expect(container.firstChild).not.toBeNull();
 });
 
 test("html attrs", () => {
