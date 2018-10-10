@@ -1,6 +1,7 @@
-React components are inherently composable. ReaKit makes them even more so with [as](/guide/as).
+React components are inherently composable. Reakit makes them even more so with [as](as.md).
 
-You can use the `as` prop just to change the underlying HTML element of a component. A common example is rendering a [Button](/components/button) as a link:
+You can use the `as` prop just to change the underlying HTML element of a component. A common example is rendering a [Button](../packages/reakit/src/Button/Button.md) as a link:
+
 ```jsx
 import { Button } from "reakit";
 
@@ -9,9 +10,10 @@ import { Button } from "reakit";
 </Button>
 ```
 
-However, we can leverage it even more by combining atomic components created with [styled](/guide/styling):
+However, we can leverage it even more by combining atomic components created with [styled](styling.md):
+
 ```jsx
-import { styled, Base, Button as BaseButton, Grid } from "reakit";
+import { styled, Button as BaseButton, Grid } from "reakit";
 
 const Button = styled(BaseButton)`
   text-transform: uppercase;
@@ -24,7 +26,7 @@ const ButtonRounded = styled(Button)`
 `;
 
 const ButtonLarge = styled(Button)`
-  font-size: 22px;
+  font-size: 20px;
 `;
 
 const ButtonPrimary = styled(Button)`
@@ -41,6 +43,8 @@ const ButtonPrimary = styled(Button)`
   <ButtonLarge as={ButtonRounded}>Large + Rounded</ButtonLarge>
   <ButtonRounded as={ButtonPrimary}>Rounded + Primary</ButtonRounded>
   <ButtonLarge as={ButtonPrimary}>Large + Primary</ButtonLarge>
-  <ButtonLarge as={[ButtonRounded, ButtonPrimary]}>Large + Rounded + Primary</ButtonLarge>
+  <ButtonLarge as={[ButtonRounded, ButtonPrimary]}>
+    Large + Rounded + Primary
+  </ButtonLarge>
 </Grid>
 ```

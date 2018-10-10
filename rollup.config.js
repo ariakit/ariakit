@@ -1,15 +1,12 @@
-import babel from "rollup-plugin-babel";
-import resolve from "rollup-plugin-node-resolve";
-import replace from "rollup-plugin-replace";
-import commonjs from "rollup-plugin-commonjs";
-import filesize from "rollup-plugin-filesize";
-import { uglify } from "rollup-plugin-uglify";
-import ignore from "rollup-plugin-ignore";
-import pkg from "./package.json";
+const babel = require("rollup-plugin-babel");
+const resolve = require("rollup-plugin-node-resolve");
+const replace = require("rollup-plugin-replace");
+const commonjs = require("rollup-plugin-commonjs");
+const { uglify } = require("rollup-plugin-uglify");
+const ignore = require("rollup-plugin-ignore");
+const { camelCase, upperFirst } = require("lodash");
 
-const { name } = pkg;
-const external = Object.keys(pkg.peerDependencies).concat("prop-types");
-const allExternal = external.concat(Object.keys(pkg.dependencies));
+const extensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
 const makeExternalPredicate = externalArr => {
   if (!externalArr.length) {
@@ -19,81 +16,69 @@ const makeExternalPredicate = externalArr => {
   return id => pattern.test(id);
 };
 
-const useLodashEs = () => ({
-  visitor: {
-    ImportDeclaration(path) {
-      const { source } = path.node;
-      source.value = source.value.replace(/^lodash($|\/)/, "lodash-es$1");
-    }
-  }
-});
-
-const common = {
-  input: "src/index.js"
+const getExternal = (umd, pkg) => {
+  const external = [...Object.keys(pkg.peerDependencies), "prop-types"];
+  const allExternal = [...external, ...Object.keys(pkg.dependencies)];
+  return makeExternalPredicate(umd ? external : allExternal);
 };
 
-const createCommonPlugins = ({ es = true } = {}) => [
+const commonPlugins = [
   babel({
-    exclude: "node_modules/**",
-    plugins: [
-      "styled-components",
-      "external-helpers",
-      es && useLodashEs
-    ].filter(Boolean)
+    extensions,
+    exclude: ["node_modules/**", "../../node_modules/**"]
   }),
-  commonjs({
-    include: /node_modules/,
-    ignoreGlobal: true,
-    namedExports: {
-      "react-is": ["isValidElementType"]
-    }
-  }),
-  filesize()
+  resolve({ extensions, preferBuiltins: false })
 ];
 
-const main = Object.assign({}, common, {
-  output: {
-    name,
-    file: pkg.main,
-    format: "cjs",
-    exports: "named"
-  },
-  external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins({ es: false }).concat([resolve()])
+const getPlugins = umd =>
+  umd
+    ? [
+        ...commonPlugins,
+        commonjs({
+          include: /node_modules/,
+          namedExports: {
+            "../../node_modules/react-is/index.js": ["isValidElementType"]
+          }
+        }),
+        ignore(["stream"]),
+        uglify(),
+        replace({
+          "process.env.NODE_ENV": JSON.stringify("production")
+        })
+      ]
+    : commonPlugins;
+
+const getOutput = (umd, pkg) =>
+  umd
+    ? {
+        name: upperFirst(camelCase(pkg.name)),
+        file: pkg.unpkg,
+        format: "umd",
+        exports: "named",
+        globals: {
+          reakit: "Reakit",
+          react: "React",
+          "react-dom": "ReactDOM",
+          "prop-types": "PropTypes"
+        }
+      }
+    : [
+        {
+          file: pkg.main,
+          format: "cjs",
+          exports: "named"
+        },
+        {
+          file: pkg.module,
+          format: "es"
+        }
+      ];
+
+const createConfig = ({ umd, pkg, plugins = [], ...config }) => ({
+  external: getExternal(umd, pkg),
+  plugins: [...getPlugins(umd), ...plugins],
+  output: getOutput(umd, pkg),
+  ...config
 });
 
-const module = Object.assign({}, common, {
-  output: {
-    file: pkg.module,
-    format: "es"
-  },
-  external: makeExternalPredicate(allExternal),
-  plugins: createCommonPlugins().concat([resolve()])
-});
-
-const unpkg = Object.assign({}, common, {
-  output: {
-    name,
-    file: pkg.unpkg,
-    format: "umd",
-    exports: "named",
-    globals: {
-      react: "React",
-      "react-dom": "ReactDOM",
-      "prop-types": "PropTypes"
-    }
-  },
-  external: makeExternalPredicate(external),
-  plugins: createCommonPlugins().concat([
-    ignore(["stream"]),
-    uglify(),
-    replace({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    }),
-    resolve({
-      preferBuiltins: false
-    })
-  ])
-});
-
-export default [main, module, unpkg];
+module.exports = createConfig;

@@ -5,24 +5,32 @@ First, make sure to have `react` and `react-dom` installed:
 npm install --save react react-dom
 ```
 
-Then, install `reakit`:
+Then, install `reakit` and `reakit-theme-default` (optional):
 ```sh
-npm install --save reakit
+npm install --save reakit reakit-theme-default
 ```
 
 ## Usage
+
 Play with an example on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj).
+
 ```jsx static
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button } from "reakit";
+import { Provider, Button } from "reakit";
+import theme from "reakit-theme-default";
 
-const App = <Button>Button</Button>;
+const App = () => (
+  <Provider theme={theme}>
+    <Button>Button</Button>
+  </Provider>
+);
 
-ReactDOM.render(App, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
 ## CDN
+
 ```html
 <html>
 <body>
@@ -31,11 +39,11 @@ ReactDOM.render(App, document.getElementById("root"));
   <script src="https://unpkg.com/react@16.4.1/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16.4.1/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/prop-types@15.6.2/prop-types.js"></script>
-  <!-- ReaKit UMD package -->
+  <!-- Reakit UMD package -->
   <script src="https://unpkg.com/reakit"></script>
   <!-- Usage -->
   <script>
-    const { Button } = reakit;
+    const { Button } = Reakit;
     const App = React.createElement(Button, {}, "Button");
     ReactDOM.render(App, document.getElementById("root"));
   </script>

@@ -1,125 +1,89 @@
 {
-  "name": "reakit",
-  "version": "0.12.1",
-  "description": "A minimalist and highly composable UI toolkit built on top of React and styled-components",
-  "license": "MIT",
-  "repository": "reakit/reakit",
-  "main": "dist/cjs/reakit.js",
-  "module": "dist/es/reakit.js",
-  "jsnext:main": "dist/es/reakit.js",
-  "unpkg": "dist/umd/reakit.min.js",
-  "author": {
-    "name": "Diego Haz",
-    "email": "hazdiego@gmail.com",
-    "url": "https://github.com/diegohaz"
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/url-loader"
+    ]
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint src benchmark website/src",
-    "singel": "singel src/components/**/[A-Z]*.js -i 'src/**/*{test,Container}.js'",
-    "benchmark": "node benchmark",
-    "clean": "rimraf dist",
-    "prebuild": "npm run clean",
-    "build": "rollup -c",
-    "website": "styleguidist server",
-    "dev": "styleguidist server --config styleguide.dev.config.js",
-    "website:build": "styleguidist build && cp website/dist/index.html website/dist/404.html",
-    "preversion": "npm run lint && npm test && npm run build",
-    "version": "standard-changelog && git add CHANGELOG.md",
-    "postpublish": "git push origin master --follow-tags"
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext js,ts,tsx",
+    "dev": "lerna exec --scope reakit -- npm run dev",
+    "build": "lerna exec --scope reakit* --concurrency 1 -- npm run build",
+    "build:clean": "lerna exec --scope reakit* -- npm run build:clean",
+    "website": "lerna exec --scope website -- npm run start",
+    "website:build": "lerna exec --scope website -- npm run build",
+    "release": "lerna publish",
+    "release:beta": "npm run release -- --npm-tag=beta --preid=beta"
   },
-  "jest": {
-    "setupFiles": [
-      "<rootDir>/test.config.js"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --ext js,ts,tsx --fix",
+      "git add"
     ],
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer",
-      "jest-serializer-html"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "<rootDir>/website"
+    "{README,CHANGELOG}.md": [
+      "scripts/copy-statics.sh"
     ]
   },
-  "keywords": [
-    "reakit"
-  ],
-  "dependencies": {
-    "constate": "^0.7.2",
-    "hoist-non-react-statics": "^3.0.1",
-    "lodash": "^4.17.5",
-    "lodash-es": "^4.17.5",
-    "prop-types": "^15.6.2",
-    "react-known-props": "^2.3.1",
-    "styled-components": "^3.3.3",
-    "styled-tools": "^1.0.0"
-  },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.6",
-    "babel-jest": "^23.4.2",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-styled-components": "^1.2.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-1": "^6.24.1",
-    "codemirror": "^5.39.2",
-    "cross-spawn": "^6.0.5",
-    "enzyme": "^3.2.0",
-    "enzyme-adapter-react-16": "^1.1.0",
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/enzyme": "^3.1.14",
+    "@types/jest": "^23.3.3",
+    "@types/prop-types": "^15.5.6",
+    "@types/react": "^16.4.14",
+    "@types/react-dom": "^16.0.8",
+    "babel-core": "^7.0.0-0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "babel-plugin-styled-components": "^1.8.0",
+    "enzyme": "^3.5.0",
+    "enzyme-adapter-react-16": "^1.3.0",
     "enzyme-to-json": "^3.3.1",
-    "eslint": "^5.2.0",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-jsx-a11y": "6.1.1",
-    "eslint-plugin-prettier": "^2.6.2",
-    "eslint-plugin-react": "^7.10.0",
-    "file-loader": "^1.1.11",
-    "jest-cli": "^23.4.2",
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-import-resolver-typescript": "^1.0.2",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-typescript": "^0.12.0",
+    "husky": "^1.1.0",
+    "jest-cli": "^23.6.0",
     "jest-serializer-html": "^5.0.0",
-    "markdown-to-jsx": "^6.6.9",
-    "opn-cli": "^3.1.0",
-    "parse-prop-types": "^0.3.0",
-    "prettier": "1.14.0",
-    "pretty": "^2.0.0",
+    "lerna": "^3.4.1",
+    "lint-staged": "^7.3.0",
+    "lodash": "^4.17.11",
+    "prettier": "1.14.3",
     "raf": "^3.4.0",
-    "raw-loader": "^0.5.1",
-    "react": "^16.4.1",
-    "react-benchmark": "^1.0.4",
-    "react-codemirror2": "^5.1.0",
-    "react-dom": "^16.4.1",
-    "react-helmet": "^5.2.0",
-    "react-icons": "^2.2.5",
-    "react-router-dom": "^4.2.2",
-    "react-styleguidist": "^7.1.1",
-    "react-test-renderer": "^16.4.1",
-    "rimraf": "^2.6.1",
-    "rollup": "^0.63.4",
-    "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.1.4",
-    "rollup-plugin-filesize": "^4.0.1",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-test-renderer": "^16.5.2",
+    "rollup": "^0.66.3",
+    "rollup-plugin-babel": "^4.0.2",
+    "rollup-plugin-commonjs": "^9.1.8",
     "rollup-plugin-ignore": "^1.0.3",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^4.0.0",
-    "singel": "^0.5.4",
-    "standard-changelog": "^2.0.0",
-    "url-loader": "^1.0.1",
-    "webpack": "^4.16.3",
-    "webpack-blocks": "^1.0.0-rc.2",
-    "whatwg-fetch": "^2.0.4"
-  },
-  "peerDependencies": {
-    "react": "^16.3.0",
-    "react-dom": "^16.3.0"
+    "rollup-plugin-uglify": "^6.0.0",
+    "typescript": "3.0.3",
+    "typescript-eslint-parser": "^19.0.2"
   }
 }

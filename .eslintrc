@@ -1,16 +1,26 @@
 {
   "parser": "babel-eslint",
-  "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
+  "extends": [
+    "airbnb", 
+    "plugin:prettier/recommended", 
+    "prettier/react"
+  ],
   "env": {
     "jest": true,
     "browser": true
   },
   "settings": {
-    "import/ignore": ["^reakit"]
+    "import/resolver": {
+      "node": true,
+      "eslint-import-resolver-typescript": true
+    }
   },
   "rules": {
+    "no-use-before-define": "off",
+    "no-restricted-syntax": "off",
     "jsx-a11y/accessible-emoji": "off",
     "jsx-a11y/anchor-is-valid": "off",
+    "import/export": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
     "import/no-named-as-default": "off",
@@ -24,6 +34,22 @@
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
     "react/sort-comp": "off",
+    "react/no-find-dom-node": "off",
     "react/prop-types": ["error", { "skipUndeclared": true }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parser": "typescript-eslint-parser",
+      "plugins": [
+        "typescript"
+      ],
+      "rules": {
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "no-restricted-globals": "off",
+        "import-name": [true, { "react": "React" }]
+      }
+    }
+  ]
 }

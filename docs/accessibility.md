@@ -1,4 +1,4 @@
-All ReaKit components are [WAI-ARIA](https://en.wikipedia.org/wiki/WAI-ARIA) compliant by default. This means that you don't need to worry about adding `role` and `aria-*` props to components unless you're using them for different purposes.
+All Reakit components are [WAI-ARIA](https://en.wikipedia.org/wiki/WAI-ARIA) compliant by default. This means that you don't need to worry about adding `role` and `aria-*` props to components unless you're using them for different purposes.
 
 Besides adding props, it also implements accessible interactions, such as navigating between tabs through arrow keys:
 

@@ -1,15 +1,15 @@
-> ReaKit uses [Constate](https://github.com/diegohaz/constate) to provide a state management system.
+> Reakit uses [Constate](https://github.com/diegohaz/constate) to provide a state management system.
 
-Besides [containers](/components?filter=container), all ReaKit components are stateless, which means that they need props to be passed in so as to modify their state.
+Reakit components are generally stateless, which means that they need props to be passed in so as to modify their state.
 
-[Hidden](/components/hidden), for example, is a generic component that can be hidden or visible, and that's controlled by props:
+[Hidden](../packages/reakit/src/Hidden/Hidden.md), for example, is a generic component that can be hidden or visible based on props:
 ```jsx
 import { Hidden } from "reakit";
 
 <Hidden visible>Hidden</Hidden>
 ```
 
-If you pass in a `hideOnEsc` prop, you will need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed.
+If you pass in a `hideOnEsc` or `hideOnClickOutside` prop, you'll need to provide a `hide` function so the component will know how to hide itself when `esc` is pressed or when you click outside the component.
 ```jsx
 import { Hidden } from "reakit";
 
@@ -22,7 +22,12 @@ class Example extends React.Component {
 
   render() {
     return (
-      <Hidden hideOnEsc visible={this.state.visible} hide={this.hide}>
+      <Hidden
+        hideOnEsc
+        hideOnClickOutside
+        visible={this.state.visible}
+        hide={this.hide}
+      >
         Hidden
       </Hidden>
     )
@@ -32,13 +37,18 @@ class Example extends React.Component {
 <Example />
 ```
 
-As a convenience, ReaKit provides handful [containers](/components?filter=container) so you don't need to worry about it. Here's the same as above but using [HiddenContainer](/components/hidden/hiddencontainer):
+As a convenience, Reakit provides handful containers so you don't need to worry about it. Here's the same as above but using [HiddenContainer](../packages/reakit/src/Hidden/HiddenContainer.md):
 ```jsx
 import { Hidden } from "reakit";
 
 <Hidden.Container initialState={{ visible: true }}>
   {({ visible, hide }) => (
-    <Hidden hideOnEsc visible={visible} hide={hide}>
+    <Hidden
+      hideOnEsc
+      hideOnClickOutside
+      visible={visible}
+      hide={hide}
+    >
       Hidden
     </Hidden>
   )}
