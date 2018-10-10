@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, wait } from "react-testing-library";
+import { render, fireEvent } from "react-testing-library";
 import Hidden from "../Hidden";
 
 const addEventListener = jest.spyOn(document.body, "addEventListener");
