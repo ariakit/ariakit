@@ -26,3 +26,26 @@ test("call show and onClick on click", () => {
   expect(show).toHaveBeenCalledTimes(1);
   expect(onClick).toHaveBeenCalledTimes(1);
 });
+
+test("styled", () => {
+  const { container } = render(<StepShow step="test" show={jest.fn()} />);
+  expect(container.firstChild).toMatchInlineSnapshot(`
+.c0 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+<button
+  class="c0"
+  step="test"
+/>
+`);
+});

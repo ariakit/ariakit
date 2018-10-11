@@ -8,8 +8,6 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test("styled", () => {});
-
 test("add event handler on mount", () => {
   const props = {
     hide: jest.fn(),
@@ -70,4 +68,39 @@ test("wait for the transition to complete before unmounting", () => {
   expect(container.firstChild).not.toBeNull();
   fireEvent.transitionEnd(getByTestId("test"));
   expect(container.firstChild).toBeNull();
+});
+
+test("styled", () => {
+  const { container } = render(<Hidden />);
+  expect(container.firstChild).toMatchInlineSnapshot(`
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c0 {
+  -webkit-transform: translate3d(0px,0px,0px);
+  -ms-transform: translate3d(0px,0px,0px);
+  transform: translate3d(0px,0px,0px);
+}
+
+.c0[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+<div
+  aria-hidden="true"
+  class="c0 c1"
+  hidden=""
+/>
+`);
 });

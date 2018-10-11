@@ -26,3 +26,25 @@ test("call toggle and onClick on click", () => {
   expect(toggle).toHaveBeenCalledTimes(1);
   expect(onClick).toHaveBeenCalledTimes(1);
 });
+
+test("styled", () => {
+  const { container } = render(<HiddenToggle toggle={jest.fn()} />);
+  expect(container.firstChild).toMatchInlineSnapshot(`
+.c0 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+<button
+  class="c0"
+/>
+`);
+});

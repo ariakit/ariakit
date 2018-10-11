@@ -61,3 +61,39 @@ test("unmounted when it is not current", () => {
   );
   expect(container.firstChild).toBeNull();
 });
+
+test("styled", () => {
+  const { container } = render(<Step {...props} />);
+  expect(container.firstChild).toMatchInlineSnapshot(`
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c0 {
+  -webkit-transform: translate3d(0px,0px,0px);
+  -ms-transform: translate3d(0px,0px,0px);
+  transform: translate3d(0px,0px,0px);
+}
+
+.c0[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+<div
+  aria-hidden="false"
+  class="c0 c1"
+  order="0"
+  step="foo"
+/>
+`);
+});
