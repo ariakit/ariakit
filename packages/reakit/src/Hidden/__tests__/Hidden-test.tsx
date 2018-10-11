@@ -1,115 +1,106 @@
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "react-testing-library";
 import Hidden from "../Hidden";
 
-const wrap = (comp: React.ReactElement<any>) => mount(shallow(comp).get(0));
-
 const addEventListener = jest.spyOn(document.body, "addEventListener");
-
-const raf = jest
-  .spyOn(window, "requestAnimationFrame")
-  .mockImplementation(cb => setTimeout(cb, 200));
-
-const dispatchEvent = (key: string) => {
-  const event = new KeyboardEvent("keydown", { key });
-  document.body.dispatchEvent(event);
-};
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-it("adds event handler on mount", () => {
+test("add event handler on mount", () => {
   const props = {
     hide: jest.fn(),
     visible: true,
     hideOnEsc: true,
     hideOnClickOutside: true
   };
-  mount(<Hidden {...props} />);
+  render(<Hidden {...props} />);
   expect(addEventListener).toHaveBeenCalledTimes(2);
 });
 
-it("calls hide when press Escape", () => {
+test("call hide when press Escape", () => {
   const props = {
     hide: jest.fn(),
     hideOnEsc: true
   };
-  const wrapper = mount(<Hidden {...props} />);
-  wrapper.setProps({ visible: true });
+  const { rerender } = render(<Hidden {...props} />);
+  rerender(<Hidden {...props} visible />);
   expect(props.hide).toHaveBeenCalledTimes(0);
-  dispatchEvent("Enter");
+  fireEvent.keyDown(document.body, { key: "Enter" });
   expect(props.hide).toHaveBeenCalledTimes(0);
-  dispatchEvent("Escape");
+  fireEvent.keyDown(document.body, { key: "Escape" });
   expect(props.hide).toHaveBeenCalledTimes(1);
 });
 
-it("calls hide when click outside", () => {
+test("call hide when click outside", () => {
   jest.useFakeTimers();
   const props = {
     hide: jest.fn(),
     hideOnClickOutside: true,
     visible: false
   };
-  const wrapper = mount(<Hidden {...props} />);
-  const clickEvent = new MouseEvent("click");
+  const { rerender } = render(<Hidden {...props} />);
 
-  document.body.dispatchEvent(clickEvent);
+  fireEvent.click(document.body);
   jest.runAllTimers();
   expect(props.hide).toHaveBeenCalledTimes(0);
 
-  wrapper.setProps({ visible: true });
-  document.body.dispatchEvent(clickEvent);
+  rerender(<Hidden {...props} visible />);
+  fireEvent.click(document.body);
   expect(props.hide).toHaveBeenCalledTimes(0);
   jest.runAllTimers();
   expect(props.hide).toHaveBeenCalledTimes(1);
 });
 
-it("has true visible state when visible prop is truthy", () => {
-  const props = { visible: true };
-  const wrapper = wrap(<Hidden {...props} />);
-  expect(wrapper.state("visible")).toBe(true);
+test("unmount", () => {
+  const { container, rerender } = render(<Hidden unmount />);
+  expect(container.firstChild).toBeNull();
+  rerender(<Hidden unmount visible />);
+  expect(container.firstChild).not.toBeNull();
 });
 
-it("has false visible state when visible prop is falsy", () => {
-  const props = { visible: false };
-  const wrapper = wrap(<Hidden {...props} />);
-  expect(wrapper.state("visible")).toBe(false);
+test("wait for the transition to complete before unmounting", () => {
+  const { container, rerender, getByTestId } = render(
+    <Hidden unmount visible fade />
+  );
+  rerender(<Hidden data-testid="test" unmount fade />);
+  expect(container.firstChild).not.toBeNull();
+  fireEvent.transitionEnd(getByTestId("test"));
+  expect(container.firstChild).toBeNull();
 });
 
-it("has true transitioning state when transitioning prop is truthy", () => {
-  const props = { transitioning: true };
-  const wrapper = wrap(<Hidden {...props} />);
-  expect(wrapper.state("transitioning")).toBe(true);
-});
+test("styled", () => {
+  const { container } = render(<Hidden />);
+  expect(container.firstChild).toMatchInlineSnapshot(`
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
 
-it("has false transitioning state when transitioning prop is falsy", () => {
-  const props = { transitioning: false };
-  const wrapper = wrap(<Hidden {...props} />);
-  expect(wrapper.state("transitioning")).toBe(false);
-});
+.c0 {
+  -webkit-transform: translate3d(0px,0px,0px);
+  -ms-transform: translate3d(0px,0px,0px);
+  transform: translate3d(0px,0px,0px);
+}
 
-it("removes the element from the dom when unmount has been passed", () => {
-  const wrapper = mount(<Hidden />);
-  expect(wrapper.html()).not.toBe(null);
-  wrapper.setProps({ unmount: true });
-  expect(wrapper.html()).toBe(null);
-  wrapper.setProps({ visible: true });
-  expect(wrapper.html()).not.toBe(null);
-});
+.c0[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
 
-it("waits for the transition to complete before unmounting", async () => {
-  jest.useFakeTimers();
-  const wrapper = wrap(<Hidden unmount visible fade />);
-  wrapper.setProps({ visible: false });
-  expect(wrapper.state()).toEqual({ visible: false, transitioning: true });
-  wrapper.simulate("transitionEnd");
-  expect(wrapper.state()).toEqual({ visible: false, transitioning: false });
-  expect(raf).not.toHaveBeenCalled();
-  wrapper.setProps({ visible: true });
-  expect(raf).toHaveBeenCalled();
-  expect(wrapper.state()).toEqual({ visible: false, transitioning: true });
-  wrapper.simulate("transitionEnd");
-  jest.runAllTimers();
-  expect(wrapper.state()).toEqual({ visible: true, transitioning: false });
+<div
+  aria-hidden="true"
+  class="c0 c1"
+  hidden=""
+/>
+`);
 });
