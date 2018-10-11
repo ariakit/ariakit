@@ -1,7 +1,6 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import { render } from "react-testing-library";
 import Step, { StepProps } from "../Step";
-import Hidden from "../../Hidden";
 
 const props: StepProps = {
   step: "foo",
@@ -13,48 +12,52 @@ const props: StepProps = {
 };
 
 beforeEach(() => {
-  Object.values(props).forEach(value => {
-    if (value.mockClear) {
-      value.mockClear();
-    }
-  });
+  jest.clearAllMocks();
 });
 
-it("registers on mount", () => {
-  mount(<Step {...props} />);
+test("register on mount", () => {
+  render(<Step {...props} />);
   expect(props.register).toHaveBeenCalledWith("foo", 0);
 });
 
-it("calls update when step has changed", () => {
-  const wrapper = mount(<Step {...props} />);
-  wrapper.setProps({ step: "bar" });
+test("call update when step has changed", () => {
+  const { rerender } = render(<Step {...props} />);
+  rerender(<Step {...props} step="bar" />);
   expect(props.update).toHaveBeenCalledWith("foo", "bar", 0);
 });
 
-it("calls update when order has changed", () => {
-  const wrapper = mount(<Step {...props} />);
-  wrapper.setProps({ order: 1 });
+test("call update when order has changed", () => {
+  const { rerender } = render(<Step {...props} />);
+  rerender(<Step {...props} order={1} />);
   expect(props.update).toHaveBeenCalledWith("foo", "foo", 1);
 });
 
-it("does not call update when other prop has changed", () => {
-  const wrapper = mount(<Step {...props} />);
-  wrapper.setProps({ foo: "bar" });
+test("do not call update when other prop has changed", () => {
+  const { rerender } = render(<Step {...props} />);
+  rerender(<Step {...props} id="foo" />);
   expect(props.update).not.toHaveBeenCalled();
 });
 
-it("calls unregister on unmount", () => {
-  const wrapper = mount(<Step {...props} />);
-  wrapper.unmount();
+test("call unregister on unmount", () => {
+  const { unmount } = render(<Step {...props} />);
+  unmount();
   expect(props.unregister).toHaveBeenCalledWith("foo");
 });
 
-it("has truthy visible property when it is current", () => {
-  const wrapper = mount(<Step {...props} isCurrent={() => true} />);
-  expect(wrapper.find(Hidden).prop("visible")).toBe(true);
+test("visible when it is current", () => {
+  const { getByText } = render(
+    <Step {...props} isCurrent={() => true}>
+      test
+    </Step>
+  );
+  expect(getByText("test")).toHaveAttribute("aria-hidden", "false");
 });
 
-it("has falsy visible property when it is not current", () => {
-  const wrapper = mount(<Step {...props} isCurrent={() => false} />);
-  expect(wrapper.find(Hidden).prop("visible")).toBe(false);
+test("unmounted when it is not current", () => {
+  const { container } = render(
+    <Step {...props} isCurrent={() => false}>
+      test
+    </Step>
+  );
+  expect(container.firstChild).toBeNull();
 });

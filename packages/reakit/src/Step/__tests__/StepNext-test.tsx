@@ -1,27 +1,28 @@
 import * as React from "react";
-import { mount } from "enzyme";
-
+import { render, fireEvent } from "react-testing-library";
 import StepNext from "../StepNext";
 
-it("calls next on click", () => {
-  const props = {
-    next: jest.fn()
-  };
-  const wrapper = mount(<StepNext {...props} />);
-  expect(props.next).toHaveBeenCalledTimes(0);
-  wrapper.simulate("click");
-  expect(props.next).toHaveBeenCalledTimes(1);
+test("html attrs", () => {
+  const { getByText } = render(
+    <StepNext id="test" aria-label="test" next={jest.fn()}>
+      test
+    </StepNext>
+  );
+  expect(getByText("test")).toHaveAttribute("id", "test");
+  expect(getByText("test")).toHaveAttribute("aria-label", "test");
 });
 
-it("calls next and onClick on click", () => {
-  const props = {
-    next: jest.fn(),
-    onClick: jest.fn()
-  };
-  const wrapper = mount(<StepNext {...props} />);
-  expect(props.next).toHaveBeenCalledTimes(0);
-  expect(props.onClick).toHaveBeenCalledTimes(0);
-  wrapper.simulate("click");
-  expect(props.next).toHaveBeenCalledTimes(1);
-  expect(props.onClick).toHaveBeenCalledTimes(1);
+test("call next and onClick on click", () => {
+  const next = jest.fn();
+  const onClick = jest.fn();
+  const { getByText } = render(
+    <StepNext next={next} onClick={onClick}>
+      test
+    </StepNext>
+  );
+  expect(next).toHaveBeenCalledTimes(0);
+  expect(onClick).toHaveBeenCalledTimes(0);
+  fireEvent.click(getByText("test"));
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(onClick).toHaveBeenCalledTimes(1);
 });

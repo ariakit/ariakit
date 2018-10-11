@@ -1,15 +1,28 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "react-testing-library";
 import StepShow from "../StepShow";
 
-it("calls show on click", () => {
-  const props = {
-    show: jest.fn(),
-    step: "b"
-  };
-  const wrapper = mount(<StepShow {...props} />);
-  expect(props.show).toHaveBeenCalledTimes(0);
-  wrapper.simulate("click");
-  expect(props.show).toHaveBeenCalledTimes(1);
-  expect(props.show).toHaveBeenCalledWith("b");
+test("html attrs", () => {
+  const { getByText } = render(
+    <StepShow step="test" id="test" aria-label="test" show={jest.fn()}>
+      test
+    </StepShow>
+  );
+  expect(getByText("test")).toHaveAttribute("id", "test");
+  expect(getByText("test")).toHaveAttribute("aria-label", "test");
+});
+
+test("call show and onClick on click", () => {
+  const show = jest.fn();
+  const onClick = jest.fn();
+  const { getByText } = render(
+    <StepShow step="test" show={show} onClick={onClick}>
+      test
+    </StepShow>
+  );
+  expect(show).toHaveBeenCalledTimes(0);
+  expect(onClick).toHaveBeenCalledTimes(0);
+  fireEvent.click(getByText("test"));
+  expect(show).toHaveBeenCalledTimes(1);
+  expect(onClick).toHaveBeenCalledTimes(1);
 });
