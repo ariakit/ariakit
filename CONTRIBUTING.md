@@ -10,9 +10,9 @@ We would love for you to contribute to Reakit and help make it even better. By c
 - [How to start contributing?](how-to-start-contributing)
 - [Contributing with code](#contributing-with-code)
   - [Scripts](#scripts)
-  - [Creating components](#creating-components)
-  - [Working on website](#working-on-website)
-  - [Working on docs](#working-on-docs)
+  - [Components](#components)
+  - [Website](#website)
+  - [Docs](#docs)
 - [Credits](#credits)
 
 ## Ownership
@@ -87,31 +87,67 @@ If you haven't already done so, [install yarn](https://yarnpkg.com/en/docs/insta
 - `yarn dev` will run a development server for components. Use it while working in the `reakit` package.
 - `yarn website` will run a development server for our [website](https://reakit.io). Use it while working in the `website` package.
 
-### Creating components
+### Components
 
-The best way to understand how to create new components is looking at the other ones located in [`packages/reakit/src`](https://github.com/reakit/reakit/blob/master/packages/reakit/src).
+The best way to understand components is to look into the existing ones in [`packages/reakit/src`](https://github.com/reakit/reakit/blob/master/packages/reakit/src).
 
-A simple component folder is composed by three files:
+A common Reakit component is composed by the following parts:
 
- - `Component.tsx` with the source code.
- - `Component.md` with the docs.
- - `index.ts` exporting the component as default.
+1. A `ComponentName.ts` file inside a `ComponentName` folder (e.g. [`Group/Group.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/Group/Group.ts)).
 
-Also, an entry should be added to [`packages/reakit/src/index.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/index.ts).
+    Prop types are exported `interfaces` named as `ComponentNameProps`:
 
-Some other components have sub components and containers. You should understand the requirements of the component you're creating so you can find a similar one to use as a base.
+    ```ts
+    export interface GroupProps extends BoxProps {
+      vertical?: boolean;
+      verticalAt?: number;
+    }
+    ```
 
-Don't forget to use `yarn dev` while working on the component and, in the end, `yarn website` to ensure that it's displaying correctly on the website.
+    > If a component has no props, we just export an empty interface ([example](https://github.com/reakit/reakit/blob/4fba0e6793b78ac677dc87f1cb7ee8950ca7bbbe/packages/reakit/src/Group/GroupItem.ts#L6)).
 
-Also don't forget to check our [typing guidelines](./TYPING_GUIDELINES.md), which will guide you through the practices that we have adopted.
+    `styled` is used to define component styles and theme:
 
-### Working on website
+    ```ts
+    const Group = styled(Box)<GroupProps>`
+      display: flex;
+      ${theme("Group")};
+    `;
+    ```
+
+    > If JSX is needed, we rename the file extension to `.tsx` and put together a component called `ComponentNameComponent` ([example](https://github.com/reakit/reakit/blob/4fba0e6793b78ac677dc87f1cb7ee8950ca7bbbe/packages/reakit/src/Toolbar/Toolbar.tsx#L16)).
+
+    If a component has sub components, we create another file in the same folder following the same instructions (e.g. [`Group/GroupItem.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/Group/GroupItem.ts)).
+
+2. A markdown file for each component containing documentation (e.g. [`Group/Group.md`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/Group/Group.md) and [`Group/GroupItem.md`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/Group/GroupItem.md)).
+
+3. An `index.ts` file to export all components (e.g. [`Group/index.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/Group/index.ts)):
+
+    ```ts
+    import Group from "./Group";
+    import GroupItem from "./GroupItem";
+
+    export * from "./Group";
+    export * from "./GroupItem";
+
+    export default Object.assign(Group, {
+      Item: GroupItem
+    });
+    ```
+
+4. A `__tests__` folder with test files. Take a look at [#271](https://github.com/reakit/reakit/issues/271) to learn more.
+
+5. An entry in [`packages/reakit/src/index.ts`](https://github.com/reakit/reakit/blob/master/packages/reakit/src/index.ts).
+
+> While working on components, one can use `yarn dev` or `yarn website` so as to have a visual reference of what's being done.
+
+### Website
 
 The `website` package is built with [react-styleguidist](https://react-styleguidist.js.org/). You can find its configuration file on [`packages/website/styleguide.config.js`](https://github.com/reakit/reakit/blob/master/packages/website/styleguide.config.js).
 
 We have replaced all the default components from `react-styleguidist` by just overriding its main component with our own, which you can find on [`packages/website/src/index.js`](https://github.com/reakit/reakit/blob/master/packages/website/src/index.js).
 
-### Working on docs
+### Docs
 
 You can find guide docs in the [`docs`](https://github.com/reakit/reakit/tree/master/docs) folder. While component docs are placed together with its component in the `reakit` package: [`packages/reakit/src`](https://github.com/reakit/reakit/blob/master/packages/reakit/src).
 
