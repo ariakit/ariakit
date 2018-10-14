@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "styleguidist server",
-    "build": "styleguidist build && cp dist/index.html dist/404.html",
+    "build": "styleguidist build",
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
