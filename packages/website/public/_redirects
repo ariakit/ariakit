@@ -1,4 +1,4 @@
 /* /index.html 200
 
 # Redirect default Netlify subdomain to primary domain
-https://reakit.netlify.com/* https://reakit.io/:splat 301!
+http://reakit.netlify.com/* http://reakit.io/:splat 301!
