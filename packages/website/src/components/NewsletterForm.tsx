@@ -2,6 +2,8 @@ import * as React from "react";
 import { Input, Block, Link, Button, styled } from "reakit";
 import { palette } from "styled-tools";
 // @ts-ignore
+import EmailIcon from "react-icons/lib/io/ios-email";
+// @ts-ignore
 import ContentWrapper from "../elements/ContentWrapper";
 import track from "../utils/track";
 
@@ -9,12 +11,14 @@ const action =
   "https://reakit.us18.list-manage.com/subscribe/post?u=cf382e48d5d8ed7178cb22060&id=941e41af27";
 
 const Wrapper = styled(ContentWrapper)`
-  background-color: ${palette("alert", -2)};
-  color: ${palette("alertText", -2)};
+  position: relative;
+  background-color: ${palette("background", -2)};
+  color: ${palette("backgroundText", -2)};
   width: 100%;
-  padding: 2rem;
+  max-width: 100%;
+  padding: 3rem 2rem;
   display: grid;
-  grid-gap: 32px 16px;
+  grid-gap: 24px 16px;
   grid-template:
     "text text text"
     "email name button"
@@ -23,6 +27,7 @@ const Wrapper = styled(ContentWrapper)`
   justify-content: center;
   align-items: center;
   height: auto;
+  border: 1px solid ${palette("background", 1)};
 
   @media (max-width: 768px) {
     grid-template:
@@ -32,15 +37,39 @@ const Wrapper = styled(ContentWrapper)`
       "button"
       "footer"
       / minmax(250px, 500px);
+    border-left-width: 0;
+    border-right-width: 0;
   }
+`;
+
+const IconBackground = styled(Block)`
+  position: absolute;
+  top: -11px;
+  height: 20px;
+  width: 30px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  background-color: ${palette("background", 0)};
+  padding: 1px;
+  box-sizing: content-box;
+`;
+
+const StyledEmailIcon = styled(EmailIcon)`
+  position: absolute;
+  top: -20px;
+  font-size: 40px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  color: ${palette("background", -1)};
 `;
 
 const NewsletterForm = (props: any) => (
   <Wrapper as="form" action={action} method="post" {...props}>
+    <IconBackground />
+    <StyledEmailIcon />
     <Block gridArea="text" fontSize={20} lineHeight={1.75} textAlign="center">
-      Reakit is evolving and big announcements are coming.
-      <br />
-      Subscribe below to be notified about <strong>important</strong> updates.
+      Receive <strong>exclusive</strong> tips and updates about Reakit and React
+      ecosystem.
     </Block>
     <Input
       gridArea="email"
@@ -78,7 +107,7 @@ const NewsletterForm = (props: any) => (
       >
         Diego Haz
       </Link>
-      , and you can always unsubscribe later.
+      , and you can unsubscribe at any time.
     </Block>
   </Wrapper>
 );
