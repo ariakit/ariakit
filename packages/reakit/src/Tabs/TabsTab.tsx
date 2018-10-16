@@ -12,18 +12,22 @@ import Step, {
   StepProps
 } from "../Step";
 
-export interface TabsTabProps
-  extends Omit<StepProps, "hide" | "step">,
-    StepContainerActions {
+export interface TabsTabProps extends Omit<StepProps, "step"> {
+  tab: string;
+  current: number;
+  register: StepContainerActions["register"];
+  update: StepContainerActions["update"];
+  unregister: StepContainerActions["unregister"];
+  show: StepContainerActions["show"];
+  next: StepContainerActions["next"];
+  previous: StepContainerActions["previous"];
+  isCurrent: StepContainerSelectors["isCurrent"];
+  role?: string;
   className?: string;
   disabled?: boolean;
   onClick?: React.MouseEventHandler;
   onFocus?: React.MouseEventHandler;
   onKeyDown?: React.KeyboardEventHandler;
-  isCurrent: StepContainerSelectors["isCurrent"];
-  current: number;
-  tab: string;
-  role?: string;
 }
 
 interface KeyMap {
@@ -110,6 +114,7 @@ const TabsTab = styled(TabsTabComponent)`
 // @ts-ignore
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
+  current: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired,
   unregister: PropTypes.func.isRequired,
