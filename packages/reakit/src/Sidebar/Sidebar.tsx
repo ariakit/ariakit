@@ -1,9 +1,7 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme, ifProp } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
-import as from "../as";
 import Overlay, { OverlayProps } from "../Overlay";
 
 export interface SidebarProps extends OverlayProps {
@@ -16,8 +14,6 @@ const SidebarComponent = (props: SidebarProps) => (
     {...props}
   />
 );
-
-hoistNonReactStatics(SidebarComponent, Overlay);
 
 const Sidebar = styled(SidebarComponent)`
   top: 0;
@@ -40,4 +36,4 @@ Sidebar.defaultProps = {
   translateY: 0
 };
 
-export default as("div")(Sidebar);
+export default Sidebar;

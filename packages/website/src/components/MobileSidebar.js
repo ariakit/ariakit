@@ -1,5 +1,5 @@
 import React from "react";
-import { Sidebar, Link, Backdrop, Block } from "reakit";
+import { Sidebar, Link, Backdrop, Block, use } from "reakit";
 import styled from "styled-components";
 import { Link as RouterLink } from "react-router-dom";
 import { palette } from "styled-tools";
@@ -19,7 +19,7 @@ const VersionLink = styled(Link)`
   color: ${palette("grayscale", 3)};
 `;
 
-const SectionLink = styled(Link.as(RouterLink))`
+const SectionLink = styled(use(Link, RouterLink))`
   font-size: 22px;
   color: ${palette("backgroundText", -1)};
   font-weight: 600;
@@ -34,7 +34,7 @@ const MobileSidebar = () => (
   <Sidebar.Container context="sidebar">
     {sidebar => (
       <React.Fragment>
-        <Backdrop fade as={Sidebar.Hide} zIndex={99999} {...sidebar} />
+        <Backdrop fade use={Sidebar.Hide} zIndex={99999} {...sidebar} />
         <StyleguidistContainer>
           {({ sections }) => (
             <StyledSidebar slide {...sidebar}>

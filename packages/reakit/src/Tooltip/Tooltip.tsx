@@ -2,9 +2,7 @@
 import * as React from "react";
 import { findDOMNode } from "react-dom";
 import { theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
-import as from "../as";
 import Popover, { PopoverProps } from "../Popover";
 
 export interface TooltipProps extends PopoverProps {}
@@ -52,8 +50,6 @@ class TooltipComponent extends React.Component<TooltipProps, TooltipState> {
   }
 }
 
-hoistNonReactStatics(TooltipComponent, Popover);
-
 const Tooltip = styled(TooltipComponent)`
   ${theme("Tooltip")};
 `;
@@ -65,4 +61,4 @@ Tooltip.defaultProps = {
   palette: "grayscale"
 };
 
-export default as("div")(Tooltip);
+export default Tooltip;

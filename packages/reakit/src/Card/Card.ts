@@ -3,7 +3,6 @@ import { theme, withProp } from "styled-tools";
 import numberToPx from "../_utils/numberToPx";
 import getSelector from "../_utils/getSelector";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 import CardFit from "./CardFit";
 
@@ -33,4 +32,4 @@ Card.defaultProps = {
   tone: -1
 };
 
-export default as("div")(Card);
+export default Card;

@@ -1,10 +1,8 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme, withProp } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import numberToPx from "../_utils/numberToPx";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 
 export interface ToolbarProps extends BoxProps {
@@ -19,8 +17,6 @@ const ToolbarComponent = (props: ToolbarProps) => (
     {...props}
   />
 );
-
-hoistNonReactStatics(ToolbarComponent, Box);
 
 const Toolbar = styled(ToolbarComponent)`
   position: relative;
@@ -55,4 +51,4 @@ Toolbar.defaultProps = {
   gutter: 8
 };
 
-export default as("div")(Toolbar);
+export default Toolbar;

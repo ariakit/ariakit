@@ -2,7 +2,6 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
 import { Omit } from "../_utils/types";
 import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
 import { StepContainerActions } from "./StepContainer";
@@ -15,11 +14,11 @@ export interface StepToggleProps extends Omit<HiddenToggleProps, "toggle"> {
 const toggle = (props: StepToggleProps) => () =>
   props.toggle && props.toggle(props.step);
 
-const Component = (props: StepToggleProps) => (
+const StepToggleComponent = (props: StepToggleProps) => (
   <HiddenToggle {...props} toggle={toggle(props)} />
 );
 
-const StepToggle = styled(Component)`
+const StepToggle = styled(StepToggleComponent)`
   ${theme("StepToggle")};
 `;
 
@@ -29,4 +28,4 @@ StepToggle.propTypes = {
   step: PropTypes.string.isRequired
 };
 
-export default as("button")(StepToggle);
+export default StepToggle;

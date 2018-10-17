@@ -1,6 +1,5 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
 import Hidden, { HiddenProps } from "../Hidden";
 
 export interface BackdropProps extends HiddenProps {}
@@ -25,4 +24,4 @@ Backdrop.defaultProps = {
   tone: 2
 };
 
-export default as("div")(Backdrop);
+export default Backdrop;

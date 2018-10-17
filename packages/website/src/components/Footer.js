@@ -15,11 +15,9 @@ const Wrapper = styled(Flex)`
   padding: 40px 0;
   color: ${palette("grayscale", 2)};
 
-  ${Link} {
+  ${"" /* ${Link} {
     color: ${palette("grayscale", 2)};
-  }
-
-  ${Paragraph} {
+  } */} ${Paragraph} {
     margin: 0;
     line-height: 1.5;
   }
@@ -31,15 +29,15 @@ const Icons = styled(Grid)`
   grid-gap: 16px;
   margin-bottom: 16px;
 
-  ${Link}:hover {
+  ${"" /* ${Link}:hover {
     color: ${palette("grayscale", 1)};
-  }
+  } */};
 `;
 
 const Credits = props => (
   <Wrapper {...props}>
     <ContentWrapper column>
-      <Icons as={List}>
+      <Icons use={List}>
         <li>
           <Link
             href="https://facebook.com/reakitjs"

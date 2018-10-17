@@ -1,13 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { styled, Grid, List, Link } from "reakit";
+import { styled, List, Link } from "reakit";
 import { Link as RouterLink } from "react-router-dom";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import getSectionUrl from "../utils/getSectionUrl";
 import findSectionUses from "../utils/findSectionUses";
 import SectionContentWrapper from "../elements/SectionContentWrapper";
 
-const Wrapper = styled(Grid.as(SectionContentWrapper))`
+const Wrapper = styled(SectionContentWrapper)`
+  display: grid;
   grid-auto-flow: column;
   grid-gap: 5px;
   justify-content: start;
@@ -37,7 +38,7 @@ const SectionUses = ({ usedBy, section, ...props }) => {
             <Sections>
               {uses.map(s => (
                 <li key={s.name}>
-                  <Link as={RouterLink} to={getSectionUrl(sections, s)}>
+                  <Link use={RouterLink} to={getSectionUrl(sections, s)}>
                     {s.name}
                   </Link>
                 </li>

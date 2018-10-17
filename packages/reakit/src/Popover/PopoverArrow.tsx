@@ -1,10 +1,8 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { prop, theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import { bgColorWithProps } from "../_utils/styledProps";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 
 export interface PopoverArrowProps extends BoxProps {
@@ -27,8 +25,6 @@ const PopoverArrowComponent = (props: PopoverArrowProps) => (
     </svg>
   </Box>
 );
-
-hoistNonReactStatics(PopoverArrowComponent, Box);
 
 const PopoverArrow = styled(PopoverArrowComponent)`
   position: absolute;
@@ -81,4 +77,4 @@ PopoverArrow.defaultProps = {
   palette: "white"
 };
 
-export default as("div")(PopoverArrow);
+export default PopoverArrow;

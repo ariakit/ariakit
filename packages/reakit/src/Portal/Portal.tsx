@@ -1,9 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 
 export interface PortalProps extends BoxProps {}
@@ -37,10 +35,8 @@ class PortalComponent extends React.Component<PortalProps, PortalState> {
   }
 }
 
-hoistNonReactStatics(PortalComponent, Box);
-
 const Portal = styled(PortalComponent)`
   ${theme("Portal")};
 `;
 
-export default as("div")(Portal);
+export default Portal;

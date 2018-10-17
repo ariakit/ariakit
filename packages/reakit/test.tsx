@@ -13,7 +13,7 @@ interface Props {
 
   <Box />;
   <Box absolute />;
-  <Test as="div" foo="" absolute />;
+  <Test use="div" foo="" absolute />;
   <Code />;
   <Code block />;
   <Card gutter={8} />;

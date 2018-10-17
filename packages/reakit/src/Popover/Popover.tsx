@@ -5,12 +5,10 @@ import { theme } from "styled-tools";
 import Popper from "popper.js";
 import styled from "../styled";
 import getSelector from "../_utils/getSelector";
-import as from "../as";
 import Hidden, { Position, HiddenProps } from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
 
 export interface PopoverProps extends HiddenProps {
-  role?: string;
   hideOnEsc?: boolean;
   placement?: Popper.Placement;
   flip?: boolean;
@@ -201,4 +199,4 @@ Popover.defaultProps = {
   palette: "white"
 };
 
-export default as("div")(Popover);
+export default Popover;

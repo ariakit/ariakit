@@ -2,7 +2,6 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
 import HiddenHide, { HiddenHideProps } from "../Hidden/HiddenHide";
 
 export interface PopoverHideProps extends HiddenHideProps {
@@ -29,4 +28,4 @@ PopoverHide.propTypes = {
   visible: PropTypes.bool
 };
 
-export default as("button")(PopoverHide);
+export default PopoverHide;

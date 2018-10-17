@@ -64,7 +64,7 @@ const StyledEmailIcon = styled(EmailIcon)`
 `;
 
 const NewsletterForm = (props: any) => (
-  <Wrapper as="form" action={action} method="post" {...props}>
+  <Wrapper use="form" action={action} method="post" {...props}>
     <IconBackground />
     <StyledEmailIcon />
     <Block gridArea="text" fontSize={20} lineHeight={1.75} textAlign="center">

@@ -59,7 +59,7 @@ const Anchor = ({ href, ...props }) => {
       <StyleguidistContainer>
         {({ sections }) => (
           <Link
-            as={RouterLink}
+            use={RouterLink}
             to={getSectionUrl(
               sections,
               href
@@ -73,7 +73,7 @@ const Anchor = ({ href, ...props }) => {
       </StyleguidistContainer>
     );
   }
-  return <Link as={RouterLink} to={href} {...props} />;
+  return <Link use={RouterLink} to={href} {...props} />;
 };
 
 const CodeBlock = ({ children }) => (

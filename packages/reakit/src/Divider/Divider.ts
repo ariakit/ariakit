@@ -1,7 +1,6 @@
 import * as PropTypes from "prop-types";
 import { ifProp, theme } from "styled-tools";
 import styled, { css } from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 
 export interface DividerProps extends BoxProps {
@@ -33,7 +32,8 @@ const Divider = styled(Box)<DividerProps>`
 
 // @ts-ignore
 Divider.propTypes = {
+  use: "hr",
   vertical: PropTypes.bool
 };
 
-export default as("hr")(Divider);
+export default Divider;

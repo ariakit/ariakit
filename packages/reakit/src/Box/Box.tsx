@@ -1,18 +1,36 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
+import use from "reuse";
 import { theme } from "styled-tools";
 import {
   bool,
   bgColorWithProps,
   textColorWithProps
 } from "../_utils/styledProps";
+import pickCSSProps from "../_utils/pickCSSProps";
+import dedupeClassName from "../_utils/dedupeClassName";
+import pickHTMLProps from "../_utils/pickHTMLProps";
 import styled from "../styled";
-import as from "../as";
 
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-const BoxComponent = ({ as: T, ...props }: { as: React.ComponentType }) =>
-  React.createElement(T, props);
+const BoxComponent = React.forwardRef(({ use: T, ...props }, ref) => {
+  const style = pickCSSProps(props);
+  if (typeof T === "string") {
+    const className = dedupeClassName(props.className);
+    const allProps = Object.assign(
+      pickHTMLProps(props),
+      { className },
+      style ? { style } : {}
+    );
+
+    return <T {...allProps} ref={ref} />;
+  }
+  return <T {...props} style={style} />;
+});
+
+// const BoxComponent = ({ as: T, ...props }: { as: React.ComponentType }) =>
+//   React.createElement(T, props);
 
 export type BoxProps = {
   static?: boolean;
@@ -25,7 +43,7 @@ export type BoxProps = {
   tone?: number;
 };
 
-const Box = styled(BoxComponent)<BoxProps>`
+const Box = styled(use(BoxComponent))<BoxProps>`
   margin: unset;
   padding: unset;
   border: unset;
@@ -46,7 +64,7 @@ const asTypes = [PropTypes.func, PropTypes.string];
 
 // @ts-ignore
 Box.propTypes = {
-  as: PropTypes.oneOfType([
+  use: PropTypes.oneOfType([
     ...asTypes,
     PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
   ]),
@@ -60,4 +78,8 @@ Box.propTypes = {
   sticky: PropTypes.bool
 };
 
-export default as("div")(Box);
+Box.defaultProps = {
+  use: "div"
+};
+
+export default Box;

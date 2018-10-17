@@ -16,7 +16,7 @@ const ContainerAPITable = ({ section, ...props }) => {
   return (
     <Block {...props}>
       <SectionContentWrapper column>
-        <Heading as="h2">API</Heading>
+        <Heading use="h2">API</Heading>
         <Paragraph>
           Props passed to <Code>children</Code>.
         </Paragraph>

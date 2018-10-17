@@ -78,7 +78,7 @@ const Navigation = () => (
     {({ sections }) =>
       sections.map(section => (
         <Toolbar.Focusable
-          as={NavigationLink}
+          use={NavigationLink}
           key={section.name}
           to={`/${section.slug}`}
         >
@@ -99,7 +99,7 @@ const DarkModeToggle = props => (
           track(`reakit.${mode}ModeClick`)();
         }}
       >
-        <Icon as={MoonIcon} />
+        <Icon use={MoonIcon} />
         <Tooltip fade>
           <Tooltip.Arrow />
           {mode === "dark" ? "Disable" : "Enable"} dark mode
@@ -112,15 +112,15 @@ const DarkModeToggle = props => (
 const Desktop = () => (
   <StyledToolbar>
     <Toolbar.Content>
-      <Toolbar.Focusable as={LogoLink} to="/">
+      <Toolbar.Focusable use={LogoLink} to="/">
         <Logo />
       </Toolbar.Focusable>
       <Navigation />
     </Toolbar.Content>
     <Toolbar.Content align="end">
-      <Toolbar.Focusable as={DarkModeToggle} />
+      <Toolbar.Focusable use={DarkModeToggle} />
       <Toolbar.Focusable
-        as={ExternalLink}
+        use={ExternalLink}
         href={getRelease.url()}
         target="_blank"
         onClick={track("reakit.headerVersionClick")}
@@ -128,7 +128,7 @@ const Desktop = () => (
         {getRelease.version}
       </Toolbar.Focusable>
       <Toolbar.Focusable
-        as={ExternalLink}
+        use={ExternalLink}
         href="https://github.com/reakit/reakit"
         target="_blank"
         onClick={track("reakit.headerGithubClick")}
@@ -146,29 +146,29 @@ const Mobile = () => (
       {sidebar => (
         <Toolbar.Content>
           <Toolbar.Focusable
-            as={[Sidebar.Toggle, ButtonTransparent]}
+            use={[Sidebar.Toggle, ButtonTransparent]}
             {...sidebar}
           >
-            <Icon as={MenuIcon} />
+            <Icon use={MenuIcon} />
           </Toolbar.Focusable>
           <MobileSidebar />
         </Toolbar.Content>
       )}
     </Sidebar.Container>
     <Toolbar.Content align="center">
-      <Toolbar.Focusable as={LogoLink} to="/">
+      <Toolbar.Focusable use={LogoLink} to="/">
         <Logo />
       </Toolbar.Focusable>
     </Toolbar.Content>
     <Toolbar.Content align="end">
-      <Toolbar.Focusable as={DarkModeToggle} />
+      <Toolbar.Focusable use={DarkModeToggle} />
       <Toolbar.Focusable
-        as={ExternalLink}
+        use={ExternalLink}
         href="https://github.com/reakit/reakit"
         target="_blank"
         onClick={track("reakit.headerGithubClick")}
       >
-        <Icon as={GitHubIcon} />
+        <Icon use={GitHubIcon} />
       </Toolbar.Focusable>
     </Toolbar.Content>
   </StyledToolbar>

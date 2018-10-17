@@ -2,7 +2,6 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
 import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
 
 export interface PopoverToggleProps extends HiddenToggleProps {
@@ -29,4 +28,4 @@ PopoverToggle.propTypes = {
   visible: PropTypes.bool
 };
 
-export default as("button")(PopoverToggle);
+export default PopoverToggle;

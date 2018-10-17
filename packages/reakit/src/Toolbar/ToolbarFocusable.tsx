@@ -2,11 +2,9 @@ import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import callAll from "../_utils/callAll";
 import getSelector from "../_utils/getSelector";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 import Toolbar from "./Toolbar";
 
@@ -166,8 +164,6 @@ class ToolbarFocusableComponent extends React.Component<
   }
 }
 
-hoistNonReactStatics(ToolbarFocusableComponent, Box);
-
 const ToolbarFocusable = styled(ToolbarFocusableComponent)`
   ${theme("ToolbarFocusable")};
 `;
@@ -179,4 +175,4 @@ ToolbarFocusable.propTypes = {
   disabled: PropTypes.bool
 };
 
-export default as("div")(ToolbarFocusable);
+export default ToolbarFocusable;

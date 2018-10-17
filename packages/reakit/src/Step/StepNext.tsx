@@ -3,7 +3,6 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
@@ -28,10 +27,11 @@ const StepNext = styled(StepNextComponent)`
 
 // @ts-ignore
 StepNext.propTypes = {
+  use: "button",
   next: PropTypes.func.isRequired,
   hasNext: PropTypes.func,
   loop: PropTypes.bool,
   onClick: PropTypes.func
 };
 
-export default as("button")(StepNext);
+export default StepNext;

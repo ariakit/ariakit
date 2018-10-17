@@ -3,7 +3,6 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
-import as from "../as";
 import Box, { BoxProps } from "../Box";
 import { HiddenContainerActions } from "./HiddenContainer";
 
@@ -22,8 +21,9 @@ const HiddenHide = styled(HiddenHideComponent)`
 
 // @ts-ignore
 HiddenHide.propTypes = {
+  use: "button",
   hide: PropTypes.func.isRequired,
   onClick: PropTypes.func
 };
 
-export default as("button")(HiddenHide);
+export default HiddenHide;

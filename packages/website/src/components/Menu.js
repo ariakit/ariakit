@@ -87,7 +87,7 @@ const renderList = (
       {sections.map(s => (
         <li key={s.name}>
           <SectionLink
-            as={s.slug ? NavLink : "label"}
+            use={s.slug ? NavLink : "label"}
             to={getSectionUrl(rootSections, s)}
           >
             {s.name}

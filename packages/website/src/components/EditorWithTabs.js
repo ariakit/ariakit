@@ -54,9 +54,9 @@ const EditorWithTabs = props => (
   <Tabs.Container>
     {tabs => (
       <Wrapper>
-        <Tabs as={Group}>
+        <Tabs use={Group}>
           <Tabs.Tab
-            as={[IconOnLeft, Button]}
+            use={[IconOnLeft, Button]}
             tab="jsx"
             onClick={track("reakit.editorTabsJSXClick")}
             {...tabs}
@@ -64,7 +64,7 @@ const EditorWithTabs = props => (
             <StyledPencilIcon /> JSX
           </Tabs.Tab>
           <Tabs.Tab
-            as={[IconOnLeft, Button]}
+            use={[IconOnLeft, Button]}
             tab="html"
             onClick={track("reakit.editorTabsHTMLClick")}
             {...tabs}

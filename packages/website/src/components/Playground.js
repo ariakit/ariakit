@@ -33,8 +33,6 @@ const ThemeWrapper = styled(Grid)`
   align-items: center;
 `;
 
-const ThemeInput = styled(Input.as("select"))``;
-
 const Playground = ({ code, evalInContext, ...props }) => (
   <StateContainer initialState={{ ownCode: code }}>
     {({ ownCode, setState }) => (
@@ -55,7 +53,8 @@ const Playground = ({ code, evalInContext, ...props }) => (
                 <Label htmlFor="themeSelect" color="#666">
                   Theme
                 </Label>
-                <ThemeInput
+                <Input
+                  use="select"
                   id="themeSelect"
                   value={theme}
                   onChange={e => {
@@ -66,7 +65,7 @@ const Playground = ({ code, evalInContext, ...props }) => (
                   {themes.map(name => (
                     <option key={name}>{name}</option>
                   ))}
-                </ThemeInput>
+                </Input>
               </ThemeWrapper>
             )}
             <EditorWithTabs
