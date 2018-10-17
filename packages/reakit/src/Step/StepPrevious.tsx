@@ -27,11 +27,14 @@ const StepPrevious = styled(StepPreviousComponent)`
 
 // @ts-ignore
 StepPrevious.propTypes = {
-  use: "button",
   previous: PropTypes.func.isRequired,
   hasPrevious: PropTypes.func,
   loop: PropTypes.bool,
   onClick: PropTypes.func
+};
+
+StepPrevious.defaultProps = {
+  use: "button"
 };
 
 export default StepPrevious;

@@ -21,9 +21,12 @@ const HiddenToggle = styled(HiddenToggleComponent)`
 
 // @ts-ignore
 HiddenToggle.propTypes = {
-  use: "button",
   toggle: PropTypes.func.isRequired,
   onClick: PropTypes.func
+};
+
+HiddenToggle.defaultProps = {
+  use: "button"
 };
 
 export default HiddenToggle;

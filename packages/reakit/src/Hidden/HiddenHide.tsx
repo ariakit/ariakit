@@ -21,9 +21,12 @@ const HiddenHide = styled(HiddenHideComponent)`
 
 // @ts-ignore
 HiddenHide.propTypes = {
-  use: "button",
   hide: PropTypes.func.isRequired,
   onClick: PropTypes.func
+};
+
+HiddenHide.defaultProps = {
+  use: "button"
 };
 
 export default HiddenHide;

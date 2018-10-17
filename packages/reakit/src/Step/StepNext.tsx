@@ -27,11 +27,14 @@ const StepNext = styled(StepNextComponent)`
 
 // @ts-ignore
 StepNext.propTypes = {
-  use: "button",
   next: PropTypes.func.isRequired,
   hasNext: PropTypes.func,
   loop: PropTypes.bool,
   onClick: PropTypes.func
+};
+
+StepNext.defaultProps = {
+  use: "button"
 };
 
 export default StepNext;

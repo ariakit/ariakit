@@ -32,8 +32,11 @@ const Divider = styled(Box)<DividerProps>`
 
 // @ts-ignore
 Divider.propTypes = {
-  use: "hr",
   vertical: PropTypes.bool
+};
+
+Divider.defaultProps = {
+  use: "hr"
 };
 
 export default Divider;
