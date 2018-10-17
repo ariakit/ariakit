@@ -36,7 +36,6 @@
   "dependencies": {
     "@emotion/is-prop-valid": "^0.7.0",
     "constate": "^0.9.0",
-    "hoist-non-react-statics": "^3.0.1",
     "popper.js": "^1.14.4",
     "prop-types": "^15.6.2",
     "reuse": "^1.0.4",
