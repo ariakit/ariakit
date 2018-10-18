@@ -4,7 +4,7 @@ You can pass it a `theme` prop to style your components.
 Use the component name in uppercase as a key.
 
 ```jsx
-import { Provider, Button } from 'reakit';
+import { Provider, Button } from "reakit";
 
 const theme = {
   Button: {

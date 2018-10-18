@@ -1,7 +1,7 @@
 `Hidden` is a highly generic yet powerful Reakit component. It simply hides itself away and waits for a `visible` prop to show up.
 
 ```jsx
-import { Hidden } from 'reakit';
+import { Hidden } from "reakit";
 
 <Hidden visible>Hidden</Hidden>
 ```

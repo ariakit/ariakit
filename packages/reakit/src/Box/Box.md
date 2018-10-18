@@ -1,7 +1,7 @@
 This is the abstract layout component that all other Reakit components are built on top of. By default it renders a `div` tag with basic reset styles.
 
 ```jsx
-import { Box } from 'reakit';
+import { Box } from "reakit";
 
 <Box>Box</Box>
 ```
@@ -9,7 +9,7 @@ import { Box } from 'reakit';
 Any additional css rules can be added as props:
 
 ```jsx
-import { Box } from 'reakit';
+import { Box } from "reakit";
 
 <Box backgroundColor="palevioletred" color="white">Box</Box>
 ```
@@ -17,7 +17,7 @@ import { Box } from 'reakit';
 You can use the `palette` prop to change its colors based on your [theme](../../docs/theming.md) (it has no effect if you're not using a theme):
 
 ```jsx
-import { Box } from 'reakit';
+import { Box } from "reakit";
 
 <React.Fragment>
   <Box palette="primary">Box</Box>
@@ -29,7 +29,7 @@ import { Box } from 'reakit';
 It offers convenience props to control the `position` css property:
 
 ```jsx
-import { Box } from 'reakit';
+import { Box } from "reakit";
 
 <Box relative width={100} height={40}>
   <Box
@@ -46,7 +46,7 @@ import { Box } from 'reakit';
 You can render it [as](../../docs/as.md) any other HTML element or React component:
 
 ```jsx
-import { Box } from 'reakit';
+import { Box } from "reakit";
 
 <Box
   as="a"

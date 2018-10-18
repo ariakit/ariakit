@@ -1,7 +1,7 @@
 Code works in two modes, for inline code and pre-formatted code blocks. Use the `block` prop to change between modes.
 
 ```jsx
-import { Code } from 'reakit';
+import { Code } from "reakit";
 
 <Code>Code by itself will be inline</Code>
 ```
@@ -9,7 +9,7 @@ import { Code } from 'reakit';
 Code in block mode.
 
 ```jsx
-import { Code } from 'reakit';
+import { Code } from "reakit";
 
 <Code block>
   {`//for example:

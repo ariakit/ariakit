@@ -1,7 +1,7 @@
 Paragraph renders by default as a `<p>` tag with `margin-bottom`.
 
 ```jsx
-import { Paragraph } from 'reakit';
+import { Paragraph } from "reakit";
 
 <Paragraph>
   Popovers are typically dismissable, whether by click on other parts of the

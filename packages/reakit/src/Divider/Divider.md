@@ -1,7 +1,7 @@
 It serves the same function as HTML's `<hr>`, to separate content. Use prop `vertical` or `horizontal` to toggle Divider's orientation. It defaults to a 1px wide horizontal line.
 
 ```jsx
-import { Divider } from 'reakit';
+import { Divider } from "reakit";
 
 <Divider />
 ```

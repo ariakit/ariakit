@@ -1,4 +1,4 @@
 ```jsx
-import { Tooltip } from 'reakit';
+import { Tooltip } from "reakit";
 <Tooltip.Arrow />
 ```

@@ -1,7 +1,7 @@
 By default renders as an `<input>` of `type="text"`.
 
 ```jsx
-import { Input } from 'reakit';
+import { Input } from "reakit";
 
 <Input />
 ```
@@ -9,7 +9,7 @@ import { Input } from 'reakit';
 A `select`:
 
 ```jsx
-import { Input } from 'reakit';
+import { Input } from "reakit";
 
 <Input as="select">
   <option>Hi</option>
@@ -20,7 +20,7 @@ import { Input } from 'reakit';
 `type="checkbox"`:
 
 ```jsx
-import { Input } from 'reakit';
+import { Input } from "reakit";
 
 <label>
   <Input type="checkbox" /> Choose any
@@ -29,7 +29,7 @@ import { Input } from 'reakit';
 
 `type="radio"`:
 ```jsx
-import { Input } from 'reakit';
+import { Input } from "reakit";
 
 <label>
   <Input type="radio" /> Choose one
@@ -38,7 +38,7 @@ import { Input } from 'reakit';
 
 `as="textarea"`:
 ```jsx
-import { Input } from 'reakit';
+import { Input } from "reakit";
 
 <Input as="textarea" />
 ```

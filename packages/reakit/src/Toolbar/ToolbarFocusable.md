@@ -1,7 +1,7 @@
 You should use `ToolbarFocusable` on elements within your [Toolbar](Toolbar.md) that you want to add to the focus sequence.
 
 ```jsx
-import { Toolbar } from 'reakit';
+import { Toolbar } from "reakit";
 
 <Toolbar>
   <Toolbar.Content whiteSpace="nowrap">
