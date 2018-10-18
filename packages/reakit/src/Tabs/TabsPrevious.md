@@ -1,5 +1,5 @@
 ```jsx
-import { Block } from "reakit";
+import { Block, Tabs } from "reakit";
 
 <Tabs.Container>
   {({ previous, hasPrevious, ...tabs }) => (

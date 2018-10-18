@@ -1,7 +1,7 @@
 This component consists of [Box](../Box/Box.md) with `display: flex`. Several flex properties can be passed directly as props for convenience.
 
 ```jsx
-import { Paragraph } from "reakit";
+import { Paragraph, Flex } from "reakit";
 
 <Flex>
   <Paragraph marginRight="1em">

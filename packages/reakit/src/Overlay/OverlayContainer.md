@@ -1,5 +1,5 @@
 ```jsx
-import { Block, Button } from "reakit";
+import { Block, Button, Overlay } from "reakit";
 
 <Overlay.Container>
   {({ visible, show, hide, toggle }) => (

@@ -2,6 +2,8 @@
 It renders by default as a `<div>`.
 
 ```jsx
+import { Table } from "reakit";
+
 <Table.Wrapper maxWidth={300}>
   <Table>
     <tr>

@@ -1,7 +1,7 @@
 `Tabs` renders as a `<ul>` for one or more [TabsTab](TabsTab.md)s inside, which render as `<li>`s. To be accessible, once focused, the arrow keys can be used to change tabs.
 
 ```jsx
-import { Block } from "reakit";
+import { Block, Tabs } from "reakit";
 
 <Tabs.Container>
   {tabs => (

@@ -1,5 +1,5 @@
 ```jsx
-import { Block, Group, Button } from "reakit";
+import { Block, Group, Button, Hidden } from "reakit";
 
 <Hidden.Container>
   {({ visible, show, hide, toggle }) => (

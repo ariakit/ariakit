@@ -1,6 +1,8 @@
 `InlineBlock` is [Box](../Box/Box.md) with `display: inline-block`.
 
 ```jsx
+import { InlineBlock } from "reakit";
+
 <div>
   <InlineBlock
     width="100px"

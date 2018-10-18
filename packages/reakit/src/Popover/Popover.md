@@ -3,7 +3,7 @@
 You can change the visiblity of the popover in the example below by removing `visible`.
 
 ```jsx
-import { InlineBlock, Button } from "reakit";
+import { InlineBlock, Button, Popover } from "reakit";
 
 <InlineBlock relative>
   <Button>Button</Button>
@@ -16,7 +16,7 @@ import { InlineBlock, Button } from "reakit";
 You can use [PopoverContainer](PopoverContainer.md) in combination with [PopoverHide](PopoverHide.md) and [PopoverToggle](PopoverToggle.md) to easily create an animated popover:
 
 ```jsx
-import { InlineBlock, Popover } from "reakit";
+import { InlineBlock, Button, Popover } from "reakit";
 
 <Popover.Container>
   {popover => (

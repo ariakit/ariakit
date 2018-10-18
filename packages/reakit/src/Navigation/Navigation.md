@@ -1,7 +1,7 @@
 `Navigation` renders a `<nav>` by default.
 
 ```jsx
-import { List } from "reakit";
+import { List, Navigation, Link } from "reakit";
 
 <Navigation>
   <List>

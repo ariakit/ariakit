@@ -1,5 +1,5 @@
 ```jsx
-import { Block } from "reakit";
+import { Block, Hidden } from "reakit";
 
 <Hidden.Container>
   {({ visible, toggle }) => (
