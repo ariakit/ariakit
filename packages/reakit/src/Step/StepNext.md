@@ -1,5 +1,5 @@
 ```jsx
-import { Block } from "reakit";
+import { Block, Step } from "reakit";
 
 <Step.Container>
   {({ next, hasNext, ...step }) => (

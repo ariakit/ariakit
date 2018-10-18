@@ -1,7 +1,7 @@
 By default, `Sidebar` is a fixed [Overlay](../Overlay/Overlay.md) that appears on the left side of the screen.
 
 ```jsx
-import { Block, Button, Backdrop } from "reakit";
+import { Block, Button, Backdrop, Sidebar } from "reakit";
 
 <Sidebar.Container>
   {sidebar => (
@@ -19,7 +19,7 @@ import { Block, Button, Backdrop } from "reakit";
 You can change its position with the `align` prop:
 
 ```jsx
-import { Block, Button, Backdrop } from "reakit";
+import { Block, Button, Backdrop, Sidebar } from "reakit";
 
 <Sidebar.Container>
   {sidebar => (
@@ -37,7 +37,7 @@ import { Block, Button, Backdrop } from "reakit";
 This is usually combined with [Portal](../Portal/Portal.md):
 
 ```jsx
-import { Block, Button, Backdrop, Portal } from "reakit";
+import { Block, Button, Backdrop, Portal, Sidebar } from "reakit";
 
 <Sidebar.Container>
   {sidebar => (
@@ -55,7 +55,7 @@ import { Block, Button, Backdrop, Portal } from "reakit";
 You can also put it inside another wrapper component tweaking its `position` and `height` css properties:
 
 ```jsx
-import { Block, Button, Backdrop } from "reakit";
+import { Block, Button, Backdrop, Sidebar } from "reakit";
 
 <Sidebar.Container>
   {sidebar => (

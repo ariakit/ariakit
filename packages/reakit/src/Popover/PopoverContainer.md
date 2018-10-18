@@ -1,5 +1,5 @@
 ```jsx
-import { InlineBlock, Button } from "reakit";
+import { InlineBlock, Button, Popover } from "reakit";
 
 <Popover.Container>
   {({ visible, show, hide, toggle }) => (

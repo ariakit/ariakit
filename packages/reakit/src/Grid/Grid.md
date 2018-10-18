@@ -1,6 +1,8 @@
 Grid is [Box](../Box/Box.md) with `display: grid`. It pairs with the Grid.Item component. Both take props to set several `grid-*` related properties.
 
 ```jsx
+import { Grid } from 'reakit';
+
 <Grid columns="repeat(2, 1fr)" autoRows="auto" gap="3vw">
   <Grid.Item>
     Non proident duis cupidatat veniam ea. Lorem esse ullamco do velit voluptate

@@ -3,7 +3,7 @@ It applies a basic styling to its children to improve differentiation between he
 Table renders by default as a `<table>`.
 
 ```jsx
-import { Block } from "reakit";
+import { Block, Table } from "reakit";
 
 <Block overflowX="auto">
   <Table>
@@ -34,7 +34,7 @@ import { Block } from "reakit";
 A more throughout example:
 
 ```jsx
-import { Block } from "reakit";
+import { Block, Table } from "reakit";
 
 <Block overflowX="auto">
   <Table>

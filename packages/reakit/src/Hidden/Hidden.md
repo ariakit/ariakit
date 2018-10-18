@@ -1,6 +1,8 @@
 `Hidden` is a highly generic yet powerful Reakit component. It simply hides itself away and waits for a `visible` prop to show up.
 
 ```jsx
+import { Hidden } from 'reakit';
+
 <Hidden visible>Hidden</Hidden>
 ```
 
@@ -11,7 +13,7 @@ You can use [HiddenContainer](HiddenContainer.md) to control its state with ease
 > Unless you're doing something different with state, it's highly recommended to pass the whole state down to components (`{...hidden}` in the example below). If something changes in the library in the future, even breaking changes, you most likely will not need to change your code, since the state details will be encapsulated.
 
 ```jsx
-import { Block, Group, Button } from "reakit";
+import { Block, Group, Button, Hidden } from "reakit";
 
 <Hidden.Container>
   {hidden => (

@@ -1,6 +1,8 @@
 `Block` is [Box](../Box/Box.md) with `display: block`. By default it renders as a `<div>`.
 
 ```jsx
+import {Block} from 'reakit';
+
 <React.Fragment>
   <Block
     width="100px"

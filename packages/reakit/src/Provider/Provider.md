@@ -4,6 +4,8 @@ You can pass it a `theme` prop to style your components.
 Use the component name in uppercase as a key.
 
 ```jsx
+import { Provider, Button } from 'reakit';
+
 const theme = {
   Button: {
     backgroundColor: "palevioletred",
@@ -19,7 +21,7 @@ const theme = {
 `Provider` supports the [Constate API](https://github.com/diegohaz/constate#provider) which makes [React Context](https://reactjs.org/docs/context.html) easier to use.
 
 ```jsx
-import { Container } from "reakit";
+import { Container, Provider, Container } from "reakit";
 
 const initial = {
   Button: {

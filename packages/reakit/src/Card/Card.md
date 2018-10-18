@@ -1,7 +1,7 @@
 A Card can be used to serve related information together such as actions, image, text etc.
 
 ```jsx
-import { Heading, Image, Paragraph } from "reakit";
+import { Heading, Image, Paragraph, Card } from "reakit";
 
 <Card>
   <Heading as="h3">Card Heading</Heading>
@@ -17,7 +17,7 @@ import { Heading, Image, Paragraph } from "reakit";
 ```
 
 ```jsx
-const { Grid, Image, Heading, Paragraph } = require("reakit");
+const { Grid, Image, Heading, Paragraph, Card } = require("reakit");
 
 <Grid column autoColumns="minmax(min-content, max-content)" gap={20} alignItems="start">
   <Card>
