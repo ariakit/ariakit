@@ -1,5 +1,5 @@
 ```jsx
-import { Block } from "reakit";
+import { Tabs } from "reakit";
 
 <Tabs.Container>
   {tabs => (
