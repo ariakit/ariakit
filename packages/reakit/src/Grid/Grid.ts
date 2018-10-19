@@ -10,9 +10,9 @@ export interface GridProps extends BoxProps {
   dense?: boolean;
   gap?: string | number;
   template?: string | number;
-  areas?: string | number;
-  columns?: string | number;
-  rows?: string | number;
+  templateAreas?: string | number;
+  templateColumns?: string | number;
+  templateRows?: string | number;
   autoColumns?: string | number;
   autoRows?: string | number;
 }
@@ -23,9 +23,9 @@ const Grid = styled(Box)<GridProps>`
     ${bool("grid-auto-flow", ["row", "column", "dense"])}
     ${value("grid-gap", "gap")}
     ${value("grid-template", "template")}
-    ${value("grid-template-areas", "areas")}
-    ${value("grid-template-columns", "columns")}
-    ${value("grid-template-rows", "rows")}
+    ${value("grid-template-areas", "templateAreas")}
+    ${value("grid-template-columns", "templateColumns")}
+    ${value("grid-template-rows", "templateRows")}
     ${value("grid-auto-columns", "autoColumns")}
     ${value("grid-auto-rows", "autoRows")}
   }
@@ -41,9 +41,9 @@ Grid.propTypes = {
   dense: PropTypes.bool,
   gap: valueType,
   template: valueType,
-  areas: valueType,
-  columns: valueType,
-  rows: valueType,
+  templateAreas: valueType,
+  templateColumns: valueType,
+  templateRows: valueType,
   autoColumns: valueType,
   autoRows: valueType
 };

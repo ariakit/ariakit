@@ -7,8 +7,6 @@ import Box, { BoxProps } from "../Box";
 export interface CodeProps extends BoxProps {
   block?: boolean;
   codeClassName?: string;
-  className?: string;
-  children?: React.ReactNode;
 }
 
 const CodeComponent = (props: CodeProps) => {

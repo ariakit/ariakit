@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import use from "reuse";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
 import Box, { BoxProps } from "../Box";
@@ -8,11 +9,12 @@ import { HiddenContainerActions } from "./HiddenContainer";
 
 export interface HiddenToggleProps extends BoxProps {
   toggle: HiddenContainerActions["toggle"];
-  onClick?: React.MouseEventHandler;
 }
 
-const HiddenToggleComponent = ({ onClick, ...props }: HiddenToggleProps) => (
-  <Box onClick={callAll(props.toggle, onClick)} {...props} />
+const HiddenToggleComponent = React.forwardRef<HTMLElement, HiddenToggleProps>(
+  ({ onClick, ...props }, ref) => (
+    <Box onClick={callAll(props.toggle, onClick)} {...props} ref={ref} />
+  )
 );
 
 const HiddenToggle = styled(HiddenToggleComponent)`
@@ -29,4 +31,4 @@ HiddenToggle.defaultProps = {
   use: "button"
 };
 
-export default HiddenToggle;
+export default use(HiddenToggle);

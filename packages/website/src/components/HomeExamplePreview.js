@@ -17,7 +17,7 @@ const Wrapper = styled(Flex)`
 const HomeExamplePreview = ({ children, ...props }) => (
   <Wrapper {...props}>
     <Grid
-      columns="auto 1fr auto auto"
+      templateColumns="auto 1fr auto auto"
       gap={16}
       alignItems="center"
       padding={16}

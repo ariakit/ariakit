@@ -9801,10 +9801,10 @@ retry@^0.10.0:
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.10.1.tgz#e76388d217992c252750241d3d3956fed98d8ff4"
   integrity sha1-52OI0heZLCUnUCQdPTlW/tmNj/Q=
 
-reuse@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/reuse/-/reuse-1.0.4.tgz#0d5f95c8df79365db1f6ef05217216beab106981"
-  integrity sha512-qIAdsWlsBVx82Y7Ulthy/HcgSd8RD7+ivG+1m+5wSnWL5UpW8WGIMFg9c7HzOejq3eEm72TJivQtalfVFgqEgw==
+reuse@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/reuse/-/reuse-1.2.0.tgz#f2a9e54708d45420d7c819cbd6e5e69c76c6109c"
+  integrity sha512-WNQ9pxVkou+TPtAKMr2Yyw95CTPUxgCPrh8j8MBsSt2LdQemBI7xNwBYk1kRa2thDxF5AWZluFtFd+iuFhddow==
 
 rimraf@2, rimraf@^2.2.8, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2:
   version "2.6.2"

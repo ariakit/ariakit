@@ -21,12 +21,6 @@ export interface TabsTabProps extends Omit<StepProps, "step"> {
   next: StepContainerActions["next"];
   previous: StepContainerActions["previous"];
   isCurrent: StepContainerSelectors["isCurrent"];
-  role?: string;
-  className?: string;
-  disabled?: boolean;
-  onClick?: React.MouseEventHandler;
-  onFocus?: React.MouseEventHandler;
-  onKeyDown?: React.KeyboardEventHandler;
 }
 
 interface KeyMap {

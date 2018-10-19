@@ -7,43 +7,51 @@ import {
   bgColorWithProps,
   textColorWithProps
 } from "../_utils/styledProps";
+import CSSProps from "../_utils/CSSProps";
 import pickCSSProps from "../_utils/pickCSSProps";
 import dedupeClassName from "../_utils/dedupeClassName";
 import pickHTMLProps from "../_utils/pickHTMLProps";
 import styled from "../styled";
 
+type CSSProperties = { [K in keyof typeof CSSProps]?: string | number };
+
+export type BoxProps = React.HTMLProps<any> &
+  CSSProperties & {
+    use?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
+    children?: React.ReactNode;
+    static?: boolean;
+    absolute?: boolean;
+    fixed?: boolean;
+    relative?: boolean;
+    sticky?: boolean;
+    opaque?: boolean;
+    palette?: string;
+    tone?: number;
+  };
+
+const BoxComponent = React.forwardRef<HTMLElement, BoxProps>(
+  ({ use: T, ...props }, ref) => {
+    const style = pickCSSProps(props);
+    if (typeof T === "string") {
+      const className = dedupeClassName(props.className);
+      const allProps = Object.assign(
+        pickHTMLProps(props),
+        { className },
+        style ? { style } : {}
+      );
+
+      return <T {...allProps} ref={ref} />;
+    }
+    if (T) {
+      return <T {...props} style={style} />;
+    }
+    return null;
+  }
+);
+
 const positions = ["static", "absolute", "fixed", "relative", "sticky"];
 
-const BoxComponent = React.forwardRef(({ use: T, ...props }, ref) => {
-  const style = pickCSSProps(props);
-  if (typeof T === "string") {
-    const className = dedupeClassName(props.className);
-    const allProps = Object.assign(
-      pickHTMLProps(props),
-      { className },
-      style ? { style } : {}
-    );
-
-    return <T {...allProps} ref={ref} />;
-  }
-  return <T {...props} style={style} />;
-});
-
-// const BoxComponent = ({ as: T, ...props }: { as: React.ComponentType }) =>
-//   React.createElement(T, props);
-
-export type BoxProps = {
-  static?: boolean;
-  absolute?: boolean;
-  fixed?: boolean;
-  relative?: boolean;
-  sticky?: boolean;
-  opaque?: boolean;
-  palette?: string;
-  tone?: number;
-};
-
-const Box = styled(use(BoxComponent))<BoxProps>`
+const Box = styled(BoxComponent)`
   margin: unset;
   padding: unset;
   border: unset;
@@ -82,4 +90,4 @@ Box.defaultProps = {
   use: "div"
 };
 
-export default Box;
+export default use(Box);
