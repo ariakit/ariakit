@@ -1,0 +1,10 @@
+{
+  "name": "reakit-codemods",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "devDependencies": {
+    "typescript": "3.0.3"
+  }
+}
