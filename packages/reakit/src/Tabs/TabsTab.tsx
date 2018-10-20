@@ -4,7 +4,9 @@ import { theme } from "styled-tools";
 import createElementRef from "../_utils/createElementRef";
 import callAll from "../_utils/callAll";
 import { Omit } from "../_utils/types";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
+import use from "../use";
 import Step, {
   StepContainerActions,
   StepContainerSelectors,
@@ -100,14 +102,14 @@ class TabsTabComponent extends React.Component<TabsTabProps> {
   }
 }
 
-const TabsTab = styled(TabsTabComponent)`
+const TabsTab = styled(hoist(TabsTabComponent, Step))`
   ${theme("TabsTab")};
 `;
 
 // @ts-ignore
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
-  current: PropTypes.string.isRequired,
+  current: PropTypes.number.isRequired,
   register: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired,
   unregister: PropTypes.func.isRequired,
@@ -125,7 +127,6 @@ TabsTab.propTypes = {
 const noop = () => {};
 
 TabsTab.defaultProps = {
-  use: "li",
   role: "tab",
   register: noop,
   update: noop,
@@ -136,4 +137,4 @@ TabsTab.defaultProps = {
   previous: noop
 };
 
-export default TabsTab;
+export default use(TabsTab, "li");

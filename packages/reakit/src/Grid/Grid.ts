@@ -2,6 +2,7 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import { bool, value } from "../_utils/styledProps";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface GridProps extends BoxProps {
@@ -48,4 +49,4 @@ Grid.propTypes = {
   autoRows: valueType
 };
 
-export default Grid;
+export default use(Grid, "div");

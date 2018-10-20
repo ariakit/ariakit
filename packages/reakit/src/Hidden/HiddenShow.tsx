@@ -1,8 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import hoist from "../_utils/hoist";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import { HiddenContainerActions } from "./HiddenContainer";
 
@@ -15,7 +17,7 @@ const HiddenShowComponent = ({ onClick, ...props }: HiddenShowProps) => (
   <Box onClick={callAll(props.show, onClick)} {...props} />
 );
 
-const HiddenShow = styled(HiddenShowComponent)`
+const HiddenShow = styled(hoist(HiddenShowComponent, Box))`
   ${theme("HiddenShow")};
 `;
 
@@ -25,8 +27,4 @@ HiddenShow.propTypes = {
   onClick: PropTypes.func
 };
 
-HiddenShow.defaultProps = {
-  use: "button"
-};
-
-export default HiddenShow;
+export default use(HiddenShow, "button");

@@ -1,5 +1,5 @@
 import React from "react";
-import { styled, Flex, Link, Paragraph, Grid, List } from "reakit";
+import { styled, Flex, Link, Paragraph, Grid, List, getSelector } from "reakit";
 import { palette } from "styled-tools";
 import FacebookIcon from "react-icons/lib/fa/facebook-official";
 import TwitterIcon from "react-icons/lib/fa/twitter";
@@ -15,10 +15,10 @@ const Wrapper = styled(Flex)`
   padding: 40px 0;
   color: ${palette("grayscale", 2)};
 
-  ${Link} {
+  ${getSelector(Link)} {
     color: ${palette("grayscale", 2)};
   }
-  ${Paragraph} {
+  ${getSelector(Paragraph)} {
     margin: 0;
     line-height: 1.5;
   }
@@ -30,7 +30,7 @@ const Icons = styled(Grid)`
   grid-gap: 16px;
   margin-bottom: 16px;
 
-  ${Link}:hover {
+  ${getSelector(Link)}:hover {
     color: ${palette("grayscale", 1)};
   }
 `;

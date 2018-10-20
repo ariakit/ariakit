@@ -2,6 +2,7 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface CodeProps extends BoxProps {
@@ -34,10 +35,9 @@ Code.propTypes = {
 };
 
 Code.defaultProps = {
-  use: CodeComponent,
   opaque: true,
   palette: "background",
   tone: -2
 };
 
-export default Code;
+export default use(Code, CodeComponent);

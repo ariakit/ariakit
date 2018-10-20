@@ -1,8 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import hoist from "../_utils/hoist";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import { HiddenContainerActions } from "./HiddenContainer";
 
@@ -15,7 +17,7 @@ const HiddenHideComponent = ({ onClick, ...props }: HiddenHideProps) => (
   <Box onClick={callAll(props.hide, onClick)} {...props} />
 );
 
-const HiddenHide = styled(HiddenHideComponent)`
+const HiddenHide = styled(hoist(HiddenHideComponent, Box))`
   ${theme("HiddenHide")};
 `;
 
@@ -25,8 +27,4 @@ HiddenHide.propTypes = {
   onClick: PropTypes.func
 };
 
-HiddenHide.defaultProps = {
-  use: "button"
-};
-
-export default HiddenHide;
+export default use(HiddenHide, "button");

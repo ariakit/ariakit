@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import use from "reuse";
 import { theme } from "styled-tools";
 import {
   bool,
@@ -8,10 +7,12 @@ import {
   textColorWithProps
 } from "../_utils/styledProps";
 import CSSProps from "../_utils/CSSProps";
+import applyAllRefs from "../_utils/applyAllRefs";
 import pickCSSProps from "../_utils/pickCSSProps";
 import dedupeClassName from "../_utils/dedupeClassName";
 import pickHTMLProps from "../_utils/pickHTMLProps";
 import styled from "../styled";
+import use from "../use";
 
 type CSSProperties = { [K in keyof typeof CSSProps]?: string | number };
 
@@ -27,11 +28,15 @@ export type BoxProps = React.HTMLProps<any> &
     opaque?: boolean;
     palette?: string;
     tone?: number;
+    elementRef?: React.Ref<any>;
   };
 
 const BoxComponent = React.forwardRef<HTMLElement, BoxProps>(
   ({ use: T, ...props }, ref) => {
+    if (!T) return null;
+
     const style = pickCSSProps(props);
+
     if (typeof T === "string") {
       const className = dedupeClassName(props.className);
       const allProps = Object.assign(
@@ -39,13 +44,10 @@ const BoxComponent = React.forwardRef<HTMLElement, BoxProps>(
         { className },
         style ? { style } : {}
       );
+      return <T {...allProps} ref={applyAllRefs(ref, props.elementRef)} />;
+    }
 
-      return <T {...allProps} ref={ref} />;
-    }
-    if (T) {
-      return <T {...props} style={style} />;
-    }
-    return null;
+    return <T {...props} style={style} />;
   }
 );
 
@@ -68,13 +70,13 @@ const Box = styled(BoxComponent)`
   }
 `;
 
-const asTypes = [PropTypes.func, PropTypes.string];
+const useTypes = [PropTypes.func, PropTypes.string];
 
 // @ts-ignore
 Box.propTypes = {
   use: PropTypes.oneOfType([
-    ...asTypes,
-    PropTypes.arrayOf(PropTypes.oneOfType(asTypes))
+    ...useTypes,
+    PropTypes.arrayOf(PropTypes.oneOfType(useTypes))
   ]),
   opaque: PropTypes.bool,
   palette: PropTypes.string,
@@ -86,8 +88,4 @@ Box.propTypes = {
   sticky: PropTypes.bool
 };
 
-Box.defaultProps = {
-  use: "div"
-};
-
-export default use(Box);
+export default use(Box, "div");

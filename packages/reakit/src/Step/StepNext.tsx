@@ -2,7 +2,9 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
@@ -21,7 +23,7 @@ const StepNextComponent = ({ onClick, ...props }: StepNextProps) => (
   />
 );
 
-const StepNext = styled(StepNextComponent)`
+const StepNext = styled(hoist(StepNextComponent, Box))`
   ${theme("StepNext")};
 `;
 
@@ -33,8 +35,4 @@ StepNext.propTypes = {
   onClick: PropTypes.func
 };
 
-StepNext.defaultProps = {
-  use: "button"
-};
-
-export default StepNext;
+export default use(StepNext, "button");

@@ -1,5 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface TabsProps extends BoxProps {}
@@ -9,8 +10,7 @@ const Tabs = styled(Box)<TabsProps>`
 `;
 
 Tabs.defaultProps = {
-  use: "ul",
   role: "tablist"
 };
 
-export default Tabs;
+export default use(Tabs, "ul");

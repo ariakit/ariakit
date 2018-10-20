@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { renderToStaticMarkup } from "react-dom/server";
-import { styled, Block, Tabs, Group, Button } from "reakit";
+import { styled, Block, Tabs, Group, Button, getSelector } from "reakit";
 import PencilIcon from "react-icons/lib/md/create";
 import diffableHtml from "diffable-html";
 import Editor from "./Editor";
@@ -17,13 +17,13 @@ const Wrapper = styled(Block)`
     margin-right: 90px;
   }
 
-  ${Tabs} {
+  ${getSelector(Tabs)} {
     position: absolute;
     top: 8px;
     right: 8px;
     z-index: 200;
 
-    ${Button} {
+    ${getSelector(Button)} {
       color: white;
       background-color: rgba(255, 255, 255, 0.1);
       text-transform: uppercase;

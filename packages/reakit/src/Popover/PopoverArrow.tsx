@@ -2,7 +2,9 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import { prop, theme } from "styled-tools";
 import { bgColorWithProps } from "../_utils/styledProps";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface PopoverArrowProps extends BoxProps {
@@ -26,7 +28,7 @@ const PopoverArrowComponent = (props: PopoverArrowProps) => (
   </Box>
 );
 
-const PopoverArrow = styled(PopoverArrowComponent)`
+const PopoverArrow = styled(hoist(PopoverArrowComponent, Box))`
   position: absolute;
   font-size: 30px;
   width: 1em;
@@ -77,4 +79,4 @@ PopoverArrow.defaultProps = {
   palette: "white"
 };
 
-export default PopoverArrow;
+export default use(PopoverArrow, "div");

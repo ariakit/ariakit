@@ -1,7 +1,8 @@
 import * as PropTypes from "prop-types";
 import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
-import getSelector from "../_utils/getSelector";
+import getSelector from "../getSelector";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import GroupItem from "./GroupItem";
 
@@ -83,4 +84,4 @@ Group.defaultProps = {
   role: "group"
 };
 
-export default Group;
+export default use(Group, "div");

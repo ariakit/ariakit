@@ -1,8 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
-import styled from "../styled";
 import { Omit } from "../_utils/types";
+import hoist from "../_utils/hoist";
+import styled from "../styled";
+import use from "../use";
 import HiddenShow, { HiddenShowProps } from "../Hidden/HiddenShow";
 import { StepContainerActions } from "./StepContainer";
 
@@ -18,7 +20,7 @@ const StepShowComponent = (props: StepShowProps) => (
   <HiddenShow {...props} show={show(props)} />
 );
 
-const StepShow = styled(StepShowComponent)`
+const StepShow = styled(hoist(StepShowComponent, HiddenShow))`
   ${theme("StepShow")};
 `;
 
@@ -28,4 +30,4 @@ StepShow.propTypes = {
   step: PropTypes.string.isRequired
 };
 
-export default StepShow;
+export default use(StepShow, "button");

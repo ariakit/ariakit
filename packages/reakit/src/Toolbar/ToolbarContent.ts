@@ -1,6 +1,7 @@
 import * as PropTypes from "prop-types";
 import { prop, theme } from "styled-tools";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface ToolbarContentProps extends BoxProps {
@@ -35,4 +36,4 @@ ToolbarContent.defaultProps = {
   align: "start"
 };
 
-export default ToolbarContent;
+export default use(ToolbarContent, "div");

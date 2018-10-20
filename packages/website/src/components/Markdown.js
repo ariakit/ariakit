@@ -4,6 +4,7 @@ import unescape from "lodash/unescape";
 import { compiler } from "markdown-to-jsx";
 import {
   styled,
+  use,
   Paragraph,
   Link,
   Heading,
@@ -83,22 +84,46 @@ const CodeBlock = ({ children }) => (
   />
 );
 
-const asComponent = (component, as) => ({ component, props: { as } });
-
 const overrides = {
-  p: StyledParagraph,
-  a: Anchor,
-  ul: StyledList,
-  code: Code,
-  pre: CodeBlock,
-  blockquote: Blockquote,
-  ol: asComponent(List, "ol"),
-  h1: asComponent(StyledHeading, "h1"),
-  h2: asComponent(StyledHeading, "h2"),
-  h3: asComponent(StyledHeading, "h3"),
-  h4: asComponent(StyledHeading, "h4"),
-  h5: asComponent(StyledHeading, "h5"),
-  h6: asComponent(StyledHeading, "h6")
+  p: {
+    component: StyledParagraph
+  },
+  a: {
+    component: Anchor
+  },
+  ul: {
+    component: StyledList
+  },
+  code: {
+    component: Code
+  },
+  pre: {
+    component: CodeBlock
+  },
+  blockquote: {
+    component: Blockquote
+  },
+  ol: {
+    component: use(List, "ol")
+  },
+  h1: {
+    component: use(StyledHeading, "h1")
+  },
+  h2: {
+    component: use(StyledHeading, "h2")
+  },
+  h3: {
+    component: use(StyledHeading, "h3")
+  },
+  h4: {
+    component: use(StyledHeading, "h4")
+  },
+  h5: {
+    component: use(StyledHeading, "h5")
+  },
+  h6: {
+    component: use(StyledHeading, "h6")
+  }
 };
 
 const Markdown = ({ text }) => compiler(text, { overrides, forceBlock: true });

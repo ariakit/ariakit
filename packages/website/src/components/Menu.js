@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { styled, Grid, List, Link } from "reakit";
+import { styled, Grid, List, Link, getSelector } from "reakit";
 import { palette, ifProp } from "styled-tools";
 import getSectionUrl from "../utils/getSectionUrl";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
@@ -14,7 +14,7 @@ const Wrapper = styled(Grid)`
 `;
 
 const MenuList = styled(List)`
-  ${List} {
+  ${getSelector(List)} {
     ${ifProp("contentsVisible", "display: block !important")};
   }
 

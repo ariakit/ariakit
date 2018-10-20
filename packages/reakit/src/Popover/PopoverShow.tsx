@@ -1,7 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
+import use from "../use";
 import HiddenShow, { HiddenShowProps } from "../Hidden/HiddenShow";
 
 export interface PopoverShowProps extends HiddenShowProps {
@@ -18,7 +20,7 @@ const PopoverShowComponent = (props: PopoverShowProps) => (
   />
 );
 
-const PopoverShow = styled(PopoverShowComponent)`
+const PopoverShow = styled(hoist(PopoverShowComponent, HiddenShow))`
   ${theme("PopoverShow")};
 `;
 
@@ -28,4 +30,4 @@ PopoverShow.propTypes = {
   visible: PropTypes.bool
 };
 
-export default PopoverShow;
+export default use(PopoverShow, "button");

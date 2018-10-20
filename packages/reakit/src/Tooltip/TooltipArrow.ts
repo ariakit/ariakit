@@ -1,5 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
+import use from "../use";
 import PopoverArrow, { PopoverArrowProps } from "../Popover/PopoverArrow";
 
 export interface TooltipArrowProps extends PopoverArrowProps {}
@@ -12,4 +13,4 @@ TooltipArrow.defaultProps = {
   palette: "grayscale"
 };
 
-export default TooltipArrow;
+export default use(TooltipArrow, "div");

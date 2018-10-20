@@ -2,6 +2,7 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import { bool } from "../_utils/styledProps";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface FlexProps extends BoxProps {
@@ -30,4 +31,4 @@ Flex.propTypes = {
   columnReverse: PropTypes.bool
 };
 
-export default Flex;
+export default use(Flex, "div");

@@ -3,8 +3,10 @@ import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import callAll from "../_utils/callAll";
-import getSelector from "../_utils/getSelector";
+import hoist from "../_utils/hoist";
+import getSelector from "../getSelector";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import Toolbar from "./Toolbar";
 
@@ -164,7 +166,7 @@ class ToolbarFocusableComponent extends React.Component<
   }
 }
 
-const ToolbarFocusable = styled(ToolbarFocusableComponent)`
+const ToolbarFocusable = styled(hoist(ToolbarFocusableComponent, Box))`
   ${theme("ToolbarFocusable")};
 `;
 
@@ -175,4 +177,4 @@ ToolbarFocusable.propTypes = {
   disabled: PropTypes.bool
 };
 
-export default ToolbarFocusable;
+export default use(ToolbarFocusable, "div");

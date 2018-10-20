@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
-import use from "reuse";
+import hoist from "../_utils/hoist";
 import callAll from "../_utils/callAll";
 import styled from "../styled";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import { HiddenContainerActions } from "./HiddenContainer";
 
@@ -17,7 +18,7 @@ const HiddenToggleComponent = React.forwardRef<HTMLElement, HiddenToggleProps>(
   )
 );
 
-const HiddenToggle = styled(HiddenToggleComponent)`
+const HiddenToggle = styled(hoist(HiddenToggleComponent, Box))`
   ${theme("HiddenToggle")};
 `;
 
@@ -27,8 +28,4 @@ HiddenToggle.propTypes = {
   onClick: PropTypes.func
 };
 
-HiddenToggle.defaultProps = {
-  use: "button"
-};
-
-export default use(HiddenToggle);
+export default use(HiddenToggle, "button");
