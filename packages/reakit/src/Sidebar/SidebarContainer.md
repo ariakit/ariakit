@@ -1,5 +1,5 @@
 ```jsx
-import { Block, Button } from "reakit";
+import { Block, Button, Sidebar } from "reakit";
 
 <Sidebar.Container>
   {({ visible, show, hide, toggle }) => (

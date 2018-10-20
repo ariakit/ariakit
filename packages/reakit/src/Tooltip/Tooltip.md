@@ -1,7 +1,7 @@
 It displays a tooltip when the parent element is hovered or receives focus. By default it renders as a `<div>`.
 
 ```jsx
-import { Button } from "reakit";
+import { Button, Tooltip } from "reakit";
 
 <Button>
   Hover me
@@ -12,7 +12,7 @@ import { Button } from "reakit";
 Multiple Tooltips are possible:
 
 ```jsx
-import { Button } from "reakit";
+import { Button, Tooltip } from "reakit";
 
 <Button margin="50px 80px">
   Hover me

@@ -1,7 +1,7 @@
 Field is a wrapper optimized for form elements. Specially things that come in pairs, like `<label>` and `<input>`.
 
 ```jsx
-import { Label, Input } from "reakit";
+import { Label, Input, Field } from "reakit";
 
 <Field>
   <Label htmlFor="input1">Username</Label>
@@ -12,7 +12,7 @@ import { Label, Input } from "reakit";
 Field wrapping a Group:
 
 ```jsx
-import { Label, Group, Button, Input } from "reakit";
+import { Label, Group, Button, Input, Field } from "reakit";
 
 <Field>
   <Label htmlFor="input2">Organize</Label>
@@ -27,7 +27,7 @@ import { Label, Group, Button, Input } from "reakit";
 Styled via props:
 
 ```jsx
-import { Label, Input } from "reakit";
+import { Label, Input, Field } from "reakit";
 
 <Field padding={8} backgroundColor="rgb(49.9%, 72.5%, 44.9%)">
   <Label htmlFor="input3">How do you feel looking at green?</Label>

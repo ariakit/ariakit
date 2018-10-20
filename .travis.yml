@@ -13,15 +13,3 @@ before_install:
   - export PATH=$HOME/.yarn/bin:$PATH
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script: yarn website:build
-    on:
-      branch: master
-  - provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_TOKEN
-    local_dir: packages/website/dist
-    on:
-      branch: master

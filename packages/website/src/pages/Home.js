@@ -23,6 +23,8 @@ const StyledHomeFeatures = styled(HomeFeatures)`
 
 const StyledNewsletterForm = styled(NewsletterForm)`
   margin: 50px 0 0;
+  border-left-width: 0;
+  border-right-width: 0;
 `;
 
 const Home = () => (

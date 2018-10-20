@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.8](https://github.com/reakit/reakit/compare/reakit@0.15.7...reakit@0.15.8) (2018-10-16)
+
+
+### Bug Fixes
+
+* Fix `will-change` css prop on `Hidden` ([50eff5c](https://github.com/reakit/reakit/commit/50eff5c))
+
+
+
+
+
 ## [0.15.7](https://github.com/reakit/reakit/compare/reakit@0.15.6...reakit@0.15.7) (2018-10-09)
 
 

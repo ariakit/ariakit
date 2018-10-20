@@ -1,7 +1,7 @@
 Group gives visual unity to elements that work together. It **doesn't** add borders, only adjusts `border-radius` of its children.
 
 ```jsx
-import { Button } from "reakit";
+import { Button, Group } from "reakit";
 
 <Group>
   <Button>Ok</Button>
@@ -12,7 +12,7 @@ import { Button } from "reakit";
 Use handy prop `vertical` to group components vertically:
 
 ```jsx
-import { Button } from "reakit";
+import { Button, Group } from "reakit";
 
 <Group vertical>
   <Button maxWidth="20vmin">Up</Button>

@@ -1,7 +1,7 @@
 `Toolbar` is a generic bar that works as a wrapper for titles and actions. It's usually positioned on the top of a page, but can be used in several ways, including vertically.
 
 ```jsx
-import { Heading, Avatar } from "reakit";
+import { Heading, Avatar, Toolbar } from "reakit";
 import MenuIcon from "react-icons/lib/md/menu";
 
 <Toolbar background="white" gutter="8px 16px">
@@ -23,7 +23,7 @@ import MenuIcon from "react-icons/lib/md/menu";
 If you pass in a `vertical` prop, the toolbar content will be vertically aligned:
 
 ```jsx
-import { Button, Heading, Link } from "reakit";
+import { Button, Heading, Link, Toolbar } from "reakit";
 import MenuIcon from "react-icons/lib/md/menu";
 import CreateIcon from "react-icons/lib/md/create";
 
