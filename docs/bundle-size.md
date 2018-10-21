@@ -8,10 +8,10 @@ If you're using modern tooling, such as [webpack](https://webpack.js.org/), [cre
 >
 > [Learn more](https://medium.com/@netxm/what-is-tree-shaking-de7c6be5cadd)
 
-In the below example, only [as](as.md), [Button](../packages/reakit/src/Button/Button.md), [Popover](../packages/reakit/src/Popover/Popover.md) and their dependencies will be included in your final bundle:
+In the below example, only [use](use.md), [Button](../packages/reakit/src/Button/Button.md), [Popover](../packages/reakit/src/Popover/Popover.md) and their dependencies will be included in your final bundle:
 
 ```js static
-import { as, Button, Popover } from "reakit";
+import { use, Button, Popover } from "reakit";
 ```
 
 ## Separate files
@@ -19,7 +19,7 @@ import { as, Button, Popover } from "reakit";
 Reakit also exposes separate files for each module. If you can't do tree shaking and/or are building an open source library based on Reakit, you should import files directly:
 
 ```js static
-import as from "reakit/as";
+import use from "reakit/use";
 import Button from "reakit/Button";
 import Popover from "reakit/Popover";
 ```

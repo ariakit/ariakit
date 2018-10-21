@@ -54,7 +54,7 @@ import { Button, Popover } from "reakit";
 const App = () => (
   <Popover.Container>
     {popover => (
-      <Button as={Popover.Toggle} {...popover}>
+      <Button use={Popover.Toggle} {...popover}>
         Toggle
         <Popover {...popover}>
           <Popover.Arrow />

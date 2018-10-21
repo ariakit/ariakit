@@ -1,11 +1,11 @@
-React components are inherently composable. Reakit makes them even more so with [as](as.md).
+React components are inherently composable. Reakit makes them even more so with [use](use.md).
 
-You can use the `as` prop just to change the underlying HTML element of a component. A common example is rendering a [Button](../packages/reakit/src/Button/Button.md) as a link:
+You can use the `use` prop just to change the underlying HTML element of a component. A common example is rendering a [Button](../packages/reakit/src/Button/Button.md) as a link:
 
 ```jsx
 import { Button } from "reakit";
 
-<Button as="a" href="https://github.com/reakit/reakit" target="_blank">
+<Button use="a" href="https://github.com/reakit/reakit" target="_blank">
   GitHub
 </Button>
 ```
@@ -40,10 +40,10 @@ const ButtonPrimary = styled(Button)`
   <ButtonLarge>Large</ButtonLarge>
   <ButtonRounded>Rounded</ButtonRounded>
   <ButtonPrimary>Primary</ButtonPrimary>
-  <ButtonLarge as={ButtonRounded}>Large + Rounded</ButtonLarge>
-  <ButtonRounded as={ButtonPrimary}>Rounded + Primary</ButtonRounded>
-  <ButtonLarge as={ButtonPrimary}>Large + Primary</ButtonLarge>
-  <ButtonLarge as={[ButtonRounded, ButtonPrimary]}>
+  <ButtonLarge use={ButtonRounded}>Large + Rounded</ButtonLarge>
+  <ButtonRounded use={ButtonPrimary}>Rounded + Primary</ButtonRounded>
+  <ButtonLarge use={ButtonPrimary}>Large + Primary</ButtonLarge>
+  <ButtonLarge use={[ButtonRounded, ButtonPrimary]}>
     Large + Rounded + Primary
   </ButtonLarge>
 </Grid>

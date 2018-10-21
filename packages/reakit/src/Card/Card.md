@@ -4,9 +4,9 @@ A Card can be used to serve related information together such as actions, image,
 import { Heading, Image, Paragraph } from "reakit";
 
 <Card>
-  <Heading as="h3">Card Heading</Heading>
+  <Heading use="h3">Card Heading</Heading>
   <Card.Fit
-    as={Image}
+    use={Image}
     src="https://placekitten.com/300/300"
     alt="Kitten"
     width={300}
@@ -21,9 +21,9 @@ const { Grid, Image, Heading, Paragraph } = require("reakit");
 
 <Grid column autoColumns="minmax(min-content, max-content)" gap={20} alignItems="start">
   <Card>
-    <Heading as="h3">Card Heading</Heading>
+    <Heading use="h3">Card Heading</Heading>
     <Card.Fit
-      as={Image}
+      use={Image}
       src="https://placekitten.com/200/300"
       alt="Kitten"
       width={200}
@@ -33,13 +33,13 @@ const { Grid, Image, Heading, Paragraph } = require("reakit");
   </Card>
   <Card>
     <Card.Fit
-      as={Image}
+      use={Image}
       src="https://placekitten.com/300/200"
       alt="Kitten"
       width={300}
       height={200}
     />
-    <Heading as="h3">Card Heading</Heading>
+    <Heading use="h3">Card Heading</Heading>
     <Paragraph>Description for Card</Paragraph>
   </Card>
 </Grid>

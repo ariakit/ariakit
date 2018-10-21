@@ -65,7 +65,7 @@ import { Popover, InlineBlock, Button } from "reakit";
 <Popover.Container>
   {popover => (
     <InlineBlock relative>
-      <Popover.Toggle as={Button} {...popover} onClick={alert}>
+      <Popover.Toggle use={Button} {...popover} onClick={alert}>
         Toggle
       </Popover.Toggle>
       <Popover {...popover}>Popover</Popover>

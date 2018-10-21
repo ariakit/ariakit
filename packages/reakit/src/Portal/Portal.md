@@ -15,10 +15,10 @@ import { Backdrop, Button, Overlay, Portal } from "reakit";
 
 <Overlay.Container>
   {overlay => (
-    <Button as={Overlay.Toggle} {...overlay}>
+    <Button use={Overlay.Toggle} {...overlay}>
       Open overlay
-      <Backdrop as={Portal} {...overlay} />
-      <Overlay as={Portal} {...overlay}>Overlay</Overlay>
+      <Backdrop use={Portal} {...overlay} />
+      <Overlay use={Portal} {...overlay}>Overlay</Overlay>
     </Button>
   )}
 </Overlay.Container>

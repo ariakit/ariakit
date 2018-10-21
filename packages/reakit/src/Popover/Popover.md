@@ -21,7 +21,7 @@ import { InlineBlock, Popover } from "reakit";
 <Popover.Container>
   {popover => (
     <InlineBlock relative>
-      <Button as={Popover.Toggle} {...popover}>
+      <Button use={Popover.Toggle} {...popover}>
         Toggle
       </Button>
       <Popover fade slide expand hideOnClickOutside {...popover}>

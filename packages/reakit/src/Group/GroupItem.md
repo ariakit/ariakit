@@ -6,11 +6,11 @@ import { Box, Field, Label, Input, Button } from "reakit";
 <Box relative border={0}>
   <Group vertical>
     <Group verticalAt={800}>
-      <Field as={Group.Item} padding={8}>
+      <Field use={Group.Item} padding={8}>
         <Label htmlFor="input">First name</Label>
         <Input id="input" placeholder="..." />
       </Field>
-      <Field as={Group.Item} padding={8}>
+      <Field use={Group.Item} padding={8}>
         <Label htmlFor="input2">Random Nickname</Label>
         <Group>
           <Button>More</Button>

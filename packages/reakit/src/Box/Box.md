@@ -35,11 +35,11 @@ It offers convenience props to control the `position` css property:
 </Box>
 ```
 
-You can render it [as](../../docs/as.md) any other HTML element or React component:
+You can render it [use](../../docs/use.md) any other HTML element or React component:
 
 ```jsx
 <Box
-  as="a"
+  use="a"
   href="https://github.com/reakit/reakit"
   target="_blank"
 >
