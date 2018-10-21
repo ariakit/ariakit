@@ -70,7 +70,7 @@ const Box = styled(BoxComponent)`
   }
 `;
 
-const useTypes = [PropTypes.func, PropTypes.string];
+const useTypes = [PropTypes.func, PropTypes.string, PropTypes.object];
 
 // @ts-ignore
 Box.propTypes = {
