@@ -545,7 +545,7 @@ export type CallOrNewBase = ASTNode & {
 
 export type CallExpression = CallOrNewBase & {
   type: "CallExpression";
-};
+} & ASTNode;
 
 export type NewExpression = CallOrNewBase & {
   type: "NewExpression";
