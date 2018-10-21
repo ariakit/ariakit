@@ -54,7 +54,7 @@ const SectionHeader = ({ section, ...props }) => {
             onClick={track("reakit.sectionMarkdownClick")}
           >
             <EditIcon />
-            <GithubSrcButtonText>Improve this page</GithubSrcButtonText>
+            <GithubSrcButtonText>Edit this page</GithubSrcButtonText>
           </ButtonTransparent>
         )}
       </Flex>
