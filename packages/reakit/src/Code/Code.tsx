@@ -35,9 +35,10 @@ Code.propTypes = {
 };
 
 Code.defaultProps = {
+  use: CodeComponent,
   opaque: true,
   palette: "background",
   tone: -2
 };
 
-export default use(Code, CodeComponent);
+export default use(Code);

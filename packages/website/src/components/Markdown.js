@@ -85,45 +85,19 @@ const CodeBlock = ({ children }) => (
 );
 
 const overrides = {
-  p: {
-    component: StyledParagraph
-  },
-  a: {
-    component: Anchor
-  },
-  ul: {
-    component: StyledList
-  },
-  code: {
-    component: Code
-  },
-  pre: {
-    component: CodeBlock
-  },
-  blockquote: {
-    component: Blockquote
-  },
-  ol: {
-    component: use(List, "ol")
-  },
-  h1: {
-    component: use(StyledHeading, "h1")
-  },
-  h2: {
-    component: use(StyledHeading, "h2")
-  },
-  h3: {
-    component: use(StyledHeading, "h3")
-  },
-  h4: {
-    component: use(StyledHeading, "h4")
-  },
-  h5: {
-    component: use(StyledHeading, "h5")
-  },
-  h6: {
-    component: use(StyledHeading, "h6")
-  }
+  p: StyledParagraph,
+  a: Anchor,
+  ul: StyledList,
+  code: Code,
+  pre: CodeBlock,
+  blockquote: Blockquote,
+  ol: use(List, "ol"),
+  h1: use(StyledHeading, "h1"),
+  h2: use(StyledHeading, "h2"),
+  h3: use(StyledHeading, "h3"),
+  h4: use(StyledHeading, "h4"),
+  h5: use(StyledHeading, "h5"),
+  h6: use(StyledHeading, "h6")
 };
 
 const Markdown = ({ text }) => compiler(text, { overrides, forceBlock: true });

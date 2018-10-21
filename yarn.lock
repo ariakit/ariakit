@@ -7186,12 +7186,20 @@ markdown-table@^1.1.0:
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-1.1.2.tgz#c78db948fa879903a41bce522e3b96f801c63786"
   integrity sha512-NcWuJFHDA8V3wkDgR/j4+gZx+YQwstPgfQDV8ndUeWWzta3dnDTBxpVzqS9lkmJAuV5YX35lmyojl6HO5JXAgw==
 
-markdown-to-jsx@^6.6.8, markdown-to-jsx@^6.7.4:
+markdown-to-jsx@^6.6.8:
   version "6.7.4"
   resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-6.7.4.tgz#becdddf559c4dc7e4e2ee48f5e669896e97ca193"
   integrity sha512-3mStPW6KBMvm0M5icmy7zu63L41dl2Gg9WL6+gqSFhTec9n6SNUbt6xgB9zVL/qz/Nzwn/MCum6c8xGv8TOPFw==
   dependencies:
     prop-types "^15.5.10"
+    unquote "^1.1.0"
+
+markdown-to-jsx@^6.8.1:
+  version "6.8.1"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-6.8.1.tgz#cecf645f95574bca0f4fc9fd773447ae497cc21c"
+  integrity sha512-OPKoi/ZGCbXmjMbiNNeDSCHgk2UV1v4fI99jpVv9w76erK6gW+NIPbdRNuAalJN/KPuUo/DeWMjHWGNKlytNsg==
+  dependencies:
+    prop-types "^15.6.2"
     unquote "^1.1.0"
 
 math-expression-evaluator@^1.2.14:
