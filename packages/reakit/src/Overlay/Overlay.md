@@ -6,8 +6,8 @@ const { Block, Button, Backdrop } = require('reakit');
 <Overlay.Container>
   {overlay => (
     <Block>
-      <Button as={Overlay.Show} {...overlay}>Click me</Button>
-      <Backdrop fade as={Overlay.Hide} {...overlay} />
+      <Button use={Overlay.Show} {...overlay}>Click me</Button>
+      <Backdrop fade use={Overlay.Hide} {...overlay} />
       <Overlay fade slide {...overlay}>Overlay</Overlay>
     </Block>
   )}
@@ -22,9 +22,9 @@ const { Block, Button, Backdrop, Portal } = require('reakit');
 <Overlay.Container>
   {overlay => (
     <Block>
-      <Button as={Overlay.Show} {...overlay}>Click me</Button>
-      <Backdrop as={[Portal, Overlay.Hide]} {...overlay} />
-      <Overlay as={Portal} {...overlay}>Overlay</Overlay>
+      <Button use={Overlay.Show} {...overlay}>Click me</Button>
+      <Backdrop use={[Portal, Overlay.Hide]} {...overlay} />
+      <Overlay use={Portal} {...overlay}>Overlay</Overlay>
     </Block>
   )}
 </Overlay.Container>

@@ -1,6 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface BlockProps extends BoxProps {}
@@ -10,4 +10,4 @@ const Block = styled(Box)<BlockProps>`
   ${theme("Block")};
 `;
 
-export default as("div")(Block);
+export default use(Block, "div");

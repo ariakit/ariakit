@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Hidden, { HiddenProps } from "../Hidden";
 import { StepContainerSelectors } from "../Step";
 
@@ -13,7 +13,7 @@ export interface TabsPanelProps extends HiddenProps {
   role?: string;
 }
 
-const Component = (props: TabsPanelProps) => {
+const TabsPanelComponent = (props: TabsPanelProps) => {
   const { isCurrent, tab } = props;
   return (
     <Hidden
@@ -26,9 +26,7 @@ const Component = (props: TabsPanelProps) => {
   );
 };
 
-hoistNonReactStatics(Component, Hidden);
-
-const TabsPanel = styled(Component)`
+const TabsPanel = styled(hoist(TabsPanelComponent, Hidden))`
   ${theme("TabsPanel")};
 `;
 
@@ -42,4 +40,4 @@ TabsPanel.defaultProps = {
   role: "tabpanel"
 };
 
-export default as("div")(TabsPanel);
+export default use(TabsPanel, "div");

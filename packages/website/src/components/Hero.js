@@ -56,14 +56,14 @@ const Hero = props => (
   <Wrapper {...props}>
     <Headline gridArea="text">
       Toolkit for building{" "}
-      <Inline as="strong" fontWeight={400}>
+      <Inline use="strong" fontWeight={400}>
         really
       </Inline>{" "}
       interactive UIs with React
     </Headline>
     <Buttons gridArea="buttons">
       <ButtonPrimary
-        as={[ButtonRounded, IconOnLeft, Link]}
+        use={[ButtonRounded, IconOnLeft, Link]}
         to="/guide"
         onClick={track("reakit.heroGuideClick")}
       >
@@ -71,7 +71,7 @@ const Hero = props => (
         Get Started
       </ButtonPrimary>
       <ButtonOutline
-        as={[ButtonRounded, IconOnLeft, Link]}
+        use={[ButtonRounded, IconOnLeft, Link]}
         to="/components"
         onClick={track("reakit.heroComponentsClick")}
       >

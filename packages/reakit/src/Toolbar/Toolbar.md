@@ -6,14 +6,14 @@ import MenuIcon from "react-icons/lib/md/menu";
 
 <Toolbar background="white" gutter="8px 16px">
   <Toolbar.Content>
-    <Toolbar.Focusable as={MenuIcon} fontSize={20} />
+    <Toolbar.Focusable use={MenuIcon} fontSize={20} />
   </Toolbar.Content>
   <Toolbar.Content align="center">
     <Heading fontSize={24} margin={0}>Reakit</Heading>
   </Toolbar.Content>
   <Toolbar.Content align="end">
     <Toolbar.Focusable
-      as={Avatar}
+      use={Avatar}
       src="https://placekitten.com/150/200"
     />
   </Toolbar.Content>
@@ -29,10 +29,10 @@ import CreateIcon from "react-icons/lib/md/create";
 
 <Toolbar background="white" vertical>
   <Toolbar.Content>
-    <Toolbar.Focusable as={Button}>
+    <Toolbar.Focusable use={Button}>
       <MenuIcon />
     </Toolbar.Focusable>
-    <Toolbar.Focusable as={Button}>
+    <Toolbar.Focusable use={Button}>
       <CreateIcon />
     </Toolbar.Focusable>
   </Toolbar.Content>

@@ -13,7 +13,8 @@ interface Props {
 
   <Box />;
   <Box absolute />;
-  <Test as="div" foo="" absolute />;
+  <Box use={Card} gutter={8} />;
+  <Test use="div" foo="" absolute />;
   <Code />;
   <Code block />;
   <Card gutter={8} />;
@@ -61,7 +62,9 @@ interface Props {
   <Popover.Container>
     {popover => (
       <div>
-        <Popover.Toggle {...popover}>Toggle</Popover.Toggle>
+        <Popover.Toggle use={Code} codeClassName="" {...popover}>
+          Toggle
+        </Popover.Toggle>
         <Popover {...popover}>Popover</Popover>
       </div>
     )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { as, styled, Grid, Paragraph, Heading, Link } from "reakit";
+import { styled, Grid, Paragraph, Heading, Link, use } from "reakit";
 import ContentWrapper from "../elements/ContentWrapper";
 
 const Wrapper = styled(ContentWrapper)`
@@ -20,7 +20,7 @@ const Feature = styled(Grid)`
   text-align: center;
 `;
 
-const Title = styled(as("h3")(Heading))`
+const Title = styled(use(Heading, "h3"))`
   font-weight: 500;
 `;
 

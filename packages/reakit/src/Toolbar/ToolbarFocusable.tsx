@@ -2,11 +2,11 @@ import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
+import s from "styled-selector";
 import callAll from "../_utils/callAll";
-import getSelector from "../_utils/getSelector";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import Toolbar from "./Toolbar";
 
@@ -79,14 +79,14 @@ class ToolbarFocusableComponent extends React.Component<
 
   getToolbar = () => {
     if (typeof this.toolbar === "undefined") {
-      this.toolbar = this.getElement().closest(getSelector(Toolbar));
+      this.toolbar = this.getElement().closest(s(Toolbar));
     }
     return this.toolbar;
   };
 
   getFocusables = (): NodeListOf<Focusable> => {
     if (!this.getToolbar()) return new NodeList() as NodeListOf<Focusable>;
-    return this.getToolbar().querySelectorAll(getSelector(ToolbarFocusable));
+    return this.getToolbar().querySelectorAll(s(ToolbarFocusable));
   };
 
   getCurrentIndex = (focusables: NodeListOf<Focusable>) => {
@@ -166,9 +166,7 @@ class ToolbarFocusableComponent extends React.Component<
   }
 }
 
-hoistNonReactStatics(ToolbarFocusableComponent, Box);
-
-const ToolbarFocusable = styled(ToolbarFocusableComponent)`
+const ToolbarFocusable = styled(hoist(ToolbarFocusableComponent, Box))`
   ${theme("ToolbarFocusable")};
 `;
 
@@ -179,4 +177,4 @@ ToolbarFocusable.propTypes = {
   disabled: PropTypes.bool
 };
 
-export default as("div")(ToolbarFocusable);
+export default use(ToolbarFocusable, "div");

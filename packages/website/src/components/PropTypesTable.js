@@ -57,7 +57,7 @@ const PropTypesTable = ({ section }) =>
           .reverse();
         return (
           <Block>
-            <StyledHeading as="h2">Props</StyledHeading>
+            <StyledHeading use="h2">Props</StyledHeading>
             {propTypes.map(([compName, types], i) => (
               <Hidden.Container
                 key={`${section.name}${compName}`}
@@ -73,9 +73,9 @@ const PropTypesTable = ({ section }) =>
                     >
                       {compName}
                       {visible ? (
-                        <Icon as={ArrowUpIcon} />
+                        <Icon use={ArrowUpIcon} />
                       ) : (
-                        <Icon as={ArrowDownIcon} />
+                        <Icon use={ArrowDownIcon} />
                       )}
                     </Button>
                     {visible && (

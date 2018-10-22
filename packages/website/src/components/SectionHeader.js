@@ -37,7 +37,7 @@ const SectionHeader = ({ section, ...props }) => {
       <Flex>
         {githubSrcUrl && (
           <ButtonTransparent
-            as={[IconOnLeft, "a"]}
+            use={[IconOnLeft, "a"]}
             href={githubSrcUrl}
             target="_blank"
             onClick={track("reakit.sectionSourceClick")}
@@ -48,7 +48,7 @@ const SectionHeader = ({ section, ...props }) => {
         )}
         {githubDocUrl && (
           <ButtonTransparent
-            as={[IconOnLeft, "a"]}
+            use={[IconOnLeft, "a"]}
             href={githubDocUrl}
             target="_blank"
             onClick={track("reakit.sectionMarkdownClick")}

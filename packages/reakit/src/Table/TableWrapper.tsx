@@ -1,6 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface TableWrapperProps extends BoxProps {}
@@ -12,4 +12,4 @@ const TableWrapper = styled(Box)<TableWrapperProps>`
   ${theme("TableWrapper")};
 `;
 
-export default as("div")(TableWrapper);
+export default use(TableWrapper, "div");

@@ -4,8 +4,9 @@ import { theme } from "styled-tools";
 import createElementRef from "../_utils/createElementRef";
 import callAll from "../_utils/callAll";
 import { Omit } from "../_utils/types";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Step, {
   StepContainerActions,
   StepContainerSelectors,
@@ -22,12 +23,6 @@ export interface TabsTabProps extends Omit<StepProps, "step"> {
   next: StepContainerActions["next"];
   previous: StepContainerActions["previous"];
   isCurrent: StepContainerSelectors["isCurrent"];
-  role?: string;
-  className?: string;
-  disabled?: boolean;
-  onClick?: React.MouseEventHandler;
-  onFocus?: React.MouseEventHandler;
-  onKeyDown?: React.KeyboardEventHandler;
 }
 
 interface KeyMap {
@@ -107,14 +102,14 @@ class TabsTabComponent extends React.Component<TabsTabProps> {
   }
 }
 
-const TabsTab = styled(TabsTabComponent)`
+const TabsTab = styled(hoist(TabsTabComponent, Step))`
   ${theme("TabsTab")};
 `;
 
 // @ts-ignore
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
-  current: PropTypes.string.isRequired,
+  current: PropTypes.number.isRequired,
   register: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired,
   unregister: PropTypes.func.isRequired,
@@ -142,4 +137,4 @@ TabsTab.defaultProps = {
   previous: noop
 };
 
-export default as("li")(TabsTab);
+export default use(TabsTab, "li");

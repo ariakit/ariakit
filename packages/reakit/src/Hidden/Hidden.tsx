@@ -2,7 +2,6 @@ import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { prop, theme, ifProp } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   hasTransition,
   translateWithProps,
@@ -10,9 +9,10 @@ import {
   scaleWithProps,
   slideWithProps
 } from "../_utils/styledProps";
+import hoist from "../_utils/hoist";
 import callAll from "../_utils/callAll";
 import styled, { css } from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 import { HiddenContainerActions } from "./HiddenContainer";
 
@@ -149,9 +149,7 @@ class HiddenComponent extends React.Component<HiddenProps, HiddenState> {
   }
 }
 
-hoistNonReactStatics(HiddenComponent, Box);
-
-const Hidden = styled(HiddenComponent)`
+const Hidden = styled(hoist(HiddenComponent, Box))`
   transform: ${translateWithProps};
   ${ifProp(
     hasTransition,
@@ -207,4 +205,4 @@ Hidden.defaultProps = {
   timing: "ease-in-out"
 };
 
-export default as("div")(Hidden);
+export default use(Hidden, "div");

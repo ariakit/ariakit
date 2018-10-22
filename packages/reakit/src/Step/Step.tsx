@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
-import hoistNonReactStatics from "hoist-non-react-statics";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Hidden, { HiddenProps } from "../Hidden";
 import { StepContainerSelectors, StepContainerActions } from "./StepContainer";
 
@@ -41,9 +41,7 @@ class StepComponent extends React.Component<StepProps> {
   }
 }
 
-hoistNonReactStatics(StepComponent, Hidden);
-
-const Step = styled(StepComponent)`
+const Step = styled(hoist(StepComponent, Hidden))`
   ${theme("Step")};
 `;
 
@@ -57,4 +55,4 @@ Step.propTypes = {
   order: PropTypes.number
 };
 
-export default as("div")(Step);
+export default use(Step, "div");

@@ -1,6 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Hidden, { HiddenProps } from "../Hidden";
 
 export interface OverlayProps extends HiddenProps {}
@@ -25,4 +25,4 @@ Overlay.defaultProps = {
   tone: -1
 };
 
-export default as("div")(Overlay);
+export default use(Overlay, "div");

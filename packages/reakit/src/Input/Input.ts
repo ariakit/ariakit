@@ -1,6 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface InputProps extends BoxProps {}
@@ -15,4 +15,4 @@ Input.defaultProps = {
   palette: "white"
 };
 
-export default as("input")(Input);
+export default use(Input, "input");

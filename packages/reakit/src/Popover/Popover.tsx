@@ -2,15 +2,15 @@ import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import s from "styled-selector";
 import Popper from "popper.js";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
-import getSelector from "../_utils/getSelector";
-import as from "../as";
+import use from "../use";
 import Hidden, { Position, HiddenProps } from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
 
 export interface PopoverProps extends HiddenProps {
-  role?: string;
   hideOnEsc?: boolean;
   placement?: Popper.Placement;
   flip?: boolean;
@@ -72,7 +72,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
   getOptions = (): Popper.PopperOptions => {
     const { placement, flip, shift } = this.props;
     const popover = this.getPopover();
-    const arrow = popover.querySelector(getSelector(PopoverArrow));
+    const arrow = popover.querySelector(s(PopoverArrow));
     return {
       placement,
       modifiers: {
@@ -157,7 +157,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
   }
 }
 
-const Popover = styled(PopoverComponent)`
+const Popover = styled(hoist(PopoverComponent, Hidden))`
   position: absolute;
   top: 0;
   left: 0;
@@ -201,4 +201,4 @@ Popover.defaultProps = {
   palette: "white"
 };
 
-export default as("div")(Popover);
+export default use(Popover, "div");

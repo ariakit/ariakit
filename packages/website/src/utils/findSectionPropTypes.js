@@ -2,6 +2,21 @@
 import parsePropTypes from "parse-prop-types";
 import findSectionUses from "./findSectionUses";
 
+function getStatic(comp, property) {
+  if (typeof comp[property] !== "undefined") {
+    return comp[property];
+  }
+  if (
+    comp.displayName === undefined &&
+    Array.isArray(comp.uses) &&
+    comp.uses[0] &&
+    comp.uses[0][property]
+  ) {
+    return comp.uses[0][property];
+  }
+  return {};
+}
+
 const findSectionPropTypes = (sections, section, defaultProps) => {
   const { default: component } = section.module;
   return {
@@ -13,8 +28,8 @@ const findSectionPropTypes = (sections, section, defaultProps) => {
       {}
     ),
     [section.name]: parsePropTypes({
-      propTypes: component.propTypes,
-      defaultProps: { ...component.defaultProps, ...defaultProps }
+      propTypes: getStatic(component, "propTypes"),
+      defaultProps: { ...getStatic(component, "defaultProps"), ...defaultProps }
     })
   };
 };

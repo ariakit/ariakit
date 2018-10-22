@@ -83,7 +83,7 @@ class Preview extends React.Component {
     return (
       <React.Fragment>
         {error ? (
-          <Block as="pre" fontSize={14} color="red">
+          <Block use="pre" fontSize={14} color="red">
             {error}
           </Block>
         ) : (

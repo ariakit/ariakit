@@ -2,7 +2,7 @@ import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
 import { value } from "../_utils/styledProps";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface GridItemProps extends BoxProps {
@@ -41,4 +41,4 @@ GridItem.propTypes = {
   rowEnd: valueType
 };
 
-export default as("div")(GridItem);
+export default use(GridItem, "div");

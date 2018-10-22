@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import hoist from "../_utils/hoist";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import HiddenToggle, { HiddenToggleProps } from "../Hidden/HiddenToggle";
 
 export interface PopoverToggleProps extends HiddenToggleProps {
@@ -19,7 +20,7 @@ const PopoverToggleComponent = (props: PopoverToggleProps) => (
   />
 );
 
-const PopoverToggle = styled(PopoverToggleComponent)`
+const PopoverToggle = styled(hoist(PopoverToggleComponent, HiddenToggle))`
   ${theme("PopoverToggle")};
 `;
 
@@ -29,4 +30,4 @@ PopoverToggle.propTypes = {
   visible: PropTypes.bool
 };
 
-export default as("button")(PopoverToggle);
+export default use(PopoverToggle, "button");

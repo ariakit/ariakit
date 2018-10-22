@@ -17,9 +17,9 @@ import { Block, Group, Button } from "reakit";
   {hidden => (
     <Block>
       <Group>
-        <Hidden.Show as={Button} {...hidden}>Show</Hidden.Show>
-        <Hidden.Hide as={Button} {...hidden}>Hide</Hidden.Hide>
-        <Hidden.Toggle as={Button} {...hidden}>Toggle</Hidden.Toggle>
+        <Hidden.Show use={Button} {...hidden}>Show</Hidden.Show>
+        <Hidden.Hide use={Button} {...hidden}>Hide</Hidden.Hide>
+        <Hidden.Toggle use={Button} {...hidden}>Toggle</Hidden.Toggle>
       </Group>
       <Hidden {...hidden}>Hidden</Hidden>
     </Block>
@@ -59,7 +59,7 @@ const props = {
 <Hidden.Container>
   {hidden => (
     <Block>
-      <Hidden.Toggle as={Button} {...hidden}>Toggle</Hidden.Toggle>
+      <Hidden.Toggle use={Button} {...hidden}>Toggle</Hidden.Toggle>
       <Hidden {...props} fade {...hidden}>Fade</Hidden>
       <Hidden {...props} delay="0.5s" slide {...hidden}>Slide</Hidden>
       <Hidden {...props} delay="1s" expand {...hidden}>Expand</Hidden>
@@ -106,7 +106,7 @@ const MyHidden = styled(Hidden)`
 <Hidden.Container>
   {hidden => (
     <Block>
-      <Hidden.Toggle as={Button} {...hidden}>Toggle</Hidden.Toggle>
+      <Hidden.Toggle use={Button} {...hidden}>Toggle</Hidden.Toggle>
       <MyHidden animated unmount duration="750ms" {...hidden} />
     </Block>
   )}

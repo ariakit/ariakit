@@ -126,8 +126,8 @@ module.exports = {
           content: "../../docs/bundle-size.md"
         },
         {
-          name: "As",
-          content: "../../docs/as.md"
+          name: "Use",
+          content: "../../docs/use.md"
         },
         {
           name: "Styling",

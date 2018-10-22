@@ -4,6 +4,7 @@ import unescape from "lodash/unescape";
 import { compiler } from "markdown-to-jsx";
 import {
   styled,
+  use,
   Paragraph,
   Link,
   Heading,
@@ -59,7 +60,7 @@ const Anchor = ({ href, ...props }) => {
       <StyleguidistContainer>
         {({ sections }) => (
           <Link
-            as={RouterLink}
+            use={RouterLink}
             to={getSectionUrl(
               sections,
               href
@@ -73,7 +74,7 @@ const Anchor = ({ href, ...props }) => {
       </StyleguidistContainer>
     );
   }
-  return <Link as={RouterLink} to={href} {...props} />;
+  return <Link use={RouterLink} to={href} {...props} />;
 };
 
 const CodeBlock = ({ children }) => (
@@ -83,8 +84,6 @@ const CodeBlock = ({ children }) => (
   />
 );
 
-const asComponent = (component, as) => ({ component, props: { as } });
-
 const overrides = {
   p: StyledParagraph,
   a: Anchor,
@@ -92,13 +91,13 @@ const overrides = {
   code: Code,
   pre: CodeBlock,
   blockquote: Blockquote,
-  ol: asComponent(List, "ol"),
-  h1: asComponent(StyledHeading, "h1"),
-  h2: asComponent(StyledHeading, "h2"),
-  h3: asComponent(StyledHeading, "h3"),
-  h4: asComponent(StyledHeading, "h4"),
-  h5: asComponent(StyledHeading, "h5"),
-  h6: asComponent(StyledHeading, "h6")
+  ol: use(List, "ol"),
+  h1: use(StyledHeading, "h1"),
+  h2: use(StyledHeading, "h2"),
+  h3: use(StyledHeading, "h3"),
+  h4: use(StyledHeading, "h4"),
+  h5: use(StyledHeading, "h5"),
+  h6: use(StyledHeading, "h6")
 };
 
 const Markdown = ({ text }) => compiler(text, { overrides, forceBlock: true });

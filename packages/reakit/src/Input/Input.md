@@ -7,7 +7,7 @@ By default renders as an `<input>` of `type="text"`.
 A `select`:
 
 ```jsx
-<Input as="select">
+<Input use="select">
   <option>Hi</option>
   <option>Hello</option>
 </Input>
@@ -28,7 +28,7 @@ A `select`:
 </label>
 ```
 
-`as="textarea"`:
+`use="textarea"`:
 ```jsx
-<Input as="textarea" />
+<Input use="textarea" />
 ```

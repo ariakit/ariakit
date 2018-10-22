@@ -1,6 +1,6 @@
 import { theme } from "styled-tools";
 import styled from "../styled";
-import as from "../as";
+import use from "../use";
 import Box, { BoxProps } from "../Box";
 
 export interface ButtonProps extends BoxProps {}
@@ -14,4 +14,4 @@ Button.defaultProps = {
   palette: "primary"
 };
 
-export default as("button")(Button);
+export default use(Button, "button");

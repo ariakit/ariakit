@@ -1,6 +1,6 @@
 export { Consumer, Container } from "constate";
 
-export { default as as } from "./as";
+export { default as use } from "./use";
 
 export { default as styled } from "./styled";
 export * from "./styled";

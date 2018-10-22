@@ -15,7 +15,7 @@
     "codemirror": "^5.40.2",
     "diffable-html": "^3.0.0",
     "lodash": "^4.17.11",
-    "markdown-to-jsx": "^6.7.4",
+    "markdown-to-jsx": "^6.8.1",
     "parse-prop-types": "^0.3.0",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
@@ -26,6 +26,7 @@
     "react-router-dom": "^4.2.2",
     "reakit": "^0.15.8",
     "reakit-theme-default": "^0.1.9",
+    "styled-selector": "^0.1.1",
     "styled-tools": "^1.5.2",
     "whatwg-fetch": "^3.0.0"
   },

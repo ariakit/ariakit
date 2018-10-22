@@ -64,7 +64,7 @@ import { Provider, Button, Hidden } from 'reakit'
 
 const HiddenButton = () => (
   <Hidden.Container context="hidden1">
-    {hidden => <Hidden.Toggle as={Button} {...hidden}>Toggle</Hidden.Toggle>}
+    {hidden => <Hidden.Toggle use={Button} {...hidden}>Toggle</Hidden.Toggle>}
   </Hidden.Container>
 );
 

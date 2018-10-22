@@ -16,14 +16,14 @@ import { Block, Group, Button } from "reakit";
     <Block>
       <Group>
         <Button 
-          as={Step.Previous} 
+          use={Step.Previous} 
           previous={previous}
           hasPrevious={hasPrevious}
         >
           Previous
         </Button>
         <Button 
-          as={Step.Next} 
+          use={Step.Next} 
           next={next}
           hasNext={hasNext}
         >

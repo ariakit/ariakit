@@ -7,8 +7,8 @@ import { Block, Group, Button, Step } from "reakit";
   {step => (
     <Block>
       <Group>
-        <Button as={Step.Previous} {...step}>Previous</Button>
-        <Button as={Step.Next} {...step}>Next</Button>
+        <Button use={Step.Previous} {...step}>Previous</Button>
+        <Button use={Step.Next} {...step}>Next</Button>
       </Group>
       <Step step="Step 1" {...step}>Step 1</Step>
       <Step step="Step 2" {...step}>Step 2</Step>

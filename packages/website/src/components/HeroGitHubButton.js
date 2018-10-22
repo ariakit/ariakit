@@ -33,13 +33,13 @@ const StarsPopover = styled(Popover)`
 
 const HeroGitHubButton = props => (
   <Button
-    as={[ButtonRounded, IconOnLeft, "a"]}
+    use={[ButtonRounded, IconOnLeft, "a"]}
     href="https://github.com/reakit/reakit"
     target="_blank"
     onClick={track("reakit.heroGithubClick")}
     {...props}
   >
-    <Icon as={GitHubIcon} />
+    <Icon use={GitHubIcon} />
     GitHub
     <ViewportContainer>
       {({ width }) => (

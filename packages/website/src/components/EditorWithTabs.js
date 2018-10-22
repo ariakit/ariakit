@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { renderToStaticMarkup } from "react-dom/server";
 import { styled, Block, Tabs, Group, Button } from "reakit";
+import s from "styled-selector";
 import PencilIcon from "react-icons/lib/md/create";
 import diffableHtml from "diffable-html";
 import Editor from "./Editor";
@@ -17,13 +18,13 @@ const Wrapper = styled(Block)`
     margin-right: 90px;
   }
 
-  ${Tabs} {
+  ${s(Tabs)} {
     position: absolute;
     top: 8px;
     right: 8px;
     z-index: 200;
 
-    ${Button} {
+    ${s(Button)} {
       color: white;
       background-color: rgba(255, 255, 255, 0.1);
       text-transform: uppercase;
@@ -54,9 +55,9 @@ const EditorWithTabs = props => (
   <Tabs.Container>
     {tabs => (
       <Wrapper>
-        <Tabs as={Group}>
+        <Tabs use={Group}>
           <Tabs.Tab
-            as={[IconOnLeft, Button]}
+            use={[IconOnLeft, Button]}
             tab="jsx"
             onClick={track("reakit.editorTabsJSXClick")}
             {...tabs}
@@ -64,7 +65,7 @@ const EditorWithTabs = props => (
             <StyledPencilIcon /> JSX
           </Tabs.Tab>
           <Tabs.Tab
-            as={[IconOnLeft, Button]}
+            use={[IconOnLeft, Button]}
             tab="html"
             onClick={track("reakit.editorTabsHTMLClick")}
             {...tabs}

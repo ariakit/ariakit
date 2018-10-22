@@ -1,6 +1,7 @@
 import React from "react";
 import { styled, Flex, Link, Paragraph, Grid, List } from "reakit";
 import { palette } from "styled-tools";
+import s from "styled-selector";
 import FacebookIcon from "react-icons/lib/fa/facebook-official";
 import TwitterIcon from "react-icons/lib/fa/twitter";
 import GitHubIcon from "react-icons/lib/go/mark-github";
@@ -15,11 +16,10 @@ const Wrapper = styled(Flex)`
   padding: 40px 0;
   color: ${palette("grayscale", 2)};
 
-  ${Link} {
+  ${s(Link)} {
     color: ${palette("grayscale", 2)};
   }
-
-  ${Paragraph} {
+  ${s(Paragraph)} {
     margin: 0;
     line-height: 1.5;
   }
@@ -31,7 +31,7 @@ const Icons = styled(Grid)`
   grid-gap: 16px;
   margin-bottom: 16px;
 
-  ${Link}:hover {
+  ${s(Link)}:hover {
     color: ${palette("grayscale", 1)};
   }
 `;
@@ -39,7 +39,7 @@ const Icons = styled(Grid)`
 const Credits = props => (
   <Wrapper {...props}>
     <ContentWrapper column>
-      <Icons as={List}>
+      <Icons use={List}>
         <li>
           <Link
             href="https://facebook.com/reakitjs"
