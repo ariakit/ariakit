@@ -1,7 +1,7 @@
 import * as PropTypes from "prop-types";
 import { ifProp, prop, theme, withProp } from "styled-tools";
+import s from "styled-selector";
 import styled, { css } from "../styled";
-import getSelector from "../getSelector";
 import use from "../use";
 import Box, { BoxProps } from "../Box";
 import GroupItem from "./GroupItem";
@@ -11,7 +11,7 @@ export interface GroupProps extends BoxProps {
   verticalAt?: number;
 }
 
-const groupItemSelector = getSelector(GroupItem);
+const groupItemSelector = s(GroupItem);
 
 const verticalAt = (pass: any, fail?: any) =>
   ifProp(

@@ -2,9 +2,9 @@ import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import s from "styled-selector";
 import callAll from "../_utils/callAll";
 import hoist from "../_utils/hoist";
-import getSelector from "../getSelector";
 import styled from "../styled";
 import use from "../use";
 import Box, { BoxProps } from "../Box";
@@ -79,14 +79,14 @@ class ToolbarFocusableComponent extends React.Component<
 
   getToolbar = () => {
     if (typeof this.toolbar === "undefined") {
-      this.toolbar = this.getElement().closest(getSelector(Toolbar));
+      this.toolbar = this.getElement().closest(s(Toolbar));
     }
     return this.toolbar;
   };
 
   getFocusables = (): NodeListOf<Focusable> => {
     if (!this.getToolbar()) return new NodeList() as NodeListOf<Focusable>;
-    return this.getToolbar().querySelectorAll(getSelector(ToolbarFocusable));
+    return this.getToolbar().querySelectorAll(s(ToolbarFocusable));
   };
 
   getCurrentIndex = (focusables: NodeListOf<Focusable>) => {

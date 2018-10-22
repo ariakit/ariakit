@@ -2,8 +2,6 @@ export { Consumer, Container } from "constate";
 
 export { default as use } from "./use";
 
-export { default as getSelector } from "./getSelector";
-
 export { default as styled } from "./styled";
 export * from "./styled";
 

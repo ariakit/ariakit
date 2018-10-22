@@ -2,11 +2,11 @@ import * as React from "react";
 import { findDOMNode } from "react-dom";
 import * as PropTypes from "prop-types";
 import { theme } from "styled-tools";
+import s from "styled-selector";
 import Popper from "popper.js";
 import hoist from "../_utils/hoist";
 import styled from "../styled";
 import use from "../use";
-import getSelector from "../getSelector";
 import Hidden, { Position, HiddenProps } from "../Hidden";
 import PopoverArrow from "./PopoverArrow";
 
@@ -72,7 +72,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
   getOptions = (): Popper.PopperOptions => {
     const { placement, flip, shift } = this.props;
     const popover = this.getPopover();
-    const arrow = popover.querySelector(getSelector(PopoverArrow));
+    const arrow = popover.querySelector(s(PopoverArrow));
     return {
       placement,
       modifiers: {

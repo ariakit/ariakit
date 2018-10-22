@@ -40,6 +40,7 @@
     "prop-types": "^15.6.2",
     "reuse": "^1.2.0",
     "styled-components": "^3.0.0",
+    "styled-selector": "^0.1.0",
     "styled-tools": "^1.5.2"
   },
   "devDependencies": {

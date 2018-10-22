@@ -1,7 +1,8 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { styled, Grid, List, Link, getSelector } from "reakit";
+import { styled, Grid, List, Link } from "reakit";
 import { palette, ifProp } from "styled-tools";
+import s from "styled-selector";
 import getSectionUrl from "../utils/getSectionUrl";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import MenuContainer from "../containers/MenuContainer";
@@ -14,7 +15,7 @@ const Wrapper = styled(Grid)`
 `;
 
 const MenuList = styled(List)`
-  ${getSelector(List)} {
+  ${s(List)} {
     ${ifProp("contentsVisible", "display: block !important")};
   }
 
@@ -84,15 +85,15 @@ const renderList = (
 
   return (
     <MenuList contentsVisible={contentsVisible}>
-      {sections.map(s => (
-        <li key={s.name}>
+      {sections.map(section => (
+        <li key={section.name}>
           <SectionLink
-            use={s.slug ? NavLink : "label"}
-            to={getSectionUrl(rootSections, s)}
+            use={section.slug ? NavLink : "label"}
+            to={getSectionUrl(rootSections, section)}
           >
-            {s.name}
+            {section.name}
           </SectionLink>
-          {renderList(rootSections, s.sections)}
+          {renderList(rootSections, section.sections)}
         </li>
       ))}
     </MenuList>
