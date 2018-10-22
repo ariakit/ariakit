@@ -10659,10 +10659,10 @@ styled-components@^3.0.0:
     stylis-rule-sheet "^0.0.10"
     supports-color "^3.2.3"
 
-styled-selector@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/styled-selector/-/styled-selector-0.1.0.tgz#b546065cd9ecacbfd6ddc6cf4f6405e5b2ffe8e1"
-  integrity sha512-kk5u7ho4xGJbnqLxd964FRkyz9XE+8uJFIQ98loYIuHd6dkHvgwjCG6ykFKqw6iTJErd9S4c3CyPjkI50W3WuQ==
+styled-selector@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/styled-selector/-/styled-selector-0.1.1.tgz#eb2b9f19e8af5b3a7d12e11b53900c5405a83f6b"
+  integrity sha512-fz+/sF2FC+HciTFOIq8cOQmqp7ix4agrJyIQaceeY2TuqjNyyAUaLMnhh+Ndz0/3rVnih6zApwr8sOyfu7IXew==
 
 styled-tools@^1.5.2:
   version "1.5.2"
