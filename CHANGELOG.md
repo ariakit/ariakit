@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.9](https://github.com/reakit/reakit/compare/reakit@0.15.8...reakit@0.15.9) (2018-10-23)
+
+
+### Bug Fixes
+
+* Fix `TabsTab` prop types ([e5762a7](https://github.com/reakit/reakit/commit/e5762a7)), closes [#279](https://github.com/reakit/reakit/issues/279)
+
+
+
+
+
 ## [0.15.8](https://github.com/reakit/reakit/compare/reakit@0.15.7...reakit@0.15.8) (2018-10-16)
 
 
