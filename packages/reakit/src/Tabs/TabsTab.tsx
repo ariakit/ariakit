@@ -114,7 +114,7 @@ const TabsTab = styled(TabsTabComponent)`
 // @ts-ignore
 TabsTab.propTypes = {
   tab: PropTypes.string.isRequired,
-  current: PropTypes.string.isRequired,
+  current: PropTypes.number.isRequired,
   register: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired,
   unregister: PropTypes.func.isRequired,
