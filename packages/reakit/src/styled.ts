@@ -1,9 +1,9 @@
 import styled, {
   css,
   keyframes,
-  injectGlobal,
+  createGlobalStyle,
   isStyledComponent,
-  consolidateStreamedStyles,
+  ThemeConsumer,
   ThemeProvider,
   withTheme,
   ServerStyleSheet,
@@ -13,9 +13,9 @@ import styled, {
 export {
   css,
   keyframes,
-  injectGlobal,
+  createGlobalStyle,
   isStyledComponent,
-  consolidateStreamedStyles,
+  ThemeConsumer,
   ThemeProvider,
   withTheme,
   ServerStyleSheet,

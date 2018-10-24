@@ -37,7 +37,11 @@ const getPlugins = umd =>
         commonjs({
           include: /node_modules/,
           namedExports: {
-            "../../node_modules/react-is/index.js": ["isValidElementType"]
+            "../../node_modules/styled-components/node_modules/react-is/index.js": [
+              "isValidElementType",
+              "isElement",
+              "ForwardRef"
+            ]
           }
         }),
         ignore(["stream"]),

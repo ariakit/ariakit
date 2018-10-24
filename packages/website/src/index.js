@@ -3,7 +3,7 @@ import "parse-prop-types";
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider, ThemeProvider } from "reakit";
-import "./globalStyles";
+import GlobalStyle from "./GlobalStyle";
 import getEvalInContext from "./utils/getEvalInContext";
 import parseSections from "./utils/parseSections";
 import lightTheme from "./theme/light";
@@ -26,14 +26,17 @@ const App = props => (
     <ThemeContainer>
       {({ mode }) => (
         <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
-          <Router>
-            <ScrollToTop>
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route path="/" component={Sections} />
-              </Switch>
-            </ScrollToTop>
-          </Router>
+          <React.Fragment>
+            <GlobalStyle />
+            <Router>
+              <ScrollToTop>
+                <Switch>
+                  <Route exact path="/" component={Home} />
+                  <Route path="/" component={Sections} />
+                </Switch>
+              </ScrollToTop>
+            </Router>
+          </React.Fragment>
         </ThemeProvider>
       )}
     </ThemeContainer>

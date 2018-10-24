@@ -85,7 +85,10 @@ class ToolbarFocusableComponent extends React.Component<
   };
 
   getFocusables = (): NodeListOf<Focusable> => {
-    if (!this.getToolbar()) return new NodeList() as NodeListOf<Focusable>;
+    if (!this.getToolbar())
+      return document.createDocumentFragment().childNodes as NodeListOf<
+        Focusable
+      >;
     return this.getToolbar().querySelectorAll(s(ToolbarFocusable));
   };
 

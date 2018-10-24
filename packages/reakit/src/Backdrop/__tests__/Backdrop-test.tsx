@@ -20,7 +20,7 @@ test("html attrs", () => {
 test("styled", () => {
   const { container } = render(<Backdrop />);
   expect(container.firstChild).toMatchInlineSnapshot(`
-.c2 {
+.c1 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -33,18 +33,10 @@ test("styled", () => {
   color: inherit;
 }
 
-.c1 {
+.c0 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);
-}
-
-.c1[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
-}
-
-.c0 {
   position: fixed;
   top: 0;
   left: 0;
@@ -55,9 +47,14 @@ test("styled", () => {
   -moz-tap-highlight-color: rgba(0,0,0,0);
 }
 
+.c0[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
 <div
   aria-hidden="true"
-  class="c0 c1 c2"
+  class="c0 c1"
   hidden=""
   role="button"
   tabindex="-1"
@@ -68,7 +65,7 @@ test("styled", () => {
 test("styled visible", () => {
   const { container } = render(<Backdrop visible />);
   expect(container.firstChild).toMatchInlineSnapshot(`
-.c2 {
+.c1 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -81,18 +78,10 @@ test("styled visible", () => {
   color: inherit;
 }
 
-.c1 {
+.c0 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);
-}
-
-.c1[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
-}
-
-.c0 {
   position: fixed;
   top: 0;
   left: 0;
@@ -103,9 +92,14 @@ test("styled visible", () => {
   -moz-tap-highlight-color: rgba(0,0,0,0);
 }
 
+.c0[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
 <div
   aria-hidden="false"
-  class="c0 c1 c2"
+  class="c0 c1"
   role="button"
   tabindex="-1"
 />
