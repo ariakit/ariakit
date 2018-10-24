@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { addImportToReakit, renameJSXProperty } from "./utils";
+import { addImportToReakit, renameJSXProperty } from "../utils";
 import {
   ImportDeclaration,
   CallExpression,
@@ -10,9 +10,10 @@ import {
   Program,
   MemberExpression,
   ImportSpecifier
-} from "./types";
+} from "../types";
 
-export default function transformer(file, api) {
+// @ts-ignore
+export default function transformer(file: any, api: { jscodeshift: any }) {
   const j = api.jscodeshift;
 
   const ast = j(file.source);
