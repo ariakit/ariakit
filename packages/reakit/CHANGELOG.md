@@ -5,7 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [0.15.10](https://github.com/reakit/reakit/compare/reakit@0.15.9...reakit@0.15.10) (2018-10-24)
 
-**Note:** Version bump only for package reakit
+### Bug Fixes
+
+* Fix `Cannot find module 'packages/reakit/src/_utils/types'` error ([1c8dc06](https://github.com/reakit/reakit/commit/1c8dc06)), closes [#283](https://github.com/reakit/reakit/issues/283)
 
 
 
