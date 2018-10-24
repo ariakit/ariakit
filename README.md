@@ -82,69 +82,29 @@ This project exists thanks to all the people who contribute.
 By donating $5 or more you help in the development of this project. Thank you to all our supporters! 🙏
 
 <p>
-  <a href="https://opencollective.com/reakit/sponsor/0/website">
-    <img src="https://opencollective.com/reakit/sponsor/0/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/1/website">
-    <img src="https://opencollective.com/reakit/sponsor/1/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/2/website">
-    <img src="https://opencollective.com/reakit/sponsor/2/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/3/website">
-    <img src="https://opencollective.com/reakit/sponsor/3/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/4/website">
-    <img src="https://opencollective.com/reakit/sponsor/4/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/5/website">
-    <img src="https://opencollective.com/reakit/sponsor/5/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/6/website">
-    <img src="https://opencollective.com/reakit/sponsor/6/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/7/website">
-    <img src="https://opencollective.com/reakit/sponsor/7/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/8/website">
-    <img src="https://opencollective.com/reakit/sponsor/8/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/sponsor/9/website">
-    <img src="https://opencollective.com/reakit/sponsor/9/avatar.svg">
-  </a>
+  <a href="https://opencollective.com/reakit/sponsor/0/website"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/1/website"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/2/website"><img src="https://opencollective.com/reakit/sponsor/2/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/3/website"><img src="https://opencollective.com/reakit/sponsor/3/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/4/website"><img src="https://opencollective.com/reakit/sponsor/4/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/5/website"><img src="https://opencollective.com/reakit/sponsor/5/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/6/website"><img src="https://opencollective.com/reakit/sponsor/6/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/7/website"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/8/website"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/sponsor/9/website"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
 </p>
 
 <p>
-  <a href="https://opencollective.com/reakit/backer/0/website">
-    <img src="https://opencollective.com/reakit/backer/0/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/1/website">
-    <img src="https://opencollective.com/reakit/backer/1/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/2/website">
-    <img src="https://opencollective.com/reakit/backer/2/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/3/website">
-    <img src="https://opencollective.com/reakit/backer/3/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/4/website">
-    <img src="https://opencollective.com/reakit/backer/4/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/5/website">
-    <img src="https://opencollective.com/reakit/backer/5/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/6/website">
-    <img src="https://opencollective.com/reakit/backer/6/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/7/website">
-    <img src="https://opencollective.com/reakit/backer/7/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/8/website">
-    <img src="https://opencollective.com/reakit/backer/8/avatar.svg">
-  </a>
-  <a href="https://opencollective.com/reakit/backer/9/website">
-    <img src="https://opencollective.com/reakit/backer/9/avatar.svg">
-  </a>
+  <a href="https://opencollective.com/reakit/backer/0/website"><img src="https://opencollective.com/reakit/backer/0/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/1/website"><img src="https://opencollective.com/reakit/backer/1/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/2/website"><img src="https://opencollective.com/reakit/backer/2/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/3/website"><img src="https://opencollective.com/reakit/backer/3/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/4/website"><img src="https://opencollective.com/reakit/backer/4/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/5/website"><img src="https://opencollective.com/reakit/backer/5/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/6/website"><img src="https://opencollective.com/reakit/backer/6/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/7/website"><img src="https://opencollective.com/reakit/backer/7/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/8/website"><img src="https://opencollective.com/reakit/backer/8/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/9/website"><img src="https://opencollective.com/reakit/backer/9/avatar.svg"></a>
 </p>
 
 ## License
