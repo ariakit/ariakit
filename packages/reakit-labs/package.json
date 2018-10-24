@@ -1,0 +1,32 @@
+{
+  "name": "reakit-labs",
+  "version": "0.0.1",
+  "description": "Experimental reakit components",
+  "keywords": [
+    "reakit"
+  ],
+  "author": "Raphael Thomazella <thomazella9@gmail.com>",
+  "homepage": "https://reakit.io/",
+  "license": "MIT",
+  "main": "lib/reakit-labs.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.yarnpkg.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diegohaz/reas.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/reakit/reakit/issues"
+  }
+}
