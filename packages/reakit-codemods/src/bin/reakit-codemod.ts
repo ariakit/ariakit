@@ -51,9 +51,9 @@ const spawnCodeshift = (transformationFile: string, target: string) =>
 
     jscodeShiftProcess.on("exit", (code: number) => {
       if (code === 0) {
-        resolve();
+        resolve(code);
       } else {
-        reject();
+        reject(code);
       }
     });
   });
@@ -81,12 +81,13 @@ const run = async () => {
     end();
   }
 
-  // const codeshiftProcess = await spawnCodeshift(
-  //   transformationName,
-  //   fileOrFolder
-  // );
-
-  // console.log("exited with copde", codeshiftProcess);
+  try {
+    await spawnCodeshift(transformationName, fileOrFolder);
+    process.exitCode = 0;
+  } catch (error) {
+    console.error(error);
+    process.exitCode = 1;
+  }
 };
 
 run();
