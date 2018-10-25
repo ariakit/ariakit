@@ -110,8 +110,8 @@ module.exports = {
           content: "../../docs/get-started.md"
         },
         {
-          name: "Composability",
-          content: "../../docs/composability.md"
+          name: "Composition",
+          content: "../../docs/composition.md"
         },
         {
           name: "Accessibility",
@@ -124,10 +124,6 @@ module.exports = {
         {
           name: "Bundle size",
           content: "../../docs/bundle-size.md"
-        },
-        {
-          name: "Use",
-          content: "../../docs/use.md"
         },
         {
           name: "Styling",

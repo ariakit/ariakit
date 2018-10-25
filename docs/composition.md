@@ -1,4 +1,6 @@
-React components are inherently composable. Reakit makes them even more so with [use](use.md).
+> Reakit uses [reuse](https://github.com/diegohaz/reuse) to compose components.
+
+React components are inherently composable. Reakit makes them even more so with the `use` feature.
 
 You can use the `use` prop just to change the underlying HTML element of a component. A common example is rendering a [Button](../packages/reakit/src/Button/Button.md) as a link:
 
@@ -10,7 +12,40 @@ import { Button } from "reakit";
 </Button>
 ```
 
-However, we can leverage it even more by combining atomic components created with [styled](styling.md):
+You can pass string elements, other React components or an array of both. You can also take advantage of the `use` factory to create new components:
+
+```jsx
+import { use, Button } from "reakit";
+
+// create a generic component that receives a `use` prop
+const Box = ({ use: T, ...props }) => <T {...props} />;
+
+// render the component as a `span`
+const UseBox = use(Box, "span");
+
+// replace span by Button, and render it as `a`
+<UseBox
+  use={[Button, "a"]}
+  href="https://github.com/reakit/reakit"
+  target="_blank"
+>
+  GitHub
+</UseBox>
+```
+
+That means you can also use it to enhance a Reakit component changing what it renders:
+
+```jsx
+import { use, Button } from 'reakit'
+
+const LinkButton = use(Button, "a");
+
+<LinkButton href="https://github.com/reakit/reakit" target="_blank">
+  GitHub
+</LinkButton>
+```
+
+We can leverage it even more by combining atomic components created with [styled](styling.md):
 
 ```jsx
 import { styled, Button as BaseButton, Grid } from "reakit";
