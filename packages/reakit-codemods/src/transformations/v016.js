@@ -1,6 +1,4 @@
 /* eslint-disable no-param-reassign */
-const { addImportToReakit, renameJSXProperty } = require("../utils");
-
 export default function transformer(file, api) {
   const j = api.jscodeshift;
 
@@ -15,22 +13,28 @@ export default function transformer(file, api) {
     if (
       element.value.callee.name === "as" &&
       element.parent &&
-      element.parent.parent &&
-      element.parent.parent.value.declaration
+      element.value.arguments[0].type !== "ArrayExpression"
     ) {
-      // eslint-disable-next-line
-      elementItself = element.parent.parent.value.declaration.arguments[0];
-      disguisedAs = element.value.arguments[0].value;
-      element.parent.parent.value.declaration = j.identifier(
-        elementItself.name
-      );
-      j(element).remove();
+      if (element.parent.parent.value.type === "VariableDeclarator") {
+        // eslint-disable-next-line
+        elementItself = element.parent.value.arguments[0];
+        disguisedAs = element.value.arguments[0].value;
+        element.parent.parent.value.init = j.callExpression(
+          j.identifier("use"),
+          [elementItself, j.identifier(disguisedAs)]
+        );
+        ast.find(j.ImportDeclaration).forEach(importDeclarations => {
+          if (importDeclarations) {
+            importDeclarations.value.specifiers.push(
+              j.importSpecifier(j.identifier("use"))
+            );
+          }
+        });
+      }
     } else if (
       element.value.callee.name === "as" &&
       element.value.arguments &&
-      element.value.arguments[0].type === "ArrayExpression" &&
-      element.parent &&
-      element.parent.parent
+      element.value.arguments[0].type === "ArrayExpression"
     ) {
       asDeclarationHasArray = true;
       const componentUsed = element.parent.value.arguments[0];
@@ -44,7 +48,13 @@ export default function transformer(file, api) {
         callExpressionArguments
       );
 
-      addImportToReakit("use", ast, j);
+      ast.find(j.ImportDeclaration).forEach(importDeclarations => {
+        if (importDeclarations) {
+          importDeclarations.value.specifiers.push(
+            j.importSpecifier(j.identifier("use"))
+          );
+        }
+      });
     }
   });
 
@@ -63,18 +73,6 @@ export default function transformer(file, api) {
     j.literal(disguisedAs)
   );
 
-  const memberExpression = j.expressionStatement(
-    j.assignmentExpression(
-      "=",
-      j.memberExpression(
-        // @ts-ignore
-        j.identifier(elementItself.name || "default"),
-        j.identifier("defaultProps")
-      ),
-      j.objectExpression([useProperty])
-    )
-  );
-
   if (!asDeclarationHasArray) {
     const defaultProps = ast.find(j.Identifier, {
       name: "defaultProps"
@@ -86,11 +84,6 @@ export default function transformer(file, api) {
           const properties = element.parent.parent.value.right;
           properties.properties.push(useProperty);
         }
-      });
-    } else {
-      ast.find(j.Program).forEach(program => {
-        const bodyLength: number = program.value.body.length;
-        program.value.body.splice(bodyLength - 1, 0, memberExpression);
       });
     }
   }
@@ -104,18 +97,28 @@ export default function transformer(file, api) {
     ) {
       const disguisedAs2 = element.parent.value.arguments[0];
       const mainElement = element.value.object;
-      element.parent.parent.value.init = j.callExpression(j.identifier("use"), [
-        mainElement,
-        disguisedAs2
-      ]);
+      const useArguments = [mainElement];
+      if (disguisedAs2.type === "ArrayExpression") {
+        disguisedAs2.elements.forEach(arg => useArguments.push(arg));
+      }
+      element.parent.parent.value.init = j.callExpression(
+        j.identifier("use"),
+        useArguments
+      );
 
-      addImportToReakit("use", ast, j);
+      ast.find(j.ImportDeclaration).forEach(importDeclarations => {
+        if (importDeclarations) {
+          importDeclarations.value.specifiers.push(
+            j.importSpecifier(j.identifier("use"))
+          );
+        }
+      });
     }
   });
 
   // work on jsx tags
   ast.find(j.JSXIdentifier, { name: "as" }).forEach(element => {
-    renameJSXProperty("use", element);
+    element.value.name = "use";
   });
 
   return ast.toSource();

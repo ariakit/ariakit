@@ -33,7 +33,7 @@ const spawnCodeshift = (transformationFile, target) =>
       path.join(__dirname, "../node_modules/.bin/jscodeshift")
     );
     const transformationPath = path.resolve(
-      path.join(__dirname, `../src/transformations/${transformationFile}`)
+      path.join(__dirname, `../src/transformations/${transformationFile}.js`)
     );
 
     const jscodeShiftProcess = spawn(
@@ -45,11 +45,11 @@ const spawnCodeshift = (transformationFile, target) =>
       }
     );
 
-    jscodeShiftProcess.on("error", (error: any) => {
+    jscodeShiftProcess.on("error", error => {
       reject(error);
     });
 
-    jscodeShiftProcess.on("exit", (code: number) => {
+    jscodeShiftProcess.on("exit", code => {
       if (code === 0) {
         resolve(code);
       } else {
