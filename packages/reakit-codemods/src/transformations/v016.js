@@ -8,6 +8,20 @@ export default function transformer(file, api) {
   let elementItself;
   let asDeclarationHasArray = false;
 
+  ast.find(j.ImportDeclaration).forEach(importDeclarations => {
+    if (importDeclarations) {
+      const hasUse = importDeclarations.value.specifiers.filter(
+        importedModule => importedModule.imported.name !== "as"
+      );
+
+      if (!hasUse.length) {
+        importDeclarations.value.specifiers.push(
+          j.importSpecifier(j.identifier("use"))
+        );
+      }
+    }
+  });
+
   // remove call expression
   ast.find(j.CallExpression).forEach(element => {
     if (
@@ -23,13 +37,6 @@ export default function transformer(file, api) {
           j.identifier("use"),
           [elementItself, j.identifier(disguisedAs)]
         );
-        ast.find(j.ImportDeclaration).forEach(importDeclarations => {
-          if (importDeclarations) {
-            importDeclarations.value.specifiers.push(
-              j.importSpecifier(j.identifier("use"))
-            );
-          }
-        });
       }
     } else if (
       element.value.callee.name === "as" &&
@@ -47,14 +54,6 @@ export default function transformer(file, api) {
         element.value.callee,
         callExpressionArguments
       );
-
-      ast.find(j.ImportDeclaration).forEach(importDeclarations => {
-        if (importDeclarations) {
-          importDeclarations.value.specifiers.push(
-            j.importSpecifier(j.identifier("use"))
-          );
-        }
-      });
     }
   });
 
@@ -100,19 +99,13 @@ export default function transformer(file, api) {
       const useArguments = [mainElement];
       if (disguisedAs2.type === "ArrayExpression") {
         disguisedAs2.elements.forEach(arg => useArguments.push(arg));
+      } else {
+        useArguments.push(disguisedAs2);
       }
       element.parent.parent.value.init = j.callExpression(
         j.identifier("use"),
         useArguments
       );
-
-      ast.find(j.ImportDeclaration).forEach(importDeclarations => {
-        if (importDeclarations) {
-          importDeclarations.value.specifiers.push(
-            j.importSpecifier(j.identifier("use"))
-          );
-        }
-      });
     }
   });
 
