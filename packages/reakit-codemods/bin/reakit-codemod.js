@@ -6,7 +6,7 @@ const parse = require("yargs-parser");
 const { spawn } = require("child_process");
 const path = require("path");
 
-const pkg = require("../../package.json");
+const pkg = require("../package.json");
 
 const help = chalk`
   ${pkg.description}
@@ -27,7 +27,7 @@ const help = chalk`
 
 const end = () => process.exit(0);
 
-const spawnCodeshift = (transformationFile: string, target: string) =>
+const spawnCodeshift = (transformationFile, target) =>
   new Promise((resolve, reject) => {
     const jscodeshiftPath = path.resolve(
       path.join(__dirname, "../node_modules/.bin/jscodeshift")

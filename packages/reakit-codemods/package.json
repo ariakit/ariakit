@@ -1,13 +1,16 @@
 {
   "name": "reakit-codemods",
   "version": "0.0.1",
+  "bin": "./bin/reakit-codemod.js",
+  "engines": {
+    "node": ">=8.12.0"
+  },
   "description": "Reakit codemods to upgrade your codebase automagically",
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "devDependencies": {
-    "typescript": "^3.0.3"
-  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",
     "yargs-parser": "^11.0.0",

@@ -1,29 +1,17 @@
 /* eslint-disable no-param-reassign */
-import { addImportToReakit, renameJSXProperty } from "../utils";
-import {
-  ImportDeclaration,
-  CallExpression,
-  ExpressionStatement,
-  ASTNode,
-  Identifier,
-  ObjectExpression,
-  Program,
-  MemberExpression,
-  ImportSpecifier
-} from "../types";
+const { addImportToReakit, renameJSXProperty } = require("../utils");
 
-// @ts-ignore
-export default function transformer(file: any, api: { jscodeshift: any }) {
+export default function transformer(file, api) {
   const j = api.jscodeshift;
 
   const ast = j(file.source);
 
   let disguisedAs = "";
-  let elementItself: Identifier;
+  let elementItself;
   let asDeclarationHasArray = false;
 
   // remove call expression
-  ast.find(j.CallExpression).forEach((element: CallExpression) => {
+  ast.find(j.CallExpression).forEach(element => {
     if (
       element.value.callee.name === "as" &&
       element.parent &&
@@ -47,11 +35,9 @@ export default function transformer(file: any, api: { jscodeshift: any }) {
       asDeclarationHasArray = true;
       const componentUsed = element.parent.value.arguments[0];
       const callExpressionArguments = [componentUsed];
-      element.value.arguments[0].elements.forEach(
-        (componentArgument: Identifier) => {
-          callExpressionArguments.push(componentArgument);
-        }
-      );
+      element.value.arguments[0].elements.forEach(componentArgument => {
+        callExpressionArguments.push(componentArgument);
+      });
       element.value.callee = j.identifier("use");
       element.parent.parent.value.init = j.callExpression(
         element.value.callee,
@@ -63,9 +49,9 @@ export default function transformer(file: any, api: { jscodeshift: any }) {
   });
 
   // remove import
-  ast.find(j.ImportDeclaration).forEach((asIdentifier: ImportDeclaration) => {
+  ast.find(j.ImportDeclaration).forEach(asIdentifier => {
     const specifiers = asIdentifier.value.specifiers.filter(
-      (importedModule: ImportSpecifier) => importedModule.imported.name !== "as"
+      importedModule => importedModule.imported.name !== "as"
     );
     asIdentifier.value.specifiers = specifiers;
   });
@@ -77,7 +63,7 @@ export default function transformer(file: any, api: { jscodeshift: any }) {
     j.literal(disguisedAs)
   );
 
-  const memberExpression: ExpressionStatement = j.expressionStatement(
+  const memberExpression = j.expressionStatement(
     j.assignmentExpression(
       "=",
       j.memberExpression(
@@ -95,15 +81,14 @@ export default function transformer(file: any, api: { jscodeshift: any }) {
     });
 
     if (defaultProps[0]) {
-      defaultProps.forEach((element: Identifier) => {
+      defaultProps.forEach(element => {
         if (element.parent && element.parent.parent) {
-          const properties: ObjectExpression =
-            element.parent.parent.value.right;
+          const properties = element.parent.parent.value.right;
           properties.properties.push(useProperty);
         }
       });
     } else {
-      ast.find(j.Program).forEach((program: Program) => {
+      ast.find(j.Program).forEach(program => {
         const bodyLength: number = program.value.body.length;
         program.value.body.splice(bodyLength - 1, 0, memberExpression);
       });
@@ -111,7 +96,7 @@ export default function transformer(file: any, api: { jscodeshift: any }) {
   }
 
   // deals with removing static Box.as from components;
-  ast.find(j.MemberExpression).forEach((element: MemberExpression) => {
+  ast.find(j.MemberExpression).forEach(element => {
     if (
       element.value.property.name === "as" &&
       element.parent &&
@@ -129,7 +114,7 @@ export default function transformer(file: any, api: { jscodeshift: any }) {
   });
 
   // work on jsx tags
-  ast.find(j.JSXIdentifier, { name: "as" }).forEach((element: ASTNode) => {
+  ast.find(j.JSXIdentifier, { name: "as" }).forEach(element => {
     renameJSXProperty("use", element);
   });
 

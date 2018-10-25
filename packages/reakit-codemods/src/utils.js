@@ -1,11 +1,6 @@
 /* eslint-disable no-param-reassign */
-import { ASTNode, JSCodeshift } from "./types";
 
-export function addImportToReakit(
-  importName: string,
-  ast: ASTNode,
-  j: JSCodeshift
-) {
+export function addImportToReakit(importName, ast, j) {
   ast.find(j.ImportDeclaration).forEach(importDeclarations => {
     if (importDeclarations) {
       importDeclarations.value.specifiers.push(
@@ -15,6 +10,6 @@ export function addImportToReakit(
   });
 }
 
-export function renameJSXProperty(newPropertyName: string, element: ASTNode) {
+export function renameJSXProperty(newPropertyName, element) {
   element.value.name = newPropertyName;
 }
