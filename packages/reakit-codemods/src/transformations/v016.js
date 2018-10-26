@@ -1,15 +1,20 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable prefer-destructuring */
 export default function transformer(file, api) {
   const j = api.jscodeshift;
 
   const ast = j(file.source);
 
-  let disguisedAs = "";
   let elementItself;
-  let asDeclarationHasArray = false;
 
+  /**
+   * Remove as import from reakit and adds use import.
+   */
   ast.find(j.ImportDeclaration).forEach(importDeclarations => {
-    if (importDeclarations && importDeclarations.value.source.value === 'reakit') {
+    if (
+      importDeclarations &&
+      importDeclarations.value.source.value === "reakit"
+    ) {
       const hasUse = importDeclarations.value.specifiers.filter(
         importedModule => importedModule.imported.name !== "as"
       );
@@ -22,20 +27,36 @@ export default function transformer(file, api) {
     }
   });
 
-  // remove call expression
+  /**
+   * Works on a call expression, in this case as call.
+   * Changes as("div")(Button) to use(Button, "div")
+   * and also changes as([Link, "div"])(Button) to use(Button, Link, "div")
+   */
   ast.find(j.CallExpression).forEach(element => {
+    // handles first case where we don't have a
     if (
       element.value.callee.name === "as" &&
       element.parent &&
-      element.value.arguments[0].type !== "ArrayExpression"
+      element.value.arguments[0].type !== "ArrayExpression" &&
+      element.parent.parent.value.type === "VariableDeclarator"
     ) {
-      if (element.parent.parent.value.type === "VariableDeclarator") {
-        // eslint-disable-next-line
-        elementItself = element.parent.value.arguments[0];
-        disguisedAs = element.value.arguments[0].value;
+      elementItself = element.parent.value.arguments[0];
+      /**
+       * case where we have as("div")(Button)
+       * where div is considered a literal.
+       */
+      if (element.value.arguments[0].type === "Literal") {
         element.parent.parent.value.init = j.callExpression(
           j.identifier("use"),
-          [elementItself, j.identifier(disguisedAs)]
+          [elementItself, j.literal(element.value.arguments[0].value)]
+        );
+      } else if (element.value.arguments[0].type === "Identifier") {
+        /**
+         * Case where we have as(OtherElement)(Button)
+         */
+        element.parent.parent.value.init = j.callExpression(
+          j.identifier("use"),
+          [elementItself, element.value.arguments[0]]
         );
       }
     } else if (
@@ -43,7 +64,6 @@ export default function transformer(file, api) {
       element.value.arguments &&
       element.value.arguments[0].type === "ArrayExpression"
     ) {
-      asDeclarationHasArray = true;
       const componentUsed = element.parent.value.arguments[0];
       const callExpressionArguments = [componentUsed];
       element.value.arguments[0].elements.forEach(componentArgument => {
@@ -57,37 +77,9 @@ export default function transformer(file, api) {
     }
   });
 
-  // remove import
-  ast.find(j.ImportDeclaration).forEach(asIdentifier => {
-    const specifiers = asIdentifier.value.specifiers.filter(
-      importedModule => importedModule.imported.name !== "as"
-    );
-    asIdentifier.value.specifiers = specifiers;
-  });
-
-  // property use to be added to the defaultProps
-  const useProperty = j.property(
-    "init",
-    j.identifier("use"),
-    j.literal(disguisedAs)
-  );
-
-  if (!asDeclarationHasArray) {
-    const defaultProps = ast.find(j.Identifier, {
-      name: "defaultProps"
-    });
-
-    if (defaultProps[0]) {
-      defaultProps.forEach(element => {
-        if (element.parent && element.parent.parent) {
-          const properties = element.parent.parent.value.right;
-          properties.properties.push(useProperty);
-        }
-      });
-    }
-  }
-
-  // deals with removing static Box.as from components;
+  /**
+   * Convert Box.as(something) to use(Box, something)
+   */
   ast.find(j.MemberExpression).forEach(element => {
     if (
       element.value.property.name === "as" &&
@@ -109,7 +101,9 @@ export default function transformer(file, api) {
     }
   });
 
-  // work on jsx tags
+  /**
+   * Rename as from JSX Tags from as to use
+   */
   ast.find(j.JSXIdentifier, { name: "as" }).forEach(element => {
     element.value.name = "use";
   });
