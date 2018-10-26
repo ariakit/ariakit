@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",
-    "yargs-parser": "^11.0.0",
-    "jscodeshift": "^0.5.1"
+    "jscodeshift": "^0.5.1",
+    "yargs-parser": "^11.0.0"
   }
 }

@@ -38,7 +38,7 @@ const spawnCodeshift = (transformationFile, target) =>
 
     const jscodeShiftProcess = spawn(
       jscodeshiftPath,
-      ["-t", transformationPath, target, "--parser", "babylon"],
+      ["-t", transformationPath, target],
       {
         stdio: "inherit",
         shell: true

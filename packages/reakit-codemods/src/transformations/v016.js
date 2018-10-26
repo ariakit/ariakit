@@ -1,31 +1,14 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable prefer-destructuring */
+
+const { renameJSXProperty, replaceAsWithUse } = require("../utils");
+
 export default function transformer(file, api) {
   const j = api.jscodeshift;
 
   const ast = j(file.source);
 
   let elementItself;
-
-  /**
-   * Remove as import from reakit and adds use import.
-   */
-  ast.find(j.ImportDeclaration).forEach(importDeclarations => {
-    if (
-      importDeclarations &&
-      importDeclarations.value.source.value === "reakit"
-    ) {
-      const hasUse = importDeclarations.value.specifiers.filter(
-        importedModule => importedModule.imported.name !== "as"
-      );
-
-      if (!hasUse.length) {
-        importDeclarations.value.specifiers.push(
-          j.importSpecifier(j.identifier("use"))
-        );
-      }
-    }
-  });
 
   /**
    * Works on a call expression, in this case as call.
@@ -75,6 +58,8 @@ export default function transformer(file, api) {
         callExpressionArguments
       );
     }
+
+    replaceAsWithUse(j, ast);
   });
 
   /**
@@ -99,14 +84,16 @@ export default function transformer(file, api) {
         useArguments
       );
     }
+    replaceAsWithUse(j, ast);
   });
 
   /**
    * Rename as from JSX Tags from as to use
    */
-  ast.find(j.JSXIdentifier, { name: "as" }).forEach(element => {
-    element.value.name = "use";
-  });
+  renameJSXProperty("as", "use", ast, j);
+  renameJSXProperty("areas", "templateAreas", ast, j);
+  renameJSXProperty("columns", "templateColumns", ast, j);
+  renameJSXProperty("rows", "templateRows", ast, j);
 
   return ast.toSource();
 }

@@ -1,18 +1,24 @@
 /* eslint-disable */
-import { as } from "reakit";
 import { Component } from "react";
 
-const ButtonDiv = as("div")(Button);
+const ButtonDiv = use(Button, "div");
 
-const ButtonDiv = Button.as("div");
+const ButtonDiv = use(Button, "div");
 
-const ButtonLinkDiv = as([Link, "div"])(Button);
+const ButtonLinkDiv = use(Button, Link, "div");
 
-const ButtonLinkDiv = Button.as([Link, "div"]);
+const ButtonLinkDiv = use(Button, Link, "div");
 
-{
-	<div>
-		<Button as="div" />
-		<Button as={[Link, "div"]} />
+function Component() {
+  return (
+    <div>
+		<Button use="div" />
+		<Button use={[Link, "div"]} />
+    <Grid
+    templateAreas="a b c"
+    templateColumns="1fr 60px auto"
+    templateRows="auto"
+  />
 	</div>
+  );
 }
