@@ -9,7 +9,7 @@ export default function transformer(file, api) {
   let asDeclarationHasArray = false;
 
   ast.find(j.ImportDeclaration).forEach(importDeclarations => {
-    if (importDeclarations) {
+    if (importDeclarations && importDeclarations.value.source.value === 'reakit') {
       const hasUse = importDeclarations.value.specifiers.filter(
         importedModule => importedModule.imported.name !== "as"
       );
