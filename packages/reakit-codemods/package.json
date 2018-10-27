@@ -10,10 +10,17 @@
     "bin",
     "src"
   ],
+  "scripts": {
+    "test": "jest"
+  },
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",
     "jscodeshift": "^0.5.1",
     "yargs-parser": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "jest-cli": "^23.6.0"
   }
 }
