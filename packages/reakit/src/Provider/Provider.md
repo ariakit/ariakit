@@ -21,7 +21,7 @@ const theme = {
 `Provider` supports the [Constate API](https://github.com/diegohaz/constate#provider) which makes [React Context](https://reactjs.org/docs/context.html) easier to use.
 
 ```jsx
-import { Container, Provider, Container } from "reakit";
+import { Container, Provider } from "reakit";
 
 const initial = {
   Button: {
