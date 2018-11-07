@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.12](https://github.com/reakit/reakit/compare/website@0.15.11...website@0.15.12) (2018-11-07)
+
+**Note:** Version bump only for package website
+
+
+
+
+
 ## [0.15.11](https://github.com/reakit/reakit/compare/website@0.15.10...website@0.15.11) (2018-10-24)
 
 **Note:** Version bump only for package website
