@@ -59,7 +59,9 @@ module.exports = function transformer(file, api) {
       );
     }
 
-    replaceAsWithUse(j, ast);
+    if (element.value.callee.name === "as") {
+      replaceAsWithUse(j, ast);
+    }
   });
 
   /**
@@ -84,7 +86,10 @@ module.exports = function transformer(file, api) {
         useArguments
       );
     }
-    replaceAsWithUse(j, ast);
+
+    if (element.value.property.name === "as") {
+      replaceAsWithUse(j, ast);
+    }
   });
 
   /**

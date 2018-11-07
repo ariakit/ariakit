@@ -36,12 +36,6 @@ function replaceAsWithUse(j, ast) {
             j.identifier("use")
           );
         }
-
-        if (!hasUse.length && asIndex === -1) {
-          importDeclarations.value.specifiers.push(
-            j.importSpecifier(j.identifier("use"))
-          );
-        }
       }
     });
   }
