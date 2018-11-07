@@ -12,14 +12,14 @@ const help = chalk`
   ${pkg.description}
 
   {underline Usage}
-    $ reakit-codemod <transformation type> <folder or file>
+    $ reakit-codemods <transformation type> <folder or file>
 
   {underline Options}
     --help            Displays this message
 
   {underline Examples}
-    $ reakit-codemod --help
-    $ reakit-codemod v016 src
+    $ reakit-codemods --help
+    $ reakit-codemods v016 src
 
   {underline Available Codemods}
     v016 - Changes made on the v016 version
