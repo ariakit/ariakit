@@ -1,14 +1,5 @@
 /* eslint-disable */
-import { use, Button, Grid } from "reakit";
-import { Component } from "react";
-
-const ButtonDiv = use(Button, "div");
-
-const ButtonDiv = use(Button, "div");
-
-const ButtonLinkDiv = use(Button, Link, "div");
-
-const ButtonLinkDiv = use(Button, Link, "div");
+import { Button, Grid } from "reakit";
 
 function Component() {
   return (

@@ -1,7 +1,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable prefer-destructuring */
 
-const { renameJSXProperty, replaceAsWithUse } = require("../utils");
+const {
+  renameJSXProperty,
+  replaceAsWithUse,
+  addUseImportToReakit
+} = require("../utils");
 
 module.exports = function transformer(file, api) {
   const j = api.jscodeshift;
@@ -58,10 +62,7 @@ module.exports = function transformer(file, api) {
         callExpressionArguments
       );
     }
-
-    if (element.value.callee.name === "as") {
-      replaceAsWithUse(j, ast);
-    }
+    replaceAsWithUse(j, ast);
   });
 
   /**
@@ -85,10 +86,7 @@ module.exports = function transformer(file, api) {
         j.identifier("use"),
         useArguments
       );
-    }
-
-    if (element.value.property.name === "as") {
-      replaceAsWithUse(j, ast);
+      addUseImportToReakit(j, ast);
     }
   });
 
