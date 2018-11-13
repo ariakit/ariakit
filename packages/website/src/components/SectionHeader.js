@@ -18,7 +18,7 @@ const Name = styled(Heading)`
 `;
 
 const GithubSrcButtonText = styled(Box)`
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 `;
@@ -54,7 +54,7 @@ const SectionHeader = ({ section, ...props }) => {
             onClick={track("reakit.sectionMarkdownClick")}
           >
             <EditIcon />
-            <GithubSrcButtonText>Improve this page</GithubSrcButtonText>
+            <GithubSrcButtonText>Edit this page</GithubSrcButtonText>
           </ButtonTransparent>
         )}
       </Flex>

@@ -1,7 +1,7 @@
 `Overlay` is by default fixed on the middle of the screen.
 
 ```jsx
-const { Block, Button, Backdrop } = require('reakit');
+const { Block, Button, Backdrop, Overlay } = require("reakit");
 
 <Overlay.Container>
   {overlay => (
@@ -17,7 +17,7 @@ const { Block, Button, Backdrop } = require('reakit');
 This is usually combined with [Portal](../Portal/Portal.md) so it can be dettached from the DOM hierarchy:
 
 ```jsx
-const { Block, Button, Backdrop, Portal } = require('reakit');
+const { Block, Button, Backdrop, Portal, Overlay } = require("reakit");
 
 <Overlay.Container>
   {overlay => (

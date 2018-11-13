@@ -1,6 +1,8 @@
 `InlineFlex` is [Box](../Box/Box.md) with `display: inline-flex`.
 
 ```jsx
+import { InlineFlex, Block } from "reakit";
+
 <InlineFlex justifyContent="space-evenly" width="100%">
   <Block width="100px" height="100px" backgroundColor="rgb(219, 112, 147)" />
   <Block width="100px" height="100px" backgroundColor="rgb(219, 112, 198)" />

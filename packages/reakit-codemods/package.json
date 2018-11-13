@@ -1,0 +1,29 @@
+{
+  "name": "reakit-codemods",
+  "version": "0.0.1",
+  "bin": "./bin/reakit-codemods.js",
+  "description": "Reakit codemods to upgrade your codebase automagically",
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-codemods",
+  "author": {
+    "name": "Matheus Gonçalves da Silva",
+    "email": "matheus.g.silva@hotmail.com",
+    "url": "https://github.com/PlayMa256"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "jscodeshift": "^0.5.1",
+    "yargs-parser": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "jest-cli": "^23.6.0"
+  }
+}

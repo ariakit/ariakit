@@ -14,13 +14,13 @@ const getSlug = pathname => pathname.split("/")[1];
 const Content = styled(Grid)`
   position: relative;
   align-items: center;
-  margin: 40px 250px 0;
+  margin: 40px 266px 0;
   max-width: 800px;
-  width: calc(100% - 250px);
+  width: calc(100% - 266px);
 
   @media (max-width: 1300px) {
     margin-right: auto;
-    padding-right: 32px;
+    padding-right: 40px;
     align-items: flex-start;
   }
 

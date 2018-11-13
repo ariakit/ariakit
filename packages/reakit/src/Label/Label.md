@@ -1,5 +1,5 @@
 ```jsx
-import { Input } from "reakit";
+import { Input, Label } from "reakit";
 
 <Label>
   Try it <Input />

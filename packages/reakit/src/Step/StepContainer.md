@@ -1,7 +1,7 @@
 Here's a destructured version of the example you saw on [Step](Step.md):
 
 ```jsx
-import { Block, Group, Button } from "reakit";
+import { Block, Group, Button, Step } from "reakit";
 
 <Step.Container initialState={{ current: 0 }}>
   {({

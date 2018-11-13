@@ -16,7 +16,7 @@ const Wrapper = styled(ContentWrapper)`
   color: ${palette("backgroundText", -2)};
   width: 100%;
   max-width: 100%;
-  padding: 3rem 2rem;
+  padding: 4rem 2rem;
   display: grid;
   grid-gap: 24px 16px;
   grid-template:

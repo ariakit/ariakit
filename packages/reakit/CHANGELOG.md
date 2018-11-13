@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.11](https://github.com/reakit/reakit/compare/reakit@0.15.10...reakit@0.15.11) (2018-11-07)
+
+
+### Bug Fixes
+
+* Blurry `Popover` ([#287](https://github.com/reakit/reakit/issues/287)) ([a9ff40b](https://github.com/reakit/reakit/commit/a9ff40b)), closes [#286](https://github.com/reakit/reakit/issues/286)
+
+
+
+
+
+## [0.15.10](https://github.com/reakit/reakit/compare/reakit@0.15.9...reakit@0.15.10) (2018-10-24)
+
+### Bug Fixes
+
+* Fix `Cannot find module 'packages/reakit/src/_utils/types'` error ([1c8dc06](https://github.com/reakit/reakit/commit/1c8dc06)), closes [#283](https://github.com/reakit/reakit/issues/283)
+
+
+
+
+
+## [0.15.9](https://github.com/reakit/reakit/compare/reakit@0.15.8...reakit@0.15.9) (2018-10-23)
+
+
+### Bug Fixes
+
+* Fix `TabsTab` prop types ([e5762a7](https://github.com/reakit/reakit/commit/e5762a7)), closes [#279](https://github.com/reakit/reakit/issues/279)
+
+
+
+
+
 ## [0.15.8](https://github.com/reakit/reakit/compare/reakit@0.15.7...reakit@0.15.8) (2018-10-16)
 
 

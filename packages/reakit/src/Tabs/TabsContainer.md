@@ -1,7 +1,7 @@
 Here's a destructured version of the example you saw on [Tabs](Tabs.md):
 
 ```jsx
-import { Block, Group, Button } from "reakit";
+import { Block, Group, Button, Tabs } from "reakit";
 
 <Tabs.Container>
   {({

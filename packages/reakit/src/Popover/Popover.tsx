@@ -61,8 +61,8 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     this.setState({
       originX: isVertical ? `${sideValue}px - 50%` : 0,
       originY: !isVertical ? `${sideValue}px - 50%` : 0,
-      translateX: popper.left,
-      translateY: popper.top,
+      translateX: Math.round(popper.left),
+      translateY: Math.round(popper.top),
       placement: data.placement
     });
 

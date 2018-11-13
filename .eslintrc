@@ -11,8 +11,9 @@
   },
   "settings": {
     "import/resolver": {
-      "node": true,
-      "eslint-import-resolver-typescript": true
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
     }
   },
   "rules": {

@@ -1,6 +1,8 @@
 `Portal` is built upon [React Portals](https://reactjs.org/docs/portals.html) and can be used alone or in combination with other components to dettach the element from the current DOM hierarchy and put it in a new `<div>`, which will be appended to `<body>`.
 
 ```jsx
+import { Portal } from "reakit";
+
 <Portal textAlign="center">
   I'm on the bottom of the page
 </Portal>
