@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0-beta.0](https://github.com/reakit/reakit/compare/website@0.15.12...website@0.16.0-beta.0) (2018-11-13)
+
+
+### Features
+
+* New `use` prop/method ([#274](https://github.com/reakit/reakit/issues/274)) ([03998f8](https://github.com/reakit/reakit/commit/03998f8)), closes [#226](https://github.com/reakit/reakit/issues/226)
+* Upgrade to `styled-components` v4 ([#282](https://github.com/reakit/reakit/issues/282)) ([a57fb62](https://github.com/reakit/reakit/commit/a57fb62))
+
+
+### BREAKING CHANGES
+
+* `styled-components` has been upgraded to `v4`. See their [migration guide](https://www.styled-components.com/docs/faqs#what-do-i-need-to-do-to-migrate-to-v4) if you run into any issues.
+* `as` has been replaced by `use`.
+
+  Due to inconsistencies between the new styled-components v4 `as` prop and Reakit's one, we decided to introduce a new feature called `use` as a replacement. It has a few differences from the old `as`:
+
+  ```diff
+  - import { as } from "reakit";
+  + import { use } from "reakit";
+
+  - const ButtonDiv = as("div")(Button);
+  + const ButtonDiv = use(Button, "div");
+
+  - const ButtonDiv = Button.as("div");
+  + const ButtonDiv = use(Button, "div");
+
+  - const ButtonLinkDiv = as([Link, "div"])(Button);
+  + const ButtonLinkDiv = use(Button, Link, "div");
+
+  - const ButtonLinkDiv = Button.as([Link, "div"]);
+  + const ButtonLinkDiv = use(Button, Link, "div");
+
+  - <Button as="div" />
+  + <Button use="div" />
+
+  - <Button as={[Link, "div"]} />
+  + <Button use={[Link, "div"]} />
+  ```
+
+  It has been released as a separate package. For more information, see [Reuse](https://github.com/diegohaz/reuse).
+* `areas`, `columns` and `rows` props on `Grid` have been replaced by `templateAreas`, `templateColumns` and `templateRows`.
+
+  ```diff
+    <Grid
+  -  areas="a b c"
+  +  templateAreas="a b c"
+  -  columns="1fr 60px auto"
+  +  templateColumns="1fr 60px auto"
+  -  rows="auto"
+  +  templateRows="auto"
+    />
+  ```
+
+
+
+
+
 ## [0.15.12](https://github.com/reakit/reakit/compare/website@0.15.11...website@0.15.12) (2018-11-07)
 
 **Note:** Version bump only for package website

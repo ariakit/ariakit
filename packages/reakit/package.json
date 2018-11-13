@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "0.15.11",
+  "version": "0.16.0-beta.0",
   "description": "Toolkit for building really interactive UIs with React",
   "license": "MIT",
   "repository": "reakit/reakit",

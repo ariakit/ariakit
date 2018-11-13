@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-beta.0](https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default/compare/reakit-theme-default@0.1.12...reakit-theme-default@0.2.0-beta.0) (2018-11-13)
+
+
+### Features
+
+* Upgrade to `styled-components` v4 ([#282](https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default/issues/282)) ([a57fb62](https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default/commit/a57fb62))
+
+
+### BREAKING CHANGES
+
+* `styled-components` has been upgraded to `v4`. See their [migration guide](https://www.styled-components.com/docs/faqs#what-do-i-need-to-do-to-migrate-to-v4) if you run into any issues.
+
+
+
+
+
 ## [0.1.12](https://github.com/reakit/reakit/tree/master/packages/reakit-theme-default/compare/reakit-theme-default@0.1.11...reakit-theme-default@0.1.12) (2018-11-07)
 
 **Note:** Version bump only for package reakit-theme-default
