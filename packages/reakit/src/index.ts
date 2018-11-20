@@ -74,6 +74,9 @@ export * from "./Link";
 export { default as List } from "./List";
 export * from "./List";
 
+export { default as Menu } from "./Menu";
+export * from "./Menu";
+
 export { default as Navigation } from "./Navigation";
 export * from "./Navigation";
 

@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`styled 1`] = `
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c0 {
+  color: transparent;
+  font-size: 0;
+  height: 2px;
+  width: 100%;
+}
+
+<div
+  aria-hidden="true"
+  class="c0 c1"
+/>
+`;
+
+exports[`styled horizontal 1`] = `
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c0 {
+  color: transparent;
+  font-size: 0;
+  height: unset;
+  width: 2px;
+}
+
+<div
+  aria-hidden="true"
+  class="c0 c1"
+/>
+`;
+
+exports[`styled horizontalAt 1`] = `
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c0 {
+  color: transparent;
+  font-size: 0;
+  height: 2px;
+  width: 100%;
+}
+
+@media (max-width:500px) {
+  .c0 {
+    height: unset;
+    width: 2px;
+  }
+}
+
+<div
+  aria-hidden="true"
+  class="c0 c1"
+/>
+`;
