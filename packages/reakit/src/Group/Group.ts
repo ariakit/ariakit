@@ -2,6 +2,7 @@ import * as PropTypes from "prop-types";
 import { ifProp, prop, theme, withProp } from "styled-tools";
 import styled, { css } from "../styled";
 import getSelector from "../_utils/getSelector";
+import withPropAt from "../_utils/withPropAt";
 import as from "../as";
 import Box, { BoxProps } from "../Box";
 import GroupItem from "./GroupItem";
@@ -12,20 +13,7 @@ export interface GroupProps extends BoxProps {
 }
 
 const groupItemSelector = getSelector(GroupItem);
-
-const verticalAt = (pass: any, fail?: any) =>
-  ifProp(
-    "verticalAt",
-    css`
-      @media (min-width: ${withProp("verticalAt", x => x + 1)}px) {
-        ${fail};
-      }
-      @media (max-width: ${prop("verticalAt")}px) {
-        ${pass};
-      }
-    `,
-    fail
-  );
+const verticalAt = withPropAt("verticalAt");
 
 const Group = styled(Box)<GroupProps>`
   display: flex;

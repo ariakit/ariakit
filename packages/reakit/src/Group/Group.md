@@ -6,7 +6,7 @@ import { Button, Group } from "reakit";
 <Group>
   <Button>Ok</Button>
   <Button>Cancel</Button>
-</Group>
+</Group>;
 ```
 
 Use handy prop `vertical` to group components vertically:
@@ -14,8 +14,8 @@ Use handy prop `vertical` to group components vertically:
 ```jsx
 import { Button, Group } from "reakit";
 
-<Group vertical>
+<Group verticalAt={400}>
   <Button maxWidth="20vmin">Up</Button>
   <Button maxWidth="20vmin">Down</Button>
-</Group>
+</Group>;
 ```
