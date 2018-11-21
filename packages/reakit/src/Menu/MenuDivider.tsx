@@ -1,42 +1,21 @@
-import React from "react";
-import { palette as p, ifProp, theme } from "styled-tools";
-import styled, { css } from "../styled";
+import { palette as p, theme } from "styled-tools";
+import styled from "../styled";
 import as from "../as";
-import { HorizontalMenuContext } from "./Menu";
-import withPropAt from "../_utils/withPropAt";
-import Box from "../Box";
+import Box, { BoxProps } from "../Box";
 
-const horizontalAt = withPropAt("horizontalAt");
-
-export interface MenuDividerProps {
-  horizontal?: boolean;
-  horizontalAt?: number | string;
-}
-
-const Diviver = styled(Box)`
+const MenuDivider = styled(Box)<BoxProps>`
+  background-color: ${p("background", 1)};
   color: transparent;
   font-size: 0;
+  height: 2px;
+  width: 100%;
 
-  height: ${ifProp("horizontal", "unset", "2px")};
-  width: ${ifProp("horizontal", "2px", "100%")};
+  [aria-orientation="horizontal"] > & {
+    height: unset;
+    width: 2px;
+  }
 
-  ${horizontalAt(
-    css`
-      height: unset;
-      width: 2px;
-    `
-  )};
-
-  background-color: ${p("background", 1)};
-  ${theme("MenuItem")};
+  ${theme("MenuDidiver")};
 `;
-
-function MenuDivider(props: MenuDividerProps) {
-  return (
-    <HorizontalMenuContext>
-      {layout => <Diviver aria-hidden="true" {...layout} {...props} />}
-    </HorizontalMenuContext>
-  );
-}
 
 export default as("div")(MenuDivider);

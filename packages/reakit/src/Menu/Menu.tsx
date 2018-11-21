@@ -1,40 +1,18 @@
-import React from "react";
-import { ifNotProp, theme } from "styled-tools";
+import { theme } from "styled-tools";
 import styled from "../styled";
-import BaseList from "../List";
-import Navigation from "../Navigation";
-import withPropAt from "../_utils/withPropAt";
+import as from "../as";
+import Box, { BoxProps } from "../Box";
 
-export interface MenuProps {
-  horizontal?: boolean;
-  horizontalAt?: number | string;
-}
-
-const horizontalAt = withPropAt("horizontalAt");
-const HorizontalMenuContext = React.createContext(false);
-
-const List = styled(BaseList)`
+const Menu = styled(Box)<BoxProps>`
   display: flex;
   flex-wrap: wrap;
-  flex-direction: ${ifNotProp("horizontal", "column", "row")};
-  ${horizontalAt("flex-direction: row")};
+  flex-direction: column;
+
+  &[aria-orientation="horizontal"] {
+    flex-direction: row;
+  }
 
   ${theme("Menu")};
 `;
 
-export { HorizontalMenuContext };
-
-export default function Menu(props: MenuProps) {
-  const layout = {
-    horizontal: Boolean(props.horizontal),
-    horizontalAt: props.horizontalAt
-  };
-
-  return (
-    <HorizontalMenuContext.Provider value={layout}>
-      <Navigation>
-        <List {...props} />
-      </Navigation>
-    </HorizontalMenuContext.Provider>
-  );
-}
+export default as("ul")(Menu);

@@ -22,9 +22,6 @@ exports[`styled 1`] = `
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
@@ -52,9 +49,6 @@ exports[`styled disabled 1`] = `
   cursor: unset;
   list-style-type: none;
   padding: 10px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
