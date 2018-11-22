@@ -13,7 +13,7 @@ import { Menu } from "reakit"
 </Menu>
 ```
 
-If you pass in a `horizontal` prop, the menu content will be vertically aligned:
+If you pass in a `horizontal` prop, the menu content will be horizontally aligned:
 
 ```jsx
 import { Menu } from "reakit"
