@@ -14,3 +14,8 @@ test("styled", () => {
   const { container } = render(<Menu />);
   expect(container.firstChild).toMatchSnapshot();
 });
+
+test("styled horizontal", () => {
+  const { container } = render(<Menu horizontal />);
+  expect(container.firstChild).toMatchSnapshot();
+});
