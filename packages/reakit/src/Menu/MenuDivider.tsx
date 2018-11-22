@@ -3,7 +3,11 @@ import styled from "../styled";
 import as from "../as";
 import Box, { BoxProps } from "../Box";
 
-const MenuDivider = styled(Box)<BoxProps>`
+export interface MenuDividerProps extends BoxProps {
+  role?: string;
+}
+
+const MenuDivider = styled(Box)<MenuDividerProps>`
   background-color: ${p("background", 1)};
   color: transparent;
   font-size: 0;
@@ -15,7 +19,11 @@ const MenuDivider = styled(Box)<BoxProps>`
     width: 2px;
   }
 
-  ${theme("MenuDidiver")};
+  ${theme("MenuDivider")};
 `;
 
-export default as("div")(MenuDivider);
+MenuDivider.defaultProps = {
+  role: "separator"
+};
+
+export default as("li")(MenuDivider);

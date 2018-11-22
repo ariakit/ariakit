@@ -27,6 +27,7 @@ exports[`styled 1`] = `
 
 <li
   class="c0 c1"
+  role="menuitem"
 />
 `;
 
@@ -58,5 +59,6 @@ exports[`styled disabled 1`] = `
 <li
   class="c0 c1"
   disabled=""
+  role="menuitem"
 />
 `;

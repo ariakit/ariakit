@@ -26,7 +26,8 @@ exports[`styled 1`] = `
   width: 2px;
 }
 
-<div
+<li
   class="c0 c1"
+  role="separator"
 />
 `;

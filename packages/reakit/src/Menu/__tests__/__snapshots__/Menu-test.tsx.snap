@@ -34,6 +34,8 @@ exports[`styled 1`] = `
 }
 
 <ul
+  aria-orientation="vertical"
   class="c0 c1"
+  role="menu"
 />
 `;
