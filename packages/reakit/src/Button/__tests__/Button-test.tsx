@@ -13,5 +13,22 @@ test("html attrs", () => {
 
 test("styled", () => {
   const { container } = render(<Button />);
-  expect(container.firstChild).toMatchSnapshot();
+  expect(container.firstChild).toMatchInlineSnapshot(`
+.c0 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+<button
+  class="c0"
+/>
+`);
 });
