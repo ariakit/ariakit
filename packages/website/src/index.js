@@ -22,7 +22,7 @@ const getInitialState = ({ allSections, ...props }) => ({
 });
 
 const App = props => (
-  <Provider initialState={getInitialState(props)} devtools>
+  <Provider initialState={getInitialState(props)}>
     <ThemeContainer>
       {({ mode }) => (
         <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
