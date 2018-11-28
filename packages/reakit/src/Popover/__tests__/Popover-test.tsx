@@ -17,16 +17,6 @@ test("placement", () => {
   expect(container.firstChild).toHaveAttribute("data-placement", "right");
 });
 
-// test("flip", () => {
-//   const { container } = render(<Popover flip={false} />);
-//   expect(container.firstChild).toHaveAttribute("data-placement", "right");
-// });
-
-// test("shift", () => {
-//   const { container } = render(<Popover shift={false} />);
-//   expect(container.firstChild).toHaveAttribute("data-placement", "right");
-// });
-
 test("popoverId", () => {
   const customId = "custom-id";
   const { container } = render(<Popover popoverId={customId} />);
