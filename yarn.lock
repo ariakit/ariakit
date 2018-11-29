@@ -1346,29 +1346,29 @@
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.6.tgz#9c03d3fed70a8d517c191b7734da2879b50ca26c"
   integrity sha512-ZBFR7TROLVzCkswA3Fmqq+IIJt62/T7aY/Dmz+QkU7CaW2QFqAitCE8Ups7IzmGhcN1YWMBT4Qcoc07jU9hOJQ==
 
-"@types/react-dom@^16.0.9":
-  version "16.0.9"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.9.tgz#73ceb7abe6703822eab6600e65c5c52efd07fb91"
-  integrity sha512-4Z0bW+75zeQgsEg7RaNuS1k9MKhci7oQqZXxrV5KUGIyXZHHAAL3KA4rjhdH8o6foZ5xsRMSqkoM5A3yRVPR5w==
+"@types/react-dom@^16.0.11":
+  version "16.0.11"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.11.tgz#bd10ccb0d9260343f4b9a49d4f7a8330a5c1f081"
+  integrity sha512-x6zUx9/42B5Kl2Vl9HlopV8JF64wLpX3c+Pst9kc1HgzrsH+mkehe/zmHMQTplIrR48H2gpU7ZqurQolYu8XBA==
   dependencies:
-    "@types/node" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.4.18":
-  version "16.4.18"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.18.tgz#2e28a2e7f92d3fa7d6a65f2b73275c3e3138a13d"
-  integrity sha512-eFzJKEg6pdeaukVLVZ8Xb79CTl/ysX+ExmOfAAqcFlCCK5TgFDD9kWR0S18sglQ3EmM8U+80enjUqbfnUyqpdA==
+"@types/react@*", "@types/react@^16.7.8":
+  version "16.7.8"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.7.8.tgz#ca24ba280f79debfc86578278a503c6d917d402e"
+  integrity sha512-7Vua2IYokMiPBk0WWXaDt4Cg3XVcwU6HpkuPhvwhBrVEy4SafpcvEfGYByoY9jxyFMiegYQPaSOT+H+AY00CPw==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/styled-components@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.0.2.tgz#4d60af452fd35e6be6bc7a46d1a317daaab613ea"
-  integrity sha512-LIm9OqdtG4WHDGkdPDOGpeIlIVYs2IBxXsW5xgt4tKwY/VGY40YvmlUq69GbHkvX+i35236GOcXh6DmYCFDrDg==
+"@types/styled-components@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.2.tgz#3219dd745cc2638ade5b2f6c0d771a32fdfc855f"
+  integrity sha512-Mi2E14EAd3tOhM2C2nJeracSI0u0EqCaMvtywsfuPnOSUeM3dIhc4mFT5s2ByKN7mV140EJ1AoCMeJq/txpsaQ==
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
+    csstype "^2.2.0"
 
 "@vxna/mini-html-webpack-template@^0.1.7":
   version "0.1.7"

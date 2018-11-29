@@ -44,7 +44,7 @@
     "styled-tools": "^1.5.2"
   },
   "devDependencies": {
-    "@types/styled-components": "^4.0.2",
+    "@types/styled-components": "^4.1.2",
     "eslint": "^5.7.0",
     "jest-cli": "^23.6.0",
     "opn-cli": "^3.1.0",
