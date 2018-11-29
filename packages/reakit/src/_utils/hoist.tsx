@@ -2,7 +2,7 @@ import * as React from "react";
 import { UseComponent } from "reuse";
 
 interface Props {
-  elementRef?: React.Ref<Element>;
+  elementRef?: React.Ref<any>;
 }
 
 function hoist<P extends Props>(

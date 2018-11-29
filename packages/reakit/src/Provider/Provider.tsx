@@ -9,7 +9,7 @@ import { ThemeProvider } from "../styled";
 
 export interface ProviderProps<S, T> extends ConstateProps<S> {
   theme?: T | ((theme: T) => T);
-  children: React.ReactNode;
+  children: React.ReactChild;
 }
 
 class Provider<S, T extends object> extends React.Component<
