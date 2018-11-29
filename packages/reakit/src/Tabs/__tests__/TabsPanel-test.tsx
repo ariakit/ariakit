@@ -30,7 +30,8 @@ test("isCurrent", () => {
 
 test("tab", () => {
   const currentTab = "second";
-  const isCurrent = (idOrIndex: string | number): boolean => tab === currentTab;
+  const isCurrent = (idOrIndex: string | number): boolean =>
+    idOrIndex === currentTab;
   const { container, rerender } = render(
     <TabsPanel tab={currentTab} isCurrent={isCurrent}>
       Test
