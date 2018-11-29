@@ -83,17 +83,17 @@ test("styled", () => {
 <li
   aria-controls="fooPanel"
   aria-hidden="false"
-  aria-selected="true"
-  class="active c0 c1"
+  aria-selected="false"
+  class="c0 c1"
   id="fooTab"
   role="tab"
   step="foo"
-  tabindex="0"
+  tabindex="-1"
 />
 `);
 });
 
-test("styled selected", () => {
+test("styled current", () => {
   const { container } = render(
     <TabsTab {...props} isCurrent={jest.fn().mockReturnValue(true)} />
   );

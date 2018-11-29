@@ -26,7 +26,7 @@ export interface TabsTabProps extends Omit<StepProps, "step"> {
   className?: string;
   disabled?: boolean;
   onClick?: React.MouseEventHandler;
-  onFocus?: React.MouseEventHandler;
+  onFocus?: React.FocusEventHandler;
   onKeyDown?: React.KeyboardEventHandler;
 }
 
