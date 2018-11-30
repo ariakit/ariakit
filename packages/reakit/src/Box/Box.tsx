@@ -14,9 +14,11 @@ import pickHTMLProps from "../_utils/pickHTMLProps";
 import styled from "../styled";
 import use from "../use";
 
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
 type CSSProperties = { [K in keyof typeof CSSProps]?: string | number };
 
-export type BoxProps = React.HTMLProps<any> &
+export type BoxProps = Omit<React.HTMLProps<any>, "as"> &
   CSSProperties & {
     use?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
     children?: React.ReactNode;
