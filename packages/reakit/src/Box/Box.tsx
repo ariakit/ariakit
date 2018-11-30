@@ -11,10 +11,9 @@ import applyAllRefs from "../_utils/applyAllRefs";
 import pickCSSProps from "../_utils/pickCSSProps";
 import dedupeClassName from "../_utils/dedupeClassName";
 import pickHTMLProps from "../_utils/pickHTMLProps";
+import { Omit } from "../_utils/types";
 import styled from "../styled";
 import use from "../use";
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type CSSProperties = { [K in keyof typeof CSSProps]?: string | number };
 
