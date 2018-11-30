@@ -7,7 +7,7 @@ We would love for you to contribute to Reakit and help make it even better. By c
   - [How can we help you get comfortable contributing?](#how-can-we-help-you-get-comfortable-contributing)
   - [Our expectations on you as a contributor](#our-expectations-on-you-as-a-contributor)
   - [What about if you have problems that cannot be discussed in a public issue?](#what-about-if-you-have-problems-that-cannot-be-discussed-in-a-public-issue)
-- [How to start contributing?](how-to-start-contributing)
+- [How to start contributing?](#how-to-start-contributing)
 - [Contributing with code](#contributing-with-code)
   - [Scripts](#scripts)
   - [Components](#components)
