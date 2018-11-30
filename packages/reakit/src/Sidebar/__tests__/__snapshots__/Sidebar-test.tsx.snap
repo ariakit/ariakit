@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`align right 1`] = `
+.c3 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c2 {
+  -webkit-transform: translate3d(0px,0px,0px);
+  -ms-transform: translate3d(0px,0px,0px);
+  transform: translate3d(0px,0px,0px);
+}
+
+.c2[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c1 {
+  position: fixed;
+  z-index: 19900410;
+  left: 50%;
+  top: 50%;
+}
+
+.c0 {
+  top: 0;
+  height: 100vh;
+  -webkit-transform: none;
+  -ms-transform: none;
+  transform: none;
+  overflow: auto;
+  left: auto;
+  right: 0;
+}
+
+<div
+  aria-hidden="false"
+  aria-modal="true"
+  class="c0 c1 c2 c3"
+  role="dialog"
+/>
+`;
+
+exports[`styled 1`] = `
+.c3 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c2 {
+  -webkit-transform: translate3d(0px,0px,0px);
+  -ms-transform: translate3d(0px,0px,0px);
+  transform: translate3d(0px,0px,0px);
+}
+
+.c2[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c1 {
+  position: fixed;
+  z-index: 19900410;
+  left: 50%;
+  top: 50%;
+}
+
+.c0 {
+  top: 0;
+  height: 100vh;
+  -webkit-transform: none;
+  -ms-transform: none;
+  transform: none;
+  overflow: auto;
+  left: 0;
+  right: auto;
+}
+
+<div
+  aria-hidden="true"
+  aria-modal="true"
+  class="c0 c1 c2 c3"
+  hidden=""
+  role="dialog"
+/>
+`;
+
+exports[`styled visible 1`] = `
+.c3 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c2 {
+  -webkit-transform: translate3d(0px,0px,0px);
+  -ms-transform: translate3d(0px,0px,0px);
+  transform: translate3d(0px,0px,0px);
+}
+
+.c2[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c1 {
+  position: fixed;
+  z-index: 19900410;
+  left: 50%;
+  top: 50%;
+}
+
+.c0 {
+  top: 0;
+  height: 100vh;
+  -webkit-transform: none;
+  -ms-transform: none;
+  transform: none;
+  overflow: auto;
+  left: 0;
+  right: auto;
+}
+
+<div
+  aria-hidden="false"
+  aria-modal="true"
+  class="c0 c1 c2 c3"
+  role="dialog"
+/>
+`;
