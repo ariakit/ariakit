@@ -14,6 +14,10 @@ exports[`align right 1`] = `
   color: inherit;
 }
 
+.c3:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c2 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
@@ -63,6 +67,10 @@ exports[`styled 1`] = `
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c3:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c2 {
@@ -115,6 +123,10 @@ exports[`styled visible 1`] = `
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c3:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c2 {

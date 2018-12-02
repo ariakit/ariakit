@@ -31,6 +31,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c0:focus:not(:focus-visible) {
+  outline: none;
+}
+
 <button
   class="c0"
 />

@@ -26,6 +26,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   position: relative;
   display: grid;
@@ -67,6 +71,10 @@ test("styled vertical", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   position: relative;
   display: grid;
@@ -106,6 +114,10 @@ test("styled gutter", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {
