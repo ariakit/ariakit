@@ -41,6 +41,11 @@ const getPlugins = umd =>
               "isValidElementType",
               "isElement",
               "ForwardRef"
+            ],
+            "../../node_modules/react-is/index.js": [
+              "isValidElementType",
+              "isElement",
+              "ForwardRef"
             ]
           }
         }),
