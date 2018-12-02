@@ -74,7 +74,7 @@ render(<App />, document.getElementById("root"));
 ## Contributors
 
 This project exists thanks to all the people who contribute.
-<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1050&button=false" /></a>
 
 
 ## Supporters
