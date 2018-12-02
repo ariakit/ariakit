@@ -27,6 +27,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c0:focus:not(:focus-visible) {
+  outline: none;
+}
+
 <code
   class="c0"
 />
@@ -47,6 +51,10 @@ test("styled block", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c0:focus:not(:focus-visible) {
+  outline: none;
 }
 
 <pre

@@ -27,6 +27,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   border-color: currentColor;
   border-style: solid;
@@ -56,6 +60,10 @@ test("styled vertical", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {

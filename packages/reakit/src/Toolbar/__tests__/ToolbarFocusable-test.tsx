@@ -80,6 +80,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c0:focus:not(:focus-visible) {
+  outline: none;
+}
+
 <div
   class="c0"
   data-testid="test"
@@ -107,6 +111,10 @@ test("styled tabIndex", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c0:focus:not(:focus-visible) {
+  outline: none;
 }
 
 <div

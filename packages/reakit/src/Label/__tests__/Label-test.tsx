@@ -27,6 +27,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: inline-block;
 }

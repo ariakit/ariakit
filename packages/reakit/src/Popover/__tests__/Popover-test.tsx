@@ -39,6 +39,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c2:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c1 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
@@ -86,6 +90,10 @@ test("styled visible", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c2:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c1 {
