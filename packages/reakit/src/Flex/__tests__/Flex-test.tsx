@@ -215,41 +215,6 @@ test("styled nowrap", () => {
 `);
 });
 
-test("styled wrap", () => {
-  const { container } = render(<Flex wrap />);
-  expect(container.firstChild).toMatchInlineSnapshot(`
-.c1 {
-  margin: unset;
-  padding: unset;
-  border: unset;
-  background: unset;
-  font: unset;
-  font-family: inherit;
-  font-size: 100%;
-  box-sizing: border-box;
-  background-color: unset;
-  color: inherit;
-}
-
-.c0 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.c0.c0.c0 {
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-}
-
-<div
-  class="c0 c1"
-/>
-`);
-});
-
 test("styled wrapReverse", () => {
   const { container } = render(<Flex wrapReverse />);
   expect(container.firstChild).toMatchInlineSnapshot(`

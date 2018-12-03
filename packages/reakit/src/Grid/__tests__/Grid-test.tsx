@@ -247,36 +247,6 @@ test("styled columns", () => {
 `);
 });
 
-test("styled rows", () => {
-  const { container } = render(<Grid rows="100px 1fr" />);
-  expect(container.firstChild).toMatchInlineSnapshot(`
-.c1 {
-  margin: unset;
-  padding: unset;
-  border: unset;
-  background: unset;
-  font: unset;
-  font-family: inherit;
-  font-size: 100%;
-  box-sizing: border-box;
-  background-color: unset;
-  color: inherit;
-}
-
-.c0 {
-  display: grid;
-}
-
-.c0.c0.c0 {
-  grid-template-rows: 100px 1fr;
-}
-
-<div
-  class="c0 c1"
-/>
-`);
-});
-
 test("styled auto columns", () => {
   const { container } = render(<Grid autoColumns="100px" />);
   expect(container.firstChild).toMatchInlineSnapshot(`
