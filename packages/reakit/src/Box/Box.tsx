@@ -46,8 +46,9 @@ const BoxComponent = React.forwardRef<HTMLElement, BoxProps>(
       );
       return <T {...allProps} ref={applyAllRefs(ref, props.elementRef)} />;
     }
-
-    return <T {...props} style={style} />;
+    return (
+      <T {...props} ref={applyAllRefs(ref, props.elementRef)} style={style} />
+    );
   }
 );
 
