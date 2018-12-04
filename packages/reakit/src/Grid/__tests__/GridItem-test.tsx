@@ -27,6 +27,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c0:focus:not(:focus-visible) {
+  outline: none;
+}
+
 <div
   class="c0"
 />
@@ -47,6 +51,10 @@ test("styled area", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0.c0.c0 {
@@ -75,6 +83,10 @@ test("styled column", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0.c0.c0 {
   grid-column: 1 /3;
 }
@@ -99,6 +111,10 @@ test("styled row", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0.c0.c0 {
@@ -127,6 +143,10 @@ test("styled columnStart", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0.c0.c0 {
   grid-column-start: 2;
 }
@@ -151,6 +171,10 @@ test("styled columnEnd", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0.c0.c0 {
@@ -179,6 +203,10 @@ test("styled rowStart", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0.c0.c0 {
   grid-row-start: span 3;
 }
@@ -203,6 +231,10 @@ test("styled rowEnd", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0.c0.c0 {

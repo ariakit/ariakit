@@ -27,6 +27,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -79,6 +83,10 @@ test("styled vertical", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -129,6 +137,10 @@ test("styled vertical at", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {

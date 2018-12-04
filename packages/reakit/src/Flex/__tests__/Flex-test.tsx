@@ -27,6 +27,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -54,6 +58,10 @@ test("styled row", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {
@@ -91,6 +99,10 @@ test("styled rowReverse", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -124,6 +136,10 @@ test("styled column", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {
@@ -161,6 +177,10 @@ test("styled columnReverse", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -196,6 +216,10 @@ test("styled nowrap", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -229,6 +253,10 @@ test("styled wrapReverse", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {
