@@ -1,6 +1,6 @@
 {
   "name": "reakit-codemods",
-  "version": "0.0.1",
+  "private": true,
   "bin": "./bin/reakit-codemods.js",
   "description": "Reakit codemods to upgrade your codebase automagically",
   "license": "MIT",
