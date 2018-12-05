@@ -33,11 +33,11 @@ test("styled", () => {
   color: inherit;
 }
 
-.c2:focus:not(:focus-visible) {
+.c1:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c1 {
+.c0 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);
@@ -82,11 +82,11 @@ test("styled visible", () => {
   color: inherit;
 }
 
-.c2:focus:not(:focus-visible) {
+.c1:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c1 {
+.c0 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);

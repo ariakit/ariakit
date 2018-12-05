@@ -246,7 +246,7 @@ test("styled areas", () => {
 });
 
 test("styled columns", () => {
-  const { container } = render(<Grid columns="100px 1fr" />);
+  const { container } = render(<Grid templateColumns="100px 1fr" />);
   expect(container.firstChild).toMatchInlineSnapshot(`
 .c1 {
   margin: unset;
