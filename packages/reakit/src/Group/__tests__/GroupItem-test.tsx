@@ -1,10 +1,10 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import Label from "../Label";
+import GroupItem from "../GroupItem";
 
 test("html attrs", () => {
   const { getByTestId } = render(
-    <Label id="test" aria-label="test" data-testid="test" />
+    <GroupItem id="test" aria-label="test" data-testid="test" />
   );
 
   expect(getByTestId("test")).toHaveAttribute("id", "test");
@@ -12,9 +12,9 @@ test("html attrs", () => {
 });
 
 test("styled", () => {
-  const { container } = render(<Label />);
+  const { container } = render(<GroupItem />);
   expect(container.firstChild).toMatchInlineSnapshot(`
-.c1 {
+.c0 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -27,16 +27,12 @@ test("styled", () => {
   color: inherit;
 }
 
-.c1:focus:not(:focus-visible) {
+.c0:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c0 {
-  display: inline-block;
-}
-
-<label
-  class="c0 c1"
+<div
+  class="c0"
 />
 `);
 });

@@ -26,6 +26,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: grid;
   grid-auto-flow: column;
@@ -76,6 +80,10 @@ test("styled align center", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   display: grid;
   grid-auto-flow: column;
@@ -124,6 +132,10 @@ test("styled align end", () => {
   box-sizing: border-box;
   background-color: unset;
   color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .c0 {

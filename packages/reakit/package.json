@@ -34,25 +34,25 @@
     "toolkit"
   ],
   "dependencies": {
-    "@emotion/is-prop-valid": "^0.7.0",
+    "@emotion/is-prop-valid": "^0.7.2",
     "constate": "^0.9.0",
-    "popper.js": "^1.14.4",
+    "popper.js": "^1.14.6",
     "prop-types": "^15.6.2",
     "reuse": "^1.2.0",
     "styled-components": "^4.0.0",
     "styled-selector": "^0.1.1",
-    "styled-tools": "^1.5.2"
+    "styled-tools": "^1.6.0"
   },
   "devDependencies": {
     "@types/styled-components": "^4.0.2",
-    "eslint": "^5.7.0",
+    "eslint": "^5.9.0",
     "jest-cli": "^23.6.0",
-    "opn-cli": "^3.1.0",
-    "react-styleguidist": "^8.0.0",
+    "opn-cli": "^4.0.0",
+    "react-styleguidist": "^7.0.0",
     "rimraf": "^2.6.1",
-    "rollup": "^0.66.6",
+    "rollup": "^0.67.4",
     "typescript": "3.1.3",
-    "webpack": "^4.22.0"
+    "webpack": "^4.26.0"
   },
   "peerDependencies": {
     "react": "^16.3.0",

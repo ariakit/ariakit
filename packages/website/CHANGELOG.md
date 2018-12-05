@@ -60,6 +60,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.15.13](https://github.com/reakit/reakit/compare/website@0.15.12...website@0.15.13) (2018-12-05)
+
+
+### Bug Fixes
+
+* **website:** Disable Redux devtools ([b214aa0](https://github.com/reakit/reakit/commit/b214aa0)), closes [#296](https://github.com/reakit/reakit/issues/296)
+
+
+
+
+
 ## [0.15.12](https://github.com/reakit/reakit/compare/website@0.15.11...website@0.15.12) (2018-11-07)
 
 **Note:** Version bump only for package website

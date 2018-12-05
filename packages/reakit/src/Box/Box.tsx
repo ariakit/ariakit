@@ -65,6 +65,11 @@ const Box = styled(BoxComponent)`
   box-sizing: border-box;
   background-color: ${bgColorWithProps};
   color: ${textColorWithProps};
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   ${theme("Box")};
   &&& {
     ${bool("position", positions)};

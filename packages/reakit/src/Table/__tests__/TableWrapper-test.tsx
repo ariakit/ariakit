@@ -26,6 +26,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .c0 {
   max-width: 100%;
   overflow-x: auto;
