@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.12](https://github.com/reakit/reakit/compare/reakit@0.15.11...reakit@0.15.12) (2018-12-05)
+
+
+### Bug Fixes
+
+* Do not compute Popover's style when its parent has `display="none"` ([#311](https://github.com/reakit/reakit/issues/311)) ([30e6713](https://github.com/reakit/reakit/commit/30e6713)), closes [#307](https://github.com/reakit/reakit/issues/307)
+
+
+### Features
+
+* Remove outline style for mouse users by default ([#306](https://github.com/reakit/reakit/issues/306)) ([d24bdb4](https://github.com/reakit/reakit/commit/d24bdb4)), closes [#259](https://github.com/reakit/reakit/issues/259) [#284](https://github.com/reakit/reakit/issues/284)
+
+
+
+
+
 ## [0.15.11](https://github.com/reakit/reakit/compare/reakit@0.15.10...reakit@0.15.11) (2018-11-07)
 
 
