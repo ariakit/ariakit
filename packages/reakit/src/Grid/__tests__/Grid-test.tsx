@@ -212,7 +212,7 @@ test("styled template", () => {
 });
 
 test("styled areas", () => {
-  const { container } = render(<Grid areas="a b b" />);
+  const { container } = render(<Grid templateAreas="a b b" />);
   expect(container.firstChild).toMatchInlineSnapshot(`
 .c1 {
   margin: unset;
