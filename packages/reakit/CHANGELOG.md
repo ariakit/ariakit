@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0-beta.1](https://github.com/reakit/reakit/compare/reakit@0.15.12...reakit@0.16.0-beta.1) (2018-12-05)
+
+
+### Bug Fixes
+
+* Do not pass `ref` down if there is no ref ([253b2c5](https://github.com/reakit/reakit/commit/253b2c5))
+* Fixed refs for `Box` ([#304](https://github.com/reakit/reakit/issues/304)) ([bf8d1a2](https://github.com/reakit/reakit/commit/bf8d1a2))
+* Remove buggy `flexWrap` props on `Flex` component ([#266](https://github.com/reakit/reakit/issues/266)) ([38a437d](https://github.com/reakit/reakit/commit/38a437d))
+
+
+### Features
+
+* New `use` prop/method ([#274](https://github.com/reakit/reakit/issues/274)) ([03998f8](https://github.com/reakit/reakit/commit/03998f8)), closes [#226](https://github.com/reakit/reakit/issues/226)
+* Upgrade to `styled-components` v4 ([#282](https://github.com/reakit/reakit/issues/282)) ([a57fb62](https://github.com/reakit/reakit/commit/a57fb62))
+
+
+### BREAKING CHANGES
+
+* `styled-components` has been upgraded to `v4`. See their [migration guide](https://www.styled-components.com/docs/faqs#what-do-i-need-to-do-to-migrate-to-v4) if you run into any issues.
+* `as` has been replaced by `use`.
+
+  Due to inconsistencies between the new styled-components v4 `as` prop and Reakit's one, we decided to introduce a new feature called `use` as a replacement. It has a few differences from the old `as`:
+
+  ```diff
+  - import { as } from "reakit";
+  + import { use } from "reakit";
+
+  - const ButtonDiv = as("div")(Button);
+  + const ButtonDiv = use(Button, "div");
+
+  - const ButtonDiv = Button.as("div");
+  + const ButtonDiv = use(Button, "div");
+
+  - const ButtonLinkDiv = as([Link, "div"])(Button);
+  + const ButtonLinkDiv = use(Button, Link, "div");
+
+  - const ButtonLinkDiv = Button.as([Link, "div"]);
+  + const ButtonLinkDiv = use(Button, Link, "div");
+
+  - <Button as="div" />
+  + <Button use="div" />
+
+  - <Button as={[Link, "div"]} />
+  + <Button use={[Link, "div"]} />
+  ```
+
+  It has been released as a separate package. For more information, see [Reuse](https://github.com/diegohaz/reuse).
+* `areas`, `columns` and `rows` props on `Grid` have been replaced by `templateAreas`, `templateColumns` and `templateRows`.
+
+  ```diff
+    <Grid
+  -  areas="a b c"
+  +  templateAreas="a b c"
+  -  columns="1fr 60px auto"
+  +  templateColumns="1fr 60px auto"
+  -  rows="auto"
+  +  templateRows="auto"
+    />
+  ```
+* `nowrap`, `wrap` and `wrapReverse` props have been removed from `Flex` component. The css prop `flexWrap` should be used instead.
+
+  Before:
+  ```jsx
+  <Flex nowrap />
+  <Flex wrap />
+  <Flex wrapReverse />
+  ```
+
+  After:
+  ```jsx
+  <Flex flexWrap="nowrap" />
+  <Flex flexWrap="wrap" />
+  <Flex flexWrap="wrap-reverse" />
+  ```
+
+
+
+
+
 # [0.16.0-beta.0](https://github.com/reakit/reakit/compare/reakit@0.15.11...reakit@0.16.0-beta.0) (2018-11-13)
 
 
@@ -75,6 +154,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   <Flex flexWrap="wrap" />
   <Flex flexWrap="wrap-reverse" />
   ```
+
+
+
+
+
+## [0.15.12](https://github.com/reakit/reakit/compare/reakit@0.15.11...reakit@0.15.12) (2018-12-05)
+
+
+### Bug Fixes
+
+* Do not compute Popover's style when its parent has `display="none"` ([#311](https://github.com/reakit/reakit/issues/311)) ([30e6713](https://github.com/reakit/reakit/commit/30e6713)), closes [#307](https://github.com/reakit/reakit/issues/307)
+
+
+### Features
+
+* Remove outline style for mouse users by default ([#306](https://github.com/reakit/reakit/issues/306)) ([d24bdb4](https://github.com/reakit/reakit/commit/d24bdb4)), closes [#259](https://github.com/reakit/reakit/issues/259) [#284](https://github.com/reakit/reakit/issues/284)
 
 
 

@@ -53,11 +53,10 @@ const Section = ({ location, ...props }) => (
               </React.Fragment>
             )}
             <Content>
-              {sectionContent.map(
-                ({ type, ...rest }, i) =>
-                  sectionMap[type]
-                    ? sectionMap[type](rest, section.name + i)
-                    : null
+              {sectionContent.map(({ type, ...rest }, i) =>
+                sectionMap[type]
+                  ? sectionMap[type](rest, section.name + i)
+                  : null
               )}
             </Content>
             <ContainerAPITable section={section} />

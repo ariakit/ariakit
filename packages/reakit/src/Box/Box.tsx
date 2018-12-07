@@ -47,8 +47,9 @@ const BoxComponent = React.forwardRef<HTMLElement, BoxProps>(
       );
       return <T {...allProps} ref={applyAllRefs(ref, props.elementRef)} />;
     }
-
-    return <T {...props} style={style} />;
+    return (
+      <T {...props} ref={applyAllRefs(ref, props.elementRef)} style={style} />
+    );
   }
 );
 
@@ -65,6 +66,11 @@ const Box = styled(BoxComponent)`
   box-sizing: border-box;
   background-color: ${bgColorWithProps};
   color: ${textColorWithProps};
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   ${theme("Box")};
   &&& {
     ${bool("position", positions)};

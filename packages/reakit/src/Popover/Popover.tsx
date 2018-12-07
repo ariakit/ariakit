@@ -94,12 +94,9 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
   initPopper = () => {
     if (!this.popper) {
       const popover = this.getPopover();
-      if (popover.parentNode) {
-        this.popper = new Popper(
-          popover.parentNode as Element,
-          popover,
-          this.getOptions()
-        );
+      const parentNode = popover.parentNode as Element;
+      if (parentNode && getComputedStyle(parentNode).display !== "none") {
+        this.popper = new Popper(parentNode, popover, this.getOptions());
       }
     }
   };
