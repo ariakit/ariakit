@@ -25,6 +25,10 @@ test("styled", () => {
   color: inherit;
 }
 
+.c0:focus:not(:focus-visible) {
+  outline: none;
+}
+
 <nav
   class="c0"
 />
