@@ -8,7 +8,7 @@ const createProxyPackage = module => `{
   "private": true,
   "main": "../lib/${module}",
   "module": "../es/${module}",
-  "types": "../ts/${module}/index.d.ts"
+  "types": "../ts/${module}"
 }
 `;
 
