@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.13](https://github.com/reakit/reakit/compare/reakit@0.15.12...reakit@0.15.13) (2018-12-17)
+
+
+### Bug Fixes
+
+* **typescript:** Fix "types" key for proxy packages ([#317](https://github.com/reakit/reakit/issues/317)) ([f08f3c5](https://github.com/reakit/reakit/commit/f08f3c5)), closes [#316](https://github.com/reakit/reakit/issues/316)
+
+
+
+
+
 ## [0.15.12](https://github.com/reakit/reakit/compare/reakit@0.15.11...reakit@0.15.12) (2018-12-05)
 
 
