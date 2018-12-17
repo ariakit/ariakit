@@ -45,13 +45,13 @@
     "styled-tools": "^1.6.0"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
+    "eslint": "^5.10.0",
     "jest-cli": "^23.6.0",
     "opn-cli": "^4.0.0",
     "reakit": "^0.16.0-beta.1",
     "rimraf": "^2.6.1",
-    "rollup": "^0.67.4",
-    "typescript": "3.0.3"
+    "rollup": "^0.68.0",
+    "typescript": "3.2.2"
   },
   "peerDependencies": {
     "reakit": "^0.15.0"

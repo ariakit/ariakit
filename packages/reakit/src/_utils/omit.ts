@@ -1,11 +1,11 @@
-import { Omit, Dictionary } from "./types";
+import { Omit } from "./types";
 
-function omit<P extends Dictionary, K extends keyof P>(
-  object: P,
+function omit<T extends Record<string, any>, K extends keyof T>(
+  object: T,
   ...paths: K[]
 ) {
   const keys = Object.keys(object);
-  const result = {} as Omit<P, K>;
+  const result: Record<string, any> = {};
 
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];
@@ -14,7 +14,7 @@ function omit<P extends Dictionary, K extends keyof P>(
     }
   }
 
-  return result;
+  return result as Omit<T, K>;
 }
 
 export default omit;
