@@ -23,7 +23,7 @@
     "yargs-parser": "^11.1.1"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
+    "eslint": "^5.10.0",
     "jest-cli": "^23.6.0"
   }
 }

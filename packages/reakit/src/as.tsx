@@ -34,7 +34,8 @@ function render(props: AsProps<any>) {
       style ? { style } : {}
     );
 
-    return <T {...allProps} ref={props.elementRef} />;
+    // https://github.com/Microsoft/TypeScript/issues/28806
+    return React.createElement(T, { ...allProps, ref: props.elementRef });
   }
 
   const allProps = Object.assign(omit(props, "as"), style ? { style } : {});
