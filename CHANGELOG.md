@@ -87,7 +87,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-<<<<<<< HEAD
 * Do not pass `ref` down if there is no ref ([253b2c5](https://github.com/reakit/reakit/commit/253b2c5))
 * Fixed refs for `Box` ([#304](https://github.com/reakit/reakit/issues/304)) ([bf8d1a2](https://github.com/reakit/reakit/commit/bf8d1a2))
 * Remove buggy `flexWrap` props on `Flex` component ([#266](https://github.com/reakit/reakit/issues/266)) ([38a437d](https://github.com/reakit/reakit/commit/38a437d))
@@ -241,6 +240,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [0.15.13](https://github.com/reakit/reakit/compare/reakit@0.15.12...reakit@0.15.13) (2018-12-17)
 
+
+### Bug Fixes
 
 * **typescript:** Fix "types" key for proxy packages ([#317](https://github.com/reakit/reakit/issues/317)) ([f08f3c5](https://github.com/reakit/reakit/commit/f08f3c5)), closes [#316](https://github.com/reakit/reakit/issues/316)
 
