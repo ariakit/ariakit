@@ -18,12 +18,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "chalk": "^2.4.1",
+    "chalk": "^2.4.2",
     "jscodeshift": "^0.5.1",
     "yargs-parser": "^11.1.1"
   },
   "devDependencies": {
-    "eslint": "^5.10.0",
-    "jest-cli": "^23.6.0"
+    "eslint": "^5.12.1",
+    "jest": "^24.0.0"
   }
 }

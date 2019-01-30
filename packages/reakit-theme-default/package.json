@@ -42,16 +42,16 @@
     "toolkit"
   ],
   "dependencies": {
-    "styled-tools": "^1.6.0"
+    "styled-tools": "^1.7.1"
   },
   "devDependencies": {
-    "eslint": "^5.10.0",
-    "jest-cli": "^23.6.0",
+    "eslint": "^5.12.1",
+    "jest": "^24.0.0",
     "opn-cli": "^4.0.0",
     "reakit": "^0.16.0-beta.2",
-    "rimraf": "^2.6.1",
+    "rimraf": "^2.6.3",
     "rollup": "^0.68.0",
-    "typescript": "3.2.2"
+    "typescript": "3.2.4"
   },
   "peerDependencies": {
     "reakit": "^0.15.0"

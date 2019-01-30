@@ -1,13 +1,17 @@
+const testing = process.env.NODE_ENV === "test";
+
 module.exports = {
   presets: [
     [
       "@babel/preset-env",
       {
-        modules: process.env.NODE_ENV === "test" ? "commonjs" : false,
+        modules: testing ? "commonjs" : false,
         loose: true,
-        targets: {
-          browsers: "defaults"
-        }
+        targets: testing
+          ? { node: "current" }
+          : {
+              browsers: "defaults"
+            }
       }
     ],
     "@babel/preset-typescript",
@@ -15,7 +19,6 @@ module.exports = {
   ],
   plugins: [
     "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-object-rest-spread",
-    process.env.NODE_ENV !== "test" && "styled-components"
+    "@babel/plugin-proposal-object-rest-spread"
   ].filter(Boolean)
 };

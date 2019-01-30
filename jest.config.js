@@ -1,5 +1,3 @@
-const { defaults } = require("jest-config");
-
 module.exports = {
   rootDir: __dirname,
   collectCoverageFrom: [
@@ -7,9 +5,11 @@ module.exports = {
     "!**/*-test.{js,ts,tsx}"
   ],
   projects: ["<rootDir>/packages/*/jest.config.js"],
-  setupTestFrameworkScriptFile: "<rootDir>/jest.setup.js",
-  moduleFileExtensions: [...defaults.moduleFileExtensions, "ts", "tsx"],
-  transform: {
-    "^.+\\.(j|t)sx?$": "babel-jest"
-  }
+  setupFilesAfterEnv: [
+    "jest-dom/extend-expect",
+    "jest-styled-components",
+    "react-testing-library/cleanup-after-each",
+    "raf/polyfill",
+    "<rootDir>/jest.setup.js"
+  ]
 };

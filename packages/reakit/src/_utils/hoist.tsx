@@ -2,16 +2,17 @@ import * as React from "react";
 import { UseComponent } from "reuse";
 
 interface Props {
-  elementRef?: React.Ref<Element>;
+  elementRef?: React.Ref<any>;
 }
 
 function hoist<P extends Props>(
   Comp: React.ComponentType<P>,
   Base: UseComponent<any>
 ) {
-  const Component = React.forwardRef((props, ref) => (
+  const Component = (React.forwardRef((props, ref) => (
+    // @ts-ignore
     <Comp {...props} elementRef={ref} />
-  )) as UseComponent<typeof Comp>;
+  )) as unknown) as UseComponent<typeof Comp>;
   Component.uses = Base.uses;
   return Component;
 }

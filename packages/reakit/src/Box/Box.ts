@@ -13,10 +13,11 @@ import dedupeClassName from "../_utils/dedupeClassName";
 import pickHTMLProps from "../_utils/pickHTMLProps";
 import styled from "../styled";
 import use from "../use";
+import { Omit } from "../_utils/types";
 
 type CSSProperties = { [K in keyof typeof CSSProps]?: string | number };
 
-export type BoxProps = React.HTMLProps<any> &
+export type BoxProps = Omit<React.HTMLProps<any>, "as"> &
   CSSProperties & {
     use?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
     children?: React.ReactNode;
@@ -44,11 +45,16 @@ const BoxComponent = React.forwardRef<HTMLElement, BoxProps>(
         { className },
         style ? { style } : {}
       );
-      return <T {...allProps} ref={applyAllRefs(ref, props.elementRef)} />;
+      return React.createElement(T, {
+        ...allProps,
+        ref: applyAllRefs(ref, props.elementRef)
+      });
     }
-    return (
-      <T {...props} ref={applyAllRefs(ref, props.elementRef)} style={style} />
-    );
+    return React.createElement(T, {
+      ...props,
+      ref: applyAllRefs(ref, props.elementRef),
+      style
+    });
   }
 );
 

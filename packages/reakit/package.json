@@ -36,23 +36,23 @@
   "dependencies": {
     "@emotion/is-prop-valid": "^0.7.3",
     "constate": "^0.9.0",
-    "popper.js": "^1.14.6",
+    "popper.js": "^1.14.7",
     "prop-types": "^15.6.2",
-    "reuse": "^1.2.0",
+    "reuse": "^1.3.0",
     "styled-components": "^4.0.0",
     "styled-selector": "^0.1.1",
-    "styled-tools": "^1.6.0"
+    "styled-tools": "^1.7.1"
   },
   "devDependencies": {
-    "@types/styled-components": "^4.0.2",
-    "eslint": "^5.10.0",
-    "jest-cli": "^23.6.0",
+    "@types/styled-components": "^4.1.6",
+    "eslint": "^5.12.1",
+    "jest": "^24.0.0",
     "opn-cli": "^4.0.0",
     "react-styleguidist": "^7.0.0",
-    "rimraf": "^2.6.1",
+    "rimraf": "^2.6.3",
     "rollup": "^0.68.0",
-    "typescript": "3.1.3",
-    "webpack": "^4.27.1"
+    "typescript": "3.2.4",
+    "webpack": "^4.29.0"
   },
   "peerDependencies": {
     "react": "^16.3.0",
