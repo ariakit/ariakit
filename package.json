@@ -74,7 +74,7 @@
     "react-dom": "16.7.0",
     "react-test-renderer": "16.7.0",
     "react-testing-library": "5.4.4",
-    "rollup": "0.68.0",
+    "rollup": "1.1.2",
     "rollup-plugin-babel": "4.3.2",
     "rollup-plugin-commonjs": "9.2.0",
     "rollup-plugin-ignore": "1.0.4",
