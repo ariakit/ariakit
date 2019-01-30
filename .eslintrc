@@ -42,9 +42,12 @@
   "overrides": [
     {
       "files": ["**/*.ts", "**/*.tsx"],
-      "parser": "typescript-eslint-parser",
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
       "plugins": [
-        "typescript"
+        "@typescript-eslint"
       ],
       "rules": {
         "no-undef": "off",
