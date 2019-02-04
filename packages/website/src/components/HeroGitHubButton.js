@@ -1,5 +1,6 @@
 import React from "react";
 import { styled, Popover } from "reakit";
+import s from "styled-selector";
 import GitHubIcon from "react-icons/lib/go/mark-github";
 import StarIcon from "react-icons/lib/go/star";
 import ButtonRounded from "../elements/ButtonRounded";
@@ -26,7 +27,7 @@ const StarsPopover = styled(Popover)`
   padding: 8px 10px 8px 8px;
   place-items: center;
   cursor: inherit;
-  ${Popover.Arrow} {
+  ${s(Popover.Arrow)} {
     font-size: 26px;
   }
 `;

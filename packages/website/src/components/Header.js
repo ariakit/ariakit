@@ -1,6 +1,7 @@
 import React from "react";
 import { styled, Flex, Link, Sidebar, Toolbar, Tooltip } from "reakit";
 import { palette } from "styled-tools";
+import s from "styled-selector";
 import { NavLink as RouterLink } from "react-router-dom";
 import MenuIcon from "react-icons/lib/md/menu";
 import OpenInNewIcon from "react-icons/lib/md/open-in-new";
@@ -32,7 +33,7 @@ const StyledToolbar = styled(Toolbar)`
   height: 100%;
   grid-gap: 24px;
   padding: 0 24px;
-  ${Toolbar.Focusable} {
+  ${s(Toolbar.Focusable)} {
     /* temporary */
     outline: none;
   }
