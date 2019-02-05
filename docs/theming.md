@@ -36,7 +36,7 @@ Take a look at the `reakit-theme-default`'s [source code](https://github.com/rea
 
 ## Extending a theme
 
-Since it's a normal JavaScript object, you can use the object spread operator to extend a theme and customize it:
+Since it's a plain JavaScript object, you can use the object spread operator to extend a theme and customize it:
 
 ```js static
 import { css } from "reakit";
