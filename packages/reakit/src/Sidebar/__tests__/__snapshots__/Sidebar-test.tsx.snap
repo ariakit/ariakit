@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`align right 1`] = `
-.c2 {
+.c3 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -14,23 +14,26 @@ exports[`align right 1`] = `
   color: inherit;
 }
 
-.c2:focus:not(:focus-visible) {
+.c3:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c1 {
+.c2 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);
+}
+
+.c2[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c1 {
   position: fixed;
   z-index: 19900410;
   left: 50%;
   top: 50%;
-}
-
-.c1[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
 }
 
 .c0 {
@@ -47,13 +50,13 @@ exports[`align right 1`] = `
 <div
   aria-hidden="false"
   aria-modal="true"
-  class="c0 c1 c2"
+  class="c0 c1 c2 c3"
   role="dialog"
 />
 `;
 
 exports[`styled 1`] = `
-.c2 {
+.c3 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -66,23 +69,26 @@ exports[`styled 1`] = `
   color: inherit;
 }
 
-.c2:focus:not(:focus-visible) {
+.c3:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c1 {
+.c2 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);
+}
+
+.c2[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c1 {
   position: fixed;
   z-index: 19900410;
   left: 50%;
   top: 50%;
-}
-
-.c1[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
 }
 
 .c0 {
@@ -99,14 +105,14 @@ exports[`styled 1`] = `
 <div
   aria-hidden="true"
   aria-modal="true"
-  class="c0 c1 c2"
+  class="c0 c1 c2 c3"
   hidden=""
   role="dialog"
 />
 `;
 
 exports[`styled visible 1`] = `
-.c2 {
+.c3 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -119,23 +125,26 @@ exports[`styled visible 1`] = `
   color: inherit;
 }
 
-.c2:focus:not(:focus-visible) {
+.c3:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c1 {
+.c2 {
   -webkit-transform: translate3d(0px,0px,0px);
   -ms-transform: translate3d(0px,0px,0px);
   transform: translate3d(0px,0px,0px);
+}
+
+.c2[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c1 {
   position: fixed;
   z-index: 19900410;
   left: 50%;
   top: 50%;
-}
-
-.c1[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
 }
 
 .c0 {
@@ -152,7 +161,7 @@ exports[`styled visible 1`] = `
 <div
   aria-hidden="false"
   aria-modal="true"
-  class="c0 c1 c2"
+  class="c0 c1 c2 c3"
   role="dialog"
 />
 `;

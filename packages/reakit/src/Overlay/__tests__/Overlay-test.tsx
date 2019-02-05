@@ -20,7 +20,7 @@ test("html attrs", () => {
 test("styled", () => {
   const { container } = render(<Overlay />);
   expect(container.firstChild).toMatchInlineSnapshot(`
-.c1 {
+.c2 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -33,29 +33,32 @@ test("styled", () => {
   color: inherit;
 }
 
-.c1:focus:not(:focus-visible) {
+.c2:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c0 {
+.c1 {
   -webkit-transform: translate3d(-50%,-50%,0px);
   -ms-transform: translate3d(-50%,-50%,0px);
   transform: translate3d(-50%,-50%,0px);
+}
+
+.c1[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c0 {
   position: fixed;
   z-index: 19900410;
   left: 50%;
   top: 50%;
 }
 
-.c0[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
-}
-
 <div
   aria-hidden="true"
   aria-modal="true"
-  class="c0 c1"
+  class="c0 c1 c2"
   hidden=""
   role="dialog"
 />
@@ -65,7 +68,7 @@ test("styled", () => {
 test("styled visible", () => {
   const { container } = render(<Overlay visible />);
   expect(container.firstChild).toMatchInlineSnapshot(`
-.c1 {
+.c2 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -78,29 +81,32 @@ test("styled visible", () => {
   color: inherit;
 }
 
-.c1:focus:not(:focus-visible) {
+.c2:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c0 {
+.c1 {
   -webkit-transform: translate3d(-50%,-50%,0px);
   -ms-transform: translate3d(-50%,-50%,0px);
   transform: translate3d(-50%,-50%,0px);
+}
+
+.c1[aria-hidden="true"] {
+  pointer-events: none;
+  display: none !important;
+}
+
+.c0 {
   position: fixed;
   z-index: 19900410;
   left: 50%;
   top: 50%;
 }
 
-.c0[aria-hidden="true"] {
-  pointer-events: none;
-  display: none !important;
-}
-
 <div
   aria-hidden="false"
   aria-modal="true"
-  class="c0 c1"
+  class="c0 c1 c2"
   role="dialog"
 />
 `);

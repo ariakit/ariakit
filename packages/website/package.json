@@ -42,6 +42,6 @@
     "react-styleguidist": "7.3.10",
     "style-loader": "0.23.1",
     "url-loader": "1.1.2",
-    "webpack": "4.29.0"
+    "webpack": "4.29.1"
   }
 }

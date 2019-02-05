@@ -14,7 +14,7 @@ test("html attrs", () => {
 test("styled", () => {
   const { container } = render(<InlineFlex />);
   expect(container.firstChild).toMatchInlineSnapshot(`
-.c1 {
+.c2 {
   margin: unset;
   padding: unset;
   border: unset;
@@ -27,15 +27,18 @@ test("styled", () => {
   color: inherit;
 }
 
-.c1:focus:not(:focus-visible) {
+.c2:focus:not(:focus-visible) {
   outline: none;
 }
 
-.c0 {
+.c1 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
+}
+
+.c0 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -43,7 +46,7 @@ test("styled", () => {
 }
 
 <div
-  class="c0 c1"
+  class="c0 c1 c2"
 />
 `);
 });
