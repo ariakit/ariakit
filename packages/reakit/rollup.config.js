@@ -5,7 +5,6 @@ const pkg = require("./package.json");
 export default [
   createConfig({
     pkg,
-    experimentalCodeSplitting: true,
     input: publicFiles,
     output: [
       {
