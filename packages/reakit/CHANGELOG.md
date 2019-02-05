@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/reakit/reakit/compare/reakit@0.16.0-beta.2...reakit@0.16.0) (2019-02-05)
+
+**Note:** Version bump only for package reakit
+
+
+
+
+
 # [0.16.0-beta.2](https://github.com/reakit/reakit/compare/reakit@0.15.13...reakit@0.16.0-beta.2) (2018-12-17)
 
 
