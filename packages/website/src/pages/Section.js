@@ -3,7 +3,7 @@ import { styled, Block } from "reakit";
 import { palette } from "styled-tools";
 import { Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import NewsletterForm from "website/src/components/NewsletterForm";
+import NewsletterForm from "../components/NewsletterForm";
 import StyleguidistContainer from "../containers/StyleguidistContainer";
 import Playground from "../components/Playground";
 import Markdown from "../components/Markdown";
