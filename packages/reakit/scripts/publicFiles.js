@@ -8,6 +8,7 @@ const isDirectory = source => lstatSync(source).isDirectory();
 const getIndex = dir =>
   join(dir, readdirSync(dir).find(file => /^index/.test(file)));
 
+// TODO get sub folders
 const getFiles = dir =>
   readdirSync(dir)
     .filter(file => !/^_/.test(file))

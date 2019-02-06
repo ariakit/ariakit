@@ -1,5 +1,4 @@
 coverage
-scripts
 /index.ts
 *.log
 *.config.js

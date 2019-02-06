@@ -1,10 +1,6 @@
 {
   "parser": "babel-eslint",
-  "extends": [
-    "airbnb", 
-    "plugin:prettier/recommended", 
-    "prettier/react"
-  ],
+  "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
   "env": {
     "jest": true,
     "browser": true
@@ -19,7 +15,6 @@
   "rules": {
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
-    "jsx-a11y/accessible-emoji": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/export": "off",
     "import/extensions": "off",
@@ -27,17 +22,12 @@
     "import/no-named-as-default": "off",
     "import/no-webpack-loader-syntax": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/no-unresolved": ["error", { "ignore": ["^reakit"] }],
     "react/require-default-props": "off",
     "react/default-props-match-prop-types": "off",
     "react/no-array-index-key": "off",
-    "react/forbid-prop-types": "off",
-    "react/button-has-type": "off",
+    "react/prop-types": "off",
     "react/jsx-filename-extension": "off",
-    "react/destructuring-assignment": "off",
-    "react/sort-comp": "off",
-    "react/no-find-dom-node": "off",
-    "react/prop-types": ["error", { "skipUndeclared": true }]
+    "react/destructuring-assignment": "off"
   },
   "overrides": [
     {
@@ -46,9 +36,7 @@
       "parserOptions": {
         "project": "./tsconfig.json"
       },
-      "plugins": [
-        "@typescript-eslint"
-      ],
+      "plugins": ["@typescript-eslint"],
       "rules": {
         "no-undef": "off",
         "no-unused-vars": "off",

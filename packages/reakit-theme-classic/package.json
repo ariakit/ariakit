@@ -1,12 +1,12 @@
 {
-  "name": "reakit",
-  "version": "0.16.0",
-  "description": "Toolkit for building accessible UIs with React",
+  "name": "reakit-theme-classic",
+  "version": "0.0.1",
+  "description": "Reakit classic theme",
   "license": "MIT",
   "repository": "reakit/reakit",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "unpkg": "dist/reakit.min.js",
+  "unpkg": "dist/reakit-theme-classic.min.js",
   "types": "ts",
   "author": {
     "name": "Diego Haz",
@@ -29,17 +29,10 @@
   },
   "keywords": [
     "reakit",
-    "a11y",
     "react",
-    "ui",
-    "toolkit",
-    "components"
+    "theme"
   ],
-  "dependencies": {
-    "popper.js": "^1.14.7"
-  },
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "reakit": "^1.0.0-alpha.0"
   }
 }
