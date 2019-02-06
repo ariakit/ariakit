@@ -38,11 +38,7 @@ import { Input } from "reakit";
 
 `use="textarea"`:
 ```jsx
-<<<<<<< HEAD
-<Input use="textarea" />
-=======
 import { Input } from "reakit";
 
-<Input as="textarea" />
->>>>>>> master
+<Input use="textarea" />
 ```
