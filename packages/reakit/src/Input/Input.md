@@ -40,5 +40,5 @@ import { Input } from "reakit";
 ```jsx
 import { Input } from "reakit";
 
-<Input as="textarea" />
+<Input use="textarea" />
 ```
