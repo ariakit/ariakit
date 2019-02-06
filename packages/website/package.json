@@ -18,8 +18,6 @@
     "markdown-to-jsx": "6.9.1",
     "react": "16.7.0",
     "react-codemirror2": "5.1.0",
-    "react-dom": "16.7.0",
-    "reakit": "^0.16.0",
-    "reakit-theme-classic": "^0.0.1"
+    "react-dom": "16.7.0"
   }
 }
