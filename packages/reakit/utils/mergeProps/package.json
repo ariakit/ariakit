@@ -1,0 +1,7 @@
+{
+  "name": "reakit/utils/mergeProps",
+  "private": true,
+  "main": "../../lib/utils/mergeProps",
+  "module": "../../es/utils/mergeProps",
+  "types": "../../ts/utils/mergeProps"
+}
