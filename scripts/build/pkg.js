@@ -21,6 +21,15 @@ function getModuleDir(rootPath) {
   }
 }
 
+function getUnpkgDir(rootPath) {
+  const pkg = getPackage(rootPath);
+  try {
+    return resolveDir(pkg.unpkg);
+  } catch (e) {
+    return false;
+  }
+}
+
 function getTypesDir(rootPath) {
   const pkg = getPackage(rootPath);
   try {
@@ -35,14 +44,10 @@ function getMainDir(rootPath) {
   return resolveDir(main);
 }
 
-function getSourcePath(rootPath) {
-  return join(rootPath, "src");
-}
-
 module.exports = {
   getPackage,
   getModuleDir,
+  getUnpkgDir,
   getTypesDir,
-  getMainDir,
-  getSourcePath
+  getMainDir
 };

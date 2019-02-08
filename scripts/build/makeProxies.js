@@ -1,14 +1,9 @@
 // https://developers.livechatinc.com/blog/how-to-create-javascript-libraries-in-2018-part-2/
 const { join } = require("path");
 const { ensureDirSync, writeFileSync } = require("fs-extra");
-const {
-  getPackage,
-  getMainDir,
-  getModuleDir,
-  getTypesDir,
-  getSourcePath
-} = require("./pkg");
-const getPublicFiles = require("./getPublicFiles");
+const { getPackage, getMainDir, getModuleDir, getTypesDir } = require("./pkg");
+const getProxyFolders = require("./getProxyFolders");
+const log = require("../log");
 
 function getProxyPackageContents(rootPath, moduleName) {
   const { name } = getPackage(rootPath);
@@ -27,17 +22,15 @@ function getProxyPackageContents(rootPath, moduleName) {
 }
 
 function makeProxies(rootPath) {
-  const publicFiles = getPublicFiles(getSourcePath(rootPath));
-  return Object.entries(publicFiles)
-    .map(([name, path]) => [name.replace(/\/index$/, ""), path])
-    .filter(([name]) => name !== "index")
-    .forEach(([name]) => {
-      ensureDirSync(name);
-      writeFileSync(
-        `${name}/package.json`,
-        getProxyPackageContents(rootPath, name)
-      );
-    });
+  log(`Making proxies in ${rootPath}`);
+  return getProxyFolders(rootPath).forEach(name => {
+    ensureDirSync(name);
+    writeFileSync(
+      `${name}/package.json`,
+      getProxyPackageContents(rootPath, name)
+    );
+    log(`Created ${name}`);
+  });
 }
 
 module.exports = makeProxies;

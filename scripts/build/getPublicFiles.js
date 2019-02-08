@@ -12,8 +12,8 @@ function isPublicModule(path) {
 
 /**
  * Returns {
- *   index: <path>,
- *   moduleName: <path>,
+ *   index: "path/to/index",
+ *   moduleName: "path/to/moduleName,
  *   ...
  * }
  */

@@ -7,12 +7,8 @@ const ignore = require("rollup-plugin-ignore");
 const { camelCase, upperFirst } = require("lodash");
 const getIndexPath = require("./getIndexPath");
 const getPublicFiles = require("./getPublicFiles");
-const {
-  getPackage,
-  getModuleDir,
-  getMainDir,
-  getSourcePath
-} = require("./pkg");
+const getSourcePath = require("./getSourcePath");
+const { getPackage, getModuleDir, getMainDir } = require("./pkg");
 
 const cwd = process.cwd();
 const pkg = getPackage(cwd);
