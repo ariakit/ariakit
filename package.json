@@ -18,7 +18,7 @@
     "build": "lerna exec --scope reakit* --ignore *codemods --concurrency 1 -- npm run build",
     "build:clean": "lerna exec --scope reakit* --ignore *codemods -- npm run build:clean",
     "website": "lerna exec --scope website -- npm run start",
-    "website:build": "lerna exec --scope website -- npm run build",
+    "website:build": "lerna exec --scope website -- yarn build",
     "release": "lerna publish",
     "release:next": "npm run release -- --npm-tag=next --preid=beta"
   },
