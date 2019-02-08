@@ -17,15 +17,12 @@
     "test": "jest",
     "coverage": "yarn test --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "type-check": "tsc --noEmit",
     "lint": "eslint . --ext js,ts,tsx",
-    "build:clean": "../../scripts/build/clean.js",
-    "build:ts": "tsc --emitDeclarationOnly",
-    "prebuild": "yarn build:clean && yarn build:ts",
+    "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
     "dev": "echo 'TODO'",
     "preversion": "yarn lint && yarn test && yarn build",
-    "postpublish": "yarn build:clean"
+    "postpublish": "yarn clean"
   },
   "keywords": [
     "reakit",

@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-const cleanBuild = require("./cleanBuild");
+const { cleanBuild } = require("./utils");
 
 cleanBuild(process.cwd());

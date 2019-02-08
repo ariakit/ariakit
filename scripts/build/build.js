@@ -1,12 +1,23 @@
 #!/usr/bin/env node
 const { join } = require("path");
 const spawn = require("cross-spawn");
-const makeProxies = require("./makeProxies");
-const makeGitignore = require("./makeGitignore");
+const {
+  makeProxies,
+  makeGitignore,
+  cleanBuild,
+  hasTSConfig
+} = require("./utils");
 
-makeGitignore(process.cwd());
-makeProxies(process.cwd());
+const cwd = process.cwd();
 
-spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
+cleanBuild(cwd);
+makeGitignore(cwd);
+makeProxies(cwd);
+
+if (hasTSConfig(cwd)) {
+  spawn.sync("yarn", ["tsc", "--emitDeclarationOnly"], { stdio: "inherit" });
+}
+
+spawn.sync("yarn", ["rollup", "-c", join(__dirname, "rollup.config.js")], {
   stdio: "inherit"
 });

@@ -5,10 +5,14 @@ const commonjs = require("rollup-plugin-commonjs");
 const { uglify } = require("rollup-plugin-uglify");
 const ignore = require("rollup-plugin-ignore");
 const { camelCase, upperFirst } = require("lodash");
-const getIndexPath = require("./getIndexPath");
-const getPublicFiles = require("./getPublicFiles");
-const getSourcePath = require("./getSourcePath");
-const { getPackage, getModuleDir, getMainDir } = require("./pkg");
+const {
+  getIndexPath,
+  getPublicFiles,
+  getSourcePath,
+  getPackage,
+  getModuleDir,
+  getMainDir
+} = require("./utils");
 
 const cwd = process.cwd();
 const pkg = getPackage(cwd);
