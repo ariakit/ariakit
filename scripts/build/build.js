@@ -15,9 +15,9 @@ makeGitignore(cwd);
 makeProxies(cwd);
 
 if (hasTSConfig(cwd)) {
-  spawn.sync("yarn", ["tsc", "--emitDeclarationOnly"], { stdio: "inherit" });
+  spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
 }
 
-spawn.sync("yarn", ["rollup", "-c", join(__dirname, "rollup.config.js")], {
+spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
   stdio: "inherit"
 });
