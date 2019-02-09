@@ -33,6 +33,7 @@
     "components"
   ],
   "dependencies": {
+    "@emotion/is-prop-valid": "0.7.3",
     "popper.js": "^1.14.7"
   },
   "peerDependencies": {
