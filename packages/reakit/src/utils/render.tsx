@@ -1,11 +1,7 @@
 import * as React from "react";
 import pickHTMLProps from "../_utils/pickHTMLProps";
 import isRenderProp from "../_utils/isRenderProp";
-import {
-  ComponentPropsWithAs,
-  As,
-  HTMLAtttributesWithRef
-} from "../_utils/types";
+import { ComponentPropsWithAs, As } from "../_utils/types";
 
 export function render({
   as = "div",

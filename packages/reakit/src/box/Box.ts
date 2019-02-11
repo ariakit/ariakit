@@ -4,9 +4,8 @@ import useBoxProps, { UseBoxOptions } from "./useBoxProps";
 import { ComponentPropsWithAs, As } from "../_utils/types";
 import { render } from "../utils";
 import forwardRef from "../_utils/forwardRef";
-import mergeProps from "../utils/mergeProps";
 
-export type BoxProps<T extends React.ReactType> = UseBoxOptions &
+export type BoxProps<T extends As> = UseBoxOptions &
   ComponentPropsWithAs<T> & React.HTMLAttributes<any>;
 
 export const Box = forwardRef(
@@ -14,8 +13,9 @@ export const Box = forwardRef(
     { as = "div" as T, theme, ...props }: BoxProps<T>,
     ref: React.Ref<any>
   ) => {
-    const boxProps = useBoxProps({ theme });
-    return render(mergeProps({ as, ref }, boxProps, props));
+    props = { as, ref, ...props };
+    props = useBoxProps({ theme }, props);
+    return render(props);
   }
 );
 

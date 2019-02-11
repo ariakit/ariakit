@@ -15,6 +15,7 @@
   "rules": {
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
+    "no-param-reassign": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/export": "off",
     "import/extensions": "off",

@@ -8,48 +8,78 @@ export type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
 
 /**
  * Render prop type
- * @template P Render prop props
- * @template T Render
+ * @template P Props
  */
 export type RenderProp<P = {}> = (props: P) => React.ReactElement<any>;
 
+/**
+ * "as" prop
+ * @template P Props
+ */
 export type As<P = any> = React.ReactType<P>;
 
+/**
+ * @template P Props
+ * @template T Element type
+ */
 export type PropsWithRef<P, T = any> = P & React.RefAttributes<T>;
 
-export type HTMLAtttributesWithRef<T = any> = PropsWithRef<
+/**
+ * @template T Element type
+ */
+export type HTMLAttributesWithRef<T = any> = PropsWithRef<
   React.HTMLAttributes<T>,
   T
 >;
 
-// hmm not using
-export type StringToElement<T> = T extends keyof JSX.IntrinsicElements
+/**
+ * Converts T to its element type
+ * @example
+ * type HTMLDivElement = ElementType<"div">;
+ * type FunctionalComponent = ElementType<() => null>;
+ * type Never = ElementType<"foo">;
+ * @template T Component type or string tag
+ */
+export type ElementType<T> = T extends keyof JSX.IntrinsicElements
   ? JSX.IntrinsicElements[T] extends React.DetailedHTMLProps<
       React.HTMLAttributes<infer E>,
       infer E
     >
     ? E
     : never
-  : T;
+  : T extends React.ComponentType<any> | React.ExoticComponent<any>
+  ? T
+  : never;
 
-export type PropsWithLol<P> = Pick<
-  HTMLAtttributesWithRef,
-  Extract<keyof HTMLAtttributesWithRef, keyof P>
+/**
+ * Returns only the HTML attributes inside P
+ * @example
+ * type OnlyId = ExtractHTMLAttributes<{ id: string; foo: string }>;
+ * type HTMLAttributes = ExtractHTMLAttributes<any>;
+ * @template P Props
+ */
+export type ExtractHTMLAttributes<P> = Pick<
+  HTMLAttributesWithRef,
+  Extract<keyof HTMLAttributesWithRef, keyof P>
 >;
 
+/**
+ * ComponentPropsWithRef without the "as" prop
+ * @template T "as" prop
+ */
 export type ComponentPropsWithoutAs<T extends As> = Omit<
   React.ComponentPropsWithRef<T>,
   "as"
 >;
 
 /**
- * Generic component props
+ * Generic component props with "as" prop
  * @template P Additional props
  * @template T React component or string element
  */
 export type ComponentPropsWithAs<T extends As> = {
   as?: T;
-  children?: React.ReactNode | RenderProp<PropsWithLol<any>>;
+  children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
 } & ComponentPropsWithoutAs<T>;
 
 /**

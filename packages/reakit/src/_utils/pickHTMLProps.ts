@@ -1,5 +1,5 @@
 import isPropValid from "@emotion/is-prop-valid";
-import { PropsWithLol } from "./types";
+import { ExtractHTMLAttributes } from "./types";
 
 function pickHTMLProps<P extends Record<string, any>>(props: P) {
   const filteredProps = {} as P;
@@ -10,7 +10,7 @@ function pickHTMLProps<P extends Record<string, any>>(props: P) {
     }
   }
 
-  return filteredProps as PropsWithLol<P>;
+  return filteredProps as ExtractHTMLAttributes<P>;
 }
 
 export default pickHTMLProps;
