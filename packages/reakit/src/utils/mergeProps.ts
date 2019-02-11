@@ -82,7 +82,7 @@ function mergeStyleProps<T>(...propsObjects: Array<{ style?: T }>) {
   };
 }
 
-function mergeProps<T extends any[]>(...propsObjects: T) {
+export function mergeProps<T extends any[]>(...propsObjects: T) {
   const allProps = Object.assign({}, ...propsObjects) as UnionToIntersection<
     T[number]
   >;

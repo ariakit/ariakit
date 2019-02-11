@@ -31,7 +31,8 @@
     "prop-types": "^15.7.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^5.2.0",
+    "reakit": "0.16.0"
   },
   "devDependencies": {
     "babel-jest": "24.1.0",

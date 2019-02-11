@@ -11,18 +11,18 @@ import DynamoContext, {
 } from "./DynamoContext";
 
 export type ThemeProviderProps = {
-  hooks: HookContextType;
-  constants: ConstantContextType;
-  variables: VariableContextType;
-  dynamos: DynamoContextType;
+  hooks?: HookContextType;
+  constants?: ConstantContextType;
+  variables?: VariableContextType;
+  dynamos?: DynamoContextType;
   children: React.ReactNode;
 };
 
 export function ThemeProvider({
-  hooks,
-  constants,
-  variables,
-  dynamos,
+  hooks = {},
+  constants = {},
+  variables = {},
+  dynamos = {},
   children
 }: ThemeProviderProps) {
   const memoizedHooks = React.useMemo(() => hooks, []);

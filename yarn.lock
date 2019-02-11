@@ -4998,7 +4998,7 @@ eslint-config-prettier@4.0.0:
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-config-react-app@^3.0.0:
+eslint-config-react-app@3.0.7, eslint-config-react-app@^3.0.0:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/eslint-config-react-app/-/eslint-config-react-app-3.0.7.tgz#d58c9216ff285e2b4de0eb8403c28b0600e45b3e"
   integrity sha512-Mmmc9lIY/qvX6OEV09+ZLqVTz1aX8VVCrgCjBHXdmMGaC+pldD+87oj3BiJWXMSfcYs5iOo9gy0mGnQ8f/fMsQ==
