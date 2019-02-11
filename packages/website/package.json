@@ -2,23 +2,39 @@
   "name": "website",
   "version": "0.16.0",
   "private": true,
+  "description": "Reakit website",
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/website",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
   "scripts": {
-    "start": "styleguidist server",
-    "build": "styleguidist build",
+    "start": "npm run develop",
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "opn coverage/lcov-report/index.html",
-    "lint": "eslint src --ext js,ts,tsx"
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "serve": "gatsby serve"
   },
   "dependencies": {
-    "@babel/polyfill": "7.2.5",
-    "codemirror": "5.43.0",
-    "diffable-html": "4.0.0",
-    "lodash": "4.17.11",
-    "markdown-to-jsx": "6.9.1",
-    "react": "16.8.1",
-    "react-codemirror2": "5.1.0",
-    "react-dom": "16.8.1",
-    "reakit": "^0.16.0"
+    "gatsby": "^2.0.118",
+    "gatsby-image": "^2.0.29",
+    "gatsby-plugin-manifest": "^2.0.17",
+    "gatsby-plugin-offline": "^2.0.23",
+    "gatsby-plugin-react-helmet": "^3.0.6",
+    "gatsby-plugin-sharp": "^2.0.20",
+    "gatsby-source-filesystem": "^2.0.20",
+    "gatsby-transformer-sharp": "^2.1.13",
+    "prop-types": "^15.7.1",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "react-helmet": "^5.2.0"
+  },
+  "devDependencies": {
+    "babel-jest": "24.1.0",
+    "babel-preset-gatsby": "0.1.7",
+    "jest": "24.1.0",
+    "react-test-renderer": "16.8.1"
   }
 }

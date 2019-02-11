@@ -1,1 +1,12 @@
-module.exports = require("../../babel.config.js");
+module.exports = {
+  presets: [
+    [
+      "babel-preset-gatsby",
+      {
+        targets: {
+          browsers: [">0.25%", "not dead"]
+        }
+      }
+    ]
+  ]
+};
