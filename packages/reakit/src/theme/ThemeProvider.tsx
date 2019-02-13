@@ -1,20 +1,11 @@
 import * as React from "react";
-import HookContext, { HookContextType } from "./HookContext";
-import ConstantContext, { ConstantContextType } from "./ConstantContext";
-import VariableContext, {
-  VariableContextType,
-  SetVariableContext
-} from "./VariableContext";
-import DynamoContext, {
-  DynamoContextType,
-  SetDynamoContext
-} from "./DynamoContext";
+import HookContext from "./HookContext";
+import ConstantContext from "./ConstantContext";
+import VariableContext, { SetVariableContext } from "./VariableContext";
+import DynamoContext, { SetDynamoContext } from "./DynamoContext";
+import { Theme } from "./_types";
 
-export type ThemeProviderProps = {
-  hooks?: HookContextType;
-  constants?: ConstantContextType;
-  variables?: VariableContextType;
-  dynamos?: DynamoContextType;
+export type ThemeProviderProps = Theme & {
   children: React.ReactNode;
 };
 

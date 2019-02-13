@@ -1,20 +1,9 @@
 import * as React from "react";
 import { UnionToIntersection, PickByValue } from "../_utils/types";
-
-function extractProp<T, K extends keyof T>(propsObjects: T[], prop: K) {
-  const props: Array<NonNullable<T[K]>> = [];
-  const { length } = propsObjects;
-
-  for (let i = 0; i < length; i += 1) {
-    const p = propsObjects[i][prop];
-    if (p) props.push(p!);
-  }
-
-  return props;
-}
+import extractPropFromObjects from "../_utils/extractPropFromObjects";
 
 function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
-  const refs = extractProp(propsObjects, "ref");
+  const refs = extractPropFromObjects(propsObjects, "ref");
   const { length } = refs;
 
   if (length === 0) return {};
@@ -35,7 +24,7 @@ function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
 }
 
 function mergeClassNames(...propsObjects: Array<{ className?: string }>) {
-  const classNames = extractProp(propsObjects, "className");
+  const classNames = extractPropFromObjects(propsObjects, "className");
   if (classNames.length === 0) return {};
   return {
     className: classNames.join(" ")
@@ -43,7 +32,7 @@ function mergeClassNames(...propsObjects: Array<{ className?: string }>) {
 }
 
 function mergeFunctions<T extends Record<string, any>>(...propsObjects: T[]) {
-  const fns: { [key: string]: Array<(...args: any[]) => any> } = {};
+  const fns: Record<string, Array<(...args: any[]) => any>> = {};
   const { length } = propsObjects;
 
   for (let i = 0; i < length; i += 1) {
@@ -73,7 +62,7 @@ function mergeFunctions<T extends Record<string, any>>(...propsObjects: T[]) {
 }
 
 function mergeStyles<T>(...propsObjects: Array<{ style?: T }>) {
-  const styles = extractProp(propsObjects, "style");
+  const styles = extractPropFromObjects(propsObjects, "style");
   if (styles.length === 0) return {};
   if (styles.length === 1) return { style: styles[0] };
   return {
