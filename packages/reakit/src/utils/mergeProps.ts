@@ -1,5 +1,4 @@
-// TODO: refine
-import { Ref } from "react";
+import * as React from "react";
 import { UnionToIntersection, PickByValue } from "../_utils/types";
 
 function extractProp<T, K extends keyof T>(propsObjects: T[], prop: K) {
@@ -8,36 +7,34 @@ function extractProp<T, K extends keyof T>(propsObjects: T[], prop: K) {
 
   for (let i = 0; i < length; i += 1) {
     const p = propsObjects[i][prop];
-    if (p) {
-      props.push(p!);
-    }
+    if (p) props.push(p!);
   }
 
   return props;
 }
 
-function mergeRefProps<T>(...propsObjects: Array<{ ref?: Ref<T> }>) {
+function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
   const refs = extractProp(propsObjects, "ref");
+  const { length } = refs;
 
-  if (refs.length === 0) return {};
-  if (refs.length === 1) return { ref: refs[0] };
+  if (length === 0) return {};
+  if (length === 1) return { ref: refs[0] };
 
   return {
     ref: (instance: T) => {
-      refs.forEach(ref => {
+      for (let i = 0; i < length; i += 1) {
+        const ref = refs[i];
         if (typeof ref === "function") {
           ref(instance);
         } else if (ref) {
-          // @ts-ignore
-          // eslint-disable-next-line no-param-reassign
-          ref.current = instance;
+          (ref as React.MutableRefObject<T>).current = instance;
         }
-      });
+      }
     }
   };
 }
 
-function mergeClassNameProps(...propsObjects: Array<{ className?: string }>) {
+function mergeClassNames(...propsObjects: Array<{ className?: string }>) {
   const classNames = extractProp(propsObjects, "className");
   if (classNames.length === 0) return {};
   return {
@@ -45,19 +42,18 @@ function mergeClassNameProps(...propsObjects: Array<{ className?: string }>) {
   };
 }
 
-function mergeFunctionProps<T extends { [key: string]: any }>(
-  ...propsObjects: T[]
-) {
+function mergeFunctions<T extends Record<string, any>>(...propsObjects: T[]) {
   const fns: { [key: string]: Array<(...args: any[]) => any> } = {};
   const { length } = propsObjects;
 
   for (let i = 0; i < length; i += 1) {
     const props = propsObjects[i];
-    const keys = Object.keys(props);
-    for (let key = 0; key < keys.length; key += 1) {
-      const value = props[key];
-      if (typeof value === "function") {
-        fns[key] = [...fns[key], value];
+    for (const key in props) {
+      if (key !== "ref" && {}.hasOwnProperty.call(props, key)) {
+        const value = props[key];
+        if (typeof value === "function") {
+          fns[key] = [...(fns[key] || []), value];
+        }
       }
     }
   }
@@ -65,15 +61,18 @@ function mergeFunctionProps<T extends { [key: string]: any }>(
   return Object.keys(fns).reduce(
     (acc, key) => ({
       ...acc,
-      [key]: (...args: any[]) => {
-        fns[key].forEach(fn => fn(...args));
-      }
+      [key]:
+        fns[key].length > 1
+          ? (...args: any[]) => {
+              fns[key].forEach(fn => fn(...args));
+            }
+          : fns[key][0]
     }),
     {}
   ) as PickByValue<Required<T>, (...args: any[]) => any>;
 }
 
-function mergeStyleProps<T>(...propsObjects: Array<{ style?: T }>) {
+function mergeStyles<T>(...propsObjects: Array<{ style?: T }>) {
   const styles = extractProp(propsObjects, "style");
   if (styles.length === 0) return {};
   if (styles.length === 1) return { style: styles[0] };
@@ -82,14 +81,17 @@ function mergeStyleProps<T>(...propsObjects: Array<{ style?: T }>) {
   };
 }
 
-export function mergeProps<T extends any[]>(...propsObjects: T) {
-  const allProps = Object.assign({}, ...propsObjects) as UnionToIntersection<
-    T[number]
-  >;
-  const refProps = mergeRefProps(...propsObjects);
-  const classNameProps = mergeClassNameProps(...propsObjects);
-  const functionProps = mergeFunctionProps(...propsObjects);
-  const styleProps = mergeStyleProps(...propsObjects);
+export function mergeProps<T extends Array<Record<string, any>>>(
+  ...propsObjects: T
+) {
+  const allProps: UnionToIntersection<T[number]> = Object.assign(
+    {},
+    ...propsObjects
+  );
+  const refProps = mergeRefs(...propsObjects);
+  const classNameProps = mergeClassNames(...propsObjects);
+  const functionProps = mergeFunctions(...propsObjects);
+  const styleProps = mergeStyles(...propsObjects);
   return {
     ...allProps,
     ...refProps,

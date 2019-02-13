@@ -1,11 +1,11 @@
 /* eslint-disable */
 import * as React from "react";
-import useBoxProps, { UseBoxOptions } from "./useBoxProps";
+import useBoxProps, { UseBoxPropsOptions } from "./useBoxProps";
 import { ComponentPropsWithAs, As } from "../_utils/types";
 import { render } from "../utils";
 import forwardRef from "../_utils/forwardRef";
 
-export type BoxProps<T extends As> = UseBoxOptions &
+export type BoxProps<T extends As> = UseBoxPropsOptions &
   ComponentPropsWithAs<T> & React.HTMLAttributes<any>;
 
 export const Box = forwardRef(

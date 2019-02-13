@@ -1,12 +1,12 @@
 import forwardRef from "./_utils/forwardRef";
 import { render } from "./utils";
 import { useThemeHook } from "./theme";
-import { BoxProps, useBoxProps, UseBoxOptions } from "./box";
+import { BoxProps, useBoxProps, UseBoxPropsOptions } from "./box";
 import { As, HTMLAttributesWithRef } from "./_utils/types";
 
 function createHook(name: string) {
   return <P extends HTMLAttributesWithRef = HTMLAttributesWithRef>(
-    options: UseBoxOptions,
+    options: UseBoxPropsOptions,
     props = {} as P
   ) => {
     props = useBoxProps(options, props);
@@ -224,9 +224,6 @@ export const Nav = createComponent("nav", useNavProps);
 
 export const useNoindexProps = createHook("useNoindexProps");
 export const Noindex = createComponent("noindex", useNoindexProps);
-
-export const useObjectProps = createHook("useObjectProps");
-export const Object = createComponent("object", useObjectProps);
 
 export const useOlProps = createHook("useOlProps");
 export const Ol = createComponent("ol", useOlProps);
