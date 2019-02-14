@@ -1,6 +1,7 @@
 export * from "./ConstantContext";
 export * from "./DynamoContext";
 export * from "./HookContext";
+export * from "./mergeTheme";
 export * from "./ThemeProvider";
 export * from "./useSetThemeDynamo";
 export * from "./useSetThemeVariable";

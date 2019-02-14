@@ -6,7 +6,7 @@ import { render } from "../utils";
 import forwardRef from "../_utils/forwardRef";
 
 export type BoxProps<T extends As> = UseBoxPropsOptions &
-  ComponentPropsWithAs<T> & React.HTMLAttributes<any>;
+  ComponentPropsWithAs<T>;
 
 export const Box = forwardRef(
   <T extends As = "div">(
@@ -14,7 +14,7 @@ export const Box = forwardRef(
     ref: React.Ref<any>
   ) => {
     props = { as, ref, ...props };
-    props = useBoxProps({ theme }, props);
+    props = useBoxProps({ theme }, props) as typeof props;
     return render(props);
   }
 );

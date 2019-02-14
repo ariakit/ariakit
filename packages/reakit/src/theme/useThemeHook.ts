@@ -4,7 +4,7 @@ import { HTMLAttributesWithRef } from "../_utils/types";
 
 export function useThemeHook<
   P extends HTMLAttributesWithRef = HTMLAttributesWithRef
->(hook: string, options: any, props = {} as P) {
+>(hook: string, options: any, props = {} as P): P {
   const hooks = React.useContext(HookContext);
   if (hook in hooks) {
     return hooks[hook](options, props);

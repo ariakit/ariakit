@@ -19,20 +19,6 @@ export type RenderProp<P = {}> = (props: P) => React.ReactElement<any>;
 export type As<P = any> = React.ReactType<P>;
 
 /**
- * @template P Props
- * @template T Element type
- */
-export type PropsWithRef<P, T = any> = P & React.RefAttributes<T>;
-
-/**
- * @template T Element type
- */
-export type HTMLAttributesWithRef<T = any> = PropsWithRef<
-  React.HTMLAttributes<T>,
-  T
->;
-
-/**
  * Converts T to its element type
  * @example
  * type HTMLDivElement = ElementType<"div">;
@@ -50,6 +36,12 @@ export type ElementType<T> = T extends keyof JSX.IntrinsicElements
   : T extends React.ComponentType<any> | React.ExoticComponent<any>
   ? T
   : never;
+
+/**
+ * @template T Element type
+ */
+export type HTMLAttributesWithRef<T = any> = React.HTMLAttributes<T> &
+  React.RefAttributes<T>;
 
 /**
  * Returns only the HTML attributes inside P

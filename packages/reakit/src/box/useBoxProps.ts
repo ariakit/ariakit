@@ -1,13 +1,14 @@
+import * as React from "react";
 import { useThemeHook } from "../theme";
-import { HTMLAttributesWithRef } from "../_utils/types";
 
 export interface UseBoxPropsOptions {
   theme?: any;
 }
 
-export function useBoxProps<
-  P extends HTMLAttributesWithRef = HTMLAttributesWithRef
->(options: UseBoxPropsOptions = {}, props = {} as P) {
+export function useBoxProps(
+  options: UseBoxPropsOptions = {},
+  props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
+) {
   props = useThemeHook("useBoxProps", options, props);
   return props;
 }

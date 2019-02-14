@@ -1,4 +1,4 @@
-import p from "./p";
+import p from "./utils/p";
 
 export const variables = {
   palette: {

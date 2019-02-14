@@ -9,6 +9,7 @@ function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
   if (length === 0) return {};
   if (length === 1) return { ref: refs[0] };
 
+  // TODO: refactor
   return {
     ref: (instance: T) => {
       for (let i = 0; i < length; i += 1) {
@@ -35,6 +36,7 @@ function mergeFunctions<T extends Record<string, any>>(...propsObjects: T[]) {
   const fns: Record<string, Array<(...args: any[]) => any>> = {};
   const { length } = propsObjects;
 
+  // TODO: refactor
   for (let i = 0; i < length; i += 1) {
     const props = propsObjects[i];
     for (const key in props) {
@@ -47,6 +49,7 @@ function mergeFunctions<T extends Record<string, any>>(...propsObjects: T[]) {
     }
   }
 
+  // TODO: refactor
   return Object.keys(fns).reduce(
     (acc, key) => ({
       ...acc,

@@ -1,5 +1,14 @@
 import { useThemeVariable } from "reakit";
-import { clamp, toArray } from "./_utils";
+
+function toArray<T>(arg: T[] | T) {
+  return Array.isArray(arg) ? arg : [arg];
+}
+
+function clamp(number: number, min: number, max: number) {
+  if (number < min) return min;
+  if (number > max) return max;
+  return number;
+}
 
 export function usePalette(
   palette?: string,
