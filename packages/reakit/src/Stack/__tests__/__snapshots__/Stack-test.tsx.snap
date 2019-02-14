@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Anchor 1`] = `
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.c0 {
+  position: relative;
+}
+
+.c0 > *:not(:first-child) {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+<div
+  class="c0 c1"
+/>
+`;
+
+exports[`Default 1`] = `
+.c1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: unset;
+  color: inherit;
+}
+
+.c1:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.c0 {
+  position: relative;
+}
+
+.c0 > *:not(:first-child) {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+<div
+  class="c0 c1"
+/>
+`;

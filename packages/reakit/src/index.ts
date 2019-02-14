@@ -95,6 +95,9 @@ export * from "./Provider";
 export { default as Sidebar } from "./Sidebar";
 export * from "./Sidebar";
 
+export { default as Stack } from "./Stack";
+export * from "./Stack";
+
 export { default as Step } from "./Step";
 export * from "./Step";
 
