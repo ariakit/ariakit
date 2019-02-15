@@ -22,7 +22,7 @@
     "build:clean": "rimraf dist es lib ts && node scripts/cleanProxies",
     "build:ts": "tsc --emitDeclarationOnly",
     "prebuild": "npm run build:clean && npm run build:ts",
-    "build": "rollup -c && node scripts/makeProxies",
+    "build": "rollup -c",
     "dev": "styleguidist server",
     "preversion": "npm run lint && npm test && npm run build",
     "postpublish": "npm run build:clean"
@@ -51,6 +51,7 @@
     "react-styleguidist": "7.0.0",
     "rimraf": "2.6.3",
     "rollup": "1.1.2",
+    "rollup-plugin-proxy-directories": "0.3.0",
     "typescript": "3.2.4",
     "webpack": "4.29.1"
   },

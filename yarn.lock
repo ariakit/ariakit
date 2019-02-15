@@ -10989,6 +10989,13 @@ rollup-plugin-node-resolve@4.0.0:
     is-module "^1.0.0"
     resolve "^1.8.1"
 
+rollup-plugin-proxy-directories@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-proxy-directories/-/rollup-plugin-proxy-directories-0.3.0.tgz#201ac9bd32a178c5b50e04edb1f6984059dacb3d"
+  integrity sha512-dKkkFknVODWQJ6Y6lnEGQoitHxp58nTTH0O8+YLCyY6d78dMblROyGutMV0XwSZvPUzrATzIdtnlvhvfAO4+LA==
+  dependencies:
+    minimatch "^3.0.2"
+
 rollup-plugin-replace@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/rollup-plugin-replace/-/rollup-plugin-replace-2.1.0.tgz#f9c07a4a89a2f8be912ee54b3f0f68d91e9ed0ae"
