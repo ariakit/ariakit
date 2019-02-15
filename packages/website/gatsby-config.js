@@ -31,6 +31,13 @@ module.exports = {
     {
       resolve: "gatsby-source-filesystem",
       options: {
+        name: "guide",
+        path: `${__dirname}/../../docs`
+      }
+    },
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
         name: "components",
         path: `${__dirname}/../reakit/src`
       }

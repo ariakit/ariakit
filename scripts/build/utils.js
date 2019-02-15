@@ -61,6 +61,10 @@ function isPublicModule(path) {
   return !/^_/.test(path);
 }
 
+function isRootModule(path) {
+  return !/\//.test(path);
+}
+
 function isDirectory(path) {
   return lstatSync(path).isDirectory();
 }
@@ -105,7 +109,7 @@ function getBuildFolders(rootPath) {
 function cleanBuild(rootPath) {
   log(`Cleaning ${rootPath}`);
   return getBuildFolders(rootPath)
-    .filter(name => !/\//.test(name))
+    .filter(isRootModule)
     .forEach(name => {
       try {
         rimraf.sync(name);
@@ -125,11 +129,11 @@ function getIndexPath(path) {
 
 function makeGitignore(rootPath) {
   const buildFolders = getBuildFolders(rootPath);
-  const contents = `${buildFolders
-    .filter(name => !/\//.test(name))
+  const contents = buildFolders
+    .filter(isRootModule)
     .map(name => `/${name}`)
-    .join("\n")}\n`;
-  writeFileSync(join(rootPath, ".gitignore"), contents);
+    .join("\n");
+  writeFileSync(join(rootPath, ".gitignore"), `${contents}\n`);
   log(`Created .gitignore in ${rootPath}`);
 }
 

@@ -1,9 +1,9 @@
 import * as React from "react";
-import forwardRef from "./_utils/forwardRef";
-import { render } from "./utils";
-import { useThemeHook } from "./theme";
-import { BoxProps, useBoxProps, UseBoxPropsOptions } from "./box";
-import { As } from "./_utils/types";
+import forwardRef from "../_utils/forwardRef";
+import { render } from "../utils";
+import { useThemeHook } from "../theme";
+import { BoxProps, useBoxProps, UseBoxPropsOptions } from "../box";
+import { As } from "../_utils/types";
 
 function createHook<T extends keyof JSX.IntrinsicElements>(hookName: string) {
   return (

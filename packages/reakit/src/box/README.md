@@ -1,8 +1,7 @@
 ---
-path: "/components/box"
+title: Box
+path: /components/box
 ---
-
-# Box
 
 Hello
 

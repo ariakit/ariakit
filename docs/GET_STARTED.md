@@ -1,3 +1,10 @@
+---
+title: Get started
+path: /guide/get-started
+redirect_from:
+  - /guide
+---
+
 ## Installation
 
 First, make sure to have `react` and `react-dom` installed:
