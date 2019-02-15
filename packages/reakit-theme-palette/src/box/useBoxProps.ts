@@ -10,7 +10,7 @@ export type UseBoxPropsOptions = {
 };
 
 export function useBoxProps(
-  { theme }: UseBoxPropsOptions,
+  { theme = {} }: UseBoxPropsOptions,
   props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ) {
   const color = usePalette(theme.color);

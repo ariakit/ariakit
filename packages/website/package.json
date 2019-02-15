@@ -28,6 +28,7 @@
     "gatsby-source-filesystem": "2.0.20",
     "gatsby-transformer-remark": "2.2.4",
     "gatsby-transformer-sharp": "^2.1.13",
+    "markdown-to-jsx": "6.9.1",
     "prop-types": "^15.7.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
