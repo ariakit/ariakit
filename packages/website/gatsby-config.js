@@ -42,10 +42,23 @@ module.exports = {
         path: `${__dirname}/../reakit/src`
       }
     },
-    "gatsby-transformer-remark",
+    {
+      resolve: "gatsby-transformer-remark",
+      options: {
+        plugins: [
+          {
+            resolve: "gatsby-remark-external-links",
+            options: {
+              target: "_blank",
+              rel: "nofollow"
+            }
+          },
+          "gatsby-remark-code-modifiers",
+          "gatsby-remark-autolink-headers",
+          "gatsby-remark-smartypants"
+        ]
+      }
+    },
     "gatsby-plugin-typescript"
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.app/offline
-    // 'gatsby-plugin-offline',
   ]
 };

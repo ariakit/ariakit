@@ -18,23 +18,27 @@
     "serve": "gatsby serve"
   },
   "dependencies": {
+    "@types/lodash": "4.14.121",
     "gatsby": "^2.0.118",
     "gatsby-image": "^2.0.29",
     "gatsby-plugin-manifest": "^2.0.17",
-    "gatsby-plugin-offline": "^2.0.23",
     "gatsby-plugin-react-helmet": "^3.0.6",
     "gatsby-plugin-sharp": "^2.0.20",
     "gatsby-plugin-typescript": "2.0.7",
+    "gatsby-remark-autolink-headers": "2.0.14",
+    "gatsby-remark-external-links": "0.0.4",
+    "gatsby-remark-smartypants": "2.0.8",
     "gatsby-source-filesystem": "2.0.20",
     "gatsby-transformer-remark": "2.2.4",
     "gatsby-transformer-sharp": "^2.1.13",
-    "markdown-to-jsx": "6.9.1",
+    "lodash": "4.17.11",
     "prop-types": "^15.7.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-helmet": "^5.2.0",
     "reakit": "0.16.0",
-    "reakit-theme-palette": "^0.0.1"
+    "reakit-theme-palette": "^0.0.1",
+    "rehype-react": "3.1.0"
   },
   "devDependencies": {
     "babel-jest": "24.1.0",

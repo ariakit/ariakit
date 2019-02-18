@@ -3,7 +3,7 @@ title: Box
 path: /components/box
 ---
 
-Hello
+Hello, "World"!
 
 ## Usage
 
@@ -17,7 +17,7 @@ import { Box } from "reakit";
 
 ### `useBoxProps`
 
-```jsx
+```jsx static
 import { useBoxProps } from "reakit";
 
 function Box(props) {

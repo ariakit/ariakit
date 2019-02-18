@@ -16,6 +16,7 @@
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
     "no-param-reassign": "off",
+    "no-sparse-arrays": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/export": "off",
     "import/extensions": "off",
@@ -42,6 +43,7 @@
         "no-undef": "off",
         "no-unused-vars": "off",
         "no-restricted-globals": "off",
+        "no-useless-constructor": "off",
         "import-name": [true, { "react": "React" }]
       }
     }
