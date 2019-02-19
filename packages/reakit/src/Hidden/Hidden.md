@@ -9,7 +9,7 @@ import { Hidden } from "reakit";
 You can use [HiddenContainer](HiddenContainer.md) to control its state with ease, and combine it with [HiddenShow](HiddenShow.md), [HiddenHide](HiddenHide.md) and [HiddenToggle](HiddenToggle.md) to get event handlers, like `onClick`, out of the box.
 
 > **Pro tip:**
-
+>
 > Unless you're doing something different with state, it's highly recommended to pass the whole state down to components (`{...hidden}` in the example below). If something changes in the library in the future, even breaking changes, you most likely will not need to change your code, since the state details will be encapsulated.
 
 ```jsx
