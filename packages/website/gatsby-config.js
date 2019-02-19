@@ -54,6 +54,7 @@ module.exports = {
             }
           },
           "gatsby-remark-code-modifiers",
+          "gatsby-remark-title",
           "gatsby-remark-autolink-headers",
           "gatsby-remark-smartypants"
         ]

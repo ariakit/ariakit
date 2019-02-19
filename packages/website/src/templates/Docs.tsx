@@ -6,6 +6,7 @@ import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit";
 type DocsProps = {
   data: {
     markdownRemark: {
+      title: string;
       htmlAst: object;
       headings: Array<{
         value: string;
@@ -53,11 +54,11 @@ const { Compiler: renderAst } = new RehypeReact({
 
 export default function Docs({ data }: DocsProps) {
   const {
-    markdownRemark: { frontmatter, htmlAst, headings }
+    markdownRemark: { title, htmlAst }
   } = data;
   return (
     <div>
-      <h1>{frontmatter.title}</h1>
+      <h1>{title}</h1>
       {renderAst(htmlAst)}
     </div>
   );
@@ -66,6 +67,7 @@ export default function Docs({ data }: DocsProps) {
 export const pageQuery = graphql`
   query($path: String!) {
     markdownRemark(frontmatter: { path: { eq: $path } }) {
+      title
       htmlAst
       headings {
         value

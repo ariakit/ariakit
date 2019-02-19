@@ -6,6 +6,6 @@
 
 // You can delete this file if you're not using it
 const React = require("react");
-const Provider = require("./src/Provider");
+const App = require("./src/App");
 
-exports.wrapRootElement = ({ element }) => <Provider>{element}</Provider>;
+exports.wrapRootElement = ({ element }) => <App>{element}</App>;

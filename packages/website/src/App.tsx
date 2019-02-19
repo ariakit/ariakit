@@ -11,8 +11,12 @@ import * as theme from "reakit-theme-palette";
 //   return props;
 // }
 
-function Provider(props: { children: React.ReactNode }) {
-  return <ThemeProvider {...theme}>{props.children}</ThemeProvider>;
+function App(props: { children: React.ReactNode }) {
+  return (
+    <React.StrictMode>
+      <ThemeProvider {...theme}>{props.children}</ThemeProvider>
+    </React.StrictMode>
+  );
 }
 
-export default Provider;
+export default App;

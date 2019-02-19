@@ -44,6 +44,7 @@
     "babel-jest": "24.1.0",
     "babel-preset-gatsby": "0.1.7",
     "jest": "24.1.0",
-    "react-test-renderer": "16.8.1"
+    "react-test-renderer": "16.8.1",
+    "unist-util-remove": "1.0.1"
   }
 }
