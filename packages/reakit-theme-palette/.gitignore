@@ -2,3 +2,7 @@
 /dist
 /es
 /ts
+/variables
+/utils
+/hooks
+/box

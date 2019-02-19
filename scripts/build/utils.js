@@ -57,16 +57,20 @@ function removeExt(path) {
   return path.replace(/\.[^.]+$/, "");
 }
 
-function isPublicModule(path) {
-  return !/^_/.test(path);
-}
-
 function isRootModule(path) {
   return !/\//.test(path);
 }
 
 function isDirectory(path) {
   return lstatSync(path).isDirectory();
+}
+
+function isPublicModule(rootPath, filename) {
+  const isPrivate = /^_/.test(filename);
+  if (isDirectory(join(rootPath, filename))) {
+    return !isPrivate;
+  }
+  return /\.(j|t)sx?$/.test(filename);
 }
 
 function getSourcePath(rootPath) {
@@ -76,7 +80,7 @@ function getSourcePath(rootPath) {
 // returns { index: "path/to/index", moduleName: "path/to/moduleName" }
 function getPublicFiles(rootPath, prefix = "") {
   return readdirSync(rootPath)
-    .filter(isPublicModule)
+    .filter(filename => isPublicModule(rootPath, filename))
     .reduce((acc, filename) => {
       const path = join(rootPath, filename);
       const childFiles = isDirectory(path) && getPublicFiles(path, filename);
