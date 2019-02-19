@@ -1,9 +1,10 @@
 ---
-title: Get started
 path: /guide/get-started
 redirect_from:
   - /guide
 ---
+
+# Get started
 
 ## Installation
 

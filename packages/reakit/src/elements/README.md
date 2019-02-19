@@ -1,6 +1,7 @@
 ---
-title: Elements
 path: /components/elements
 ---
+
+# Elements
 
 TODO

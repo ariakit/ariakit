@@ -1,6 +1,7 @@
 ---
-title: Accessibility
 path: /guide/accessibility
 ---
+
+# Accessibility
 
 TODO

@@ -32,19 +32,24 @@
     "gatsby-transformer-remark": "2.2.4",
     "gatsby-transformer-sharp": "^2.1.13",
     "lodash": "4.17.11",
+    "mdast-util-to-string": "1.0.5",
     "prop-types": "^15.7.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-helmet": "^5.2.0",
     "reakit": "0.16.0",
     "reakit-theme-palette": "^0.0.1",
-    "rehype-react": "3.1.0"
+    "rehype-react": "3.1.0",
+    "remark-parse": "6.0.3",
+    "unified": "7.1.0",
+    "unist-util-remove": "1.0.1",
+    "unist-util-select": "2.0.0",
+    "unist-util-visit": "1.4.0"
   },
   "devDependencies": {
     "babel-jest": "24.1.0",
     "babel-preset-gatsby": "0.1.7",
     "jest": "24.1.0",
-    "react-test-renderer": "16.8.1",
-    "unist-util-remove": "1.0.1"
+    "react-test-renderer": "16.8.1"
   }
 }

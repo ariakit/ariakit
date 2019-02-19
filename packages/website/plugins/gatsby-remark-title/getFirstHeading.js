@@ -1,8 +1,7 @@
-const select = require("unist-util-select");
-const { first } = require("lodash");
+const { select } = require("unist-util-select");
 
 function getFirstHeading(tree) {
-  return first(select(tree, "heading").filter(node => node.depth === 1));
+  return select("heading[depth=1]", tree);
 }
 
 module.exports = getFirstHeading;

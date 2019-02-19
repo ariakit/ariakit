@@ -1,6 +1,7 @@
 ---
-title: Theming
 path: /guide/theming
 ---
+
+# Theming
 
 TODO

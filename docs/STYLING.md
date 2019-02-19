@@ -1,6 +1,7 @@
 ---
-title: Styling
 path: /guide/styling
 ---
+
+# Styling
 
 TODO

@@ -1,6 +1,7 @@
 ---
-title: Composition
 path: /guide/composition
 ---
+
+# Composition
 
 TODO
