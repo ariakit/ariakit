@@ -1,18 +1,24 @@
 import * as React from "react";
 import forwardRef from "../_utils/forwardRef";
-import { render } from "../utils";
-import { useThemeHook } from "../theme";
-import { BoxProps, useBoxProps, UseBoxPropsOptions } from "../box";
 import { As } from "../_utils/types";
+import { useCreateElement } from "../utils";
+import { useThemeHook } from "../theme";
+import { BoxProps, useBoxProps, BoxOptions } from "../box";
 
 function createHook<T extends keyof JSX.IntrinsicElements>(hookName: string) {
-  return (
-    options: UseBoxPropsOptions = {},
+  const useHook = (
+    options: BoxOptions = {},
     props: React.ComponentPropsWithRef<T> = {} as typeof props
   ) => {
-    props = useBoxProps(options, props) as typeof props;
+    props = useBoxProps(options, props);
     return useThemeHook(hookName, options, props);
   };
+
+  Object.defineProperty(useHook, "name", {
+    value: hookName
+  });
+
+  return useHook;
 }
 
 function createComponent<T extends keyof JSX.IntrinsicElements>(
@@ -26,7 +32,7 @@ function createComponent<T extends keyof JSX.IntrinsicElements>(
     ) => {
       props = { as, ref, ...props };
       props = useHook(props, props) as typeof props;
-      return render(props);
+      return useCreateElement(props);
     }
   );
 }

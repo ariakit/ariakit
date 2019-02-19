@@ -70,3 +70,15 @@ test("different hooks", () => {
   expect(fn1).toBeCalledWith(1, undefined);
   expect(fn2).toBeCalledWith(1, { max: 1 });
 });
+
+test("useCreateElement", () => {
+  const fn1 = jest.fn((a, b, c) => a + b + c);
+  const fn2 = jest.fn((a, b, c) => a + b + c);
+  const theme1 = { hooks: { useCreateElement: fn1 } };
+  const theme2 = { hooks: { useCreateElement: fn2 } };
+  const merged = mergeTheme(theme1, theme2);
+
+  expect(merged.hooks.useCreateElement(1, 2, 3)).toBe(9);
+  expect(fn1).toBeCalledWith(1, 2, 3);
+  expect(fn2).toBeCalledWith(1, 2, 6);
+});

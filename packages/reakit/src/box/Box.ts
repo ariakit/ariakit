@@ -1,12 +1,10 @@
-/* eslint-disable */
 import * as React from "react";
-import useBoxProps, { UseBoxPropsOptions } from "./useBoxProps";
 import { ComponentPropsWithAs, As } from "../_utils/types";
-import { render } from "../utils";
 import forwardRef from "../_utils/forwardRef";
+import { useCreateElement } from "../utils";
+import useBoxProps, { BoxOptions } from "./useBoxProps";
 
-export type BoxProps<T extends As> = UseBoxPropsOptions &
-  ComponentPropsWithAs<T>;
+export type BoxProps<T extends As> = BoxOptions & ComponentPropsWithAs<T>;
 
 export const Box = forwardRef(
   <T extends As = "div">(
@@ -15,7 +13,7 @@ export const Box = forwardRef(
   ) => {
     props = { as, ref, ...props };
     props = useBoxProps({ theme }, props) as typeof props;
-    return render(props);
+    return useCreateElement(props);
   }
 );
 

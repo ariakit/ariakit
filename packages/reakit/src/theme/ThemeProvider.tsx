@@ -1,11 +1,20 @@
 import * as React from "react";
-import HookContext from "./HookContext";
-import ConstantContext from "./ConstantContext";
-import VariableContext, { SetVariableContext } from "./VariableContext";
-import DynamoContext, { SetDynamoContext } from "./DynamoContext";
-import { Theme } from "./_types";
+import HookContext, { HookContextType } from "./HookContext";
+import ConstantContext, { ConstantContextType } from "./ConstantContext";
+import VariableContext, {
+  SetVariableContext,
+  VariableContextType
+} from "./VariableContext";
+import DynamoContext, {
+  SetDynamoContext,
+  DynamoContextType
+} from "./DynamoContext";
 
-export type ThemeProviderProps = Theme & {
+export type ThemeProviderProps = {
+  hooks?: Partial<HookContextType>;
+  constants?: ConstantContextType;
+  variables?: VariableContextType;
+  dynamos?: DynamoContextType;
   children: React.ReactNode;
 };
 
@@ -16,7 +25,10 @@ export function ThemeProvider({
   dynamos = {},
   children
 }: ThemeProviderProps) {
-  const memoizedHooks = React.useMemo(() => hooks, []);
+  const memoizedHooks = React.useMemo(
+    () => ({ useCreateElement: React.createElement, ...hooks }),
+    []
+  );
   const memoizedConstants = React.useMemo(() => constants, []);
   const [stateVariables, setVariables] = React.useState(variables);
   const [stateDynamos, setDynamos] = React.useState(dynamos);

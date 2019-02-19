@@ -70,6 +70,9 @@ export type ComponentPropsWithoutAs<T extends As> = Omit<
  * @template T React component or string element
  */
 export type ComponentPropsWithAs<T extends As> = {
+  /**
+   * Replace the underlying element
+   */
   as?: T;
   children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
 } & ComponentPropsWithoutAs<T>;

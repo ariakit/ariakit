@@ -1,6 +1,16 @@
-import { Theme } from "./_types";
-import { UnionToIntersection } from "../_utils/types";
 import extractPropFromObjects from "../_utils/extractPropFromObjects";
+import { UnionToIntersection } from "../_utils/types";
+import { HookContextType } from "./HookContext";
+import { ConstantContextType } from "./ConstantContext";
+import { VariableContextType } from "./VariableContext";
+import { DynamoContextType } from "./DynamoContext";
+
+type Theme = {
+  hooks?: Partial<HookContextType>;
+  constants?: ConstantContextType;
+  variables?: VariableContextType;
+  dynamos?: DynamoContextType;
+};
 
 function mergeObjects<T extends Theme, K extends keyof T>(
   themes: T[],
@@ -33,7 +43,7 @@ function mergeHooks<T extends Theme>(...themes: T[]) {
       if ({}.hasOwnProperty.call(hook, key)) {
         const value = hook[key];
         if (typeof value === "function") {
-          fns[key] = [...(fns[key] || []), value];
+          fns[key] = [...(fns[key] || []), value!];
         }
       }
     }
@@ -47,8 +57,10 @@ function mergeHooks<T extends Theme>(...themes: T[]) {
         [key]:
           fns[key].length > 1
             ? fns[key].reduce(
-                (lastHook, currHook) => (options: any, props: any) =>
-                  currHook(options, lastHook(options, props))
+                (lastHook, currHook) => (a: any, b: any, c?: any) =>
+                  key === "useCreateElement"
+                    ? currHook(a, b, lastHook(a, b, c))
+                    : currHook(a, lastHook(a, b))
               )
             : fns[key][0]
       }),

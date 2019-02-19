@@ -1,2 +1,2 @@
 export * from "./mergeProps";
-export * from "./render";
+export * from "./useCreateElement";

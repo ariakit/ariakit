@@ -1,7 +1,19 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
-import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit";
+import {
+  H1,
+  H2,
+  H3,
+  H4,
+  H5,
+  H6,
+  P,
+  Pre,
+  Hidden,
+  HiddenButton,
+  useHiddenState
+} from "reakit";
 
 type DocsProps = {
   data: {
@@ -45,7 +57,7 @@ const { Compiler: renderAst } = new RehypeReact({
       ...props
     }: { static?: boolean } & React.HTMLAttributes<any>) => {
       if (hasCodeChildren(props)) {
-        return null;
+        return <Pre {...props} />;
       }
       return <Pre {...props} />;
     }
@@ -53,11 +65,16 @@ const { Compiler: renderAst } = new RehypeReact({
 });
 
 export default function Docs({ data }: DocsProps) {
+  const hiddenState = useHiddenState();
   const {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
     <div>
+      <HiddenButton {...hiddenState}>Button</HiddenButton>
+      <Hidden hideOnClickOutside hideOnEsc {...hiddenState}>
+        Hidden
+      </Hidden>
       <h1>{title}</h1>
       {renderAst(htmlAst)}
     </div>
