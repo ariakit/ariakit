@@ -11,7 +11,7 @@ import {
   P,
   Pre,
   Hidden,
-  HiddenButton,
+  HiddenToggleButton,
   useHiddenState
 } from "reakit";
 
@@ -65,14 +65,14 @@ const { Compiler: renderAst } = new RehypeReact({
 });
 
 export default function Docs({ data }: DocsProps) {
-  const hiddenState = useHiddenState();
+  const hidden = useHiddenState();
   const {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
     <div>
-      <HiddenButton {...hiddenState}>Button</HiddenButton>
-      <Hidden hideOnClickOutside hideOnEsc {...hiddenState}>
+      <HiddenToggleButton {...hidden}>Button</HiddenToggleButton>
+      <Hidden hideOnClickOutside hideOnEsc {...hidden}>
         Hidden
       </Hidden>
       <h1>{title}</h1>

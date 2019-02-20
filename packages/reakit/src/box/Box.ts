@@ -1,19 +1,18 @@
 import * as React from "react";
-import { ComponentPropsWithAs, As } from "../_utils/types";
+import { As, PropsWithAs } from "../_utils/types";
 import forwardRef from "../_utils/forwardRef";
 import { useCreateElement } from "../utils";
-import useBoxProps, { BoxOptions } from "./useBoxProps";
+import useBox, { UseBoxOptions } from "./useBox";
 
-export type BoxProps<T extends As> = BoxOptions & ComponentPropsWithAs<T>;
+export type BoxProps<T extends As> = PropsWithAs<UseBoxOptions, T>;
 
 export const Box = forwardRef(
   <T extends As = "div">(
-    { as = "div" as T, theme, ...props }: BoxProps<T>,
+    { as = "div" as T, ...props }: BoxProps<T>,
     ref: React.Ref<any>
   ) => {
-    props = { as, ref, ...props };
-    props = useBoxProps({ theme }, props) as typeof props;
-    return useCreateElement(props);
+    const boxProps = useBox(props, { ref, ...props });
+    return useCreateElement(as, boxProps);
   }
 );
 

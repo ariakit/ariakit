@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UnionToIntersection, PickByValue } from "../_utils/types";
+import { PickByValue } from "../_utils/types";
 import extractPropFromObjects from "../_utils/extractPropFromObjects";
 
 function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
@@ -64,7 +64,7 @@ function mergeFunctions<T extends Record<string, any>>(...propsObjects: T[]) {
   ) as PickByValue<Required<T>, (...args: any[]) => any>;
 }
 
-function mergeStyles<T>(...propsObjects: Array<{ style?: T }>) {
+function mergeStyles<T>(...propsObjects: Array<{ style?: T }>): { style?: T } {
   const styles = extractPropFromObjects(propsObjects, "style");
   if (styles.length === 0) return {};
   if (styles.length === 1) return { style: styles[0] };
@@ -73,13 +73,8 @@ function mergeStyles<T>(...propsObjects: Array<{ style?: T }>) {
   };
 }
 
-export function mergeProps<T extends Array<Record<string, any>>>(
-  ...propsObjects: T
-) {
-  const allProps: UnionToIntersection<T[number]> = Object.assign(
-    {},
-    ...propsObjects
-  );
+export function mergeProps<T>(...propsObjects: T[]) {
+  const allProps = Object.assign({}, ...propsObjects);
   const refProps = mergeRefs(...propsObjects);
   const classNameProps = mergeClassNames(...propsObjects);
   const functionProps = mergeFunctions(...propsObjects);
@@ -90,7 +85,7 @@ export function mergeProps<T extends Array<Record<string, any>>>(
     ...classNameProps,
     ...functionProps,
     ...styleProps
-  };
+  } as T;
 }
 
 export default mergeProps;

@@ -6,7 +6,7 @@ import { VariableContextType } from "./VariableContext";
 import { DynamoContextType } from "./DynamoContext";
 
 type Theme = {
-  hooks?: Partial<HookContextType>;
+  hooks?: HookContextType;
   constants?: ConstantContextType;
   variables?: VariableContextType;
   dynamos?: DynamoContextType;

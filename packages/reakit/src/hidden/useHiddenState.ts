@@ -19,7 +19,7 @@ export type HiddenState = {
   toggle: () => void;
 };
 
-export type HiddenStateOptions = {
+export type UseHiddenStateOptions = {
   /**
    * Tell whether it's visible or not
    * @default false
@@ -29,7 +29,7 @@ export type HiddenStateOptions = {
 
 export function useHiddenState({
   visible: initialVisible = false
-}: HiddenStateOptions = {}): HiddenState {
+}: UseHiddenStateOptions = {}): HiddenState {
   const [visible, setVisible] = React.useState(initialVisible);
 
   const show = () => {

@@ -1,4 +1,4 @@
-import { useSetThemeVariable } from "reakit";
+import { useSetVariable } from "reakit";
 import p from "./p";
 
 type PaletteValue =
@@ -8,10 +8,10 @@ type PaletteValue =
   | Array<ReturnType<typeof p>>;
 
 export function useSetPalette() {
-  const setThemeVariable = useSetThemeVariable();
+  const setVariable = useSetVariable();
 
   return (palette: string, value: PaletteValue) => {
-    return setThemeVariable(variables => ({
+    return setVariable(variables => ({
       ...variables,
       palette: {
         ...variables.palette,

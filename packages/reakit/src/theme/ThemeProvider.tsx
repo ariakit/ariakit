@@ -11,7 +11,7 @@ import DynamoContext, {
 } from "./DynamoContext";
 
 export type ThemeProviderProps = {
-  hooks?: Partial<HookContextType>;
+  hooks?: HookContextType;
   constants?: ConstantContextType;
   variables?: VariableContextType;
   dynamos?: DynamoContextType;
@@ -25,10 +25,7 @@ export function ThemeProvider({
   dynamos = {},
   children
 }: ThemeProviderProps) {
-  const memoizedHooks = React.useMemo(
-    () => ({ useCreateElement: React.createElement, ...hooks }),
-    []
-  );
+  const memoizedHooks = React.useMemo(() => hooks, []);
   const memoizedConstants = React.useMemo(() => constants, []);
   const [stateVariables, setVariables] = React.useState(variables);
   const [stateDynamos, setDynamos] = React.useState(dynamos);

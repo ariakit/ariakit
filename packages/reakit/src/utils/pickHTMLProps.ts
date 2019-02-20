@@ -1,5 +1,5 @@
 import isPropValid from "@emotion/is-prop-valid";
-import { ExtractHTMLAttributes } from "./types";
+import { ExtractHTMLAttributes } from "../_utils/types";
 
 function pickHTMLProps<P extends Record<string, any>>(props: P) {
   const filteredProps = {} as P;

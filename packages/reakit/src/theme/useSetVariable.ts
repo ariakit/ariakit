@@ -1,8 +1,8 @@
 import * as React from "react";
 import { SetVariableContext } from "./VariableContext";
 
-export function useSetThemeVariable() {
+export function useSetVariable() {
   return React.useContext(SetVariableContext);
 }
 
-export default useSetThemeVariable;
+export default useSetVariable;

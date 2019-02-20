@@ -1,18 +1,14 @@
-import * as React from "react";
-import { mergeProps } from "reakit";
+import { mergeProps, UseBoxProps } from "reakit";
 import usePalette from "../utils/usePalette";
 
-export type UseBoxPropsOptions = {
+export type UseBoxOptions = {
   theme: {
     color?: string;
     bgColor?: string;
   };
 };
 
-export function useBoxProps(
-  { theme = {} }: UseBoxPropsOptions,
-  props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
-) {
+export function useBox({ theme = {} }: UseBoxOptions, props: UseBoxProps = {}) {
   const color = usePalette(theme.color);
   const bgColor = usePalette(theme.bgColor);
   const style = {
@@ -22,4 +18,4 @@ export function useBoxProps(
   return mergeProps({ style }, props);
 }
 
-export default useBoxProps;
+export default useBox;

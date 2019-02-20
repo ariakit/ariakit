@@ -1,22 +1,22 @@
 import * as React from "react";
 import { HiddenState } from "./useHiddenState";
-import { useBoxProps, BoxOptions, BoxAttributes } from "../box";
-import { useThemeHook } from "../theme";
+import { useBox, UseBoxOptions, UseBoxProps } from "../box";
+import { useHook } from "../theme";
 import { mergeProps } from "../utils";
 
-export type HiddenOptions = BoxOptions &
+export type UseHiddenOptions = UseBoxOptions &
   Partial<Pick<HiddenState, "visible" | "hide">> & {
     hideOnEsc?: boolean;
     hideOnClickOutside?: boolean;
   };
 
-export type HiddenAttributes = BoxAttributes;
+export type UseHiddenProps = UseBoxProps;
 
-export function useHiddenProps(
-  options: HiddenOptions = {},
-  props: HiddenAttributes = {}
+export function useHidden(
+  options: UseHiddenOptions = {},
+  props: UseHiddenProps = {}
 ) {
-  const ref = React.useRef<HTMLButtonElement | null>(null);
+  const ref = React.useRef<HTMLElement | null>(null);
 
   React.useEffect(() => {
     if (!options.hideOnEsc) return undefined;
@@ -47,15 +47,19 @@ export function useHiddenProps(
     };
     document.body.addEventListener("click", handleClickOutside);
     return () => document.body.removeEventListener("click", handleClickOutside);
-  }, [ref.current, options.hideOnClickOutside, options.visible, options.hide]);
+  }, [ref, options.hideOnClickOutside, options.visible, options.hide]);
 
-  props = mergeProps(
-    { ref, "aria-hidden": !options.visible, hidden: !options.visible },
+  let hiddenProps = mergeProps(
+    {
+      ref,
+      "aria-hidden": !options.visible,
+      hidden: !options.visible
+    },
     props
   );
-  props = useBoxProps(options, props);
-  props = useThemeHook("useHiddenProps", options, props);
-  return props;
+  hiddenProps = useBox(options, hiddenProps);
+  hiddenProps = useHook("useHidden", options, hiddenProps);
+  return hiddenProps;
 }
 
-export default useHiddenProps;
+export default useHidden;

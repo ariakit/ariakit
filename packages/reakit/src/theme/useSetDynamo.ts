@@ -1,8 +1,8 @@
 import * as React from "react";
 import { SetDynamoContext } from "./DynamoContext";
 
-export function useSetThemeDynamo() {
+export function useSetDynamo() {
   return React.useContext(SetDynamoContext);
 }
 
-export default useSetThemeDynamo;
+export default useSetDynamo;

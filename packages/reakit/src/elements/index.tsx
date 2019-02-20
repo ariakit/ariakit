@@ -2,230 +2,174 @@ import * as React from "react";
 import forwardRef from "../_utils/forwardRef";
 import { As } from "../_utils/types";
 import { useCreateElement } from "../utils";
-import { useThemeHook } from "../theme";
-import { BoxProps, useBoxProps, BoxOptions } from "../box";
+import { useHook } from "../theme";
+import { useBox, BoxProps, UseBoxOptions, UseBoxProps } from "../box";
 
-function createHook<T extends keyof JSX.IntrinsicElements>(hookName: string) {
-  const useHook = (
-    options: BoxOptions = {},
-    props: React.ComponentPropsWithRef<T> = {} as typeof props
-  ) => {
-    props = useBoxProps(options, props) as typeof props;
-    return useThemeHook(hookName, options, props);
+function createHook(hookName: string) {
+  const useElement = (options: UseBoxOptions = {}, props: UseBoxProps = {}) => {
+    const boxProps = useBox(options, props);
+    return useHook(hookName, options, boxProps);
   };
 
-  Object.defineProperty(useHook, "name", {
+  Object.defineProperty(useElement, "name", {
     value: hookName
   });
 
-  return useHook;
+  return useElement;
 }
 
 function createComponent<T extends keyof JSX.IntrinsicElements>(
-  tag: T,
-  useHook: ReturnType<typeof createHook>
+  element: T,
+  useElement: ReturnType<typeof createHook>
 ) {
   return forwardRef(
     <TT extends As = T>(
-      { as = (tag as unknown) as TT, ...props }: BoxProps<TT>,
+      { as = (element as unknown) as TT, ...props }: BoxProps<TT>,
       ref: React.Ref<any>
     ) => {
-      props = { as, ref, ...props };
-      props = useHook(props, props) as typeof props;
-      return useCreateElement(props);
+      const elementProps = useElement(props, { ref, ...props });
+      return useCreateElement(as, elementProps);
     }
   );
 }
 
-export const useAProps = createHook<"a">("useAProps");
-export const A = createComponent("a", useAProps);
+export const useA = createHook("useA");
+export const A = createComponent("a", useA);
 
-export const useAbbrProps = createHook<"abbr">("useAbbrProps");
-export const Abbr = createComponent("abbr", useAbbrProps);
+export const useBlockquote = createHook("useBlockquote");
+export const Blockquote = createComponent("blockquote", useBlockquote);
 
-export const useAddressProps = createHook<"address">("useAddressProps");
-export const Address = createComponent("address", useAddressProps);
+export const useButton = createHook("useButton");
+export const Button = createComponent("button", useButton);
 
-export const useAreaProps = createHook<"area">("useAreaProps");
-export const Area = createComponent("area", useAreaProps);
+export const useCaption = createHook("useCaption");
+export const Caption = createComponent("caption", useCaption);
 
-export const useArticleProps = createHook<"article">("useArticleProps");
-export const Article = createComponent("article", useArticleProps);
+export const useCite = createHook("useCite");
+export const Cite = createComponent("cite", useCite);
 
-export const useAsideProps = createHook<"aside">("useAsideProps");
-export const Aside = createComponent("aside", useAsideProps);
+export const useCode = createHook("useCode");
+export const Code = createComponent("code", useCode);
 
-export const useBlockquoteProps = createHook<"blockquote">(
-  "useBlockquoteProps"
-);
-export const Blockquote = createComponent("blockquote", useBlockquoteProps);
+export const useDd = createHook("useDd");
+export const Dd = createComponent("dd", useDd);
 
-export const useButtonProps = createHook<"button">("useButtonProps");
-export const Button = createComponent("button", useButtonProps);
+export const useDiv = createHook("useDiv");
+export const Div = createComponent("div", useDiv);
 
-export const useCaptionProps = createHook<"caption">("useCaptionProps");
-export const Caption = createComponent("caption", useCaptionProps);
+export const useDl = createHook("useDl");
+export const Dl = createComponent("dl", useDl);
 
-export const useCiteProps = createHook<"cite">("useCiteProps");
-export const Cite = createComponent("cite", useCiteProps);
+export const useDt = createHook("useDt");
+export const Dt = createComponent("dt", useDt);
 
-export const useCodeProps = createHook<"code">("useCodeProps");
-export const Code = createComponent("code", useCodeProps);
+export const useFieldset = createHook("useFieldset");
+export const Fieldset = createComponent("fieldset", useFieldset);
 
-export const useColProps = createHook<"col">("useColProps");
-export const Col = createComponent("col", useColProps);
+export const useFigcaption = createHook("useFigcaption");
+export const Figcaption = createComponent("figcaption", useFigcaption);
 
-export const useColgroupProps = createHook<"colgroup">("useColgroupProps");
-export const Colgroup = createComponent("colgroup", useColgroupProps);
+export const useFigure = createHook("useFigure");
+export const Figure = createComponent("figure", useFigure);
 
-export const useDdProps = createHook<"dd">("useDdProps");
-export const Dd = createComponent("dd", useDdProps);
+export const useFooter = createHook("useFooter");
+export const Footer = createComponent("footer", useFooter);
 
-export const useDelProps = createHook<"del">("useDelProps");
-export const Del = createComponent("del", useDelProps);
+export const useH1 = createHook("useH1");
+export const H1 = createComponent("h1", useH1);
 
-export const useDetailsProps = createHook<"details">("useDetailsProps");
-export const Details = createComponent("details", useDetailsProps);
+export const useH2 = createHook("useH2");
+export const H2 = createComponent("h2", useH2);
 
-export const useDfnProps = createHook<"dfn">("useDfnProps");
-export const Dfn = createComponent("dfn", useDfnProps);
+export const useH3 = createHook("useH3");
+export const H3 = createComponent("h3", useH3);
 
-export const useDivProps = createHook<"div">("useDivProps");
-export const Div = createComponent("div", useDivProps);
+export const useH4 = createHook("useH4");
+export const H4 = createComponent("h4", useH4);
 
-export const useDlProps = createHook<"dl">("useDlProps");
-export const Dl = createComponent("dl", useDlProps);
+export const useH5 = createHook("useH5");
+export const H5 = createComponent("h5", useH5);
 
-export const useDtProps = createHook<"dt">("useDtProps");
-export const Dt = createComponent("dt", useDtProps);
+export const useH6 = createHook("useH6");
+export const H6 = createComponent("h6", useH6);
 
-export const useEmProps = createHook<"em">("useEmProps");
-export const Em = createComponent("em", useEmProps);
+export const useHeader = createHook("useHeader");
+export const Header = createComponent("header", useHeader);
 
-export const useFieldsetProps = createHook<"fieldset">("useFieldsetProps");
-export const Fieldset = createComponent("fieldset", useFieldsetProps);
+export const useHgroup = createHook("useHgroup");
+export const Hgroup = createComponent("hgroup", useHgroup);
 
-export const useFigcaptionProps = createHook<"figcaption">(
-  "useFigcaptionProps"
-);
-export const Figcaption = createComponent("figcaption", useFigcaptionProps);
+export const useHr = createHook("useHr");
+export const Hr = createComponent("hr", useHr);
 
-export const useFigureProps = createHook<"figure">("useFigureProps");
-export const Figure = createComponent("figure", useFigureProps);
+export const useImg = createHook("useImg");
+export const Img = createComponent("img", useImg);
 
-export const useFooterProps = createHook<"footer">("useFooterProps");
-export const Footer = createComponent("footer", useFooterProps);
+export const useInput = createHook("useInput");
+export const Input = createComponent("input", useInput);
 
-export const useH1Props = createHook<"h1">("useH1Props");
-export const H1 = createComponent("h1", useH1Props);
+export const useIns = createHook("useIns");
+export const Ins = createComponent("ins", useIns);
 
-export const useH2Props = createHook<"h2">("useH2Props");
-export const H2 = createComponent("h2", useH2Props);
+export const useKbd = createHook("useKbd");
+export const Kbd = createComponent("kbd", useKbd);
 
-export const useH3Props = createHook<"h3">("useH3Props");
-export const H3 = createComponent("h3", useH3Props);
+export const useLabel = createHook("useLabel");
+export const Label = createComponent("label", useLabel);
 
-export const useH4Props = createHook<"h4">("useH4Props");
-export const H4 = createComponent("h4", useH4Props);
+export const useLegend = createHook("useLegend");
+export const Legend = createComponent("legend", useLegend);
 
-export const useH5Props = createHook<"h5">("useH5Props");
-export const H5 = createComponent("h5", useH5Props);
+export const useLi = createHook("useLi");
+export const Li = createComponent("li", useLi);
 
-export const useH6Props = createHook<"h6">("useH6Props");
-export const H6 = createComponent("h6", useH6Props);
+export const useMark = createHook("useMark");
+export const Mark = createComponent("mark", useMark);
 
-export const useHeaderProps = createHook<"header">("useHeaderProps");
-export const Header = createComponent("header", useHeaderProps);
+export const useNav = createHook("useNav");
+export const Nav = createComponent("nav", useNav);
 
-export const useHgroupProps = createHook<"hgroup">("useHgroupProps");
-export const Hgroup = createComponent("hgroup", useHgroupProps);
+export const useOl = createHook("useOl");
+export const Ol = createComponent("ol", useOl);
 
-export const useHrProps = createHook<"hr">("useHrProps");
-export const Hr = createComponent("hr", useHrProps);
+export const useP = createHook("useP");
+export const P = createComponent("p", useP);
 
-export const useImgProps = createHook<"img">("useImgProps");
-export const Img = createComponent("img", useImgProps);
+export const usePre = createHook("usePre");
+export const Pre = createComponent("pre", usePre);
 
-export const useInputProps = createHook<"input">("useInputProps");
-export const Input = createComponent("input", useInputProps);
+export const useSelect = createHook("useSelect");
+export const Select = createComponent("select", useSelect);
 
-export const useInsProps = createHook<"ins">("useInsProps");
-export const Ins = createComponent("ins", useInsProps);
+export const useSpan = createHook("useSpan");
+export const Span = createComponent("span", useSpan);
 
-export const useLabelProps = createHook<"label">("useLabelProps");
-export const Label = createComponent("label", useLabelProps);
+export const useSummary = createHook("useSummary");
+export const Summary = createComponent("summary", useSummary);
 
-export const useLegendProps = createHook<"legend">("useLegendProps");
-export const Legend = createComponent("legend", useLegendProps);
+export const useTable = createHook("useTable");
+export const Table = createComponent("table", useTable);
 
-export const useLiProps = createHook<"li">("useLiProps");
-export const Li = createComponent("li", useLiProps);
+export const useTbody = createHook("useTbody");
+export const Tbody = createComponent("tbody", useTbody);
 
-export const useMainProps = createHook<"main">("useMainProps");
-export const Main = createComponent("main", useMainProps);
+export const useTd = createHook("useTd");
+export const Td = createComponent("td", useTd);
 
-export const useNavProps = createHook<"nav">("useNavProps");
-export const Nav = createComponent("nav", useNavProps);
+export const useTextarea = createHook("useTextarea");
+export const Textarea = createComponent("textarea", useTextarea);
 
-export const useOlProps = createHook<"ol">("useOlProps");
-export const Ol = createComponent("ol", useOlProps);
+export const useTfoot = createHook("useTfoot");
+export const Tfoot = createComponent("tfoot", useTfoot);
 
-export const usePProps = createHook<"p">("usePProps");
-export const P = createComponent("p", usePProps);
+export const useTh = createHook("useTh");
+export const Th = createComponent("th", useTh);
 
-export const usePreProps = createHook<"pre">("usePreProps");
-export const Pre = createComponent("pre", usePreProps);
+export const useThead = createHook("useThead");
+export const Thead = createComponent("thead", useThead);
 
-export const useSampProps = createHook<"samp">("useSampProps");
-export const Samp = createComponent("samp", useSampProps);
+export const useTr = createHook("useTr");
+export const Tr = createComponent("tr", useTr);
 
-export const useSectionProps = createHook<"section">("useSectionProps");
-export const Section = createComponent("section", useSectionProps);
-
-export const useSelectProps = createHook<"select">("useSelectProps");
-export const Select = createComponent("select", useSelectProps);
-
-export const useSpanProps = createHook<"span">("useSpanProps");
-export const Span = createComponent("span", useSpanProps);
-
-export const useStrongProps = createHook<"strong">("useStrongProps");
-export const Strong = createComponent("strong", useStrongProps);
-
-export const useSubProps = createHook<"sub">("useSubProps");
-export const Sub = createComponent("sub", useSubProps);
-
-export const useSummaryProps = createHook<"summary">("useSummaryProps");
-export const Summary = createComponent("summary", useSummaryProps);
-
-export const useSupProps = createHook<"sup">("useSupProps");
-export const Sup = createComponent("sup", useSupProps);
-
-export const useTableProps = createHook<"table">("useTableProps");
-export const Table = createComponent("table", useTableProps);
-
-export const useTbodyProps = createHook<"tbody">("useTbodyProps");
-export const Tbody = createComponent("tbody", useTbodyProps);
-
-export const useTdProps = createHook<"td">("useTdProps");
-export const Td = createComponent("td", useTdProps);
-
-export const useTextareaProps = createHook<"textarea">("useTextareaProps");
-export const Textarea = createComponent("textarea", useTextareaProps);
-
-export const useTfootProps = createHook<"tfoot">("useTfootProps");
-export const Tfoot = createComponent("tfoot", useTfootProps);
-
-export const useThProps = createHook<"th">("useThProps");
-export const Th = createComponent("th", useThProps);
-
-export const useTheadProps = createHook<"thead">("useTheadProps");
-export const Thead = createComponent("thead", useTheadProps);
-
-export const useTimeProps = createHook<"time">("useTimeProps");
-export const Time = createComponent("time", useTimeProps);
-
-export const useTrProps = createHook<"tr">("useTrProps");
-export const Tr = createComponent("tr", useTrProps);
-
-export const useUlProps = createHook<"ul">("useUlProps");
-export const Ul = createComponent("ul", useUlProps);
+export const useUl = createHook("useUl");
+export const Ul = createComponent("ul", useUl);

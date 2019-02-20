@@ -1,2 +1,2 @@
 export * from "./Box";
-export * from "./useBoxProps";
+export * from "./useBox";

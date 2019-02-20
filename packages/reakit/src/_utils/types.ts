@@ -4,7 +4,7 @@ import * as React from "react";
  * @template T Object
  * @template K Union of T keys
  */
-export type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 /**
  * Render prop type
@@ -56,26 +56,18 @@ export type ExtractHTMLAttributes<P> = Pick<
 >;
 
 /**
- * ComponentPropsWithRef without the "as" prop
- * @template T "as" prop
- */
-export type ComponentPropsWithoutAs<T extends As> = Omit<
-  React.ComponentPropsWithRef<T>,
-  "as"
->;
-
-/**
  * Generic component props with "as" prop
  * @template P Additional props
  * @template T React component or string element
  */
-export type ComponentPropsWithAs<T extends As> = {
+export type PropsWithAs<P, T extends As> = {
   /**
    * Replace the underlying element
    */
   as?: T;
   children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
-} & ComponentPropsWithoutAs<T>;
+} & P &
+  Omit<React.ComponentPropsWithRef<T>, "as" | keyof P>;
 
 /**
  * Transform `"a" | "b"` into `"a" & "b"`

@@ -1,10 +1,11 @@
 import * as React from "react";
-import { HTMLAttributesWithRef } from "../_utils/types";
 import HookContext from "./HookContext";
 
-export function useThemeHook<
-  P extends HTMLAttributesWithRef = HTMLAttributesWithRef
->(hook: string, options: any, props = {} as P): P {
+export function useHook(
+  hook: string,
+  options: Record<string, any> = {},
+  props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
+) {
   React.useDebugValue(hook);
   const hooks = React.useContext(HookContext);
   if (hook in hooks) {
@@ -13,4 +14,4 @@ export function useThemeHook<
   return props;
 }
 
-export default useThemeHook;
+export default useHook;

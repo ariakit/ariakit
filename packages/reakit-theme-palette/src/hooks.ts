@@ -1,5 +1,5 @@
-import useBoxProps from "./box/useBoxProps";
+import useBox from "./box/useBoxProps";
 
-export const hooks = { useBoxProps };
+export const hooks = { useBox };
 
 export default hooks;
