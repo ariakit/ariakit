@@ -7,8 +7,9 @@ import { useBox, BoxProps, UseBoxOptions, UseBoxProps } from "../box";
 
 function createHook(hookName: string) {
   const useElement = (options: UseBoxOptions = {}, props: UseBoxProps = {}) => {
-    const boxProps = useBox(options, props);
-    return useHook(hookName, options, boxProps);
+    props = useBox(options, props);
+    props = useHook(hookName, options, props);
+    return props;
   };
 
   Object.defineProperty(useElement, "name", {

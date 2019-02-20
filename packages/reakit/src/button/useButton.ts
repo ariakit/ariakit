@@ -32,7 +32,8 @@ export function useButton(
     props
   );
   props = useBox(options, props);
-  return useHook("useButton", options, props);
+  props = useHook("useButton", options, props);
+  return props;
 }
 
 export default useButton;

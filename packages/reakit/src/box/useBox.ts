@@ -11,7 +11,8 @@ export type UseBoxOptions = {
 export type UseBoxProps = React.HTMLAttributes<any> & React.RefAttributes<any>;
 
 export function useBox(options: UseBoxOptions = {}, props: UseBoxProps = {}) {
-  return useHook("useBox", options, props);
+  props = useHook("useBox", options, props);
+  return props;
 }
 
 export default useBox;

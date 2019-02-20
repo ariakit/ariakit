@@ -14,15 +14,15 @@ export function useHiddenToggleButton(
   options: UseHiddenToggleButtonOptions,
   props: UseHiddenToggleButtonProps = {}
 ) {
-  let buttonProps = mergeProps<typeof props>(
+  props = mergeProps<typeof props>(
     {
       onClick: options.toggle
     },
     props
   );
-  buttonProps = useButton(options, buttonProps);
-  buttonProps = useHook("useHiddenToggleButton", options, buttonProps);
-  return buttonProps;
+  props = useButton(options, props);
+  props = useHook("useHiddenToggleButton", options, props);
+  return props;
 }
 
 export default useHiddenToggleButton;

@@ -1,11 +1,11 @@
 import * as React from "react";
-import { HiddenState } from "./useHiddenState";
+import { StepState } from "./useStepState";
 import { useBox, UseBoxOptions, UseBoxProps } from "../box";
 import { useHook } from "../theme";
 import { mergeProps } from "../utils";
 
 export type UseHiddenOptions = UseBoxOptions &
-  Partial<Pick<HiddenState, "visible" | "hide">> & {
+  Partial<Pick<StepState, "visible" | "hide">> & {
     hideOnEsc?: boolean;
     hideOnClickOutside?: boolean;
   };
