@@ -1,12 +1,11 @@
 const proxyDirecoriesPlugin = require("rollup-plugin-proxy-directories");
 const createConfig = require("../../rollup.config");
-const publicFiles = require("./scripts/publicFiles");
 const pkg = require("./package.json");
 
 export default [
   createConfig({
     pkg,
-    input: publicFiles,
+    input: [],
     output: [
       {
         format: "es",
@@ -18,13 +17,7 @@ export default [
         exports: "named"
       }
     ],
-    plugins: [
-      proxyDirecoriesPlugin({
-        name: pkg.name,
-        files: publicFiles,
-        gitIgnore: true
-      })
-    ]
+    plugins: [proxyDirecoriesPlugin()]
   }),
   createConfig({ pkg, input: "src/index.ts", umd: true })
 ];

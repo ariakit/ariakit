@@ -5475,7 +5475,7 @@ from2@^2.1.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
 
-fs-extra@^7.0.0:
+fs-extra@^7.0.0, fs-extra@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-7.0.1.tgz#4f189c44aa123b895f722804f55ea23eadc348e9"
   integrity sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==
@@ -10937,7 +10937,7 @@ reuse@^2.0.0:
   resolved "https://registry.yarnpkg.com/reuse/-/reuse-2.0.0.tgz#33f6ee7a966b146e0b1dce79fbbf6c54613fe579"
   integrity sha512-y2HgChpsMdAQFwIPKTC3nRWnS0cQm+VoT9bvdp/av3yurEnhSh4PUN7QS5nnoawvV87uiKYQ00/Xb3/w0Xdk2g==
 
-rimraf@2, rimraf@2.6.3, rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2, rimraf@~2.6.2:
+rimraf@2, rimraf@2.6.3, rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2, rimraf@^2.6.3, rimraf@~2.6.2:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.3.tgz#b2d104fe0d8fb27cf9e0a1cda8262dd3833c6cab"
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
@@ -10989,12 +10989,15 @@ rollup-plugin-node-resolve@4.0.0:
     is-module "^1.0.0"
     resolve "^1.8.1"
 
-rollup-plugin-proxy-directories@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-proxy-directories/-/rollup-plugin-proxy-directories-0.3.0.tgz#201ac9bd32a178c5b50e04edb1f6984059dacb3d"
-  integrity sha512-dKkkFknVODWQJ6Y6lnEGQoitHxp58nTTH0O8+YLCyY6d78dMblROyGutMV0XwSZvPUzrATzIdtnlvhvfAO4+LA==
+rollup-plugin-proxy-directories@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-proxy-directories/-/rollup-plugin-proxy-directories-1.1.0.tgz#c93fb3469c8135e731c406de48f8724bb5af300e"
+  integrity sha512-p50GPq51WVatjvFgRyMqh/jbmFxdiON2JE7slw4GS2GMx7wPmEziPrVvGskGEnoODVh7ezc4tJqzOreLbTWXDg==
   dependencies:
+    chalk "^2.4.2"
+    fs-extra "^7.0.1"
     minimatch "^3.0.2"
+    rimraf "^2.6.3"
 
 rollup-plugin-replace@2.1.0:
   version "2.1.0"
