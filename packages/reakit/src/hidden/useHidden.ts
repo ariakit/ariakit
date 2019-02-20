@@ -49,7 +49,7 @@ export function useHidden(
     return () => document.body.removeEventListener("click", handleClickOutside);
   }, [ref, options.hideOnClickOutside, options.visible, options.hide]);
 
-  let hiddenProps = mergeProps(
+  let hiddenProps = mergeProps<typeof props>(
     {
       ref,
       "aria-hidden": !options.visible,

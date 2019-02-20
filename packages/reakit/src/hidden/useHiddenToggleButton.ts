@@ -2,7 +2,7 @@ import { HiddenState } from "./useHiddenState";
 import { UseBoxOptions, UseBoxProps } from "../box";
 import { useHook } from "../theme";
 import { mergeProps } from "../utils";
-import { useButton } from "../elements";
+import { useButton } from "../button";
 
 export type UseHiddenToggleButtonOptions = UseBoxOptions &
   Pick<HiddenState, "toggle">;
@@ -14,7 +14,7 @@ export function useHiddenToggleButton(
   options: UseHiddenToggleButtonOptions,
   props: UseHiddenToggleButtonProps = {}
 ) {
-  let buttonProps = mergeProps(
+  let buttonProps = mergeProps<typeof props>(
     {
       onClick: options.toggle
     },

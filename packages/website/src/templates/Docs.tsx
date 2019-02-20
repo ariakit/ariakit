@@ -71,7 +71,9 @@ export default function Docs({ data }: DocsProps) {
   } = data;
   return (
     <div>
-      <HiddenToggleButton {...hidden}>Button</HiddenToggleButton>
+      <HiddenToggleButton as="div" {...hidden}>
+        Button
+      </HiddenToggleButton>
       <Hidden hideOnClickOutside hideOnEsc {...hidden}>
         Hidden
       </Hidden>
