@@ -1,12 +1,15 @@
 import * as React from "react";
-import { HiddenState } from "./useHiddenState";
+import { HiddenState, HiddenActions } from "./useHiddenState";
 import { useBox, UseBoxOptions, UseBoxProps } from "../box";
 import { useHook } from "../theme";
 import { mergeProps } from "../utils";
 
 export type UseHiddenOptions = UseBoxOptions &
-  Partial<Pick<HiddenState, "visible" | "hide">> & {
+  Partial<HiddenState> &
+  Partial<Pick<HiddenActions, "hide">> & {
+    /** TODO: Description */
     hideOnEsc?: boolean;
+    /** TODO: Description */
     hideOnClickOutside?: boolean;
   };
 

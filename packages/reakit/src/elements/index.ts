@@ -25,10 +25,10 @@ function createComponent<T extends keyof JSX.IntrinsicElements>(
 ) {
   return forwardRef(
     <TT extends As = T>(
-      { as = (element as unknown) as TT, ...props }: BoxProps<TT>,
+      { as = (element as unknown) as TT, theme, ...props }: BoxProps<TT>,
       ref: React.Ref<any>
     ) => {
-      const elementProps = useElement(props, { ref, ...props });
+      const elementProps = useElement({ theme }, { ref, ...props });
       return useCreateElement(as, elementProps);
     }
   );

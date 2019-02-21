@@ -1,5 +1,4 @@
 import * as React from "react";
-import pickHTMLProps from "./pickHTMLProps";
 import isRenderProp from "../_utils/isRenderProp";
 import { HookContext } from "../theme";
 
@@ -14,13 +13,11 @@ export const useCreateElement = ((
     return context.useCreateElement(type, props, children);
   }
 
-  const htmlProps = pickHTMLProps(props);
-
   if (isRenderProp(children)) {
-    return children(htmlProps);
+    return children(props);
   }
 
-  return React.createElement(type, htmlProps, children);
+  return React.createElement(type, props, children);
 }) as typeof React.createElement;
 
 export default useCreateElement;

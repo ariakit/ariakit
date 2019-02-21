@@ -2,10 +2,8 @@ import * as React from "react";
 import { useHook } from "../theme";
 
 export type UseBoxOptions = {
-  /**
-   * Options passed to `reakit-theme-*`
-   */
-  theme?: Record<string, any>;
+  /** Options passed to `reakit-theme-*` */
+  theme?: any;
 };
 
 export type UseBoxProps = React.HTMLAttributes<any> & React.RefAttributes<any>;

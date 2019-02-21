@@ -1,11 +1,11 @@
-import { HiddenState } from "./useHiddenState";
+import { HiddenActions } from "./useHiddenState";
 import { UseBoxOptions, UseBoxProps } from "../box";
 import { useHook } from "../theme";
 import { mergeProps } from "../utils";
 import { useButton } from "../button";
 
 export type UseHiddenToggleButtonOptions = UseBoxOptions &
-  Pick<HiddenState, "toggle">;
+  Pick<HiddenActions, "toggle">;
 
 export type UseHiddenToggleButtonProps = UseBoxProps &
   React.ButtonHTMLAttributes<any>;

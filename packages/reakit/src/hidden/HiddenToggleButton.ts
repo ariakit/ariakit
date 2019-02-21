@@ -13,11 +13,18 @@ export type HiddenToggleButtonProps<T extends As> = PropsWithAs<
 
 export const HiddenToggleButton = forwardRef(
   <T extends As = "button">(
-    { as = "button" as T, ...props }: HiddenToggleButtonProps<T>,
+    {
+      as = "button" as T,
+      theme,
+      visible,
+      show,
+      hide,
+      toggle,
+      ...props
+    }: HiddenToggleButtonProps<T>,
     ref: React.Ref<any>
   ) => {
-    // @ts-ignore TS bug - props have toggle
-    const button = useHiddenToggleButton(props, { ref, ...props });
+    const button = useHiddenToggleButton({ theme, toggle }, { ref, ...props });
     return useCreateElement(as, button);
   }
 );

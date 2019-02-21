@@ -1,35 +1,24 @@
 import * as React from "react";
 
 export type HiddenState = {
-  /**
-   * Tell whether it's visible or not
-   */
+  /** Tell whether it's visible or not */
   visible: boolean;
-  /**
-   * Change the `visible` state to `true`
-   */
+};
+
+export type HiddenActions = {
+  /** Change the `visible` state to `true` */
   show: () => void;
-  /**
-   * Change the `visible` state to `false`
-   */
+  /** Change the `visible` state to `false` */
   hide: () => void;
-  /**
-   * Toggle the `visible` state
-   */
+  /** Toggle the `visible` state */
   toggle: () => void;
 };
 
-export type UseHiddenStateOptions = {
-  /**
-   * Tell whether it's visible or not
-   * @default false
-   */
-  visible?: boolean;
-};
+export type UseHiddenStateOptions = Partial<HiddenState>;
 
 export function useHiddenState({
   visible: initialVisible = false
-}: UseHiddenStateOptions = {}): HiddenState {
+}: UseHiddenStateOptions = {}): HiddenState & HiddenActions {
   const [visible, setVisible] = React.useState(initialVisible);
 
   const show = () => {

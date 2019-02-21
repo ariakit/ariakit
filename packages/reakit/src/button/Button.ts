@@ -8,10 +8,10 @@ export type ButtonProps<T extends As> = PropsWithAs<UseButtonOptions, T>;
 
 export const Button = forwardRef(
   <T extends As = "button">(
-    { as = "button" as T, ...props }: ButtonProps<T>,
+    { as = "button" as T, theme, ...props }: ButtonProps<T>,
     ref: React.Ref<any>
   ) => {
-    const buttonProps = useButton(props, { ref, ...props });
+    const buttonProps = useButton({ theme }, { ref, ...props });
     return useCreateElement(as, buttonProps);
   }
 );
