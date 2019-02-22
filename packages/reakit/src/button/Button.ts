@@ -3,15 +3,17 @@ import { As, PropsWithAs } from "../_utils/types";
 import forwardRef from "../_utils/forwardRef";
 import { useCreateElement } from "../utils";
 import useButton, { UseButtonOptions } from "./useButton";
+import splitButtonProps from "./splitButtonProps";
 
 export type ButtonProps<T extends As> = PropsWithAs<UseButtonOptions, T>;
 
 export const Button = forwardRef(
   <T extends As = "button">(
-    { as = "button" as T, theme, ...props }: ButtonProps<T>,
+    { as = "button" as T, ...props }: ButtonProps<T>,
     ref: React.Ref<any>
   ) => {
-    const buttonProps = useButton({ theme }, { ref, ...props });
+    const [options, htmlProps] = splitButtonProps(props);
+    const buttonProps = useButton(options, { ref, ...htmlProps });
     return useCreateElement(as, buttonProps);
   }
 );

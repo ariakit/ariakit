@@ -10,9 +10,10 @@ import {
   H6,
   P,
   Pre,
-  Hidden,
-  HiddenToggleButton,
-  useHiddenState
+  useStepState,
+  Step,
+  StepPreviousButton,
+  StepNextButton
 } from "reakit";
 
 type DocsProps = {
@@ -65,18 +66,20 @@ const { Compiler: renderAst } = new RehypeReact({
 });
 
 export default function Docs({ data }: DocsProps) {
-  const hidden = useHiddenState();
+  const step = useStepState({ loop: true });
   const {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
     <div>
-      <HiddenToggleButton as="div" {...hidden}>
-        Button
-      </HiddenToggleButton>
-      <Hidden hideOnClickOutside hideOnEsc {...hidden}>
-        Hidden
-      </Hidden>
+      <StepPreviousButton {...step}>Previous</StepPreviousButton>
+      <StepNextButton {...step}>Next</StepNextButton>
+      <Step stepId="step1" {...step}>
+        Step1
+      </Step>
+      <Step stepId="step2" {...step}>
+        Step2
+      </Step>
       <h1>{title}</h1>
       {renderAst(htmlAst)}
     </div>

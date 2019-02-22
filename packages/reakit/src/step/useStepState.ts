@@ -47,8 +47,6 @@ export type StepActions = {
   register: (id: string, order?: number) => void;
   /** TODO: Description */
   unregister: (id: string) => void;
-  /** TODO: Description */
-  update: (id: string, nextId: string, nextOrder?: number) => void;
 };
 
 export type UseStepStateOptions = Partial<StepState>;
@@ -61,13 +59,7 @@ type StepAction =
   | { type: "next" }
   | { type: "reorder"; id: string; order: number }
   | { type: "register"; id: string; order: number }
-  | { type: "unregister"; id: string }
-  | {
-      type: "update";
-      id: string;
-      nextId: string;
-      nextOrder: number;
-    };
+  | { type: "unregister"; id: string };
 
 function getActiveId(state: StepState) {
   return state.ids[state.activeIndex];
@@ -165,14 +157,18 @@ function reducer(state: StepState, action: StepAction): StepState {
       const nextIds =
         indexOf(state, action.id) >= 0 ? state.ids : [...state.ids, action.id];
       const nextState = { ...state, ids: nextIds };
-      return reducer(nextState, { type: "reorder", ...action });
+      return reducer(nextState, {
+        type: "reorder",
+        id: action.id,
+        order: action.order
+      });
     }
 
     case "unregister": {
       const index = indexOf(state, action.id);
       if (index === -1) return state;
 
-      const nextOrdered = omit(state.ordered, state.ids[index]);
+      const nextOrdered = omit(state.ordered, [state.ids[index]]);
       const nextIds = [
         ...state.ids.slice(0, index),
         ...state.ids.slice(index + 1)
@@ -183,13 +179,13 @@ function reducer(state: StepState, action: StepAction): StepState {
       if (isActive(state, action.id) && !hasNext(state)) {
         if (hasPrevious(state)) {
           return {
-            ...nextState,
-            ...reducer(state, { type: "previous" })
+            ...reducer(state, { type: "previous" }),
+            ...nextState
           };
         }
         return {
-          ...nextState,
-          ...reducer(state, { type: "hide" })
+          ...reducer(state, { type: "hide" }),
+          ...nextState
         };
       }
       if (state.activeIndex >= nextIds.length) {
@@ -199,42 +195,6 @@ function reducer(state: StepState, action: StepAction): StepState {
         };
       }
       return nextState;
-    }
-
-    case "update": {
-      const idChanged = action.id !== action.nextId;
-      const orderChanged = action.nextOrder !== state.ordered[action.id];
-
-      if (!idChanged && !orderChanged) return state;
-
-      const overridingId = idChanged && state.ids.indexOf(action.nextId) >= 0;
-
-      if (overridingId) {
-        const nextOrderChanged =
-          action.nextOrder !== state.ordered[action.nextId];
-        const nextState = nextOrderChanged
-          ? reducer(state, {
-              type: "reorder",
-              id: action.nextId,
-              order: action.nextOrder
-            })
-          : state;
-        return reducer(nextState, { type: "unregister", id: action.id });
-      }
-
-      const index = indexOf(state, action.id);
-      const nextIds = [
-        ...state.ids.slice(0, index),
-        action.nextId,
-        ...state.ids.slice(index + 1)
-      ];
-      const nextState = { ...state, ids: nextIds };
-
-      return reducer(nextState, {
-        type: "reorder",
-        id: action.nextId,
-        order: action.nextOrder
-      });
     }
 
     default: {
@@ -257,25 +217,35 @@ export function useStepState({
   });
 
   return {
-    loop,
-    ids,
-    activeIndex,
-    ordered,
+    ...state,
     getActiveId: () => getActiveId(state),
     hasPrevious: () => hasPrevious(state),
     hasNext: () => hasNext(state),
     indexOf: idOrIndex => indexOf(state, idOrIndex),
     isActive: idOrIndex => isActive(state, idOrIndex),
-    show: idOrIndex => dispatch({ type: "show", idOrIndex }),
-    hide: () => dispatch({ type: "hide" }),
-    toggle: idOrIndex => dispatch({ type: "toggle", idOrIndex }),
-    previous: () => dispatch({ type: "previous" }),
-    next: () => dispatch({ type: "next" }),
-    reorder: (id, order = 0) => dispatch({ type: "reorder", id, order }),
-    register: (id, order = 0) => dispatch({ type: "register", id, order }),
-    unregister: id => dispatch({ type: "unregister", id }),
-    update: (id, nextId, nextOrder = state.ordered[id]) =>
-      dispatch({ type: "update", id, nextId, nextOrder })
+    show: React.useCallback(
+      idOrIndex => dispatch({ type: "show", idOrIndex }),
+      []
+    ),
+    hide: React.useCallback(() => dispatch({ type: "hide" }), []),
+    toggle: React.useCallback(
+      idOrIndex => dispatch({ type: "toggle", idOrIndex }),
+      []
+    ),
+    previous: React.useCallback(() => dispatch({ type: "previous" }), []),
+    next: React.useCallback(() => dispatch({ type: "next" }), []),
+    reorder: React.useCallback(
+      (id, order = 0) => dispatch({ type: "reorder", id, order }),
+      []
+    ),
+    register: React.useCallback(
+      (id, order = 0) => dispatch({ type: "register", id, order }),
+      []
+    ),
+    unregister: React.useCallback(
+      id => dispatch({ type: "unregister", id }),
+      []
+    )
   };
 }
 

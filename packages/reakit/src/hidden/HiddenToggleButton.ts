@@ -5,6 +5,7 @@ import useHiddenToggleButton, {
   UseHiddenToggleButtonOptions
 } from "./useHiddenToggleButton";
 import { useCreateElement } from "../utils";
+import splitHiddenProps from "./splitHiddenProps";
 
 export type HiddenToggleButtonProps<T extends As> = PropsWithAs<
   UseHiddenToggleButtonOptions,
@@ -13,19 +14,12 @@ export type HiddenToggleButtonProps<T extends As> = PropsWithAs<
 
 export const HiddenToggleButton = forwardRef(
   <T extends As = "button">(
-    {
-      as = "button" as T,
-      theme,
-      visible,
-      show,
-      hide,
-      toggle,
-      ...props
-    }: HiddenToggleButtonProps<T>,
+    { as = "button" as T, ...props }: HiddenToggleButtonProps<T>,
     ref: React.Ref<any>
   ) => {
-    const button = useHiddenToggleButton({ theme, toggle }, { ref, ...props });
-    return useCreateElement(as, button);
+    const [options, htmlProps] = splitHiddenProps(props);
+    const buttonProps = useHiddenToggleButton(options, { ref, ...htmlProps });
+    return useCreateElement(as, buttonProps);
   }
 );
 

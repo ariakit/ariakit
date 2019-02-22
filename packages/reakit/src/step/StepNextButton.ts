@@ -1,0 +1,26 @@
+import * as React from "react";
+import { As, PropsWithAs } from "../_utils/types";
+import forwardRef from "../_utils/forwardRef";
+import { useCreateElement } from "../utils";
+import splitStepProps from "./splitStepProps";
+import useStepNextButton, {
+  UseStepNextButtonOptions
+} from "./useStepNextButton";
+
+export type StepNextButtonProps<T extends As> = PropsWithAs<
+  UseStepNextButtonOptions,
+  T
+>;
+
+export const StepNextButton = forwardRef(
+  <T extends As = "button">(
+    { as = "button" as T, ...props }: StepNextButtonProps<T>,
+    ref: React.Ref<any>
+  ) => {
+    const [options, htmlProps] = splitStepProps(props);
+    const buttonProps = useStepNextButton(options, { ref, ...htmlProps });
+    return useCreateElement(as, buttonProps);
+  }
+);
+
+export default StepNextButton;
