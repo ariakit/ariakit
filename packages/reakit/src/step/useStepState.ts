@@ -32,11 +32,7 @@ export type StepSelectors = {
 
 export type StepActions = {
   /** TODO: Description */
-  show: (idOrIndex: string | number) => void;
-  /** TODO: Description */
-  hide: () => void;
-  /** TODO: Description */
-  toggle: (idOrIndex: string | number) => void;
+  goto: (idOrIndex: string | number) => void;
   /** TODO: Description */
   previous: () => void;
   /** TODO: Description */
@@ -52,9 +48,7 @@ export type StepActions = {
 export type UseStepStateOptions = Partial<StepState>;
 
 type StepAction =
-  | { type: "show"; idOrIndex: string | number }
-  | { type: "hide" }
-  | { type: "toggle"; idOrIndex: string | number }
+  | { type: "goto"; idOrIndex: string | number }
   | { type: "previous" }
   | { type: "next" }
   | { type: "reorder"; id: string; order: number }
@@ -87,24 +81,11 @@ function isActive(state: StepState, idOrIndex: string | number) {
 
 function reducer(state: StepState, action: StepAction): StepState {
   switch (action.type) {
-    case "show": {
+    case "goto": {
       return {
         ...state,
         activeIndex: indexOf(state, action.idOrIndex)
       };
-    }
-
-    case "hide": {
-      return {
-        ...state,
-        activeIndex: -1
-      };
-    }
-
-    case "toggle": {
-      return isActive(state, action.idOrIndex)
-        ? reducer(state, { type: "hide" })
-        : reducer(state, { type: "show", idOrIndex: action.idOrIndex });
     }
 
     case "previous": {
@@ -184,8 +165,8 @@ function reducer(state: StepState, action: StepAction): StepState {
           };
         }
         return {
-          ...reducer(state, { type: "hide" }),
-          ...nextState
+          ...nextState,
+          activeIndex: -1
         };
       }
       if (state.activeIndex >= nextIds.length) {
@@ -223,13 +204,8 @@ export function useStepState({
     hasNext: () => hasNext(state),
     indexOf: idOrIndex => indexOf(state, idOrIndex),
     isActive: idOrIndex => isActive(state, idOrIndex),
-    show: React.useCallback(
-      idOrIndex => dispatch({ type: "show", idOrIndex }),
-      []
-    ),
-    hide: React.useCallback(() => dispatch({ type: "hide" }), []),
-    toggle: React.useCallback(
-      idOrIndex => dispatch({ type: "toggle", idOrIndex }),
+    goto: React.useCallback(
+      idOrIndex => dispatch({ type: "goto", idOrIndex }),
       []
     ),
     previous: React.useCallback(() => dispatch({ type: "previous" }), []),
@@ -259,9 +235,7 @@ useStepState.keys = [
   "hasNext",
   "indexOf",
   "isActive",
-  "show",
-  "hide",
-  "toggle",
+  "goto",
   "previous",
   "next",
   "reorder",
