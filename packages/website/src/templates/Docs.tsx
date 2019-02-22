@@ -13,7 +13,9 @@ import {
   useStepState,
   Step,
   StepPreviousButton,
-  StepNextButton
+  StepNextButton,
+  useTabState,
+  Tab
 } from "reakit";
 import CoreLayout from "../components/CoreLayout";
 
@@ -68,11 +70,23 @@ const { Compiler: renderAst } = new RehypeReact({
 
 export default function Docs({ data }: DocsProps) {
   const step = useStepState({ loop: true });
+  const tab = useTabState();
   const {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
     <CoreLayout>
+      <ul>
+        <Tab tabId="tab1" {...tab}>
+          Tab 1
+        </Tab>
+        <Tab tabId="tab2" {...tab}>
+          Tab 2
+        </Tab>
+        <Tab tabId="tab3" {...tab}>
+          Tab 3
+        </Tab>
+      </ul>
       <StepPreviousButton theme={{ bgColor: "primary" }} {...step}>
         Previous
       </StepPreviousButton>

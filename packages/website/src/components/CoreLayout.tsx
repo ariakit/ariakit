@@ -1,23 +1,23 @@
 import * as React from "react";
-import { ThemeProvider, mergeProps, mergeTheme } from "reakit";
+import { ThemeProvider } from "reakit";
 import * as theme from "reakit-theme-palette";
 
-function useBox(_: any, props: any) {
-  return mergeProps(
-    {
-      style: {
-        color: "red"
-      }
-    },
-    props
-  );
-}
+// function useBox(_: any, props: any) {
+//   return mergeProps(
+//     {
+//       style: {
+//         color: "red"
+//       }
+//     },
+//     props
+//   );
+// }
 
-const myTheme = {
-  hooks: {
-    useBox
-  }
-};
+// const myTheme = {
+//   hooks: {
+//     useBox
+//   }
+// };
 
 function CoreLayout(props: { children: React.ReactNode }) {
   return (
