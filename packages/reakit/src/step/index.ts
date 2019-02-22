@@ -1,4 +1,3 @@
-export * from "./splitStepProps";
 export * from "./Step";
 export * from "./StepNextButton";
 export * from "./StepPreviousButton";

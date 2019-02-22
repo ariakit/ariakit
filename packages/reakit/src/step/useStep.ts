@@ -1,9 +1,17 @@
 import * as React from "react";
-import { StepSelectors, StepActions } from "./useStepState";
-import { useHidden, UseHiddenOptions, UseHiddenProps } from "../hidden";
-import { useHook } from "../theme";
+import useHook from "../theme/useHook";
+import useHidden, {
+  UseHiddenOptions,
+  UseHiddenProps
+} from "../hidden/useHidden";
+import useStepState, {
+  StepState,
+  StepSelectors,
+  StepActions
+} from "./useStepState";
 
 export type UseStepOptions = UseHiddenOptions &
+  Partial<StepState & StepSelectors & StepActions> &
   Pick<StepSelectors, "isActive"> &
   Pick<StepActions, "register" | "unregister"> & {
     /** TODO: Description */
@@ -27,5 +35,12 @@ export function useStep(options: UseStepOptions, props: UseStepProps) {
   props = useHook("useStep", options, props);
   return props;
 }
+
+useStep.keys = [
+  ...useHidden.keys,
+  ...useStepState.keys,
+  "stepId",
+  "order"
+] as const;
 
 export default useStep;

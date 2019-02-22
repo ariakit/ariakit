@@ -39,4 +39,6 @@ export function useHiddenState({
   };
 }
 
+useHiddenState.keys = ["visible", "show", "hide", "toggle"] as const;
+
 export default useHiddenState;

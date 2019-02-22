@@ -1,7 +1,7 @@
 import * as React from "react";
-import { useHook } from "../theme";
-import { UseBoxOptions, UseBoxProps, useBox } from "../box";
-import { mergeProps } from "../utils";
+import useHook from "../theme/useHook";
+import mergeProps from "../utils/mergeProps";
+import useBox, { UseBoxOptions, UseBoxProps } from "../box/useBox";
 
 export type UseButtonOptions = UseBoxOptions;
 
@@ -11,7 +11,7 @@ export function useButton(
   options: UseButtonOptions = {},
   props: UseButtonProps = {}
 ) {
-  props = mergeProps<typeof props>(
+  props = mergeProps(
     {
       role: "button",
       tabIndex: 0,
@@ -28,12 +28,14 @@ export function useButton(
           );
         }
       }
-    },
+    } as typeof props,
     props
   );
   props = useBox(options, props);
   props = useHook("useButton", options, props);
   return props;
 }
+
+useButton.keys = useBox.keys;
 
 export default useButton;

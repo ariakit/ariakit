@@ -1,8 +1,8 @@
 import { Omit } from "./types";
 
-function omit<T extends Record<string, any>, K extends keyof T>(
+export function omit<T extends Record<string, any>, K extends keyof T>(
   object: T,
-  paths: K[]
+  paths: ReadonlyArray<K> | K[]
 ) {
   const keys = Object.keys(object);
   const result = {} as Omit<T, K>;

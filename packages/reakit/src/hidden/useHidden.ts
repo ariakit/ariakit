@@ -1,12 +1,11 @@
 import * as React from "react";
-import { HiddenState, HiddenActions } from "./useHiddenState";
-import { useBox, UseBoxOptions, UseBoxProps } from "../box";
-import { useHook } from "../theme";
-import { mergeProps } from "../utils";
+import mergeProps from "../utils/mergeProps";
+import useHook from "../theme/useHook";
+import useBox, { UseBoxOptions, UseBoxProps } from "../box/useBox";
+import useHiddenState, { HiddenState, HiddenActions } from "./useHiddenState";
 
 export type UseHiddenOptions = UseBoxOptions &
-  Partial<HiddenState> &
-  Partial<Pick<HiddenActions, "hide">> & {
+  Partial<HiddenState & HiddenActions> & {
     /** TODO: Description */
     hideOnEsc?: boolean;
     /** TODO: Description */
@@ -52,17 +51,24 @@ export function useHidden(
     return () => document.body.removeEventListener("click", handleClickOutside);
   }, [ref, options.hideOnClickOutside, options.visible, options.hide]);
 
-  props = mergeProps<typeof props>(
+  props = mergeProps(
     {
       ref,
       "aria-hidden": !options.visible,
       hidden: !options.visible
-    },
+    } as typeof props,
     props
   );
   props = useBox(options, props);
   props = useHook("useHidden", options, props);
   return props;
 }
+
+useHidden.keys = [
+  ...useBox.keys,
+  ...useHiddenState.keys,
+  "hideOnEsc",
+  "hideOnClickOutside"
+] as const;
 
 export default useHidden;

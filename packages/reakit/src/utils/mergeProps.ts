@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PickByValue } from "../_utils/types";
+import { PickByValue, UnionToIntersection } from "../_utils/types";
 import extractPropFromObjects from "../_utils/extractPropFromObjects";
 
 function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
@@ -73,7 +73,7 @@ function mergeStyles<T>(...propsObjects: Array<{ style?: T }>): { style?: T } {
   };
 }
 
-export function mergeProps<T>(...propsObjects: T[]) {
+export function mergeProps<T extends any[]>(...propsObjects: T) {
   const allProps = Object.assign({}, ...propsObjects);
   const refProps = mergeRefs(...propsObjects);
   const classNameProps = mergeClassNames(...propsObjects);
@@ -85,7 +85,7 @@ export function mergeProps<T>(...propsObjects: T[]) {
     ...classNameProps,
     ...functionProps,
     ...styleProps
-  } as T;
+  } as UnionToIntersection<T[number]>;
 }
 
 export default mergeProps;

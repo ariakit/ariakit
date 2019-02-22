@@ -56,19 +56,19 @@ test("single hooks", () => {
 
 test("different hooks", () => {
   const impl = (
-    amount: number,
+    options: { amount: number },
     props: React.InputHTMLAttributes<any> = {}
-  ) => ({ ...props, max: +(props.max || 0) + amount });
+  ) => ({ ...props, max: +(props.max || 0) + options.amount });
   const fn1 = jest.fn(impl);
   const fn2 = jest.fn(impl);
   const theme1 = { hooks: { useSomething: fn1 } };
   const theme2 = { hooks: { useSomething: fn2 } };
   const merged = mergeTheme(theme1, theme2);
 
-  merged.hooks.useSomething(1);
+  merged.hooks.useSomething({ amount: 1 });
 
-  expect(fn1).toBeCalledWith(1, undefined);
-  expect(fn2).toBeCalledWith(1, { max: 1 });
+  expect(fn1).toBeCalledWith({ amount: 1 }, undefined);
+  expect(fn2).toBeCalledWith({ amount: 1 }, { max: 1 });
 });
 
 test("useCreateElement", () => {

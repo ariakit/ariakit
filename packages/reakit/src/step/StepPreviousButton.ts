@@ -1,8 +1,8 @@
 import * as React from "react";
 import { As, PropsWithAs } from "../_utils/types";
 import forwardRef from "../_utils/forwardRef";
-import { useCreateElement } from "../utils";
-import splitStepProps from "./splitStepProps";
+import splitProps from "../utils/splitProps";
+import useCreateElement from "../utils/useCreateElement";
 import useStepPreviousButton, {
   UseStepPreviousButtonOptions
 } from "./useStepPreviousButton";
@@ -17,7 +17,7 @@ export const StepPreviousButton = forwardRef(
     { as = "button" as T, ...props }: StepPreviousButtonProps<T>,
     ref: React.Ref<any>
   ) => {
-    const [options, htmlProps] = splitStepProps(props);
+    const [options, htmlProps] = splitProps(props, useStepPreviousButton.keys);
     const buttonProps = useStepPreviousButton(options, { ref, ...htmlProps });
     return useCreateElement(as, buttonProps);
   }

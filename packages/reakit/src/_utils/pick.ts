@@ -1,9 +1,9 @@
-function pick<T extends Record<string, any>, K extends keyof T>(
+export function pick<T extends Record<string, any>, K extends keyof T>(
   object: T,
-  paths: K[]
+  paths: ReadonlyArray<K> | K[]
 ) {
   const keys = Object.keys(object);
-  const result = {} as Pick<T, K>;
+  const result = {} as { [P in K]: T[P] };
 
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];

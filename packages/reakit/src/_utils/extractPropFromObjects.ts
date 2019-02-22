@@ -1,4 +1,4 @@
-function extractPropFromObjects<T, K extends keyof T>(
+export function extractPropFromObjects<T, K extends keyof T>(
   propsObjects: T[],
   prop: K
 ) {

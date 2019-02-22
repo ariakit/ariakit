@@ -17,6 +17,7 @@
     "no-restricted-syntax": "off",
     "no-param-reassign": "off",
     "no-sparse-arrays": "off",
+    "no-underscore-dangle": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/export": "off",
     "import/extensions": "off",

@@ -249,4 +249,24 @@ export function useStepState({
   };
 }
 
+useStepState.keys = [
+  "loop",
+  "ids",
+  "activeIndex",
+  "ordered",
+  "getActiveId",
+  "hasPrevious",
+  "hasNext",
+  "indexOf",
+  "isActive",
+  "show",
+  "hide",
+  "toggle",
+  "previous",
+  "next",
+  "reorder",
+  "register",
+  "unregister"
+] as const;
+
 export default useStepState;

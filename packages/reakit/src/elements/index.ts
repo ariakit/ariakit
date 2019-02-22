@@ -1,15 +1,11 @@
 import * as React from "react";
 import forwardRef from "../_utils/forwardRef";
 import { As } from "../_utils/types";
-import { useCreateElement } from "../utils";
-import { useHook } from "../theme";
-import {
-  useBox,
-  BoxProps,
-  UseBoxOptions,
-  UseBoxProps,
-  splitBoxProps
-} from "../box";
+import useCreateElement from "../utils/useCreateElement";
+import splitProps from "../utils/splitProps";
+import useHook from "../theme/useHook";
+import useBox, { UseBoxOptions, UseBoxProps } from "../box/useBox";
+import { BoxProps } from "../box/Box";
 
 function createHook(hookName: string) {
   const useElement = (options: UseBoxOptions = {}, props: UseBoxProps = {}) => {
@@ -17,6 +13,8 @@ function createHook(hookName: string) {
     props = useHook(hookName, options, props);
     return props;
   };
+
+  useElement.keys = useBox.keys;
 
   Object.defineProperty(useElement, "name", {
     value: hookName
@@ -34,7 +32,7 @@ function createComponent<T extends keyof JSX.IntrinsicElements>(
       { as = (element as unknown) as TT, ...props }: BoxProps<TT>,
       ref: React.Ref<any>
     ) => {
-      const [options, htmlProps] = splitBoxProps(props);
+      const [options, htmlProps] = splitProps(props, useElement.keys);
       const elementProps = useElement(options, { ref, ...htmlProps });
       return useCreateElement(as, elementProps);
     }

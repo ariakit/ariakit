@@ -1,7 +1,10 @@
-import pick from "./pick";
-import omit from "./omit";
+import pick from "../_utils/pick";
+import omit from "../_utils/omit";
 
-function splitProps<P, K extends keyof P>(props: P, keys: K[]) {
+export function splitProps<P, K extends keyof P>(
+  props: P,
+  keys: ReadonlyArray<K> | K[]
+) {
   const picked = pick(props, keys);
   const omitted = omit(props, keys);
 

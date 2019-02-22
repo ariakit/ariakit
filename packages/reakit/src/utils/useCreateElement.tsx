@@ -1,6 +1,6 @@
 import * as React from "react";
 import isRenderProp from "../_utils/isRenderProp";
-import { HookContext } from "../theme";
+import HookContext from "../theme/HookContext";
 
 export const useCreateElement = ((
   type: string,
