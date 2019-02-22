@@ -36,11 +36,13 @@ export function useStep(options: UseStepOptions, props: UseStepProps) {
   return props;
 }
 
-useStep.keys = [
+const keys: Array<keyof UseStepOptions> = [
   ...useHidden.keys,
   ...useStepState.keys,
   "stepId",
   "order"
-] as const;
+];
+
+useStep.keys = keys;
 
 export default useStep;

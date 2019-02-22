@@ -39,6 +39,13 @@ export function useHiddenState({
   };
 }
 
-useHiddenState.keys = ["visible", "show", "hide", "toggle"] as const;
+const keys: Array<keyof ReturnType<typeof useHiddenState>> = [
+  "visible",
+  "show",
+  "hide",
+  "toggle"
+];
+
+useHiddenState.keys = keys;
 
 export default useHiddenState;

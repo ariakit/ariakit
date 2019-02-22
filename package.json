@@ -16,6 +16,7 @@
     "build": "lerna exec --scope reakit* --ignore *codemods --concurrency 1 -- yarn build",
     "website": "lerna exec --scope website -- yarn start",
     "website:build": "lerna exec --scope website -- npm run build",
+    "website:serve": "lerna exec --scope website -- npm run serve",
     "release": "lerna publish",
     "release:next": "yarn release --npm-tag=next --preid=beta"
   },
@@ -80,6 +81,6 @@
     "rollup-plugin-node-resolve": "4.0.1",
     "rollup-plugin-replace": "2.1.0",
     "rollup-plugin-uglify": "6.0.2",
-    "typescript": "3.4.0-dev.20190222"
+    "typescript": "3.3.3"
   }
 }

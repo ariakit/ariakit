@@ -64,11 +64,13 @@ export function useHidden(
   return props;
 }
 
-useHidden.keys = [
+const keys: Array<keyof UseHiddenOptions> = [
   ...useBox.keys,
   ...useHiddenState.keys,
   "hideOnEsc",
   "hideOnClickOutside"
-] as const;
+];
+
+useHidden.keys = keys;
 
 export default useHidden;

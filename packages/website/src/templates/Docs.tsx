@@ -15,6 +15,7 @@ import {
   StepPreviousButton,
   StepNextButton
 } from "reakit";
+import CoreLayout from "../components/CoreLayout";
 
 type DocsProps = {
   data: {
@@ -71,8 +72,10 @@ export default function Docs({ data }: DocsProps) {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
-    <div>
-      <StepPreviousButton {...step}>Previous</StepPreviousButton>
+    <CoreLayout>
+      <StepPreviousButton theme={{ bgColor: "primary" }} {...step}>
+        Previous
+      </StepPreviousButton>
       <StepNextButton {...step}>Next</StepNextButton>
       <Step stepId="step1" {...step}>
         Step1
@@ -82,7 +85,7 @@ export default function Docs({ data }: DocsProps) {
       </Step>
       <h1>{title}</h1>
       {renderAst(htmlAst)}
-    </div>
+    </CoreLayout>
   );
 }
 

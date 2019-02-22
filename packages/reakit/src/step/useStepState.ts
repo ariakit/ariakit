@@ -225,7 +225,7 @@ export function useStepState({
   };
 }
 
-useStepState.keys = [
+const keys: Array<keyof ReturnType<typeof useStepState>> = [
   "loop",
   "ids",
   "activeIndex",
@@ -241,6 +241,8 @@ useStepState.keys = [
   "reorder",
   "register",
   "unregister"
-] as const;
+];
+
+useStepState.keys = keys;
 
 export default useStepState;

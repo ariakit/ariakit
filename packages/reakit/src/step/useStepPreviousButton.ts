@@ -31,6 +31,11 @@ export function useStepPreviousButton(
   return props;
 }
 
-useStepPreviousButton.keys = [...useButton.keys, ...useStepState.keys] as const;
+const keys: Array<keyof UseStepPreviousButtonOptions> = [
+  ...useButton.keys,
+  ...useStepState.keys
+];
+
+useStepPreviousButton.keys = keys;
 
 export default useStepPreviousButton;

@@ -28,9 +28,11 @@ export function useHiddenToggleButton(
   return props;
 }
 
-useHiddenToggleButton.keys = [
+const keys: Array<keyof UseHiddenToggleButtonOptions> = [
   ...useButton.keys,
   ...useHiddenState.keys
-] as const;
+];
+
+useHiddenToggleButton.keys = keys;
 
 export default useHiddenToggleButton;

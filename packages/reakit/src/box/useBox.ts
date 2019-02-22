@@ -13,6 +13,6 @@ export function useBox(options: UseBoxOptions = {}, props: UseBoxProps = {}) {
   return props;
 }
 
-useBox.keys = ["theme"] as const;
+useBox.keys = ["theme"] as Array<keyof UseBoxOptions>;
 
 export default useBox;
