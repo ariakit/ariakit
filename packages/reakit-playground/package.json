@@ -1,12 +1,12 @@
 {
-  "name": "reakit-theme-classic",
+  "name": "reakit-playground",
   "version": "0.0.1",
-  "description": "Reakit classic theme",
+  "description": "Reakit Playground",
   "license": "MIT",
-  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-theme-classic",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-playground",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "unpkg": "dist/reakit-theme-classic.min.js",
+  "unpkg": "dist/reakit-playground.min.js",
   "types": "ts",
   "author": {
     "name": "Diego Haz",
@@ -27,7 +27,7 @@
   "keywords": [
     "reakit",
     "react",
-    "theme"
+    "playground"
   ],
   "peerDependencies": {
     "react": "^16.8.0",
