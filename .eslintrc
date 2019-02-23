@@ -18,6 +18,7 @@
     "no-param-reassign": "off",
     "no-sparse-arrays": "off",
     "no-underscore-dangle": "off",
+    "no-plusplus": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "import/export": "off",
     "import/extensions": "off",

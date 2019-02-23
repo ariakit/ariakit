@@ -5,9 +5,15 @@ import {
   StepActions,
   UseStepStateOptions
 } from "../step/useStepState";
+import { useId } from "../utils/useId";
 
-export type TabState = StepState;
+export type TabState = StepState & {
+  /** TODO: Description */
+  baseId: string;
+};
+
 export type TabSelectors = StepSelectors;
+
 export type TabActions = StepActions;
 
 export type UseTabStateOptions = UseStepStateOptions;
@@ -17,7 +23,16 @@ export function useTabState({
   activeIndex = 0,
   ...options
 }: UseTabStateOptions = {}): TabState & TabSelectors & TabActions {
-  return useStepState({ loop, activeIndex, ...options });
+  const baseId = useId("tab-");
+  return {
+    baseId,
+    ...useStepState({ loop, activeIndex, ...options })
+  };
 }
 
-useTabState.keys = useStepState.keys;
+const keys: Array<keyof ReturnType<typeof useTabState>> = [
+  "baseId",
+  ...useStepState.keys
+];
+
+useTabState.keys = keys;

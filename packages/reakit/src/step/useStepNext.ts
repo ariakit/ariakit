@@ -20,7 +20,7 @@ export type UseStepNextProps = UseButtonProps;
 
 export function useStepNext(
   options: UseStepNextOptions,
-  props: UseStepNextProps
+  props: UseStepNextProps = {}
 ) {
   props = mergeProps(
     {

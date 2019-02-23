@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ThemeProvider } from "reakit";
+import { Provider } from "reakit";
 import * as theme from "reakit-theme-palette";
 
 // function useBox(_: any, props: any) {
@@ -22,7 +22,7 @@ import * as theme from "reakit-theme-palette";
 function CoreLayout(props: { children: React.ReactNode }) {
   return (
     <React.StrictMode>
-      <ThemeProvider {...theme}>{props.children}</ThemeProvider>
+      <Provider {...theme}>{props.children}</Provider>
     </React.StrictMode>
   );
 }

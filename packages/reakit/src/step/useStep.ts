@@ -24,7 +24,7 @@ export type UseStepOptions = UseHiddenOptions &
 
 export type UseStepProps = UseHiddenProps;
 
-export function useStep(options: UseStepOptions, props: UseStepProps) {
+export function useStep(options: UseStepOptions, props: UseStepProps = {}) {
   React.useEffect(() => {
     options.register(options.stepId, options.order);
     return () => options.unregister(options.stepId);

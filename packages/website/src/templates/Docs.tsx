@@ -15,7 +15,9 @@ import {
   StepPrevious,
   StepNext,
   useTabState,
-  Tab
+  Tab,
+  TabList,
+  TabPanel
 } from "reakit";
 import CoreLayout from "../components/CoreLayout";
 
@@ -76,7 +78,7 @@ export default function Docs({ data }: DocsProps) {
   } = data;
   return (
     <CoreLayout>
-      <ul>
+      <TabList {...tab}>
         <Tab tabId="tab1" {...tab}>
           Tab 1
         </Tab>
@@ -86,7 +88,16 @@ export default function Docs({ data }: DocsProps) {
         <Tab tabId="tab3" {...tab}>
           Tab 3
         </Tab>
-      </ul>
+      </TabList>
+      <TabPanel tabId="tab1" {...tab}>
+        Tab1
+      </TabPanel>
+      <TabPanel tabId="tab2" {...tab}>
+        Tab2
+      </TabPanel>
+      <TabPanel tabId="tab3" {...tab}>
+        Tab3
+      </TabPanel>
       <StepPrevious theme={{ bgColor: "primary" }} {...step}>
         Previous
       </StepPrevious>

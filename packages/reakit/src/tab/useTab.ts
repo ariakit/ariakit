@@ -4,9 +4,11 @@ import { mergeProps } from "../utils/mergeProps";
 import { useLi } from "../elements";
 import { UseBoxOptions, UseBoxProps } from "../box/useBox";
 import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
+import { getTabId, getTabPanelId } from "./utils";
 
 export type UseTabOptions = UseBoxOptions &
   Partial<TabState & TabSelectors & TabActions> &
+  Pick<TabState, "baseId"> &
   Pick<TabSelectors, "isActive"> &
   Pick<TabActions, "register" | "unregister" | "goto" | "previous" | "next"> & {
     /** TODO: Description */
@@ -17,7 +19,7 @@ export type UseTabOptions = UseBoxOptions &
 
 export type UseTabProps = UseBoxProps & React.LiHTMLAttributes<any>;
 
-export function useTab(options: UseTabOptions, props: UseTabProps) {
+export function useTab(options: UseTabOptions, props: UseTabProps = {}) {
   const ref = React.useRef<HTMLLIElement | null>(null);
 
   React.useEffect(() => {
@@ -37,11 +39,12 @@ export function useTab(options: UseTabOptions, props: UseTabProps) {
 
   props = mergeProps(
     {
-      id: "TODO",
+      role: "tab",
+      id: getTabId(options.tabId, options.baseId),
       ref,
       tabIndex: active ? 0 : -1,
       "aria-selected": active,
-      "aria-controls": "TODO",
+      "aria-controls": getTabPanelId(options.tabId, options.baseId),
       onClick: show,
       onFocus: show,
       onKeyDown: e => {
