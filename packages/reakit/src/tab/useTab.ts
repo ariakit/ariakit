@@ -1,9 +1,9 @@
 import * as React from "react";
-import useHook from "../theme/useHook";
-import mergeProps from "../utils/mergeProps";
+import { useHook } from "../theme/useHook";
+import { mergeProps } from "../utils/mergeProps";
 import { useLi } from "../elements";
 import { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import useTabState, { TabState, TabSelectors, TabActions } from "./useTabState";
+import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
 
 export type UseTabOptions = UseBoxOptions &
   Partial<TabState & TabSelectors & TabActions> &
@@ -70,5 +70,3 @@ const keys: Array<keyof UseTabOptions> = [
 ];
 
 useTab.keys = keys;
-
-export default useTab;

@@ -1,4 +1,5 @@
-import useStepState, {
+import {
+  useStepState,
   StepState,
   StepSelectors,
   StepActions,
@@ -20,5 +21,3 @@ export function useTabState({
 }
 
 useTabState.keys = useStepState.keys;
-
-export default useTabState;

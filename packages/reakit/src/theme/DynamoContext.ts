@@ -8,5 +8,3 @@ export const DynamoContext = React.createContext<DynamoContextType>({});
 export const SetDynamoContext = React.createContext<SetDynamoContextType>(
   () => {}
 );
-
-export default DynamoContext;

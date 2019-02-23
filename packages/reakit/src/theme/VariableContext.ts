@@ -12,5 +12,3 @@ export const VariableContext = React.createContext<VariableContextType>({});
 export const SetVariableContext = React.createContext<SetVariableContextType>(
   () => {}
 );
-
-export default VariableContext;

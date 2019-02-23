@@ -4,5 +4,3 @@ import { SetVariableContext } from "./VariableContext";
 export function useSetVariable() {
   return React.useContext(SetVariableContext);
 }
-
-export default useSetVariable;

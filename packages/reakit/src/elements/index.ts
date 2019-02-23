@@ -1,11 +1,6 @@
-import * as React from "react";
-import forwardRef from "../_utils/forwardRef";
-import { As } from "../_utils/types";
-import useCreateElement from "../utils/useCreateElement";
-import splitProps from "../utils/splitProps";
-import useHook from "../theme/useHook";
-import useBox, { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import { BoxProps } from "../box/Box";
+import { createComponent } from "../_utils/createComponent";
+import { useHook } from "../theme/useHook";
+import { useBox, UseBoxOptions, UseBoxProps } from "../box/useBox";
 
 function createHook(hookName: string) {
   const useElement = (options: UseBoxOptions = {}, props: UseBoxProps = {}) => {
@@ -21,22 +16,6 @@ function createHook(hookName: string) {
   });
 
   return useElement;
-}
-
-function createComponent<T extends keyof JSX.IntrinsicElements>(
-  element: T,
-  useElement: ReturnType<typeof createHook>
-) {
-  return forwardRef(
-    <TT extends As = T>(
-      { as = (element as unknown) as TT, ...props }: BoxProps<TT>,
-      ref: React.Ref<any>
-    ) => {
-      const [options, htmlProps] = splitProps(props, useElement.keys);
-      const elementProps = useElement(options, { ref, ...htmlProps });
-      return useCreateElement(as, elementProps);
-    }
-  );
 }
 
 export const useA = createHook("useA");

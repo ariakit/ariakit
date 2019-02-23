@@ -5,5 +5,3 @@ export function forwardRef<T extends React.RefForwardingComponent<any, any>>(
 ) {
   return (React.forwardRef(component) as unknown) as T;
 }
-
-export default forwardRef;

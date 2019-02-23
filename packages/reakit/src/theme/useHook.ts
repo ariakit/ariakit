@@ -1,5 +1,5 @@
 import * as React from "react";
-import HookContext from "./HookContext";
+import { HookContext } from "./HookContext";
 
 export function useHook(
   hook: string,
@@ -13,5 +13,3 @@ export function useHook(
   }
   return props;
 }
-
-export default useHook;

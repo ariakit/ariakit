@@ -1,6 +1,6 @@
 import * as React from "react";
-import isRenderProp from "../_utils/isRenderProp";
-import HookContext from "../theme/HookContext";
+import { isRenderProp } from "../_utils/isRenderProp";
+import { HookContext } from "../theme/HookContext";
 
 export const useCreateElement = ((
   type: string,
@@ -19,5 +19,3 @@ export const useCreateElement = ((
 
   return React.createElement(type, props, children);
 }) as typeof React.createElement;
-
-export default useCreateElement;

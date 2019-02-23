@@ -1,4 +1,4 @@
-import extractPropFromObjects from "../_utils/extractPropFromObjects";
+import { extractPropFromObjects } from "../_utils/extractPropFromObjects";
 import { UnionToIntersection } from "../_utils/types";
 import { HookContextType } from "./HookContext";
 import { ConstantContextType } from "./ConstantContext";
@@ -77,5 +77,3 @@ export function mergeTheme<T extends Theme[]>(...themes: T) {
     ...mergeHooks(...themes)
   } as UnionToIntersection<T[number]>;
 }
-
-export default mergeTheme;

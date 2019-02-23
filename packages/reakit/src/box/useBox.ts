@@ -1,5 +1,5 @@
 import * as React from "react";
-import useHook from "../theme/useHook";
+import { useHook } from "../theme/useHook";
 
 export type UseBoxOptions = {
   /** Options passed to `reakit-theme-*` */
@@ -16,5 +16,3 @@ export function useBox(options: UseBoxOptions = {}, props: UseBoxProps = {}) {
 const keys: Array<keyof UseBoxOptions> = ["theme"];
 
 useBox.keys = keys;
-
-export default useBox;

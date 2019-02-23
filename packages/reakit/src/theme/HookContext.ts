@@ -10,5 +10,3 @@ export type HookContextType = {
 };
 
 export const HookContext = React.createContext<HookContextType>({});
-
-export default HookContext;

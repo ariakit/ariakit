@@ -1,5 +1,5 @@
 import * as React from "react";
-import mergeTheme from "../mergeTheme";
+import { mergeTheme } from "../mergeTheme";
 
 test("single constants", () => {
   const theme = { constants: { a: "a" } };

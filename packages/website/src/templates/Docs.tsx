@@ -12,8 +12,8 @@ import {
   Pre,
   useStepState,
   Step,
-  StepPreviousButton,
-  StepNextButton,
+  StepPrevious,
+  StepNext,
   useTabState,
   Tab
 } from "reakit";
@@ -87,10 +87,10 @@ export default function Docs({ data }: DocsProps) {
           Tab 3
         </Tab>
       </ul>
-      <StepPreviousButton theme={{ bgColor: "primary" }} {...step}>
+      <StepPrevious theme={{ bgColor: "primary" }} {...step}>
         Previous
-      </StepPreviousButton>
-      <StepNextButton {...step}>Next</StepNextButton>
+      </StepPrevious>
+      <StepNext {...step}>Next</StepNext>
       <Step stepId="step1" {...step}>
         Step1
       </Step>

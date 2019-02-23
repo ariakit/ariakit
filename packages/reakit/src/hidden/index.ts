@@ -1,5 +1,5 @@
 export * from "./Hidden";
-export * from "./HiddenToggleButton";
+export * from "./HiddenToggle";
 export * from "./useHidden";
 export * from "./useHiddenState";
-export * from "./useHiddenToggleButton";
+export * from "./useHiddenToggle";

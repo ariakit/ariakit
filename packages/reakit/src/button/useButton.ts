@@ -1,7 +1,7 @@
 import * as React from "react";
-import useHook from "../theme/useHook";
-import mergeProps from "../utils/mergeProps";
-import useBox, { UseBoxOptions, UseBoxProps } from "../box/useBox";
+import { useHook } from "../theme/useHook";
+import { mergeProps } from "../utils/mergeProps";
+import { useBox, UseBoxOptions, UseBoxProps } from "../box/useBox";
 
 export type UseButtonOptions = UseBoxOptions;
 
@@ -37,5 +37,3 @@ export function useButton(
 }
 
 useButton.keys = useBox.keys;
-
-export default useButton;

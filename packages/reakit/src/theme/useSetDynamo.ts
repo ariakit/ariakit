@@ -4,5 +4,3 @@ import { SetDynamoContext } from "./DynamoContext";
 export function useSetDynamo() {
   return React.useContext(SetDynamoContext);
 }
-
-export default useSetDynamo;

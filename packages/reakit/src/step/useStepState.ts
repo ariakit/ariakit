@@ -1,5 +1,5 @@
 import * as React from "react";
-import omit from "../_utils/omit";
+import { omit } from "../_utils/omit";
 
 export type StepState = {
   /**
@@ -244,5 +244,3 @@ const keys: Array<keyof ReturnType<typeof useStepState>> = [
 ];
 
 useStepState.keys = keys;
-
-export default useStepState;

@@ -1,8 +1,8 @@
 import * as React from "react";
-import mergeProps from "../utils/mergeProps";
-import useHook from "../theme/useHook";
-import useBox, { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import useHiddenState, { HiddenState, HiddenActions } from "./useHiddenState";
+import { mergeProps } from "../utils/mergeProps";
+import { useHook } from "../theme/useHook";
+import { useBox, UseBoxOptions, UseBoxProps } from "../box/useBox";
+import { useHiddenState, HiddenState, HiddenActions } from "./useHiddenState";
 
 export type UseHiddenOptions = UseBoxOptions &
   Partial<HiddenState & HiddenActions> & {
@@ -72,5 +72,3 @@ const keys: Array<keyof UseHiddenOptions> = [
 ];
 
 useHidden.keys = keys;
-
-export default useHidden;

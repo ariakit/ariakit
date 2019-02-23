@@ -47,5 +47,3 @@ const keys: Array<keyof ReturnType<typeof useHiddenState>> = [
 ];
 
 useHiddenState.keys = keys;
-
-export default useHiddenState;

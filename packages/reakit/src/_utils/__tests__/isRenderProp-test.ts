@@ -1,4 +1,4 @@
-import isRenderProp from "../isRenderProp";
+import { isRenderProp } from "../isRenderProp";
 
 test("isRenderProp", () => {
   expect(isRenderProp("a")).toBe(false);

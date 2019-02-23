@@ -1,11 +1,13 @@
 import * as React from "react";
-import HookContext, { HookContextType } from "./HookContext";
-import ConstantContext, { ConstantContextType } from "./ConstantContext";
-import VariableContext, {
+import { HookContext, HookContextType } from "./HookContext";
+import { ConstantContext, ConstantContextType } from "./ConstantContext";
+import {
+  VariableContext,
   SetVariableContext,
   VariableContextType
 } from "./VariableContext";
-import DynamoContext, {
+import {
+  DynamoContext,
   SetDynamoContext,
   DynamoContextType
 } from "./DynamoContext";
@@ -45,5 +47,3 @@ export function ThemeProvider({
     </HookContext.Provider>
   );
 }
-
-export default ThemeProvider;

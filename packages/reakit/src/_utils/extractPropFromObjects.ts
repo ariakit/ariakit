@@ -12,5 +12,3 @@ export function extractPropFromObjects<T, K extends keyof T>(
 
   return props;
 }
-
-export default extractPropFromObjects;

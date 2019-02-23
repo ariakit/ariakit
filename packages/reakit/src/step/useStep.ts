@@ -1,10 +1,12 @@
 import * as React from "react";
-import useHook from "../theme/useHook";
-import useHidden, {
+import { useHook } from "../theme/useHook";
+import {
+  useHidden,
   UseHiddenOptions,
   UseHiddenProps
 } from "../hidden/useHidden";
-import useStepState, {
+import {
+  useStepState,
   StepState,
   StepSelectors,
   StepActions
@@ -44,5 +46,3 @@ const keys: Array<keyof UseStepOptions> = [
 ];
 
 useStep.keys = keys;
-
-export default useStep;
