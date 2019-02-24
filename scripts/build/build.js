@@ -8,6 +8,8 @@ const {
   hasTSConfig
 } = require("./utils");
 
+process.env.NODE_ENV = "production";
+
 const cwd = process.cwd();
 
 cleanBuild(cwd);

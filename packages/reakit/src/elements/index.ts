@@ -1,5 +1,5 @@
-import { createComponent } from "../_utils/createComponent";
-import { useHook } from "../theme/useHook";
+import { useHook } from "../theme/_useHook";
+import { createComponent } from "../utils/_createComponent";
 import { useBox, UseBoxOptions, UseBoxProps } from "../box/useBox";
 
 function createHook(hookName: string) {

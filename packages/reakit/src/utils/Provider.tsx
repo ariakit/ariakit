@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ThemeProviderProps, ThemeProvider } from "../theme/ThemeProvider";
-import { IdProvider } from "./useId";
+import { ThemeProviderProps, ThemeProvider } from "../theme/_ThemeProvider";
+import { IdProvider } from "./_useId";
 
 export type ProviderProps = ThemeProviderProps;
 

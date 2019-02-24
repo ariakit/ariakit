@@ -1,4 +1,4 @@
-import { useHook } from "../theme/useHook";
+import { useHook } from "../theme/_useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   useButton,

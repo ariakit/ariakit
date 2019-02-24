@@ -1,5 +1,5 @@
 import * as React from "react";
-import { VariableContext } from "./VariableContext";
+import { VariableContext } from "./_VariableContext";
 
 export function useVariable(variable: string) {
   React.useDebugValue(variable);

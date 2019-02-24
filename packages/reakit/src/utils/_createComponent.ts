@@ -1,8 +1,8 @@
 import * as React from "react";
-import { useCreateElement } from "../utils/useCreateElement";
-import { splitProps } from "../utils/splitProps";
-import { forwardRef } from "./forwardRef";
-import { As, PropsWithAs } from "./types";
+import { forwardRef } from "../__utils/forwardRef";
+import { As, PropsWithAs } from "../__utils/types";
+import { useCreateElement } from "./_useCreateElement";
+import { splitProps } from "./_splitProps";
 
 type Hook<Options> = {
   (

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DynamoContext } from "./DynamoContext";
+import { DynamoContext } from "./_DynamoContext";
 
 export function useDynamo(dynamo: string) {
   React.useDebugValue(dynamo);

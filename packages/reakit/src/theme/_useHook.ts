@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HookContext } from "./HookContext";
+import { HookContext } from "./_HookContext";
 
 export function useHook(
   hook: string,

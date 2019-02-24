@@ -1,9 +1,9 @@
-import { extractPropFromObjects } from "../_utils/extractPropFromObjects";
-import { UnionToIntersection } from "../_utils/types";
-import { HookContextType } from "./HookContext";
-import { ConstantContextType } from "./ConstantContext";
-import { VariableContextType } from "./VariableContext";
-import { DynamoContextType } from "./DynamoContext";
+import { extractPropFromObjects } from "../__utils/extractPropFromObjects";
+import { UnionToIntersection } from "../__utils/types";
+import { HookContextType } from "./_HookContext";
+import { ConstantContextType } from "./_ConstantContext";
+import { VariableContextType } from "./_VariableContext";
+import { DynamoContextType } from "./_DynamoContext";
 
 type Theme = {
   hooks?: HookContextType;

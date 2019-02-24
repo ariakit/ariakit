@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
@@ -11,6 +12,12 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "paths": {
+      "reakit/*": ["./node_modules/reakit/src/*"],
+      "reakit-theme-palette/*": ["./node_modules/reakit-theme-palette/src/*"],
+      "reakit-theme-classic/*": ["./node_modules/reakit-theme-classic/src/*"],
+      "reakit-playground/*": ["./node_modules/reakit-playground/src/*"]
+    }
   }
 }

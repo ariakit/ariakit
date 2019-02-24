@@ -5,7 +5,7 @@ import {
   StepActions,
   UseStepStateOptions
 } from "../step/useStepState";
-import { useId } from "../utils/useId";
+import { useId } from "../utils/_useId";
 
 export type TabState = StepState & {
   /** TODO: Description */

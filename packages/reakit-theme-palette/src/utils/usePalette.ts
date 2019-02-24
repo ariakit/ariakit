@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useVariable } from "reakit";
+import { useVariable } from "reakit/theme/_useVariable";
 
 function toArray<T>(arg: T[] | T) {
   return Array.isArray(arg) ? arg : [arg];

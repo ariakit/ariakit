@@ -70,14 +70,14 @@ const { Compiler: renderAst } = new RehypeReact({
   }
 });
 
-export default function Docs({ data }: DocsProps) {
+function Comp({ data }: DocsProps) {
   const step = useStepState({ loop: true });
   const tab = useTabState();
   const {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
-    <CoreLayout>
+    <>
       <TabList {...tab}>
         <Tab tabId="tab1" {...tab}>
           Tab 1
@@ -110,6 +110,14 @@ export default function Docs({ data }: DocsProps) {
       </Step>
       <h1>{title}</h1>
       {renderAst(htmlAst)}
+    </>
+  );
+}
+
+export default function Docs(props: DocsProps) {
+  return (
+    <CoreLayout>
+      <Comp {...props} />
     </CoreLayout>
   );
 }

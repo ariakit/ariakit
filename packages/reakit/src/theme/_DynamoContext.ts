@@ -1,5 +1,8 @@
 import * as React from "react";
-import { VariableContextType, SetVariableContextType } from "./VariableContext";
+import {
+  VariableContextType,
+  SetVariableContextType
+} from "./_VariableContext";
 
 export type DynamoContextType = VariableContextType;
 export type SetDynamoContextType = SetVariableContextType;

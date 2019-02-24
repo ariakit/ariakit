@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useHook } from "../theme/useHook";
+import { useHook } from "../theme/_useHook";
 import { mergeProps } from "../utils/mergeProps";
 import { useLi } from "../elements";
 import { UseBoxOptions, UseBoxProps } from "../box/useBox";
 import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
-import { getTabId, getTabPanelId } from "./utils";
+import { getTabId, getTabPanelId } from "./_utils";
 
 export type UseTabOptions = UseBoxOptions &
   Partial<TabState & TabSelectors & TabActions> &

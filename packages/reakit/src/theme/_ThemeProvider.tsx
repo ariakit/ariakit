@@ -1,16 +1,16 @@
 import * as React from "react";
-import { HookContext, HookContextType } from "./HookContext";
-import { ConstantContext, ConstantContextType } from "./ConstantContext";
+import { HookContext, HookContextType } from "./_HookContext";
+import { ConstantContext, ConstantContextType } from "./_ConstantContext";
 import {
   VariableContext,
   SetVariableContext,
   VariableContextType
-} from "./VariableContext";
+} from "./_VariableContext";
 import {
   DynamoContext,
   SetDynamoContext,
   DynamoContextType
-} from "./DynamoContext";
+} from "./_DynamoContext";
 
 export type ThemeProviderProps = {
   hooks?: HookContextType;

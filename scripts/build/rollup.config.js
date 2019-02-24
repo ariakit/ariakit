@@ -32,7 +32,7 @@ function makeExternalPredicate(externalArr) {
 function getExternal(isUMD) {
   const external = Object.keys(pkg.peerDependencies || {});
   const allExternal = [...external, ...Object.keys(pkg.dependencies || {})];
-  return makeExternalPredicate(isUMD ? external : allExternal);
+  return isUMD ? external : makeExternalPredicate(allExternal);
 }
 
 function getPlugins(isUMD) {

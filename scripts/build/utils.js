@@ -66,9 +66,12 @@ function isDirectory(path) {
 }
 
 function isPublicModule(rootPath, filename) {
-  const isPrivate = /^_/.test(filename);
+  const isPrivate = /^__/.test(filename);
+  if (isPrivate) {
+    return false;
+  }
   if (isDirectory(join(rootPath, filename))) {
-    return !isPrivate;
+    return true;
   }
   return /\.(j|t)sx?$/.test(filename);
 }

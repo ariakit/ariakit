@@ -1,4 +1,4 @@
-import { useHook } from "../theme/useHook";
+import { useHook } from "../theme/_useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   UseHiddenOptions,
@@ -6,7 +6,7 @@ import {
   useHidden
 } from "../hidden/useHidden";
 import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
-import { getTabPanelId, getTabId } from "./utils";
+import { getTabPanelId, getTabId } from "./_utils";
 
 export type UseTabPanelOptions = UseHiddenOptions &
   Partial<TabState & TabSelectors & TabActions> &

@@ -1,4 +1,4 @@
-import { useSetVariable } from "reakit";
+import { useSetVariable } from "reakit/theme/_useSetVariable";
 import p from "./p";
 
 type PaletteValue =

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useHook } from "../theme/useHook";
+import { useHook } from "../theme/_useHook";
 import {
   useHidden,
   UseHiddenOptions,

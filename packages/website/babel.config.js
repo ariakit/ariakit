@@ -1,3 +1,5 @@
+const { plugins } = require("../../babel.config");
+
 module.exports = {
   presets: [
     [
@@ -8,5 +10,6 @@ module.exports = {
         }
       }
     ]
-  ]
+  ],
+  plugins
 };

@@ -1,6 +1,6 @@
 import * as React from "react";
+import { useHook } from "../theme/_useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useHook } from "../theme/useHook";
 import { useBox, UseBoxOptions, UseBoxProps } from "../box/useBox";
 import { useHiddenState, HiddenState, HiddenActions } from "./useHiddenState";
 

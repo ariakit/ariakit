@@ -14,7 +14,7 @@ export function IdProvider({ children }: { children: React.ReactNode }) {
   const count = React.useRef(0);
   const genId = React.useMemo(
     () => (prefix = defaultPrefix) => `${prefix}${++count.current}`,
-    []
+    [count]
   );
   return <Context.Provider value={genId}>{children}</Context.Provider>;
 }

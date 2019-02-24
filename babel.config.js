@@ -1,13 +1,14 @@
-const testing = process.env.NODE_ENV === "test";
+const test = process.env.NODE_ENV === "test";
+const prod = process.env.NODE_ENV === "production";
 
 module.exports = {
   presets: [
     [
       "@babel/preset-env",
       {
-        modules: testing ? "commonjs" : false,
+        modules: test ? "commonjs" : false,
         loose: true,
-        targets: testing
+        targets: test
           ? { node: "current" }
           : {
               browsers: "defaults"
@@ -19,6 +20,15 @@ module.exports = {
   ],
   plugins: [
     "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-object-rest-spread"
-  ]
+    "@babel/plugin-proposal-object-rest-spread",
+    !prod && [
+      "babel-plugin-module-resolver",
+      {
+        alias: {
+          "^reakit/(.+)": "reakit/src/\\1",
+          "^reakit([^/]*)/(.+)": "reakit\\1/src/\\2"
+        }
+      }
+    ]
+  ].filter(Boolean)
 };
