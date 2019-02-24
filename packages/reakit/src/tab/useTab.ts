@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useHook } from "../theme/_useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useLi } from "../elements";
+import { useLi } from "../html";
 import { UseBoxOptions, UseBoxProps } from "../box/useBox";
 import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
 import { getTabId, getTabPanelId } from "./_utils";

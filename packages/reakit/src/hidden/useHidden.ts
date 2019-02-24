@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useHook } from "../theme/_useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useBox, UseBoxOptions, UseBoxProps } from "../box/useBox";
+import { useDiv } from "../html";
+import { UseBoxOptions, UseBoxProps } from "../box/useBox";
 import { useHiddenState, HiddenState, HiddenActions } from "./useHiddenState";
 
 export type UseHiddenOptions = UseBoxOptions &
@@ -59,13 +60,13 @@ export function useHidden(
     } as typeof props,
     props
   );
-  props = useBox(options, props);
+  props = useDiv(options, props);
   props = useHook("useHidden", options, props);
   return props;
 }
 
 const keys: Array<keyof UseHiddenOptions> = [
-  ...useBox.keys,
+  ...useDiv.keys,
   ...useHiddenState.keys,
   "hideOnEsc",
   "hideOnClickOutside"

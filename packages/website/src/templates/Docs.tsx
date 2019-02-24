@@ -1,15 +1,8 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
+import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit/html";
 import {
-  H1,
-  H2,
-  H3,
-  H4,
-  H5,
-  H6,
-  P,
-  Pre,
   useStepState,
   Step,
   StepPrevious,

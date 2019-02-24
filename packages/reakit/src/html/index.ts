@@ -24,6 +24,9 @@ export const A = createComponent("a", useA);
 export const useBlockquote = createHook("useBlockquote");
 export const Blockquote = createComponent("blockquote", useBlockquote);
 
+export const useButton = createHook("useButton");
+export const Button = createComponent("button", useButton);
+
 export const useCaption = createHook("useCaption");
 export const Caption = createComponent("caption", useCaption);
 
