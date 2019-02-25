@@ -1,5 +1,5 @@
-import { extractPropFromObjects } from "../_utils/extractPropFromObjects";
-import { UnionToIntersection } from "../_utils/types";
+import { extractPropFromObjects } from "../__utils/extractPropFromObjects";
+import { UnionToIntersection } from "../__utils/types";
 import { unstable_HookContextType } from "./HookContext";
 import { unstable_ConstantContextType } from "./ConstantContext";
 import { unstable_VariableContextType } from "./VariableContext";

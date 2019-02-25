@@ -1,5 +1,5 @@
 import * as React from "react";
-import { isRenderProp } from "../_utils/isRenderProp";
+import { isRenderProp } from "../__utils/isRenderProp";
 import { unstable_HookContext } from "../theme/HookContext";
 
 export const unstable_useCreateElement = ((

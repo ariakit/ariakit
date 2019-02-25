@@ -144,6 +144,14 @@ function makeGitignore(rootPath) {
   log(`Created .gitignore in ${rootPath}`);
 }
 
+function makeModulesJSON(rootPath) {
+  const buildFolders = getBuildFolders(rootPath);
+  const { name } = getPackage(rootPath);
+  const array = buildFolders.map(folder => `${name}/${folder}`);
+  writeFileSync(join(rootPath, "modules.json"), JSON.stringify(array, null, 2));
+  log(`Created modules.json in ${rootPath}`);
+}
+
 function getProxyPackageContents(rootPath, moduleName) {
   const { name } = getPackage(rootPath);
   const mainDir = getMainDir(rootPath);
@@ -189,6 +197,7 @@ module.exports = {
   cleanBuild,
   getIndexPath,
   makeGitignore,
+  makeModulesJSON,
   makeProxies,
   hasTSConfig
 };

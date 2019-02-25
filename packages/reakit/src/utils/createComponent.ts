@@ -1,6 +1,6 @@
 import * as React from "react";
-import { forwardRef } from "../_utils/forwardRef";
-import { As, PropsWithAs } from "../_utils/types";
+import { forwardRef } from "../__utils/forwardRef";
+import { As, PropsWithAs } from "../__utils/types";
 import { unstable_useCreateElement } from "./useCreateElement";
 import { unstable_splitProps } from "./splitProps";
 
