@@ -1,7 +1,7 @@
-import { pick } from "../__utils/pick";
-import { omit } from "../__utils/omit";
+import { pick } from "../_utils/pick";
+import { omit } from "../_utils/omit";
 
-export function splitProps<P, K extends keyof P>(
+export function unstable_splitProps<P, K extends keyof P>(
   props: P,
   keys: ReadonlyArray<K> | K[]
 ) {

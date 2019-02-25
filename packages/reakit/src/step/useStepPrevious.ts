@@ -1,26 +1,26 @@
-import { useHook } from "../theme/_useHook";
+import { unstable_useHook } from "../theme/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   useButton,
-  UseButtonOptions,
-  UseButtonProps
+  unstable_UseButtonOptions,
+  unstable_UseButtonProps
 } from "../button/useButton";
 import {
   useStepState,
-  StepState,
-  StepSelectors,
-  StepActions
+  unstable_StepState,
+  unstable_StepSelectors,
+  unstable_StepActions
 } from "./useStepState";
 
-export type UseStepPreviousOptions = UseButtonOptions &
-  Partial<StepState & StepSelectors & StepActions> &
-  Pick<StepActions, "previous">;
+export type unstable_UseStepPreviousOptions = unstable_UseButtonOptions &
+  Partial<unstable_StepState & unstable_StepSelectors & unstable_StepActions> &
+  Pick<unstable_StepActions, "previous">;
 
-export type UseStepPreviousProps = UseButtonProps;
+export type unstable_UseStepPreviousProps = unstable_UseButtonProps;
 
 export function useStepPrevious(
-  options: UseStepPreviousOptions,
-  props: UseStepPreviousProps = {}
+  options: unstable_UseStepPreviousOptions,
+  props: unstable_UseStepPreviousProps = {}
 ) {
   props = mergeProps(
     {
@@ -29,11 +29,11 @@ export function useStepPrevious(
     props
   );
   props = useButton(options, props);
-  props = useHook("useStepPrevious", options, props);
+  props = unstable_useHook("useStepPrevious", options, props);
   return props;
 }
 
-const keys: Array<keyof UseStepPreviousOptions> = [
+const keys: Array<keyof unstable_UseStepPreviousOptions> = [
   ...useButton.keys,
   ...useStepState.keys
 ];

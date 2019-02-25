@@ -2,6 +2,7 @@
   "name": "reakit-theme-palette",
   "version": "0.0.1",
   "description": "Reakit palette theme",
+  "sideEffects": false,
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-theme-palette",
   "main": "lib/index.js",
@@ -29,6 +30,11 @@
     "react",
     "theme"
   ],
+  "devDependencies": {
+    "react": "16.8.0",
+    "react-dom": "16.8.0",
+    "reakit": "0.16.0"
+  },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",

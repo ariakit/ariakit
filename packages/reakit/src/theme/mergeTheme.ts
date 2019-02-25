@@ -1,15 +1,15 @@
-import { extractPropFromObjects } from "../__utils/extractPropFromObjects";
-import { UnionToIntersection } from "../__utils/types";
-import { HookContextType } from "./_HookContext";
-import { ConstantContextType } from "./_ConstantContext";
-import { VariableContextType } from "./_VariableContext";
-import { DynamoContextType } from "./_DynamoContext";
+import { extractPropFromObjects } from "../_utils/extractPropFromObjects";
+import { UnionToIntersection } from "../_utils/types";
+import { unstable_HookContextType } from "./HookContext";
+import { unstable_ConstantContextType } from "./ConstantContext";
+import { unstable_VariableContextType } from "./VariableContext";
+import { unstable_DynamoContextType } from "./DynamoContext";
 
 type Theme = {
-  hooks?: HookContextType;
-  constants?: ConstantContextType;
-  variables?: VariableContextType;
-  dynamos?: DynamoContextType;
+  hooks?: unstable_HookContextType;
+  constants?: unstable_ConstantContextType;
+  variables?: unstable_VariableContextType;
+  dynamos?: unstable_DynamoContextType;
 };
 
 function mergeObjects<T extends Theme, K extends keyof T>(

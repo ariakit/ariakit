@@ -1,11 +1,11 @@
 import * as React from "react";
 
-export type HiddenState = {
+export type unstable_HiddenState = {
   /** Tell whether it's visible or not */
   visible: boolean;
 };
 
-export type HiddenActions = {
+export type unstable_HiddenActions = {
   /** Change the `visible` state to `true` */
   show: () => void;
   /** Change the `visible` state to `false` */
@@ -14,11 +14,12 @@ export type HiddenActions = {
   toggle: () => void;
 };
 
-export type UseHiddenStateOptions = Partial<HiddenState>;
+export type unstable_UseHiddenStateOptions = Partial<unstable_HiddenState>;
 
 export function useHiddenState({
   visible: initialVisible = false
-}: UseHiddenStateOptions = {}): HiddenState & HiddenActions {
+}: unstable_UseHiddenStateOptions = {}): unstable_HiddenState &
+  unstable_HiddenActions {
   const [visible, setVisible] = React.useState(initialVisible);
 
   const show = () => {

@@ -1,28 +1,35 @@
 import * as React from "react";
-import { useHook } from "../theme/_useHook";
+import { unstable_useHook } from "../theme/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useDiv } from "../html";
-import { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import { useHiddenState, HiddenState, HiddenActions } from "./useHiddenState";
+import {
+  unstable_UseBoxOptions,
+  unstable_UseBoxProps,
+  useBox
+} from "../box/useBox";
+import {
+  useHiddenState,
+  unstable_HiddenState,
+  unstable_HiddenActions
+} from "./useHiddenState";
 
-export type UseHiddenOptions = UseBoxOptions &
-  Partial<HiddenState & HiddenActions> & {
-    /** TODO: Description */
-    hideOnEsc?: boolean;
-    /** TODO: Description */
-    hideOnClickOutside?: boolean;
+export type unstable_UseHiddenOptions = unstable_UseBoxOptions &
+  Partial<unstable_HiddenState & unstable_HiddenActions> & {
+    /** @experimental */
+    unstable_hideOnEsc?: boolean;
+    /** @experimental */
+    unstable_hideOnClickOutside?: boolean;
   };
 
-export type UseHiddenProps = UseBoxProps;
+export type unstable_UseHiddenProps = unstable_UseBoxProps;
 
 export function useHidden(
-  options: UseHiddenOptions = {},
-  props: UseHiddenProps = {}
+  options: unstable_UseHiddenOptions = {},
+  props: unstable_UseHiddenProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
 
   React.useEffect(() => {
-    if (!options.hideOnEsc) return undefined;
+    if (!options.unstable_hideOnEsc) return undefined;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && options.visible && options.hide) {
         options.hide();
@@ -30,10 +37,10 @@ export function useHidden(
     };
     document.body.addEventListener("keydown", handleKeyDown);
     return () => document.body.removeEventListener("keydown", handleKeyDown);
-  }, [options.hideOnEsc, options.visible, options.hide]);
+  }, [options.unstable_hideOnEsc, options.visible, options.hide]);
 
   React.useEffect(() => {
-    if (!options.hideOnClickOutside) return undefined;
+    if (!options.unstable_hideOnClickOutside) return undefined;
     const handleClickOutside = (e: MouseEvent) => {
       const el = ref.current;
       const shouldHide =
@@ -50,7 +57,7 @@ export function useHidden(
     };
     document.body.addEventListener("click", handleClickOutside);
     return () => document.body.removeEventListener("click", handleClickOutside);
-  }, [ref, options.hideOnClickOutside, options.visible, options.hide]);
+  }, [ref, options.unstable_hideOnClickOutside, options.visible, options.hide]);
 
   props = mergeProps(
     {
@@ -60,16 +67,16 @@ export function useHidden(
     } as typeof props,
     props
   );
-  props = useDiv(options, props);
-  props = useHook("useHidden", options, props);
+  props = useBox(options, props);
+  props = unstable_useHook("useHidden", options, props);
   return props;
 }
 
-const keys: Array<keyof UseHiddenOptions> = [
-  ...useDiv.keys,
+const keys: Array<keyof unstable_UseHiddenOptions> = [
+  ...useBox.keys,
   ...useHiddenState.keys,
-  "hideOnEsc",
-  "hideOnClickOutside"
+  "unstable_hideOnEsc",
+  "unstable_hideOnClickOutside"
 ];
 
 useHidden.keys = keys;

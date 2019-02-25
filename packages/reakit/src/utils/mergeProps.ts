@@ -1,6 +1,6 @@
 import * as React from "react";
-import { PickByValue, UnionToIntersection } from "../__utils/types";
-import { extractPropFromObjects } from "../__utils/extractPropFromObjects";
+import { PickByValue, UnionToIntersection } from "../_utils/types";
+import { extractPropFromObjects } from "../_utils/extractPropFromObjects";
 
 function mergeRefs<T>(...propsObjects: Array<{ ref?: React.Ref<T> }>) {
   const refs = extractPropFromObjects(propsObjects, "ref");

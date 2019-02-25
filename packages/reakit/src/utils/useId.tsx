@@ -10,7 +10,11 @@ const generateId = (prefix = defaultPrefix) =>
 
 const Context = React.createContext(generateId);
 
-export function IdProvider({ children }: { children: React.ReactNode }) {
+export function unstable_IdProvider({
+  children
+}: {
+  children: React.ReactNode;
+}) {
   const count = React.useRef(0);
   const genId = React.useMemo(
     () => (prefix = defaultPrefix) => `${prefix}${++count.current}`,
@@ -19,7 +23,7 @@ export function IdProvider({ children }: { children: React.ReactNode }) {
   return <Context.Provider value={genId}>{children}</Context.Provider>;
 }
 
-export function useId(prefix = defaultPrefix) {
+export function unstable_useId(prefix = defaultPrefix) {
   const genId = React.useContext(Context);
   const [id] = React.useState(() => genId(prefix));
   return id;

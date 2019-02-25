@@ -1,17 +1,25 @@
-import { useHook } from "../theme/_useHook";
+import { unstable_useHook } from "../theme/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useUl } from "../html";
-import { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
+import {
+  unstable_UseBoxOptions,
+  unstable_UseBoxProps,
+  useBox
+} from "../box/useBox";
+import {
+  useTabState,
+  unstable_TabState,
+  unstable_TabSelectors,
+  unstable_TabActions
+} from "./useTabState";
 
-export type UseTabListOptions = UseBoxOptions &
-  Partial<TabState & TabSelectors & TabActions>;
+export type unstable_UseTabListOptions = unstable_UseBoxOptions &
+  Partial<unstable_TabState & unstable_TabSelectors & unstable_TabActions>;
 
-export type UseTabListProps = UseBoxProps;
+export type unstable_UseTabListProps = unstable_UseBoxProps;
 
 export function useTabList(
-  options: UseTabListOptions = {},
-  props: UseTabListProps = {}
+  options: unstable_UseTabListOptions = {},
+  props: unstable_UseTabListProps = {}
 ) {
   props = mergeProps(
     {
@@ -19,13 +27,13 @@ export function useTabList(
     } as typeof props,
     props
   );
-  props = useUl(options, props);
-  props = useHook("useTabList", options, props);
+  props = useBox(options, props);
+  props = unstable_useHook("useTabList", options, props);
   return props;
 }
 
-const keys: Array<keyof UseTabListOptions> = [
-  ...useUl.keys,
+const keys: Array<keyof unstable_UseTabListOptions> = [
+  ...useBox.keys,
   ...useTabState.keys
 ];
 

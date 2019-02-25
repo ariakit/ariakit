@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useVariable } from "reakit/theme/_useVariable";
+import { unstable_useVariable } from "reakit/theme/useVariable";
 
 function toArray<T>(arg: T[] | T) {
   return Array.isArray(arg) ? arg : [arg];
@@ -16,7 +16,7 @@ export function usePalette(
   fallback?: string
 ): string | undefined {
   React.useDebugValue(palette || "(not set)");
-  const palettes = useVariable("palette");
+  const palettes = unstable_useVariable("palette");
 
   if (!palette) return fallback;
 
@@ -37,5 +37,3 @@ export function usePalette(
   }
   return result;
 }
-
-export default usePalette;

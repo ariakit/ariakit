@@ -13,17 +13,42 @@ npm i reakit-playground
 ```jsx
 import React from "react";
 import { Playground } from "reakit-playground";
-import { createComponent } from "reakit/utils/_createComponent";
-import { getTabId } from "reakit/_popover";
 
 function App() {
   const playground = usePlaygroundState({
     language: "jsx",
     code: "foo",
     html: true,
-    readonly: false
+    readonly: true
   });
   return <Playground {...playground} />;
+}
+
+function App() {
+  const editor = useEditorState({
+    language: "jsx",
+    code: "foo",
+    html: true,
+    readonly: true
+  });
+  return <PlaygroundEditor readonly code="foo" language="jsx" />;
+}
+
+function App() {
+  // there will be no tabs
+  const playgroundApp = usePlaygroundState({
+    title: "App",
+    language: "jsx",
+    code: "foo",
+    html: true,
+    readonly: true
+  });
+  const playgroundHeader = usePlaygroundState({
+    title: "Header",
+    language: "jsx",
+    code: "foo"
+  });
+  return <Playground readonly html disableToolbar {...playground} />;
 }
 
 function App() {
@@ -57,12 +82,6 @@ function App() {
       </PlaygroundHeader>
     </PlaygroundLayout>
   );
-}
-
-function App() {
-  const [jsx, setJSX] = React.useState("foo");
-  const [html, setHTML] = React.useState("foo");
-  return <Playground value={value} onChange={setValue} />;
 }
 ```
 

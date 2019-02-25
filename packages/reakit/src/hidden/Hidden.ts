@@ -1,4 +1,4 @@
-import { createComponent } from "../utils/_createComponent";
+import { unstable_createComponent } from "../utils/createComponent";
 import { useHidden } from "./useHidden";
 
-export const Hidden = createComponent("div", useHidden);
+export const Hidden = unstable_createComponent("div", useHidden);

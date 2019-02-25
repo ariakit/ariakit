@@ -1,5 +1,5 @@
-import { useSetVariable } from "reakit/theme/_useSetVariable";
-import p from "./p";
+import { unstable_useSetVariable } from "reakit/theme/useSetVariable";
+import { p } from "./p";
 
 type PaletteValue =
   | string
@@ -8,7 +8,7 @@ type PaletteValue =
   | Array<ReturnType<typeof p>>;
 
 export function useSetPalette() {
-  const setVariable = useSetVariable();
+  const setVariable = unstable_useSetVariable();
 
   return (palette: string, value: PaletteValue) => {
     return setVariable(variables => ({
@@ -20,5 +20,3 @@ export function useSetPalette() {
     }));
   };
 }
-
-export default useSetPalette;

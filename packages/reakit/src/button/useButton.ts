@@ -1,15 +1,17 @@
-import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
-import { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import { useButton as useHTMLButton } from "../html";
+import {
+  unstable_UseBoxOptions,
+  unstable_UseBoxProps,
+  useBox
+} from "../box/useBox";
 
-export type UseButtonOptions = UseBoxOptions;
+export type unstable_UseButtonOptions = unstable_UseBoxOptions;
 
-export type UseButtonProps = UseBoxProps & React.ButtonHTMLAttributes<any>;
+export type unstable_UseButtonProps = unstable_UseBoxProps;
 
 export function useButton(
-  options: UseButtonOptions = {},
-  props: UseButtonProps = {}
+  options: unstable_UseButtonOptions = {},
+  props: unstable_UseButtonProps = {}
 ) {
   props = mergeProps(
     {
@@ -31,8 +33,8 @@ export function useButton(
     } as typeof props,
     props
   );
-  props = useHTMLButton(options, props);
+  props = useBox(options, props);
   return props;
 }
 
-useButton.keys = useHTMLButton.keys;
+useButton.keys = useBox.keys;

@@ -1,4 +1,4 @@
-import { createComponent } from "../utils/_createComponent";
+import { unstable_createComponent } from "../utils/createComponent";
 import { useStepNext } from "./useStepNext";
 
-export const StepNext = createComponent("button", useStepNext);
+export const StepNext = unstable_createComponent("button", useStepNext);

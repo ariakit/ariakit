@@ -1,3 +1,2 @@
 export * from "./utils";
-export * from "./hooks";
-export * from "./variables";
+export * from "./theme";

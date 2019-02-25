@@ -1,29 +1,31 @@
 import {
   useStepState,
-  StepState,
-  StepSelectors,
-  StepActions,
-  UseStepStateOptions
+  unstable_StepState,
+  unstable_StepSelectors,
+  unstable_StepActions,
+  unstable_UseStepStateOptions
 } from "../step/useStepState";
-import { useId } from "../utils/_useId";
+import { unstable_useId } from "../utils/useId";
 
-export type TabState = StepState & {
+export type unstable_TabState = unstable_StepState & {
   /** TODO: Description */
   baseId: string;
 };
 
-export type TabSelectors = StepSelectors;
+export type unstable_TabSelectors = unstable_StepSelectors;
 
-export type TabActions = StepActions;
+export type unstable_TabActions = unstable_StepActions;
 
-export type UseTabStateOptions = UseStepStateOptions;
+export type unstable_UseTabStateOptions = unstable_UseStepStateOptions;
 
 export function useTabState({
   loop = true,
   activeIndex = 0,
   ...options
-}: UseTabStateOptions = {}): TabState & TabSelectors & TabActions {
-  const baseId = useId("tab-");
+}: unstable_UseTabStateOptions = {}): unstable_TabState &
+  unstable_TabSelectors &
+  unstable_TabActions {
+  const baseId = unstable_useId("tab-");
   return {
     baseId,
     ...useStepState({ loop, activeIndex, ...options })

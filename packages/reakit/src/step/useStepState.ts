@@ -1,7 +1,7 @@
 import * as React from "react";
-import { omit } from "../__utils/omit";
+import { omit } from "../_utils/omit";
 
-export type StepState = {
+export type unstable_StepState = {
   /**
    * The first index becomes the next one when the last one is active.
    * The last index becomes the previous one when the first one is active.
@@ -17,7 +17,7 @@ export type StepState = {
   };
 };
 
-export type StepSelectors = {
+export type unstable_StepSelectors = {
   /** TODO: Description */
   getActiveId: () => string;
   /** TODO: Description */
@@ -30,7 +30,7 @@ export type StepSelectors = {
   isActive: (idOrIndex: string | number) => boolean;
 };
 
-export type StepActions = {
+export type unstable_StepActions = {
   /** TODO: Description */
   goto: (idOrIndex: string | number) => void;
   /** TODO: Description */
@@ -45,7 +45,7 @@ export type StepActions = {
   unregister: (id: string) => void;
 };
 
-export type UseStepStateOptions = Partial<StepState>;
+export type unstable_UseStepStateOptions = Partial<unstable_StepState>;
 
 type StepAction =
   | { type: "goto"; idOrIndex: string | number }
@@ -55,31 +55,34 @@ type StepAction =
   | { type: "register"; id: string; order: number }
   | { type: "unregister"; id: string };
 
-function getActiveId(state: StepState) {
+function getActiveId(state: unstable_StepState) {
   return state.ids[state.activeIndex];
 }
 
-function hasPrevious(state: StepState) {
+function hasPrevious(state: unstable_StepState) {
   return state.ids.length > 1 && Boolean(state.ids[state.activeIndex - 1]);
 }
 
-function hasNext(state: StepState) {
+function hasNext(state: unstable_StepState) {
   return state.ids.length > 1 && Boolean(state.ids[state.activeIndex + 1]);
 }
 
-function indexOf(state: StepState, idOrIndex: string | number) {
+function indexOf(state: unstable_StepState, idOrIndex: string | number) {
   return typeof idOrIndex === "number"
     ? idOrIndex
     : state.ids.indexOf(idOrIndex);
 }
 
-function isActive(state: StepState, idOrIndex: string | number) {
+function isActive(state: unstable_StepState, idOrIndex: string | number) {
   return (
     state.activeIndex >= 0 && state.activeIndex === indexOf(state, idOrIndex)
   );
 }
 
-function reducer(state: StepState, action: StepAction): StepState {
+function reducer(
+  state: unstable_StepState,
+  action: StepAction
+): unstable_StepState {
   switch (action.type) {
     case "goto": {
       return {
@@ -189,7 +192,9 @@ export function useStepState({
   ids = [],
   activeIndex = -1,
   ordered = {}
-}: UseStepStateOptions = {}): StepState & StepSelectors & StepActions {
+}: unstable_UseStepStateOptions = {}): unstable_StepState &
+  unstable_StepSelectors &
+  unstable_StepActions {
   const [state, dispatch] = React.useReducer(reducer, {
     loop,
     ids,

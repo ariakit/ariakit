@@ -1,8 +1,11 @@
 import * as React from "react";
-import { ThemeProviderProps, ThemeProvider } from "../theme/_ThemeProvider";
-import { IdProvider } from "./_useId";
+import {
+  unstable_ThemeProviderProps,
+  unstable_ThemeProvider as ThemeProvider
+} from "../theme/ThemeProvider";
+import { unstable_IdProvider as IdProvider } from "./useId";
 
-export type ProviderProps = ThemeProviderProps;
+export type ProviderProps = unstable_ThemeProviderProps;
 
 export function Provider(props: ProviderProps) {
   return (

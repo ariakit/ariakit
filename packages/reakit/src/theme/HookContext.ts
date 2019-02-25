@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export type HookContextType = {
+export type unstable_HookContextType = {
   useCreateElement?: typeof React.createElement;
 } & {
   [key: string]: (
@@ -9,4 +9,6 @@ export type HookContextType = {
   ) => React.HTMLAttributes<any> & React.RefAttributes<any>;
 };
 
-export const HookContext = React.createContext<HookContextType>({});
+export const unstable_HookContext = React.createContext<
+  unstable_HookContextType
+>({});

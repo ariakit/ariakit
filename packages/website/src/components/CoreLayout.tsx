@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Provider } from "reakit";
-import * as theme from "reakit-theme-palette";
+import { theme } from "reakit-theme-palette";
 
 // function useBox(_: any, props: any) {
 //   return mergeProps(

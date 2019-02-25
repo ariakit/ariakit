@@ -1,5 +1,6 @@
-import { mergeProps, UseBoxProps } from "reakit";
-import usePalette from "../utils/usePalette";
+import { unstable_UseBoxProps } from "reakit/box/useBox";
+import { mergeProps } from "reakit/utils/mergeProps";
+import { usePalette } from "../utils/usePalette";
 
 export type UseBoxOptions = {
   theme: {
@@ -8,7 +9,10 @@ export type UseBoxOptions = {
   };
 };
 
-export function useBox({ theme = {} }: UseBoxOptions, props: UseBoxProps = {}) {
+export function useBox(
+  { theme = {} }: UseBoxOptions,
+  props: unstable_UseBoxProps = {}
+) {
   const color = usePalette(theme.color);
   const bgColor = usePalette(theme.bgColor);
   const style = {
@@ -17,5 +21,3 @@ export function useBox({ theme = {} }: UseBoxOptions, props: UseBoxProps = {}) {
   };
   return mergeProps({ style }, props);
 }
-
-export default useBox;

@@ -1,25 +1,40 @@
 import * as React from "react";
-import { useHook } from "../theme/_useHook";
+import { unstable_useHook } from "../theme/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useLi } from "../html";
-import { UseBoxOptions, UseBoxProps } from "../box/useBox";
-import { useTabState, TabState, TabSelectors, TabActions } from "./useTabState";
-import { getTabId, getTabPanelId } from "./_utils";
+import {
+  unstable_UseBoxOptions,
+  unstable_UseBoxProps,
+  useBox
+} from "../box/useBox";
+import {
+  useTabState,
+  unstable_TabState,
+  unstable_TabSelectors,
+  unstable_TabActions
+} from "./useTabState";
+import { unstable_getTabId, unstable_getTabPanelId } from "./utils";
 
-export type UseTabOptions = UseBoxOptions &
-  Partial<TabState & TabSelectors & TabActions> &
-  Pick<TabState, "baseId"> &
-  Pick<TabSelectors, "isActive"> &
-  Pick<TabActions, "register" | "unregister" | "goto" | "previous" | "next"> & {
+export type unstable_UseTabOptions = unstable_UseBoxOptions &
+  Partial<unstable_TabState & unstable_TabSelectors & unstable_TabActions> &
+  Pick<unstable_TabState, "baseId"> &
+  Pick<unstable_TabSelectors, "isActive"> &
+  Pick<
+    unstable_TabActions,
+    "register" | "unregister" | "goto" | "previous" | "next"
+  > & {
     /** TODO: Description */
     tabId: string;
     /** TODO: Description */
     order?: number;
   };
 
-export type UseTabProps = UseBoxProps & React.LiHTMLAttributes<any>;
+export type unstable_UseTabProps = unstable_UseBoxProps &
+  React.LiHTMLAttributes<any>;
 
-export function useTab(options: UseTabOptions, props: UseTabProps = {}) {
+export function useTab(
+  options: unstable_UseTabOptions,
+  props: unstable_UseTabProps = {}
+) {
   const ref = React.useRef<HTMLLIElement | null>(null);
 
   React.useEffect(() => {
@@ -40,11 +55,11 @@ export function useTab(options: UseTabOptions, props: UseTabProps = {}) {
   props = mergeProps(
     {
       role: "tab",
-      id: getTabId(options.tabId, options.baseId),
+      id: unstable_getTabId(options.tabId, options.baseId),
       ref,
       tabIndex: active ? 0 : -1,
       "aria-selected": active,
-      "aria-controls": getTabPanelId(options.tabId, options.baseId),
+      "aria-controls": unstable_getTabPanelId(options.tabId, options.baseId),
       onClick: show,
       onFocus: show,
       onKeyDown: e => {
@@ -60,13 +75,13 @@ export function useTab(options: UseTabOptions, props: UseTabProps = {}) {
     props
   );
 
-  props = useLi(options, props);
-  props = useHook("useTab", options, props);
+  props = useBox(options, props);
+  props = unstable_useHook("useTab", options, props);
   return props;
 }
 
-const keys: Array<keyof UseTabOptions> = [
-  ...useLi.keys,
+const keys: Array<keyof unstable_UseTabOptions> = [
+  ...useBox.keys,
   ...useTabState.keys,
   "tabId",
   "order"

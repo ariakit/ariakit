@@ -1,13 +1,13 @@
 import * as React from "react";
-import { HookContext } from "./_HookContext";
+import { unstable_HookContext } from "./HookContext";
 
-export function useHook(
+export function unstable_useHook(
   hook: string,
   options: Record<string, any> = {},
   props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ) {
   React.useDebugValue(hook);
-  const hooks = React.useContext(HookContext);
+  const hooks = React.useContext(unstable_HookContext);
   if (hook in hooks) {
     return hooks[hook](options, props);
   }

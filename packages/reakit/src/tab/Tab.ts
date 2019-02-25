@@ -1,4 +1,4 @@
-import { createComponent } from "../utils/_createComponent";
+import { unstable_createComponent } from "../utils/createComponent";
 import { useTab } from "./useTab";
 
-export const Tab = createComponent("li", useTab);
+export const Tab = unstable_createComponent("li", useTab);

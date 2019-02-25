@@ -2,6 +2,7 @@
   "name": "reakit",
   "version": "0.16.0",
   "description": "Toolkit for building accessible UIs with React",
+  "sideEffects": false,
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit",
   "main": "lib/index.js",
