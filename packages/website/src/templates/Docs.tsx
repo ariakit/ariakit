@@ -1,6 +1,7 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
+import { Editor } from "reakit-playground";
 import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit-theme-classic";
 import {
   useStepState,
@@ -41,6 +42,19 @@ function hasCodeChildren(props: { children?: React.ReactNode }) {
   return false;
 }
 
+function getText(props: { children?: React.ReactNode }): string {
+  const children = React.Children.toArray(props.children);
+  return children.reduce<string>((acc, curr) => {
+    if (typeof curr === "string") {
+      return `${acc}${curr}`;
+    }
+    if (typeof curr === "object" && curr !== null && "props" in curr) {
+      return `${acc}${getText(curr.props)}`;
+    }
+    return acc;
+  }, "");
+}
+
 const { Compiler: renderAst } = new RehypeReact({
   createElement: React.createElement,
   components: {
@@ -56,7 +70,7 @@ const { Compiler: renderAst } = new RehypeReact({
       ...props
     }: { static?: boolean } & React.HTMLAttributes<any>) => {
       if (hasCodeChildren(props)) {
-        return <Pre {...props} />;
+        return <Editor readOnly={isStatic} initialValue={getText(props)} />;
       }
       return <Pre {...props} />;
     }

@@ -38,5 +38,10 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "reakit": "^1.0.0-alpha.0"
+  },
+  "dependencies": {
+    "@types/codemirror": "0.0.72",
+    "codemirror": "5.44.0",
+    "react-codemirror2": "5.1.0"
   }
 }

@@ -1528,6 +1528,13 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
   integrity sha512-ONhaKPIufzzrlNbqtWFFd+jlnemX6lJAgq9ZeiZtS7I1PIf/la7CW4m83rTXRnVnsMbW2k56pGYu7AUFJD9Pow==
 
+"@types/codemirror@0.0.72":
+  version "0.0.72"
+  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.72.tgz#75e95e3b488717605d2591cd80c4d2ed88ff276e"
+  integrity sha512-dKtEP139Jxdrog/6zW8akX3LdhJ3V8NjYNCpIHdBVVo6ZiYpShPamtQoGpVhzrUzTOu5A6NlozOSiZipCEVCow==
+  dependencies:
+    "@types/tern" "*"
+
 "@types/configstore@^2.1.1":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@types/configstore/-/configstore-2.1.1.tgz#cd1e8553633ad3185c3f2f239ecff5d2643e92b6"
@@ -1538,7 +1545,7 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-0.0.29.tgz#a1e514adfbd92f03a224ba54d693111dbf1f3754"
   integrity sha1-oeUUrfvZLwOiJLpU1pMRHb8fN1Q=
 
-"@types/estree@0.0.39":
+"@types/estree@*", "@types/estree@0.0.39":
   version "0.0.39"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
   integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
@@ -1636,6 +1643,13 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
+
+"@types/tern@*":
+  version "0.22.2"
+  resolved "https://registry.yarnpkg.com/@types/tern/-/tern-0.22.2.tgz#324c0cc9b24fcdc62bad821cb57ad191bdb0ccef"
+  integrity sha512-+NIfiqlXrItuv0M6DiXF8gFTQ0CITidyATwTJLmu442x6M38dn0RKFsgRQzm9wFF0WE/PYM1Hf3hLSZxMDkoyQ==
+  dependencies:
+    "@types/estree" "*"
 
 "@types/tmp@^0.0.32":
   version "0.0.32"
@@ -3335,6 +3349,11 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
+
+codemirror@5.44.0:
+  version "5.44.0"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.44.0.tgz#80dc2a231eeb7aab25ec2405cdca37e693ccf9cc"
+  integrity sha512-3l42syTNakCdCQuYeZJXTyxina6Y9i4V0ighSJXNCQtRbaCN76smKKLu1ZHPHQon3rnzC7l4i/0r4gp809K1wg==
 
 collapse-white-space@^1.0.0, collapse-white-space@^1.0.2:
   version "1.0.4"
@@ -11668,6 +11687,11 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     ini "~1.3.0"
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
+
+react-codemirror2@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-5.1.0.tgz#62de4460178adea40eb52eabf7491669bf3794b8"
+  integrity sha512-Cksbgbviuf2mJfMyrKmcu7ycK6zX/ukuQO8dvRZdFWqATf5joalhjFc6etnBdGCcPA2LbhIwz+OPnQxLN/j1Fw==
 
 react-dev-utils@^4.2.1:
   version "4.2.3"

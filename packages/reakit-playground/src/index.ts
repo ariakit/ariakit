@@ -1,3 +1,1 @@
-export const foo = "bar";
-
-export default {};
+export * from "./Editor";
