@@ -1,8 +1,8 @@
+# Automatically generated
 /lib
 /dist
 /es
 /ts
-/variables
 /utils
-/hooks
+/theme
 /box

@@ -9,6 +9,7 @@ const { join, dirname } = require("path");
 const rimraf = require("rimraf");
 const log = require("../log");
 
+// converts ./path/to/file.js to ./path/to
 function resolveDir(dir) {
   if (!/\.(t|j)s$/.test(dir)) {
     return dir;
@@ -26,6 +27,8 @@ function getModuleDir(rootPath) {
   try {
     return resolveDir(pkg.module);
   } catch (e) {
+    // resolveDir will throw an error if pkg.module doesn't exist
+    // we just return false here.
     return false;
   }
 }
@@ -61,12 +64,29 @@ function isRootModule(path) {
   return !/\//.test(path);
 }
 
+// filters out /dist, /es, /lib, /ts etc.
+function isSourceModule(rootPath, filename) {
+  const dists = [
+    getModuleDir(rootPath),
+    getUnpkgDir(rootPath),
+    getTypesDir(rootPath),
+    getMainDir(rootPath)
+  ];
+  return !dists.includes(filename);
+}
+
 function isDirectory(path) {
   return lstatSync(path).isDirectory();
 }
 
+function getSourcePath(rootPath) {
+  return join(rootPath, "src");
+}
+
+// filters out files starting with __
+// includes directories and TS/JS files
 function isPublicModule(rootPath, filename) {
-  const isPrivate = /^_/.test(filename);
+  const isPrivate = /^__/.test(filename);
   if (isPrivate) {
     return false;
   }
@@ -74,10 +94,6 @@ function isPublicModule(rootPath, filename) {
     return true;
   }
   return /\.(j|t)sx?$/.test(filename);
-}
-
-function getSourcePath(rootPath) {
-  return join(rootPath, "src");
 }
 
 // returns { index: "path/to/index", moduleName: "path/to/moduleName" }
@@ -140,15 +156,24 @@ function makeGitignore(rootPath) {
     .filter(isRootModule)
     .map(name => `/${name}`)
     .join("\n");
-  writeFileSync(join(rootPath, ".gitignore"), `${contents}\n`);
+  writeFileSync(
+    join(rootPath, ".gitignore"),
+    `# Automatically generated\n${contents}\n`
+  );
   log(`Created .gitignore in ${rootPath}`);
 }
 
 function makeModulesJSON(rootPath) {
   const buildFolders = getBuildFolders(rootPath);
   const { name } = getPackage(rootPath);
-  const array = buildFolders.map(folder => `${name}/${folder}`);
-  writeFileSync(join(rootPath, "modules.json"), JSON.stringify(array, null, 2));
+  const folders = buildFolders
+    .filter(filename => isSourceModule(rootPath, filename))
+    .map(folder => `${name}/${folder}`);
+  const contents = [name, ...folders];
+  writeFileSync(
+    join(rootPath, "modules.json"),
+    `${JSON.stringify(contents, null, 2)}\n`
+  );
   log(`Created modules.json in ${rootPath}`);
 }
 

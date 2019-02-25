@@ -29,6 +29,9 @@
     "react",
     "theme"
   ],
+  "dependencies": {
+    "reakit-theme-palette": "0.0.1"
+  },
   "devDependencies": {
     "react": "16.8.0",
     "react-dom": "16.8.0",

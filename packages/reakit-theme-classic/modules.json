@@ -1,0 +1,9 @@
+[
+  "reakit-theme-classic",
+  "reakit-theme-classic/utils/useSetPalette",
+  "reakit-theme-classic/utils/usePalette",
+  "reakit-theme-classic/utils/p",
+  "reakit-theme-classic/utils",
+  "reakit-theme-classic/theme",
+  "reakit-theme-classic/elements"
+]
