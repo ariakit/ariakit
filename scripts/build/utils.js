@@ -7,6 +7,7 @@ const {
 } = require("fs-extra");
 const { join, dirname } = require("path");
 const rimraf = require("rimraf");
+const chalk = require("chalk");
 const log = require("../log");
 
 // converts ./path/to/file.js to ./path/to
@@ -130,17 +131,23 @@ function getBuildFolders(rootPath) {
 }
 
 function cleanBuild(rootPath) {
-  log(`Cleaning ${rootPath}`);
-  return getBuildFolders(rootPath)
+  const pkg = getPackage(rootPath);
+  const cleaned = [];
+  getBuildFolders(rootPath)
     .filter(isRootModule)
     .forEach(name => {
-      try {
-        rimraf.sync(name);
-        log(`Cleaned ${name}`);
-      } catch (e) {
-        log(`Couldn't clean ${name}`);
-      }
+      rimraf.sync(name);
+      cleaned.push(chalk.bold(chalk.gray(name)));
     });
+  if (cleaned.length) {
+    log(
+      [
+        "",
+        `Cleaned in ${chalk.bold(pkg.name)}:`,
+        `${cleaned.join(", ")}.`
+      ].join("\n")
+    );
+  }
 }
 
 function getIndexPath(path) {
@@ -151,6 +158,7 @@ function getIndexPath(path) {
 }
 
 function makeGitignore(rootPath) {
+  const pkg = getPackage(rootPath);
   const buildFolders = getBuildFolders(rootPath);
   const contents = buildFolders
     .filter(isRootModule)
@@ -160,12 +168,16 @@ function makeGitignore(rootPath) {
     join(rootPath, ".gitignore"),
     `# Automatically generated\n${contents}\n`
   );
-  log(`Created .gitignore in ${rootPath}`);
+  log(
+    `\nCreated in ${chalk.bold(pkg.name)}: ${chalk.bold(
+      chalk.green(".gitignore")
+    )}`
+  );
 }
 
 function makeModulesJSON(rootPath) {
-  const buildFolders = getBuildFolders(rootPath);
   const { name } = getPackage(rootPath);
+  const buildFolders = getBuildFolders(rootPath);
   const folders = buildFolders
     .filter(filename => isSourceModule(rootPath, filename))
     .map(folder => `${name}/${folder}`);
@@ -174,7 +186,11 @@ function makeModulesJSON(rootPath) {
     join(rootPath, "modules.json"),
     `${JSON.stringify(contents, null, 2)}\n`
   );
-  log(`Created modules.json in ${rootPath}`);
+  log(
+    `\nCreated in ${chalk.bold(name)}: ${chalk.bold(
+      chalk.green("modules.json")
+    )}`
+  );
 }
 
 function getProxyPackageContents(rootPath, moduleName) {
@@ -194,15 +210,25 @@ function getProxyPackageContents(rootPath, moduleName) {
 }
 
 function makeProxies(rootPath) {
-  log(`Making proxies in ${rootPath}`);
-  return getProxyFolders(rootPath).forEach(name => {
+  const pkg = getPackage(rootPath);
+  const created = [];
+  getProxyFolders(rootPath).forEach(name => {
     ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
       getProxyPackageContents(rootPath, name)
     );
-    log(`Created ${name}`);
+    created.push(chalk.bold(chalk.green(name)));
   });
+  if (created.length) {
+    log(
+      [
+        "",
+        `Created in ${chalk.bold(pkg.name)}:`,
+        `${created.join(", ")}.`
+      ].join("\n")
+    );
+  }
 }
 
 function hasTSConfig(rootPath) {
