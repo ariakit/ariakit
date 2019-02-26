@@ -13,9 +13,9 @@ First, make sure to have `react` and `react-dom` installed:
 npm install --save react react-dom
 ```
 
-Then, install `reakit` and `reakit-theme-classic` (optional):
+Then, install `reakit` and `reakit-system-classic` (optional):
 ```sh
-npm install --save reakit reakit-theme-classic
+npm install --save reakit reakit-system-classic
 ```
 
 ## Usage
@@ -26,10 +26,10 @@ Play with an example on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj).
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider, Button } from "reakit";
-import theme from "reakit-theme-classic";
+import system from "reakit-system-classic";
 
 const App = () => (
-  <Provider theme={theme}>
+  <Provider system={system}>
     <Button>Button</Button>
   </Provider>
 );

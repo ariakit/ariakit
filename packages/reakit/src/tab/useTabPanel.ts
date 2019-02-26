@@ -1,4 +1,4 @@
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   unstable_UseHiddenOptions,
@@ -24,22 +24,22 @@ export type unstable_UseTabPanelProps = unstable_UseHiddenProps;
 
 export function useTabPanel(
   options: unstable_UseTabPanelOptions,
-  props: unstable_UseTabPanelProps = {}
+  htmlProps: unstable_UseTabPanelProps = {}
 ) {
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       role: "tabpanel",
       id: unstable_getTabPanelId(options.tabId, options.baseId),
       "aria-labelledby": unstable_getTabId(options.tabId, options.baseId)
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useHidden(
+  htmlProps = useHidden(
     { visible: options.isActive(options.tabId), ...options },
-    props
+    htmlProps
   );
-  props = unstable_useHook("useTabPanel", options, props);
-  return props;
+  htmlProps = unstable_useHook("useTabPanel", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseTabPanelOptions> = [

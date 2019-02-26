@@ -1,0 +1,10 @@
+[
+  "reakit-system-palette",
+  "reakit-system-palette/utils/useSetPalette",
+  "reakit-system-palette/utils/usePalette",
+  "reakit-system-palette/utils/p",
+  "reakit-system-palette/utils",
+  "reakit-system-palette/system",
+  "reakit-system-palette/box/useBox",
+  "reakit-system-palette/box"
+]

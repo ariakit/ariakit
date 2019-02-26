@@ -2,7 +2,7 @@ import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
 import { Editor } from "reakit-playground";
-import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit-theme-classic";
+import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit-system-classic";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import {
@@ -113,7 +113,7 @@ function Comp({ data }: DocsProps) {
       <TabPanel tabId="tab3" {...tab}>
         Tab3
       </TabPanel>
-      <StepPrevious theme={{ bgColor: "primary" }} {...step}>
+      <StepPrevious system={{ bgColor: "primary" }} {...step}>
         Previous
       </StepPrevious>
       <StepNext {...step}>Next</StepNext>

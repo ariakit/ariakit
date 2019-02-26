@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Provider } from "reakit";
-import { theme } from "reakit-theme-palette";
+import { system } from "reakit-system-palette";
 
 // function useBox(_: any, props: any) {
 //   return mergeProps(
@@ -13,7 +13,7 @@ import { theme } from "reakit-theme-palette";
 //   );
 // }
 
-// const myTheme = {
+// const mysystem = {
 //   hooks: {
 //     useBox
 //   }
@@ -22,7 +22,7 @@ import { theme } from "reakit-theme-palette";
 function CoreLayout(props: { children: React.ReactNode }) {
   return (
     <React.StrictMode>
-      <Provider {...theme}>{props.children}</Provider>
+      <Provider system={system}>{props.children}</Provider>
     </React.StrictMode>
   );
 }

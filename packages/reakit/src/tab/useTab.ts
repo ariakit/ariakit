@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   unstable_UseBoxOptions,
@@ -33,7 +33,7 @@ export type unstable_UseTabProps = unstable_UseBoxProps &
 
 export function useTab(
   options: unstable_UseTabOptions,
-  props: unstable_UseTabProps = {}
+  htmlProps: unstable_UseTabProps = {}
 ) {
   const ref = React.useRef<HTMLLIElement | null>(null);
 
@@ -52,7 +52,7 @@ export function useTab(
     }
   }, [active, ref]);
 
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       role: "tab",
       id: unstable_getTabId(options.tabId, options.baseId),
@@ -71,13 +71,13 @@ export function useTab(
           options.next();
         }
       }
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
 
-  props = useBox(options, props);
-  props = unstable_useHook("useTab", options, props);
-  return props;
+  htmlProps = useBox(options, htmlProps);
+  htmlProps = unstable_useHook("useTab", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseTabOptions> = [

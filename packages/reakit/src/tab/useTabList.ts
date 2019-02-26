@@ -1,4 +1,4 @@
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   unstable_UseBoxOptions,
@@ -19,17 +19,17 @@ export type unstable_UseTabListProps = unstable_UseBoxProps;
 
 export function useTabList(
   options: unstable_UseTabListOptions = {},
-  props: unstable_UseTabListProps = {}
+  htmlProps: unstable_UseTabListProps = {}
 ) {
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       role: "tablist"
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useBox(options, props);
-  props = unstable_useHook("useTabList", options, props);
-  return props;
+  htmlProps = useBox(options, htmlProps);
+  htmlProps = unstable_useHook("useTabList", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseTabListOptions> = [

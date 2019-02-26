@@ -1,4 +1,4 @@
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   useButton,
@@ -20,17 +20,17 @@ export type unstable_UseStepPreviousProps = unstable_UseButtonProps;
 
 export function useStepPrevious(
   options: unstable_UseStepPreviousOptions,
-  props: unstable_UseStepPreviousProps = {}
+  htmlProps: unstable_UseStepPreviousProps = {}
 ) {
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       onClick: options.previous
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useButton(options, props);
-  props = unstable_useHook("useStepPrevious", options, props);
-  return props;
+  htmlProps = useButton(options, htmlProps);
+  htmlProps = unstable_useHook("useStepPrevious", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseStepPreviousOptions> = [

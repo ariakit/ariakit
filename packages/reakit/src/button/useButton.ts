@@ -1,4 +1,5 @@
 import { mergeProps } from "../utils/mergeProps";
+import { unstable_useHook } from "../system/useHook";
 import {
   unstable_UseBoxOptions,
   unstable_UseBoxProps,
@@ -11,9 +12,9 @@ export type unstable_UseButtonProps = unstable_UseBoxProps;
 
 export function useButton(
   options: unstable_UseButtonOptions = {},
-  props: unstable_UseButtonProps = {}
+  htmlProps: unstable_UseButtonProps = {}
 ) {
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       role: "button",
       tabIndex: 0,
@@ -30,11 +31,12 @@ export function useButton(
           );
         }
       }
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useBox(options, props);
-  return props;
+  htmlProps = useBox(options, htmlProps);
+  htmlProps = unstable_useHook("useButton", options, htmlProps);
+  return htmlProps;
 }
 
 useButton.keys = useBox.keys;

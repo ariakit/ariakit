@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   unstable_UseBoxOptions,
@@ -24,7 +24,7 @@ export type unstable_UseHiddenProps = unstable_UseBoxProps;
 
 export function useHidden(
   options: unstable_UseHiddenOptions = {},
-  props: unstable_UseHiddenProps = {}
+  htmlProps: unstable_UseHiddenProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
 
@@ -59,17 +59,17 @@ export function useHidden(
     return () => document.body.removeEventListener("click", handleClickOutside);
   }, [ref, options.unstable_hideOnClickOutside, options.visible, options.hide]);
 
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       ref,
       "aria-hidden": !options.visible,
       hidden: !options.visible
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useBox(options, props);
-  props = unstable_useHook("useHidden", options, props);
-  return props;
+  htmlProps = useBox(options, htmlProps);
+  htmlProps = unstable_useHook("useHidden", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseHiddenOptions> = [

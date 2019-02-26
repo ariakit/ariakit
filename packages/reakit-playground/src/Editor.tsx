@@ -2,8 +2,13 @@ import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
 
 export type EditorProps = {
-  initialValue?: string;
+  /** TODO: Description */
+  value?: string;
+  onChange?: (value: string) => void;
+  mode?: string | { name: string; [key: string]: any };
   readOnly?: boolean;
+  tabSize?: number;
+  lineWrapping?: boolean;
 };
 
 export function Editor({ initialValue = "", readOnly }: EditorProps) {

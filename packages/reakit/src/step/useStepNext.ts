@@ -1,4 +1,4 @@
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   useButton,
@@ -20,17 +20,17 @@ export type unstable_UseStepNextProps = unstable_UseButtonProps;
 
 export function useStepNext(
   options: unstable_UseStepNextOptions,
-  props: unstable_UseStepNextProps = {}
+  htmlProps: unstable_UseStepNextProps = {}
 ) {
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       onClick: options.next
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useButton(options, props);
-  props = unstable_useHook("useStepNext", options, props);
-  return props;
+  htmlProps = useButton(options, htmlProps);
+  htmlProps = unstable_useHook("useStepNext", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseStepNextOptions> = [

@@ -15,8 +15,8 @@
     "stripInternal": true,
     "paths": {
       "reakit/*": ["./node_modules/reakit/src/*"],
-      "reakit-theme-palette/*": ["./node_modules/reakit-theme-palette/src/*"],
-      "reakit-theme-classic/*": ["./node_modules/reakit-theme-classic/src/*"],
+      "reakit-system-palette/*": ["./node_modules/reakit-system-palette/src/*"],
+      "reakit-system-classic/*": ["./node_modules/reakit-system-classic/src/*"],
       "reakit-playground/*": ["./node_modules/reakit-playground/src/*"]
     }
   }

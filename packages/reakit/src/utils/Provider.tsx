@@ -1,16 +1,16 @@
 import * as React from "react";
 import {
-  unstable_ThemeProviderProps,
-  unstable_ThemeProvider as ThemeProvider
-} from "../theme/ThemeProvider";
+  unstable_SystemProviderProps,
+  unstable_SystemProvider as SystemProvider
+} from "../system/SystemProvider";
 import { unstable_IdProvider as IdProvider } from "./useId";
 
-export type ProviderProps = unstable_ThemeProviderProps;
+export type ProviderProps = unstable_SystemProviderProps;
 
 export function Provider(props: ProviderProps) {
   return (
     <IdProvider>
-      <ThemeProvider {...props} />
+      <SystemProvider {...props} />
     </IdProvider>
   );
 }

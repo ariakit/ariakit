@@ -1,4 +1,4 @@
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   useButton,
@@ -19,17 +19,17 @@ export type unstable_UseHiddenToggleProps = unstable_UseButtonProps;
 
 export function useHiddenToggle(
   options: unstable_UseHiddenToggleOptions,
-  props: unstable_UseHiddenToggleProps = {}
+  htmlProps: unstable_UseHiddenToggleProps = {}
 ) {
-  props = mergeProps(
+  htmlProps = mergeProps(
     {
       onClick: options.toggle
-    } as typeof props,
-    props
+    } as typeof htmlProps,
+    htmlProps
   );
-  props = useButton(options, props);
-  props = unstable_useHook("useHiddenToggle", options, props);
-  return props;
+  htmlProps = useButton(options, htmlProps);
+  htmlProps = unstable_useHook("useHiddenToggle", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseHiddenToggleOptions> = [

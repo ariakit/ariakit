@@ -1,9 +1,9 @@
 import * as React from "react";
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 
 export type unstable_UseBoxOptions = {
-  /** Options passed to `reakit-theme-*` */
-  theme?: any;
+  /** Options passed to `reakit-system-*` */
+  system?: any;
 };
 
 export type unstable_UseBoxProps = React.HTMLAttributes<any> &
@@ -11,12 +11,12 @@ export type unstable_UseBoxProps = React.HTMLAttributes<any> &
 
 export function useBox(
   options: unstable_UseBoxOptions = {},
-  props: unstable_UseBoxProps = {}
+  htmlProps: unstable_UseBoxProps = {}
 ) {
-  props = unstable_useHook("useBox", options, props);
-  return props;
+  htmlProps = unstable_useHook("useBox", options, htmlProps);
+  return htmlProps;
 }
 
-const keys: Array<keyof unstable_UseBoxOptions> = ["theme"];
+const keys: Array<keyof unstable_UseBoxOptions> = ["system"];
 
 useBox.keys = keys;

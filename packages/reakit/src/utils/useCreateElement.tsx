@@ -1,13 +1,13 @@
 import * as React from "react";
 import { isRenderProp } from "../__utils/isRenderProp";
-import { unstable_HookContext } from "../theme/HookContext";
+import { unstable_SystemContext } from "../system/SystemContext";
 
 export const unstable_useCreateElement = ((
   type: string,
   props: Record<string, any> = {},
   children: React.ReactNode = props.children
 ) => {
-  const context = React.useContext(unstable_HookContext);
+  const context = React.useContext(unstable_SystemContext);
 
   if (context.useCreateElement) {
     return context.useCreateElement(type, props, children);

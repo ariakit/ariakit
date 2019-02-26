@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_useHook } from "../theme/useHook";
+import { unstable_useHook } from "../system/useHook";
 import {
   useHidden,
   unstable_UseHiddenOptions,
@@ -26,19 +26,19 @@ export type unstable_UseStepProps = unstable_UseHiddenProps;
 
 export function useStep(
   options: unstable_UseStepOptions,
-  props: unstable_UseStepProps = {}
+  htmlProps: unstable_UseStepProps = {}
 ) {
   React.useEffect(() => {
     options.register(options.stepId, options.order);
     return () => options.unregister(options.stepId);
   }, [options.register, options.unregister, options.stepId, options.order]);
 
-  props = useHidden(
+  htmlProps = useHidden(
     { visible: options.isActive(options.stepId), ...options },
-    props
+    htmlProps
   );
-  props = unstable_useHook("useStep", options, props);
-  return props;
+  htmlProps = unstable_useHook("useStep", options, htmlProps);
+  return htmlProps;
 }
 
 const keys: Array<keyof unstable_UseStepOptions> = [
