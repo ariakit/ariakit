@@ -3,6 +3,8 @@ import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
 import { Editor } from "reakit-playground";
 import { H1, H2, H3, H4, H5, H6, P, Pre } from "reakit-theme-classic";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/dracula.css";
 import {
   useStepState,
   Step,
@@ -14,6 +16,11 @@ import {
   TabPanel
 } from "reakit";
 import CoreLayout from "../components/CoreLayout";
+
+if (typeof navigator !== "undefined") {
+  require("codemirror/mode/jsx/jsx");
+  require("codemirror/mode/htmlmixed/htmlmixed");
+}
 
 type DocsProps = {
   data: {
@@ -70,6 +77,7 @@ const { Compiler: renderAst } = new RehypeReact({
       ...props
     }: { static?: boolean } & React.HTMLAttributes<any>) => {
       if (hasCodeChildren(props)) {
+        // return <Pre {...props} />;
         return <Editor readOnly={isStatic} initialValue={getText(props)} />;
       }
       return <Pre {...props} />;

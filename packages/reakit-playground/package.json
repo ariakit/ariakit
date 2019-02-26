@@ -30,8 +30,8 @@
     "playground"
   ],
   "devDependencies": {
-    "react": "16.8.0",
-    "react-dom": "16.8.0",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
     "reakit": "0.16.0"
   },
   "peerDependencies": {

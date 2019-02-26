@@ -1,9 +1,5 @@
 import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
-import "codemirror/mode/jsx/jsx";
-import "codemirror/mode/htmlmixed/htmlmixed";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/dracula.css";
 
 export type EditorProps = {
   initialValue?: string;

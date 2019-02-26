@@ -19,7 +19,7 @@ function resolveDir(dir) {
 }
 
 function getPackage(rootPath) {
-  // eslint-disable-next-line import/no-dynamic-require, global-require
+  // eslint-disable-next-line import/no-dynamic-require
   return require(join(rootPath, "package.json"));
 }
 
@@ -141,11 +141,9 @@ function cleanBuild(rootPath) {
     });
   if (cleaned.length) {
     log(
-      [
-        "",
-        `Cleaned in ${chalk.bold(pkg.name)}:`,
-        `${cleaned.join(", ")}.`
-      ].join("\n")
+      ["", `Cleaned in ${chalk.bold(pkg.name)}:`, `${cleaned.join(", ")}`].join(
+        "\n"
+      )
     );
   }
 }
@@ -224,8 +222,8 @@ function makeProxies(rootPath) {
     log(
       [
         "",
-        `Created in ${chalk.bold(pkg.name)}:`,
-        `${created.join(", ")}.`
+        `Created proxies in ${chalk.bold(pkg.name)}:`,
+        `${created.join(", ")}`
       ].join("\n")
     );
   }
