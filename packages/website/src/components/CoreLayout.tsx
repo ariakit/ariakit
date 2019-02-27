@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Provider } from "reakit";
-import { system } from "reakit-system-palette";
+import * as system from "reakit-system-palette";
 
 // function useBox(_: any, props: any) {
 //   return mergeProps(

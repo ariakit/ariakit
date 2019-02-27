@@ -1,12 +1,12 @@
 export function extractPropFromObjects<T, K extends keyof T>(
-  propsObjects: T[],
+  objects: T[],
   prop: K
 ) {
   const props: Array<NonNullable<T[K]>> = [];
-  const { length } = propsObjects;
+  const { length } = objects;
 
   for (let i = 0; i < length; i += 1) {
-    const p = propsObjects[i][prop];
+    const p = objects[i][prop];
     if (p) props.push(p!);
   }
 

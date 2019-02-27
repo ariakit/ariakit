@@ -30,6 +30,7 @@
     "system"
   ],
   "dependencies": {
+    "emotion": "10.0.7",
     "reakit-system-palette": "0.0.1"
   },
   "devDependencies": {

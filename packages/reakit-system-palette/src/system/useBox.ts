@@ -11,7 +11,7 @@ export type UseBoxOptions = {
 
 export function useBox(
   { system = {} }: UseBoxOptions,
-  props: unstable_UseBoxProps = {}
+  htmlProps: unstable_UseBoxProps = {}
 ) {
   const color = usePalette(system.color);
   const bgColor = usePalette(system.bgColor);
@@ -19,5 +19,5 @@ export function useBox(
     ...(color ? { color } : {}),
     ...(bgColor ? { backgroundColor: bgColor } : {})
   };
-  return mergeProps({ style }, props);
+  return mergeProps({ style }, htmlProps);
 }

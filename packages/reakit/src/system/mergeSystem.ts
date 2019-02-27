@@ -1,66 +1,17 @@
-import { UnionToIntersection, PickByValue } from "../__utils/types";
+import { isObject } from "../__utils/isObject";
+import { reduceObjects } from "../__utils/reduceObjects";
+import { UnionToIntersection } from "../__utils/types";
 import { unstable_SystemContextType } from "./SystemContext";
+import { mergeFunctionsInObjects } from "../__utils/mergeFunctionsInObjects";
 
-function reduceObjects<T extends Record<string, any>>(
-  objects: T[],
-  filter?: (key: keyof T, value: T[keyof T]) => boolean
-) {
-  const result = {} as { [K in keyof T]?: Array<T[K]> };
-
-  for (const object of objects) {
-    const keys = Object.keys(object);
-    for (const key of keys) {
-      // eslint-disable-next-line no-continue
-      if (filter && !filter(key, object[key])) continue;
-      result[key] = [...(result[key] || []), object[key]];
-    }
-  }
-
-  return result;
-}
-
-function mergeObjects<T extends unstable_SystemContextType[]>(...systems: T) {
-  const object = reduceObjects(
-    systems,
-    (_, value) => typeof value === "object" && value != null
-  );
-
+function mergeObjectsInObjects(systems: Array<Record<string, any>>) {
+  const object = reduceObjects(systems, isObject);
   const keys = Object.keys(object);
-  const result = {} as PickByValue<
-    UnionToIntersection<T[number]>,
-    Record<string, any>
-  >;
+  const result: Record<string, any> = {};
 
   for (const key of keys) {
     const values = object[key]!;
-    // @ts-ignore
     result[key] = Object.assign({}, ...values);
-  }
-
-  return result;
-}
-
-function mergeFunctions<T extends unstable_SystemContextType[]>(...systems: T) {
-  const object = reduceObjects(
-    systems,
-    (_, value) => typeof value === "function"
-  );
-
-  const keys = Object.keys(object);
-  const result = {} as PickByValue<
-    UnionToIntersection<T[number]>,
-    (...args: any[]) => any
-  >;
-
-  for (const key of keys) {
-    const fns = object[key]!;
-    // @ts-ignore
-    result[key] =
-      fns.length === 1
-        ? fns[0]
-        : fns.reduce((lastHook, currHook) => (...args: any[]) =>
-            currHook(...args.slice(0, -1), lastHook(...args))
-          );
   }
 
   return result;
@@ -72,7 +23,7 @@ export function mergeSystem<T extends unstable_SystemContextType[]>(
   return Object.assign(
     {},
     ...systems,
-    mergeObjects(...systems),
-    mergeFunctions(...systems)
+    mergeObjectsInObjects(systems),
+    mergeFunctionsInObjects(systems)
   ) as UnionToIntersection<T[number]>;
 }
