@@ -23,7 +23,7 @@ export function usePalette(
   React.useDebugValue(palette || "(not set)");
   const palettes = unstable_useToken<Palette>("palette");
 
-  if (!palette) return fallback;
+  if (!palette || !palettes) return fallback;
 
   const [color, shade = 0] = palette.split(".");
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
-import { Editor } from "reakit-playground";
+import { Preview, Editor, useEditorState } from "reakit-playground";
 import {
   H1,
   H2,
@@ -86,8 +86,13 @@ const { Compiler: renderAst } = new RehypeReact({
       ...props
     }: { static?: boolean } & React.HTMLAttributes<any>) => {
       if (hasCodeChildren(props)) {
-        // return <Pre {...props} />;
-        return <Editor readOnly={isStatic} initialValue={getText(props)} />;
+        const state = useEditorState({ code: () => getText(props) });
+        return (
+          <>
+            <Preview {...state} />
+            <Editor readOnly={isStatic} {...state} />
+          </>
+        );
       }
       return <Pre {...props} />;
     }

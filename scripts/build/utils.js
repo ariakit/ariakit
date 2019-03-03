@@ -173,21 +173,23 @@ function makeGitignore(rootPath) {
   );
 }
 
-function makeModulesJSON(rootPath) {
+function makeModulesFile(rootPath) {
   const { name } = getPackage(rootPath);
   const buildFolders = getBuildFolders(rootPath);
   const folders = buildFolders
     .filter(filename => isSourceModule(rootPath, filename))
-    .map(folder => `${name}/${folder}`);
-  const contents = [name, ...folders];
+    .reduce(
+      (acc, folder) =>
+        `${acc},\n  "${join(name, folder)}": require("${join(name, folder)}")`,
+      `  "reakit": require("reakit")`
+    );
+  const contents = `/* eslint-disable */\n// Automatically generated\nmodule.exports = {\n${folders}\n};\n`;
   writeFileSync(
-    join(rootPath, "modules.json"),
-    `${JSON.stringify(contents, null, 2)}\n`
+    join(rootPath, `../reakit-playground/src/__${name}.js`),
+    contents
   );
   log(
-    `\nCreated in ${chalk.bold(name)}: ${chalk.bold(
-      chalk.green("modules.json")
-    )}`
+    `\nCreated in ${chalk.bold(name)}: ${chalk.bold(chalk.green("modules.js"))}`
   );
 }
 
@@ -246,7 +248,7 @@ module.exports = {
   cleanBuild,
   getIndexPath,
   makeGitignore,
-  makeModulesJSON,
+  makeModulesFile,
   makeProxies,
   hasTSConfig
 };

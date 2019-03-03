@@ -1,27 +1,40 @@
 import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
+import { EditorState, EditorActions } from "./useEditorState";
 
-export type EditorProps = {
-  /** TODO: Description */
-  value?: string;
-  onChange?: (value: string) => void;
-  mode?: string | { name: string; [key: string]: any };
-  readOnly?: boolean;
-  tabSize?: number;
-  lineWrapping?: boolean;
-};
+export type EditorProps = EditorState &
+  EditorActions & {
+    /** TODO: Description */
+    mode?: string | { name: string; [key: string]: any };
+    /** TODO: Description */
+    theme?: string;
+    /** TODO: Description */
+    readOnly?: boolean;
+    /** TODO: Description */
+    tabSize?: number;
+    /** TODO: Description */
+    lineWrapping?: boolean;
+  };
 
-export function Editor({ initialValue = "", readOnly }: EditorProps) {
-  const [value, setValue] = React.useState(initialValue);
+export function Editor({
+  code,
+  update,
+  readOnly,
+  lineWrapping,
+  theme = "dracula",
+  tabSize = 2,
+  mode = "jsx"
+}: EditorProps) {
   return (
     <CodeMirror
-      value={value}
-      onBeforeChange={(_, __, nextValue) => setValue(nextValue)}
+      value={code}
+      onBeforeChange={(_, __, value) => update(value)}
       options={{
+        theme,
         readOnly,
-        tabSize: 2,
-        theme: "dracula",
-        mode: { name: "jsx", base: { name: "javascript", typescript: true } }
+        lineWrapping,
+        tabSize,
+        mode
       }}
     />
   );

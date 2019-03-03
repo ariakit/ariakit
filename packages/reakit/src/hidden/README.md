@@ -11,7 +11,9 @@ path: /components/hidden
 ```jsx
 import { Hidden } from "reakit";
 
-<Hidden visible>Hidden</Hidden>
+return (
+  <Hidden visible>Hidden</Hidden>
+);
 ```
 
 ```jsx
@@ -62,7 +64,7 @@ function Example() {
 
 ### `useHiddenState`
 
-```ts
+```ts static
 type HiddenStateOptions = {
   /** @default false */
   visible?: boolean;
@@ -80,7 +82,7 @@ function useHiddenState(options?: HiddenStateOptions): HiddenState;
 
 ### `useHiddenProps`
 
-```ts
+```ts static
 type UseHiddenPropsOptions = UseBoxPropsOptions & HiddenStateOptions;
 
 export function useHiddenProps(
@@ -88,7 +90,7 @@ export function useHiddenProps(
   props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ```
 
-```ts
+```ts static
 type HiddenState = {
   visible: boolean;
   show: () => void;

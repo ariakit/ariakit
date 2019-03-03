@@ -18,6 +18,7 @@ export type unstable_TabActions = unstable_StepActions;
 
 export type unstable_UseTabStateOptions = unstable_UseStepStateOptions;
 
+// TODO: Accept function for the entire options or for each value
 export function useTabState({
   loop = true,
   activeIndex = 0,

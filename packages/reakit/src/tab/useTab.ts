@@ -50,7 +50,7 @@ export function useTab(
     if (active && ref.current) {
       ref.current.focus();
     }
-  }, [active, ref]);
+  }, [active]);
 
   htmlProps = mergeProps(
     {

@@ -45,6 +45,7 @@ export type unstable_StepActions = {
   unregister: (id: string) => void;
 };
 
+// TODO: Accept function for the entire options or for each value
 export type unstable_UseStepStateOptions = Partial<unstable_StepState>;
 
 type StepAction =

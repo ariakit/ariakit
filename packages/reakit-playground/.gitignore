@@ -3,4 +3,6 @@
 /dist
 /es
 /ts
+/useEditorState
+/Preview
 /Editor

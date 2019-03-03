@@ -37,7 +37,7 @@ export function useHidden(
     };
     document.body.addEventListener("keydown", handleKeyDown);
     return () => document.body.removeEventListener("keydown", handleKeyDown);
-  }, [options.unstable_hideOnEsc, options.visible, options.hide]);
+  }, [options.hide, options.unstable_hideOnEsc, options.visible]);
 
   React.useEffect(() => {
     if (!options.unstable_hideOnClickOutside) return undefined;
@@ -57,7 +57,7 @@ export function useHidden(
     };
     document.body.addEventListener("click", handleClickOutside);
     return () => document.body.removeEventListener("click", handleClickOutside);
-  }, [ref, options.unstable_hideOnClickOutside, options.visible, options.hide]);
+  }, [options.unstable_hideOnClickOutside, options.visible, options.hide]);
 
   htmlProps = mergeProps(
     {

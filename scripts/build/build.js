@@ -4,7 +4,7 @@ const spawn = require("cross-spawn");
 const {
   makeProxies,
   makeGitignore,
-  makeModulesJSON,
+  makeModulesFile,
   cleanBuild,
   hasTSConfig
 } = require("./utils");
@@ -15,7 +15,7 @@ const cwd = process.cwd();
 
 cleanBuild(cwd);
 makeGitignore(cwd);
-makeModulesJSON(cwd);
+makeModulesFile(cwd);
 makeProxies(cwd);
 
 if (hasTSConfig(cwd)) {
