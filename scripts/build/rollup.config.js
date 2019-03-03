@@ -2,7 +2,7 @@ const babel = require("rollup-plugin-babel");
 const resolve = require("rollup-plugin-node-resolve");
 const replace = require("rollup-plugin-replace");
 const commonjs = require("rollup-plugin-commonjs");
-const { uglify } = require("rollup-plugin-uglify");
+const { terser } = require("rollup-plugin-terser");
 const ignore = require("rollup-plugin-ignore");
 const { camelCase, upperFirst } = require("lodash");
 const {
@@ -49,7 +49,7 @@ function getPlugins(isUMD) {
       ...commonPlugins,
       commonjs({ include: /node_modules/ }),
       ignore(["stream"]),
-      uglify(),
+      terser(),
       replace({ "process.env.NODE_ENV": JSON.stringify("production") })
     ];
   }

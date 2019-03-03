@@ -10,7 +10,8 @@ import {
   H5,
   H6,
   P,
-  Pre
+  Pre,
+  Code
 } from "reakit-system-classic/components";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
@@ -52,7 +53,7 @@ function getChildrenCode(props: { children?: React.ReactNode }) {
   const children = React.Children.toArray(props.children);
   const [first] = children;
   if (typeof first === "object" && first !== null && "type" in first) {
-    return first.type === "code" ? first : null;
+    return first.type === "code" || first.type === Code ? first : null;
   }
   return null;
 }
@@ -80,10 +81,16 @@ const { Compiler: renderAst } = new RehypeReact({
     h5: H5,
     h6: H6,
     p: P,
+    code: Code,
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
-        const isStatic = codeElement.props.static;
+        const { static: isStatic, className } = codeElement.props;
+        const [, lang] =
+          className.match(/language-((?:j|t)sx?)/) || ([] as any[]);
+        if (!lang) {
+          return <Pre {...props} />;
+        }
         const state = useEditorState({ code: () => getText(props) });
         if (isStatic) {
           return <Editor readOnly {...state} />;

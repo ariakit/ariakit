@@ -1,9 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { transform } from "buble";
-import reakitPaths from "./__reakit";
-
-console.log(reakitPaths);
+// @ts-ignore
+import reakitPaths from "./__deps/reakit";
 
 function importToRequire(code: string) {
   return code
@@ -19,14 +18,15 @@ function compileComponent(code: string) {
   const { code: compiledCode } = transform(importToRequire(code), {
     objectAssign: "Object.assign"
   });
-  const require = (path: string) => {
+  const req = (path: string) => {
     if (path in reakitPaths) {
       return reakitPaths[path];
     }
     return undefined;
   };
+  // eslint-disable-next-line no-new-func
   const fn = new Function("require", "React", compiledCode);
-  return fn(require, React);
+  return fn(req, React);
 }
 
 // class ErrorBoundary extends React.Component {
@@ -54,16 +54,19 @@ function compileComponent(code: string) {
 
 export function Preview(props: any) {
   const ref = React.useRef<HTMLDivElement | null>(null);
-  const [rendered, setRendered] = React.useState<JSX.Element | null>(null);
+  const [rendered, setRendered] = React.useState(() =>
+    compileComponent(props.code)
+  );
   const [error, setError] = React.useState<string | null>(null);
 
-  const handleError = e => {
+  const handleError = (e: any) => {
     setError(e.toString());
     console.error(e); // eslint-disable-line no-console
   };
 
   const unmount = () => {
     if (ref.current) {
+      setRendered(null);
       ReactDOM.unmountComponentAtNode(ref.current);
     }
   };
@@ -88,7 +91,7 @@ export function Preview(props: any) {
   return (
     <React.Fragment>
       {error && <pre style={{ fontSize: 14, color: "red" }}>{error}</pre>}
-      <div ref={ref} />
+      <div ref={ref}>{rendered}</div>
     </React.Fragment>
   );
 }
