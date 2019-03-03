@@ -48,14 +48,13 @@ type DocsProps = {
   };
 };
 
-function hasCodeChildren(props: { children?: React.ReactNode }) {
+function getChildrenCode(props: { children?: React.ReactNode }) {
   const children = React.Children.toArray(props.children);
-  if (children.length > 1) return false;
   const [first] = children;
   if (typeof first === "object" && first !== null && "type" in first) {
-    return first.type === "code";
+    return first.type === "code" ? first : null;
   }
-  return false;
+  return null;
 }
 
 function getText(props: { children?: React.ReactNode }): string {
@@ -81,16 +80,18 @@ const { Compiler: renderAst } = new RehypeReact({
     h5: H5,
     h6: H6,
     p: P,
-    pre: ({
-      static: isStatic,
-      ...props
-    }: { static?: boolean } & React.HTMLAttributes<any>) => {
-      if (hasCodeChildren(props)) {
+    pre: (props: React.HTMLAttributes<any>) => {
+      const codeElement = getChildrenCode(props);
+      if (codeElement) {
+        const isStatic = codeElement.props.static;
         const state = useEditorState({ code: () => getText(props) });
+        if (isStatic) {
+          return <Editor readOnly {...state} />;
+        }
         return (
           <>
             <Preview {...state} />
-            <Editor readOnly={isStatic} {...state} />
+            <Editor {...state} />
           </>
         );
       }

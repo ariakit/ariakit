@@ -28,6 +28,8 @@ function Example() {
     </div>
   );
 }
+
+return <Example />;
 ```
 
 ```jsx

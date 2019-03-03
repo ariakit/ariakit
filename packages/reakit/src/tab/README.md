@@ -1,5 +1,5 @@
 ---
-path: /components/hidden
+path: /components/tab
 ---
 
 # Hidden

@@ -3,6 +3,6 @@
  *
  * See: https://www.gatsbyjs.org/docs/browser-apis/
  */
-import { setConfig } from "react-hot-loader";
+// import { setConfig } from "react-hot-loader";
 
-setConfig({ pureSFC: true });
+// setConfig({ pureSFC: true });
