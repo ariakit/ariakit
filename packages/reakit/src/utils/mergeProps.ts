@@ -1,7 +1,26 @@
 import * as React from "react";
+import { reduceObjects } from "../__utils/reduceObjects";
 import { UnionToIntersection } from "../__utils/types";
 import { extractPropFromObjects } from "../__utils/extractPropFromObjects";
-import { mergeFunctionsInObjects } from "../__utils/mergeFunctionsInObjects";
+
+function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {
+  const object = reduceObjects(objects, value => typeof value === "function");
+  const keys = Object.keys(object);
+  const result: Record<string, any> = {};
+
+  for (const key of keys) {
+    const fns = object[key]!;
+    result[key] =
+      fns.length === 1
+        ? fns[0]
+        : fns.reduce((lastFn, currFn) => (...args: any[]) => {
+            lastFn(...args);
+            return currFn(...args);
+          });
+  }
+
+  return result;
+}
 
 function mergeRefsInObjects(objects: Array<{ ref?: React.Ref<any> }>) {
   const refs = extractPropFromObjects(objects, "ref");
@@ -43,9 +62,9 @@ export function mergeProps<T extends any[]>(...objects: T) {
   return Object.assign(
     {},
     ...objects,
+    mergeFunctionsInObjects(objects),
     mergeRefsInObjects(objects),
     mergeClassNamesInObjects(objects),
-    mergeFunctionsInObjects(objects),
     mergeStylesInObjects(objects)
   ) as UnionToIntersection<T[number]>;
 }

@@ -11,9 +11,9 @@ path: /components/hidden
 ```jsx
 import { Hidden } from "reakit";
 
-return (
-  <Hidden visible>Hidden</Hidden>
-);
+function Example() {
+  return <Hidden visible>Hidden</Hidden>
+}
 ```
 
 ```jsx
@@ -23,7 +23,7 @@ function Example() {
   const state = useHiddenState({ visible: true });
   return (
     <div>
-      <button onClick={state.toggle}>Button</button>
+      <button onClick={state.toggle}>Toggle</button>
       <Hidden {...state}>Hidden</Hidden>
     </div>
   );
@@ -33,13 +33,13 @@ return <Example />;
 ```
 
 ```jsx
-import { Hidden, HiddenButton, useHiddenState } from "reakit";
+import { Hidden, HiddenToggle, useHiddenState } from "reakit";
 
 function Example() {
   const state = useHiddenState({ visible: true });
   return (
     <div>
-      <HiddenButton {...state}>Button</HiddenButton>
+      <HiddenToggle {...state}>Toggle</HiddenToggle>
       <Hidden hideOnClickOutside {...state}>Hidden</Hidden>
     </div>
   );
@@ -47,16 +47,16 @@ function Example() {
 ```
 
 ```jsx
-import { useHiddenProps, useHiddenButtonProps, useHiddenState } from "reakit";
-
+import { useHidden, useHiddenToggle, useHiddenState } from "reakit";
+dasda
 function Example() {
   const state = useHiddenState({ visible: true });
-  const hiddenButtonProps = useHiddenButtonProps(state);
-  const hiddenProps = useHiddenProps({ hideOnClickOutside: true, ...state });
+  const hiddenToggle = useHiddenToggle(state);
+  const hidden = useHidden({ hideOnClickOutside: true, ...state });
   return (
     <div>
-      <button {...hiddenButtonProps}>Button</button>
-      <div {...hiddenProps}>Hidden</div>
+      <button {...hiddenToggle}>Toggle</button>
+      <div {...hidden}>Hidden</div>
     </div>
   );
 }
@@ -82,13 +82,13 @@ type HiddenState = {
 function useHiddenState(options?: HiddenStateOptions): HiddenState;
 ```
 
-### `useHiddenProps`
+### `useHidden`
 
 ```ts static
-type UseHiddenPropsOptions = UseBoxPropsOptions & HiddenStateOptions;
+type UseHiddenOptions = UseBoxOptions & HiddenStateOptions;
 
-export function useHiddenProps(
-  options: UseHiddenPropsOptions = {},
+export function useHidden(
+  options: UseHiddenOptions = {},
   props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ```
 
@@ -100,14 +100,14 @@ type HiddenState = {
   toggle: () => void;
 };
 
-type HiddenProps = BoxProps & {
+type Hidden = Box & {
   visible: boolean;
   hide: () => void;
   hideOnClickOutside: boolean;
   hideOnEsc: boolean;
 };
 
-type HiddenButtonProps = BoxProps & {
+type HiddenToggle = Box & {
   toggle: () => void;
 };
 ```

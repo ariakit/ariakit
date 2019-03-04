@@ -197,10 +197,10 @@ ${objectContents}
 };
 `;
   ensureDirSync(playDepsPath);
-  writeFileSync(join(playDepsPath, `${name}.js`), contents);
+  writeFileSync(join(playDepsPath, `${name}.ts`), contents);
   log(
     `\nCreated in ${chalk.bold("reakit-playground")}: ${chalk.bold(
-      chalk.green(`__deps/${name}.js`)
+      chalk.green(`__deps/${name}.ts`)
     )}`
   );
 }

@@ -2,7 +2,7 @@ import { isObject } from "../__utils/isObject";
 import { reduceObjects } from "../__utils/reduceObjects";
 import { UnionToIntersection } from "../__utils/types";
 import { unstable_SystemContextType } from "./SystemContext";
-import { mergeFunctionsInObjects } from "../__utils/mergeFunctionsInObjects";
+import { composeFunctionsInObjects } from "../__utils/composeFunctionsInObjects";
 
 function mergeObjectsInObjects(systems: Array<Record<string, any>>) {
   const object = reduceObjects(systems, isObject);
@@ -24,6 +24,6 @@ export function mergeSystem<T extends unstable_SystemContextType[]>(
     {},
     ...systems,
     mergeObjectsInObjects(systems),
-    mergeFunctionsInObjects(systems)
+    composeFunctionsInObjects(systems)
   ) as UnionToIntersection<T[number]>;
 }
