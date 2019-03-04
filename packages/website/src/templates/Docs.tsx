@@ -15,16 +15,6 @@ import {
 } from "reakit-system-classic/components";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
-import {
-  useStepState,
-  Step,
-  StepPrevious,
-  StepNext,
-  useTabState,
-  Tab,
-  TabList,
-  TabPanel
-} from "reakit";
 import CoreLayout from "../components/CoreLayout";
 
 if (typeof navigator !== "undefined") {
@@ -108,43 +98,11 @@ const { Compiler: renderAst } = new RehypeReact({
 });
 
 function Comp({ data }: DocsProps) {
-  const step = useStepState({ loop: true });
-  const tab = useTabState();
   const {
     markdownRemark: { title, htmlAst }
   } = data;
   return (
     <>
-      <TabList {...tab}>
-        <Tab tabId="tab1" {...tab}>
-          Tab 1
-        </Tab>
-        <Tab tabId="tab2" {...tab}>
-          Tab 2
-        </Tab>
-        <Tab tabId="tab3" {...tab}>
-          Tab 3
-        </Tab>
-      </TabList>
-      <TabPanel tabId="tab1" {...tab}>
-        Tab1
-      </TabPanel>
-      <TabPanel tabId="tab2" {...tab}>
-        Tab2
-      </TabPanel>
-      <TabPanel tabId="tab3" {...tab}>
-        Tab3
-      </TabPanel>
-      <StepPrevious system={{ bgColor: "primary" }} {...step}>
-        Previous
-      </StepPrevious>
-      <StepNext {...step}>Next</StepNext>
-      <Step stepId="step1" {...step}>
-        Step1
-      </Step>
-      <Step stepId="step2" {...step}>
-        Step2
-      </Step>
       <h1>{title}</h1>
       {renderAst(htmlAst)}
     </>

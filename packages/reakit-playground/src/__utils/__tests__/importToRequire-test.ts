@@ -11,7 +11,8 @@ test("importToRequire", () => {
         "import { foo as bar } from 'foo'",
         "import foo, { bar } from 'foo';",
         "import foo, { bar, baz } from 'foo';",
-        "import foo, { bar, baz as qux } from 'foo';"
+        "import foo, { bar, baz as qux } from 'foo';",
+        "import * as foo from 'foo';"
       ].join("\n")
     )
   ).toMatchInlineSnapshot(`
@@ -25,6 +26,7 @@ const { bar } = require('foo');
 const foo = require('foo').default || require('foo');
 const { bar, baz } = require('foo');
 const foo = require('foo').default || require('foo');
-const { bar, baz: qux } = require('foo');"
+const { bar, baz: qux } = require('foo');
+const foo = require('foo');"
 `);
 });

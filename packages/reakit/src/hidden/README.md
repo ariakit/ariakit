@@ -48,7 +48,7 @@ function Example() {
 
 ```jsx
 import { useHidden, useHiddenToggle, useHiddenState } from "reakit";
-dasda
+
 function Example() {
   const state = useHiddenState({ visible: true });
   const hiddenToggle = useHiddenToggle(state);
