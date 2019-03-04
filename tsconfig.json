@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
@@ -11,6 +12,13 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "reakit/*": ["./node_modules/reakit/src/*"],
+      "reakit-system-palette/*": ["./node_modules/reakit-system-palette/src/*"],
+      "reakit-system-classic/*": ["./node_modules/reakit-system-classic/src/*"],
+      "reakit-playground/*": ["./node_modules/reakit-playground/src/*"]
+    }
   }
 }

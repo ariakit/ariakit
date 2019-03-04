@@ -1,0 +1,9 @@
+[build]
+  command = "yarn build && yarn website:build"
+  publish = "packages/website/public"
+
+[[redirects]]
+  from = "https://reakit.netlify.com/*"
+  to = "https://reakit.io/:splat"
+  status = 301
+  force = true
