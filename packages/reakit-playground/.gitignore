@@ -5,4 +5,6 @@
 /ts
 /useEditorState
 /Preview
+/ErrorMessage
+/ErrorBoundary
 /Editor
