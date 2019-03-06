@@ -1,9 +1,8 @@
 import * as React from "react";
 import { forwardRef } from "../__utils/forwardRef";
 import { As, PropsWithAs } from "../__utils/types";
-import { unstable_Portal as Portal } from "../portal/Portal";
-import { unstable_useCreateElement } from "./useCreateElement";
 import { unstable_splitProps } from "./splitProps";
+import { unstable_useCreateElement as originalUseCreateElement } from "./useCreateElement";
 
 type Hook<Options> = {
   (
@@ -16,7 +15,7 @@ type Hook<Options> = {
 export function unstable_createComponent<T extends As, O>(
   element: T,
   useHook: Hook<O>,
-  portal?: boolean
+  useCreateElement = originalUseCreateElement
 ) {
   return forwardRef(
     <TT extends As = T>(
@@ -25,13 +24,7 @@ export function unstable_createComponent<T extends As, O>(
     ) => {
       const [options, htmlProps] = unstable_splitProps(props, useHook.keys);
       const elementProps = useHook(options, { ref, ...htmlProps });
-      const rendered = unstable_useCreateElement(as, elementProps);
-
-      if (portal) {
-        return <Portal>{rendered}</Portal>;
-      }
-
-      return rendered;
+      return useCreateElement(as, elementProps);
     }
   );
 }

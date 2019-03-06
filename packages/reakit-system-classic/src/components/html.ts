@@ -1,15 +1,11 @@
 import { unstable_useHook } from "reakit/system/useHook";
 import { unstable_createComponent } from "reakit/utils/createComponent";
-import {
-  useBox,
-  unstable_UseBoxOptions,
-  unstable_UseBoxProps
-} from "reakit/box/useBox";
+import { useBox, unstable_BoxOptions, unstable_BoxProps } from "reakit/box/Box";
 
 function createHook(hookName: string) {
   const useElement = (
-    options: unstable_UseBoxOptions = {},
-    props: unstable_UseBoxProps = {}
+    options: unstable_BoxOptions = {},
+    props: unstable_BoxProps = {}
   ) => {
     props = useBox(options, props);
     props = unstable_useHook(hookName, options, props);

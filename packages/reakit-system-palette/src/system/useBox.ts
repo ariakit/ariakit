@@ -1,4 +1,4 @@
-import { unstable_UseBoxProps } from "reakit/box/useBox";
+import { unstable_BoxProps } from "reakit/box/Box";
 import { mergeProps } from "reakit/utils/mergeProps";
 import { usePalette } from "../utils/usePalette";
 
@@ -11,7 +11,7 @@ export type UseBoxOptions = {
 
 export function useBox(
   { system = {} }: UseBoxOptions,
-  htmlProps: unstable_UseBoxProps = {}
+  htmlProps: unstable_BoxProps = {}
 ) {
   const color = usePalette(system.color);
   const bgColor = usePalette(system.bgColor);
