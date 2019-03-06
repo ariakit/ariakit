@@ -1,5 +1,7 @@
 ---
-path: /components/button
+path: /docs/button
+redirect_from:
+  - /components/button
 ---
 
 # Box

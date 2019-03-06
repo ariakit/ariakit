@@ -1,5 +1,7 @@
 ---
-path: /guide/theming
+path: /docs/theming
+redirect_from:
+  - /guide/theming
 ---
 
 # Theming

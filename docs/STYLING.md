@@ -1,5 +1,7 @@
 ---
-path: /guide/styling
+path: /docs/styling
+redirect_from:
+  - /guide/styling
 ---
 
 # Styling

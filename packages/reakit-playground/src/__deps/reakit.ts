@@ -32,6 +32,8 @@ export default {
   "reakit/step/StepPrevious": require("reakit/step/StepPrevious"),
   "reakit/step/StepNext": require("reakit/step/StepNext"),
   "reakit/step/Step": require("reakit/step/Step"),
+  "reakit/portal": require("reakit/portal"),
+  "reakit/portal/Portal": require("reakit/portal/Portal"),
   "reakit/hidden/useHiddenToggle": require("reakit/hidden/useHiddenToggle"),
   "reakit/hidden/useHiddenState": require("reakit/hidden/useHiddenState"),
   "reakit/hidden/useHidden": require("reakit/hidden/useHidden"),

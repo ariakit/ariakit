@@ -1,3 +1,4 @@
+// TODO: Refactor
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { compileComponent } from "./__utils/compileComponent";
@@ -19,6 +20,7 @@ export function Preview(props: PreviewProps) {
     console.error(e); // eslint-disable-line no-console
   }, []);
 
+  const [initialCode] = React.useState(props.code);
   const [rendered, setRendered] = React.useState(() => {
     try {
       return compileComponent(props.code, props.modules);
@@ -36,7 +38,9 @@ export function Preview(props: PreviewProps) {
   }, []);
 
   React.useEffect(() => {
-    if (!props.code) return undefined;
+    if (!props.code || props.code === initialCode) {
+      return undefined;
+    }
     const timer = setTimeout(() => {
       setError(null);
       try {
