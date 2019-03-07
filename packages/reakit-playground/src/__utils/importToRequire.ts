@@ -2,7 +2,7 @@ export function importToRequire(code: string) {
   return (
     code
       // { a as b } => { a: b }
-      .replace(/{([^}]+) as ([^}]+)}/g, "{$1: $2}")
+      .replace(/([0-9a-z_$]+) as ([0-9a-z_$]+)/gi, "$1: $2")
       // import { a } from "a" => const { a } = require("b")
       .replace(
         /import {([^}]+)} from ([^\s;]+);?/g,

@@ -18,6 +18,8 @@ export function useBox(
   return htmlProps;
 }
 
-useBox.keys = ["system"] as Array<keyof unstable_BoxOptions>;
+const keys: Array<keyof unstable_BoxOptions> = ["system"];
+
+useBox.keys = keys;
 
 export const Box = unstable_createComponent("div", useBox);

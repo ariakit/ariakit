@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { transform } from "buble";
 import { importToRequire } from "./importToRequire";
 import deps from "../__deps";
@@ -7,6 +8,10 @@ export function compileComponent(
   code: string,
   depsMap?: Record<string, any>
 ): JSX.Element {
+  const defaultDeps = {
+    react: React,
+    "react-dom": ReactDOM
+  };
   const fullCode = `{
 ${importToRequire(code)}
 if (typeof Example !== "undefined") {
@@ -19,6 +24,9 @@ if (typeof Example !== "undefined") {
     }
     if (depsMap && path in depsMap) {
       return depsMap[path];
+    }
+    if (path in defaultDeps) {
+      return defaultDeps[path as keyof typeof defaultDeps];
     }
     throw new Error(`Unable to resolve path to module '${path}'.`);
   };

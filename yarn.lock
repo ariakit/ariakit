@@ -5137,6 +5137,15 @@ eslint-plugin-jsx-a11y@6.2.1, eslint-plugin-jsx-a11y@^6.0.3:
     has "^1.0.3"
     jsx-ast-utils "^2.0.1"
 
+eslint-plugin-markdown@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-markdown/-/eslint-plugin-markdown-1.0.0.tgz#2d381b44fcf367f1bb53ae166eccf111cd4e1174"
+  integrity sha512-YIrClt3yLgyGov+rInjIoC/05zMxb/c6YXQZkyI9UKuBRFLgCrL37cxthj0JYWiTYtiHq0p8O0Nt0/HrvO48iQ==
+  dependencies:
+    object-assign "^4.0.1"
+    remark-parse "^5.0.0"
+    unified "^6.1.2"
+
 eslint-plugin-prettier@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.0.1.tgz#19d521e3981f69dd6d14f64aec8c6a6ac6eb0b0d"
@@ -14321,7 +14330,7 @@ unified@^4.1.1:
     trough "^1.0.0"
     vfile "^1.0.0"
 
-unified@^6.0.0, unified@^6.1.5:
+unified@^6.0.0, unified@^6.1.2, unified@^6.1.5:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/unified/-/unified-6.2.0.tgz#7fbd630f719126d67d40c644b7e3f617035f6dba"
   integrity sha512-1k+KPhlVtqmG99RaTbAv/usu85fcSRu3wY8X+vnsEhIxNP5VbVIDiXnLqyKIG+UMdyTg0ZX9EI6k2AfjJkHPtA==

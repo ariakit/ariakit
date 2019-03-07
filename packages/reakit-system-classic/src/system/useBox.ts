@@ -4,6 +4,9 @@ import { css } from "emotion";
 
 const className = css`
   color: red;
+  &:focus {
+    outline: 2px solid black;
+  }
 `;
 
 export function useBox(_: any, htmlProps: unstable_BoxProps = {}) {

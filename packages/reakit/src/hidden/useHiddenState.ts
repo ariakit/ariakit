@@ -15,11 +15,11 @@ export type unstable_HiddenActions = {
 };
 
 // TODO: Accept function for the entire options or for each value
-export type unstable_UseHiddenStateOptions = Partial<unstable_HiddenState>;
+export type unstable_HiddenStateOptions = Partial<unstable_HiddenState>;
 
 export function useHiddenState({
   visible: initialVisible = false
-}: unstable_UseHiddenStateOptions = {}): unstable_HiddenState &
+}: unstable_HiddenStateOptions = {}): unstable_HiddenState &
   unstable_HiddenActions {
   const [visible, setVisible] = React.useState(initialVisible);
 

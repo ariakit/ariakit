@@ -25,16 +25,28 @@ export function Editor({
   tabSize = 2,
   mode = "jsx"
 }: EditorProps) {
+  // https://github.com/codemirror/CodeMirror/issues/5444#issuecomment-395523420
+  const [interacted, setInteracted] = React.useState(false);
+  const interact = () => setInteracted(true);
+
   return (
     <CodeMirror
       value={code}
       onBeforeChange={(_, __, value) => update(value)}
+      onChange={interact}
+      onMouseDown={interact}
       options={{
         theme,
         readOnly,
         lineWrapping,
         tabSize,
-        mode
+        mode,
+        extraKeys: interacted
+          ? {}
+          : {
+              Tab: false,
+              "Shift-Tab": false
+            }
       }}
     />
   );
