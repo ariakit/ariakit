@@ -36,7 +36,8 @@
     "react/no-array-index-key": "off",
     "react/prop-types": "off",
     "react/jsx-filename-extension": "off",
-    "react/destructuring-assignment": "off"
+    "react/destructuring-assignment": "off",
+    "react/button-has-type": "off"
   },
   "overrides": [
     {

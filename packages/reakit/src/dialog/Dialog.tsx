@@ -1,3 +1,4 @@
+// TODO: Refactor
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -19,7 +20,10 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
   Partial<unstable_DialogState & unstable_DialogActions> & {
     /** TODO: Description */
     unstable_focusOnShow?: React.RefObject<HTMLElement>;
+    /** TODO: Description */
     unstable_focusOnHide?: React.RefObject<HTMLElement>;
+    /** TODO: Description */
+    unstable_hideOnEsc?: boolean;
   };
 
 export type unstable_DialogProps = unstable_HiddenProps;
@@ -28,7 +32,7 @@ const tabbableSelector =
   'input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
 
 export function useDialog(
-  options: unstable_DialogOptions = {},
+  { unstable_hideOnEsc = true, ...options }: unstable_DialogOptions = {},
   htmlProps: unstable_DialogProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
@@ -40,6 +44,28 @@ export function useDialog(
       activeElement.current = document.activeElement as HTMLElement;
     }
   }, [options.visible]);
+
+  // hideOnEsc
+  React.useEffect(() => {
+    if (!unstable_hideOnEsc) return undefined;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && options.visible && options.hide) {
+        if (ref.current && ref.current.parentNode) {
+          const nestedDialogs = ref.current.parentNode.querySelectorAll(
+            "[data-hide-on-esc=true][aria-hidden=false]"
+          );
+          if (nestedDialogs.item(nestedDialogs.length - 1) !== ref.current)
+            return;
+        }
+        // It's necessary so it doesn't hide before the condition above
+        window.requestAnimationFrame(() => {
+          options.hide!();
+        });
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [options.hide, unstable_hideOnEsc, options.visible]);
 
   // restores focus on the activeElement after closing the dialog
   React.useEffect(() => {
@@ -69,18 +95,18 @@ export function useDialog(
         );
         if (tabbable) {
           tabbable.focus();
-        } else if (options.modal) {
+        } else if (options.unstable_modal) {
           throw new Error(
             "There should be at least one tabbable element in the modal"
           );
         }
       }
     }
-  }, [options.visible, options.unstable_focusOnShow, options.modal]);
+  }, [options.visible, options.unstable_focusOnShow, options.unstable_modal]);
 
   // focus trap
   React.useEffect(() => {
-    if (options.visible && options.modal) {
+    if (options.visible && options.unstable_modal) {
       const handleTab = (e: KeyboardEvent) => {
         if (!ref.current) return;
         if (e.key !== "Tab") return;
@@ -110,22 +136,25 @@ export function useDialog(
         }
       };
 
-      document.body.addEventListener("keydown", handleTab);
-      return () => document.body.removeEventListener("keydown", handleTab);
+      document.addEventListener("keydown", handleTab);
+      return () => document.removeEventListener("keydown", handleTab);
     }
     return undefined;
-  }, [options.visible, options.modal]);
+  }, [options.visible, options.unstable_modal]);
 
   htmlProps = mergeProps(
     {
-      role: "dialog",
-      ref
+      ref,
+      role: "dialog"
     } as typeof htmlProps,
-    options.modal ? { "aria-modal": true } : {},
+    // necessary for escaping nested dialogs
+    unstable_hideOnEsc ? { "data-hide-on-esc": true } : {},
+    options.unstable_modal ? { "aria-modal": true } : {},
     htmlProps
   );
-  htmlProps = useHidden(options, htmlProps);
-  htmlProps = unstable_useHook("useDialog", options, htmlProps);
+  const allOptions = { unstable_hideOnEsc, ...options };
+  htmlProps = useHidden(allOptions, htmlProps);
+  htmlProps = unstable_useHook("useDialog", allOptions, htmlProps);
   return htmlProps;
 }
 

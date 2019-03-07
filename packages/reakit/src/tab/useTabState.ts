@@ -28,14 +28,14 @@ export function useTabState({
   unstable_TabActions {
   const baseId = unstable_useId("tab-");
   return {
-    baseId,
-    ...useStepState({ loop, activeIndex, ...options })
+    ...useStepState({ loop, activeIndex, ...options }),
+    baseId
   };
 }
 
 const keys: Array<keyof ReturnType<typeof useTabState>> = [
-  "baseId",
-  ...useStepState.keys
+  ...useStepState.keys,
+  "baseId"
 ];
 
 useTabState.keys = keys;
