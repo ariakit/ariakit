@@ -2,6 +2,7 @@ export * from "./box";
 export * from "./button";
 export * from "./dialog";
 export * from "./hidden";
+export * from "./popover";
 export * from "./portal";
 export * from "./step";
 export * from "./system";

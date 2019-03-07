@@ -19,12 +19,14 @@ export type unstable_DialogActions = unstable_HiddenActions & {
 export type unstable_DialogStateOptions = unstable_HiddenStateOptions &
   Partial<Pick<unstable_DialogState, "unstable_modal">>;
 
+export type unstable_DialogStateReturn = unstable_DialogState &
+  unstable_DialogActions;
+
 // TODO: Accept function for the entire options or for each value
 export function useDialogState({
   unstable_modal: initialModal = false,
   ...options
-}: unstable_DialogStateOptions = {}): unstable_DialogState &
-  unstable_DialogActions {
+}: unstable_DialogStateOptions = {}): unstable_DialogStateReturn {
   const [modal, setModal] = React.useState(initialModal);
   return {
     ...useHiddenState(options),
@@ -33,7 +35,7 @@ export function useDialogState({
   };
 }
 
-const keys: Array<keyof ReturnType<typeof useDialogState>> = [
+const keys: Array<keyof unstable_DialogStateReturn> = [
   ...useHiddenState.keys,
   "unstable_modal",
   "unstable_setModal"

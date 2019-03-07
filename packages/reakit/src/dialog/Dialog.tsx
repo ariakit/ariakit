@@ -5,11 +5,7 @@ import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useHook } from "../system/useHook";
 import { unstable_Portal as Portal } from "../portal/Portal";
-import {
-  useDialogState,
-  unstable_DialogState,
-  unstable_DialogActions
-} from "./useDialogState";
+import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
@@ -17,7 +13,7 @@ import {
 } from "../hidden/Hidden";
 
 export type unstable_DialogOptions = unstable_HiddenOptions &
-  Partial<unstable_DialogState & unstable_DialogActions> & {
+  Partial<unstable_DialogStateReturn> & {
     /** TODO: Description */
     unstable_focusOnShow?: React.RefObject<HTMLElement>;
     /** TODO: Description */
@@ -37,6 +33,7 @@ export function useDialog(
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
   const activeElement = React.useRef<HTMLElement | null>(null);
+  const [hasFocusable, setHasFocusable] = React.useState(true);
 
   // stores the active element before focusing dialog
   React.useLayoutEffect(() => {
@@ -95,14 +92,17 @@ export function useDialog(
         );
         if (tabbable) {
           tabbable.focus();
-        } else if (options.unstable_modal) {
-          throw new Error(
-            "There should be at least one tabbable element in the modal"
-          );
+        } else {
+          setHasFocusable(false);
+          window.requestAnimationFrame(() => {
+            if (ref.current) {
+              ref.current.focus();
+            }
+          });
         }
       }
     }
-  }, [options.visible, options.unstable_focusOnShow, options.unstable_modal]);
+  }, [options.visible, options.unstable_focusOnShow]);
 
   // focus trap
   React.useEffect(() => {
@@ -150,6 +150,7 @@ export function useDialog(
     // necessary for escaping nested dialogs
     unstable_hideOnEsc ? { "data-hide-on-esc": true } : {},
     options.unstable_modal ? { "aria-modal": true } : {},
+    hasFocusable ? {} : { tabIndex: 0 },
     htmlProps
   );
   const allOptions = { unstable_hideOnEsc, ...options };

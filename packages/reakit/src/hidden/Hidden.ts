@@ -3,14 +3,10 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../box/Box";
-import {
-  useHiddenState,
-  unstable_HiddenState,
-  unstable_HiddenActions
-} from "./useHiddenState";
+import { useHiddenState, unstable_HiddenStateReturn } from "./useHiddenState";
 
 export type unstable_HiddenOptions = unstable_BoxOptions &
-  Partial<unstable_HiddenState & unstable_HiddenActions>;
+  Partial<unstable_HiddenStateReturn>;
 
 export type unstable_HiddenProps = unstable_BoxProps;
 

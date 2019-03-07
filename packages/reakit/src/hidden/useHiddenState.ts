@@ -17,10 +17,12 @@ export type unstable_HiddenActions = {
 // TODO: Accept function for the entire options or for each value
 export type unstable_HiddenStateOptions = Partial<unstable_HiddenState>;
 
+export type unstable_HiddenStateReturn = unstable_HiddenState &
+  unstable_HiddenActions;
+
 export function useHiddenState({
   visible: initialVisible = false
-}: unstable_HiddenStateOptions = {}): unstable_HiddenState &
-  unstable_HiddenActions {
+}: unstable_HiddenStateOptions = {}): unstable_HiddenStateReturn {
   const [visible, setVisible] = React.useState(initialVisible);
 
   const show = () => {
@@ -41,7 +43,7 @@ export function useHiddenState({
   };
 }
 
-const keys: Array<keyof ReturnType<typeof useHiddenState>> = [
+const keys: Array<keyof unstable_HiddenStateReturn> = [
   "visible",
   "show",
   "hide",
