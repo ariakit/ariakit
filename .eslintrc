@@ -36,9 +36,18 @@
     "react/no-array-index-key": "off",
     "react/prop-types": "off",
     "react/jsx-filename-extension": "off",
-    "react/destructuring-assignment": "off"
+    "react/destructuring-assignment": "off",
+    "react/button-has-type": "off"
   },
   "overrides": [
+    {
+      "files": ["**/*.md"],
+      "plugins": ["markdown"],
+      "rules": {
+        "no-unused-vars": "off",
+        "react/react-in-jsx-scope": "off"
+      }
+    },
     {
       "files": ["**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",

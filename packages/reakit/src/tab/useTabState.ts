@@ -3,7 +3,7 @@ import {
   unstable_StepState,
   unstable_StepSelectors,
   unstable_StepActions,
-  unstable_UseStepStateOptions
+  unstable_StepStateOptions
 } from "../step/useStepState";
 import { unstable_useId } from "../utils/useId";
 
@@ -16,26 +16,26 @@ export type unstable_TabSelectors = unstable_StepSelectors;
 
 export type unstable_TabActions = unstable_StepActions;
 
-export type unstable_UseTabStateOptions = unstable_UseStepStateOptions;
+export type unstable_TabStateOptions = unstable_StepStateOptions;
 
 // TODO: Accept function for the entire options or for each value
 export function useTabState({
   loop = true,
   activeIndex = 0,
   ...options
-}: unstable_UseTabStateOptions = {}): unstable_TabState &
+}: unstable_TabStateOptions = {}): unstable_TabState &
   unstable_TabSelectors &
   unstable_TabActions {
   const baseId = unstable_useId("tab-");
   return {
-    baseId,
-    ...useStepState({ loop, activeIndex, ...options })
+    ...useStepState({ loop, activeIndex, ...options }),
+    baseId
   };
 }
 
 const keys: Array<keyof ReturnType<typeof useTabState>> = [
-  "baseId",
-  ...useStepState.keys
+  ...useStepState.keys,
+  "baseId"
 ];
 
 useTabState.keys = keys;

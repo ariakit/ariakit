@@ -18,7 +18,7 @@ redirect_from:
 import { Hidden } from "reakit";
 
 function Example() {
-  return <Hidden visible>Hidden</Hidden>
+  return <Hidden visible>Hidden</Hidden>;
 }
 ```
 
@@ -36,20 +36,6 @@ function Example() {
 }
 
 return <Example />;
-```
-
-```jsx
-import { Hidden, HiddenToggle, useHiddenState } from "reakit";
-
-function Example() {
-  const state = useHiddenState({ visible: true });
-  return (
-    <div>
-      <HiddenToggle {...state}>Toggle</HiddenToggle>
-      <Hidden hideOnClickOutside {...state}>Hidden</Hidden>
-    </div>
-  );
-}
 ```
 
 ```jsx
@@ -109,8 +95,6 @@ type HiddenState = {
 type Hidden = Box & {
   visible: boolean;
   hide: () => void;
-  hideOnClickOutside: boolean;
-  hideOnEsc: boolean;
 };
 
 type HiddenToggle = Box & {

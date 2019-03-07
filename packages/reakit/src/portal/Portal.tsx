@@ -1,12 +1,17 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
+const PortalContext = React.createContext<HTMLElement | null>(
+  typeof document !== "undefined" ? document.body : null
+);
+
 export type unstable_PortalProps = {
   /** TODO: Description */
   children: React.ReactNode;
 };
 
 export function unstable_Portal({ children }: unstable_PortalProps) {
+  const wrapper = React.useContext(PortalContext);
   const [container] = React.useState(() => {
     if (typeof document !== "undefined") {
       return document.createElement("div");
@@ -16,18 +21,23 @@ export function unstable_Portal({ children }: unstable_PortalProps) {
   });
 
   React.useLayoutEffect(() => {
-    if (container) {
-      document.body.appendChild(container);
+    if (container && wrapper) {
+      wrapper.appendChild(container);
     }
     return () => {
-      if (container) {
-        document.body.removeChild(container);
+      if (container && wrapper) {
+        wrapper.removeChild(container);
       }
     };
-  }, [container]);
+  }, [container, wrapper]);
 
   if (container) {
-    return ReactDOM.createPortal(children, container);
+    const portal = ReactDOM.createPortal(children, container);
+    return (
+      <PortalContext.Provider value={container}>
+        {portal}
+      </PortalContext.Provider>
+    );
   }
 
   // ssr

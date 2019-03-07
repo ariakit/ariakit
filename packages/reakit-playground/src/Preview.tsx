@@ -1,6 +1,8 @@
 // TODO: Refactor
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as system from "reakit-system-classic";
+import { Provider } from "reakit/utils/Provider";
 import { compileComponent } from "./__utils/compileComponent";
 import { EditorState } from "./useEditorState";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -58,7 +60,9 @@ export function Preview(props: PreviewProps) {
   return (
     <ErrorBoundary>
       {error && <ErrorMessage error={error} />}
-      <div ref={ref}>{rendered}</div>
+      <Provider system={system}>
+        <div ref={ref}>{rendered}</div>
+      </Provider>
     </ErrorBoundary>
   );
 }

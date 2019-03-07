@@ -14,7 +14,7 @@
     "start": "npm run develop",
     "test": "jest",
     "build": "gatsby build",
-    "develop": "gatsby develop",
+    "develop": "gatsby develop -H 0.0.0.0 -p 8000",
     "serve": "gatsby serve"
   },
   "dependencies": {
