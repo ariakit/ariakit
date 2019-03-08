@@ -3,21 +3,20 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../box/Box";
-import {
-  useTabState,
-  unstable_TabState,
-  unstable_TabSelectors,
-  unstable_TabActions
-} from "./useTabState";
+import { useTabState, unstable_TabStateReturn } from "./useTabState";
 import { unstable_getTabId, unstable_getTabPanelId } from "./utils";
 
 export type unstable_TabOptions = unstable_BoxOptions &
-  Partial<unstable_TabState & unstable_TabSelectors & unstable_TabActions> &
-  Pick<unstable_TabState, "baseId"> &
-  Pick<unstable_TabSelectors, "isActive"> &
+  Partial<unstable_TabStateReturn> &
   Pick<
-    unstable_TabActions,
-    "register" | "unregister" | "goto" | "previous" | "next"
+    unstable_TabStateReturn,
+    | "baseId"
+    | "isActive"
+    | "register"
+    | "unregister"
+    | "goto"
+    | "previous"
+    | "next"
   > & {
     /** TODO: Description */
     tabId: string;

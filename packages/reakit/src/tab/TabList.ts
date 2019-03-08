@@ -2,15 +2,10 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../box/Box";
-import {
-  useTabState,
-  unstable_TabState,
-  unstable_TabSelectors,
-  unstable_TabActions
-} from "./useTabState";
+import { useTabState, unstable_TabStateReturn } from "./useTabState";
 
 export type unstable_TabListOptions = unstable_BoxOptions &
-  Partial<unstable_TabState & unstable_TabSelectors & unstable_TabActions>;
+  Partial<unstable_TabStateReturn>;
 
 export type unstable_TabListProps = unstable_BoxProps;
 

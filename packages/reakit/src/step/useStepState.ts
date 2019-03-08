@@ -48,6 +48,10 @@ export type unstable_StepActions = {
 // TODO: Accept function for the entire options or for each value
 export type unstable_StepStateOptions = Partial<unstable_StepState>;
 
+export type unstable_StepStateReturn = unstable_StepState &
+  unstable_StepSelectors &
+  unstable_StepActions;
+
 type StepAction =
   | { type: "goto"; idOrIndex: string | number }
   | { type: "previous" }
@@ -193,9 +197,7 @@ export function useStepState({
   ids = [],
   activeIndex = -1,
   ordered = {}
-}: unstable_StepStateOptions = {}): unstable_StepState &
-  unstable_StepSelectors &
-  unstable_StepActions {
+}: unstable_StepStateOptions = {}): unstable_StepStateReturn {
   const [state, dispatch] = React.useReducer(reducer, {
     loop,
     ids,
@@ -231,7 +233,7 @@ export function useStepState({
   };
 }
 
-const keys: Array<keyof ReturnType<typeof useStepState>> = [
+const keys: Array<keyof unstable_StepStateReturn> = [
   "loop",
   "ids",
   "activeIndex",

@@ -1,18 +1,14 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
+import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
 import {
   unstable_HiddenShowOptions,
   unstable_HiddenShowProps,
   useHiddenShow
 } from "../hidden/HiddenShow";
-import {
-  unstable_DialogState,
-  unstable_DialogActions,
-  useDialogState
-} from "./useDialogState";
 
 export type unstable_DialogShowOptions = unstable_HiddenShowOptions &
-  Partial<unstable_DialogState & unstable_DialogActions>;
+  Partial<unstable_DialogStateReturn>;
 
 export type unstable_DialogShowProps = unstable_HiddenShowProps;
 

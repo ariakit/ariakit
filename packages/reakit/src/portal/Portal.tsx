@@ -11,7 +11,9 @@ export type unstable_PortalProps = {
 };
 
 export function unstable_Portal({ children }: unstable_PortalProps) {
-  const wrapper = React.useContext(PortalContext);
+  // if it's a nested portal, context is the parent portal
+  // otherwise it's document.body
+  const context = React.useContext(PortalContext);
   const [container] = React.useState(() => {
     if (typeof document !== "undefined") {
       return document.createElement("div");
@@ -21,15 +23,14 @@ export function unstable_Portal({ children }: unstable_PortalProps) {
   });
 
   React.useLayoutEffect(() => {
-    if (container && wrapper) {
-      wrapper.appendChild(container);
+    if (container && context) {
+      context.appendChild(container);
+      return () => {
+        context.removeChild(container);
+      };
     }
-    return () => {
-      if (container && wrapper) {
-        wrapper.removeChild(container);
-      }
-    };
-  }, [container, wrapper]);
+    return undefined;
+  }, [container, context]);
 
   if (container) {
     const portal = ReactDOM.createPortal(children, container);

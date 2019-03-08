@@ -1,22 +1,16 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
+import { useStepState, unstable_StepStateReturn } from "./useStepState";
 import {
   useHidden,
   unstable_HiddenOptions,
   unstable_HiddenProps
 } from "../hidden/Hidden";
-import {
-  useStepState,
-  unstable_StepState,
-  unstable_StepSelectors,
-  unstable_StepActions
-} from "./useStepState";
 
 export type unstable_StepOptions = unstable_HiddenOptions &
-  Partial<unstable_StepState & unstable_StepSelectors & unstable_StepActions> &
-  Pick<unstable_StepSelectors, "isActive"> &
-  Pick<unstable_StepActions, "register" | "unregister"> & {
+  Partial<unstable_StepStateReturn> &
+  Pick<unstable_StepStateReturn, "isActive" | "register" | "unregister"> & {
     /** TODO: Description */
     stepId: string;
     /** TODO: Description */

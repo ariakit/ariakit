@@ -1,20 +1,16 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
+import { useHiddenState, unstable_HiddenStateReturn } from "./useHiddenState";
 import {
   useButton,
   unstable_ButtonOptions,
   unstable_ButtonProps
 } from "../button/Button";
-import {
-  useHiddenState,
-  unstable_HiddenActions,
-  unstable_HiddenState
-} from "./useHiddenState";
 
 export type unstable_HiddenHideOptions = unstable_ButtonOptions &
-  Partial<unstable_HiddenState & unstable_HiddenActions> &
-  Pick<unstable_HiddenActions, "hide">;
+  Partial<unstable_HiddenStateReturn> &
+  Pick<unstable_HiddenStateReturn, "hide">;
 
 export type unstable_HiddenHideProps = unstable_ButtonProps;
 

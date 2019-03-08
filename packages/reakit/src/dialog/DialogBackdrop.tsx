@@ -4,20 +4,16 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useHook } from "../system/useHook";
 import { unstable_Portal as Portal } from "../portal/Portal";
+import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
   useHidden
 } from "../hidden/Hidden";
-import {
-  unstable_DialogState,
-  unstable_DialogActions,
-  useDialogState
-} from "./useDialogState";
 
 export type unstable_DialogBackdropOptions = unstable_HiddenOptions &
-  Partial<unstable_DialogState & unstable_DialogActions> &
-  Pick<unstable_DialogActions, "unstable_setModal" | "hide">;
+  Partial<unstable_DialogStateReturn> &
+  Pick<unstable_DialogStateReturn, "unstable_setModal" | "hide">;
 
 export type unstable_DialogBackdropProps = unstable_HiddenProps;
 

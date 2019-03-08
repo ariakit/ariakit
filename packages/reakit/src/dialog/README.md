@@ -52,22 +52,14 @@ function Example() {
     <>
       <Button ref={focusOutRef}>Focus out</Button>
       <DialogShow {...dialog}>Show Dialog</DialogShow>
-      <DialogBackdrop style={backdropStyle} {...dialog} />
-      <Dialog
-        style={style}
-        aria-label="test"
-        unstable_focusOnShow={focusInRef}
-        unstable_focusOnHide={focusOutRef}
-        {...dialog}
-      >
+      <Dialog style={style} aria-label="test" {...dialog}>
         <DialogHide {...dialog}>X</DialogHide>
         <DialogShow {...dialog2}>Show Dialog 2</DialogShow>
         <A href="#" ref={focusInRef}>
           Focus In
         </A>
-        <DialogBackdrop style={backdropStyle} {...dialog2} />
         <Dialog style={style} {...dialog2}>
-          <A href="#">Hi</A>
+          Hi
         </Dialog>
       </Dialog>
     </>
