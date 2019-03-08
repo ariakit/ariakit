@@ -48,7 +48,10 @@ export function Preview(props: PreviewProps) {
       try {
         const exampleComponent = compileComponent(props.code);
         unmount();
-        ReactDOM.render(exampleComponent, ref.current);
+        ReactDOM.render(
+          <Provider system={system}>{exampleComponent}</Provider>,
+          ref.current
+        );
       } catch (e) {
         unmount();
         handleError(e);
@@ -60,9 +63,9 @@ export function Preview(props: PreviewProps) {
   return (
     <ErrorBoundary>
       {error && <ErrorMessage error={error} />}
-      <Provider system={system}>
-        <div ref={ref}>{rendered}</div>
-      </Provider>
+      <div ref={ref}>
+        <Provider system={system}>{rendered}</Provider>
+      </div>
     </ErrorBoundary>
   );
 }

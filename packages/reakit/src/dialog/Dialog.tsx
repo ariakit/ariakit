@@ -32,13 +32,13 @@ export function useDialog(
   htmlProps: unstable_DialogProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
-  const activeElement = React.useRef<HTMLElement | null>(null);
+  const activeElementBeforeVisible = React.useRef<HTMLElement | null>(null);
   const [hasFocusable, setHasFocusable] = React.useState(true);
 
   // stores the active element before focusing dialog
   React.useLayoutEffect(() => {
     if (options.visible) {
-      activeElement.current = document.activeElement as HTMLElement;
+      activeElementBeforeVisible.current = document.activeElement as HTMLElement;
     }
   }, [options.visible]);
 
@@ -72,8 +72,8 @@ export function useDialog(
         options.unstable_focusOnHide.current
       ) {
         options.unstable_focusOnHide.current.focus();
-      } else if (activeElement.current) {
-        activeElement.current.focus();
+      } else if (activeElementBeforeVisible.current) {
+        activeElementBeforeVisible.current.focus();
       }
     }
   }, [options.visible, options.unstable_focusOnHide]);
@@ -106,21 +106,55 @@ export function useDialog(
 
   // focus trap
   React.useEffect(() => {
-    if (options.visible && options.unstable_modal) {
+    if (options.visible) {
       const handleTab = (e: KeyboardEvent) => {
         if (!ref.current) return;
         if (e.key !== "Tab") return;
-        e.preventDefault();
         const tabbable = ref.current.querySelectorAll<HTMLElement>(
           tabbableSelector
         );
+        const array = Array.from(tabbable);
+        let focused = array.find(item => item === document.activeElement);
+
+        if (!options.unstable_modal) {
+          if (!focused) {
+            // TODO: if activeElementBeforeVisible is document.activeElement
+            // focus the first tabbable element on the dialog
+            // if focus is on the next tabbable element after activeElementBeforeVisible
+            // focus the last tabbable element on the dialog
+            return;
+          }
+          const index = array.indexOf(focused);
+          if (index === 0 && e.shiftKey) {
+            if (activeElementBeforeVisible.current) {
+              e.preventDefault();
+              activeElementBeforeVisible.current.focus();
+            }
+          } else if (index === array.length - 1 && !e.shiftKey) {
+            if (activeElementBeforeVisible.current) {
+              const allTabbable = document.querySelectorAll<HTMLElement>(
+                tabbableSelector
+              );
+              const i = Array.from(allTabbable).indexOf(
+                activeElementBeforeVisible.current
+              );
+              if (allTabbable[i + 1]) {
+                e.preventDefault();
+                allTabbable[i + 1].focus();
+              }
+            }
+          }
+          return;
+        }
+
         if (!tabbable.length) {
           throw new Error(
             "There should be at least one tabbable element in the modal"
           );
         }
-        const array = Array.from(tabbable);
-        let focused = array.find(item => item === document.activeElement);
+
+        e.preventDefault();
+
         if (!focused) {
           const [first] = array;
           first.focus();
