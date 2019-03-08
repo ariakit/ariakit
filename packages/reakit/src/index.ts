@@ -7,4 +7,5 @@ export * from "./portal";
 export * from "./step";
 export * from "./system";
 export * from "./tab";
+export * from "./tooltip";
 export * from "./utils";

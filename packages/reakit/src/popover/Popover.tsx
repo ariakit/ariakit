@@ -24,7 +24,10 @@ export type unstable_PopoverOptions = unstable_DialogOptions &
 export type unstable_PopoverProps = unstable_DialogProps;
 
 export function usePopover(
-  { unstable_hideOnClickOutside = true, ...options }: unstable_PopoverOptions,
+  {
+    unstable_hideOnClickOutside = true,
+    ...options
+  }: unstable_PopoverOptions = {},
   htmlProps: unstable_PopoverProps = {}
 ) {
   React.useEffect(() => {
