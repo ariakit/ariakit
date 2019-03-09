@@ -38,22 +38,6 @@ function Example() {
 return <Example />;
 ```
 
-```jsx
-import { useHidden, useHiddenToggle, useHiddenState } from "reakit";
-
-function Example() {
-  const state = useHiddenState({ visible: true });
-  const hiddenToggle = useHiddenToggle(state);
-  const hidden = useHidden({ hideOnClickOutside: true, ...state });
-  return (
-    <div>
-      <button {...hiddenToggle}>Toggle</button>
-      <div {...hidden}>Hidden</div>
-    </div>
-  );
-}
-```
-
 ## API
 
 ### `useHiddenState`

@@ -11,7 +11,7 @@ redirect_from:
 ### `Portal`
 
 ```jsx
-import { unstable_Portal as Portal } from "reakit";
+import { Portal } from "reakit";
 
 function Example() {
   return <Portal>hi</Portal>;
