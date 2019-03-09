@@ -1,16 +1,19 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { usePortalContext, PortalContext } from "./PortalContext";
 
 export type unstable_PortalProps = {
   /** TODO: Description */
   children: React.ReactNode;
 };
 
-export function unstable_Portal({ children }: unstable_PortalProps) {
+const PortalContext = React.createContext<HTMLElement | null>(
+  typeof document !== "undefined" ? document.body : null
+);
+
+export function Portal({ children }: unstable_PortalProps) {
   // if it's a nested portal, context is the parent portal
   // otherwise it's document.body
-  const context = usePortalContext();
+  const context = React.useContext(PortalContext);
   const [container] = React.useState(() => {
     if (typeof document !== "undefined") {
       return document.createElement("div");

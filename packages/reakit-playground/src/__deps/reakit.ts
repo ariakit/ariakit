@@ -31,7 +31,6 @@ export default {
   "reakit/Step/StepNext": require("reakit/Step/StepNext"),
   "reakit/Step/Step": require("reakit/Step/Step"),
   "reakit/Portal": require("reakit/Portal"),
-  "reakit/Portal/PortalContext": require("reakit/Portal/PortalContext"),
   "reakit/Portal/Portal": require("reakit/Portal/Portal"),
   "reakit/Popover": require("reakit/Popover"),
   "reakit/Popover/PopoverState": require("reakit/Popover/PopoverState"),

@@ -52,7 +52,7 @@ function Example() {
       <Button ref={focusOutRef}>Focus out</Button>
       <DialogController {...dialog}>Show Dialog</DialogController>
       <DialogBackdrop {...dialog} style={backdropStyle} />
-      <Dialog style={style} aria-label="test" {...dialog}>
+      <Dialog modal style={style} aria-label="test" {...dialog}>
         <Button onClick={dialog.hide}>X</Button>
         <DialogController {...dialog2}>Show Dialog 2</DialogController>
         <A href="#" ref={focusInRef}>
@@ -115,8 +115,7 @@ function Example() {
         <A href="#" ref={focusInRef}>
           Focus In
         </A>
-        <DialogBackdrop {...dialog2} style={backdropStyle} />
-        <Dialog style={style} {...dialog2}>
+        <Dialog modal style={style} {...dialog2}>
           Hi
         </Dialog>
       </Dialog>

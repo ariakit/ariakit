@@ -3,7 +3,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_Portal as Portal } from "../Portal/Portal";
+import { Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
@@ -12,20 +12,14 @@ import {
 import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogBackdropOptions = unstable_HiddenOptions &
-  Partial<unstable_DialogStateReturn> &
-  Pick<unstable_DialogStateReturn, "unstable_setModal">;
+  Partial<unstable_DialogStateReturn>;
 
 export type unstable_DialogBackdropProps = unstable_HiddenProps;
 
 export function useDialogBackdrop(
-  options: unstable_DialogBackdropOptions,
+  options: unstable_DialogBackdropOptions = {},
   htmlProps: unstable_DialogBackdropProps = {}
 ) {
-  React.useLayoutEffect(() => {
-    options.unstable_setModal(true);
-    return () => options.unstable_setModal(false);
-  }, [options.unstable_modal, options.unstable_setModal]);
-
   htmlProps = mergeProps(
     {
       role: "presentation",

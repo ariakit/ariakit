@@ -2,7 +2,7 @@ import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_Portal as Portal } from "../Portal/Portal";
+import { Portal } from "../Portal/Portal";
 import {
   unstable_DialogBackdropOptions,
   unstable_DialogBackdropProps,

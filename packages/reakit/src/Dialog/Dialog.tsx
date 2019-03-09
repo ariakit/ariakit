@@ -4,7 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_Portal as Portal } from "../Portal/Portal";
+import { Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
@@ -14,6 +14,8 @@ import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogOptions = unstable_HiddenOptions &
   Partial<unstable_DialogStateReturn> & {
+    /** TODO: Description */
+    modal?: boolean;
     /** TODO: Description */
     unstable_focusOnShow?: React.RefObject<HTMLElement>;
     /** TODO: Description */
@@ -26,8 +28,13 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
 
 export type unstable_DialogProps = unstable_HiddenProps;
 
-const tabbableSelector =
-  'input, select, textarea, a[href], button, [tabindex]:not([tabindex="-1"]), audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
+const focusableSelector =
+  'input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
+
+const tabbableSelector = focusableSelector
+  .split(", ")
+  .map(selector => `${selector}:not([tabindex="-1"]):not([disabled])`)
+  .join(", ");
 
 export function useDialog(
   {
@@ -38,53 +45,69 @@ export function useDialog(
   htmlProps: unstable_DialogProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
-  const activeElementBeforeVisible = React.useRef<HTMLElement | null>(null);
-  const [hasFocusable, setHasFocusable] = React.useState(true);
+  const lastActiveElement = React.useRef<HTMLElement | null>(null);
+  const getPortal = React.useCallback(
+    () => ref.current && (ref.current.parentNode as HTMLElement),
+    []
+  );
 
-  // stores the active element before focusing dialog
+  // Add stuff to portal
+  React.useLayoutEffect(() => {
+    const portal = getPortal();
+
+    if (!portal) return;
+
+    // Make it focusable so it works like a document.body in the dialog scope
+    portal.setAttribute("tabindex", "-1");
+
+    if (options.modal) {
+      const className = "modal-open";
+      if (options.visible) {
+        portal.classList.add(className);
+      } else {
+        portal.classList.remove(className);
+      }
+    }
+  }, [getPortal, options.visible, options.modal]);
+
+  // Store the active element before focusing dialog
   React.useLayoutEffect(() => {
     if (options.visible) {
-      activeElementBeforeVisible.current = document.activeElement as HTMLElement;
+      lastActiveElement.current = document.activeElement as HTMLElement;
     }
   }, [options.visible]);
 
   // hideOnEsc
   React.useEffect(() => {
-    if (!unstable_hideOnEsc) return undefined;
+    const portal = getPortal();
+
+    if (!unstable_hideOnEsc || !portal || !options.visible) {
+      return undefined;
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && options.visible && options.hide) {
-        const portal = ref.current && ref.current.parentNode;
-        if (portal) {
-          const nestedDialogs = portal.querySelectorAll(
-            "[data-hide-on-esc=true][aria-hidden=false]"
-          );
-          if (nestedDialogs.item(nestedDialogs.length - 1) !== ref.current)
-            return;
-        }
-        // delay hide so the above querySelector can capture nested dialogs before they hide
-        // it's necessary so it doesn't hide before the condition above
-        window.requestAnimationFrame(() => {
-          options.hide!();
-        });
+      if (e.key !== "Escape" || !options.hide || !ref.current) return;
+      if (ref.current.contains(e.target as Node) || e.target === portal) {
+        options.hide();
       }
     };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [options.hide, unstable_hideOnEsc, options.visible]);
+
+    portal.addEventListener("keydown", handleKeyDown);
+
+    return () => portal.removeEventListener("keydown", handleKeyDown);
+  }, [getPortal, options.hide, unstable_hideOnEsc, options.visible]);
 
   // hide on click outside
   React.useEffect(() => {
-    if (!unstable_hideOnClickOutside) return undefined;
+    const portal = getPortal();
+
+    if (!unstable_hideOnClickOutside || !options.visible || !portal) {
+      return undefined;
+    }
+
     const handleInteractionOutside = (e: MouseEvent | FocusEvent) => {
       const target = e.target as HTMLElement;
       const targetConstrols = target.getAttribute("aria-controls");
-      const portal = ref.current && ref.current.parentNode;
-
-      if (!portal) return;
-
-      const nestedDialogs = portal.querySelectorAll(
-        "[data-hide-on-click-outside=true][aria-hidden=false]"
-      );
 
       const shouldHide =
         // parentNode is the portal wrapper
@@ -93,9 +116,6 @@ export function useDialog(
         !portal.contains(target) &&
         // make sure we aren't dealing with the toggler
         (!targetConstrols || targetConstrols !== options.baseId) &&
-        // cascade
-        nestedDialogs.item(nestedDialogs.length - 1) === ref.current &&
-        options.visible &&
         options.hide;
 
       if (shouldHide) {
@@ -111,141 +131,155 @@ export function useDialog(
       document.removeEventListener("focus", handleInteractionOutside, true);
     };
   }, [
+    getPortal,
     unstable_hideOnClickOutside,
     options.baseId,
     options.visible,
     options.hide
   ]);
 
-  // restores focus on the activeElement after closing the dialog
+  // handle click inside
   React.useEffect(() => {
-    if (!options.visible) {
-      // there's already a focused element outside
-      if (
-        ref.current &&
-        !ref.current.contains(document.activeElement) &&
-        document.activeElement !== document.body
-      ) {
+    const portal = getPortal();
+
+    if (!portal || !options.visible) return undefined;
+
+    const handle = (e: MouseEvent | TouchEvent) => {
+      if (!portal.contains(e.target as Node)) return;
+      if (document.activeElement === document.body) {
+        portal.focus();
+      }
+    };
+    portal.addEventListener("touchstart", handle);
+    portal.addEventListener("mousedown", handle);
+    return () => {
+      portal.removeEventListener("touchstart", handle);
+      portal.removeEventListener("mousedown", handle);
+    };
+  }, [getPortal, options.visible]);
+
+  // Restore focus on the activeElement after closing the dialog
+  React.useEffect(() => {
+    const portal = getPortal();
+
+    if (!portal || options.visible) return;
+
+    // There's already a focused element outside the portal, do nothing
+    if (
+      !portal.contains(document.activeElement) &&
+      document.activeElement !== document.body
+    ) {
+      return;
+    }
+
+    const focusOnHideElement =
+      options.unstable_focusOnHide && options.unstable_focusOnHide.current;
+
+    if (focusOnHideElement) {
+      focusOnHideElement.focus();
+    } else if (lastActiveElement.current) {
+      lastActiveElement.current.focus();
+    }
+  }, [getPortal, options.visible, options.unstable_focusOnHide]);
+
+  // Focus the first tabbable/focusable element when the dialog opens
+  React.useEffect(() => {
+    const portal = getPortal();
+
+    if (!portal || !options.visible) return;
+
+    const focusOnShowElement =
+      options.unstable_focusOnShow && options.unstable_focusOnShow.current;
+
+    if (focusOnShowElement) {
+      focusOnShowElement.focus();
+    } else {
+      const tabbable = portal.querySelector<HTMLElement>(tabbableSelector);
+      if (tabbable) {
+        tabbable.focus();
+      } else {
+        // If there's no tabblable element, fallback to the focusable ones
+        const focusable = portal.querySelector<HTMLElement>(focusableSelector);
+        if (focusable) {
+          focusable.focus();
+        } else {
+          // If there's no focusable element, fallback to the portal itself
+          portal.focus({ preventScroll: true });
+        }
+      }
+    }
+  }, [getPortal, options.visible, options.unstable_focusOnShow]);
+
+  // Focus trap
+  React.useEffect(() => {
+    const portal = getPortal();
+
+    if (!portal || !options.visible) return undefined;
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      // If there's nested open dialogs, let them handle it
+      const nestedOpenDialogs = portal.querySelectorAll(
+        "[role=dialog][aria-hidden=false]"
+      );
+      if (nestedOpenDialogs.length > 1) return;
+
+      const focusables = Array.from(
+        portal.querySelectorAll<HTMLElement>(focusableSelector)
+      );
+      focusables.unshift(portal);
+      const tabbables = Array.from(
+        portal.querySelectorAll<HTMLElement>(tabbableSelector)
+      );
+
+      const focused = focusables.find(f => f === document.activeElement);
+
+      if (!focused) return;
+
+      const tabbableIndex = tabbables.indexOf(focused);
+      if (options.modal) {
+        e.preventDefault();
+        if (e.shiftKey) {
+          const previousTabbableIndex =
+            tabbableIndex > 0 ? tabbableIndex - 1 : tabbables.length - 1;
+          const previousTabbable = tabbables[previousTabbableIndex];
+          previousTabbable.focus();
+        } else {
+          const nextTabbableIndex =
+            tabbableIndex + 1 < tabbables.length ? tabbableIndex + 1 : 0;
+          const nextTabbable = tabbables[nextTabbableIndex];
+          nextTabbable.focus();
+        }
         return;
       }
-      if (
-        options.unstable_focusOnHide &&
-        options.unstable_focusOnHide.current
-      ) {
-        options.unstable_focusOnHide.current.focus();
-      } else if (activeElementBeforeVisible.current) {
-        activeElementBeforeVisible.current.focus();
-      }
-    }
-  }, [options.visible, options.unstable_focusOnHide]);
 
-  // focuses the first tabbable element when the dialog is shown
-  React.useEffect(() => {
-    if (options.visible) {
-      if (
-        options.unstable_focusOnShow &&
-        options.unstable_focusOnShow.current
-      ) {
-        options.unstable_focusOnShow.current.focus();
-      } else if (ref.current) {
-        const tabbable = ref.current.querySelector<HTMLElement>(
-          tabbableSelector
-        );
-        if (tabbable) {
-          tabbable.focus();
-        } else {
-          setHasFocusable(false);
-          window.requestAnimationFrame(() => {
-            if (ref.current) {
-              ref.current.focus();
-            }
-          });
-        }
-      }
-    }
-  }, [options.visible, options.unstable_focusOnShow]);
+      if (!lastActiveElement.current) return;
 
-  // focus trap
-  React.useEffect(() => {
-    // TODO: Refactor
-    if (options.visible) {
-      const handleTab = (e: KeyboardEvent) => {
-        const portal = ref.current && ref.current.parentNode;
-        if (!portal) return;
-        if (e.key !== "Tab") return;
-
-        const nestedDialogs = portal.querySelectorAll(
-          "[role=dialog][aria-hidden=false]"
-        );
-        if (nestedDialogs.length > 1) return;
-
-        const tabbable = portal.querySelectorAll<HTMLElement>(tabbableSelector);
-        const array = Array.from(tabbable);
-
-        let focused = array.find(item => item === document.activeElement);
-
-        if (!options.unstable_modal) {
-          if (!focused) {
-            // TODO: if activeElementBeforeVisible is document.activeElement
-            // focus the first tabbable element on the dialog
-            // if focus is on the next tabbable element after activeElementBeforeVisible
-            // focus the last tabbable element on the dialog
-            return;
-          }
-          const index = array.indexOf(focused);
-          if (index === 0 && e.shiftKey) {
-            if (activeElementBeforeVisible.current) {
-              e.preventDefault();
-              // ignore tag handlers for nested non-modal dialogs
-              e.stopImmediatePropagation();
-              activeElementBeforeVisible.current.focus();
-            }
-          } else if (index === array.length - 1 && !e.shiftKey) {
-            if (activeElementBeforeVisible.current) {
-              const allTabbable = document.querySelectorAll<HTMLElement>(
-                tabbableSelector
-              );
-              const i = Array.from(allTabbable).indexOf(
-                activeElementBeforeVisible.current
-              );
-              if (allTabbable[i + 1]) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                allTabbable[i + 1].focus();
-              }
-            }
-          }
-          return;
-        }
-
-        if (!array.length) {
-          throw new Error(
-            "There should be at least one tabbable element in the modal"
-          );
-        }
-
+      if (e.shiftKey && tabbableIndex <= 0) {
         e.preventDefault();
-
-        if (!focused) {
-          const [first] = array;
-          first.focus();
-          focused = first;
+        e.stopImmediatePropagation();
+        lastActiveElement.current.focus();
+      } else if (!e.shiftKey && tabbableIndex === tabbables.length - 1) {
+        const documentTabbables = Array.from(
+          document.querySelectorAll<HTMLElement>(tabbableSelector)
+        );
+        const lastActiveElementIndex = documentTabbables.indexOf(
+          lastActiveElement.current
+        );
+        const nextDocumentTabbable =
+          documentTabbables[lastActiveElementIndex + 1];
+        if (nextDocumentTabbable) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          nextDocumentTabbable.focus();
         }
-        const index = array.indexOf(focused);
-        const next = array.length - 1 > index ? index + 1 : 0;
-        const previous = index === 0 ? array.length - 1 : index - 1;
-        if (e.shiftKey) {
-          array[previous].focus();
-        } else {
-          array[next].focus();
-        }
-      };
+      }
+    };
 
-      document.addEventListener("keydown", handleTab);
-      return () => document.removeEventListener("keydown", handleTab);
-    }
-    return undefined;
-  }, [options.visible, options.unstable_modal]);
+    portal.addEventListener("keydown", handleTab);
+    return () => portal.removeEventListener("keydown", handleTab);
+  }, [getPortal, options.visible, options.modal]);
 
   htmlProps = mergeProps(
     {
@@ -253,10 +287,9 @@ export function useDialog(
       role: "dialog"
     } as typeof htmlProps,
     // necessary for escaping nested dialogs
-    unstable_hideOnEsc ? { "data-hide-on-esc": true } : {},
-    unstable_hideOnClickOutside ? { "data-hide-on-click-outside": true } : {},
-    options.unstable_modal ? { "aria-modal": true } : {},
-    hasFocusable || !options.visible ? {} : { tabIndex: 0 },
+    // unstable_hideOnEsc ? { "data-hide-on-esc": true } : {},
+    // unstable_hideOnClickOutside ? { "data-hide-on-click-outside": true } : {},
+    options.modal ? { "aria-modal": true } : {},
     htmlProps
   );
   const allOptions = { unstable_hideOnEsc, ...options };
@@ -268,6 +301,7 @@ export function useDialog(
 const keys: Array<keyof unstable_DialogOptions> = [
   ...useHidden.keys,
   ...useDialogState.keys,
+  "modal",
   "unstable_focusOnHide",
   "unstable_focusOnShow",
   "unstable_hideOnEsc",
