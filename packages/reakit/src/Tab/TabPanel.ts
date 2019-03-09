@@ -1,13 +1,13 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
-import { useTabState, unstable_TabStateReturn } from "./useTabState";
-import { unstable_getTabPanelId, unstable_getTabId } from "./utils";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
   useHidden
-} from "../hidden/Hidden";
+} from "../Hidden/Hidden";
+import { useTabState, unstable_TabStateReturn } from "./useTabState";
+import { unstable_getTabPanelId, unstable_getTabId } from "./utils";
 
 export type unstable_TabPanelOptions = unstable_HiddenOptions &
   Partial<unstable_TabStateReturn> &

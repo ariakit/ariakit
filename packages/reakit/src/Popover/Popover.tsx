@@ -4,16 +4,16 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_Portal as Portal } from "../portal/Portal";
-import {
-  unstable_PopoverStateReturn,
-  usePopoverState
-} from "./usePopoverState";
+import { unstable_Portal as Portal } from "../Portal/Portal";
 import {
   unstable_DialogOptions,
   unstable_DialogProps,
   useDialog
-} from "../dialog/Dialog";
+} from "../Dialog/Dialog";
+import {
+  unstable_PopoverStateReturn,
+  usePopoverState
+} from "./usePopoverState";
 
 export type unstable_PopoverOptions = unstable_DialogOptions &
   Partial<unstable_PopoverStateReturn>;

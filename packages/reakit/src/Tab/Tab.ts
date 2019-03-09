@@ -2,7 +2,7 @@ import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../box/Box";
+import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useTabState, unstable_TabStateReturn } from "./useTabState";
 import { unstable_getTabId, unstable_getTabPanelId } from "./utils";
 

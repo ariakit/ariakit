@@ -3,7 +3,7 @@ import {
   unstable_PopoverActions,
   unstable_PopoverStateOptions,
   usePopoverState
-} from "../popover/usePopoverState";
+} from "../Popover/usePopoverState";
 
 export type unstable_TooltipState = unstable_PopoverState;
 

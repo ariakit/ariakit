@@ -5,7 +5,7 @@ import {
   unstable_DialogActions,
   unstable_DialogStateOptions,
   useDialogState
-} from "../dialog/useDialogState";
+} from "../Dialog/useDialogState";
 
 export type unstable_PopoverState = unstable_DialogState & {
   /** TODO: Description */

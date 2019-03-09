@@ -6,7 +6,7 @@ import {
   useButton,
   unstable_ButtonOptions,
   unstable_ButtonProps
-} from "../button/Button";
+} from "../Button/Button";
 
 export type unstable_HiddenControllerOptions = unstable_ButtonOptions &
   Partial<unstable_HiddenStateReturn> &

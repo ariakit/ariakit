@@ -3,13 +3,13 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_Portal as Portal } from "../portal/Portal";
-import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
+import { unstable_Portal as Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
   useHidden
-} from "../hidden/Hidden";
+} from "../Hidden/Hidden";
+import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
 
 export type unstable_DialogBackdropOptions = unstable_HiddenOptions &
   Partial<unstable_DialogStateReturn> &

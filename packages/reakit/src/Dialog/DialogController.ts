@@ -1,12 +1,12 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
-import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
 import {
   unstable_HiddenControllerOptions,
   unstable_HiddenControllerProps,
   useHiddenController
-} from "../hidden/HiddenController";
+} from "../Hidden/HiddenController";
+import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
 
 export type unstable_DialogControllerOptions = unstable_HiddenControllerOptions &
   Partial<unstable_DialogStateReturn>;

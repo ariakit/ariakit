@@ -2,7 +2,7 @@ import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../box/Box";
+import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useHiddenState, unstable_HiddenStateReturn } from "./useHiddenState";
 
 export type unstable_HiddenOptions = unstable_BoxOptions &

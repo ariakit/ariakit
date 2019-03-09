@@ -4,12 +4,12 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_Portal as Portal } from "../portal/Portal";
+import { unstable_Portal as Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
   useHidden
-} from "../hidden/Hidden";
+} from "../Hidden/Hidden";
 import {
   unstable_TooltipStateReturn,
   useTooltipState

@@ -5,7 +5,7 @@ import {
   unstable_DialogControllerOptions,
   unstable_DialogControllerProps,
   useDialogController
-} from "../dialog/DialogController";
+} from "../Dialog/DialogController";
 import {
   usePopoverState,
   unstable_PopoverStateReturn

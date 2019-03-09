@@ -1,12 +1,12 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { useStepState, unstable_StepStateReturn } from "./useStepState";
 import {
   useButton,
   unstable_ButtonOptions,
   unstable_ButtonProps
-} from "../button/Button";
+} from "../Button/Button";
+import { useStepState, unstable_StepStateReturn } from "./useStepState";
 
 export type unstable_StepPreviousOptions = unstable_ButtonOptions &
   Partial<unstable_StepStateReturn> &

@@ -1,7 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../box/Box";
+import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 
 export type unstable_ButtonOptions = unstable_BoxOptions;
 

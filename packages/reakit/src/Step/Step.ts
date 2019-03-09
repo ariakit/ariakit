@@ -1,12 +1,12 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
-import { useStepState, unstable_StepStateReturn } from "./useStepState";
 import {
   useHidden,
   unstable_HiddenOptions,
   unstable_HiddenProps
-} from "../hidden/Hidden";
+} from "../Hidden/Hidden";
+import { useStepState, unstable_StepStateReturn } from "./useStepState";
 
 export type unstable_StepOptions = unstable_HiddenOptions &
   Partial<unstable_StepStateReturn> &
