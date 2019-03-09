@@ -16,66 +16,23 @@ import {
 } from "../dialog/Dialog";
 
 export type unstable_PopoverOptions = unstable_DialogOptions &
-  Partial<unstable_PopoverStateReturn> & {
-    /** TODO: Description */
-    unstable_hideOnClickOutside?: boolean;
-  };
+  Partial<unstable_PopoverStateReturn>;
 
 export type unstable_PopoverProps = unstable_DialogProps;
 
 export function usePopover(
-  {
-    unstable_hideOnClickOutside = true,
-    ...options
-  }: unstable_PopoverOptions = {},
+  options: unstable_PopoverOptions = {},
   htmlProps: unstable_PopoverProps = {}
 ) {
-  React.useEffect(() => {
-    if (!unstable_hideOnClickOutside) return undefined;
-    const handleClickOutside = (e: MouseEvent) => {
-      // TODO: Cascading hide
-      const { popoverRef, visible, hide } = options;
-      const shouldHide =
-        popoverRef &&
-        popoverRef.current &&
-        // parentNode is the portal wrapper
-        // we're using it (instead of just popoverRef.current)
-        // to include nested portals
-        popoverRef.current.parentNode &&
-        !popoverRef.current.parentNode.contains(e.target as Node) &&
-        visible &&
-        hide;
-      if (shouldHide) {
-        // it's possible that the outside click was on a toggle button
-        // in that case, we should "wait" before hiding it
-        // otherwise it could hide before and then toggle, showing it again
-        setTimeout(() => visible && hide && hide());
-      }
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [
-    unstable_hideOnClickOutside,
-    options.visible,
-    options.hide,
-    options.popoverRef
-  ]);
-
-  const allOptions = {
-    unstable_hideOnClickOutside,
-    ...options
-  };
-
   htmlProps = mergeProps(
     {
-      id: options.baseId,
       ref: options.popoverRef,
       style: options.popoverStyles
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useDialog(allOptions, htmlProps);
-  htmlProps = unstable_useHook("usePopover", allOptions, htmlProps);
+  htmlProps = useDialog(options, htmlProps);
+  htmlProps = unstable_useHook("usePopover", options, htmlProps);
   return htmlProps;
 }
 

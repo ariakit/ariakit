@@ -4,10 +4,12 @@
 /es
 /ts
 /utils
+/tooltip
 /tab
 /system
 /step
 /portal
+/popover
 /hidden
 /dialog
 /button

@@ -20,15 +20,21 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
     unstable_focusOnHide?: React.RefObject<HTMLElement>;
     /** TODO: Description */
     unstable_hideOnEsc?: boolean;
+    /** TODO: Description */
+    unstable_hideOnClickOutside?: boolean;
   };
 
 export type unstable_DialogProps = unstable_HiddenProps;
 
 const tabbableSelector =
-  'input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
+  'input, select, textarea, a[href], button, [tabindex]:not([tabindex="-1"]), audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
 
 export function useDialog(
-  { unstable_hideOnEsc = true, ...options }: unstable_DialogOptions = {},
+  {
+    unstable_hideOnEsc = true,
+    unstable_hideOnClickOutside = true,
+    ...options
+  }: unstable_DialogOptions = {},
   htmlProps: unstable_DialogProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
@@ -47,14 +53,16 @@ export function useDialog(
     if (!unstable_hideOnEsc) return undefined;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && options.visible && options.hide) {
-        if (ref.current && ref.current.parentNode) {
-          const nestedDialogs = ref.current.parentNode.querySelectorAll(
+        const portal = ref.current && ref.current.parentNode;
+        if (portal) {
+          const nestedDialogs = portal.querySelectorAll(
             "[data-hide-on-esc=true][aria-hidden=false]"
           );
           if (nestedDialogs.item(nestedDialogs.length - 1) !== ref.current)
             return;
         }
-        // It's necessary so it doesn't hide before the condition above
+        // delay hide so the above querySelector can capture nested dialogs before they hide
+        // it's necessary so it doesn't hide before the condition above
         window.requestAnimationFrame(() => {
           options.hide!();
         });
@@ -64,9 +72,62 @@ export function useDialog(
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [options.hide, unstable_hideOnEsc, options.visible]);
 
+  // hide on click outside
+  React.useEffect(() => {
+    if (!unstable_hideOnClickOutside) return undefined;
+    const handleInteractionOutside = (e: MouseEvent | FocusEvent) => {
+      const target = e.target as HTMLElement;
+      const targetConstrols = target.getAttribute("aria-controls");
+      const portal = ref.current && ref.current.parentNode;
+
+      if (!portal) return;
+
+      const nestedDialogs = portal.querySelectorAll(
+        "[data-hide-on-click-outside=true][aria-hidden=false]"
+      );
+
+      const shouldHide =
+        // parentNode is the portal wrapper
+        // we're using it (instead of just popoverRef.current)
+        // to include nested portals
+        !portal.contains(target) &&
+        // make sure we aren't dealing with the toggler
+        (!targetConstrols || targetConstrols !== options.baseId) &&
+        // cascade
+        nestedDialogs.item(nestedDialogs.length - 1) === ref.current &&
+        options.visible &&
+        options.hide;
+
+      if (shouldHide) {
+        window.requestAnimationFrame(() => {
+          options.hide!();
+        });
+      }
+    };
+    document.addEventListener("click", handleInteractionOutside);
+    document.addEventListener("focus", handleInteractionOutside, true);
+    return () => {
+      document.removeEventListener("click", handleInteractionOutside);
+      document.removeEventListener("focus", handleInteractionOutside, true);
+    };
+  }, [
+    unstable_hideOnClickOutside,
+    options.baseId,
+    options.visible,
+    options.hide
+  ]);
+
   // restores focus on the activeElement after closing the dialog
   React.useEffect(() => {
     if (!options.visible) {
+      // there's already a focused element outside
+      if (
+        ref.current &&
+        !ref.current.contains(document.activeElement) &&
+        document.activeElement !== document.body
+      ) {
+        return;
+      }
       if (
         options.unstable_focusOnHide &&
         options.unstable_focusOnHide.current
@@ -106,14 +167,21 @@ export function useDialog(
 
   // focus trap
   React.useEffect(() => {
+    // TODO: Refactor
     if (options.visible) {
       const handleTab = (e: KeyboardEvent) => {
-        if (!ref.current) return;
+        const portal = ref.current && ref.current.parentNode;
+        if (!portal) return;
         if (e.key !== "Tab") return;
-        const tabbable = ref.current.querySelectorAll<HTMLElement>(
-          tabbableSelector
+
+        const nestedDialogs = portal.querySelectorAll(
+          "[role=dialog][aria-hidden=false]"
         );
+        if (nestedDialogs.length > 1) return;
+
+        const tabbable = portal.querySelectorAll<HTMLElement>(tabbableSelector);
         const array = Array.from(tabbable);
+
         let focused = array.find(item => item === document.activeElement);
 
         if (!options.unstable_modal) {
@@ -128,6 +196,8 @@ export function useDialog(
           if (index === 0 && e.shiftKey) {
             if (activeElementBeforeVisible.current) {
               e.preventDefault();
+              // ignore tag handlers for nested non-modal dialogs
+              e.stopImmediatePropagation();
               activeElementBeforeVisible.current.focus();
             }
           } else if (index === array.length - 1 && !e.shiftKey) {
@@ -140,6 +210,7 @@ export function useDialog(
               );
               if (allTabbable[i + 1]) {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 allTabbable[i + 1].focus();
               }
             }
@@ -147,7 +218,7 @@ export function useDialog(
           return;
         }
 
-        if (!tabbable.length) {
+        if (!array.length) {
           throw new Error(
             "There should be at least one tabbable element in the modal"
           );
@@ -183,8 +254,9 @@ export function useDialog(
     } as typeof htmlProps,
     // necessary for escaping nested dialogs
     unstable_hideOnEsc ? { "data-hide-on-esc": true } : {},
+    unstable_hideOnClickOutside ? { "data-hide-on-click-outside": true } : {},
     options.unstable_modal ? { "aria-modal": true } : {},
-    hasFocusable ? {} : { tabIndex: 0 },
+    hasFocusable || !options.visible ? {} : { tabIndex: 0 },
     htmlProps
   );
   const allOptions = { unstable_hideOnEsc, ...options };
@@ -197,7 +269,9 @@ const keys: Array<keyof unstable_DialogOptions> = [
   ...useHidden.keys,
   ...useDialogState.keys,
   "unstable_focusOnHide",
-  "unstable_focusOnShow"
+  "unstable_focusOnShow",
+  "unstable_hideOnEsc",
+  "unstable_hideOnClickOutside"
 ];
 
 useDialog.keys = keys;

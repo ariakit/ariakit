@@ -1,6 +1,5 @@
 import * as React from "react";
 import Popper, { Placement } from "popper.js";
-import { unstable_useId } from "../utils/useId";
 import {
   unstable_DialogState,
   unstable_DialogActions,
@@ -9,8 +8,6 @@ import {
 } from "../dialog/useDialogState";
 
 export type unstable_PopoverState = unstable_DialogState & {
-  /** TODO: Description */
-  baseId: string;
   /** TODO: Description */
   referenceRef: React.RefObject<HTMLElement | null>;
   /** TODO: Description */
@@ -52,7 +49,6 @@ export function usePopoverState({
   gutter: initialGutter = 12,
   ...options
 }: unstable_PopoverStateOptions = {}): unstable_PopoverStateReturn {
-  const baseId = unstable_useId("popover-");
   const popper = React.useRef<Popper | null>(null);
   const referenceRef = React.useRef<HTMLElement | null>(null);
   const popoverRef = React.useRef<HTMLElement | null>(null);
@@ -69,14 +65,24 @@ export function usePopoverState({
   const [shift] = React.useState(initialShift);
   const [gutter] = React.useState(initialGutter);
 
-  const dialogState = useDialogState(options);
+  const dialog = useDialogState(options);
 
   React.useLayoutEffect(() => {
-    if (dialogState.visible && referenceRef.current && popoverRef.current) {
+    if (popper.current) {
+      if (dialog.visible) {
+        popper.current.enableEventListeners();
+      } else {
+        popper.current.disableEventListeners();
+      }
+      popper.current.scheduleUpdate();
+    }
+  }, [dialog.visible]);
+
+  React.useLayoutEffect(() => {
+    if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
         placement: originalPlacement,
         modifiers: {
-          // hide: { enabled: false },
           applyStyle: { enabled: false },
           flip: { enabled: flip, padding: 16 },
           shift: { enabled: shift },
@@ -102,11 +108,10 @@ export function usePopoverState({
         popper.current.destroy();
       }
     };
-  }, [dialogState.visible, originalPlacement, flip, shift, gutter]);
+  }, [originalPlacement, flip, shift, gutter]);
 
   return {
-    ...dialogState,
-    baseId,
+    ...dialog,
     referenceRef,
     popoverRef,
     arrowRef,
@@ -120,7 +125,6 @@ export function usePopoverState({
 
 const keys: Array<keyof unstable_PopoverStateReturn> = [
   ...useDialogState.keys,
-  "baseId",
   "referenceRef",
   "popoverRef",
   "arrowRef",

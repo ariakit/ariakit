@@ -13,7 +13,7 @@ import {
 
 export type unstable_DialogBackdropOptions = unstable_HiddenOptions &
   Partial<unstable_DialogStateReturn> &
-  Pick<unstable_DialogStateReturn, "unstable_setModal" | "hide">;
+  Pick<unstable_DialogStateReturn, "unstable_setModal">;
 
 export type unstable_DialogBackdropProps = unstable_HiddenProps;
 
@@ -29,8 +29,13 @@ export function useDialogBackdrop(
   htmlProps = mergeProps(
     {
       role: "presentation",
-      tabIndex: -1,
-      onClick: options.hide
+      style: {
+        position: "fixed",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      }
     } as typeof htmlProps,
     htmlProps
   );

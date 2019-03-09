@@ -1,5 +1,4 @@
 export * from "./Popover";
-export * from "./PopoverHide";
-export * from "./PopoverShow";
-export * from "./PopoverToggle";
+export * from "./PopoverBackdrop";
+export * from "./PopoverController";
 export * from "./usePopoverState";

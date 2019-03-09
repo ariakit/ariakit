@@ -27,7 +27,6 @@ export function useTooltip(
   htmlProps = mergeProps(
     {
       role: "tooltip",
-      id: options.baseId,
       ref: options.popoverRef,
       style: options.popoverStyles
     } as typeof htmlProps,
