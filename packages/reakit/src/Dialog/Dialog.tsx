@@ -36,6 +36,25 @@ const tabbableSelector = focusableSelector
   .map(selector => `${selector}:not([tabindex="-1"]):not([disabled])`)
   .join(", ");
 
+function isTabbable(el: HTMLElement) {
+  const isDisabled = Boolean(el.getAttribute("disabled"));
+  const hasNegativeTabIndex = el.tabIndex < 0;
+  const is = !isDisabled && !hasNegativeTabIndex;
+  const tags = {
+    input: is,
+    select: is,
+    textarea: is,
+    a: is,
+    button: is,
+    audio: is && Boolean(el.getAttribute("controls")),
+    video: is && Boolean(el.getAttribute("controls"))
+  };
+  if (el.tagName in tags) {
+    return tags[el.tagName as keyof typeof tags];
+  }
+  return is && el.contentEditable && el.contentEditable !== "false";
+}
+
 export function useDialog(
   {
     unstable_hideOnEsc = true,
@@ -167,7 +186,7 @@ export function useDialog(
     // There's already a focused element outside the portal, do nothing
     if (
       !portal.contains(document.activeElement) &&
-      document.activeElement !== document.body
+      isTabbable(document.activeElement as HTMLElement)
     ) {
       return;
     }
