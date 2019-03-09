@@ -51,21 +51,21 @@ export function useDialog(
     []
   );
 
-  // Add stuff to portal
+  // Add stuff to portal and document.body
   React.useLayoutEffect(() => {
     const portal = getPortal();
 
     if (!portal) return;
 
     // Make it focusable so it works like a document.body in the dialog scope
-    portal.setAttribute("tabindex", "-1");
+    portal.tabIndex = -1;
 
     if (options.modal) {
       const className = "modal-open";
       if (options.visible) {
-        portal.classList.add(className);
+        document.body.classList.add(className);
       } else {
-        portal.classList.remove(className);
+        document.body.classList.remove(className);
       }
     }
   }, [getPortal, options.visible, options.modal]);
@@ -238,19 +238,22 @@ export function useDialog(
       if (!focused) return;
 
       const tabbableIndex = tabbables.indexOf(focused);
+
       if (options.modal) {
         e.preventDefault();
-        if (e.shiftKey) {
-          const previousTabbableIndex =
-            tabbableIndex > 0 ? tabbableIndex - 1 : tabbables.length - 1;
-          const previousTabbable = tabbables[previousTabbableIndex];
+        const previousTabbableIndex =
+          tabbableIndex > 0 ? tabbableIndex - 1 : tabbables.length - 1;
+        const nextTabbableIndex =
+          tabbableIndex + 1 < tabbables.length ? tabbableIndex + 1 : 0;
+        const previousTabbable = tabbables[previousTabbableIndex];
+        const nextTabbable = tabbables[nextTabbableIndex];
+
+        if (e.shiftKey && previousTabbable) {
           previousTabbable.focus();
-        } else {
-          const nextTabbableIndex =
-            tabbableIndex + 1 < tabbables.length ? tabbableIndex + 1 : 0;
-          const nextTabbable = tabbables[nextTabbableIndex];
+        } else if (!e.shiftKey && nextTabbable) {
           nextTabbable.focus();
         }
+
         return;
       }
 
