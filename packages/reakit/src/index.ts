@@ -7,5 +7,6 @@ export * from "./Portal";
 export * from "./Step";
 export * from "./system";
 export * from "./Tab";
+export * from "./Toolbar";
 export * from "./Tooltip";
 export * from "./utils";
