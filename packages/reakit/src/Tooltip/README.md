@@ -7,7 +7,13 @@ redirect_from:
 # Tooltip
 
 ```jsx
-import { Tooltip, TooltipReference, useTooltipState, Button } from "reakit";
+import {
+  Tooltip,
+  TooltipArrow,
+  TooltipReference,
+  useTooltipState,
+  Button
+} from "reakit";
 
 function Example() {
   const tooltip = useTooltipState();
@@ -16,7 +22,10 @@ function Example() {
       <TooltipReference as={Button} {...tooltip}>
         Reference
       </TooltipReference>
-      <Tooltip {...tooltip}>tooltip</Tooltip>
+      <Tooltip {...tooltip}>
+        <TooltipArrow {...tooltip} />
+        tooltip
+      </Tooltip>
     </div>
   );
 }

@@ -14,6 +14,7 @@ redirect_from:
 import React from "react";
 import {
   Popover,
+  PopoverArrow,
   PopoverController,
   PopoverHide,
   usePopoverState
@@ -27,6 +28,7 @@ function Example() {
     <div style={{ padding: 100 }}>
       <PopoverController {...popover}>Controller</PopoverController>
       <Popover style={{ width: 100, background: "pink" }} {...popover}>
+        <PopoverArrow {...popover} />
         dsada
       </Popover>
       <input />
@@ -39,6 +41,7 @@ function Example() {
 import React from "react";
 import {
   Popover,
+  PopoverArrow,
   PopoverController,
   PopoverHide,
   PopoverBackdrop,
@@ -54,6 +57,7 @@ function Example() {
       <PopoverController {...popover}>Controller</PopoverController>
       <PopoverBackdrop {...popover} />
       <Popover style={{ width: 100, background: "pink" }} {...popover}>
+        <PopoverArrow {...popover} />
         dsada
       </Popover>
       <input />

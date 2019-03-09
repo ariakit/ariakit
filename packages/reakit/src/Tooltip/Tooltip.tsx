@@ -25,7 +25,10 @@ export function useTooltip(
     {
       role: "tooltip",
       ref: options.popoverRef,
-      style: options.popoverStyles
+      style: {
+        ...options.popoverStyles,
+        pointerEvents: "none"
+      }
     } as typeof htmlProps,
     htmlProps
   );
