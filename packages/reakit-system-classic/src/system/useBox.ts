@@ -1,4 +1,4 @@
-import { unstable_BoxProps } from "reakit/box/Box";
+import { unstable_BoxProps } from "reakit/Box/Box";
 import { mergeProps } from "reakit/utils/mergeProps";
 import { css } from "emotion";
 
