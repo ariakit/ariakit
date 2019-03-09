@@ -4,7 +4,7 @@ import {
   unstable_HiddenState,
   unstable_HiddenActions,
   unstable_HiddenStateOptions
-} from "../Hidden/useHiddenState";
+} from "../Hidden/HiddenState";
 
 export type unstable_DialogState = unstable_HiddenState & {
   /** TODO: Description */

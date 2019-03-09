@@ -6,7 +6,7 @@ import {
   unstable_ButtonOptions,
   unstable_ButtonProps
 } from "../Button/Button";
-import { useStepState, unstable_StepStateReturn } from "./useStepState";
+import { useStepState, unstable_StepStateReturn } from "./StepState";
 
 export type unstable_StepNextOptions = unstable_ButtonOptions &
   Partial<unstable_StepStateReturn> &

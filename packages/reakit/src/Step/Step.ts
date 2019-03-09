@@ -6,7 +6,7 @@ import {
   unstable_HiddenOptions,
   unstable_HiddenProps
 } from "../Hidden/Hidden";
-import { useStepState, unstable_StepStateReturn } from "./useStepState";
+import { useStepState, unstable_StepStateReturn } from "./StepState";
 
 export type unstable_StepOptions = unstable_HiddenOptions &
   Partial<unstable_StepStateReturn> &

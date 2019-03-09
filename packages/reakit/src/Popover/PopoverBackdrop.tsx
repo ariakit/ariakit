@@ -8,10 +8,7 @@ import {
   unstable_DialogBackdropProps,
   useDialogBackdrop
 } from "../Dialog/DialogBackdrop";
-import {
-  usePopoverState,
-  unstable_PopoverStateReturn
-} from "./usePopoverState";
+import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
 
 export type unstable_PopoverBackdropOptions = unstable_DialogBackdropOptions &
   Partial<unstable_PopoverStateReturn>;

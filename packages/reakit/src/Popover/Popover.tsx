@@ -10,10 +10,7 @@ import {
   unstable_DialogProps,
   useDialog
 } from "../Dialog/Dialog";
-import {
-  unstable_PopoverStateReturn,
-  usePopoverState
-} from "./usePopoverState";
+import { unstable_PopoverStateReturn, usePopoverState } from "./PopoverState";
 
 export type unstable_PopoverOptions = unstable_DialogOptions &
   Partial<unstable_PopoverStateReturn>;

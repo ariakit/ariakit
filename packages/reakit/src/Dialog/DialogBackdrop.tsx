@@ -9,7 +9,7 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
-import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
+import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogBackdropOptions = unstable_HiddenOptions &
   Partial<unstable_DialogStateReturn> &

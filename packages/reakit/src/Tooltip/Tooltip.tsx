@@ -10,10 +10,7 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
-import {
-  unstable_TooltipStateReturn,
-  useTooltipState
-} from "./useTooltipState";
+import { unstable_TooltipStateReturn, useTooltipState } from "./TooltipState";
 
 export type unstable_TooltipOptions = unstable_HiddenOptions &
   Partial<unstable_TooltipStateReturn>;

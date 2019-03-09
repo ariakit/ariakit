@@ -6,7 +6,7 @@ import {
   unstable_HiddenControllerProps,
   useHiddenController
 } from "../Hidden/HiddenController";
-import { useDialogState, unstable_DialogStateReturn } from "./useDialogState";
+import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogControllerOptions = unstable_HiddenControllerOptions &
   Partial<unstable_DialogStateReturn>;

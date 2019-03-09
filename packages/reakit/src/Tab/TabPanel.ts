@@ -6,7 +6,7 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
-import { useTabState, unstable_TabStateReturn } from "./useTabState";
+import { useTabState, unstable_TabStateReturn } from "./TabState";
 import { unstable_getTabPanelId, unstable_getTabId } from "./utils";
 
 export type unstable_TabPanelOptions = unstable_HiddenOptions &

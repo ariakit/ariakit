@@ -2,10 +2,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
-import {
-  useTooltipState,
-  unstable_TooltipStateReturn
-} from "./useTooltipState";
+import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
 
 export type unstable_TooltipReferenceOptions = unstable_BoxOptions &
   Partial<unstable_TooltipStateReturn> &

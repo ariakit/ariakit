@@ -4,7 +4,7 @@ import {
   unstable_StepSelectors,
   unstable_StepActions,
   unstable_StepStateOptions
-} from "../Step/useStepState";
+} from "../Step/StepState";
 import { unstable_useId } from "../utils/useId";
 
 export type unstable_TabState = unstable_StepState & {

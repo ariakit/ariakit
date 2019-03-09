@@ -1,3 +1,3 @@
 export * from "./Tooltip";
 export * from "./TooltipReference";
-export * from "./useTooltipState";
+export * from "./TooltipState";
