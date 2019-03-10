@@ -2,122 +2,91 @@ import * as React from "react";
 
 export type unstable_RovingState = {
   /** TODO: Description */
-  orientation: "horizontal" | "vertical";
+  refs: any[];
   /** TODO: Description */
-  matrix: Array<Array<number>>;
-  /** TODO: Description */
-  active: [number, number] | null;
+  enabled: boolean[];
   /** TODO: Description */
   loop: boolean;
   /** TODO: Description */
-  upCoords: [number, number] | null;
+  currentRef: any;
   /** TODO: Description */
-  rightCoords: [number, number] | null;
+  currentIndex: number;
   /** TODO: Description */
-  downCoords: [number, number] | null;
+  nextIndex: number;
   /** TODO: Description */
-  leftCoords: [number, number] | null;
+  previousIndex: number;
+  /** TODO: Description */
+  firstIndex: number;
+  /** TODO: Description */
+  lastIndex: number;
 };
 
 export type unstable_RovingActions = {
   /** TODO: Description */
-  register: (disabled?: boolean, row?: number, col?: number) => void;
+  register: (ref: any, disabled?: boolean) => void;
   /** TODO: Description */
-  unregister: (row?: number, col?: number) => void;
+  unregister: (ref: any) => void;
   /** TODO: Description */
-  goto: (row: number, col: number) => void;
+  select: (ref: any) => void;
   /** TODO: Description */
-  update: () => void;
+  next: () => void;
   /** TODO: Description */
-  up: () => void;
-  /** TODO: Description */
-  right: () => void;
-  /** TODO: Description */
-  down: () => void;
-  /** TODO: Description */
-  left: () => void;
-  /** TODO: Description */
-  home: () => void;
-  /** TODO: Description */
-  end: () => void;
-  /** TODO: Description */
-  pageUp: () => void;
-  /** TODO: Description */
-  pageDown: () => void;
+  previous: () => void;
   /** TODO: Description */
   first: () => void;
   /** TODO: Description */
   last: () => void;
 };
 
-export type unstable_RovingStateOptions = Partial<unstable_RovingState>;
+export type unstable_RovingStateOptions = Partial<
+  Pick<unstable_RovingState, "loop" | "currentIndex">
+>;
 
 export type unstable_RovingStateReturn = unstable_RovingState &
   unstable_RovingActions;
 
 type RovingAction =
-  | { type: "register"; disabled?: boolean; row?: number; col?: number }
-  | { type: "unregister"; row: number; col: number }
-  | { type: "goto"; row: number; col: number }
+  | { type: "register"; ref: any; disabled?: boolean }
+  | { type: "unregister"; ref: any }
+  | { type: "select"; ref: any }
   | { type: "update" }
-  | { type: "up" }
-  | { type: "right" }
-  | { type: "down" }
-  | { type: "left" }
-  | { type: "home" }
-  | { type: "end" }
-  | { type: "pageUp" }
-  | { type: "pageDown" }
+  | { type: "next" }
+  | { type: "previous" }
   | { type: "first" }
   | { type: "last" };
 
-function findCoords(
-  { active, matrix, loop }: unstable_RovingState,
-  dir: "up" | "right" | "down" | "left"
-): [number, number] | null {
-  const [row, col] = active;
-  const isVertical = dir === "up" || dir === "down";
-  const isAdditive = dir === "down" || dir === "right";
-  const items = isVertical ? matrix.map(cols => cols[col]) : matrix[row];
-
-  if (items.filter(Boolean).length === 0) return null;
-
-  let coord = isVertical ? row : col;
-
-  if (isAdditive) {
-    do {
-      coord = coord === items.length && loop ? 0 : coord + 1;
-    } while (coord < items.length && !items[coord]);
-    if (coord >= items.length) return null;
-  } else {
-    do {
-      coord = coord === 0 && loop ? items.length - 1 : coord - 1;
-    } while (coord >= 0 && !items[coord]);
-    if (coord < 0) return null;
-  }
-  return isVertical ? [coord, col] : [row, coord];
+function findNext({ currentIndex, loop, enabled }: unstable_RovingState) {
+  if (enabled.filter(Boolean).length === 0) return -1;
+  let i = currentIndex;
+  do {
+    i = loop && i === enabled.length - 1 ? 0 : i + 1;
+  } while (i < enabled.length && !enabled[i]);
+  return i < enabled.length ? i : -1;
 }
 
-function findOutermostCoords(
-  { active, matrix, orientation }: unstable_RovingState,
-  dir: "up" | "right" | "down" | "left"
-): [number, number] | null {
-  const [row, col] = active;
-  const isVertical =
-    orientation === "horizontal" && (dir === "up" || dir === "down");
-  const isAdditive = dir === "up" || dir === "left";
-  const items = isVertical ? matrix.map(cols => cols[col]) : matrix[row];
+function findPrevious({ currentIndex, loop, enabled }: unstable_RovingState) {
+  if (enabled.filter(Boolean).length === 0) return -1;
+  let i = currentIndex;
+  do {
+    i = loop && i === 0 ? enabled.length - 1 : i - 1;
+  } while (i >= 0 && !enabled[i]);
+  return i;
+}
 
-  if (items.filter(Boolean).length === 0) return null;
+function findFirst({ enabled }: unstable_RovingState) {
+  let i = 0;
+  while (!enabled[i] && i < enabled.length) {
+    i += 1;
+  }
+  return i < enabled.length ? i : -1;
+}
 
-  let coord = isAdditive ? 0 : items.length - 1;
-  while (!items[coord] && coord >= 0 && coord < items.length) {
-    coord += isAdditive ? 1 : -1;
+function findLast({ enabled }: unstable_RovingState) {
+  let i = enabled.length - 1;
+  while (!enabled[i] && i >= 0) {
+    i -= 1;
   }
-  if (items[coord]) {
-    return isVertical ? [coord, col] : [row, coord];
-  }
-  return null;
+  return i;
 }
 
 function reducer(
@@ -125,145 +94,132 @@ function reducer(
   action: RovingAction
 ): unstable_RovingState {
   const {
-    orientation,
-    active,
-    matrix,
-    upCoords,
-    rightCoords,
-    downCoords,
-    leftCoords
+    refs,
+    enabled,
+    currentRef,
+    currentIndex,
+    nextIndex,
+    previousIndex,
+    firstIndex,
+    lastIndex
   } = state;
   switch (action.type) {
     case "register": {
-      const {
-        disabled,
-        row = orientation === "vertical" ? matrix.length : matrix.length - 1
-      } = action;
-      const { col = matrix[row].length } = action;
-      const nextState = {
-        ...state,
-        matrix: [
-          ...matrix.slice(0, row),
-          [
-            ...matrix[row].slice(0, col),
-            Number(!disabled),
-            ...matrix[row].slice(col + 1)
-          ],
-          ...matrix.slice(row + 1)
-        ]
-      };
+      const { disabled, ref } = action;
+      const index = refs.indexOf(ref);
+      const nextState =
+        index === -1
+          ? {
+              ...state,
+              refs: [...refs, ref],
+              enabled: [...enabled, !disabled]
+            }
+          : {
+              ...state,
+              refs: [...refs.slice(0, index), ref, ...refs.slice(index + 1)],
+              enabled: [
+                ...enabled.slice(0, index),
+                Boolean(!disabled),
+                ...enabled.slice(index + 1)
+              ]
+            };
       return reducer(nextState, { type: "update" });
     }
     case "unregister": {
-      const { row, col } = action;
+      const { ref } = action;
+      const index = refs.indexOf(ref);
+      if (index === -1) return state;
       const nextState = {
         ...state,
-        matrix: [
-          ...matrix.slice(0, row),
-          matrix[row].length > 1
-            ? [...matrix[row].slice(0, col), ...matrix[row].slice(col + 1)]
-            : [],
-          ...matrix.slice(row + 1)
-        ]
+        refs: [...refs.slice(0, index), ...refs.slice(index + 1)],
+        enabled: [...enabled.slice(0, index), ...enabled.slice(index + 1)]
       };
       return reducer(nextState, { type: "update" });
     }
-    case "goto": {
-      if (!matrix[action.col] || !matrix[action.col][action.row]) return state;
+    case "select": {
+      const { ref } = action;
+      const index = refs.indexOf(ref);
+      if (!enabled[index]) return state;
       const nextState = {
         ...state,
-        active: [action.col, action.row] as [number, number]
+        currentRef: ref,
+        currentIndex: index
       };
       return reducer(nextState, { type: "update" });
     }
-    case "update": {
-      const nextState = {
-        ...state,
-        upCoords: findCoords(state, "up"),
-        rightCoords: findCoords(state, "right"),
-        downCoords: findCoords(state, "down"),
-        leftCoords: findCoords(state, "left")
-      };
-
-      if (!active) return nextState;
-
-      const [row, col] = active;
-      const rowEnabled = Boolean(matrix[row]);
-      const colEnabled = rowEnabled && Boolean(matrix[row][col]);
-
-      if (colEnabled) return nextState;
-
-      if (rowEnabled) {
-        return {
-          ...nextState,
-          active: nextState.rightCoords || nextState.leftCoords
-        };
-      }
-
+    case "update":
       return {
-        ...nextState,
-        active: nextState.downCoords || nextState.upCoords
+        ...state,
+        currentRef: enabled[refs.indexOf(currentRef)] ? currentRef : null,
+        currentIndex: enabled[currentIndex] ? currentIndex : -1,
+        nextIndex: findNext(state),
+        previousIndex: findPrevious(state),
+        firstIndex: findFirst(state),
+        lastIndex: findLast(state)
       };
-    }
-    case "up": {
-      if (!upCoords) return state;
-      const [row, col] = upCoords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "right": {
-      if (!rightCoords) return state;
-      const [row, col] = rightCoords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "down": {
-      if (!downCoords) return state;
-      const [row, col] = downCoords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "left": {
-      if (!leftCoords) return state;
-      const [row, col] = leftCoords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "home": {
-      const coords = findOutermostCoords(state, "left");
-      if (!coords) return state;
-      const [row, col] = coords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "end": {
-      const coords = findOutermostCoords(state, "right");
-      if (!coords) return state;
-      const [row, col] = coords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "pageUp": {
-      const coords = findOutermostCoords(state, "up");
-      if (!coords) return state;
-      const [row, col] = coords;
-      return reducer(state, { type: "goto", row, col });
-    }
-    case "pageDown": {
-      const coords = findOutermostCoords(state, "down");
-      if (!coords) return state;
-      const [row, col] = coords;
-      return reducer(state, { type: "goto", row, col });
-    }
-
-    default: {
+    case "next":
+      return reducer(state, { type: "select", ref: refs[nextIndex] });
+    case "previous":
+      return reducer(state, { type: "select", ref: refs[previousIndex] });
+    case "first":
+      return reducer(state, { type: "select", ref: refs[firstIndex] });
+    case "last":
+      return reducer(state, { type: "select", ref: refs[lastIndex] });
+    default:
       return state;
-    }
   }
 }
 
 export function useRovingState({
-  orientation = "horizontal"
+  currentIndex = -1,
+  loop = false
 }: unstable_RovingStateOptions = {}): unstable_RovingStateReturn {
+  const [state, dispatch] = React.useReducer(reducer, {
+    loop,
+    currentIndex,
+    currentRef: null,
+    refs: [],
+    enabled: [],
+    nextIndex: -1,
+    previousIndex: -1,
+    firstIndex: -1,
+    lastIndex: -1
+  });
   return {
-    orientation
+    ...state,
+    register: React.useCallback(
+      (ref, disabled) => dispatch({ type: "register", ref, disabled }),
+      []
+    ),
+    unregister: React.useCallback(
+      ref => dispatch({ type: "unregister", ref }),
+      []
+    ),
+    select: React.useCallback(ref => dispatch({ type: "select", ref }), []),
+    next: React.useCallback(() => dispatch({ type: "next" }), []),
+    previous: React.useCallback(() => dispatch({ type: "previous" }), []),
+    first: React.useCallback(() => dispatch({ type: "first" }), []),
+    last: React.useCallback(() => dispatch({ type: "last" }), [])
   };
 }
 
-const keys: Array<keyof unstable_RovingStateReturn> = ["orientation"];
+const keys: Array<keyof unstable_RovingStateReturn> = [
+  "refs",
+  "enabled",
+  "loop",
+  "currentRef",
+  "currentIndex",
+  "nextIndex",
+  "previousIndex",
+  "firstIndex",
+  "lastIndex",
+  "register",
+  "unregister",
+  "select",
+  "next",
+  "previous",
+  "first",
+  "last"
+];
 
 useRovingState.keys = keys;

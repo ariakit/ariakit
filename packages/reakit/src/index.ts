@@ -4,6 +4,7 @@ export * from "./Dialog";
 export * from "./Hidden";
 export * from "./Popover";
 export * from "./Portal";
+export * from "./Roving";
 export * from "./Step";
 export * from "./system";
 export * from "./Tab";

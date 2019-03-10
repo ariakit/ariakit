@@ -3,43 +3,39 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
-import { useTabState, unstable_TabStateReturn } from "./RovingState";
-import { unstable_getTabId, unstable_getTabPanelId } from "./utils";
+import { useRovingState, unstable_RovingStateReturn } from "./RovingState";
 
-export type unstable_TabOptions = unstable_BoxOptions &
-  Partial<unstable_TabStateReturn> &
+export type unstable_RovingOptions = unstable_BoxOptions &
+  Partial<unstable_RovingStateReturn> &
   Pick<
-    unstable_TabStateReturn,
-    | "baseId"
-    | "isActive"
+    unstable_RovingStateReturn,
+    | "refs"
+    | "currentRef"
     | "register"
     | "unregister"
-    | "goto"
-    | "previous"
+    | "select"
     | "next"
+    | "previous"
+    | "first"
+    | "last"
   > & {
     /** TODO: Description */
-    tabId: string;
-    /** TODO: Description */
-    order?: number;
+    disabled?: boolean;
   };
 
-export type unstable_TabProps = unstable_BoxProps & React.LiHTMLAttributes<any>;
+export type unstable_RovingProps = unstable_BoxProps;
 
-export function useTab(
-  options: unstable_TabOptions,
-  htmlProps: unstable_TabProps = {}
+export function useRoving(
+  options: unstable_RovingOptions,
+  htmlProps: unstable_RovingProps = {}
 ) {
-  const ref = React.useRef<HTMLLIElement | null>(null);
+  const ref = React.useRef<HTMLElement | null>(null);
+  const active = options.currentRef === ref;
 
   React.useEffect(() => {
-    options.register(options.tabId, options.order);
-    return () => options.unregister(options.tabId);
-  }, [options.register, options.unregister, options.tabId, options.order]);
-
-  const active = options.isActive(options.tabId);
-
-  const show = () => !active && options.goto(options.tabId);
+    options.register(ref, options.disabled);
+    return () => options.unregister(ref);
+  }, [options.disabled, options.register, options.unregister]);
 
   React.useEffect(() => {
     if (active && ref.current) {
@@ -47,41 +43,49 @@ export function useTab(
     }
   }, [active]);
 
+  const select = React.useCallback(() => {
+    options.select(ref);
+  }, [options.select]);
+
   htmlProps = mergeProps(
     {
-      role: "tab",
-      id: unstable_getTabId(options.tabId, options.baseId),
       ref,
-      tabIndex: active ? 0 : -1,
-      "aria-selected": active,
-      "aria-controls": unstable_getTabPanelId(options.tabId, options.baseId),
-      onClick: show,
-      onFocus: show,
+      onClick: select,
+      onFocus: select,
       onKeyDown: e => {
-        if (e.key === "ArrowLeft") {
+        const keyMap = {
+          ArrowUp: options.previous,
+          ArrowRight: options.next,
+          ArrowDown: options.next,
+          ArrowLeft: options.previous,
+          Home: options.first,
+          End: options.last,
+          PageUp: options.first,
+          PageDown: options.last
+        };
+        if (e.key in keyMap) {
           e.preventDefault();
-          options.previous();
-        } else if (e.key === "ArrowRight") {
-          e.preventDefault();
-          options.next();
+          keyMap[e.key as keyof typeof keyMap]();
         }
       }
     } as typeof htmlProps,
+    options.disabled
+      ? { disabled: options.disabled }
+      : { tabIndex: active ? 0 : -1 },
     htmlProps
   );
 
   htmlProps = useBox(options, htmlProps);
-  htmlProps = unstable_useHook("useTab", options, htmlProps);
+  htmlProps = unstable_useHook("useRoving", options, htmlProps);
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_TabOptions> = [
+const keys: Array<keyof unstable_RovingOptions> = [
   ...useBox.keys,
-  ...useTabState.keys,
-  "tabId",
-  "order"
+  ...useRovingState.keys,
+  "disabled"
 ];
 
-useTab.keys = keys;
+useRoving.keys = keys;
 
-export const Tab = unstable_createComponent("li", useTab);
+export const Roving = unstable_createComponent("div", useRoving);
