@@ -97,7 +97,7 @@ export function useDialog(
     return () => portal.removeEventListener("keydown", handleKeyDown);
   }, [getPortal, options.hide, unstable_hideOnEsc, options.visible]);
 
-  // hide on click outside
+  // hide on click/focus outside
   React.useEffect(() => {
     const portal = getPortal();
 
