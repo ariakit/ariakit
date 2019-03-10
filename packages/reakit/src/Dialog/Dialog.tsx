@@ -1,5 +1,12 @@
 // TODO: Refactor
 import * as React from "react";
+import {
+  isTabbable,
+  selectTabbableIn,
+  selectFocusableIn,
+  selectAllFocusableIn,
+  selectAllTabbableIn
+} from "../__utils/tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
@@ -28,33 +35,6 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
 
 export type unstable_DialogProps = unstable_HiddenProps;
 
-const focusableSelector =
-  'input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
-
-const tabbableSelector = focusableSelector
-  .split(", ")
-  .map(selector => `${selector}:not([tabindex="-1"]):not([disabled])`)
-  .join(", ");
-
-function isTabbable(el: HTMLElement) {
-  const isDisabled = Boolean(el.getAttribute("disabled"));
-  const hasNegativeTabIndex = el.tabIndex < 0;
-  const is = !isDisabled && !hasNegativeTabIndex;
-  const tags = {
-    input: is,
-    select: is,
-    textarea: is,
-    a: is,
-    button: is,
-    audio: is && Boolean(el.getAttribute("controls")),
-    video: is && Boolean(el.getAttribute("controls"))
-  };
-  if (el.tagName in tags) {
-    return tags[el.tagName as keyof typeof tags];
-  }
-  return is && el.contentEditable && el.contentEditable !== "false";
-}
-
 export function useDialog(
   {
     unstable_hideOnEsc = true,
@@ -63,8 +43,9 @@ export function useDialog(
   }: unstable_DialogOptions = {},
   htmlProps: unstable_DialogProps = {}
 ) {
+  const allOptions = { unstable_hideOnEsc, ...options };
   const ref = React.useRef<HTMLElement | null>(null);
-  const lastActiveElement = React.useRef<HTMLElement | null>(null);
+  const previousActiveElement = React.useRef<HTMLElement | null>(null);
   const getPortal = React.useCallback(
     () => ref.current && (ref.current.parentNode as HTMLElement),
     []
@@ -92,7 +73,7 @@ export function useDialog(
   // Store the active element before focusing dialog
   React.useLayoutEffect(() => {
     if (options.visible) {
-      lastActiveElement.current = document.activeElement as HTMLElement;
+      previousActiveElement.current = document.activeElement as HTMLElement;
     }
   }, [options.visible]);
 
@@ -116,7 +97,7 @@ export function useDialog(
     return () => portal.removeEventListener("keydown", handleKeyDown);
   }, [getPortal, options.hide, unstable_hideOnEsc, options.visible]);
 
-  // hide on click outside
+  // hide on click/focus outside
   React.useEffect(() => {
     const portal = getPortal();
 
@@ -185,8 +166,9 @@ export function useDialog(
 
     // There's already a focused element outside the portal, do nothing
     if (
+      document.activeElement &&
       !portal.contains(document.activeElement) &&
-      isTabbable(document.activeElement as HTMLElement)
+      isTabbable(document.activeElement)
     ) {
       return;
     }
@@ -196,8 +178,8 @@ export function useDialog(
 
     if (focusOnHideElement) {
       focusOnHideElement.focus();
-    } else if (lastActiveElement.current) {
-      lastActiveElement.current.focus();
+    } else if (previousActiveElement.current) {
+      previousActiveElement.current.focus();
     }
   }, [getPortal, options.visible, options.unstable_focusOnHide]);
 
@@ -213,12 +195,12 @@ export function useDialog(
     if (focusOnShowElement) {
       focusOnShowElement.focus();
     } else {
-      const tabbable = portal.querySelector<HTMLElement>(tabbableSelector);
+      const tabbable = selectTabbableIn(portal);
       if (tabbable) {
         tabbable.focus();
       } else {
         // If there's no tabblable element, fallback to the focusable ones
-        const focusable = portal.querySelector<HTMLElement>(focusableSelector);
+        const focusable = selectFocusableIn(portal);
         if (focusable) {
           focusable.focus();
         } else {
@@ -244,13 +226,10 @@ export function useDialog(
       );
       if (nestedOpenDialogs.length > 1) return;
 
-      const focusables = Array.from(
-        portal.querySelectorAll<HTMLElement>(focusableSelector)
-      );
+      const focusables = Array.from(selectAllFocusableIn(portal));
+      const tabbables = Array.from(selectAllTabbableIn(portal));
+
       focusables.unshift(portal);
-      const tabbables = Array.from(
-        portal.querySelectorAll<HTMLElement>(tabbableSelector)
-      );
 
       const focused = focusables.find(f => f === document.activeElement);
 
@@ -276,21 +255,19 @@ export function useDialog(
         return;
       }
 
-      if (!lastActiveElement.current) return;
+      if (!previousActiveElement.current) return;
 
       if (e.shiftKey && tabbableIndex <= 0) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        lastActiveElement.current.focus();
+        previousActiveElement.current.focus();
       } else if (!e.shiftKey && tabbableIndex === tabbables.length - 1) {
-        const documentTabbables = Array.from(
-          document.querySelectorAll<HTMLElement>(tabbableSelector)
-        );
-        const lastActiveElementIndex = documentTabbables.indexOf(
-          lastActiveElement.current
+        const allTabbables = Array.from(selectAllTabbableIn(document.body));
+        const previousActiveElementIndex = allTabbables.indexOf(
+          previousActiveElement.current
         );
         const nextDocumentTabbable =
-          documentTabbables[lastActiveElementIndex + 1];
+          allTabbables[previousActiveElementIndex + 1];
         if (nextDocumentTabbable) {
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -314,7 +291,7 @@ export function useDialog(
     options.modal ? { "aria-modal": true } : {},
     htmlProps
   );
-  const allOptions = { unstable_hideOnEsc, ...options };
+
   htmlProps = useHidden(allOptions, htmlProps);
   htmlProps = unstable_useHook("useDialog", allOptions, htmlProps);
   return htmlProps;

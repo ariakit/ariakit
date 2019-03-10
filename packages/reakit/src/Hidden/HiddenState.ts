@@ -18,7 +18,7 @@ export type unstable_HiddenActions = {
 };
 
 // TODO: Accept function for the entire options or for each value
-export type unstable_HiddenStateOptions = Partial<
+export type unstable_HiddenInitialState = Partial<
   Pick<unstable_HiddenState, "visible">
 >;
 
@@ -27,7 +27,7 @@ export type unstable_HiddenStateReturn = unstable_HiddenState &
 
 export function useHiddenState({
   visible: initialVisible = false
-}: unstable_HiddenStateOptions = {}): unstable_HiddenStateReturn {
+}: unstable_HiddenInitialState = {}): unstable_HiddenStateReturn {
   const [visible, setVisible] = React.useState(initialVisible);
   const baseId = unstable_useId("hidden-");
 

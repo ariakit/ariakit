@@ -4,29 +4,18 @@ redirect_from:
   - /components/button
 ---
 
-# Box
-
-Hello, "World"!
+# Button
 
 ## Usage
 
-### `Box`
-
 ```jsx
-import { Box } from "reakit";
+import { Button } from "reakit";
 
-<Box>Box</Box>
-```
-
-### `useBoxProps`
-
-```jsx static
-import { useBoxProps } from "reakit";
-
-function Box(props) {
-  const boxProps = useBoxProps({}, props);
-  return <div {...boxProps} />;
+function Example() {
+  return (
+    <Button as="div" disabled>
+      Button
+    </Button>
+  );
 }
-
-<Box>Box</Box>
 ```

@@ -3,7 +3,7 @@ import Popper, { Placement } from "popper.js";
 import {
   unstable_DialogState,
   unstable_DialogActions,
-  unstable_DialogStateOptions,
+  unstable_DialogInitialState,
   useDialogState
 } from "../Dialog/DialogState";
 
@@ -29,7 +29,7 @@ export type unstable_PopoverActions = unstable_DialogActions & {
   place: React.Dispatch<React.SetStateAction<Placement>>;
 };
 
-export type unstable_PopoverStateOptions = unstable_DialogStateOptions &
+export type unstable_PopoverInitialState = unstable_DialogInitialState &
   Partial<Pick<unstable_PopoverState, "placement">> & {
     /** TODO: Description */
     flip?: boolean;
@@ -47,8 +47,8 @@ export function usePopoverState({
   flip: initialFlip = true,
   shift: initialShift = true,
   gutter: initialGutter = 12,
-  ...options
-}: unstable_PopoverStateOptions = {}): unstable_PopoverStateReturn {
+  ...initialState
+}: unstable_PopoverInitialState = {}): unstable_PopoverStateReturn {
   const popper = React.useRef<Popper | null>(null);
   const referenceRef = React.useRef<HTMLElement | null>(null);
   const popoverRef = React.useRef<HTMLElement | null>(null);
@@ -65,7 +65,7 @@ export function usePopoverState({
   const [shift] = React.useState(initialShift);
   const [gutter] = React.useState(initialGutter);
 
-  const dialog = useDialogState(options);
+  const dialog = useDialogState(initialState);
 
   React.useLayoutEffect(() => {
     if (popper.current) {
