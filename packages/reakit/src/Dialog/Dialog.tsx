@@ -110,9 +110,6 @@ export function useDialog(
       const targetConstrols = target.getAttribute("aria-controls");
 
       const shouldHide =
-        // parentNode is the portal wrapper
-        // we're using it (instead of just popoverRef.current)
-        // to include nested portals
         !portal.contains(target) &&
         // make sure we aren't dealing with the toggler
         (!targetConstrols || targetConstrols !== options.baseId) &&

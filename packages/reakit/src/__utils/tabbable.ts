@@ -18,9 +18,9 @@ function isContentEditable(element: Element) {
 }
 
 export function isFocusable(element: Element) {
-  const { tagName } = element;
+  const { localName } = element;
   const focusableTags = ["input", "select", "textarea", "button"];
-  if (focusableTags.indexOf(tagName) >= 0) {
+  if (focusableTags.indexOf(localName) >= 0) {
     return true;
   }
   const others = {
@@ -28,8 +28,8 @@ export function isFocusable(element: Element) {
     audio: () => hasAttribute(element, "controls"),
     video: () => hasAttribute(element, "controls")
   };
-  if (tagName in others) {
-    return others[tagName as keyof typeof others]();
+  if (localName in others) {
+    return others[localName as keyof typeof others]();
   }
   return isContentEditable(element);
 }
