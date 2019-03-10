@@ -59,7 +59,7 @@ function Example() {
           Focus In
         </A>
         <Dialog style={style} {...dialog2}>
-          Hi
+          Hi<Button>Button</Button>
         </Dialog>
       </Dialog>
     </>

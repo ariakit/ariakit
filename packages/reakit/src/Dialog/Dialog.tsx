@@ -223,8 +223,8 @@ export function useDialog(
       );
       if (nestedOpenDialogs.length > 1) return;
 
-      const focusables = Array.from(selectAllFocusableIn(portal));
-      const tabbables = Array.from(selectAllTabbableIn(portal));
+      const focusables = Array.from(selectAllFocusableIn(ref.current!));
+      const tabbables = Array.from(selectAllTabbableIn(ref.current!));
 
       focusables.unshift(portal);
 
@@ -256,7 +256,7 @@ export function useDialog(
 
       if (e.shiftKey && tabbableIndex <= 0) {
         e.preventDefault();
-        e.stopImmediatePropagation();
+        // e.stopImmediatePropagation();
         previousActiveElement.current.focus();
       } else if (!e.shiftKey && tabbableIndex === tabbables.length - 1) {
         const allTabbables = Array.from(selectAllTabbableIn(document.body));
@@ -267,7 +267,7 @@ export function useDialog(
           allTabbables[previousActiveElementIndex + 1];
         if (nextDocumentTabbable) {
           e.preventDefault();
-          e.stopImmediatePropagation();
+          // e.stopImmediatePropagation();
           nextDocumentTabbable.focus();
         }
       }

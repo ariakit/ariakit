@@ -1,11 +1,23 @@
 import { hasAttribute } from "./hasAttribute";
 
-const focusableSelector =
-  'input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable="false"])';
+const focusableSelector = [
+  "input",
+  "select",
+  "textarea",
+  "a[href]",
+  "button",
+  "[tabindex]",
+  "audio[controls]",
+  "video[controls]",
+  "[contenteditable]:not([contenteditable=false])"
+].join(", ");
 
 const tabbableSelector = focusableSelector
   .split(", ")
-  .map(selector => `${selector}:not([tabindex="-1"]):not([disabled])`)
+  .map(
+    selector =>
+      `${selector}:not([tabindex="-1"]):not([disabled]):not([aria-disabled=true])`
+  )
   .join(", ");
 
 function hasNegativeTabIndex(element: Element) {
