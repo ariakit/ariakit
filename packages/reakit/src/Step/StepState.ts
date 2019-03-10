@@ -47,7 +47,7 @@ export type unstable_StepActions = {
 };
 
 // TODO: Accept function for the entire options or for each value
-export type unstable_StepStateOptions = Partial<unstable_StepState>;
+export type unstable_StepInitialState = Partial<unstable_StepState>;
 
 export type unstable_StepStateReturn = unstable_StepState &
   unstable_StepSelectors &
@@ -198,7 +198,7 @@ export function useStepState({
   ids = [],
   activeIndex = -1,
   ordered = {}
-}: unstable_StepStateOptions = {}): unstable_StepStateReturn {
+}: unstable_StepInitialState = {}): unstable_StepStateReturn {
   const [state, dispatch] = React.useReducer(reducer, {
     loop,
     ids,

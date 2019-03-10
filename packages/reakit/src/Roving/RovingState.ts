@@ -57,7 +57,7 @@ export type unstable_RovingActions = {
   setOrientation: (orientation: unstable_RovingState["orientation"]) => void;
 };
 
-export type unstable_RovingStateOptions = Partial<
+export type unstable_RovingInitialState = Partial<
   Pick<
     unstable_RovingState,
     "orientation" | "selectedRef" | "loop" | "autoSelect"
@@ -97,14 +97,14 @@ function getNextRef({ refs, enabled, loop }: unstable_RovingState, ref: any) {
 }
 
 function getPreviousRef(
-  { refs, enabled, ...options }: unstable_RovingState,
+  { refs, enabled, ...state }: unstable_RovingState,
   ref: any
 ) {
   return getNextRef(
     {
       refs: refs.slice().reverse(),
       enabled: enabled.slice().reverse(),
-      ...options
+      ...state
     },
     ref
   );
@@ -114,11 +114,11 @@ function getFirstRef({ refs, enabled }: unstable_RovingState) {
   return refs.find((_, i) => enabled[i]);
 }
 
-function getLastRef({ refs, enabled, ...options }: unstable_RovingState) {
+function getLastRef({ refs, enabled, ...state }: unstable_RovingState) {
   return getFirstRef({
     refs: refs.slice().reverse(),
     enabled: enabled.slice().reverse(),
-    ...options
+    ...state
   });
 }
 
@@ -249,7 +249,7 @@ export function useRovingState({
   loop = false,
   selectedRef = null,
   autoSelect = false
-}: unstable_RovingStateOptions = {}): unstable_RovingStateReturn {
+}: unstable_RovingInitialState = {}): unstable_RovingStateReturn {
   const [state, dispatch] = React.useReducer(reducer, {
     orientation,
     refs: [],
