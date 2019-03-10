@@ -2,23 +2,30 @@ import * as React from "react";
 
 export type unstable_RovingState = {
   /** TODO: Description */
+  orientation: "horizontal" | "vertical";
+  /** TODO: Description */
   refs: any[];
   /** TODO: Description */
   enabled: boolean[];
   /** TODO: Description */
+  selectedRef: any;
+  /** TODO: Description */
+  focusedRef: any;
+  /** TODO: Description */
+  autoSelect: boolean;
+  /** TODO: Description */
   loop: boolean;
+};
+
+export type unstable_RovingSelectors = {
   /** TODO: Description */
-  currentRef: any;
+  getNextRef: (ref: any) => any;
   /** TODO: Description */
-  currentIndex: number;
+  getPreviousRef: (ref: any) => any;
   /** TODO: Description */
-  nextIndex: number;
+  getFirstRef: () => any;
   /** TODO: Description */
-  previousIndex: number;
-  /** TODO: Description */
-  firstIndex: number;
-  /** TODO: Description */
-  lastIndex: number;
+  getLastRef: () => any;
 };
 
 export type unstable_RovingActions = {
@@ -29,164 +36,244 @@ export type unstable_RovingActions = {
   /** TODO: Description */
   select: (ref: any) => void;
   /** TODO: Description */
-  next: () => void;
+  focus: (ref: any, select?: boolean) => void;
   /** TODO: Description */
-  previous: () => void;
+  selectNext: () => void;
   /** TODO: Description */
-  first: () => void;
+  selectPrevious: () => void;
   /** TODO: Description */
-  last: () => void;
+  selectFirst: () => void;
+  /** TODO: Description */
+  selectLast: () => void;
+  /** TODO: Description */
+  focusNext: (select?: boolean) => void;
+  /** TODO: Description */
+  focusPrevious: (select?: boolean) => void;
+  /** TODO: Description */
+  focusFirst: (select?: boolean) => void;
+  /** TODO: Description */
+  focusLast: (select?: boolean) => void;
+  /** TODO: Description */
+  setOrientation: (orientation: unstable_RovingState["orientation"]) => void;
 };
 
 export type unstable_RovingStateOptions = Partial<
-  Pick<unstable_RovingState, "loop" | "currentIndex">
+  Pick<
+    unstable_RovingState,
+    "orientation" | "selectedRef" | "loop" | "autoSelect"
+  >
 >;
 
 export type unstable_RovingStateReturn = unstable_RovingState &
+  unstable_RovingSelectors &
   unstable_RovingActions;
 
 type RovingAction =
   | { type: "register"; ref: any; disabled?: boolean }
   | { type: "unregister"; ref: any }
   | { type: "select"; ref: any }
-  | { type: "update" }
-  | { type: "next" }
-  | { type: "previous" }
-  | { type: "first" }
-  | { type: "last" };
+  | { type: "focus"; ref: any; select?: boolean }
+  | { type: "selectNext" }
+  | { type: "selectPrevious" }
+  | { type: "selectFirst" }
+  | { type: "selectLast" }
+  | { type: "focusNext"; select?: boolean }
+  | { type: "focusPrevious"; select?: boolean }
+  | { type: "focusFirst"; select?: boolean }
+  | { type: "focusLast"; select?: boolean }
+  | {
+      type: "setOrientation";
+      orientation: unstable_RovingState["orientation"];
+    };
 
-function findNext({ currentIndex, loop, enabled }: unstable_RovingState) {
-  if (enabled.filter(Boolean).length === 0) return -1;
-  let i = currentIndex;
-  do {
-    i = loop && i === enabled.length - 1 ? 0 : i + 1;
-  } while (i < enabled.length && !enabled[i]);
-  return i < enabled.length ? i : -1;
+function getNextRef({ refs, enabled, loop }: unstable_RovingState, ref: any) {
+  if (!enabled.find(Boolean)) return null;
+  const index = refs.indexOf(ref);
+  const reordered = [
+    ...refs.slice(index + 1),
+    ...(loop ? refs.slice(0, index) : [])
+  ];
+  return reordered.find(r => enabled[refs.indexOf(r)]);
 }
 
-function findPrevious({ currentIndex, loop, enabled }: unstable_RovingState) {
-  if (enabled.filter(Boolean).length === 0) return -1;
-  let i = currentIndex;
-  do {
-    i = loop && i === 0 ? enabled.length - 1 : i - 1;
-  } while (i >= 0 && !enabled[i]);
-  return i;
+function getPreviousRef(
+  { refs, enabled, ...options }: unstable_RovingState,
+  ref: any
+) {
+  return getNextRef(
+    {
+      refs: refs.slice().reverse(),
+      enabled: enabled.slice().reverse(),
+      ...options
+    },
+    ref
+  );
 }
 
-function findFirst({ enabled }: unstable_RovingState) {
-  let i = 0;
-  while (!enabled[i] && i < enabled.length) {
-    i += 1;
-  }
-  return i < enabled.length ? i : -1;
+function getFirstRef({ refs, enabled }: unstable_RovingState) {
+  return refs.find((_, i) => enabled[i]);
 }
 
-function findLast({ enabled }: unstable_RovingState) {
-  let i = enabled.length - 1;
-  while (!enabled[i] && i >= 0) {
-    i -= 1;
-  }
-  return i;
+function getLastRef({ refs, enabled, ...options }: unstable_RovingState) {
+  return getFirstRef({
+    refs: refs.slice().reverse(),
+    enabled: enabled.slice().reverse(),
+    ...options
+  });
 }
 
 function reducer(
   state: unstable_RovingState,
   action: RovingAction
 ): unstable_RovingState {
-  const {
-    refs,
-    enabled,
-    currentRef,
-    currentIndex,
-    nextIndex,
-    previousIndex,
-    firstIndex,
-    lastIndex
-  } = state;
+  const { refs, enabled, autoSelect, selectedRef, focusedRef } = state;
+
   switch (action.type) {
     case "register": {
       const { disabled, ref } = action;
       const index = refs.indexOf(ref);
-      const nextState =
-        index === -1
-          ? {
-              ...state,
-              refs: [...refs, ref],
-              enabled: [...enabled, !disabled]
-            }
-          : {
-              ...state,
-              refs: [...refs.slice(0, index), ref, ...refs.slice(index + 1)],
-              enabled: [
-                ...enabled.slice(0, index),
-                Boolean(!disabled),
-                ...enabled.slice(index + 1)
-              ]
-            };
-      return reducer(nextState, { type: "update" });
+
+      if (index === -1) {
+        // create
+        return {
+          ...state,
+          refs: [...refs, ref],
+          enabled: [...enabled, !disabled]
+        };
+      }
+
+      // update
+      let nextState = {
+        ...state,
+        enabled: [
+          ...enabled.slice(0, index),
+          !disabled,
+          ...enabled.slice(index + 1)
+        ]
+      };
+
+      if (disabled && focusedRef === ref) {
+        nextState = reducer(nextState, { type: "focusNext", select: false });
+      }
+
+      if (disabled && selectedRef === ref) {
+        nextState = reducer(nextState, { type: "selectNext" });
+      }
+
+      return nextState;
     }
     case "unregister": {
       const { ref } = action;
       const index = refs.indexOf(ref);
       if (index === -1) return state;
-      const nextState = {
+
+      let nextState = {
         ...state,
         refs: [...refs.slice(0, index), ...refs.slice(index + 1)],
         enabled: [...enabled.slice(0, index), ...enabled.slice(index + 1)]
       };
-      return reducer(nextState, { type: "update" });
+
+      if (focusedRef === ref) {
+        nextState = reducer(nextState, { type: "focusNext", select: false });
+      }
+
+      if (selectedRef === ref) {
+        nextState = reducer(nextState, { type: "selectNext" });
+      }
+
+      return nextState;
     }
     case "select": {
       const { ref } = action;
       const index = refs.indexOf(ref);
       if (!enabled[index]) return state;
-      const nextState = {
-        ...state,
-        currentRef: ref,
-        currentIndex: index
-      };
-      return reducer(nextState, { type: "update" });
+      return { ...state, selectedRef: ref };
     }
-    case "update":
-      return {
-        ...state,
-        currentRef: enabled[refs.indexOf(currentRef)] ? currentRef : null,
-        currentIndex: enabled[currentIndex] ? currentIndex : -1,
-        nextIndex: findNext(state),
-        previousIndex: findPrevious(state),
-        firstIndex: findFirst(state),
-        lastIndex: findLast(state)
-      };
-    case "next":
-      return reducer(state, { type: "select", ref: refs[nextIndex] });
-    case "previous":
-      return reducer(state, { type: "select", ref: refs[previousIndex] });
-    case "first":
-      return reducer(state, { type: "select", ref: refs[firstIndex] });
-    case "last":
-      return reducer(state, { type: "select", ref: refs[lastIndex] });
+    case "focus": {
+      const { ref, select = autoSelect } = action;
+      const index = refs.indexOf(ref);
+      if (!enabled[index]) return state;
+      const nextState = { ...state, focusedRef: ref };
+      if (select) {
+        return reducer(nextState, { type: "select", ref });
+      }
+      return nextState;
+    }
+    case "selectNext":
+      return reducer(state, {
+        type: "select",
+        ref: getNextRef(state, selectedRef)
+      });
+    case "selectPrevious":
+      return reducer(state, {
+        type: "select",
+        ref: getPreviousRef(state, selectedRef)
+      });
+    case "selectFirst":
+      return reducer(state, { type: "select", ref: getFirstRef(state) });
+    case "selectLast":
+      return reducer(state, { type: "select", ref: getLastRef(state) });
+    case "focusNext":
+      return reducer(state, {
+        type: "focus",
+        ref: getNextRef(state, focusedRef),
+        select: action.select
+      });
+    case "focusPrevious":
+      return reducer(state, {
+        type: "focus",
+        ref: getPreviousRef(state, focusedRef),
+        select: action.select
+      });
+    case "focusFirst":
+      return reducer(state, {
+        type: "focus",
+        ref: getFirstRef(state),
+        select: action.select
+      });
+    case "focusLast":
+      return reducer(state, {
+        type: "focus",
+        ref: getLastRef(state),
+        select: action.select
+      });
+    case "setOrientation":
+      return { ...state, orientation: action.orientation };
     default:
       return state;
   }
 }
 
 export function useRovingState({
-  currentIndex = -1,
-  loop = false
+  orientation = "horizontal",
+  loop = false,
+  selectedRef = null,
+  autoSelect = false
 }: unstable_RovingStateOptions = {}): unstable_RovingStateReturn {
   const [state, dispatch] = React.useReducer(reducer, {
-    loop,
-    currentIndex,
-    currentRef: null,
+    orientation,
     refs: [],
     enabled: [],
-    nextIndex: -1,
-    previousIndex: -1,
-    firstIndex: -1,
-    lastIndex: -1
+    selectedRef,
+    focusedRef: null,
+    autoSelect,
+    loop
   });
+
+  React.useEffect(() => {
+    if (!state.autoSelect || state.selectedRef) return;
+    const firstRef = getFirstRef(state);
+    if (firstRef) {
+      dispatch({ type: "select", ref: firstRef });
+    }
+  }, [state.autoSelect, state.refs, state.selectedRef]);
+
   return {
     ...state,
+    getNextRef: ref => getNextRef(state, ref),
+    getPreviousRef: ref => getPreviousRef(state, ref),
+    getFirstRef: () => getFirstRef(state),
+    getLastRef: () => getLastRef(state),
     register: React.useCallback(
       (ref, disabled) => dispatch({ type: "register", ref, disabled }),
       []
@@ -196,30 +283,64 @@ export function useRovingState({
       []
     ),
     select: React.useCallback(ref => dispatch({ type: "select", ref }), []),
-    next: React.useCallback(() => dispatch({ type: "next" }), []),
-    previous: React.useCallback(() => dispatch({ type: "previous" }), []),
-    first: React.useCallback(() => dispatch({ type: "first" }), []),
-    last: React.useCallback(() => dispatch({ type: "last" }), [])
+    focus: React.useCallback(
+      (ref, select) => dispatch({ type: "focus", ref, select }),
+      []
+    ),
+    selectNext: React.useCallback(() => dispatch({ type: "selectNext" }), []),
+    selectPrevious: React.useCallback(
+      () => dispatch({ type: "selectPrevious" }),
+      []
+    ),
+    selectFirst: React.useCallback(() => dispatch({ type: "selectFirst" }), []),
+    selectLast: React.useCallback(() => dispatch({ type: "selectLast" }), []),
+    focusNext: React.useCallback(
+      select => dispatch({ type: "focusNext", select }),
+      []
+    ),
+    focusPrevious: React.useCallback(
+      select => dispatch({ type: "focusPrevious", select }),
+      []
+    ),
+    focusFirst: React.useCallback(
+      select => dispatch({ type: "focusFirst", select }),
+      []
+    ),
+    focusLast: React.useCallback(
+      select => dispatch({ type: "focusLast", select }),
+      []
+    ),
+    setOrientation: React.useCallback(
+      o => dispatch({ type: "setOrientation", orientation: o }),
+      []
+    )
   };
 }
 
 const keys: Array<keyof unstable_RovingStateReturn> = [
+  "orientation",
   "refs",
   "enabled",
+  "selectedRef",
+  "focusedRef",
+  "autoSelect",
   "loop",
-  "currentRef",
-  "currentIndex",
-  "nextIndex",
-  "previousIndex",
-  "firstIndex",
-  "lastIndex",
+  "getNextRef",
+  "getPreviousRef",
+  "getFirstRef",
+  "getLastRef",
   "register",
   "unregister",
   "select",
-  "next",
-  "previous",
-  "first",
-  "last"
+  "focus",
+  "selectNext",
+  "selectPrevious",
+  "selectFirst",
+  "selectLast",
+  "focusNext",
+  "focusPrevious",
+  "focusFirst",
+  "focusLast"
 ];
 
 useRovingState.keys = keys;

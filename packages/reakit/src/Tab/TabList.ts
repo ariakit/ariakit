@@ -15,7 +15,8 @@ export function useTabList(
 ) {
   htmlProps = mergeProps(
     {
-      role: "tablist"
+      role: "tablist",
+      "aria-orientation": options.orientation
     } as typeof htmlProps,
     htmlProps
   );
@@ -31,4 +32,4 @@ const keys: Array<keyof unstable_TabListOptions> = [
 
 useTabList.keys = keys;
 
-export const TabList = unstable_createComponent("ul", useTabList);
+export const TabList = unstable_createComponent("div", useTabList);

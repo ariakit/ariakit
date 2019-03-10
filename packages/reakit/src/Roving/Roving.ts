@@ -2,66 +2,77 @@ import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import {
+  unstable_ButtonOptions,
+  unstable_ButtonProps,
+  useButton
+} from "../Button/Button";
 import { useRovingState, unstable_RovingStateReturn } from "./RovingState";
 
-export type unstable_RovingOptions = unstable_BoxOptions &
+export type unstable_RovingOptions = unstable_ButtonOptions &
   Partial<unstable_RovingStateReturn> &
   Pick<
     unstable_RovingStateReturn,
     | "refs"
-    | "currentRef"
+    | "selectedRef"
+    | "focusedRef"
+    | "getFirstRef"
     | "register"
     | "unregister"
     | "select"
-    | "next"
-    | "previous"
-    | "first"
-    | "last"
+    | "focus"
+    | "focusNext"
+    | "focusPrevious"
+    | "focusFirst"
+    | "focusLast"
   > & {
     /** TODO: Description */
-    disabled?: boolean;
+    refId?: string;
   };
 
-export type unstable_RovingProps = unstable_BoxProps;
+export type unstable_RovingProps = unstable_ButtonProps;
 
 export function useRoving(
   options: unstable_RovingOptions,
   htmlProps: unstable_RovingProps = {}
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
-  const active = options.currentRef === ref;
+  const refId = options.refId || ref;
+  const focused = options.focusedRef === refId;
+  const selected = options.selectedRef === refId;
+  const isFirst = options.getFirstRef() === refId;
+  const noFocused = options.focusedRef == null;
+  const noSelected = options.selectedRef == null;
+  const shouldTabIndexZero =
+    focused || (selected && noFocused) || (isFirst && noFocused && noSelected);
 
   React.useEffect(() => {
-    options.register(ref, options.disabled);
-    return () => options.unregister(ref);
-  }, [options.disabled, options.register, options.unregister]);
+    options.register(refId, options.disabled);
+    return () => options.unregister(refId);
+  }, [refId, options.disabled, options.register, options.unregister]);
 
   React.useEffect(() => {
-    if (active && ref.current) {
+    if (ref.current && focused) {
       ref.current.focus();
     }
-  }, [active]);
-
-  const select = React.useCallback(() => {
-    options.select(ref);
-  }, [options.select]);
+  }, [focused]);
 
   htmlProps = mergeProps(
     {
       ref,
-      onClick: select,
-      onFocus: select,
+      tabIndex: shouldTabIndexZero ? 0 : -1,
+      onClick: () => options.select(refId),
+      onFocus: () => options.focus(refId),
       onKeyDown: e => {
         const keyMap = {
-          ArrowUp: options.previous,
-          ArrowRight: options.next,
-          ArrowDown: options.next,
-          ArrowLeft: options.previous,
-          Home: options.first,
-          End: options.last,
-          PageUp: options.first,
-          PageDown: options.last
+          ArrowUp: options.focusPrevious,
+          ArrowRight: options.focusNext,
+          ArrowDown: options.focusNext,
+          ArrowLeft: options.focusPrevious,
+          Home: options.focusFirst,
+          End: options.focusLast,
+          PageUp: options.focusFirst,
+          PageDown: options.focusLast
         };
         if (e.key in keyMap) {
           e.preventDefault();
@@ -69,23 +80,20 @@ export function useRoving(
         }
       }
     } as typeof htmlProps,
-    options.disabled
-      ? { disabled: options.disabled }
-      : { tabIndex: active ? 0 : -1 },
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
+  htmlProps = useButton(options, htmlProps);
   htmlProps = unstable_useHook("useRoving", options, htmlProps);
   return htmlProps;
 }
 
 const keys: Array<keyof unstable_RovingOptions> = [
-  ...useBox.keys,
+  ...useButton.keys,
   ...useRovingState.keys,
-  "disabled"
+  "refId"
 ];
 
 useRoving.keys = keys;
 
-export const Roving = unstable_createComponent("div", useRoving);
+export const Roving = unstable_createComponent("button", useRoving);

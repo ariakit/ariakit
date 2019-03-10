@@ -32,4 +32,4 @@ const keys: Array<keyof unstable_ToolbarOptions> = [
 
 useToolbar.keys = keys;
 
-export const Toolbar = unstable_createComponent("ul", useToolbar);
+export const Toolbar = unstable_createComponent("div", useToolbar);

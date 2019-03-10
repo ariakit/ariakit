@@ -17,17 +17,61 @@ redirect_from:
 import { useTabState, Tab, TabList, TabPanel } from "reakit";
 
 function Example() {
-  const tab = useTabState({ activeIndex: 0 })
+  const tab = useTabState();
   return (
     <>
       <TabList>
-        <Tab tabId="tab1" {...tab}>Tab 1</Tab>
-        <Tab tabId="tab2" {...tab}>Tab 2</Tab>
-        <Tab tabId="tab3" {...tab}>Tab 3</Tab>
+        <Tab refId="tab1" {...tab}>
+          Tab 1
+        </Tab>
+        <Tab refId="tab2" disabled {...tab}>
+          Tab 2
+        </Tab>
+        <Tab refId="tab3" {...tab}>
+          Tab 3
+        </Tab>
       </TabList>
-      <TabPanel tabId="tab1" {...tab}>Tab 1</TabPanel>
-      <TabPanel tabId="tab2" {...tab}>Tab 2</TabPanel>
-      <TabPanel tabId="tab3" {...tab}>Tab 3</TabPanel>
+      <TabPanel refId="tab1" {...tab}>
+        Tab 1
+      </TabPanel>
+      <TabPanel refId="tab2" {...tab}>
+        Tab 2
+      </TabPanel>
+      <TabPanel refId="tab3" {...tab}>
+        Tab 3
+      </TabPanel>
+    </>
+  );
+}
+```
+
+```jsx
+import { useTabState, Tab, TabList, TabPanel } from "reakit";
+
+function Example() {
+  const tab = useTabState({ autoSelect: false, selectedRef: "tab2" });
+  return (
+    <>
+      <TabList>
+        <Tab refId="tab1" {...tab}>
+          Tab 1
+        </Tab>
+        <Tab refId="tab2" disabled {...tab}>
+          Tab 2
+        </Tab>
+        <Tab refId="tab3" {...tab}>
+          Tab 3
+        </Tab>
+      </TabList>
+      <TabPanel refId="tab1" {...tab}>
+        Tab 1
+      </TabPanel>
+      <TabPanel refId="tab2" {...tab}>
+        Tab 2
+      </TabPanel>
+      <TabPanel refId="tab3" {...tab}>
+        Tab 3
+      </TabPanel>
     </>
   );
 }
