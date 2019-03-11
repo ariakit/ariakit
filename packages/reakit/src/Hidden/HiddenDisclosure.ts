@@ -8,37 +8,37 @@ import {
 } from "../Button/Button";
 import { useHiddenState, unstable_HiddenStateReturn } from "./HiddenState";
 
-export type unstable_HiddenControllerOptions = unstable_ButtonOptions &
+export type unstable_HiddenDisclosureOptions = unstable_ButtonOptions &
   Partial<unstable_HiddenStateReturn> &
-  Pick<unstable_HiddenStateReturn, "toggle" | "baseId">;
+  Pick<unstable_HiddenStateReturn, "toggle" | "refId">;
 
-export type unstable_HiddenControllerProps = unstable_ButtonProps;
+export type unstable_HiddenDisclosureProps = unstable_ButtonProps;
 
-export function useHiddenController(
-  options: unstable_HiddenControllerOptions,
-  htmlProps: unstable_HiddenControllerProps = {}
+export function useHiddenDisclosure(
+  options: unstable_HiddenDisclosureOptions,
+  htmlProps: unstable_HiddenDisclosureProps = {}
 ) {
   htmlProps = mergeProps(
     {
       onClick: options.toggle,
       "aria-expanded": Boolean(options.visible),
-      "aria-controls": options.baseId
+      "aria-controls": options.refId
     } as typeof htmlProps,
     htmlProps
   );
   htmlProps = useButton(options, htmlProps);
-  htmlProps = unstable_useHook("useHiddenController", options, htmlProps);
+  htmlProps = unstable_useHook("useHiddenDisclosure", options, htmlProps);
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_HiddenControllerOptions> = [
+const keys: Array<keyof unstable_HiddenDisclosureOptions> = [
   ...useButton.keys,
   ...useHiddenState.keys
 ];
 
-useHiddenController.keys = keys;
+useHiddenDisclosure.keys = keys;
 
-export const HiddenController = unstable_createComponent(
+export const HiddenDisclosure = unstable_createComponent(
   "button",
-  useHiddenController
+  useHiddenDisclosure
 );

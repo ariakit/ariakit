@@ -22,7 +22,7 @@ export function useTooltipReference(
       onBlur: options.hide,
       onMouseEnter: options.show,
       onMouseLeave: options.hide,
-      "aria-describedby": options.baseId
+      "aria-describedby": options.refId
     } as typeof htmlProps,
     htmlProps
   );

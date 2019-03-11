@@ -16,7 +16,9 @@ export function Portal({ children }: unstable_PortalProps) {
   const context = React.useContext(PortalContext);
   const [container] = React.useState(() => {
     if (typeof document !== "undefined") {
-      return document.createElement("div");
+      const portal = document.createElement("div");
+      portal.className = "portal";
+      return portal;
     }
     // ssr
     return null;

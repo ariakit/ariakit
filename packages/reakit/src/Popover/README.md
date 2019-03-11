@@ -15,7 +15,7 @@ import React from "react";
 import {
   Popover,
   PopoverArrow,
-  PopoverController,
+  PopoverDisclosure,
   PopoverHide,
   usePopoverState
 } from "reakit";
@@ -26,7 +26,7 @@ function Example() {
   const popover = usePopoverState();
   return (
     <div style={{ padding: 100 }}>
-      <PopoverController {...popover}>Controller</PopoverController>
+      <PopoverDisclosure {...popover}>Disclosure</PopoverDisclosure>
       <Popover style={{ width: 100, background: "pink" }} {...popover}>
         <PopoverArrow {...popover} />
         dsada
@@ -42,7 +42,7 @@ import React from "react";
 import {
   Popover,
   PopoverArrow,
-  PopoverController,
+  PopoverDisclosure,
   PopoverHide,
   PopoverBackdrop,
   usePopoverState
@@ -54,7 +54,7 @@ function Example() {
   const popover = usePopoverState();
   return (
     <div style={{ padding: 100 }}>
-      <PopoverController {...popover}>Controller</PopoverController>
+      <PopoverDisclosure {...popover}>Disclosure</PopoverDisclosure>
       <PopoverBackdrop {...popover} />
       <Popover style={{ width: 100, background: "pink" }} {...popover}>
         <PopoverArrow {...popover} />

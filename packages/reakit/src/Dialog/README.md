@@ -14,7 +14,7 @@ redirect_from:
 import React from "react";
 import {
   Dialog,
-  DialogController,
+  DialogDisclosure,
   DialogBackdrop,
   useDialogState,
   Button
@@ -50,11 +50,11 @@ function Example() {
   return (
     <>
       <Button ref={focusOutRef}>Focus out</Button>
-      <DialogController {...dialog}>Show Dialog</DialogController>
+      <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
       <DialogBackdrop {...dialog} style={backdropStyle} />
-      <Dialog modal style={style} aria-label="test" {...dialog}>
+      <Dialog style={style} aria-label="test" {...dialog}>
         <Button onClick={dialog.hide}>X</Button>
-        <DialogController {...dialog2}>Show Dialog 2</DialogController>
+        <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
         <A href="#" ref={focusInRef}>
           Focus In
         </A>
@@ -71,7 +71,7 @@ function Example() {
 import React from "react";
 import {
   Dialog,
-  DialogController,
+  DialogDisclosure,
   DialogBackdrop,
   useDialogState,
   Button
@@ -107,15 +107,14 @@ function Example() {
   return (
     <>
       <Button ref={focusOutRef}>Focus out</Button>
-      <DialogController {...dialog}>Show Dialog</DialogController>
-      <DialogBackdrop {...dialog} style={backdropStyle} />
-      <Dialog style={style} aria-label="test" {...dialog}>
+      <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
+      <Dialog modal={false} style={style} aria-label="test" {...dialog}>
         <Button onClick={dialog.hide}>X</Button>
-        <DialogController {...dialog2}>Show Dialog 2</DialogController>
+        <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
         <A href="#" ref={focusInRef}>
           Focus In
         </A>
-        <Dialog modal style={style} {...dialog2}>
+        <Dialog style={style} {...dialog2}>
           Hi
         </Dialog>
       </Dialog>

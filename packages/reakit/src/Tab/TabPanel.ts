@@ -1,5 +1,4 @@
 import { mergeProps } from "../utils/mergeProps";
-import { useTabbable } from "../__utils/useTabbable";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import {
@@ -24,15 +23,14 @@ export function useTabPanel(
   htmlProps: unstable_TabPanelProps = {}
 ) {
   const visible = options.selectedRef === options.refId;
-  const tabbableProps = useTabbable();
 
   htmlProps = mergeProps(
     {
       role: "tabpanel",
-      id: unstable_getTabPanelId(options.refId, options.baseId),
-      "aria-labelledby": unstable_getTabId(options.refId, options.baseId)
+      tabIndex: 0,
+      id: unstable_getTabPanelId(options.refId, options.refId),
+      "aria-labelledby": unstable_getTabId(options.refId, options.refId)
     } as typeof htmlProps,
-    tabbableProps,
     htmlProps
   );
   htmlProps = useHidden({ visible, ...options }, htmlProps);

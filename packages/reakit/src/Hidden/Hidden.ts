@@ -19,7 +19,8 @@ export function useHidden(
   htmlProps = mergeProps(
     {
       ref,
-      id: options.baseId,
+      role: "region",
+      id: options.refId,
       hidden: !options.visible,
       "aria-hidden": !options.visible
     } as typeof htmlProps,

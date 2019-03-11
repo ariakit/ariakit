@@ -18,7 +18,7 @@ export type unstable_PopoverOptions = unstable_DialogOptions &
 export type unstable_PopoverProps = unstable_DialogProps;
 
 export function usePopover(
-  options: unstable_PopoverOptions = {},
+  options: unstable_PopoverOptions,
   htmlProps: unstable_PopoverProps = {}
 ) {
   htmlProps = mergeProps(
@@ -35,8 +35,7 @@ export function usePopover(
 
 const keys: Array<keyof unstable_PopoverOptions> = [
   ...useDialog.keys,
-  ...usePopoverState.keys,
-  "unstable_hideOnClickOutside"
+  ...usePopoverState.keys
 ];
 
 usePopover.keys = keys;

@@ -1,3 +1,3 @@
 export * from "./Hidden";
-export * from "./HiddenController";
+export * from "./HiddenDisclosure";
 export * from "./HiddenState";

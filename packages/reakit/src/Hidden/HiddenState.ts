@@ -3,7 +3,7 @@ import { unstable_useId } from "../utils/useId";
 
 export type unstable_HiddenState = {
   /** TODO: Description */
-  baseId: string;
+  refId: string;
   /** Tell whether it's visible or not */
   visible: boolean;
 };
@@ -42,7 +42,7 @@ export function useHiddenState({
   const toggle = () => setVisible(!visible);
 
   return {
-    baseId,
+    refId: baseId,
     visible,
     show,
     hide,
@@ -51,7 +51,7 @@ export function useHiddenState({
 }
 
 const keys: Array<keyof unstable_HiddenStateReturn> = [
-  "baseId",
+  "refId",
   "visible",
   "show",
   "hide",
