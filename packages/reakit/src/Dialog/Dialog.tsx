@@ -1,5 +1,6 @@
 // TODO: Refactor
 import * as React from "react";
+import * as BodyScrollLock from "body-scroll-lock";
 import {
   isTabbable,
   selectFirstTabbableIn,
@@ -25,13 +26,15 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
     /** TODO: Description */
     modal?: boolean;
     /** TODO: Description */
-    unstable_focusOnShow?: React.RefObject<HTMLElement>;
-    /** TODO: Description */
-    unstable_focusOnHide?: React.RefObject<HTMLElement>;
-    /** TODO: Description */
     hideOnEsc?: boolean;
     /** TODO: Description */
     hideOnClickOutside?: boolean;
+    /** TODO: Description */
+    unstable_disableBodyScroll?: boolean;
+    /** TODO: Description */
+    unstable_focusOnShow?: React.RefObject<HTMLElement>;
+    /** TODO: Description */
+    unstable_focusOnHide?: React.RefObject<HTMLElement>;
   };
 
 export type unstable_DialogProps = unstable_HiddenProps;
@@ -54,7 +57,7 @@ function getDisclosure(container: Element, refId: string) {
   if (isDisclosure(container, refId)) {
     return container;
   }
-  return container.querySelector(`[aria-controls~="${refId}"]`);
+  return container.querySelector(`[aria-controls~="${refId}"]`) || container;
 }
 
 export function useDialog(
@@ -62,20 +65,37 @@ export function useDialog(
     modal = true,
     hideOnEsc = true,
     hideOnClickOutside = true,
+    unstable_disableBodyScroll = true,
     ...options
   }: unstable_DialogOptions,
   htmlProps: unstable_DialogProps = {}
 ) {
   const allOptions = { modal, hideOnEsc, hideOnClickOutside, ...options };
   const ref = React.useRef<HTMLElement | null>(null);
-  const previousActiveElement = React.useRef<HTMLElement | null>(null);
+  const disclosure = React.useRef<HTMLElement | null>(null);
   const lastFocus = React.useRef<Element | null>(null);
+
+  // body scroll
+  React.useEffect(() => {
+    const dialog = ref.current;
+    const portal = getPortal(dialog);
+
+    if (!portal || !unstable_disableBodyScroll || !options.visible) {
+      return undefined;
+    }
+
+    BodyScrollLock.disableBodyScroll(dialog);
+
+    return () => BodyScrollLock.enableBodyScroll(dialog);
+  }, [unstable_disableBodyScroll, options.visible]);
 
   // Store the active element before focusing dialog
   React.useEffect(() => {
-    if (options.visible) {
-      previousActiveElement.current = document.activeElement as HTMLElement;
-    }
+    if (!options.visible || !document.activeElement) return;
+    disclosure.current = getDisclosure(
+      document.activeElement,
+      options.refId
+    ) as HTMLElement;
   }, [options.visible]);
 
   // hideOnEsc
@@ -115,16 +135,8 @@ export function useDialog(
 
     if (focusOnHideElement) {
       focusOnHideElement.focus();
-    } else if (previousActiveElement.current) {
-      const disclosure = getDisclosure(
-        previousActiveElement.current,
-        options.refId
-      );
-      if (disclosure) {
-        (disclosure as HTMLElement).focus();
-      } else {
-        previousActiveElement.current.focus();
-      }
+    } else if (disclosure.current) {
+      disclosure.current.focus();
     }
   }, [options.visible, options.unstable_focusOnHide]);
 
@@ -166,6 +178,7 @@ export function useDialog(
   }, [modal, hideOnClickOutside, options.visible]);
 
   // Focus trap hack
+  // https://github.com/w3c/aria-practices/issues/545
   React.useEffect(() => {
     const dialog = ref.current;
     const portal = getPortal(dialog);
@@ -253,7 +266,7 @@ export function useDialog(
     const handleClick = (e: MouseEvent | FocusEvent) => {
       const target = e.target as Element;
       if (portal.contains(target)) return;
-      if (isDisclosure(target, options.refId)) return;
+      if (target === disclosure.current) return;
 
       if (options.hide) {
         options.hide();
@@ -266,7 +279,7 @@ export function useDialog(
       document.removeEventListener("mousedown", handleClick);
       document.removeEventListener("focus", handleClick, true);
     };
-  }, [hideOnClickOutside, options.refId, options.visible, options.hide]);
+  }, [hideOnClickOutside, options.visible, options.hide]);
 
   htmlProps = mergeProps(
     {
@@ -300,7 +313,6 @@ useDialog.keys = keys;
 export const Dialog = unstable_createComponent(
   "div",
   useDialog,
-  // @ts-ignore: TODO typeof createElement
   (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;

@@ -19,17 +19,18 @@ export type unstable_HiddenActions = {
 
 // TODO: Accept function for the entire options or for each value
 export type unstable_HiddenInitialState = Partial<
-  Pick<unstable_HiddenState, "visible">
+  Pick<unstable_HiddenState, "refId" | "visible">
 >;
 
 export type unstable_HiddenStateReturn = unstable_HiddenState &
   unstable_HiddenActions;
 
 export function useHiddenState({
-  visible: initialVisible = false
+  visible: initialVisible = false,
+  ...initialState
 }: unstable_HiddenInitialState = {}): unstable_HiddenStateReturn {
   const [visible, setVisible] = React.useState(initialVisible);
-  const baseId = unstable_useId("hidden-");
+  const refId = unstable_useId("hidden-");
 
   const show = () => {
     if (!visible) setVisible(true);
@@ -42,7 +43,7 @@ export function useHiddenState({
   const toggle = () => setVisible(!visible);
 
   return {
-    refId: baseId,
+    refId: initialState.refId || refId,
     visible,
     show,
     hide,

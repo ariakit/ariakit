@@ -30,12 +30,12 @@
     "system"
   ],
   "dependencies": {
-    "emotion": "10.0.7",
+    "emotion": "10.0.9",
     "reakit-system-palette": "0.0.1"
   },
   "devDependencies": {
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
+    "react": "16.8.4",
+    "react-dom": "16.8.4",
     "reakit": "0.16.0"
   },
   "peerDependencies": {

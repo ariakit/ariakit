@@ -1,4 +1,3 @@
-import { hasAttribute } from "./hasAttribute";
 import { isVisibleInDOM } from "./isVisibleInDOM";
 
 const selector =
@@ -22,9 +21,9 @@ export function isFocusable(element: Element) {
   if (focusableTags.indexOf(localName) >= 0) return true;
 
   const others = {
-    a: () => hasAttribute(element, "href"),
-    audio: () => hasAttribute(element, "controls"),
-    video: () => hasAttribute(element, "controls")
+    a: () => element.hasAttribute("href"),
+    audio: () => element.hasAttribute("controls"),
+    video: () => element.hasAttribute("controls")
   };
 
   if (localName in others) {
@@ -37,7 +36,7 @@ export function isFocusable(element: Element) {
 export function isTabbable(element: Element) {
   if (!isFocusable(element)) return false;
   if (hasNegativeTabIndex(element)) return false;
-  if (hasAttribute(element, "disabled")) return false;
+  if (element.hasAttribute("disabled")) return false;
   if (element.getAttribute("aria-disabled") === "true") return false;
   return true;
 }

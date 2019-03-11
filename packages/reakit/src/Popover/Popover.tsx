@@ -43,7 +43,6 @@ usePopover.keys = keys;
 export const Popover = unstable_createComponent(
   "div",
   usePopover,
-  // @ts-ignore: TODO typeof createElement
   (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;

@@ -47,7 +47,6 @@ useTooltip.keys = keys;
 export const Tooltip = unstable_createComponent(
   "div",
   useTooltip,
-  // @ts-ignore: TODO typeof createElement
   (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;

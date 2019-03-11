@@ -67,7 +67,7 @@ export type PropsWithAs<P, T extends As> = {
   as?: T;
   children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
 } & P &
-  Omit<React.ComponentPropsWithRef<T>, "as" | keyof P>;
+  Omit<React.ComponentProps<T>, "as" | keyof P>;
 
 /**
  * Transform `"a" | "b"` into `"a" & "b"`

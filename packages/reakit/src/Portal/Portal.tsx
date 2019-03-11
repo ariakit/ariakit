@@ -25,13 +25,11 @@ export function Portal({ children }: unstable_PortalProps) {
   });
 
   React.useLayoutEffect(() => {
-    if (container && context) {
-      context.appendChild(container);
-      return () => {
-        context.removeChild(container);
-      };
-    }
-    return undefined;
+    if (!container || !context) return undefined;
+    context.appendChild(container);
+    return () => {
+      context.removeChild(container);
+    };
   }, [container, context]);
 
   if (container) {

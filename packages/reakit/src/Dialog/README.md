@@ -33,10 +33,11 @@ function Example() {
     transform: "translate(-50%, -50%)",
     background: "white",
     padding: 20,
-    maxHeight: 50,
+    maxHeight: 100,
     overflow: "auto",
     border: "2px solid red",
-    zIndex: 99999
+    zIndex: 99999,
+    "-webkit-overflow-scrolling": "touch"
   };
   const backdropStyle = {
     position: "fixed",
@@ -58,8 +59,10 @@ function Example() {
         <A href="#" ref={focusInRef}>
           Focus In
         </A>
+        <div style={{ height: 500 }}>Hi</div>
         <Dialog style={style} {...dialog2}>
-          Hi<Button>Button</Button>
+          <div style={{ height: 500 }}>Hi</div>
+          <Button>Button</Button>
         </Dialog>
       </Dialog>
     </>

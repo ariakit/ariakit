@@ -1,4 +1,3 @@
-import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
@@ -14,11 +13,8 @@ export function useHidden(
   options: unstable_HiddenOptions = {},
   htmlProps: unstable_HiddenProps = {}
 ) {
-  const ref = React.useRef<HTMLElement | null>(null);
-
   htmlProps = mergeProps(
     {
-      ref,
       role: "region",
       id: options.refId,
       hidden: !options.visible,

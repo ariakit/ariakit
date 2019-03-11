@@ -30,8 +30,8 @@
     "system"
   ],
   "devDependencies": {
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
+    "react": "16.8.4",
+    "react-dom": "16.8.4",
     "reakit": "0.16.0"
   },
   "peerDependencies": {

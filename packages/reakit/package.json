@@ -33,10 +33,14 @@
     "components"
   ],
   "dependencies": {
+    "body-scroll-lock": "2.6.1",
     "popper.js": "^1.14.7"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
+  },
+  "devDependencies": {
+    "@types/body-scroll-lock": "2.6.0"
   }
 }

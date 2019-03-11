@@ -1,7 +1,8 @@
 import * as React from "react";
+import { unstable_useCreateElement } from "../utils/useCreateElement";
 
 export type unstable_SystemContextType = {
-  useCreateElement?: typeof React.createElement;
+  useCreateElement?: typeof unstable_useCreateElement;
   [key: string]: any;
 };
 
