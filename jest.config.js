@@ -6,6 +6,7 @@ module.exports = {
   ],
   projects: ["<rootDir>/packages/*/jest.config.js"],
   setupFilesAfterEnv: [
+    "raf/polyfill",
     "jest-dom/extend-expect",
     "react-testing-library/cleanup-after-each",
     "<rootDir>/jest.setup.js"

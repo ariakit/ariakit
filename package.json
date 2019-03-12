@@ -35,7 +35,7 @@
     ]
   },
   "resolutions": {
-    "jsdom": "14.0.0"
+    "jsdom": "^14.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.2.3",

@@ -246,7 +246,7 @@ test("clicking outside does not close the dialog when hideOnClickOutside is fals
   expect(dialog).not.toHaveAttribute("hidden");
 });
 
-test.skip("clicking outside puts focus on the dialog when hideOnClickOutside is falsy", async () => {
+test.skip("clicking outside puts focus on the dialog when hideOnClickOutside is falsy", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
     return (
@@ -260,7 +260,7 @@ test.skip("clicking outside puts focus on the dialog when hideOnClickOutside is 
   const button = getByText("Button");
   expect(button).toHaveFocus();
   act(() => button.blur());
-  await wait(() => expect(dialog).toHaveFocus());
+  expect(dialog).toHaveFocus();
 });
 
 test.todo("focusing outside closes the non-modal dialog");

@@ -119,15 +119,13 @@ export function useDialog(
   // Body scroll
   React.useEffect(() => {
     const dialog = ref.current;
-    const portal = getPortal(dialog);
 
-    if (!portal || !unstable_preventBodyScroll || !options.visible) {
+    if (!dialog || !unstable_preventBodyScroll || !options.visible) {
       return undefined;
     }
 
-    disableBodyScroll(portal);
-
-    return () => enableBodyScroll(portal);
+    disableBodyScroll(dialog);
+    return () => enableBodyScroll(dialog);
   }, [unstable_preventBodyScroll, options.visible]);
 
   // Store the active element before focusing dialog
@@ -274,11 +272,9 @@ export function useDialog(
       const portal = getPortal(dialog);
       if (!portal || !dialog) return;
       if (hasNestedOpenDialogs(portal)) return;
-      window.requestAnimationFrame(() => {
-        if (document.activeElement === document.body) {
-          dialog.focus();
-        }
-      });
+      if (document.activeElement === document.body) {
+        dialog.focus();
+      }
     };
 
     document.addEventListener("blur", handleBlur, true);
