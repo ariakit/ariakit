@@ -1,19 +1,13 @@
-import { isVisibleInDOM } from "./isVisibleInDOM";
-
 const selector =
   "input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable=false])";
 
-function hasNegativeTabIndex(element: Element) {
-  return element.getAttribute("tabindex") === "-1";
-}
-
-function isContentEditable(element: Element) {
+export function isContentEditable(element: Element) {
   const value = element.getAttribute("contenteditable");
   return value != null && value !== "false";
 }
 
 export function isFocusable(element: Element) {
-  if (!isVisibleInDOM(element)) return false;
+  if (element.hasAttribute("hidden")) return false;
 
   const { localName } = element;
   const focusableTags = ["input", "select", "textarea", "button"];
@@ -21,7 +15,7 @@ export function isFocusable(element: Element) {
   if (focusableTags.indexOf(localName) >= 0) return true;
 
   const others = {
-    a: () => element.hasAttribute("href"),
+    a: () => !!element.hasAttribute("href"),
     audio: () => element.hasAttribute("controls"),
     video: () => element.hasAttribute("controls")
   };
@@ -35,7 +29,7 @@ export function isFocusable(element: Element) {
 
 export function isTabbable(element: Element) {
   if (!isFocusable(element)) return false;
-  if (hasNegativeTabIndex(element)) return false;
+  if (element.getAttribute("tabindex") === "-1") return false;
   if (element.hasAttribute("disabled")) return false;
   if (element.getAttribute("aria-disabled") === "true") return false;
   return true;

@@ -1,11 +1,6 @@
 // TODO: Refactor
 import * as React from "react";
 import * as BodyScrollLock from "body-scroll-lock";
-import {
-  isTabbable,
-  selectFirstTabbableIn,
-  selectLastTabbableIn
-} from "../__utils/tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
@@ -16,6 +11,11 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
+import {
+  isTabbable,
+  selectFirstTabbableIn,
+  selectLastTabbableIn
+} from "./__utils";
 import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogOptions = unstable_HiddenOptions &
