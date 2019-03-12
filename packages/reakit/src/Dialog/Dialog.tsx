@@ -84,9 +84,9 @@ export function useDialog(
       return undefined;
     }
 
-    BodyScrollLock.disableBodyScroll(dialog);
+    BodyScrollLock.disableBodyScroll(portal);
 
-    return () => BodyScrollLock.enableBodyScroll(dialog);
+    return () => BodyScrollLock.enableBodyScroll(portal);
   }, [unstable_disableBodyScroll, options.visible]);
 
   // Store the active element before focusing dialog
