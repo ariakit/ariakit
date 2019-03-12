@@ -1,6 +1,6 @@
 // TODO: Refactor
 import * as React from "react";
-import * as BodyScrollLock from "body-scroll-lock";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
@@ -30,7 +30,7 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
     /** TODO: Description */
     hideOnClickOutside?: boolean;
     /** TODO: Description */
-    unstable_disableBodyScroll?: boolean;
+    unstable_preventBodyScroll?: boolean;
     /** TODO: Description */
     unstable_focusOnShow?: React.RefObject<HTMLElement>;
     /** TODO: Description */
@@ -65,7 +65,7 @@ export function useDialog(
     modal = true,
     hideOnEsc = true,
     hideOnClickOutside = true,
-    unstable_disableBodyScroll = true,
+    unstable_preventBodyScroll = true,
     ...options
   }: unstable_DialogOptions,
   htmlProps: unstable_DialogProps = {}
@@ -80,14 +80,14 @@ export function useDialog(
     const dialog = ref.current;
     const portal = getPortal(dialog);
 
-    if (!portal || !unstable_disableBodyScroll || !options.visible) {
+    if (!portal || !unstable_preventBodyScroll || !options.visible) {
       return undefined;
     }
 
-    BodyScrollLock.disableBodyScroll(portal);
+    disableBodyScroll(portal);
 
-    return () => BodyScrollLock.enableBodyScroll(portal);
-  }, [unstable_disableBodyScroll, options.visible]);
+    return () => enableBodyScroll(portal);
+  }, [unstable_preventBodyScroll, options.visible]);
 
   // Store the active element before focusing dialog
   React.useEffect(() => {

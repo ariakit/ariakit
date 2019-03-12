@@ -47,7 +47,12 @@ function getPlugins(isUMD) {
   if (isUMD) {
     return [
       ...commonPlugins,
-      commonjs({ include: /node_modules/ }),
+      commonjs({
+        include: /node_modules/,
+        namedExports: {
+          "body-scroll-lock": ["enableBodyScroll", "disableBodyScroll"]
+        }
+      }),
       ignore(["stream"]),
       terser(),
       replace({ "process.env.NODE_ENV": JSON.stringify("production") })
