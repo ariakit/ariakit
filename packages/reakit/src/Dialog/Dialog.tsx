@@ -13,9 +13,9 @@ import {
 } from "../Hidden/Hidden";
 import {
   isTabbable,
-  selectFirstTabbableIn,
-  selectLastTabbableIn
-} from "./__utils";
+  getFirstTabbableIn,
+  getLastTabbableIn
+} from "./__utils/tabbable";
 import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogOptions = unstable_HiddenOptions &
@@ -39,8 +39,21 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
 
 export type unstable_DialogProps = unstable_HiddenProps;
 
+function getNestedOpenDialogs(portal: Element) {
+  return Array.from(
+    portal.querySelectorAll("[role=dialog][aria-hidden=false]")
+  );
+}
+
 function hasNestedOpenDialogs(portal: Element) {
-  return portal.querySelectorAll("[role=dialog][aria-hidden=false]").length > 1;
+  return getNestedOpenDialogs(portal).length > 1;
+}
+
+function hasNestedOpenModals(portal: Element) {
+  return (
+    portal.querySelectorAll("[role=dialog][aria-modal=true][aria-hidden=false]")
+      .length > 1
+  );
 }
 
 function getPortal(dialog: Element | null) {
@@ -57,7 +70,7 @@ function getDisclosure(container: Element, refId: string) {
   if (isDisclosure(container, refId)) {
     return container;
   }
-  return container.querySelector(`[aria-controls~="${refId}"]`) || container;
+  return container.querySelector(`[aria-controls~="${refId}"]`);
 }
 
 export function useDialog(
@@ -75,7 +88,35 @@ export function useDialog(
   const disclosure = React.useRef<HTMLElement | null>(null);
   const lastFocus = React.useRef<Element | null>(null);
 
-  // body scroll
+  // Attach hide to element
+  React.useEffect(() => {
+    if (!ref.current) return;
+    Object.defineProperty(ref.current, "hide", {
+      writable: true,
+      value: options.hide
+    });
+  }, [options.hide]);
+
+  // Close nested dialogs
+  React.useEffect(() => {
+    const dialog = ref.current;
+    const portal = getPortal(dialog);
+
+    if (!portal || options.visible) return;
+
+    const nestedOpenDialogs = getNestedOpenDialogs(portal);
+    if (nestedOpenDialogs.length) {
+      nestedOpenDialogs.forEach(openDialog => {
+        // @ts-ignore
+        if (typeof openDialog.hide === "function") {
+          // @ts-ignore
+          openDialog.hide();
+        }
+      });
+    }
+  }, [options.visible]);
+
+  // Body scroll
   React.useEffect(() => {
     const dialog = ref.current;
     const portal = getPortal(dialog);
@@ -97,22 +138,6 @@ export function useDialog(
       options.refId
     ) as HTMLElement;
   }, [options.visible]);
-
-  // hideOnEsc
-  React.useEffect(() => {
-    const dialog = ref.current;
-    if (!hideOnEsc || !dialog || !options.visible) return undefined;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Escape" || !options.hide) return;
-      if (dialog.contains(e.target as Node)) {
-        options.hide();
-      }
-    };
-
-    dialog.addEventListener("keydown", handleKeyDown);
-    return () => dialog.removeEventListener("keydown", handleKeyDown);
-  }, [options.hide, hideOnEsc, options.visible]);
 
   // Restore focus on the activeElement after closing the dialog
   React.useEffect(() => {
@@ -143,8 +168,10 @@ export function useDialog(
   // Focus the first tabbable/focusable element when the dialog opens
   React.useEffect(() => {
     const dialog = ref.current;
+    const portal = getPortal(dialog);
 
-    if (!dialog || !options.visible) return;
+    if (!portal || !dialog || !options.visible) return;
+    if (hasNestedOpenDialogs(portal)) return;
 
     const focusOnShowElement =
       options.unstable_focusOnShow && options.unstable_focusOnShow.current;
@@ -153,7 +180,7 @@ export function useDialog(
       focusOnShowElement.focus();
       lastFocus.current = focusOnShowElement;
     } else {
-      const tabbable = selectFirstTabbableIn(dialog, true);
+      const tabbable = getFirstTabbableIn(dialog, true);
       if (tabbable) {
         tabbable.focus();
         lastFocus.current = tabbable;
@@ -211,7 +238,7 @@ export function useDialog(
       if (!portal) return;
       if (!dialog) return;
       if (!activeElement) return;
-      if (hasNestedOpenDialogs(portal)) return;
+      if (hasNestedOpenModals(portal)) return;
       if (portal.contains(activeElement)) {
         lastFocus.current = activeElement;
         return;
@@ -220,11 +247,11 @@ export function useDialog(
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      let tabbable = selectFirstTabbableIn(dialog, true);
+      let tabbable = getFirstTabbableIn(dialog, true);
 
       if (tabbable) {
         if (lastFocus.current === tabbable || lastFocus.current === portal) {
-          tabbable = selectLastTabbableIn(dialog, true) || tabbable;
+          tabbable = getLastTabbableIn(dialog, true) || tabbable;
         }
         tabbable.focus();
         lastFocus.current = tabbable;
@@ -238,20 +265,24 @@ export function useDialog(
     return () => document.removeEventListener("focus", handleFocus, true);
   }, [options.visible, modal]);
 
-  // click on document.body
+  // when focus get back to document.body
   React.useEffect(() => {
     if (!options.visible || hideOnClickOutside) return undefined;
 
-    const handleClick = () => {
+    const handleBlur = () => {
       const dialog = ref.current;
-      if (!dialog) return;
-      if (document.activeElement === document.body) {
-        dialog.focus();
-      }
+      const portal = getPortal(dialog);
+      if (!portal || !dialog) return;
+      if (hasNestedOpenDialogs(portal)) return;
+      window.requestAnimationFrame(() => {
+        if (document.activeElement === document.body) {
+          dialog.focus();
+        }
+      });
     };
 
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
+    document.addEventListener("blur", handleBlur, true);
+    return () => document.removeEventListener("blur", handleBlur, true);
   }, [hideOnClickOutside, options.visible]);
 
   // hide on click/focus outside
@@ -273,10 +304,10 @@ export function useDialog(
       }
     };
 
-    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("click", handleClick);
     document.addEventListener("focus", handleClick, true);
     return () => {
-      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("click", handleClick);
       document.removeEventListener("focus", handleClick, true);
     };
   }, [hideOnClickOutside, options.visible, options.hide]);
@@ -287,7 +318,19 @@ export function useDialog(
       role: "dialog",
       tabIndex: -1,
       "aria-label": options.label,
-      "aria-modal": modal
+      "aria-modal": modal,
+      onKeyDown: e => {
+        const keyMap = {
+          Escape: () => {
+            if (!options.hide || !hideOnEsc) return;
+            e.stopPropagation();
+            options.hide();
+          }
+        };
+        if (e.key in keyMap) {
+          keyMap[e.key as keyof typeof keyMap]();
+        }
+      }
     } as typeof htmlProps,
     htmlProps
   );
@@ -302,10 +345,11 @@ const keys: Array<keyof unstable_DialogOptions> = [
   ...useDialogState.keys,
   "label",
   "modal",
-  "unstable_focusOnHide",
-  "unstable_focusOnShow",
   "hideOnEsc",
-  "hideOnClickOutside"
+  "hideOnClickOutside",
+  "unstable_preventBodyScroll",
+  "unstable_focusOnHide",
+  "unstable_focusOnShow"
 ];
 
 useDialog.keys = keys;

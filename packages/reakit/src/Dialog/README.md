@@ -53,14 +53,19 @@ function Example() {
       <Button ref={focusOutRef}>Focus out</Button>
       <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
       <DialogBackdrop {...dialog} style={backdropStyle} />
-      <Dialog style={style} aria-label="test" {...dialog}>
+      <Dialog
+        hideOnClickOutside={false}
+        style={style}
+        aria-label="test"
+        {...dialog}
+      >
         <Button onClick={dialog.hide}>X</Button>
         <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
         <A href="#" ref={focusInRef}>
           Focus In
         </A>
         <div style={{ height: 500 }}>Hi</div>
-        <Dialog style={style} {...dialog2}>
+        <Dialog hideOnClickOutside={false} style={style} {...dialog2}>
           <div style={{ height: 500 }}>Hi</div>
           <Button>Button</Button>
         </Dialog>

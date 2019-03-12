@@ -47,9 +47,9 @@ export function useButton(
           options.onClick(e);
         }
       },
-      onKeyPress: e => {
+      onKeyDown: e => {
         // No need to check options.disabled
-        // KeyPress isn't invoked without focus
+        // KeyDown isn't invoked without focus
         // Focus isn't invoked without tabIndex
         if (isNativeButton(e.target)) return;
 

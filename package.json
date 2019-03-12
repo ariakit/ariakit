@@ -8,7 +8,7 @@
   "scripts": {
     "test": "jest",
     "test:all": "yarn lint && yarn type-check && yarn build && yarn test && yarn website:build && yarn clean",
-    "coverage": "npm test --coverage",
+    "coverage": "yarn test --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext js,ts,tsx",
@@ -33,6 +33,9 @@
     "{README,CHANGELOG}.md": [
       "scripts/copy-statics.sh"
     ]
+  },
+  "resolutions": {
+    "jsdom": "14.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.2.3",
@@ -67,7 +70,6 @@
     "husky": "1.3.1",
     "jest": "24.4.0",
     "jest-dom": "3.1.2",
-    "jest-environment-jsdom-thirteen": "1.0.0",
     "lerna": "3.13.1",
     "lint-staged": "8.1.5",
     "lodash": "4.17.11",

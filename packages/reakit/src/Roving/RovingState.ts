@@ -86,6 +86,7 @@ type RovingAction =
       orientation: unstable_RovingState["orientation"];
     };
 
+// TODO: Should focus disabled, but not select
 function getNextRef({ refs, enabled, loop }: unstable_RovingState, ref: any) {
   if (!enabled.find(Boolean)) return null;
   const index = refs.indexOf(ref);

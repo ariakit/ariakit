@@ -22,9 +22,9 @@ test("non-native button space/enter", () => {
     </Button>
   );
   const element = getByText("test");
-  fireEvent.keyPress(element, { charCode: 13 });
+  fireEvent.keyDown(element, { key: "Enter" });
   expect(fn).toHaveBeenCalledTimes(1);
-  fireEvent.keyPress(element, { charCode: 32 });
+  fireEvent.keyDown(element, { key: " " });
   expect(fn).toHaveBeenCalledTimes(2);
 });
 
@@ -36,7 +36,7 @@ test("non-native button space/enter disabled", () => {
     </Button>
   );
   const element = getByText("test");
-  fireEvent.keyPress(element, { charCode: 13 });
-  fireEvent.keyPress(element, { charCode: 32 });
+  fireEvent.keyDown(element, { key: "Enter" });
+  fireEvent.keyDown(element, { key: " " });
   expect(fn).toHaveBeenCalledTimes(0);
 });
