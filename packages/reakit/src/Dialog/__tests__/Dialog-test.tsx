@@ -3,12 +3,12 @@ import { render } from "react-testing-library";
 import { Dialog } from "../Dialog";
 
 const props = {
-  refId: "test",
-  label: "test"
+  refId: "dialog",
+  label: "dialog"
 };
 
 test("render", () => {
-  const { baseElement } = render(<Dialog {...props}>test</Dialog>);
+  const { baseElement } = render(<Dialog {...props}>dialog</Dialog>);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div />
@@ -17,14 +17,14 @@ test("render", () => {
   >
     <div
       aria-hidden="true"
-      aria-label="test"
+      aria-label="dialog"
       aria-modal="true"
       hidden=""
-      id="test"
+      id="dialog"
       role="dialog"
       tabindex="-1"
     >
-      test
+      dialog
     </div>
   </div>
 </body>
@@ -34,7 +34,7 @@ test("render", () => {
 test("render visible", () => {
   const { baseElement } = render(
     <Dialog {...props} visible>
-      test
+      dialog
     </Dialog>
   );
   expect(baseElement).toMatchInlineSnapshot(`
@@ -50,13 +50,13 @@ test("render visible", () => {
   >
     <div
       aria-hidden="false"
-      aria-label="test"
+      aria-label="dialog"
       aria-modal="true"
-      id="test"
+      id="dialog"
       role="dialog"
       tabindex="-1"
     >
-      test
+      dialog
     </div>
   </div>
   <div
@@ -82,10 +82,10 @@ test("render non-modal", () => {
   >
     <div
       aria-hidden="true"
-      aria-label="test"
+      aria-label="dialog"
       aria-modal="false"
       hidden=""
-      id="test"
+      id="dialog"
       role="dialog"
       tabindex="-1"
     >

@@ -9,12 +9,12 @@ export function isDisabled(element: HTMLElement) {
   return Boolean((element as HTMLInputElement).disabled);
 }
 
-export function hasTabIndex(element: HTMLElement) {
-  return typeof element.tabIndex !== "undefined";
+export function hasTabIndex(element: Element) {
+  return element.hasAttribute("tabindex");
 }
 
 export function hasNegativeTabIndex(element: HTMLElement) {
-  return element.tabIndex < 0;
+  return hasTabIndex(element) && element.tabIndex < 0;
 }
 
 export function isHidden(element: HTMLElement) {

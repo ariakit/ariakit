@@ -11,14 +11,14 @@ test("clicking on disclosure opens the modal", () => {
     const dialog = useDialogState();
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" {...dialog} />
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" {...dialog} />
       </>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const dialog = getByLabelText("Dialog");
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
   expect(dialog).toHaveAttribute("hidden");
   fireEvent.click(disclosure);
   expect(dialog).not.toHaveAttribute("hidden");
@@ -29,17 +29,17 @@ test("focus the first tabbable element when dialog opens", () => {
     const dialog = useDialogState();
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" {...dialog}>
-          <button>Button 1</button>
-          <button>Button 2</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" {...dialog}>
+          <button>button1</button>
+          <button>button2</button>
         </Dialog>
       </>
     );
   };
   const { getByText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const button1 = getByText("Button 1");
+  const disclosure = getByText("disclosure");
+  const button1 = getByText("button1");
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure);
   expect(button1).toHaveFocus();
@@ -50,17 +50,17 @@ test("focus the first tabbable element when non-modal dialog opens", () => {
     const dialog = useDialogState();
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" modal={false} {...dialog}>
-          <button>Button 1</button>
-          <button>Button 2</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" modal={false} {...dialog}>
+          <button>button1</button>
+          <button>button2</button>
         </Dialog>
       </>
     );
   };
   const { getByText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const button1 = getByText("Button 1");
+  const disclosure = getByText("disclosure");
+  const button1 = getByText("button1");
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure);
   expect(button1).toHaveFocus();
@@ -72,17 +72,17 @@ test("focus a given element when dialog opens and focusOnShow is passed in", () 
     const ref = React.useRef<HTMLButtonElement>(null);
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" unstable_focusOnShow={ref} {...dialog}>
-          <button>Button 1</button>
-          <button ref={ref}>Button 2</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" unstable_focusOnShow={ref} {...dialog}>
+          <button>button1</button>
+          <button ref={ref}>button2</button>
         </Dialog>
       </>
     );
   };
   const { getByText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const button1 = getByText("Button 2");
+  const disclosure = getByText("disclosure");
+  const button1 = getByText("button2");
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure);
   expect(button1).toHaveFocus();
@@ -93,16 +93,14 @@ test("focus dialog itself if there is no tabbable descendant element", () => {
     const dialog = useDialogState();
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" {...dialog}>
-          Dialog
-        </Dialog>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" {...dialog} />
       </>
     );
   };
-  const { getByText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const dialog = getByText("Dialog");
+  const { getByText, getByLabelText } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure);
   expect(dialog).toHaveFocus();
@@ -113,19 +111,19 @@ test("focus is trapped within the dialog", () => {
     const dialog = useDialogState({ visible: true });
     return (
       <>
-        <button>Button 1</button>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" {...dialog}>
-          <button>Button 2</button>
-          <button>Button 3</button>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" {...dialog}>
+          <button>button2</button>
+          <button>button3</button>
         </Dialog>
-        <button>Button 4</button>
+        <button>button4</button>
       </>
     );
   };
   const { getByText, baseElement } = render(<Test />);
-  const button2 = getByText("Button 2");
-  const button3 = getByText("Button 3");
+  const button2 = getByText("button2");
+  const button3 = getByText("button3");
   expect(button2).toHaveFocus();
 
   act(() => focusNextTabbableIn(baseElement));
@@ -137,32 +135,56 @@ test("focus is trapped within the dialog", () => {
   expect(button3).toHaveFocus();
 });
 
+test("focus is trapped within an empty dialog", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button>button1</button>
+        <Dialog label="dialog" {...dialog} />
+        <button>button2</button>
+      </>
+    );
+  };
+  const { getByLabelText, baseElement } = render(<Test />);
+  const dialog = getByLabelText("dialog");
+  expect(dialog).toHaveFocus();
+
+  act(() => focusNextTabbableIn(baseElement));
+  expect(dialog).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(dialog).toHaveFocus();
+
+  act(() => focusPreviousTabbableIn(baseElement));
+  expect(dialog).toHaveFocus();
+});
+
 test("focus is not trapped within the non-modal dialog", async () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
     return (
       <>
-        <button>Button 1</button>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog
-          label="Dialog"
+          label="dialog"
           modal={false}
           hideOnClickOutside={false}
           {...dialog}
         >
-          <button>Button 2</button>
-          <button>Button 3</button>
+          <button>button2</button>
+          <button>button3</button>
         </Dialog>
-        <button>Button 4</button>
+        <button>button4</button>
       </>
     );
   };
   const { getByText, baseElement } = render(<Test />);
-  const button1 = getByText("Button 1");
-  const disclosure = getByText("Disclosure");
-  const button2 = getByText("Button 2");
-  const button3 = getByText("Button 3");
-  const button4 = getByText("Button 4");
+  const button1 = getByText("button1");
+  const disclosure = getByText("disclosure");
+  const button2 = getByText("button2");
+  const button3 = getByText("button3");
+  const button4 = getByText("button4");
   expect(button2).toHaveFocus();
 
   act(() => focusNextTabbableIn(baseElement));
@@ -183,10 +205,10 @@ test("focus is not trapped within the non-modal dialog", async () => {
 test("esc closes the dialog", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
-    return <Dialog label="Dialog" {...dialog} />;
+    return <Dialog label="dialog" {...dialog} />;
   };
   const { getByLabelText } = render(<Test />);
-  const dialog = getByLabelText("Dialog");
+  const dialog = getByLabelText("dialog");
   expect(dialog).not.toHaveAttribute("hidden");
   fireEvent.keyDown(dialog, { key: "Escape" });
   expect(dialog).toHaveAttribute("hidden");
@@ -195,22 +217,22 @@ test("esc closes the dialog", () => {
 test("esc does not close the dialog when hideOnEsc is falsy", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
-    return <Dialog label="Dialog" hideOnEsc={false} {...dialog} />;
+    return <Dialog label="dialog" hideOnEsc={false} {...dialog} />;
   };
   const { getByLabelText } = render(<Test />);
-  const dialog = getByLabelText("Dialog");
+  const dialog = getByLabelText("dialog");
   expect(dialog).not.toHaveAttribute("hidden");
   fireEvent.keyDown(dialog, { key: "Escape" });
   expect(dialog).not.toHaveAttribute("hidden");
 });
 
-test("clicling outside closes the dialog", () => {
+test("clicking outside closes the dialog", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
-    return <Dialog label="Dialog" {...dialog} />;
+    return <Dialog label="dialog" {...dialog} />;
   };
   const { getByLabelText, baseElement } = render(<Test />);
-  const dialog = getByLabelText("Dialog");
+  const dialog = getByLabelText("dialog");
   expect(dialog).not.toHaveAttribute("hidden");
   fireEvent.click(baseElement);
   expect(dialog).toHaveAttribute("hidden");
@@ -221,14 +243,14 @@ test("clicking on disclosure closes the dialog", () => {
     const dialog = useDialogState({ visible: true });
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" {...dialog} />
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" {...dialog} />
       </>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const dialog = getByLabelText("Dialog");
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
   expect(dialog).not.toHaveAttribute("hidden");
   fireEvent.click(disclosure);
   expect(dialog).toHaveAttribute("hidden");
@@ -237,10 +259,10 @@ test("clicking on disclosure closes the dialog", () => {
 test("clicking outside does not close the dialog when hideOnClickOutside is falsy", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
-    return <Dialog label="Dialog" hideOnClickOutside={false} {...dialog} />;
+    return <Dialog label="dialog" hideOnClickOutside={false} {...dialog} />;
   };
   const { getByLabelText, baseElement } = render(<Test />);
-  const dialog = getByLabelText("Dialog");
+  const dialog = getByLabelText("dialog");
   expect(dialog).not.toHaveAttribute("hidden");
   fireEvent.click(baseElement);
   expect(dialog).not.toHaveAttribute("hidden");
@@ -250,47 +272,161 @@ test.skip("clicking outside puts focus on the dialog when hideOnClickOutside is 
   const Test = () => {
     const dialog = useDialogState({ visible: true });
     return (
-      <Dialog label="Dialog" hideOnClickOutside={false} {...dialog}>
-        <button>Button</button>
+      <Dialog label="dialog" hideOnClickOutside={false} {...dialog}>
+        <button>button</button>
       </Dialog>
     );
   };
   const { getByLabelText, getByText } = render(<Test />);
-  const dialog = getByLabelText("Dialog");
-  const button = getByText("Button");
+  const dialog = getByLabelText("dialog");
+  const button = getByText("button");
   expect(button).toHaveFocus();
   act(() => button.blur());
   expect(dialog).toHaveFocus();
 });
 
-test.todo("focusing outside closes the non-modal dialog");
+test("focusing outside closes the non-modal dialog", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button>button</button>
+        <Dialog label="dialog" modal={false} {...dialog} />
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const button = getByText("button");
+  const dialog = getByLabelText("dialog");
+  expect(dialog).not.toHaveAttribute("hidden");
+  act(() => button.focus());
+  expect(button).toHaveFocus();
+  expect(dialog).toHaveAttribute("hidden");
+});
+
+test("focusing outside does not close the non-modal dialog when hideOnClickOutside is falsy", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button>button</button>
+        <Dialog
+          label="dialog"
+          modal={false}
+          hideOnClickOutside={false}
+          {...dialog}
+        />
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const button = getByText("button");
+  const dialog = getByLabelText("dialog");
+  expect(dialog).not.toHaveAttribute("hidden");
+  act(() => button.focus());
+  expect(button).toHaveFocus();
+  expect(dialog).not.toHaveAttribute("hidden");
+});
 
 test("focusing disclosure does not close the non-modal dialog", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure</DialogDisclosure>
-        <Dialog label="Dialog" modal={false} {...dialog} />
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" modal={false} {...dialog} />
       </>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const dialog = getByLabelText("Dialog");
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
   expect(dialog).not.toHaveAttribute("hidden");
   act(() => disclosure.focus());
   expect(disclosure).toHaveFocus();
   expect(dialog).not.toHaveAttribute("hidden");
 });
 
-test.todo(
-  "focusing outside does not close the non-modal dialog when hideOnClickOutside is falsy"
-);
+test("focus disclosure when dialog closes", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" {...dialog} />
+      </>
+    );
+  };
+  const { getByText, getByLabelText, baseElement } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
+  fireEvent.click(baseElement);
+  expect(dialog).toHaveAttribute("hidden");
+  expect(disclosure).toHaveFocus();
+});
 
-test.todo("focus disclosure when dialog closes");
+test("focus disclosure when non-modal dialog closes", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" modal={false} {...dialog} />
+      </>
+    );
+  };
+  const { getByText, getByLabelText, baseElement } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
+  fireEvent.click(baseElement);
+  expect(dialog).toHaveAttribute("hidden");
+  expect(disclosure).toHaveFocus();
+});
 
-test.todo("focus a given element when dialog closes");
+test("focus a given element when dialog closes", () => {
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button ref={ref}>button</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" unstable_focusOnHide={ref} {...dialog} />
+      </>
+    );
+  };
+  const { getByText, getByLabelText, baseElement } = render(<Test />);
+  const button = getByText("button");
+  const dialog = getByLabelText("dialog");
+  fireEvent.click(baseElement);
+  expect(dialog).toHaveAttribute("hidden");
+  expect(button).toHaveFocus();
+});
+
+test("focus a given element when non-modal dialog closes", () => {
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button ref={ref}>button</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog
+          label="dialog"
+          modal={false}
+          unstable_focusOnHide={ref}
+          {...dialog}
+        />
+      </>
+    );
+  };
+  const { getByText, getByLabelText, baseElement } = render(<Test />);
+  const button = getByText("button");
+  const dialog = getByLabelText("dialog");
+  fireEvent.click(baseElement);
+  expect(dialog).toHaveAttribute("hidden");
+  expect(button).toHaveFocus();
+});
 
 test("focus the first tabbable element when nested dialog opens", () => {
   const Test = () => {
@@ -298,23 +434,23 @@ test("focus the first tabbable element when nested dialog opens", () => {
     const dialog2 = useDialogState();
     return (
       <>
-        <DialogDisclosure {...dialog}>Disclosure 1</DialogDisclosure>
-        <Dialog label="Dialog 1" {...dialog}>
-          <button>Button 1</button>
-          <DialogDisclosure {...dialog2}>Disclosure 2</DialogDisclosure>
-          <Dialog label="Dialog 2" {...dialog2}>
-            <button>Button 2</button>
-            <button>Button 3</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog1" {...dialog}>
+          <button>button1</button>
+          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
+          <Dialog label="dialog2" {...dialog2}>
+            <button>button2</button>
+            <button>button3</button>
           </Dialog>
         </Dialog>
       </>
     );
   };
   const { getByText } = render(<Test />);
-  const disclosure1 = getByText("Disclosure 1");
-  const disclosure2 = getByText("Disclosure 2");
-  const button1 = getByText("Button 1");
-  const button2 = getByText("Button 2");
+  const disclosure1 = getByText("disclosure");
+  const disclosure2 = getByText("disclosure2");
+  const button1 = getByText("button1");
+  const button2 = getByText("button2");
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure1);
   expect(button1).toHaveFocus();
@@ -328,23 +464,23 @@ test("focus is trapped within the nested dialog", () => {
     const dialog2 = useDialogState({ visible: true });
     return (
       <>
-        <button>Button 1</button>
-        <DialogDisclosure {...dialog}>Disclosure 1</DialogDisclosure>
-        <Dialog label="Dialog 1" {...dialog}>
-          <button>Button 2</button>
-          <DialogDisclosure {...dialog2}>Disclosure 2</DialogDisclosure>
-          <Dialog label="Dialog 2" {...dialog2}>
-            <button>Button 3</button>
-            <button>Button 4</button>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog1" {...dialog}>
+          <button>button2</button>
+          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
+          <Dialog label="dialog2" {...dialog2}>
+            <button>button3</button>
+            <button>button4</button>
           </Dialog>
         </Dialog>
-        <button>Button 5</button>
+        <button>button5</button>
       </>
     );
   };
   const { getByText, baseElement } = render(<Test />);
-  const button3 = getByText("Button 3");
-  const button4 = getByText("Button 4");
+  const button3 = getByText("button3");
+  const button4 = getByText("button4");
   expect(button3).toHaveFocus();
 
   act(() => focusNextTabbableIn(baseElement));
@@ -362,32 +498,32 @@ test("focus is not trapped within the nested non-modal dialog", async () => {
     const dialog2 = useDialogState({ visible: true });
     return (
       <>
-        <button>Button 1</button>
-        <DialogDisclosure {...dialog}>Disclosure 1</DialogDisclosure>
-        <Dialog label="Dialog 1" {...dialog}>
-          <button>Button 2</button>
-          <DialogDisclosure {...dialog2}>Disclosure 2</DialogDisclosure>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog1" {...dialog}>
+          <button>button2</button>
+          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog
-            label="Dialog 2"
+            label="dialog2"
             modal={false}
             hideOnClickOutside={false}
             {...dialog2}
           >
-            <button>Button 3</button>
-            <button>Button 4</button>
+            <button>button3</button>
+            <button>button4</button>
           </Dialog>
-          <button>Button 5</button>
+          <button>button5</button>
         </Dialog>
-        <button>Button 6</button>
+        <button>button6</button>
       </>
     );
   };
   const { getByText, baseElement } = render(<Test />);
-  const button2 = getByText("Button 2");
-  const disclosure2 = getByText("Disclosure 2");
-  const button3 = getByText("Button 3");
-  const button4 = getByText("Button 4");
-  const button5 = getByText("Button 5");
+  const button2 = getByText("button2");
+  const disclosure2 = getByText("disclosure2");
+  const button3 = getByText("button3");
+  const button4 = getByText("button4");
+  const button5 = getByText("button5");
   expect(button3).toHaveFocus();
 
   act(() => focusNextTabbableIn(baseElement));
@@ -411,40 +547,40 @@ test("focus is not trapped within two nested non-modal dialog", async () => {
     const dialog2 = useDialogState({ visible: true });
     return (
       <>
-        <button>Button 1</button>
-        <DialogDisclosure {...dialog}>Disclosure 1</DialogDisclosure>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog
-          label="Dialog 1"
+          label="dialog1"
           modal={false}
           hideOnClickOutside={false}
           {...dialog}
         >
-          <button>Button 2</button>
-          <DialogDisclosure {...dialog2}>Disclosure 2</DialogDisclosure>
+          <button>button2</button>
+          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog
-            label="Dialog 2"
+            label="dialog2"
             modal={false}
             hideOnClickOutside={false}
             {...dialog2}
           >
-            <button>Button 3</button>
-            <button>Button 4</button>
+            <button>button3</button>
+            <button>button4</button>
           </Dialog>
-          <button>Button 5</button>
+          <button>button5</button>
         </Dialog>
-        <button>Button 6</button>
+        <button>button6</button>
       </>
     );
   };
   const { getByText, baseElement } = render(<Test />);
-  const button1 = getByText("Button 1");
-  const disclosure1 = getByText("Disclosure 1");
-  const button2 = getByText("Button 2");
-  const disclosure2 = getByText("Disclosure 2");
-  const button3 = getByText("Button 3");
-  const button4 = getByText("Button 4");
-  const button5 = getByText("Button 5");
-  const button6 = getByText("Button 6");
+  const button1 = getByText("button1");
+  const disclosure1 = getByText("disclosure");
+  const button2 = getByText("button2");
+  const disclosure2 = getByText("disclosure2");
+  const button3 = getByText("button3");
+  const button4 = getByText("button4");
+  const button5 = getByText("button5");
+  const button6 = getByText("button6");
   expect(button3).toHaveFocus();
 
   act(() => focusNextTabbableIn(baseElement));
@@ -477,14 +613,14 @@ test("clicking on the nested dialog does not close the parent dialog", () => {
     const dialog = useDialogState({ visible: true });
     const dialog2 = useDialogState({ visible: true });
     return (
-      <Dialog label="Dialog 1" {...dialog}>
-        <Dialog label="Dialog 2" {...dialog2} />
+      <Dialog label="dialog1" {...dialog}>
+        <Dialog label="dialog2" {...dialog2} />
       </Dialog>
     );
   };
   const { getByLabelText } = render(<Test />);
-  const dialog1 = getByLabelText("Dialog 1");
-  const dialog2 = getByLabelText("Dialog 2");
+  const dialog1 = getByLabelText("dialog1");
+  const dialog2 = getByLabelText("dialog2");
   expect(dialog2).toHaveFocus();
   expect(dialog1).not.toHaveAttribute("hidden");
   expect(dialog2).not.toHaveAttribute("hidden");
@@ -498,14 +634,14 @@ test("clicking on the parent dialog closes the nested dialog", () => {
     const dialog = useDialogState({ visible: true });
     const dialog2 = useDialogState({ visible: true });
     return (
-      <Dialog label="Dialog 1" {...dialog}>
-        <Dialog label="Dialog 2" {...dialog2} />
+      <Dialog label="dialog1" {...dialog}>
+        <Dialog label="dialog2" {...dialog2} />
       </Dialog>
     );
   };
   const { getByLabelText } = render(<Test />);
-  const dialog1 = getByLabelText("Dialog 1");
-  const dialog2 = getByLabelText("Dialog 2");
+  const dialog1 = getByLabelText("dialog1");
+  const dialog2 = getByLabelText("dialog2");
   expect(dialog2).toHaveFocus();
   expect(dialog1).not.toHaveAttribute("hidden");
   expect(dialog2).not.toHaveAttribute("hidden");
@@ -519,14 +655,14 @@ test("esc closes nested dialog, but not parent dialog", () => {
     const dialog = useDialogState({ visible: true });
     const dialog2 = useDialogState({ visible: true });
     return (
-      <Dialog label="Dialog 1" {...dialog}>
-        <Dialog label="Dialog 2" {...dialog2} />
+      <Dialog label="dialog1" {...dialog}>
+        <Dialog label="dialog2" {...dialog2} />
       </Dialog>
     );
   };
   const { getByLabelText } = render(<Test />);
-  const dialog1 = getByLabelText("Dialog 1");
-  const dialog2 = getByLabelText("Dialog 2");
+  const dialog1 = getByLabelText("dialog1");
+  const dialog2 = getByLabelText("dialog2");
   expect(dialog1).not.toHaveAttribute("hidden");
   expect(dialog2).not.toHaveAttribute("hidden");
   fireEvent.keyDown(dialog2, { key: "Escape" });
@@ -539,14 +675,14 @@ test("esc on parent dialog closes nested dialogs", () => {
     const dialog = useDialogState({ visible: true });
     const dialog2 = useDialogState({ visible: true });
     return (
-      <Dialog label="Dialog 1" {...dialog}>
-        <Dialog label="Dialog 2" {...dialog2} />
+      <Dialog label="dialog1" {...dialog}>
+        <Dialog label="dialog2" {...dialog2} />
       </Dialog>
     );
   };
   const { getByLabelText } = render(<Test />);
-  const dialog1 = getByLabelText("Dialog 1");
-  const dialog2 = getByLabelText("Dialog 2");
+  const dialog1 = getByLabelText("dialog1");
+  const dialog2 = getByLabelText("dialog2");
   expect(dialog1).not.toHaveAttribute("hidden");
   expect(dialog2).not.toHaveAttribute("hidden");
   fireEvent.keyDown(dialog1, { key: "Escape" });

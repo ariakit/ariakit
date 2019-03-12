@@ -29,7 +29,8 @@ export function useDialogBackdrop(
         right: 0,
         bottom: 0,
         left: 0
-      }
+      },
+      id: undefined
     } as typeof htmlProps,
     htmlProps
   );
