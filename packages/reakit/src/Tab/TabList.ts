@@ -5,17 +5,21 @@ import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useTabState, unstable_TabStateReturn } from "./TabState";
 
 export type unstable_TabListOptions = unstable_BoxOptions &
-  Partial<unstable_TabStateReturn>;
+  Partial<unstable_TabStateReturn> & {
+    /** TODO: Description */
+    label: string;
+  };
 
 export type unstable_TabListProps = unstable_BoxProps;
 
 export function useTabList(
-  options: unstable_TabListOptions = {},
+  options: unstable_TabListOptions,
   htmlProps: unstable_TabListProps = {}
 ) {
   htmlProps = mergeProps(
     {
       role: "tablist",
+      "aria-label": options.label,
       "aria-orientation": options.orientation
     } as typeof htmlProps,
     htmlProps

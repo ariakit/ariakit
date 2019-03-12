@@ -5,7 +5,10 @@ import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
 export type unstable_ToolbarOptions = unstable_BoxOptions &
-  Partial<unstable_ToolbarStateReturn>;
+  Partial<unstable_ToolbarStateReturn> & {
+    /** TODO: Description */
+    label: string;
+  };
 
 export type unstable_ToolbarProps = unstable_BoxProps;
 
@@ -16,6 +19,7 @@ export function useToolbar(
   htmlProps = mergeProps(
     {
       role: "toolbar",
+      "aria-label": options.label,
       "aria-orientation": options.orientation
     } as typeof htmlProps,
     htmlProps

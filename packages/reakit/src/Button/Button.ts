@@ -6,7 +6,11 @@ import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 
 export type unstable_ButtonOptions = unstable_BoxOptions & {
   /** TODO: Description */
+  tabIndex?: number;
+  /** TODO: Description */
   disabled?: boolean;
+  /** TODO: Description */
+  onClick?: React.MouseEventHandler;
 };
 
 export type unstable_ButtonProps = unstable_BoxProps &
@@ -24,10 +28,10 @@ function isNativeButton(element: EventTarget) {
 }
 
 export function useButton(
-  options: unstable_ButtonOptions = {},
+  { tabIndex = 0, ...options }: unstable_ButtonOptions = {},
   htmlProps: unstable_ButtonProps = {}
 ) {
-  const { onClick, tabIndex = 0, ...otherHTMLProps } = htmlProps;
+  const allOptions = { tabIndex, ...options };
 
   htmlProps = mergeProps(
     {
@@ -39,11 +43,14 @@ export function useButton(
         if (options.disabled) {
           e.stopPropagation();
           e.preventDefault();
-        } else if (onClick) {
-          onClick(e);
+        } else if (options.onClick) {
+          options.onClick(e);
         }
       },
       onKeyPress: e => {
+        // No need to check options.disabled
+        // KeyPress isn't invoked without focus
+        // Focus isn't invoked without tabIndex
         if (isNativeButton(e.target)) return;
 
         if (e.key === "Enter" || e.key === " ") {
@@ -58,15 +65,20 @@ export function useButton(
         }
       }
     } as typeof htmlProps,
-    otherHTMLProps
+    htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
-  htmlProps = unstable_useHook("useButton", options, htmlProps);
+  htmlProps = useBox(allOptions, htmlProps);
+  htmlProps = unstable_useHook("useButton", allOptions, htmlProps);
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_ButtonOptions> = [...useBox.keys, "disabled"];
+const keys: Array<keyof unstable_ButtonOptions> = [
+  ...useBox.keys,
+  "tabIndex",
+  "disabled",
+  "onClick"
+];
 
 useButton.keys = keys;
 
