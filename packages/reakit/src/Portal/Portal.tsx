@@ -17,7 +17,7 @@ export function Portal({ children }: unstable_PortalProps) {
   const [container] = React.useState(() => {
     if (typeof document !== "undefined") {
       const portal = document.createElement("div");
-      portal.className = "portal";
+      portal.className = Portal.__className;
       return portal;
     }
     // ssr
@@ -44,3 +44,6 @@ export function Portal({ children }: unstable_PortalProps) {
   // ssr
   return null;
 }
+
+Portal.__className = "__reakit-portal";
+Portal.__selector = `.${Portal.__className}`;

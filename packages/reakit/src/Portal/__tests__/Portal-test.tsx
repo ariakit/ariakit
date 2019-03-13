@@ -8,7 +8,7 @@ test("render", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     test
   </div>
@@ -27,11 +27,11 @@ test("render nested", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     test
     <div
-      class="portal"
+      class="__reakit-portal"
     >
       test2
     </div>
@@ -54,17 +54,17 @@ test("render nested and sibling", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     test
     <div
-      class="portal"
+      class="__reakit-portal"
     >
       test2
     </div>
   </div>
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     test3
   </div>

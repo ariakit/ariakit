@@ -13,7 +13,7 @@ test("render", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     <div
       aria-hidden="true"
@@ -46,7 +46,7 @@ test("render visible", () => {
     tabindex="0"
   />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     <div
       aria-hidden="false"
@@ -78,7 +78,7 @@ test("render non-modal", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     <div
       aria-hidden="true"

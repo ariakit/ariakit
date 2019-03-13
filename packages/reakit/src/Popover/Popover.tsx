@@ -18,9 +18,10 @@ export type unstable_PopoverOptions = unstable_DialogOptions &
 export type unstable_PopoverProps = unstable_DialogProps;
 
 export function usePopover(
-  options: unstable_PopoverOptions,
+  { preventBodyScroll = false, ...options }: unstable_PopoverOptions,
   htmlProps: unstable_PopoverProps = {}
 ) {
+  const allOptions = { preventBodyScroll, ...options };
   htmlProps = mergeProps(
     {
       ref: options.popoverRef,
@@ -28,8 +29,8 @@ export function usePopover(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useDialog(options, htmlProps);
-  htmlProps = unstable_useHook("usePopover", options, htmlProps);
+  htmlProps = useDialog(allOptions, htmlProps);
+  htmlProps = unstable_useHook("usePopover", allOptions, htmlProps);
   return htmlProps;
 }
 

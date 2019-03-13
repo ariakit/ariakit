@@ -8,7 +8,7 @@ test("render", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     <div
       aria-hidden="true"
@@ -27,7 +27,7 @@ test("render visible", () => {
 <body>
   <div />
   <div
-    class="portal"
+    class="__reakit-portal"
   >
     <div
       aria-hidden="false"

@@ -36,7 +36,6 @@ function Example() {
     maxHeight: 100,
     overflow: "auto",
     border: "2px solid red",
-    zIndex: 99999,
     "-webkit-overflow-scrolling": "touch"
   };
   const backdropStyle = {
@@ -45,14 +44,13 @@ function Example() {
     right: 0,
     bottom: 0,
     left: 0,
-    zIndex: 99999,
     background: "rgba(0, 0, 0, 0.5)"
   };
   return (
     <>
       <Button ref={focusOutRef}>Focus out</Button>
       <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
-      <DialogBackdrop {...dialog} style={backdropStyle} />
+      {/* <DialogBackdrop {...dialog} style={backdropStyle} /> */}
       <Dialog
         hideOnClickOutside={false}
         style={style}

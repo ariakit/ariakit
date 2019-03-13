@@ -73,7 +73,7 @@ test("focus a given element when dialog opens and focusOnShow is passed in", () 
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog label="dialog" unstable_focusOnShow={ref} {...dialog}>
+        <Dialog label="dialog" focusOnShow={ref} {...dialog}>
           <button>button1</button>
           <button ref={ref}>button2</button>
         </Dialog>
@@ -114,6 +114,35 @@ test("focus is trapped within the dialog", () => {
         <button>button1</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog label="dialog" {...dialog}>
+          <button>button2</button>
+          <button>button3</button>
+        </Dialog>
+        <button>button4</button>
+      </>
+    );
+  };
+  const { getByText, baseElement } = render(<Test />);
+  const button2 = getByText("button2");
+  const button3 = getByText("button3");
+  expect(button2).toHaveFocus();
+
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button3).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button2).toHaveFocus();
+
+  act(() => focusPreviousTabbableIn(baseElement));
+  expect(button3).toHaveFocus();
+});
+
+test("focus is trapped within the dialog when hideOnClickOutside is falsy", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" hideOnClickOutside={false} {...dialog}>
           <button>button2</button>
           <button>button3</button>
         </Dialog>
@@ -268,7 +297,7 @@ test("clicking outside does not close the dialog when hideOnClickOutside is fals
   expect(dialog).not.toHaveAttribute("hidden");
 });
 
-test.skip("clicking outside puts focus on the dialog when hideOnClickOutside is falsy", () => {
+test("clicking outside puts focus on the dialog when hideOnClickOutside is falsy", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
     return (
@@ -277,11 +306,12 @@ test.skip("clicking outside puts focus on the dialog when hideOnClickOutside is 
       </Dialog>
     );
   };
-  const { getByLabelText, getByText } = render(<Test />);
+  const { getByLabelText, getByText, baseElement } = render(<Test />);
   const dialog = getByLabelText("dialog");
   const button = getByText("button");
   expect(button).toHaveFocus();
   act(() => button.blur());
+  fireEvent.click(baseElement);
   expect(dialog).toHaveFocus();
 });
 
@@ -391,7 +421,7 @@ test("focus a given element when dialog closes", () => {
       <>
         <button ref={ref}>button</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog label="dialog" unstable_focusOnHide={ref} {...dialog} />
+        <Dialog label="dialog" focusOnHide={ref} {...dialog} />
       </>
     );
   };
@@ -403,6 +433,8 @@ test("focus a given element when dialog closes", () => {
   expect(button).toHaveFocus();
 });
 
+test.todo("focusing any tabbable element outside the dialog keeps focus on it");
+
 test("focus a given element when non-modal dialog closes", () => {
   const Test = () => {
     const ref = React.useRef<HTMLButtonElement>(null);
@@ -411,12 +443,7 @@ test("focus a given element when non-modal dialog closes", () => {
       <>
         <button ref={ref}>button</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog
-          label="dialog"
-          modal={false}
-          unstable_focusOnHide={ref}
-          {...dialog}
-        />
+        <Dialog label="dialog" modal={false} focusOnHide={ref} {...dialog} />
       </>
     );
   };
