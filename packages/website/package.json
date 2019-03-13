@@ -18,19 +18,19 @@
     "serve": "gatsby serve"
   },
   "dependencies": {
-    "@types/lodash": "4.14.122",
-    "gatsby": "2.1.30",
-    "gatsby-image": "2.0.32",
-    "gatsby-plugin-manifest": "2.0.23",
+    "@types/lodash": "4.14.123",
+    "gatsby": "2.1.32",
+    "gatsby-image": "2.0.33",
+    "gatsby-plugin-manifest": "2.0.24",
     "gatsby-plugin-react-helmet": "3.0.9",
-    "gatsby-plugin-sharp": "2.0.27",
+    "gatsby-plugin-sharp": "2.0.28",
     "gatsby-plugin-typescript": "2.0.11",
     "gatsby-remark-autolink-headers": "2.0.16",
     "gatsby-remark-external-links": "0.0.4",
     "gatsby-remark-smartypants": "2.0.9",
-    "gatsby-source-filesystem": "2.0.24",
-    "gatsby-transformer-remark": "2.3.2",
-    "gatsby-transformer-sharp": "2.1.16",
+    "gatsby-source-filesystem": "2.0.25",
+    "gatsby-transformer-remark": "2.3.3",
+    "gatsby-transformer-sharp": "2.1.17",
     "lodash": "4.17.11",
     "mdast-util-to-string": "1.0.5",
     "prop-types": "15.7.2",
@@ -48,9 +48,9 @@
     "unist-util-visit": "1.4.0"
   },
   "devDependencies": {
-    "babel-jest": "24.4.0",
+    "babel-jest": "24.5.0",
     "babel-preset-gatsby": "0.1.9",
-    "jest": "24.4.0",
+    "jest": "24.5.0",
     "react-test-renderer": "16.8.4"
   }
 }
