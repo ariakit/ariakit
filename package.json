@@ -79,7 +79,7 @@
     "raf": "3.4.1",
     "react": "16.8.4",
     "react-dom": "16.8.4",
-    "react-hooks-testing-library": "0.3.6",
+    "react-hooks-testing-library": "0.3.7",
     "react-test-renderer": "16.8.4",
     "react-testing-library": "6.0.0",
     "rimraf": "2.6.3",
