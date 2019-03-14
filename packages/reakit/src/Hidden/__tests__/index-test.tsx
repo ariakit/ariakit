@@ -21,18 +21,16 @@ test("show", () => {
   const { getByText } = render(<Test />);
   const disclosure = getByText("Disclosure");
   const hidden = getByText("Hidden");
-  // TODO: Replace by .toBeVisible
-  // https://github.com/gnapse/jest-dom/issues/84
-  expect(hidden).toHaveAttribute("hidden");
+  expect(hidden).not.toBeVisible();
   fireEvent.click(disclosure);
-  expect(hidden).not.toHaveAttribute("hidden");
+  expect(hidden).toBeVisible();
 });
 
 test("hide", () => {
   const { getByText } = render(<Test visible />);
   const disclosure = getByText("Disclosure");
   const hidden = getByText("Hidden");
-  expect(hidden).not.toHaveAttribute("hidden");
+  expect(hidden).toBeVisible();
   fireEvent.click(disclosure);
-  expect(hidden).toHaveAttribute("hidden");
+  expect(hidden).not.toBeVisible();
 });
