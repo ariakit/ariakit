@@ -6,7 +6,7 @@ import {
 } from "../__utils/tabbable";
 import { Dialog, DialogDisclosure, useDialogState } from "..";
 
-test("clicking on disclosure opens the modal", () => {
+test("clicking on disclosure opens the dialog", () => {
   const Test = () => {
     const dialog = useDialogState();
     return (

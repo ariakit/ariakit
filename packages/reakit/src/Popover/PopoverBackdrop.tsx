@@ -34,7 +34,6 @@ usePopoverBackdrop.keys = keys;
 export const PopoverBackdrop = unstable_createComponent(
   "div",
   usePopoverBackdrop,
-  // @ts-ignore: TODO typeof createElement
   (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;

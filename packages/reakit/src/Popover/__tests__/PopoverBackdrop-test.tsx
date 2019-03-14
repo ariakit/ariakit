@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { DialogBackdrop } from "../DialogBackdrop";
+import { PopoverBackdrop } from "../PopoverBackdrop";
 
 test("render", () => {
-  const { baseElement } = render(<DialogBackdrop />);
+  const { baseElement } = render(<PopoverBackdrop />);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div />
@@ -21,7 +21,7 @@ test("render", () => {
 });
 
 test("render visible", () => {
-  const { baseElement } = render(<DialogBackdrop visible />);
+  const { baseElement } = render(<PopoverBackdrop visible />);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div />
