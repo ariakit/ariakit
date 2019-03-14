@@ -19,9 +19,9 @@ test("clicking on disclosure opens the modal", () => {
   const { getByText, getByLabelText } = render(<Test />);
   const disclosure = getByText("disclosure");
   const dialog = getByLabelText("dialog");
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
   fireEvent.click(disclosure);
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
 });
 
 test("focus the first tabbable element when dialog opens", () => {
@@ -82,10 +82,10 @@ test("focus a given element when dialog opens and focusOnShow is passed in", () 
   };
   const { getByText } = render(<Test />);
   const disclosure = getByText("disclosure");
-  const button1 = getByText("button2");
+  const button2 = getByText("button2");
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure);
-  expect(button1).toHaveFocus();
+  expect(button2).toHaveFocus();
 });
 
 test("focus dialog itself if there is no tabbable descendant element", () => {
@@ -238,9 +238,9 @@ test("esc closes the dialog", () => {
   };
   const { getByLabelText } = render(<Test />);
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   fireEvent.keyDown(dialog, { key: "Escape" });
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
 });
 
 test("esc does not close the dialog when hideOnEsc is falsy", () => {
@@ -250,9 +250,9 @@ test("esc does not close the dialog when hideOnEsc is falsy", () => {
   };
   const { getByLabelText } = render(<Test />);
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   fireEvent.keyDown(dialog, { key: "Escape" });
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
 });
 
 test("clicking outside closes the dialog", () => {
@@ -262,9 +262,9 @@ test("clicking outside closes the dialog", () => {
   };
   const { getByLabelText, baseElement } = render(<Test />);
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   fireEvent.click(baseElement);
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
 });
 
 test("clicking on disclosure closes the dialog", () => {
@@ -280,9 +280,9 @@ test("clicking on disclosure closes the dialog", () => {
   const { getByText, getByLabelText } = render(<Test />);
   const disclosure = getByText("disclosure");
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   fireEvent.click(disclosure);
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
 });
 
 test("clicking outside does not close the dialog when hideOnClickOutside is falsy", () => {
@@ -292,9 +292,9 @@ test("clicking outside does not close the dialog when hideOnClickOutside is fals
   };
   const { getByLabelText, baseElement } = render(<Test />);
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   fireEvent.click(baseElement);
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
 });
 
 test("clicking outside puts focus on the dialog when hideOnClickOutside is falsy", () => {
@@ -328,10 +328,10 @@ test("focusing outside closes the non-modal dialog", () => {
   const { getByText, getByLabelText } = render(<Test />);
   const button = getByText("button");
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   act(() => button.focus());
   expect(button).toHaveFocus();
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
 });
 
 test("focusing outside does not close the non-modal dialog when hideOnClickOutside is falsy", () => {
@@ -352,10 +352,10 @@ test("focusing outside does not close the non-modal dialog when hideOnClickOutsi
   const { getByText, getByLabelText } = render(<Test />);
   const button = getByText("button");
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   act(() => button.focus());
   expect(button).toHaveFocus();
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
 });
 
 test("focusing disclosure does not close the non-modal dialog", () => {
@@ -371,10 +371,10 @@ test("focusing disclosure does not close the non-modal dialog", () => {
   const { getByText, getByLabelText } = render(<Test />);
   const disclosure = getByText("disclosure");
   const dialog = getByLabelText("dialog");
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
   act(() => disclosure.focus());
   expect(disclosure).toHaveFocus();
-  expect(dialog).not.toHaveAttribute("hidden");
+  expect(dialog).toBeVisible();
 });
 
 test("focus disclosure when dialog closes", () => {
@@ -391,7 +391,7 @@ test("focus disclosure when dialog closes", () => {
   const disclosure = getByText("disclosure");
   const dialog = getByLabelText("dialog");
   fireEvent.click(baseElement);
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
   expect(disclosure).toHaveFocus();
 });
 
@@ -409,7 +409,7 @@ test("focus disclosure when non-modal dialog closes", () => {
   const disclosure = getByText("disclosure");
   const dialog = getByLabelText("dialog");
   fireEvent.click(baseElement);
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
   expect(disclosure).toHaveFocus();
 });
 
@@ -429,11 +429,28 @@ test("focus a given element when dialog closes", () => {
   const button = getByText("button");
   const dialog = getByLabelText("dialog");
   fireEvent.click(baseElement);
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
   expect(button).toHaveFocus();
 });
 
-test.todo("focusing any tabbable element outside the dialog keeps focus on it");
+test("focusing an element outside keeps focus on it after the non-modal dialog closes", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button>button</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog label="dialog" modal={false} {...dialog} />
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const button = getByText("button");
+  const dialog = getByLabelText("dialog");
+  act(() => button.focus());
+  expect(dialog).not.toBeVisible();
+  expect(button).toHaveFocus();
+});
 
 test("focus a given element when non-modal dialog closes", () => {
   const Test = () => {
@@ -451,7 +468,7 @@ test("focus a given element when non-modal dialog closes", () => {
   const button = getByText("button");
   const dialog = getByLabelText("dialog");
   fireEvent.click(baseElement);
-  expect(dialog).toHaveAttribute("hidden");
+  expect(dialog).not.toBeVisible();
   expect(button).toHaveFocus();
 });
 
@@ -649,11 +666,11 @@ test("clicking on the nested dialog does not close the parent dialog", () => {
   const dialog1 = getByLabelText("dialog1");
   const dialog2 = getByLabelText("dialog2");
   expect(dialog2).toHaveFocus();
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).not.toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).toBeVisible();
   fireEvent.click(dialog2);
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).not.toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).toBeVisible();
 });
 
 test("clicking on the parent dialog closes the nested dialog", () => {
@@ -670,11 +687,11 @@ test("clicking on the parent dialog closes the nested dialog", () => {
   const dialog1 = getByLabelText("dialog1");
   const dialog2 = getByLabelText("dialog2");
   expect(dialog2).toHaveFocus();
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).not.toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).toBeVisible();
   fireEvent.click(dialog1);
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).not.toBeVisible();
 });
 
 test("esc closes nested dialog, but not parent dialog", () => {
@@ -690,11 +707,11 @@ test("esc closes nested dialog, but not parent dialog", () => {
   const { getByLabelText } = render(<Test />);
   const dialog1 = getByLabelText("dialog1");
   const dialog2 = getByLabelText("dialog2");
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).not.toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).toBeVisible();
   fireEvent.keyDown(dialog2, { key: "Escape" });
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).not.toBeVisible();
 });
 
 test("esc on parent dialog closes nested dialogs", () => {
@@ -710,9 +727,9 @@ test("esc on parent dialog closes nested dialogs", () => {
   const { getByLabelText } = render(<Test />);
   const dialog1 = getByLabelText("dialog1");
   const dialog2 = getByLabelText("dialog2");
-  expect(dialog1).not.toHaveAttribute("hidden");
-  expect(dialog2).not.toHaveAttribute("hidden");
+  expect(dialog1).toBeVisible();
+  expect(dialog2).toBeVisible();
   fireEvent.keyDown(dialog1, { key: "Escape" });
-  expect(dialog1).toHaveAttribute("hidden");
-  expect(dialog2).toHaveAttribute("hidden");
+  expect(dialog1).not.toBeVisible();
+  expect(dialog2).not.toBeVisible();
 });
