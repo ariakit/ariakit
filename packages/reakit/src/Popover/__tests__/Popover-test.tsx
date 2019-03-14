@@ -1,14 +1,14 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { Dialog } from "../Dialog";
+import { Popover } from "../Popover";
 
 const props = {
-  refId: "dialog",
-  "aria-label": "dialog"
+  refId: "popover",
+  "aria-label": "popover"
 };
 
 test("render", () => {
-  const { baseElement } = render(<Dialog {...props}>dialog</Dialog>);
+  const { baseElement } = render(<Popover {...props}>popover</Popover>);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div />
@@ -17,14 +17,14 @@ test("render", () => {
   >
     <div
       aria-hidden="true"
-      aria-label="dialog"
+      aria-label="popover"
       aria-modal="true"
       hidden=""
-      id="dialog"
+      id="popover"
       role="dialog"
       tabindex="-1"
     >
-      dialog
+      popover
     </div>
   </div>
 </body>
@@ -33,9 +33,9 @@ test("render", () => {
 
 test("render visible", () => {
   const { baseElement } = render(
-    <Dialog {...props} visible>
-      dialog
-    </Dialog>
+    <Popover {...props} visible>
+      popover
+    </Popover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
@@ -50,13 +50,13 @@ test("render visible", () => {
   >
     <div
       aria-hidden="false"
-      aria-label="dialog"
+      aria-label="popover"
       aria-modal="true"
-      id="dialog"
+      id="popover"
       role="dialog"
       tabindex="-1"
     >
-      dialog
+      popover
     </div>
   </div>
   <div
@@ -70,9 +70,9 @@ test("render visible", () => {
 
 test("render non-modal", () => {
   const { baseElement } = render(
-    <Dialog {...props} modal={false}>
+    <Popover {...props} modal={false}>
       test
-    </Dialog>
+    </Popover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
@@ -82,10 +82,10 @@ test("render non-modal", () => {
   >
     <div
       aria-hidden="true"
-      aria-label="dialog"
+      aria-label="popover"
       aria-modal="false"
       hidden=""
-      id="dialog"
+      id="popover"
       role="dialog"
       tabindex="-1"
     >

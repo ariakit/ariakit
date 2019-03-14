@@ -1,4 +1,5 @@
 import * as React from "react";
+import warning from "tiny-warning";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
@@ -22,8 +23,6 @@ import { useFocusOnHide } from "./__utils/useFocusOnHide";
 export type unstable_DialogOptions = unstable_HiddenOptions &
   Partial<unstable_DialogStateReturn> &
   Pick<unstable_DialogStateReturn, "refId"> & {
-    /** TODO: Description */
-    label: string;
     /** TODO: Description */
     modal?: boolean;
     /** TODO: Description */
@@ -108,7 +107,6 @@ export function useDialog(
       ref: dialog,
       role: "dialog",
       tabIndex: -1,
-      "aria-label": options.label,
       "aria-modal": modal,
       onKeyDown: e => {
         const keyMap = {
@@ -134,7 +132,6 @@ export function useDialog(
 const keys: Array<keyof unstable_DialogOptions> = [
   ...useHidden.keys,
   ...useDialogState.keys,
-  "label",
   "modal",
   "hideOnEsc",
   "hideOnClickOutside",
@@ -149,6 +146,13 @@ export const Dialog = unstable_createComponent(
   "div",
   useDialog,
   (type, props, children) => {
+    warning(
+      props["aria-label"] || props["aria-labelledby"],
+      `[reakit/Dialog]
+You should provide either \`aria-label\` or \`aria-labelledby\` props.
+See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`
+    );
+
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;
   }

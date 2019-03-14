@@ -5,7 +5,7 @@ import { unstable_SystemContext } from "../system/SystemContext";
 
 export const unstable_useCreateElement = <T extends As>(
   type: T,
-  props: Record<string, any> = {},
+  props: Record<string, any>,
   children: React.ReactNode = props.children
 ): JSX.Element => {
   const context = React.useContext(unstable_SystemContext);

@@ -1,12 +1,6 @@
 import { ComponentProps } from "react";
 import { isFocusable, isTabbable } from "../tabbable";
 
-function render(html: string) {
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  return div;
-}
-
 function h<T extends keyof JSX.IntrinsicElements>(
   type: T,
   props: ComponentProps<T> = {} as any

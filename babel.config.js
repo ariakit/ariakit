@@ -19,6 +19,7 @@ module.exports = {
     "@babel/preset-react"
   ],
   plugins: [
+    "babel-plugin-dev-expression",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-proposal-object-rest-spread",
     !prod && [
