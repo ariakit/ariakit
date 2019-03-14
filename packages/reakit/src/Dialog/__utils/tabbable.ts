@@ -1,34 +1,36 @@
 const selector =
   "input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable=false])";
 
-export function isHTMLElement(element: Element): element is HTMLElement {
+function isHTMLElement(element: Element): element is HTMLElement {
   return element instanceof HTMLElement;
 }
 
-export function isDisabled(element: HTMLElement) {
+function isDisabled(element: HTMLElement) {
   return Boolean((element as HTMLInputElement).disabled);
 }
 
-export function hasTabIndex(element: Element) {
+function hasTabIndex(element: Element) {
   return element.hasAttribute("tabindex");
 }
 
-export function hasNegativeTabIndex(element: HTMLElement) {
+function hasNegativeTabIndex(element: HTMLElement) {
   return hasTabIndex(element) && element.tabIndex < 0;
 }
 
-export function isHidden(element: HTMLElement) {
+function isHidden(element: HTMLElement) {
   if (element.parentElement && isHidden(element.parentElement)) return true;
   return element.hidden;
 }
 
-export function isContentEditable(element: HTMLElement) {
-  return element.isContentEditable;
+function isContentEditable(element: HTMLElement) {
+  const value = element.getAttribute("contenteditable");
+  return value !== "false" && value != null;
 }
 
 export function isFocusable(element: Element) {
   if (!isHTMLElement(element)) return false;
   if (isHidden(element)) return false;
+  if (isDisabled(element)) return false;
 
   const { localName } = element;
   const focusableTags = ["input", "select", "textarea", "button"];
@@ -53,7 +55,6 @@ export function isFocusable(element: Element) {
 export function isTabbable(element: Element) {
   if (!isHTMLElement(element)) return false;
   if (!isFocusable(element)) return false;
-  if (isDisabled(element)) return false;
   if (hasNegativeTabIndex(element)) return false;
   return true;
 }

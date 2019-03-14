@@ -1,10 +1,11 @@
 import { ComponentProps } from "react";
-import {
-  isHTMLElement,
-  isDisabled,
-  hasTabIndex,
-  hasNegativeTabIndex
-} from "../tabbable";
+import { isFocusable, isTabbable } from "../tabbable";
+
+function render(html: string) {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div;
+}
 
 function h<T extends keyof JSX.IntrinsicElements>(
   type: T,
@@ -21,25 +22,42 @@ function h<T extends keyof JSX.IntrinsicElements>(
   return element;
 }
 
-test("isHTMLElement", () => {
+test("isFocusable", () => {
   expect(
-    isHTMLElement(document.createElementNS("http://www.w3.org/2000/svg", "svg"))
+    isFocusable(document.createElementNS("http://www.w3.org/2000/svg", "svg"))
   ).toBe(false);
-  expect(isHTMLElement(h("div"))).toBe(true);
+  expect(isFocusable(h("input"))).toBe(true);
+  expect(isFocusable(h("input", { tabIndex: -1 }))).toBe(true);
+  expect(isFocusable(h("input", { hidden: true }))).toBe(false);
+  expect(isFocusable(h("input", { disabled: true }))).toBe(false);
+  expect(isFocusable(h("a"))).toBe(false);
+  expect(isFocusable(h("a", { href: "" }))).toBe(true);
+  expect(isFocusable(h("audio"))).toBe(false);
+  expect(isFocusable(h("audio", { controls: true }))).toBe(true);
+  expect(isFocusable(h("video"))).toBe(false);
+  expect(isFocusable(h("video", { controls: true }))).toBe(true);
+  expect(isFocusable(h("div"))).toBe(false);
+  expect(isFocusable(h("div", { contentEditable: true }))).toBe(true);
+  expect(isFocusable(h("div", { tabIndex: 0 }))).toBe(true);
+  expect(isFocusable(h("div", { tabIndex: -1 }))).toBe(true);
 });
 
-test("isDisabled", () => {
-  expect(isDisabled(h("input"))).toBe(false);
-  expect(isDisabled(h("input", { disabled: true }))).toBe(true);
-});
-
-test("hasTabIndex", () => {
-  expect(hasTabIndex(h("div"))).toBe(false);
-  expect(hasTabIndex(h("div", { tabIndex: -1 }))).toBe(true);
-});
-
-test("hasNegativeTabIndex", () => {
-  expect(hasNegativeTabIndex(h("div"))).toBe(false);
-  expect(hasNegativeTabIndex(h("div", { tabIndex: 0 }))).toBe(false);
-  expect(hasNegativeTabIndex(h("div", { tabIndex: -1 }))).toBe(true);
+test("isTabbable", () => {
+  expect(
+    isTabbable(document.createElementNS("http://www.w3.org/2000/svg", "svg"))
+  ).toBe(false);
+  expect(isTabbable(h("input"))).toBe(true);
+  expect(isTabbable(h("input", { tabIndex: -1 }))).toBe(false);
+  expect(isTabbable(h("input", { hidden: true }))).toBe(false);
+  expect(isTabbable(h("input", { disabled: true }))).toBe(false);
+  expect(isTabbable(h("a"))).toBe(false);
+  expect(isTabbable(h("a", { href: "" }))).toBe(true);
+  expect(isTabbable(h("audio"))).toBe(false);
+  expect(isTabbable(h("audio", { controls: true }))).toBe(true);
+  expect(isTabbable(h("video"))).toBe(false);
+  expect(isTabbable(h("video", { controls: true }))).toBe(true);
+  expect(isTabbable(h("div"))).toBe(false);
+  expect(isTabbable(h("div", { contentEditable: true }))).toBe(true);
+  expect(isTabbable(h("div", { tabIndex: 0 }))).toBe(true);
+  expect(isTabbable(h("div", { tabIndex: -1 }))).toBe(false);
 });

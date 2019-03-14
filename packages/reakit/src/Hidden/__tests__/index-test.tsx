@@ -11,16 +11,16 @@ function Test(props: unstable_HiddenInitialState) {
   const hidden = useHiddenState(props);
   return (
     <>
-      <HiddenDisclosure {...hidden}>Disclosure</HiddenDisclosure>
-      <Hidden {...hidden}>Hidden</Hidden>
+      <HiddenDisclosure {...hidden}>disclosure</HiddenDisclosure>
+      <Hidden {...hidden}>hidden</Hidden>
     </>
   );
 }
 
 test("show", () => {
   const { getByText } = render(<Test />);
-  const disclosure = getByText("Disclosure");
-  const hidden = getByText("Hidden");
+  const disclosure = getByText("disclosure");
+  const hidden = getByText("hidden");
   expect(hidden).not.toBeVisible();
   fireEvent.click(disclosure);
   expect(hidden).toBeVisible();
@@ -28,8 +28,8 @@ test("show", () => {
 
 test("hide", () => {
   const { getByText } = render(<Test visible />);
-  const disclosure = getByText("Disclosure");
-  const hidden = getByText("Hidden");
+  const disclosure = getByText("disclosure");
+  const hidden = getByText("hidden");
   expect(hidden).toBeVisible();
   fireEvent.click(disclosure);
   expect(hidden).not.toBeVisible();
