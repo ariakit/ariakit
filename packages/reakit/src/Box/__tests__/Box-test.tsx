@@ -3,10 +3,10 @@ import { render } from "react-testing-library";
 import { Box } from "../Box";
 
 test("render", () => {
-  const { getByText } = render(<Box>test</Box>);
-  expect(getByText("test")).toMatchInlineSnapshot(`
+  const { getByText } = render(<Box>box</Box>);
+  expect(getByText("box")).toMatchInlineSnapshot(`
 <div>
-  test
+  box
 </div>
 `);
 });

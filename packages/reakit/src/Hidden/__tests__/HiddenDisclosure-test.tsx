@@ -9,16 +9,16 @@ const props = {
 
 test("render", () => {
   const { getByText } = render(
-    <HiddenDisclosure {...props}>test</HiddenDisclosure>
+    <HiddenDisclosure {...props}>disclosure</HiddenDisclosure>
   );
-  expect(getByText("test")).toMatchInlineSnapshot(`
+  expect(getByText("disclosure")).toMatchInlineSnapshot(`
 <button
   aria-controls="test"
   aria-expanded="false"
   role="button"
   tabindex="0"
 >
-  test
+  disclosure
 </button>
 `);
 });
@@ -26,17 +26,17 @@ test("render", () => {
 test("render visible", () => {
   const { getByText } = render(
     <HiddenDisclosure {...props} visible>
-      test
+      disclosure
     </HiddenDisclosure>
   );
-  expect(getByText("test")).toMatchInlineSnapshot(`
+  expect(getByText("disclosure")).toMatchInlineSnapshot(`
 <button
   aria-controls="test"
   aria-expanded="true"
   role="button"
   tabindex="0"
 >
-  test
+  disclosure
 </button>
 `);
 });
@@ -45,10 +45,10 @@ test("toggle", () => {
   const fn = jest.fn();
   const { getByText } = render(
     <HiddenDisclosure {...props} toggle={fn}>
-      test
+      disclosure
     </HiddenDisclosure>
   );
   expect(fn).toHaveBeenCalledTimes(0);
-  fireEvent.click(getByText("test"));
+  fireEvent.click(getByText("disclosure"));
   expect(fn).toHaveBeenCalledTimes(1);
 });

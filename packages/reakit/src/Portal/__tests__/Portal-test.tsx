@@ -3,14 +3,14 @@ import { render } from "react-testing-library";
 import { Portal } from "../Portal";
 
 test("render", () => {
-  const { baseElement } = render(<Portal>test</Portal>);
+  const { baseElement } = render(<Portal>portal</Portal>);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div />
   <div
     class="__reakit-portal"
   >
-    test
+    portal
   </div>
 </body>
 `);
@@ -19,8 +19,8 @@ test("render", () => {
 test("render nested", () => {
   const { baseElement } = render(
     <Portal>
-      test
-      <Portal>test2</Portal>
+      portal1
+      <Portal>portal2</Portal>
     </Portal>
   );
   expect(baseElement).toMatchInlineSnapshot(`
@@ -29,11 +29,11 @@ test("render nested", () => {
   <div
     class="__reakit-portal"
   >
-    test
+    portal1
     <div
       class="__reakit-portal"
     >
-      test2
+      portal2
     </div>
   </div>
 </body>
@@ -44,10 +44,10 @@ test("render nested and sibling", () => {
   const { baseElement } = render(
     <>
       <Portal>
-        test
-        <Portal>test2</Portal>
+        portal1
+        <Portal>portal2</Portal>
       </Portal>
-      <Portal>test3</Portal>
+      <Portal>portal3</Portal>
     </>
   );
   expect(baseElement).toMatchInlineSnapshot(`
@@ -56,17 +56,17 @@ test("render nested and sibling", () => {
   <div
     class="__reakit-portal"
   >
-    test
+    portal1
     <div
       class="__reakit-portal"
     >
-      test2
+      portal2
     </div>
   </div>
   <div
     class="__reakit-portal"
   >
-    test3
+    portal3
   </div>
 </body>
 `);

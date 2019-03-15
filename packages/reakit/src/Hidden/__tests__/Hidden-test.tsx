@@ -3,26 +3,26 @@ import { render } from "react-testing-library";
 import { Hidden } from "../Hidden";
 
 test("render", () => {
-  const { getByText } = render(<Hidden>test</Hidden>);
-  expect(getByText("test")).toMatchInlineSnapshot(`
+  const { getByText } = render(<Hidden>hidden</Hidden>);
+  expect(getByText("hidden")).toMatchInlineSnapshot(`
 <div
   aria-hidden="true"
   hidden=""
   role="region"
 >
-  test
+  hidden
 </div>
 `);
 });
 
 test("render visible", () => {
-  const { getByText } = render(<Hidden visible>test</Hidden>);
-  expect(getByText("test")).toMatchInlineSnapshot(`
+  const { getByText } = render(<Hidden visible>hidden</Hidden>);
+  expect(getByText("hidden")).toMatchInlineSnapshot(`
 <div
   aria-hidden="false"
   role="region"
 >
-  test
+  hidden
 </div>
 `);
 });
