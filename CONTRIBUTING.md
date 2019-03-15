@@ -13,7 +13,6 @@ We would love for you to contribute to Reakit and help make it even better. By c
   - [Components](#components)
   - [Website](#website)
   - [Docs](#docs)
-- [Credits](#credits)
 
 ## Ownership
 
@@ -152,42 +151,3 @@ We have replaced all the default components from `react-styleguidist` by just ov
 You can find guide docs in the [`docs`](https://github.com/reakit/reakit/tree/master/docs) folder. While component docs are placed together with its component in the `reakit` package: [`packages/reakit/src`](https://github.com/reakit/reakit/blob/master/packages/reakit/src).
 
 While working on docs, make sure to run `yarn website` to see the changes. If the browser doesn't refresh automatically, you should do that manually.
-
-## Credits
-
-### Contributors
-
-This project exists thanks to all the people who contribute.
-<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1050&button=false" /></a>
-
-
-### Supporters
-
-By donating $5 or more you help in the development of this project. Thank you to all our supporters! 🙏
-
-<p>
-  <a href="https://opencollective.com/reakit/sponsor/0/website"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/1/website"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/2/website"><img src="https://opencollective.com/reakit/sponsor/2/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/3/website"><img src="https://opencollective.com/reakit/sponsor/3/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/4/website"><img src="https://opencollective.com/reakit/sponsor/4/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/5/website"><img src="https://opencollective.com/reakit/sponsor/5/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/6/website"><img src="https://opencollective.com/reakit/sponsor/6/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/7/website"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/8/website"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/9/website"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
-</p>
-
-<p>
-  <a href="https://opencollective.com/reakit/backer/0/website"><img src="https://opencollective.com/reakit/backer/0/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/1/website"><img src="https://opencollective.com/reakit/backer/1/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/2/website"><img src="https://opencollective.com/reakit/backer/2/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/3/website"><img src="https://opencollective.com/reakit/backer/3/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/4/website"><img src="https://opencollective.com/reakit/backer/4/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/5/website"><img src="https://opencollective.com/reakit/backer/5/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/6/website"><img src="https://opencollective.com/reakit/backer/6/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/7/website"><img src="https://opencollective.com/reakit/backer/7/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/8/website"><img src="https://opencollective.com/reakit/backer/8/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/9/website"><img src="https://opencollective.com/reakit/backer/9/avatar.svg"></a>
-</p>
-
