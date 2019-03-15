@@ -2,11 +2,11 @@ import * as React from "react";
 
 export type unstable_RovingState = {
   /** TODO: Description */
-  orientation: "horizontal" | "vertical";
+  orientation?: "horizontal" | "vertical";
   /** TODO: Description */
   refs: any[];
   /** TODO: Description */
-  enabled: boolean[];
+  meta: Array<{ focusable: boolean; selectable: boolean }>;
   /** TODO: Description */
   selectedRef: any;
   /** TODO: Description */
@@ -19,18 +19,30 @@ export type unstable_RovingState = {
 
 export type unstable_RovingSelectors = {
   /** TODO: Description */
-  getNextRef: (ref: any) => any;
+  getNextFocusableRef: (ref: any) => any;
   /** TODO: Description */
-  getPreviousRef: (ref: any) => any;
+  getNextSelectableRef: (ref: any) => any;
   /** TODO: Description */
-  getFirstRef: () => any;
+  getPreviousFocusableRef: (ref: any) => any;
   /** TODO: Description */
-  getLastRef: () => any;
+  getPreviousSelectableRef: (ref: any) => any;
+  /** TODO: Description */
+  getFirstFocusableRef: () => any;
+  /** TODO: Description */
+  getFirstSelectableRef: () => any;
+  /** TODO: Description */
+  getLastFocusableRef: () => any;
+  /** TODO: Description */
+  getLastSelectableRef: () => any;
+  /** TODO: Description */
+  isFocusable: (ref: any) => boolean;
+  /** TODO: Description */
+  isSelectable: (ref: any) => boolean;
 };
 
 export type unstable_RovingActions = {
   /** TODO: Description */
-  register: (ref: any, disabled?: boolean) => void;
+  register: (ref: any, focusable?: boolean, selectable?: boolean) => void;
   /** TODO: Description */
   unregister: (ref: any) => void;
   /** TODO: Description */
@@ -60,7 +72,7 @@ export type unstable_RovingActions = {
 export type unstable_RovingInitialState = Partial<
   Pick<
     unstable_RovingState,
-    "orientation" | "selectedRef" | "loop" | "autoSelect"
+    "orientation" | "selectedRef" | "autoSelect" | "loop"
   >
 >;
 
@@ -69,7 +81,7 @@ export type unstable_RovingStateReturn = unstable_RovingState &
   unstable_RovingActions;
 
 type RovingAction =
-  | { type: "register"; ref: any; disabled?: boolean }
+  | { type: "register"; ref: any; focusable: boolean; selectable?: boolean }
   | { type: "unregister"; ref: any }
   | { type: "select"; ref: any }
   | { type: "focus"; ref: any; select?: boolean }
@@ -86,39 +98,82 @@ type RovingAction =
       orientation: unstable_RovingState["orientation"];
     };
 
-// TODO: Should focus disabled, but not select
-function getNextRef({ refs, enabled, loop }: unstable_RovingState, ref: any) {
-  if (!enabled.find(Boolean)) return null;
+function getNextRefs(
+  { refs, loop }: Pick<unstable_RovingState, "refs" | "loop">,
+  ref: any
+) {
   const index = refs.indexOf(ref);
-  const reordered = [
+  const nextRefs = [
     ...refs.slice(index + 1),
     ...(loop ? refs.slice(0, index) : [])
   ];
-  return reordered.find(r => enabled[refs.indexOf(r)]);
+  return nextRefs;
 }
 
-function getPreviousRef(
-  { refs, enabled, ...state }: unstable_RovingState,
-  ref: any
-) {
-  return getNextRef(
+type IsState = Pick<unstable_RovingState, "refs" | "meta">;
+
+function isFocusable({ refs, meta }: IsState, ref: any) {
+  const index = refs.indexOf(ref);
+  return meta[index] && meta[index].focusable;
+}
+
+function isSelectable({ refs, meta }: IsState, ref: any) {
+  const index = refs.indexOf(ref);
+  return meta[index] && meta[index].selectable;
+}
+
+type GetState = Pick<unstable_RovingState, "refs" | "meta" | "loop">;
+
+function getNextFocusableRef(state: GetState, ref: any) {
+  return getNextRefs(state, ref).find(r => isFocusable(state, r));
+}
+
+function getNextSelectableRef(state: GetState, ref: any) {
+  return getNextRefs(state, ref).find(r => isSelectable(state, r));
+}
+
+function getPreviousFocusableRef({ refs, meta, loop }: GetState, ref: any) {
+  return getNextFocusableRef(
     {
       refs: refs.slice().reverse(),
-      enabled: enabled.slice().reverse(),
-      ...state
+      meta: meta.slice().reverse(),
+      loop
     },
     ref
   );
 }
 
-function getFirstRef({ refs, enabled }: unstable_RovingState) {
-  return refs.find((_, i) => enabled[i]);
+function getPreviousSelectableRef({ refs, meta, loop }: GetState, ref: any) {
+  return getNextSelectableRef(
+    {
+      refs: refs.slice().reverse(),
+      meta: meta.slice().reverse(),
+      loop
+    },
+    ref
+  );
 }
 
-function getLastRef({ refs, enabled, ...state }: unstable_RovingState) {
-  return getFirstRef({
+function getFirstFocusableRef({ refs, ...state }: GetState) {
+  return refs.find(ref => isFocusable({ refs, ...state }, ref));
+}
+
+function getFirstSelectableRef({ refs, ...state }: GetState) {
+  return refs.find(ref => isSelectable({ refs, ...state }, ref));
+}
+
+function getLastFocusableRef({ refs, meta, ...state }: GetState) {
+  return getFirstFocusableRef({
     refs: refs.slice().reverse(),
-    enabled: enabled.slice().reverse(),
+    meta: meta.slice().reverse(),
+    ...state
+  });
+}
+
+function getLastSelectableRef({ refs, meta, ...state }: GetState) {
+  return getFirstSelectableRef({
+    refs: refs.slice().reverse(),
+    meta: meta.slice().reverse(),
     ...state
   });
 }
@@ -127,11 +182,12 @@ function reducer(
   state: unstable_RovingState,
   action: RovingAction
 ): unstable_RovingState {
-  const { refs, enabled, autoSelect, selectedRef, focusedRef } = state;
+  const { refs, meta, autoSelect, selectedRef, focusedRef } = state;
 
   switch (action.type) {
     case "register": {
-      const { disabled, ref } = action;
+      const { ref, focusable } = action;
+      const selectable = focusable ? action.selectable || false : false;
       const index = refs.indexOf(ref);
 
       if (index === -1) {
@@ -139,25 +195,25 @@ function reducer(
         return {
           ...state,
           refs: [...refs, ref],
-          enabled: [...enabled, !disabled]
+          meta: [...meta, { focusable, selectable }]
         };
       }
 
       // update
       let nextState = {
         ...state,
-        enabled: [
-          ...enabled.slice(0, index),
-          !disabled,
-          ...enabled.slice(index + 1)
+        meta: [
+          ...meta.slice(0, index),
+          { focusable, selectable },
+          ...meta.slice(index + 1)
         ]
       };
 
-      if (disabled && focusedRef === ref) {
+      if (!focusable && focusedRef === ref) {
         nextState = reducer(nextState, { type: "focusNext", select: false });
       }
 
-      if (disabled && selectedRef === ref) {
+      if (!selectable && selectedRef === ref) {
         nextState = reducer(nextState, { type: "selectNext" });
       }
 
@@ -171,7 +227,7 @@ function reducer(
       let nextState = {
         ...state,
         refs: [...refs.slice(0, index), ...refs.slice(index + 1)],
-        enabled: [...enabled.slice(0, index), ...enabled.slice(index + 1)]
+        meta: [...meta.slice(0, index), ...meta.slice(index + 1)]
       };
 
       if (focusedRef === ref) {
@@ -187,13 +243,13 @@ function reducer(
     case "select": {
       const { ref } = action;
       const index = refs.indexOf(ref);
-      if (!enabled[index]) return state;
+      if (!meta[index] || !meta[index].selectable) return state;
       return { ...state, selectedRef: ref };
     }
     case "focus": {
       const { ref, select = autoSelect } = action;
       const index = refs.indexOf(ref);
-      if (!enabled[index]) return state;
+      if (!meta[index] || !meta[index].focusable) return state;
       const nextState = { ...state, focusedRef: ref };
       if (select) {
         return reducer(nextState, { type: "select", ref });
@@ -203,39 +259,45 @@ function reducer(
     case "selectNext":
       return reducer(state, {
         type: "select",
-        ref: getNextRef(state, selectedRef)
+        ref: getNextSelectableRef(state, selectedRef)
       });
     case "selectPrevious":
       return reducer(state, {
         type: "select",
-        ref: getPreviousRef(state, selectedRef)
+        ref: getPreviousSelectableRef(state, selectedRef)
       });
     case "selectFirst":
-      return reducer(state, { type: "select", ref: getFirstRef(state) });
+      return reducer(state, {
+        type: "select",
+        ref: getFirstSelectableRef(state)
+      });
     case "selectLast":
-      return reducer(state, { type: "select", ref: getLastRef(state) });
+      return reducer(state, {
+        type: "select",
+        ref: getLastSelectableRef(state)
+      });
     case "focusNext":
       return reducer(state, {
         type: "focus",
-        ref: getNextRef(state, focusedRef),
+        ref: getNextFocusableRef(state, focusedRef),
         select: action.select
       });
     case "focusPrevious":
       return reducer(state, {
         type: "focus",
-        ref: getPreviousRef(state, focusedRef),
+        ref: getPreviousFocusableRef(state, focusedRef),
         select: action.select
       });
     case "focusFirst":
       return reducer(state, {
         type: "focus",
-        ref: getFirstRef(state),
+        ref: getFirstFocusableRef(state),
         select: action.select
       });
     case "focusLast":
       return reducer(state, {
         type: "focus",
-        ref: getLastRef(state),
+        ref: getLastFocusableRef(state),
         select: action.select
       });
     case "setOrientation":
@@ -246,15 +308,15 @@ function reducer(
 }
 
 export function useRovingState({
-  orientation = "horizontal",
-  loop = false,
+  orientation,
   selectedRef = null,
-  autoSelect = false
+  autoSelect = false,
+  loop = false
 }: unstable_RovingInitialState = {}): unstable_RovingStateReturn {
   const [state, dispatch] = React.useReducer(reducer, {
     orientation,
     refs: [],
-    enabled: [],
+    meta: [],
     selectedRef,
     focusedRef: null,
     autoSelect,
@@ -263,7 +325,7 @@ export function useRovingState({
 
   React.useEffect(() => {
     if (!state.autoSelect || state.selectedRef) return;
-    const firstRef = getFirstRef(state);
+    const firstRef = getFirstSelectableRef(state);
     if (firstRef) {
       dispatch({ type: "select", ref: firstRef });
     }
@@ -271,12 +333,85 @@ export function useRovingState({
 
   return {
     ...state,
-    getNextRef: ref => getNextRef(state, ref),
-    getPreviousRef: ref => getPreviousRef(state, ref),
-    getFirstRef: () => getFirstRef(state),
-    getLastRef: () => getLastRef(state),
+    isFocusable: React.useCallback(
+      ref => isFocusable({ refs: state.refs, meta: state.meta }, ref),
+      [state.refs, state.meta]
+    ),
+    isSelectable: React.useCallback(
+      ref => isSelectable({ refs: state.refs, meta: state.meta }, ref),
+      [state.refs, state.meta]
+    ),
+    getNextFocusableRef: React.useCallback(
+      ref =>
+        getNextFocusableRef(
+          { refs: state.refs, meta: state.meta, loop: state.loop },
+          ref
+        ),
+      [state.refs, state.meta, state.loop]
+    ),
+    getPreviousFocusableRef: React.useCallback(
+      ref =>
+        getPreviousFocusableRef(
+          { refs: state.refs, meta: state.meta, loop: state.loop },
+          ref
+        ),
+      [state.refs, state.meta, state.loop]
+    ),
+    getFirstFocusableRef: React.useCallback(
+      () =>
+        getFirstFocusableRef({
+          refs: state.refs,
+          meta: state.meta,
+          loop: state.loop
+        }),
+      [state.refs, state.meta, state.loop]
+    ),
+    getLastFocusableRef: React.useCallback(
+      () =>
+        getLastFocusableRef({
+          refs: state.refs,
+          meta: state.meta,
+          loop: state.loop
+        }),
+      [state.refs, state.meta, state.loop]
+    ),
+    getNextSelectableRef: React.useCallback(
+      ref =>
+        getNextSelectableRef(
+          { refs: state.refs, meta: state.meta, loop: state.loop },
+          ref
+        ),
+      [state.refs, state.meta, state.loop]
+    ),
+    getPreviousSelectableRef: React.useCallback(
+      ref =>
+        getPreviousSelectableRef(
+          { refs: state.refs, meta: state.meta, loop: state.loop },
+          ref
+        ),
+      [state.refs, state.meta, state.loop]
+    ),
+    getFirstSelectableRef: React.useCallback(
+      () =>
+        getFirstSelectableRef({
+          refs: state.refs,
+          meta: state.meta,
+          loop: state.loop
+        }),
+      [state.refs, state.meta, state.loop]
+    ),
+    getLastSelectableRef: React.useCallback(
+      () =>
+        getLastSelectableRef({
+          refs: state.refs,
+          meta: state.meta,
+          loop: state.loop
+        }),
+      [state.refs, state.meta, state.loop]
+    ),
     register: React.useCallback(
-      (ref, disabled) => dispatch({ type: "register", ref, disabled }),
+      (ref, focusable, selectable) =>
+        dispatch({ type: "register", ref, focusable, selectable }),
       []
     ),
     unregister: React.useCallback(
@@ -321,15 +456,21 @@ export function useRovingState({
 const keys: Array<keyof unstable_RovingStateReturn> = [
   "orientation",
   "refs",
-  "enabled",
+  "meta",
   "selectedRef",
   "focusedRef",
   "autoSelect",
   "loop",
-  "getNextRef",
-  "getPreviousRef",
-  "getFirstRef",
-  "getLastRef",
+  "getNextFocusableRef",
+  "getNextSelectableRef",
+  "getPreviousFocusableRef",
+  "getPreviousSelectableRef",
+  "getFirstFocusableRef",
+  "getFirstSelectableRef",
+  "getLastFocusableRef",
+  "getLastSelectableRef",
+  "isFocusable",
+  "isSelectable",
   "register",
   "unregister",
   "select",

@@ -11,6 +11,8 @@ export type unstable_ButtonOptions = unstable_BoxOptions & {
   disabled?: boolean;
   /** TODO: Description */
   onClick?: React.MouseEventHandler;
+  /** TODO: Description */
+  focusable?: boolean;
 };
 
 export type unstable_ButtonProps = unstable_BoxProps &
@@ -36,8 +38,8 @@ export function useButton(
   htmlProps = mergeProps(
     {
       role: "button",
-      disabled: options.disabled,
-      tabIndex: options.disabled ? undefined : tabIndex,
+      disabled: options.disabled && !options.focusable,
+      tabIndex: options.disabled && !options.focusable ? undefined : tabIndex,
       "aria-disabled": options.disabled,
       onClick: e => {
         if (options.disabled) {
@@ -48,10 +50,8 @@ export function useButton(
         }
       },
       onKeyDown: e => {
-        // No need to check options.disabled
-        // KeyDown isn't invoked without focus
-        // Focus isn't invoked without tabIndex
         if (isNativeButton(e.target)) return;
+        if (options.disabled) return;
 
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -77,7 +77,8 @@ const keys: Array<keyof unstable_ButtonOptions> = [
   ...useBox.keys,
   "tabIndex",
   "disabled",
-  "onClick"
+  "onClick",
+  "focusable"
 ];
 
 useButton.keys = keys;

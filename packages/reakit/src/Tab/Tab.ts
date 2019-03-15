@@ -27,14 +27,13 @@ export function useTab(
     {
       role: "tab",
       id: unstable_getTabId(options.refId, options.baseId),
-      disabled: undefined,
       "aria-selected": selected,
       "aria-controls": unstable_getTabPanelId(options.refId, options.refId)
     } as typeof htmlProps,
     htmlProps
   );
 
-  htmlProps = useRoving(options, htmlProps);
+  htmlProps = useRoving({ focusable: true, ...options }, htmlProps);
   htmlProps = unstable_useHook("useTab", options, htmlProps);
   return htmlProps;
 }

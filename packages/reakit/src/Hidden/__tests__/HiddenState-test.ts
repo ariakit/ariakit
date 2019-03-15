@@ -1,5 +1,8 @@
 import { renderHook, act } from "react-hooks-testing-library";
 import { useHiddenState } from "../HiddenState";
+import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
+
+expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
 function render(props: Parameters<typeof useHiddenState>[0] = {}) {
   return renderHook(useHiddenState, {
@@ -7,54 +10,69 @@ function render(props: Parameters<typeof useHiddenState>[0] = {}) {
   }).result;
 }
 
-test("render", () => {
+test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "hide": [Function],
   "refId": "test",
-  "show": [Function],
-  "toggle": [Function],
   "visible": false,
 }
 `);
 });
 
-test("visible initial state", () => {
+test("initial state visible", () => {
   const result = render({ visible: true });
-  expect(result.current).toEqual(
-    expect.objectContaining({
+  expect(result.current).toMatchInlineSnapshot(
+    {
       visible: true
-    })
+    },
+    `
+Object {
+  "refId": "test",
+  "visible": true,
+}
+`
   );
 });
 
 test("show", () => {
   const result = render();
   act(result.current.show);
-  expect(result.current).toEqual(
-    expect.objectContaining({
-      visible: true
-    })
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: true },
+    `
+Object {
+  "refId": "test",
+  "visible": true,
+}
+`
   );
 });
 
 test("hide", () => {
   const result = render({ visible: true });
   act(result.current.hide);
-  expect(result.current).toEqual(
-    expect.objectContaining({
-      visible: false
-    })
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: false },
+    `
+Object {
+  "refId": "test",
+  "visible": false,
+}
+`
   );
 });
 
 test("toggle", () => {
   const result = render();
   act(result.current.toggle);
-  expect(result.current).toEqual(
-    expect.objectContaining({
-      visible: true
-    })
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: true },
+    `
+Object {
+  "refId": "test",
+  "visible": true,
+}
+`
   );
 });

@@ -16,7 +16,7 @@ export type unstable_RovingOptions = unstable_ButtonOptions &
     | "refs"
     | "selectedRef"
     | "focusedRef"
-    | "getFirstRef"
+    | "getFirstFocusableRef"
     | "register"
     | "unregister"
     | "select"
@@ -38,18 +38,28 @@ export function useRoving(
 ) {
   const ref = React.useRef<HTMLElement | null>(null);
   const refId = options.refId || ref;
+  const focusable =
+    typeof options.focusable !== "undefined"
+      ? options.focusable
+      : !options.disabled;
   const focused = options.focusedRef === refId;
   const selected = options.selectedRef === refId;
-  const isFirst = options.getFirstRef() === refId;
+  const isFirst = options.getFirstFocusableRef() === refId;
   const noFocused = options.focusedRef == null;
   const noSelected = options.selectedRef == null;
   const shouldTabIndexZero =
     focused || (selected && noFocused) || (isFirst && noFocused && noSelected);
 
   React.useEffect(() => {
-    options.register(refId, options.disabled);
+    options.register(refId, focusable, !options.disabled);
     return () => options.unregister(refId);
-  }, [refId, options.disabled, options.register, options.unregister]);
+  }, [
+    refId,
+    focusable,
+    options.disabled,
+    options.register,
+    options.unregister
+  ]);
 
   React.useEffect(() => {
     if (ref.current && focused) {
@@ -64,11 +74,12 @@ export function useRoving(
       onClick: () => options.select(refId),
       onFocus: () => options.focus(refId),
       onKeyDown: e => {
+        const { orientation } = options;
         const keyMap = {
-          ArrowUp: options.focusPrevious,
-          ArrowRight: options.focusNext,
-          ArrowDown: options.focusNext,
-          ArrowLeft: options.focusPrevious,
+          ArrowUp: orientation !== "horizontal" && options.focusPrevious,
+          ArrowRight: orientation !== "vertical" && options.focusNext,
+          ArrowDown: orientation !== "horizontal" && options.focusNext,
+          ArrowLeft: orientation !== "vertical" && options.focusPrevious,
           Home: options.focusFirst,
           End: options.focusLast,
           PageUp: options.focusFirst,
@@ -76,7 +87,11 @@ export function useRoving(
         };
         if (e.key in keyMap) {
           e.preventDefault();
-          keyMap[e.key as keyof typeof keyMap]();
+          const key = e.key as keyof typeof keyMap;
+          const action = keyMap[key];
+          if (action) {
+            action();
+          }
         }
       }
     } as typeof htmlProps,
