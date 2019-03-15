@@ -1,0 +1,44 @@
+import * as React from "react";
+import { render } from "react-testing-library";
+import { TabList } from "../TabList";
+
+const props = {
+  "aria-label": "tablist"
+};
+
+test("render", () => {
+  const { baseElement } = render(<TabList {...props}>tablist</TabList>);
+  expect(baseElement).toMatchInlineSnapshot(`
+<body>
+  <div>
+    <div
+      aria-label="tablist"
+      role="tablist"
+    >
+      tablist
+    </div>
+  </div>
+</body>
+`);
+});
+
+test("render orientation", () => {
+  const { baseElement } = render(
+    <TabList {...props} orientation="horizontal">
+      tablist
+    </TabList>
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+<body>
+  <div>
+    <div
+      aria-label="tablist"
+      aria-orientation="horizontal"
+      role="tablist"
+    >
+      tablist
+    </div>
+  </div>
+</body>
+`);
+});

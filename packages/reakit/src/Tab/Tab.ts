@@ -30,7 +30,7 @@ export function useTab(
       role: "tab",
       id: unstable_getTabId(options.refId, options.baseId),
       "aria-selected": selected,
-      "aria-controls": unstable_getTabPanelId(options.refId, options.refId),
+      "aria-controls": unstable_getTabPanelId(options.refId, options.baseId),
       onClick: () => {
         if (!options.disabled && !selected) {
           options.select(options.refId);
