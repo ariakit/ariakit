@@ -38,6 +38,9 @@ npm i reakit
 
 > Thanks to [@nosebit](https://github.com/nosebit) for the package name on npm.
 
+If you are using TypeScript, you'll need to also install
+`@types/styled-components`.
+
 ## Example
 
 <p align="center">
