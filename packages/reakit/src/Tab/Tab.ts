@@ -2,25 +2,27 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useHook } from "../system/useHook";
 import {
-  unstable_RovingOptions,
-  unstable_RovingProps,
-  useRoving
-} from "../Roving/Roving";
+  unstable_RoverOptions,
+  unstable_RoverProps,
+  useRover
+} from "../Rover/Rover";
 import { useTabState, unstable_TabStateReturn } from "./TabState";
 import { unstable_getTabId, unstable_getTabPanelId } from "./utils";
 
-export type unstable_TabOptions = unstable_RovingOptions &
-  Partial<unstable_TabStateReturn> & {
+export type unstable_TabOptions = unstable_RoverOptions &
+  Partial<unstable_TabStateReturn> &
+  Pick<unstable_TabStateReturn, "select"> & {
     /** TODO: Description */
     refId: string;
   };
 
-export type unstable_TabProps = unstable_RovingProps;
+export type unstable_TabProps = unstable_RoverProps;
 
 export function useTab(
-  options: unstable_TabOptions,
+  { focusable = true, ...options }: unstable_TabOptions,
   htmlProps: unstable_TabProps = {}
 ) {
+  const allOptions = { focusable, ...options };
   const selected = options.selectedRef === options.refId;
 
   htmlProps = mergeProps(
@@ -28,18 +30,28 @@ export function useTab(
       role: "tab",
       id: unstable_getTabId(options.refId, options.baseId),
       "aria-selected": selected,
-      "aria-controls": unstable_getTabPanelId(options.refId, options.refId)
+      "aria-controls": unstable_getTabPanelId(options.refId, options.refId),
+      onClick: () => {
+        if (!options.disabled && !selected) {
+          options.select(options.refId);
+        }
+      },
+      onFocus: () => {
+        if (!options.disabled && options.autoSelect && !selected) {
+          options.select(options.refId);
+        }
+      }
     } as typeof htmlProps,
     htmlProps
   );
 
-  htmlProps = useRoving({ focusable: true, ...options }, htmlProps);
-  htmlProps = unstable_useHook("useTab", options, htmlProps);
+  htmlProps = useRover(allOptions, htmlProps);
+  htmlProps = unstable_useHook("useTab", allOptions, htmlProps);
   return htmlProps;
 }
 
 const keys: Array<keyof unstable_TabOptions> = [
-  ...useRoving.keys,
+  ...useRover.keys,
   ...useTabState.keys
 ];
 

@@ -34,12 +34,13 @@ export function useButton(
   htmlProps: unstable_ButtonProps = {}
 ) {
   const allOptions = { tabIndex, ...options };
+  const reallyDisabled = options.disabled && !options.focusable;
 
   htmlProps = mergeProps(
     {
       role: "button",
-      disabled: options.disabled && !options.focusable,
-      tabIndex: options.disabled && !options.focusable ? undefined : tabIndex,
+      disabled: reallyDisabled,
+      tabIndex: reallyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,
       onClick: e => {
         if (options.disabled) {
