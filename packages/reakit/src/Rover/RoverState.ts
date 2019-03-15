@@ -17,9 +17,9 @@ export type unstable_RoverState = {
 
 export type unstable_RoverSelectors = {
   /** TODO: Description */
-  getNext: (ref?: any) => any;
+  getNext: (activeRef?: any) => any;
   /** TODO: Description */
-  getPrevious: (ref?: any) => any;
+  getPrevious: (activeRef?: any) => any;
   /** TODO: Description */
   getFirst: () => any;
   /** TODO: Description */
@@ -79,7 +79,7 @@ function getNext({
     ...refs.slice(index + 1),
     ...(loop ? refs.slice(0, index) : [])
   ];
-  return reordered.find(r => enabled[refs.indexOf(r)]);
+  return reordered.find(r => enabled[refs.indexOf(r)]) || null;
 }
 
 function getPrevious({
@@ -98,7 +98,7 @@ function getFirst({
   refs,
   enabled
 }: Pick<unstable_RoverState, "refs" | "enabled">) {
-  return refs.find((_, i) => enabled[i]);
+  return refs.find((_, i) => enabled[i]) || null;
 }
 
 function getLast({
@@ -147,11 +147,13 @@ function reducer(
       }
 
       if (disabled && activeRef === ref) {
-        nextState = reducer(nextState, {
-          type: "moveTo",
-          ref:
-            nextState.lastActiveRef || getNext(nextState) || getFirst(nextState)
-        });
+        nextState = reducer(
+          { ...nextState, activeRef: null },
+          {
+            type: "moveTo",
+            ref: nextState.lastActiveRef || getNext(nextState)
+          }
+        );
       }
 
       return nextState;
@@ -169,11 +171,13 @@ function reducer(
       };
 
       if (activeRef === ref) {
-        nextState = reducer(nextState, {
-          type: "moveTo",
-          ref:
-            nextState.lastActiveRef || getNext(nextState) || getFirst(nextState)
-        });
+        nextState = reducer(
+          { ...nextState, activeRef: null },
+          {
+            type: "moveTo",
+            ref: nextState.lastActiveRef || getNext(nextState)
+          }
+        );
       }
 
       return nextState;
@@ -185,9 +189,10 @@ function reducer(
       return {
         ...state,
         activeRef: ref,
-        lastActiveRef: enabled[refs.indexOf(activeRef)]
-          ? activeRef
-          : lastActiveRef
+        lastActiveRef:
+          enabled[refs.indexOf(activeRef)] && activeRef !== ref
+            ? activeRef
+            : lastActiveRef
       };
     }
     case "next":
@@ -201,12 +206,12 @@ function reducer(
     case "orientate":
       return { ...state, orientation: action.orientation };
     default:
-      return state;
+      throw new Error();
   }
 }
 
 export function useRoverState({
-  orientation = "horizontal",
+  orientation,
   activeRef = null,
   loop = false
 }: unstable_RoverInitialState = {}): unstable_RoverStateReturn {
