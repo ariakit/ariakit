@@ -10,6 +10,12 @@ Then, install `reakit` and `reakit-theme-default` (optional):
 npm install --save reakit reakit-theme-default
 ```
 
+If you are using TypeScript, install `@types/styled-components`:
+
+```sh
+npm install --save-dev @types/styled-components
+```
+
 ## Usage
 
 Play with an example on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj).
