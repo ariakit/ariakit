@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, act } from "react-testing-library";
+import { render, fireEvent } from "react-testing-library";
 import { Tab, TabList, TabPanel, useTabState } from "..";
 import { unstable_TabInitialState } from "../TabState";
 
