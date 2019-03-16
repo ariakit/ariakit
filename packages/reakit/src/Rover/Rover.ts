@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import {
   unstable_ButtonOptions,
   unstable_ButtonProps,
@@ -85,7 +85,7 @@ export function useRover(
   );
 
   htmlProps = useButton(options, htmlProps);
-  htmlProps = unstable_useHook("useRover", options, htmlProps);
+  htmlProps = useHook("useRover", options, htmlProps);
   return htmlProps;
 }
 

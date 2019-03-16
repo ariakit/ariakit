@@ -1,7 +1,18 @@
 import * as React from "react";
 import { reduceObjects } from "../__utils/reduceObjects";
 import { UnionToIntersection } from "../__utils/types";
-import { extractPropFromObjects } from "../__utils/extractPropFromObjects";
+
+function extractPropFromObjects<T, K extends keyof T>(objects: T[], prop: K) {
+  const props: Array<NonNullable<T[K]>> = [];
+  const { length } = objects;
+
+  for (let i = 0; i < length; i += 1) {
+    const p = objects[i][prop];
+    if (p) props.push(p!);
+  }
+
+  return props;
+}
 
 function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {
   const object = reduceObjects(objects, value => typeof value === "function");

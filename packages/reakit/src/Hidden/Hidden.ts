@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useHiddenState, unstable_HiddenStateReturn } from "./HiddenState";
@@ -23,7 +23,7 @@ export function useHidden(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = unstable_useHook("useHidden", options, htmlProps);
+  htmlProps = useHook("useHidden", options, htmlProps);
   return htmlProps;
 }
 

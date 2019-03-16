@@ -1,7 +1,7 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 
 export type unstable_ButtonOptions = unstable_BoxOptions & {
@@ -70,7 +70,7 @@ export function useButton(
   );
 
   htmlProps = useBox(allOptions, htmlProps);
-  htmlProps = unstable_useHook("useButton", allOptions, htmlProps);
+  htmlProps = useHook("useButton", allOptions, htmlProps);
   return htmlProps;
 }
 

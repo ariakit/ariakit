@@ -1,6 +1,6 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
@@ -29,7 +29,7 @@ export function useToolbarSeparator(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = unstable_useHook("useToolbarSeparator", options, htmlProps);
+  htmlProps = useHook("useToolbarSeparator", options, htmlProps);
   return htmlProps;
 }
 

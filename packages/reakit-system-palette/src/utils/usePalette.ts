@@ -1,6 +1,6 @@
 // TODO: Refactor
 import * as React from "react";
-import { unstable_useToken } from "reakit/system/useToken";
+import { useToken } from "reakit/system/useToken";
 
 function toArray<T>(arg: T[] | T) {
   return Array.isArray(arg) ? arg : [arg];
@@ -21,7 +21,7 @@ export function usePalette(
   fallback?: string
 ): string | undefined {
   React.useDebugValue(palette || "(not set)");
-  const palettes = unstable_useToken<Palette>("palette");
+  const palettes = useToken<Palette>("palette");
 
   if (!palette || !palettes) return fallback;
 

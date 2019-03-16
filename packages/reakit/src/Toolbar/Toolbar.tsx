@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -23,7 +23,7 @@ export function useToolbar(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = unstable_useHook("useToolbar", options, htmlProps);
+  htmlProps = useHook("useToolbar", options, htmlProps);
   return htmlProps;
 }
 

@@ -4,7 +4,7 @@ import warning from "tiny-warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { Portal } from "../Portal/Portal";
 import {
   unstable_DialogOptions,
@@ -31,7 +31,7 @@ export function usePopover(
     htmlProps
   );
   htmlProps = useDialog(allOptions, htmlProps);
-  htmlProps = unstable_useHook("usePopover", allOptions, htmlProps);
+  htmlProps = useHook("usePopover", allOptions, htmlProps);
   return htmlProps;
 }
 

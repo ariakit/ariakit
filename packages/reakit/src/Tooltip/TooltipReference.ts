@@ -1,6 +1,6 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
 
@@ -27,7 +27,7 @@ export function useTooltipReference(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = unstable_useHook("useTooltipReference", options, htmlProps);
+  htmlProps = useHook("useTooltipReference", options, htmlProps);
   return htmlProps;
 }
 

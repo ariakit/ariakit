@@ -1,6 +1,6 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import {
   unstable_HiddenDisclosureOptions,
   unstable_HiddenDisclosureProps,
@@ -24,7 +24,7 @@ export function useDialogDisclosure(
     htmlProps
   );
   htmlProps = useHiddenDisclosure(options, htmlProps);
-  htmlProps = unstable_useHook("useDialogDisclosure", options, htmlProps);
+  htmlProps = useHook("useDialogDisclosure", options, htmlProps);
   return htmlProps;
 }
 

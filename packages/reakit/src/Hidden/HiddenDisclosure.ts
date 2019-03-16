@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useHook } from "../system/useHook";
+import { useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
 import {
   useButton,
@@ -27,7 +27,7 @@ export function useHiddenDisclosure(
     htmlProps
   );
   htmlProps = useButton(options, htmlProps);
-  htmlProps = unstable_useHook("useHiddenDisclosure", options, htmlProps);
+  htmlProps = useHook("useHiddenDisclosure", options, htmlProps);
   return htmlProps;
 }
 
