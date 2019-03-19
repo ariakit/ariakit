@@ -11,106 +11,72 @@ function hasNestedOpenModals(portal: Element) {
 export function useFocusTrap(
   dialogRef: React.RefObject<HTMLElement>,
   portalRef: React.RefObject<HTMLElement>,
-  hideOnClickOutside?: boolean,
   shouldTrap?: boolean
 ) {
-  const lastFocus = React.useRef<HTMLElement | null>(null);
-  const lastMouseDownTarget = React.useRef<Element | null>(null);
+  const beforeElement = React.useRef<HTMLElement | null>(null);
+  const afterElement = React.useRef<HTMLElement | null>(null);
 
-  const registerFocus = React.useCallback((element: HTMLElement) => {
-    lastFocus.current = element;
-    lastMouseDownTarget.current = null;
-  }, []);
-
+  // Create before and after elements
   // https://github.com/w3c/aria-practices/issues/545
   React.useEffect(() => {
     const portal = portalRef.current;
 
     if (!portal || !shouldTrap) return undefined;
 
-    const beforeElement = document.createElement("div");
-    beforeElement.tabIndex = 0;
-    beforeElement.style.position = "fixed";
-    beforeElement.setAttribute("aria-hidden", "true");
+    if (!beforeElement.current) {
+      beforeElement.current = document.createElement("div");
+      beforeElement.current.tabIndex = 0;
+      beforeElement.current.style.position = "fixed";
+      beforeElement.current.setAttribute("aria-hidden", "true");
+    }
 
-    const afterElement = beforeElement.cloneNode() as Element;
+    if (!afterElement.current) {
+      afterElement.current = beforeElement.current.cloneNode() as HTMLElement;
+    }
 
-    portal.insertAdjacentElement("beforebegin", beforeElement);
-    portal.insertAdjacentElement("afterend", afterElement);
+    portal.insertAdjacentElement("beforebegin", beforeElement.current);
+    portal.insertAdjacentElement("afterend", afterElement.current);
 
     return () => {
-      beforeElement.remove();
-      afterElement.remove();
+      if (beforeElement.current) beforeElement.current.remove();
+      if (afterElement.current) afterElement.current.remove();
     };
   }, [portalRef, shouldTrap]);
 
   // Focus trap
   React.useEffect(() => {
-    if (!shouldTrap) return undefined;
-
-    lastFocus.current = document.activeElement as HTMLElement;
+    const before = beforeElement.current;
+    const after = afterElement.current;
+    if (!shouldTrap || !before || !after) return undefined;
 
     const handleFocus = (e: FocusEvent) => {
-      const dialog = dialogRef.current;
       const portal = portalRef.current;
-      const activeElement = document.activeElement as HTMLElement;
-
-      // If there're nested open modals, let them handle focus
-      if (!dialog || !portal || !activeElement || hasNestedOpenModals(portal)) {
-        return undefined;
-      }
-
-      // Focus is inside portal, do nothing
-      if (portal.contains(activeElement)) {
-        return registerFocus(activeElement);
-      }
+      const dialog = dialogRef.current;
+      if (!portal || !dialog || hasNestedOpenModals(portal)) return;
 
       e.preventDefault();
 
-      if (activeElement.contains(lastMouseDownTarget.current)) {
-        if (hideOnClickOutside) return undefined;
+      const isAfter = e.target === after;
+
+      const tabbable = isAfter
+        ? getFirstTabbableIn(dialog)
+        : getLastTabbableIn(dialog);
+
+      if (tabbable) {
+        tabbable.focus();
+      } else {
+        // fallback to dialog
         dialog.focus();
-        return registerFocus(dialog);
       }
-
-      const firstTabbable = getFirstTabbableIn(dialog, true);
-
-      if (firstTabbable) {
-        // Last focus before this was in the first tabbable element
-        // It's a shift+Tab, then focus goes to the last tabbable element
-        if (lastFocus.current === firstTabbable) {
-          const lastTabbable = getLastTabbableIn(dialog, true) || firstTabbable;
-          lastTabbable.focus();
-          return registerFocus(lastTabbable);
-        }
-        firstTabbable.focus();
-        return registerFocus(firstTabbable);
-      }
-
-      // Fallback to dialog
-      dialog.focus();
-      return registerFocus(dialog);
     };
 
-    document.addEventListener("focus", handleFocus, true);
+    before.addEventListener("focus", handleFocus);
+    after.addEventListener("focus", handleFocus);
     return () => {
-      document.removeEventListener("focus", handleFocus, true);
+      before.removeEventListener("focus", handleFocus);
+      after.removeEventListener("focus", handleFocus);
     };
-  }, [dialogRef, portalRef, shouldTrap, registerFocus, hideOnClickOutside]);
-
-  // MouseDown trap
-  React.useEffect(() => {
-    if (!shouldTrap) return undefined;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      lastMouseDownTarget.current = e.target as Element;
-    };
-
-    document.addEventListener("mousedown", handleMouseDown);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-    };
-  }, [shouldTrap]);
+  }, [dialogRef, portalRef, shouldTrap]);
 
   // Click trap
   React.useEffect(() => {
@@ -122,9 +88,8 @@ export function useFocusTrap(
 
       if (!dialog || !portal || hasNestedOpenModals(portal)) return;
 
-      if (document.activeElement === document.body) {
+      if (!portal.contains(document.activeElement)) {
         dialog.focus();
-        registerFocus(dialog);
       }
     };
 
@@ -132,5 +97,5 @@ export function useFocusTrap(
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [dialogRef, portalRef, shouldTrap, registerFocus]);
+  }, [dialogRef, portalRef, shouldTrap]);
 }

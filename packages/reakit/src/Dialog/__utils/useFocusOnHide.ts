@@ -3,8 +3,7 @@ import { isTabbable } from "./tabbable";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosureRef: React.RefObject<HTMLElement>,
-  elementToFocus?: React.RefObject<HTMLElement>,
+  finalFocusRef?: React.RefObject<HTMLElement>,
   shouldFocus?: boolean
 ) {
   React.useEffect(() => {
@@ -19,10 +18,8 @@ export function useFocusOnHide(
       return;
     }
 
-    if (elementToFocus && elementToFocus.current) {
-      elementToFocus.current.focus();
-    } else if (disclosureRef.current) {
-      disclosureRef.current.focus();
+    if (finalFocusRef && finalFocusRef.current) {
+      finalFocusRef.current.focus();
     }
-  }, [dialogRef, disclosureRef, elementToFocus, shouldFocus]);
+  }, [dialogRef, finalFocusRef, shouldFocus]);
 }

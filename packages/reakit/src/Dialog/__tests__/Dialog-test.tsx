@@ -2,8 +2,8 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { Dialog } from "../Dialog";
 
-const props = {
-  refId: "dialog",
+const props: Parameters<typeof Dialog>[0] = {
+  hiddenId: "dialog",
   "aria-label": "dialog"
 };
 
@@ -19,6 +19,7 @@ test("render", () => {
       aria-hidden="true"
       aria-label="dialog"
       aria-modal="true"
+      data-dialog="true"
       hidden=""
       id="dialog"
       role="dialog"
@@ -52,6 +53,7 @@ test("render visible", () => {
       aria-hidden="false"
       aria-label="dialog"
       aria-modal="true"
+      data-dialog="true"
       id="dialog"
       role="dialog"
       tabindex="-1"
@@ -84,6 +86,7 @@ test("render non-modal", () => {
       aria-hidden="true"
       aria-label="dialog"
       aria-modal="false"
+      data-dialog="true"
       hidden=""
       id="dialog"
       role="dialog"

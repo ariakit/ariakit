@@ -4,47 +4,41 @@ import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripF
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
-function render(props?: Parameters<typeof useTabState>[0]) {
-  return renderHook(useTabState, {
-    initialProps: { baseId: "base", ...props }
-  }).result;
+function render(...args: Parameters<typeof useTabState>) {
+  return renderHook(() => useTabState(...args)).result;
 }
 
 test("initial state", () => {
-  const result = render();
+  const result = render({ baseId: "base" });
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "activeRef": null,
-  "autoSelect": true,
   "baseId": "base",
-  "enabled": Array [],
-  "lastActiveRef": null,
+  "currentId": null,
   "loop": true,
-  "orientation": undefined,
-  "refs": Array [],
-  "selectedRef": null,
+  "manual": false,
+  "pastId": null,
+  "selectedId": null,
+  "stops": Array [],
 }
 `);
 });
 
-test("initial state selectedRef", () => {
-  const result = render({ selectedRef: "a" });
+test("initial state selectedId", () => {
+  const result = render({ baseId: "base", selectedId: "a" });
   expect(result.current).toMatchInlineSnapshot(
     {
-      activeRef: "a",
-      selectedRef: "a"
+      currentId: "a",
+      selectedId: "a"
     },
     `
 Object {
-  "activeRef": "a",
-  "autoSelect": true,
   "baseId": "base",
-  "enabled": Array [],
-  "lastActiveRef": null,
+  "currentId": "a",
   "loop": true,
-  "orientation": undefined,
-  "refs": Array [],
-  "selectedRef": "a",
+  "manual": false,
+  "pastId": null,
+  "selectedId": "a",
+  "stops": Array [],
 }
 `
   );

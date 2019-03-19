@@ -36,23 +36,10 @@ Hello, "World"!
 
 ## Usage
 
-### `Box`
-
 ```jsx
 import { Box } from "reakit";
 
-<Box>Box</Box>
-```
-
-### `useBoxProps`
-
-```jsx static
-import { useBoxProps } from "reakit";
-
-function Box(props) {
-  const boxProps = useBoxProps({}, props);
-  return <div {...boxProps} />;
+function Example() {
+  return <Box>Box</Box>;
 }
-
-<Box>Box</Box>
 ```

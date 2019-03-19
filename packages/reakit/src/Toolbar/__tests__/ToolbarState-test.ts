@@ -4,22 +4,18 @@ import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripF
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
-function render(props?: Parameters<typeof useToolbarState>[0]) {
-  return renderHook(useToolbarState, {
-    initialProps: props
-  }).result;
+function render(...args: Parameters<typeof useToolbarState>) {
+  return renderHook(() => useToolbarState(...args)).result;
 }
 
 test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "activeRef": null,
-  "enabled": Array [],
-  "lastActiveRef": null,
+  "currentId": null,
   "loop": false,
-  "orientation": undefined,
-  "refs": Array [],
+  "pastId": null,
+  "stops": Array [],
 }
 `);
 });

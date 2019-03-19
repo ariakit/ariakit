@@ -15,6 +15,12 @@ export type PreviewProps = EditorState & {
 
 export function Preview(props: PreviewProps) {
   const ref = React.useRef<HTMLDivElement | null>(null);
+  const [prefix] = React.useState(
+    () =>
+      `preview-${Math.random()
+        .toString(32)
+        .substr(2, 6)}-`
+  );
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((e: Error) => {
@@ -49,7 +55,9 @@ export function Preview(props: PreviewProps) {
         const exampleComponent = compileComponent(props.code);
         unmount();
         ReactDOM.render(
-          <Provider system={system}>{exampleComponent}</Provider>,
+          <Provider system={system} prefix={prefix}>
+            {exampleComponent}
+          </Provider>,
           ref.current
         );
       } catch (e) {
@@ -63,8 +71,10 @@ export function Preview(props: PreviewProps) {
   return (
     <ErrorBoundary>
       {error && <ErrorMessage error={error} />}
-      <div ref={ref}>
-        <Provider system={system}>{rendered}</Provider>
+      <div ref={ref} style={{ padding: 50 }}>
+        <Provider system={system} prefix={prefix}>
+          {rendered}
+        </Provider>
       </div>
     </ErrorBoundary>
   );

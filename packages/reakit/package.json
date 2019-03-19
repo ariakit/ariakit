@@ -34,8 +34,7 @@
   ],
   "dependencies": {
     "body-scroll-lock": "^2.6.1",
-    "popper.js": "^1.14.7",
-    "tiny-warning": "^1.0.2"
+    "popper.js": "^1.14.7"
   },
   "peerDependencies": {
     "react": "^16.8.0",

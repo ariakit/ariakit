@@ -2,8 +2,8 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { PopoverDisclosure } from "../PopoverDisclosure";
 
-const props = {
-  refId: "popover",
+const props: Parameters<typeof PopoverDisclosure>[0] = {
+  hiddenId: "popover",
   toggle: jest.fn
 };
 

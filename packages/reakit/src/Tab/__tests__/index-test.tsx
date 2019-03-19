@@ -8,23 +8,23 @@ function SimpleTest(props: unstable_TabInitialState = {}) {
   return (
     <>
       <TabList {...tab} aria-label="tablist">
-        <Tab {...tab} refId="tab1">
+        <Tab {...tab} stopId="tab1">
           tab1
         </Tab>
-        <Tab {...tab} refId="tab2">
+        <Tab {...tab} stopId="tab2">
           tab2
         </Tab>
-        <Tab {...tab} refId="tab3">
+        <Tab {...tab} stopId="tab3">
           tab3
         </Tab>
       </TabList>
-      <TabPanel {...tab} refId="tab1">
+      <TabPanel {...tab} stopId="tab1">
         tabpanel1
       </TabPanel>
-      <TabPanel {...tab} refId="tab2">
+      <TabPanel {...tab} stopId="tab2">
         tabpanel2
       </TabPanel>
-      <TabPanel {...tab} refId="tab3">
+      <TabPanel {...tab} stopId="tab3">
         tabpanel3
       </TabPanel>
     </>
@@ -45,13 +45,17 @@ test("focusing tab reveals the panel", () => {
   const { getByText } = render(<SimpleTest />);
   const tab1 = getByText("tab1");
   const tabpanel1 = getByText("tabpanel1");
+  const tabpanel2 = getByText("tabpanel2");
+  const tabpanel3 = getByText("tabpanel3");
   expect(tabpanel1).not.toBeVisible();
   fireEvent.focus(tab1);
   expect(tabpanel1).toBeVisible();
+  expect(tabpanel2).not.toBeVisible();
+  expect(tabpanel3).not.toBeVisible();
 });
 
-test("focusing tab does not reveal the panel when autoSelect is falsy", () => {
-  const { getByText } = render(<SimpleTest autoSelect={false} />);
+test("focusing tab does not reveal the panel when manual is truthy", () => {
+  const { getByText } = render(<SimpleTest manual />);
   const tab2 = getByText("tab2");
   const tabpanel2 = getByText("tabpanel2");
   expect(tabpanel2).not.toBeVisible();

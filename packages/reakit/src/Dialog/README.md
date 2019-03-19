@@ -52,6 +52,7 @@ function Example() {
       <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
       {/* <DialogBackdrop {...dialog} style={backdropStyle} /> */}
       <Dialog
+        modal={false}
         hideOnClickOutside={false}
         style={style}
         aria-label="test"

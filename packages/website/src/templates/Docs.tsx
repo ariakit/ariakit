@@ -15,6 +15,7 @@ import {
 } from "reakit-system-classic/components";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
+import "./codemirror.css";
 import CoreLayout from "../components/CoreLayout";
 
 if (typeof navigator !== "undefined") {

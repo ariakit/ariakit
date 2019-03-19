@@ -1,6 +1,11 @@
 // https://github.com/reach/reach-ui/blob/2a20f45849220c6bc71f8e7425e3ac4f41cd5a0a/packages/utils/src/lib/Context.js
 import * as React from "react";
 
+export type unstable_IdProviderProps = {
+  children: React.ReactNode;
+  prefix?: string;
+};
+
 const defaultPrefix = "id-";
 
 const generateId = (prefix = defaultPrefix) =>
@@ -11,13 +16,13 @@ const generateId = (prefix = defaultPrefix) =>
 const Context = React.createContext(generateId);
 
 export function unstable_IdProvider({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+  children,
+  prefix = ""
+}: unstable_IdProviderProps) {
   const count = React.useRef(0);
   const genId = React.useMemo(
-    () => (prefix = defaultPrefix) => `${prefix}${++count.current}`,
+    () => (localPrefix = defaultPrefix) =>
+      `${prefix}${localPrefix}${++count.current}`,
     [count]
   );
   return <Context.Provider value={genId}>{children}</Context.Provider>;

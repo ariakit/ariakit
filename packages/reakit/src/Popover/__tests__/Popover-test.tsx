@@ -2,8 +2,8 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { Popover } from "../Popover";
 
-const props = {
-  refId: "popover",
+const props: Parameters<typeof Popover>[0] = {
+  hiddenId: "popover",
   "aria-label": "popover"
 };
 
@@ -19,6 +19,7 @@ test("render", () => {
       aria-hidden="true"
       aria-label="popover"
       aria-modal="true"
+      data-dialog="true"
       hidden=""
       id="popover"
       role="dialog"
@@ -52,6 +53,7 @@ test("render visible", () => {
       aria-hidden="false"
       aria-label="popover"
       aria-modal="true"
+      data-dialog="true"
       id="popover"
       role="dialog"
       tabindex="-1"
@@ -84,6 +86,7 @@ test("render non-modal", () => {
       aria-hidden="true"
       aria-label="popover"
       aria-modal="false"
+      data-dialog="true"
       hidden=""
       id="popover"
       role="dialog"

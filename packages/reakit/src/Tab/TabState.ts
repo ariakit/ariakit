@@ -1,49 +1,48 @@
 import * as React from "react";
+import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
 import {
   useRoverState,
   unstable_RoverState,
-  unstable_RoverActions,
-  unstable_RoverSelectors
+  unstable_RoverActions
 } from "../Rover/RoverState";
 
 export type unstable_TabState = unstable_RoverState & {
   /** TODO: Description */
   baseId: string;
   /** TODO: Description */
-  selectedRef: any;
+  selectedId: unstable_RoverState["currentId"];
   /** TODO: Description */
-  autoSelect: boolean;
+  manual: boolean;
 };
 
-export type unstable_TabSelectors = unstable_RoverSelectors;
-
 export type unstable_TabActions = unstable_RoverActions & {
-  select: (ref?: any) => void;
+  select: (id: unstable_TabState["selectedId"]) => void;
 };
 
 export type unstable_TabInitialState = Partial<unstable_TabState>;
 
-export type unstable_TabStateReturn = unstable_TabState &
-  unstable_TabSelectors &
-  unstable_TabActions;
+export type unstable_TabStateReturn = unstable_TabState & unstable_TabActions;
 
-// TODO: Accept function for the entire initialState or for each value
-export function useTabState({
-  loop = true,
-  selectedRef: initialSelectedRef = null,
-  autoSelect = true,
-  ...initialState
-}: unstable_TabInitialState = {}): unstable_TabStateReturn {
+export function useTabState(
+  initialState: SealedInitialState<unstable_TabInitialState> = {}
+): unstable_TabStateReturn {
+  const {
+    selectedId: sealedSelectedId = null,
+    loop = true,
+    manual = false,
+    ...sealed
+  } = useSealedState(initialState);
+
   const baseId = unstable_useId("tab-");
-  const [selectedRef, select] = React.useState(initialSelectedRef);
-  const rover = useRoverState({ loop, activeRef: selectedRef });
+  const [selectedId, select] = React.useState(sealedSelectedId);
+  const rover = useRoverState({ loop, currentId: selectedId });
 
   return {
     ...rover,
-    baseId: initialState.baseId || baseId,
-    selectedRef,
-    autoSelect,
+    baseId: sealed.baseId || baseId,
+    selectedId,
+    manual,
     select
   };
 }
@@ -51,9 +50,9 @@ export function useTabState({
 const keys: Array<keyof unstable_TabStateReturn> = [
   ...useRoverState.keys,
   "baseId",
-  "selectedRef",
-  "autoSelect",
-  "select"
+  "selectedId",
+  "select",
+  "manual"
 ];
 
 useTabState.keys = keys;

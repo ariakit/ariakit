@@ -66,14 +66,14 @@ test("focus the first tabbable element when non-modal dialog opens", () => {
   expect(button1).toHaveFocus();
 });
 
-test("focus a given element when dialog opens and focusOnShow is passed in", () => {
+test("focus a given element when dialog opens and initialFocusRef is passed in", () => {
   const Test = () => {
     const dialog = useDialogState();
     const ref = React.useRef<HTMLButtonElement>(null);
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog aria-label="dialog" focusOnShow={ref} {...dialog}>
+        <Dialog aria-label="dialog" initialFocusRef={ref} {...dialog}>
           <button>button1</button>
           <button ref={ref}>button2</button>
         </Dialog>
@@ -423,7 +423,7 @@ test("focus a given element when dialog closes", () => {
       <>
         <button ref={ref}>button</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog aria-label="dialog" focusOnHide={ref} {...dialog} />
+        <Dialog aria-label="dialog" finalFocusRef={ref} {...dialog} />
       </>
     );
   };
@@ -465,7 +465,7 @@ test("focus a given element when non-modal dialog closes", () => {
         <Dialog
           aria-label="dialog"
           modal={false}
-          focusOnHide={ref}
+          finalFocusRef={ref}
           {...dialog}
         />
       </>
@@ -550,7 +550,7 @@ test("focus is not trapped within the nested non-modal dialog", async () => {
     return (
       <>
         <button>button1</button>
-        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog aria-label="dialog1" {...dialog}>
           <button>button2</button>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
@@ -587,6 +587,10 @@ test("focus is not trapped within the nested non-modal dialog", async () => {
   expect(button5).toHaveFocus();
   act(() => focusNextTabbableIn(baseElement));
   expect(button3).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button4).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button2).toHaveFocus();
 
   act(() => focusPreviousTabbableIn(baseElement));
   expect(button5).toHaveFocus();

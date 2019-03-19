@@ -1,3 +1,4 @@
+import { SealedInitialState } from "../__utils/useSealedState";
 import {
   useHiddenState,
   unstable_HiddenState,
@@ -14,9 +15,8 @@ export type unstable_DialogInitialState = unstable_HiddenInitialState;
 export type unstable_DialogStateReturn = unstable_DialogState &
   unstable_DialogActions;
 
-// TODO: Accept function for the entire options or for each value
 export function useDialogState(
-  initialState: unstable_DialogInitialState = {}
+  initialState: SealedInitialState<unstable_DialogInitialState> = {}
 ): unstable_DialogStateReturn {
   return useHiddenState(initialState);
 }

@@ -6,15 +6,19 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
   listener: (e: DocumentEventMap[T]) => void,
   shouldListen?: boolean
 ) {
-  React.useEffect(() => {
-    const element = targetRef.current;
+  const listenerRef = React.useRef(listener);
 
-    if (!element || !shouldListen) return undefined;
+  React.useEffect(() => {
+    listenerRef.current = listener;
+  });
+
+  React.useEffect(() => {
+    if (!shouldListen) return undefined;
 
     const handleEvent = (e: MouseEvent) => {
-      if (!targetRef.current || targetRef.current.contains(e.target as Element))
-        return;
-      listener(e);
+      const element = targetRef.current;
+      if (!element || element.contains(e.target as Element)) return;
+      listenerRef.current(e);
     };
 
     document.addEventListener(event, handleEvent, true);
@@ -22,5 +26,5 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
     return () => {
       document.removeEventListener(event, handleEvent, true);
     };
-  }, [targetRef, event, listener, shouldListen]);
+  }, [targetRef, event, shouldListen]);
 }

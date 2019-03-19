@@ -1,5 +1,6 @@
 import * as React from "react";
 import Popper, { Placement } from "popper.js";
+import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import {
   unstable_DialogState,
   unstable_DialogActions,
@@ -42,41 +43,32 @@ export type unstable_PopoverInitialState = unstable_DialogInitialState &
 export type unstable_PopoverStateReturn = unstable_PopoverState &
   unstable_PopoverActions;
 
-export function usePopoverState({
-  placement: initialPlacement = "bottom",
-  flip: initialFlip = true,
-  shift: initialShift = true,
-  gutter: initialGutter = 12,
-  ...initialState
-}: unstable_PopoverInitialState = {}): unstable_PopoverStateReturn {
+export function usePopoverState(
+  initialState: SealedInitialState<unstable_PopoverInitialState> = {}
+): unstable_PopoverStateReturn {
+  const {
+    placement: sealedPlacement = "bottom",
+    flip = true,
+    shift = true,
+    gutter = 12,
+    ...sealed
+  } = useSealedState(initialState);
+
   const popper = React.useRef<Popper | null>(null);
   const referenceRef = React.useRef<HTMLElement | null>(null);
   const popoverRef = React.useRef<HTMLElement | null>(null);
   const arrowRef = React.useRef<HTMLElement | null>(null);
-  const [originalPlacement, place] = React.useState(initialPlacement);
-  const [placement, setPlacement] = React.useState(initialPlacement);
+
+  const [originalPlacement, place] = React.useState(sealedPlacement);
+  const [placement, setPlacement] = React.useState(sealedPlacement);
   const [popoverStyles, setPopoverStyles] = React.useState<
     Partial<CSSStyleDeclaration>
   >({});
   const [arrowStyles, setArrowStyles] = React.useState<
     Partial<CSSStyleDeclaration>
   >({});
-  const [flip] = React.useState(initialFlip);
-  const [shift] = React.useState(initialShift);
-  const [gutter] = React.useState(initialGutter);
 
-  const dialog = useDialogState(initialState);
-
-  React.useLayoutEffect(() => {
-    if (popper.current) {
-      if (dialog.visible) {
-        popper.current.enableEventListeners();
-      } else {
-        popper.current.disableEventListeners();
-      }
-      popper.current.scheduleUpdate();
-    }
-  }, [dialog.visible]);
+  const dialog = useDialogState(sealed);
 
   React.useLayoutEffect(() => {
     if (referenceRef.current && popoverRef.current) {
@@ -92,7 +84,8 @@ export function usePopoverState({
             : undefined,
           updateStateModifier: {
             order: 900,
-            enabled: true,
+            // For some reason, we can't act() this
+            enabled: process.env.NODE_ENV !== "test",
             fn: data => {
               setPlacement(data.placement);
               setPopoverStyles(data.styles);
@@ -109,6 +102,16 @@ export function usePopoverState({
       }
     };
   }, [originalPlacement, flip, shift, gutter]);
+
+  React.useLayoutEffect(() => {
+    if (!popper.current) return;
+    if (dialog.visible) {
+      popper.current.enableEventListeners();
+    } else {
+      popper.current.disableEventListeners();
+    }
+    popper.current.update();
+  }, [dialog.visible]);
 
   return {
     ...dialog,

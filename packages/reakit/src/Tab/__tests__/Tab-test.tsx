@@ -2,17 +2,16 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { Tab } from "../Tab";
 
-const props = {
+const props: Parameters<typeof Tab>[0] = {
   baseId: "base",
-  refId: "tab",
-  refs: [],
-  activeRef: null,
-  selectedRef: null,
-  lastActiveRef: null,
-  getFirst: jest.fn(),
+  stopId: "tab",
+  stops: [],
+  currentId: null,
+  selectedId: null,
+  pastId: null,
   register: jest.fn(),
   unregister: jest.fn(),
-  moveTo: jest.fn(),
+  move: jest.fn(),
   select: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
@@ -41,7 +40,7 @@ test("render", () => {
 
 test("render active", () => {
   const { baseElement } = render(
-    <Tab {...props} activeRef="tab">
+    <Tab {...props} currentId="tab">
       tab
     </Tab>
   );
@@ -64,7 +63,7 @@ test("render active", () => {
 
 test("render active selected", () => {
   const { baseElement } = render(
-    <Tab {...props} activeRef="tab" selectedRef="tab">
+    <Tab {...props} currentId="tab" selectedId="tab">
       tab
     </Tab>
   );

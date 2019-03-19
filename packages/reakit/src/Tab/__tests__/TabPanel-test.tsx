@@ -2,10 +2,10 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { TabPanel } from "../TabPanel";
 
-const props = {
+const props: Parameters<typeof TabPanel>[0] = {
   baseId: "base",
-  refId: "tab",
-  selectedRef: null
+  stopId: "tab",
+  selectedId: null
 };
 
 test("render", () => {
@@ -53,7 +53,7 @@ test("render visible", () => {
 
 test("render selected", () => {
   const { baseElement } = render(
-    <TabPanel {...props} selectedRef="tab">
+    <TabPanel {...props} selectedId="tab">
       tabpanel
     </TabPanel>
   );

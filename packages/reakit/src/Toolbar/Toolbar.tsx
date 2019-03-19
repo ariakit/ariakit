@@ -1,10 +1,10 @@
-import warning from "tiny-warning";
+import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
+import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
 
 export type unstable_ToolbarOptions = unstable_BoxOptions &
   Partial<unstable_ToolbarStateReturn>;
@@ -40,9 +40,9 @@ export const Toolbar = unstable_createComponent(
   (type, props, children) => {
     warning(
       props["aria-label"] || props["aria-labelledby"],
-      `[reakit/Toolbar]
-You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props-21`
+      `You should provide either \`aria-label\` or \`aria-labelledby\` props.
+See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props-21`,
+      "Toolbar"
     );
 
     const element = unstable_useCreateElement(type, props, children);

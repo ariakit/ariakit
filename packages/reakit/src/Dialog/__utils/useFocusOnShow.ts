@@ -2,13 +2,13 @@ import * as React from "react";
 import { getFirstTabbableIn } from "./tabbable";
 
 function hasNestedOpenDialogs(portal: Element) {
-  return portal.querySelectorAll("[role=dialog][aria-hidden=false]").length > 1;
+  return portal.querySelectorAll("[data-dialog][aria-hidden=false]").length > 1;
 }
 
 export function useFocusOnShow(
   dialogRef: React.RefObject<HTMLElement>,
   portalRef: React.RefObject<HTMLElement>,
-  elementToFocus?: React.RefObject<HTMLElement>,
+  initialFocusRef?: React.RefObject<HTMLElement>,
   shouldFocus?: boolean
 ) {
   React.useEffect(() => {
@@ -20,8 +20,8 @@ export function useFocusOnShow(
       return;
     }
 
-    if (elementToFocus && elementToFocus.current) {
-      elementToFocus.current.focus();
+    if (initialFocusRef && initialFocusRef.current) {
+      initialFocusRef.current.focus();
     } else {
       const tabbable = getFirstTabbableIn(dialog, true);
       if (tabbable) {
@@ -30,5 +30,5 @@ export function useFocusOnShow(
         dialog.focus();
       }
     }
-  }, [dialogRef, elementToFocus, shouldFocus]);
+  }, [dialogRef, initialFocusRef, shouldFocus]);
 }

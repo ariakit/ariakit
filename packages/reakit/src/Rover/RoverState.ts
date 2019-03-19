@@ -1,38 +1,33 @@
+// Credits: https://github.com/stevejay/react-roving-tabindex
 import * as React from "react";
+import { warning } from "../__utils/warning";
+import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+
+type Stop = {
+  id: string;
+  ref: React.RefObject<HTMLElement>;
+};
 
 export type unstable_RoverState = {
   /** TODO: Description */
   orientation?: "horizontal" | "vertical";
   /** TODO: Description */
-  refs: any[];
+  stops: Stop[];
   /** TODO: Description */
-  enabled: boolean[];
+  currentId: Stop["id"] | null;
   /** TODO: Description */
-  activeRef: any;
-  /** TODO: Description */
-  lastActiveRef: any;
+  pastId: Stop["id"] | null;
   /** TODO: Description */
   loop: boolean;
 };
 
-export type unstable_RoverSelectors = {
-  /** TODO: Description */
-  getNext: (activeRef?: any) => any;
-  /** TODO: Description */
-  getPrevious: (activeRef?: any) => any;
-  /** TODO: Description */
-  getFirst: () => any;
-  /** TODO: Description */
-  getLast: () => any;
-};
-
 export type unstable_RoverActions = {
   /** TODO: Description */
-  register: (ref: any, disabled?: boolean) => void;
+  register: (id: Stop["id"], ref: Stop["ref"]) => void;
   /** TODO: Description */
-  unregister: (ref: any) => void;
+  unregister: (id: Stop["id"]) => void;
   /** TODO: Description */
-  moveTo: (ref: any) => void;
+  move: (id: Stop["id"]) => void;
   /** TODO: Description */
   next: () => void;
   /** TODO: Description */
@@ -42,167 +37,154 @@ export type unstable_RoverActions = {
   /** TODO: Description */
   last: () => void;
   /** TODO: Description */
+  reset: () => void;
+  /** TODO: Description */
   orientate: (orientation: unstable_RoverState["orientation"]) => void;
 };
 
 export type unstable_RoverInitialState = Partial<
-  Pick<unstable_RoverState, "orientation" | "activeRef" | "loop">
+  Pick<unstable_RoverState, "orientation" | "currentId" | "loop">
 >;
 
 export type unstable_RoverStateReturn = unstable_RoverState &
-  unstable_RoverSelectors &
   unstable_RoverActions;
 
 type RoverAction =
-  | { type: "register"; ref: any; disabled?: boolean }
-  | { type: "unregister"; ref: any }
-  | { type: "sync"; activeRef: any; lastActiveRef: any }
-  | { type: "moveTo"; ref: any }
+  | { type: "register"; id: Stop["id"]; ref: Stop["ref"] }
+  | { type: "unregister"; id: Stop["id"] }
+  | { type: "move"; id: Stop["id"] | null }
   | { type: "next" }
   | { type: "previous" }
   | { type: "first" }
   | { type: "last" }
+  | { type: "reset" }
   | {
       type: "orientate";
       orientation?: unstable_RoverState["orientation"];
     };
 
-function getNext({
-  refs,
-  enabled,
-  loop,
-  activeRef
-}: Pick<unstable_RoverState, "refs" | "enabled" | "loop" | "activeRef">) {
-  if (!enabled.find(Boolean)) return null;
-  const index = refs.indexOf(activeRef);
-  const reordered = [
-    ...refs.slice(index + 1),
-    ...(loop ? refs.slice(0, index) : [])
-  ];
-  return reordered.find(r => enabled[refs.indexOf(r)]) || null;
-}
-
-function getPrevious({
-  refs,
-  enabled,
-  ...state
-}: Pick<unstable_RoverState, "refs" | "enabled" | "loop" | "activeRef">) {
-  return getNext({
-    refs: refs.slice().reverse(),
-    enabled: enabled.slice().reverse(),
-    ...state
-  });
-}
-
-function getFirst({
-  refs,
-  enabled
-}: Pick<unstable_RoverState, "refs" | "enabled">) {
-  return refs.find((_, i) => enabled[i]) || null;
-}
-
-function getLast({
-  refs,
-  enabled
-}: Pick<unstable_RoverState, "refs" | "enabled">) {
-  return getFirst({
-    refs: refs.slice().reverse(),
-    enabled: enabled.slice().reverse()
-  });
-}
-
 function reducer(
   state: unstable_RoverState,
   action: RoverAction
 ): unstable_RoverState {
-  const { refs, enabled, activeRef, lastActiveRef } = state;
+  const { stops, currentId, pastId, loop } = state;
 
   switch (action.type) {
     case "register": {
-      const { disabled, ref } = action;
-      const index = refs.indexOf(ref);
-      let nextState = {} as unstable_RoverState;
-
-      if (index === -1) {
-        // create
-        nextState = {
+      const { id, ref } = action;
+      if (stops.length === 0) {
+        return {
           ...state,
-          refs: [...refs, ref],
-          enabled: [...enabled, !disabled]
-        };
-      } else {
-        // update
-        nextState = {
-          ...state,
-          enabled: [
-            ...enabled.slice(0, index),
-            !disabled,
-            ...enabled.slice(index + 1)
-          ]
+          stops: [{ id, ref }]
         };
       }
 
-      if (disabled && lastActiveRef === ref) {
-        nextState = { ...nextState, lastActiveRef: null };
+      const index = stops.findIndex(stop => stop.id === id);
+
+      if (index >= 0) {
+        warning(false, `${id} stop is already registered`, "RoverState");
+        return state;
       }
 
-      if (disabled && activeRef === ref) {
-        nextState = reducer(
-          { ...nextState, activeRef: null },
-          {
-            type: "moveTo",
-            ref: nextState.lastActiveRef || getNext(nextState)
-          }
+      const afterRefIndex = stops.findIndex(stop => {
+        if (!stop.ref.current || !ref.current) return false;
+        return Boolean(
+          stop.ref.current.compareDocumentPosition(ref.current) &
+            Node.DOCUMENT_POSITION_PRECEDING
         );
+      });
+
+      if (afterRefIndex === -1) {
+        return {
+          ...state,
+          stops: [...stops, { id, ref }]
+        };
       }
-
-      return nextState;
-    }
-    case "unregister": {
-      const { ref } = action;
-      const index = refs.indexOf(ref);
-      if (index === -1) return state;
-
-      let nextState = {
-        ...state,
-        refs: [...refs.slice(0, index), ...refs.slice(index + 1)],
-        enabled: [...enabled.slice(0, index), ...enabled.slice(index + 1)],
-        lastActiveRef: lastActiveRef === ref ? null : lastActiveRef
-      };
-
-      if (activeRef === ref) {
-        nextState = reducer(
-          { ...nextState, activeRef: null },
-          {
-            type: "moveTo",
-            ref: nextState.lastActiveRef || getNext(nextState)
-          }
-        );
-      }
-
-      return nextState;
-    }
-    case "moveTo": {
-      const { ref } = action;
-      const index = refs.indexOf(ref);
-      if (!enabled[index]) return state;
       return {
         ...state,
-        activeRef: ref,
-        lastActiveRef:
-          enabled[refs.indexOf(activeRef)] && activeRef !== ref
-            ? activeRef
-            : lastActiveRef
+        stops: [
+          ...stops.slice(0, afterRefIndex),
+          { id, ref },
+          ...stops.slice(afterRefIndex)
+        ]
       };
     }
-    case "next":
-      return reducer(state, { type: "moveTo", ref: getNext(state) });
-    case "previous":
-      return reducer(state, { type: "moveTo", ref: getPrevious(state) });
-    case "first":
-      return reducer(state, { type: "moveTo", ref: getFirst(state) });
-    case "last":
-      return reducer(state, { type: "moveTo", ref: getLast(state) });
+    case "unregister": {
+      const { id } = action;
+      const nextStops = stops.filter(stop => stop.id !== id);
+      if (nextStops.length === stops.length) {
+        warning(false, `${id} stop is not registered`, "RoverState");
+        return state;
+      }
+
+      return {
+        ...state,
+        stops: nextStops,
+        pastId: pastId && pastId === id ? null : pastId,
+        currentId: currentId && currentId === id ? null : currentId
+      };
+    }
+    case "move": {
+      const { id } = action;
+      const index = stops.findIndex(stop => stop.id === id);
+
+      if (index === -1 || stops[index].id === currentId) {
+        return state;
+      }
+
+      return {
+        ...state,
+        currentId: stops[index].id,
+        pastId: currentId
+      };
+    }
+    case "next": {
+      if (currentId == null) {
+        return reducer(state, { type: "move", id: stops[0] && stops[0].id });
+      }
+      const index = stops.findIndex(stop => stop.id === currentId);
+
+      // If loop is truthy, turns [0, currentId, 2, 3] into [currentId, 2, 3, 0]
+      // Otherwise turns into [currentId, 2, 3]
+      const reorderedStops = [
+        ...stops.slice(index + 1),
+        ...(loop ? stops.slice(0, index) : [])
+      ];
+
+      const nextIndex =
+        reorderedStops.findIndex(stop => stop.id === currentId) + 1;
+
+      return reducer(state, {
+        type: "move",
+        id: reorderedStops[nextIndex] && reorderedStops[nextIndex].id
+      });
+    }
+    case "previous": {
+      const nextState = reducer(
+        { ...state, stops: stops.slice().reverse() },
+        { type: "next" }
+      );
+      return {
+        ...state,
+        currentId: nextState.currentId,
+        pastId: nextState.pastId
+      };
+    }
+    case "first": {
+      const stop = stops[0];
+      return reducer(state, { type: "move", id: stop && stop.id });
+    }
+    case "last": {
+      const stop = stops[stops.length - 1];
+      return reducer(state, { type: "move", id: stop && stop.id });
+    }
+    case "reset": {
+      return {
+        ...state,
+        currentId: null,
+        pastId: null
+      };
+    }
     case "orientate":
       return { ...state, orientation: action.orientation };
     default:
@@ -210,63 +192,36 @@ function reducer(
   }
 }
 
-export function useRoverState({
-  orientation,
-  activeRef = null,
-  loop = false
-}: unstable_RoverInitialState = {}): unstable_RoverStateReturn {
+export function useRoverState(
+  initialState: SealedInitialState<unstable_RoverInitialState> = {}
+): unstable_RoverStateReturn {
+  const { currentId = null, loop = false, ...sealed } = useSealedState(
+    initialState
+  );
   const [state, dispatch] = React.useReducer(reducer, {
-    orientation,
-    refs: [],
-    enabled: [],
-    activeRef,
-    lastActiveRef: null,
+    ...sealed,
+    stops: [],
+    currentId,
+    pastId: null,
     loop
   });
 
   return {
     ...state,
-    getNext: React.useCallback(
-      (ref = state.activeRef) =>
-        getNext({
-          refs: state.refs,
-          enabled: state.enabled,
-          loop: state.loop,
-          activeRef: ref
-        }),
-      [state.refs, state.enabled, state.loop, state.activeRef]
-    ),
-    getPrevious: React.useCallback(
-      (ref = state.activeRef) =>
-        getPrevious({
-          refs: state.refs,
-          enabled: state.enabled,
-          loop: state.loop,
-          activeRef: ref
-        }),
-      [state.refs, state.enabled, state.loop, state.activeRef]
-    ),
-    getFirst: React.useCallback(
-      () => getFirst({ refs: state.refs, enabled: state.enabled }),
-      [state.refs, state.enabled]
-    ),
-    getLast: React.useCallback(
-      () => getLast({ refs: state.refs, enabled: state.enabled }),
-      [state.refs, state.enabled]
-    ),
     register: React.useCallback(
-      (ref, disabled) => dispatch({ type: "register", ref, disabled }),
+      (id, ref) => dispatch({ type: "register", id, ref }),
       []
     ),
     unregister: React.useCallback(
-      ref => dispatch({ type: "unregister", ref }),
+      id => dispatch({ type: "unregister", id }),
       []
     ),
-    moveTo: React.useCallback(ref => dispatch({ type: "moveTo", ref }), []),
+    move: React.useCallback(id => dispatch({ type: "move", id }), []),
     next: React.useCallback(() => dispatch({ type: "next" }), []),
     previous: React.useCallback(() => dispatch({ type: "previous" }), []),
     first: React.useCallback(() => dispatch({ type: "first" }), []),
     last: React.useCallback(() => dispatch({ type: "last" }), []),
+    reset: React.useCallback(() => dispatch({ type: "reset" }), []),
     orientate: React.useCallback(
       o => dispatch({ type: "orientate", orientation: o }),
       []
@@ -276,22 +231,18 @@ export function useRoverState({
 
 const keys: Array<keyof unstable_RoverStateReturn> = [
   "orientation",
-  "refs",
-  "enabled",
-  "activeRef",
-  "lastActiveRef",
+  "stops",
+  "currentId",
+  "pastId",
   "loop",
-  "getNext",
-  "getPrevious",
-  "getFirst",
-  "getLast",
   "register",
   "unregister",
-  "moveTo",
+  "move",
   "next",
   "previous",
   "first",
   "last",
+  "reset",
   "orientate"
 ];
 

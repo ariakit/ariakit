@@ -2,14 +2,14 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { ToolbarButton } from "../ToolbarButton";
 
-const props = {
-  refs: [],
-  activeRef: null,
-  lastActiveRef: null,
-  getFirst: jest.fn(),
+const props: Parameters<typeof ToolbarButton>[0] = {
+  stopId: "rover",
+  stops: [],
+  currentId: null,
+  pastId: null,
   register: jest.fn(),
   unregister: jest.fn(),
-  moveTo: jest.fn(),
+  move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
@@ -24,6 +24,7 @@ test("render", () => {
 <body>
   <div>
     <button
+      id="rover"
       role="button"
       tabindex="-1"
     >

@@ -3,14 +3,18 @@ import {
   unstable_SystemProviderProps,
   unstable_SystemProvider as SystemProvider
 } from "../system/SystemProvider";
-import { unstable_IdProvider as IdProvider } from "./useId";
+import {
+  unstable_IdProvider as IdProvider,
+  unstable_IdProviderProps
+} from "./useId";
 
-export type ProviderProps = unstable_SystemProviderProps;
+export type ProviderProps = unstable_IdProviderProps &
+  unstable_SystemProviderProps;
 
-export function Provider(props: ProviderProps) {
+export function Provider({ prefix, system, children }: ProviderProps) {
   return (
-    <IdProvider>
-      <SystemProvider {...props} />
+    <IdProvider prefix={prefix}>
+      <SystemProvider system={system}>{children}</SystemProvider>
     </IdProvider>
   );
 }

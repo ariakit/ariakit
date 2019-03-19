@@ -2,9 +2,9 @@ import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
 import { HiddenDisclosure } from "../HiddenDisclosure";
 
-const props = {
+const props: Parameters<typeof HiddenDisclosure>[0] = {
   toggle: jest.fn,
-  refId: "test"
+  hiddenId: "test"
 };
 
 test("render", () => {

@@ -5,6 +5,7 @@ const attr = "data-invoke";
 export function useAttachAndInvoke(
   targetRef: React.RefObject<Element>,
   containerRef: React.RefObject<Element>,
+  name: string,
   method?: () => void,
   shouldInvoke?: boolean
 ) {
@@ -14,19 +15,17 @@ export function useAttachAndInvoke(
 
     if (!element || !method) return;
 
-    Object.defineProperty(targetRef.current, method.name, {
+    Object.defineProperty(targetRef.current, name, {
       writable: true,
       value: method
     });
 
-    const invokeValues = (element.getAttribute(attr) || "").split(" ");
-    if (invokeValues.indexOf(method.name) === -1) {
-      element.setAttribute(
-        "data-invoke",
-        [...invokeValues, method.name].join(" ")
-      );
+    const attribute = element.getAttribute(attr);
+    const invokeValues = attribute ? attribute.split(" ") : [];
+    if (invokeValues.indexOf(name) === -1) {
+      element.setAttribute("data-invoke", [...invokeValues, name].join(" "));
     }
-  }, [targetRef, method]);
+  }, [targetRef, name, method]);
 
   // Invoke
   React.useEffect(() => {
@@ -34,8 +33,8 @@ export function useAttachAndInvoke(
 
     if (!container || !method || !shouldInvoke) return;
 
-    const elements = container.querySelectorAll(`[${attr}~="${method.name}"]`);
+    const elements = container.querySelectorAll(`[${attr}~="${name}"]`);
 
-    elements.forEach((element: any) => element[method.name]());
-  }, [containerRef, method, shouldInvoke]);
+    elements.forEach((element: any) => element[name]());
+  }, [containerRef, name, method, shouldInvoke]);
 }

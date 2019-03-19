@@ -4,31 +4,44 @@ import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripF
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
-function render(props: Parameters<typeof useHiddenState>[0] = {}) {
-  return renderHook(useHiddenState, {
-    initialProps: { refId: "test", ...props }
-  }).result;
+function render(...args: Parameters<typeof useHiddenState>) {
+  return renderHook(() => useHiddenState(...args)).result;
 }
 
 test("initial state", () => {
-  const result = render();
+  const result = render({ hiddenId: "test" });
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "refId": "test",
+  "hiddenId": "test",
   "visible": false,
 }
 `);
 });
 
 test("initial state visible", () => {
-  const result = render({ visible: true });
+  const result = render({ hiddenId: "test", visible: true });
   expect(result.current).toMatchInlineSnapshot(
     {
       visible: true
     },
     `
 Object {
-  "refId": "test",
+  "hiddenId": "test",
+  "visible": true,
+}
+`
+  );
+});
+
+test("initial state lazy", () => {
+  const result = render(() => ({ hiddenId: "test", visible: true }));
+  expect(result.current).toMatchInlineSnapshot(
+    {
+      visible: true
+    },
+    `
+Object {
+  "hiddenId": "test",
   "visible": true,
 }
 `
@@ -36,13 +49,13 @@ Object {
 });
 
 test("show", () => {
-  const result = render();
+  const result = render({ hiddenId: "test" });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
     `
 Object {
-  "refId": "test",
+  "hiddenId": "test",
   "visible": true,
 }
 `
@@ -50,13 +63,13 @@ Object {
 });
 
 test("hide", () => {
-  const result = render({ visible: true });
+  const result = render({ hiddenId: "test", visible: true });
   act(result.current.hide);
   expect(result.current).toMatchInlineSnapshot(
     { visible: false },
     `
 Object {
-  "refId": "test",
+  "hiddenId": "test",
   "visible": false,
 }
 `
@@ -64,13 +77,13 @@ Object {
 });
 
 test("toggle", () => {
-  const result = render();
+  const result = render({ hiddenId: "test" });
   act(result.current.toggle);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
     `
 Object {
-  "refId": "test",
+  "hiddenId": "test",
   "visible": true,
 }
 `

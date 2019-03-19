@@ -56,20 +56,6 @@ export type ExtractHTMLAttributes<P> = Pick<
 >;
 
 /**
- * Generic component props with "as" prop
- * @template P Additional props
- * @template T React component or string element
- */
-export type PropsWithAs<P, T extends As> = {
-  /**
-   * Replace the underlying element
-   */
-  as?: T;
-  children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
-} & P &
-  Omit<React.ComponentProps<T>, "as" | keyof P>;
-
-/**
  * Transform `"a" | "b"` into `"a" & "b"`
  * @template U Union
  */
@@ -88,3 +74,17 @@ export type PickByValue<T, V> = Pick<
   T,
   { [K in keyof T]: T[K] extends V ? K : never }[keyof T]
 >;
+
+/**
+ * Generic component props with "as" prop
+ * @template P Additional props
+ * @template T React component or string element
+ */
+export type PropsWithAs<P, T extends As> = {
+  /**
+   * Replace the underlying element
+   */
+  as?: T;
+  children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
+} & P &
+  Omit<React.ComponentProps<T>, "as" | keyof P>;

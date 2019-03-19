@@ -8,6 +8,7 @@ test("render", () => {
 <body>
   <div>
     <hr
+      aria-orientation="horizontal"
       role="separator"
     />
   </div>

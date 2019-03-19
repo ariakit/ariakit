@@ -1,5 +1,5 @@
 import * as React from "react";
-import warning from "tiny-warning";
+import { warning } from "../__utils/warning";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
@@ -10,7 +10,6 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
-import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -19,10 +18,11 @@ import { useEventListenerOutside } from "./__utils/useEventListenerOutside";
 import { useAttachAndInvoke } from "./__utils/useAttachAndInvoke";
 import { useFocusTrap } from "./__utils/useFocusTrap";
 import { useFocusOnHide } from "./__utils/useFocusOnHide";
+import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogOptions = unstable_HiddenOptions &
   Partial<unstable_DialogStateReturn> &
-  Pick<unstable_DialogStateReturn, "refId"> & {
+  Pick<unstable_DialogStateReturn, "hiddenId"> & {
     /** TODO: Description */
     modal?: boolean;
     /** TODO: Description */
@@ -32,16 +32,16 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
     /** TODO: Description */
     preventBodyScroll?: boolean;
     /** TODO: Description */
-    focusOnShow?: React.RefObject<HTMLElement>;
+    initialFocusRef?: React.RefObject<HTMLElement>;
     /** TODO: Description */
-    focusOnHide?: React.RefObject<HTMLElement>;
+    finalFocusRef?: React.RefObject<HTMLElement>;
+    /** TODO: Description */
+    autoFocusOnShow?: boolean;
+    /** TODO: Description */
+    autoFocusOnHide?: boolean;
   };
 
 export type unstable_DialogProps = unstable_HiddenProps;
-
-function getDisclosureContainer() {
-  return document.activeElement || document.body;
-}
 
 export function useDialog(
   {
@@ -49,40 +49,52 @@ export function useDialog(
     hideOnEsc = true,
     hideOnClickOutside = true,
     preventBodyScroll = true,
+    autoFocusOnShow = true,
+    autoFocusOnHide = true,
     ...options
   }: unstable_DialogOptions,
   htmlProps: unstable_DialogProps = {}
 ) {
-  const allOptions = { modal, hideOnEsc, hideOnClickOutside, ...options };
+  const allOptions = {
+    modal,
+    hideOnEsc,
+    hideOnClickOutside,
+    preventBodyScroll,
+    autoFocusOnShow,
+    autoFocusOnHide,
+    ...options
+  };
   const dialog = React.useRef<HTMLElement | null>(null);
-  const portal = usePortalRef(dialog);
-  const disclosure = useDisclosureRef(
-    options.refId,
-    getDisclosureContainer,
-    options.visible
-  );
+  const portal = usePortalRef(dialog, options.visible);
+  const disclosure = useDisclosureRef(options.hiddenId, options.visible);
 
   preventBodyScroll = !modal ? false : preventBodyScroll;
   usePreventBodyScroll(dialog, options.visible && preventBodyScroll);
 
-  useFocusTrap(dialog, portal, hideOnClickOutside, options.visible && modal);
+  useFocusTrap(dialog, portal, options.visible && modal);
 
-  useFocusOnShow(dialog, portal, options.focusOnShow, options.visible);
+  useFocusOnShow(
+    dialog,
+    portal,
+    options.initialFocusRef,
+    options.visible && autoFocusOnShow
+  );
 
-  useFocusOnHide(dialog, disclosure, options.focusOnHide, !options.visible);
+  useFocusOnHide(
+    dialog,
+    options.finalFocusRef || disclosure,
+    !options.visible && autoFocusOnHide
+  );
 
   // Close all nested dialogs when parent dialog closes
-  useAttachAndInvoke(dialog, portal, options.hide, !options.visible);
+  useAttachAndInvoke(dialog, portal, "hide", options.hide, !options.visible);
 
-  const hide = React.useCallback(
-    e => {
-      // Ignore disclosure since a click on it will already close the dialog
-      if (e.target !== disclosure.current && options.hide) {
-        options.hide();
-      }
-    },
-    [disclosure, options.hide]
-  );
+  const hide = (e: Event) => {
+    // Ignore disclosure since a click on it will already close the dialog
+    if (e.target !== disclosure.current && options.hide) {
+      options.hide();
+    }
+  };
 
   // Hide on click outside
   useEventListenerOutside(
@@ -94,7 +106,7 @@ export function useDialog(
     options.visible && hideOnClickOutside
   );
 
-  // Hide on focus outside (for non-modal dialogs with hideOnClickOutside=true)
+  // Hide on focus outside
   useEventListenerOutside(
     portal,
     "focus",
@@ -108,6 +120,7 @@ export function useDialog(
       role: "dialog",
       tabIndex: -1,
       "aria-modal": modal,
+      "data-dialog": true,
       onKeyDown: e => {
         const keyMap = {
           Escape: () => {
@@ -136,8 +149,10 @@ const keys: Array<keyof unstable_DialogOptions> = [
   "hideOnEsc",
   "hideOnClickOutside",
   "preventBodyScroll",
-  "focusOnHide",
-  "focusOnShow"
+  "initialFocusRef",
+  "finalFocusRef",
+  "autoFocusOnShow",
+  "autoFocusOnHide"
 ];
 
 useDialog.keys = keys;
@@ -148,9 +163,9 @@ export const Dialog = unstable_createComponent(
   (type, props, children) => {
     warning(
       props["aria-label"] || props["aria-labelledby"],
-      `[reakit/Dialog]
-You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`
+      `You should provide either \`aria-label\` or \`aria-labelledby\` props.
+See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
+      "Dialog"
     );
 
     const element = unstable_useCreateElement(type, props, children);

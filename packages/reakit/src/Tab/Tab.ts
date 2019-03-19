@@ -6,14 +6,14 @@ import {
   unstable_RoverProps,
   useRover
 } from "../Rover/Rover";
+import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, unstable_TabStateReturn } from "./TabState";
-import { unstable_getTabId, unstable_getTabPanelId } from "./utils";
 
 export type unstable_TabOptions = unstable_RoverOptions &
   Partial<unstable_TabStateReturn> &
   Pick<unstable_TabStateReturn, "select"> & {
     /** TODO: Description */
-    refId: string;
+    stopId: string;
   };
 
 export type unstable_TabProps = unstable_RoverProps;
@@ -23,22 +23,22 @@ export function useTab(
   htmlProps: unstable_TabProps = {}
 ) {
   const allOptions = { focusable, ...options };
-  const selected = options.selectedRef === options.refId;
+  const selected = options.selectedId === options.stopId;
 
   htmlProps = mergeProps(
     {
       role: "tab",
-      id: unstable_getTabId(options.refId, options.baseId),
+      id: getTabId(options.stopId, options.baseId),
       "aria-selected": selected,
-      "aria-controls": unstable_getTabPanelId(options.refId, options.baseId),
+      "aria-controls": getTabPanelId(options.stopId, options.baseId),
       onClick: () => {
         if (!options.disabled && !selected) {
-          options.select(options.refId);
+          options.select(options.stopId);
         }
       },
       onFocus: () => {
-        if (!options.disabled && options.autoSelect && !selected) {
-          options.select(options.refId);
+        if (!options.disabled && !options.manual && !selected) {
+          options.select(options.stopId);
         }
       }
     } as typeof htmlProps,

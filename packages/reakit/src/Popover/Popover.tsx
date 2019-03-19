@@ -1,6 +1,6 @@
 // TODO: Refactor
 import * as React from "react";
-import warning from "tiny-warning";
+import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -48,9 +48,9 @@ export const Popover = unstable_createComponent(
   (type, props, children) => {
     warning(
       props["aria-label"] || props["aria-labelledby"],
-      `[reakit/Popover]
-You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`
+      `You should provide either \`aria-label\` or \`aria-labelledby\` props.
+See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
+      "Popover"
     );
 
     const element = unstable_useCreateElement(type, props, children);

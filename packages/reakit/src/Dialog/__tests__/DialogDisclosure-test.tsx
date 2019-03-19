@@ -2,8 +2,8 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { DialogDisclosure } from "../DialogDisclosure";
 
-const props = {
-  refId: "dialog",
+const props: Parameters<typeof DialogDisclosure>[0] = {
+  hiddenId: "dialog",
   toggle: jest.fn
 };
 

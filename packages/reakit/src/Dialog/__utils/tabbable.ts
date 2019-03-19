@@ -101,11 +101,13 @@ export function getNextTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
 ): T | null {
-  const allTabbable = getAllTabbableIn(container, fallbackToFocusable);
-  const index = allTabbable.indexOf(document.activeElement as T);
+  const allFocusable = getAllFocusableIn(container);
+  const index = allFocusable.indexOf(document.activeElement as T);
+  const slice = allFocusable.slice(index + 1);
   return (
-    allTabbable[index + 1] ||
-    (index + 1 === allTabbable.length ? allTabbable[0] : null)
+    slice.find(isTabbable) ||
+    allFocusable.find(isTabbable) ||
+    (fallbackToFocusable ? slice[0] : null)
   );
 }
 
@@ -113,11 +115,13 @@ export function getPreviousTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
 ): T | null {
-  const allTabbable = getAllTabbableIn(container, fallbackToFocusable);
-  const index = allTabbable.indexOf(document.activeElement as T);
+  const allFocusable = getAllFocusableIn(container).reverse();
+  const index = allFocusable.indexOf(document.activeElement as T);
+  const slice = allFocusable.slice(index + 1);
   return (
-    allTabbable[index - 1] ||
-    (index - 1 <= 0 ? allTabbable[allTabbable.length - 1] : null)
+    slice.find(isTabbable) ||
+    allFocusable.find(isTabbable) ||
+    (fallbackToFocusable ? slice[0] : null)
   );
 }
 

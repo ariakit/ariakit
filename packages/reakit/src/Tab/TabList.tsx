@@ -1,4 +1,4 @@
-import warning from "tiny-warning";
+import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { useHook } from "../system/useHook";
@@ -40,9 +40,9 @@ export const TabList = unstable_createComponent(
   (type, props, children) => {
     warning(
       props["aria-label"] || props["aria-labelledby"],
-      `[reakit/TabList]
-You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props-20`
+      `You should provide either \`aria-label\` or \`aria-labelledby\` props.
+See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props-20`,
+      "TabList"
     );
 
     const element = unstable_useCreateElement(type, props, children);

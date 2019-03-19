@@ -21,23 +21,23 @@ function Example() {
   return (
     <>
       <TabList>
-        <Tab refId="tab1" {...tab}>
+        <Tab stopId="tab1" {...tab}>
           Tab 1
         </Tab>
-        <Tab refId="tab2" disabled {...tab}>
+        <Tab stopId="tab2" disabled {...tab}>
           Tab 2
         </Tab>
-        <Tab refId="tab3" {...tab}>
+        <Tab stopId="tab3" {...tab}>
           Tab 3
         </Tab>
       </TabList>
-      <TabPanel refId="tab1" {...tab}>
+      <TabPanel stopId="tab1" {...tab}>
         Tab 1
       </TabPanel>
-      <TabPanel refId="tab2" {...tab}>
+      <TabPanel stopId="tab2" {...tab}>
         Tab 2
       </TabPanel>
-      <TabPanel refId="tab3" {...tab}>
+      <TabPanel stopId="tab3" {...tab}>
         Tab 3
       </TabPanel>
     </>
@@ -49,27 +49,27 @@ function Example() {
 import { useTabState, Tab, TabList, TabPanel } from "reakit";
 
 function Example() {
-  const tab = useTabState({ autoSelect: false, selectedRef: "tab2" });
+  const tab = useTabState({ manual: true, selectedId: "tab2" });
   return (
     <>
       <TabList>
-        <Tab refId="tab1" {...tab}>
+        <Tab stopId="tab1" {...tab}>
           Tab 1
         </Tab>
-        <Tab refId="tab2" disabled {...tab}>
+        <Tab stopId="tab2" disabled {...tab}>
           Tab 2
         </Tab>
-        <Tab refId="tab3" {...tab}>
+        <Tab stopId="tab3" {...tab}>
           Tab 3
         </Tab>
       </TabList>
-      <TabPanel refId="tab1" {...tab}>
+      <TabPanel stopId="tab1" {...tab}>
         Tab 1
       </TabPanel>
-      <TabPanel refId="tab2" {...tab}>
+      <TabPanel stopId="tab2" {...tab}>
         Tab 2
       </TabPanel>
-      <TabPanel refId="tab3" {...tab}>
+      <TabPanel stopId="tab3" {...tab}>
         Tab 3
       </TabPanel>
     </>

@@ -10,7 +10,7 @@ import { useHiddenState, unstable_HiddenStateReturn } from "./HiddenState";
 
 export type unstable_HiddenDisclosureOptions = unstable_ButtonOptions &
   Partial<unstable_HiddenStateReturn> &
-  Pick<unstable_HiddenStateReturn, "toggle" | "refId">;
+  Pick<unstable_HiddenStateReturn, "toggle" | "hiddenId">;
 
 export type unstable_HiddenDisclosureProps = unstable_ButtonProps;
 
@@ -22,7 +22,7 @@ export function useHiddenDisclosure(
     {
       onClick: options.toggle,
       "aria-expanded": Boolean(options.visible),
-      "aria-controls": options.refId
+      "aria-controls": options.hiddenId
     } as typeof htmlProps,
     htmlProps
   );

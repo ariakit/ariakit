@@ -2,7 +2,7 @@ import * as React from "react";
 import { render } from "react-testing-library";
 import { TabList } from "../TabList";
 
-const props = {
+const props: Parameters<typeof TabList>[0] = {
   "aria-label": "tablist"
 };
 
