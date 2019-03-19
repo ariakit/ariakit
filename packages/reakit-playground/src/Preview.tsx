@@ -3,6 +3,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as system from "reakit-system-classic";
 import { Provider } from "reakit/utils/Provider";
+import { unstable_useId } from "reakit/utils/useId";
 import { compileComponent } from "./__utils/compileComponent";
 import { EditorState } from "./useEditorState";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -15,12 +16,7 @@ export type PreviewProps = EditorState & {
 
 export function Preview(props: PreviewProps) {
   const ref = React.useRef<HTMLDivElement | null>(null);
-  const [prefix] = React.useState(
-    () =>
-      `preview-${Math.random()
-        .toString(32)
-        .substr(2, 6)}-`
-  );
+  const prefix = unstable_useId("preview-");
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((e: Error) => {
@@ -55,7 +51,7 @@ export function Preview(props: PreviewProps) {
         const exampleComponent = compileComponent(props.code);
         unmount();
         ReactDOM.render(
-          <Provider system={system} prefix={prefix}>
+          <Provider system={system} prefix={`${prefix}-`}>
             {exampleComponent}
           </Provider>,
           ref.current
@@ -72,7 +68,7 @@ export function Preview(props: PreviewProps) {
     <ErrorBoundary>
       {error && <ErrorMessage error={error} />}
       <div ref={ref} style={{ padding: 50 }}>
-        <Provider system={system} prefix={prefix}>
+        <Provider system={system} prefix={`${prefix}-`}>
           {rendered}
         </Provider>
       </div>
