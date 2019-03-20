@@ -49,8 +49,6 @@ export type unstable_FormState<V> = {
   submitSucceed: number;
   /** TODO: Description */
   submitFailed: number;
-  /** TODO: Description */
-  resetOnUnmount: boolean;
 };
 
 export type unstable_FormActions<V> = {
@@ -74,7 +72,7 @@ export type unstable_FormActions<V> = {
 };
 
 export type unstable_FormInitialState<V> = Partial<
-  Pick<unstable_FormState<V>, "baseId" | "initialValues" | "resetOnUnmount">
+  Pick<unstable_FormState<V>, "baseId" | "initialValues">
 > & {
   /** TODO: Description */
   validateOnBlur?: boolean;
@@ -82,6 +80,8 @@ export type unstable_FormInitialState<V> = Partial<
   validateOnChange?: boolean;
   /** TODO: Description */
   resetOnSubmitSucceed?: boolean;
+  /** TODO: Description */
+  resetOnUnmount?: boolean;
   /** TODO: Description */
   onValidate?: (values: V) => ValidateReturn<V>;
   /** TODO: Description */
@@ -219,7 +219,6 @@ export function useFormState<V = Record<any, any>>(
     baseId,
     initialValues,
     values: initialValues,
-    resetOnUnmount,
     touched: {},
     errors: {},
     messages: {},
@@ -230,18 +229,8 @@ export function useFormState<V = Record<any, any>>(
     submitSucceed: 0
   });
 
-  const valuesRef = React.useRef(state.values as V);
-  const validatingRef = React.useRef(state.validating);
-  const submittingRef = React.useRef(state.submitting);
-
-  React.useEffect(() => {
-    valuesRef.current = state.values as V;
-    validatingRef.current = state.validating;
-    submittingRef.current = state.submitting;
-  });
-
   const validate = React.useCallback(
-    async (vals = valuesRef.current) => {
+    async (vals = state.values) => {
       try {
         if (onValidate) {
           const response = onValidate(filterAllEmpty(vals));
@@ -256,22 +245,23 @@ export function useFormState<V = Record<any, any>>(
         throw errors;
       }
     },
-    [onValidate]
+    [state.values, onValidate]
   );
 
   useUpdateEffect(() => {
-    if (!validateOnChange || submittingRef.current || validatingRef.current) {
-      return;
+    if (validateOnChange) {
+      validate();
     }
-    validate();
-  }, [validate, validateOnChange, state.values]);
+  }, [validate, validateOnChange]);
 
-  useUpdateEffect(() => {
-    if (!validateOnBlur || submittingRef.current || validatingRef.current) {
-      return;
+  React.useEffect(() => {
+    if (resetOnUnmount) {
+      return () => {
+        dispatch({ type: "reset" });
+      };
     }
-    validate();
-  }, [validate, validateOnBlur, state.touched]);
+    return undefined;
+  }, [resetOnUnmount]);
 
   return {
     ...state,
@@ -283,7 +273,7 @@ export function useFormState<V = Record<any, any>>(
       try {
         const validateMessages = await validate();
         if (onSubmit) {
-          const response = onSubmit(valuesRef.current);
+          const response = onSubmit(state.values as V);
           dispatch({ type: "startSubmit" });
           const submitMessages = await response;
           const messages = { ...validateMessages, ...submitMessages };
@@ -300,7 +290,15 @@ export function useFormState<V = Record<any, any>>(
       (name, value) => dispatch({ type: "update", name, value }),
       []
     ),
-    blur: React.useCallback(name => dispatch({ type: "blur", name }), []),
+    blur: React.useCallback(
+      name => {
+        dispatch({ type: "blur", name });
+        if (validateOnBlur) {
+          validate();
+        }
+      },
+      [validate]
+    ),
     push: React.useCallback(
       (name, value) => dispatch({ type: "push", name, value }),
       []
@@ -323,7 +321,6 @@ const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "submitting",
   "submitSucceed",
   "submitFailed",
-  "resetOnUnmount",
   "validate",
   "submit",
   "reset",

@@ -105,7 +105,8 @@ function getPublicFiles(rootPath, prefix = "") {
     .filter(filename => isPublicModule(rootPath, filename))
     .reduce((acc, filename) => {
       const path = join(rootPath, filename);
-      const childFiles = isDirectory(path) && getPublicFiles(path, filename);
+      const childFiles =
+        isDirectory(path) && getPublicFiles(path, join(prefix, filename));
       return {
         ...(childFiles || { [removeExt(join(prefix, filename))]: path }),
         ...acc
