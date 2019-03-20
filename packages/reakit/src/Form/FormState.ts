@@ -6,7 +6,7 @@ import { unstable_useId } from "../utils/useId";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
 import { hasMessages } from "./__utils/hasMessages";
-import { unstable_setAllIn } from "./utils/setAll";
+import { unstable_setAllIn } from "./utils/setAllIn";
 import { unstable_getIn } from "./utils/getIn";
 import { unstable_setIn } from "./utils/setIn";
 
