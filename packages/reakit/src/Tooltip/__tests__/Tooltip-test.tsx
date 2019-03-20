@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { Tooltip } from "../Tooltip";
 
 test("render", () => {

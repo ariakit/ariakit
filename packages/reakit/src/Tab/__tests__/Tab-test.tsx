@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { Tab } from "../Tab";
 
 const props: Parameters<typeof Tab>[0] = {

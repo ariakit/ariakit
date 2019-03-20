@@ -38,7 +38,19 @@
     "react/prop-types": "off",
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
-    "react/button-has-type": "off"
+    "react/button-has-type": "off",
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always-and-inside-groups",
+        "groups": [
+          ["builtin", "external", "internal"],
+          "parent",
+          "sibling",
+          "index"
+        ]
+      }
+    ]
   },
   "overrides": [
     {

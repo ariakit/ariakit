@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { Menu } from "../Menu";
 
 function createRef(id: string) {

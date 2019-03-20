@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { TooltipReference } from "../TooltipReference";
 
 const props: Parameters<typeof TooltipReference>[0] = {

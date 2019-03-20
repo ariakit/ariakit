@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { ToolbarButton } from "../ToolbarButton";
 
 const props: Parameters<typeof ToolbarButton>[0] = {

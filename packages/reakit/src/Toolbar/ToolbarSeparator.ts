@@ -5,6 +5,7 @@ import {
   unstable_SeparatorProps,
   useSeparator
 } from "../Separator/Separator";
+
 import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
 export type unstable_ToolbarSeparatorOptions = unstable_SeparatorOptions &

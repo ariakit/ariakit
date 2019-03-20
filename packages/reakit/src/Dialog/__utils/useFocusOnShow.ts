@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { getFirstTabbableIn } from "./tabbable";
 
 function hasNestedOpenDialogs(portal: Element) {

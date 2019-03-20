@@ -1,9 +1,11 @@
 import * as React from "react";
 import { render, fireEvent, act } from "react-testing-library";
+
 import {
   focusNextTabbableIn,
   focusPreviousTabbableIn
 } from "../__utils/tabbable";
+
 import { Dialog, DialogDisclosure, useDialogState } from "..";
 
 test("clicking on disclosure opens the dialog", () => {

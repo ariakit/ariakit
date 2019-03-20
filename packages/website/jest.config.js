@@ -1,5 +1,7 @@
 const { join } = require("path");
+
 const { projects, ...baseConfig } = require("../../jest.config");
+
 const pkg = require("./package.json");
 
 module.exports = {

@@ -6,6 +6,7 @@ import {
   unstable_PopoverDisclosureProps,
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
+
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
 export type unstable_MenuDisclosureOptions = unstable_PopoverDisclosureOptions &

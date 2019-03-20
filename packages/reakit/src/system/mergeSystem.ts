@@ -1,6 +1,7 @@
 import { isObject } from "../__utils/isObject";
 import { reduceObjects } from "../__utils/reduceObjects";
 import { UnionToIntersection } from "../__utils/types";
+
 import { unstable_SystemContextType } from "./SystemContext";
 
 function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {

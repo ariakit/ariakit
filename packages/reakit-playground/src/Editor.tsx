@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
+
 import { EditorState, EditorActions } from "./useEditorState";
 
 export type EditorProps = EditorState &

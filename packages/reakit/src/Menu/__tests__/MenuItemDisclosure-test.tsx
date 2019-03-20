@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { MenuItemDisclosure } from "../MenuItemDisclosure";
 
 const props: Parameters<typeof MenuItemDisclosure>[0] = {

@@ -1,8 +1,10 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { transform } from "buble";
-import { importToRequire } from "./importToRequire";
+
 import deps from "../__deps";
+
+import { importToRequire } from "./importToRequire";
 
 export function compileComponent(
   code: string,

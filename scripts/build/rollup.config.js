@@ -5,6 +5,7 @@ const commonjs = require("rollup-plugin-commonjs");
 const { terser } = require("rollup-plugin-terser");
 const ignore = require("rollup-plugin-ignore");
 const { camelCase, upperFirst } = require("lodash");
+
 const {
   getIndexPath,
   getPublicFiles,

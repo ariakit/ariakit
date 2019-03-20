@@ -6,6 +6,7 @@ import {
   unstable_ButtonOptions,
   unstable_ButtonProps
 } from "../Button/Button";
+
 import { useHiddenState, unstable_HiddenStateReturn } from "./HiddenState";
 
 export type unstable_HiddenDisclosureOptions = unstable_ButtonOptions &

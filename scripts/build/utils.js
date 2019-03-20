@@ -1,3 +1,4 @@
+const { join, dirname, relative } = require("path");
 const {
   readdirSync,
   ensureDirSync,
@@ -5,9 +6,9 @@ const {
   lstatSync,
   existsSync
 } = require("fs-extra");
-const { join, dirname, relative } = require("path");
 const rimraf = require("rimraf");
 const chalk = require("chalk");
+
 const log = require("../log");
 
 /** converts ./path/to/file.js to ./path/to */

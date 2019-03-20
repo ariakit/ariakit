@@ -5,6 +5,7 @@ import {
   unstable_SeparatorProps,
   useSeparator
 } from "../Separator/Separator";
+
 import { unstable_MenuStateReturn, useMenuState } from "./MenuState";
 
 export type unstable_MenuSeparatorOptions = unstable_SeparatorOptions &

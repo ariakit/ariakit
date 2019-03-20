@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { TabPanel } from "../TabPanel";
 
 const props: Parameters<typeof TabPanel>[0] = {

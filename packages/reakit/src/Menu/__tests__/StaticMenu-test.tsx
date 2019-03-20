@@ -1,5 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
+
 import { StaticMenu } from "../StaticMenu";
 
 const props: Parameters<typeof StaticMenu>[0] = {

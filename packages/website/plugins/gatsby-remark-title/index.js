@@ -1,4 +1,5 @@
 const remove = require("unist-util-remove");
+
 const getFirstHeading = require("./getFirstHeading");
 
 function plugin({ markdownAST }) {
