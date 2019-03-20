@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { isTabbable } from "./tabbable";
 
 export function useFocusOnHide(

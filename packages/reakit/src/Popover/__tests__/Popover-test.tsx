@@ -1,6 +1,5 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-
 import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {

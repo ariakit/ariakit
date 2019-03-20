@@ -2,7 +2,6 @@ import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
 import { Preview, Editor, useEditorState } from "reakit-playground";
-
 import {
   H1,
   H2,
@@ -14,7 +13,6 @@ import {
   Pre,
   Code
 } from "reakit-system-classic/components";
-
 import CoreLayout from "../components/CoreLayout";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";

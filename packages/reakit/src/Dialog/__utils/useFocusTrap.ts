@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 
 function hasNestedOpenModals(portal: Element) {

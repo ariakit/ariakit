@@ -1,6 +1,5 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-
 import { PopoverBackdrop } from "../PopoverBackdrop";
 
 test("render", () => {

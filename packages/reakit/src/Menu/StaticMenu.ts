@@ -4,7 +4,6 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
-
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 

@@ -6,7 +6,6 @@ import {
   unstable_HiddenDisclosureProps,
   useHiddenDisclosure
 } from "../Hidden/HiddenDisclosure";
-
 import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogDisclosureOptions = unstable_HiddenDisclosureOptions &

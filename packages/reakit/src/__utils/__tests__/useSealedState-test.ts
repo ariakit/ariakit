@@ -1,5 +1,4 @@
 import { renderHook } from "react-hooks-testing-library";
-
 import { useSealedState } from "../useSealedState";
 
 test("useSealedState", () => {

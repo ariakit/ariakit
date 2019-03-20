@@ -6,7 +6,6 @@ import {
   unstable_DialogDisclosureProps,
   useDialogDisclosure
 } from "../Dialog/DialogDisclosure";
-
 import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
 
 export type unstable_PopoverDisclosureOptions = unstable_DialogDisclosureOptions &

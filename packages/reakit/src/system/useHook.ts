@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { useToken } from "./useToken";
 
 export function useHook(

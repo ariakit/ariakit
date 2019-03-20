@@ -5,7 +5,6 @@ import {
   unstable_PopoverArrowProps,
   usePopoverArrow
 } from "../Popover/PopoverArrow";
-
 import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
 
 export type unstable_TooltipArrowOptions = unstable_PopoverArrowOptions &

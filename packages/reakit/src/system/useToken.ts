@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { unstable_SystemContext } from "./SystemContext";
 
 export function useToken<T = any>(token: string, defaultValue?: T): T {

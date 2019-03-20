@@ -1,11 +1,9 @@
 import * as React from "react";
-
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
 import { As, PropsWithAs } from "../__utils/types";
-
+import { unstable_createComponent } from "../utils/createComponent";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";

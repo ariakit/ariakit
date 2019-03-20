@@ -8,7 +8,6 @@ const {
 } = require("fs-extra");
 const rimraf = require("rimraf");
 const chalk = require("chalk");
-
 const log = require("../log");
 
 /** converts ./path/to/file.js to ./path/to */

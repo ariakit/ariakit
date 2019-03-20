@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { mergeProps } from "../mergeProps";
 
 test("single ref", () => {

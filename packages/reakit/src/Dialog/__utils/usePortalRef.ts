@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Portal } from "../../Portal/Portal";
 
 export function usePortalRef(

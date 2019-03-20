@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const { join } = require("path");
 const spawn = require("cross-spawn");
-
 const {
   makeProxies,
   makeGitignore,

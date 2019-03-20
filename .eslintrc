@@ -42,7 +42,7 @@
     "import/order": [
       "error",
       {
-        "newlines-between": "always-and-inside-groups",
+        "newlines-between": "never",
         "groups": [
           ["builtin", "external", "internal"],
           "parent",

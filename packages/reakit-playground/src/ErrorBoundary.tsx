@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { ErrorMessage } from "./ErrorMessage";
 
 type ErrorBoundaryState = {

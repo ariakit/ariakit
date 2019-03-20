@@ -1,6 +1,5 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {

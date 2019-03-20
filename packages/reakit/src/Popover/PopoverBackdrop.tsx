@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { useHook } from "../system/useHook";
@@ -9,7 +8,6 @@ import {
   unstable_DialogBackdropProps,
   useDialogBackdrop
 } from "../Dialog/DialogBackdrop";
-
 import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
 
 export type unstable_PopoverBackdropOptions = unstable_DialogBackdropOptions &

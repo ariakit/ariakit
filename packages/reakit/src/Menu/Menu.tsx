@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -11,7 +10,6 @@ import {
   unstable_PopoverProps,
   usePopover
 } from "../Popover/Popover";
-
 import {
   unstable_StaticMenuOptions,
   unstable_StaticMenuProps,

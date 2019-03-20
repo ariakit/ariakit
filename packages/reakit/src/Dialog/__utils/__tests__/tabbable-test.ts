@@ -1,5 +1,4 @@
 import { ComponentProps } from "react";
-
 import { isFocusable, isTabbable } from "../tabbable";
 
 function h<T extends keyof JSX.IntrinsicElements>(

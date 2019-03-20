@@ -1,6 +1,5 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
-
 import { HiddenDisclosure } from "../HiddenDisclosure";
 
 const props: Parameters<typeof HiddenDisclosure>[0] = {

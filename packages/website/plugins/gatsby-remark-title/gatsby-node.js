@@ -2,7 +2,6 @@ const unified = require("unified");
 const remarkParse = require("remark-parse");
 const mdastToString = require("mdast-util-to-string");
 const { GraphQLString } = require("gatsby/graphql");
-
 const getFirstHeading = require("./getFirstHeading");
 
 const processor = unified().use(remarkParse);

@@ -1,6 +1,5 @@
 // TODO: Refactor
 import * as React from "react";
-
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -11,7 +10,6 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
-
 import { unstable_TooltipStateReturn, useTooltipState } from "./TooltipState";
 
 export type unstable_TooltipOptions = unstable_HiddenOptions &

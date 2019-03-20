@@ -6,7 +6,6 @@ import {
   unstable_RoverProps,
   useRover
 } from "../Rover/Rover";
-
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
 export type unstable_MenuItemOptions = unstable_RoverOptions &

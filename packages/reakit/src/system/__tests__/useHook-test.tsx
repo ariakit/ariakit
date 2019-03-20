@@ -1,6 +1,5 @@
 import * as React from "react";
 import { renderHook } from "react-hooks-testing-library";
-
 import { useHook } from "../useHook";
 import {
   unstable_SystemProvider as SystemProvider,

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
-
 import {
   Hidden,
   HiddenDisclosure,

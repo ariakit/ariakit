@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { As } from "../__utils/types";
 import { isRenderProp } from "../__utils/isRenderProp";
 import { unstable_SystemContext } from "../system/SystemContext";

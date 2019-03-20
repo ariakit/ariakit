@@ -1,6 +1,5 @@
 // TODO: Refactor
 import * as React from "react";
-
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -12,7 +11,6 @@ import {
   unstable_DialogProps,
   useDialog
 } from "../Dialog/Dialog";
-
 import { unstable_PopoverStateReturn, usePopoverState } from "./PopoverState";
 
 export type unstable_PopoverOptions = unstable_DialogOptions &

@@ -1,6 +1,5 @@
 // Credits: https://github.com/stevejay/react-roving-tabindex
 import * as React from "react";
-
 import { warning } from "../__utils/warning";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 
