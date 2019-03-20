@@ -27,7 +27,7 @@ export function unstable_createComponent<T extends As, O>(
   };
 
   if (process.env.NODE_ENV !== "production") {
-    Comp.displayName = useHook.name.replace("use", "");
+    (Comp as any).displayName = useHook.name.replace("use", "");
   }
 
   return forwardRef(Comp);
