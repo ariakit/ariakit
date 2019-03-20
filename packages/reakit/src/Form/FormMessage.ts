@@ -4,7 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs } from "../__utils/types";
 import { unstable_FormStateReturn, useFormState } from "./FormState";
-import { unstable_getIn } from "./utils";
+import { unstable_getIn } from "./utils/getIn";
 import { getMessageId } from "./__utils/getMessageId";
 import { shouldShowError } from "./__utils/shouldShowError";
 import { shouldShowMessage } from "./__utils/shouldShowMessage";

@@ -9,7 +9,7 @@ import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
 import { unstable_FormStateReturn, useFormState } from "./FormState";
-import { unstable_getIn } from "./utils";
+import { unstable_getIn } from "./utils/getIn";
 import { formatInputName } from "./__utils/formatInputName";
 import { getMessageId } from "./__utils/getMessageId";
 import { shouldShowError } from "./__utils/shouldShowError";
@@ -60,6 +60,8 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
   htmlProps = mergeProps(
     {
       checked,
+      "aria-checked": checked,
+      "aria-invalid": shouldShowError(options, options.name),
       role: "checkbox",
       type: "checkbox",
       tabIndex: 0,
@@ -72,9 +74,7 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
         if (event.key === " ") {
           change();
         }
-      },
-      "aria-checked": checked,
-      "aria-invalid": shouldShowError(options, options.name)
+      }
     } as typeof htmlProps,
     isBoolean
       ? ({

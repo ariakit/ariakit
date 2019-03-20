@@ -7,7 +7,7 @@ path: /docs/form
 ## Usage
 
 ```jsx
-import { Form, FormInput, useFormState } from "reakit";
+import { Form, FormInput, FormMessage, useFormState } from "reakit";
 
 function Example() {
   const form = useFormState({
@@ -25,7 +25,9 @@ function Example() {
   return (
     <Form {...form}>
       <FormInput {...form} name="a" />
+      <FormMessage {...form} name="a" />
       <FormInput {...form} name="b" />
+      <FormMessage {...form} name="b" />
       <pre>{JSON.stringify(form, null, 2)}</pre>
     </Form>
   );
