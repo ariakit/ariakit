@@ -33,7 +33,7 @@
     "@types/buble": "0.19.2",
     "@types/codemirror": "0.0.72",
     "buble": "0.19.7",
-    "codemirror": "5.44.0",
+    "codemirror": "5.45.0",
     "react-codemirror2": "5.1.0",
     "reakit": "^0.16.0",
     "reakit-system-classic": "^0.0.1",
