@@ -64,7 +64,7 @@ export function useRover(
       id: stopId,
       tabIndex: shouldTabIndexZero ? 0 : -1,
       onFocus: () => options.move(stopId),
-      onKeyDown: e => {
+      onKeyDown: event => {
         const { orientation } = options;
         const keyMap = {
           ArrowUp: orientation !== "horizontal" && options.previous,
@@ -76,11 +76,11 @@ export function useRover(
           PageUp: options.first,
           PageDown: options.last
         };
-        if (e.key in keyMap) {
-          const key = e.key as keyof typeof keyMap;
+        if (event.key in keyMap) {
+          const key = event.key as keyof typeof keyMap;
           const action = keyMap[key];
           if (action) {
-            e.preventDefault();
+            event.preventDefault();
             action();
           }
         }

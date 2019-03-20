@@ -23,18 +23,18 @@ export function useMenuDisclosure(
   htmlProps = mergeProps(
     {
       "aria-haspopup": "menu",
-      onKeyDown: e => {
+      onKeyDown: event => {
         const keyMap = {
           ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
           ArrowRight: dir === "right" && options.first,
           ArrowDown: dir === "bottom" || dir === "top" ? options.first : false,
           ArrowLeft: dir === "left" && options.first
         };
-        if (e.key in keyMap) {
-          const key = e.key as keyof typeof keyMap;
+        if (event.key in keyMap) {
+          const key = event.key as keyof typeof keyMap;
           const action = keyMap[key];
           if (typeof action === "function") {
-            e.preventDefault();
+            event.preventDefault();
             options.show();
             action();
           }

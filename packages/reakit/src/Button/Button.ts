@@ -42,21 +42,21 @@ export function useButton(
       disabled: reallyDisabled,
       tabIndex: reallyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,
-      onClick: e => {
+      onClick: event => {
         if (options.disabled) {
-          e.stopPropagation();
-          e.preventDefault();
+          event.stopPropagation();
+          event.preventDefault();
         } else if (options.onClick) {
-          options.onClick(e);
+          options.onClick(event);
         }
       },
-      onKeyDown: e => {
-        if (isNativeButton(e.target)) return;
+      onKeyDown: event => {
+        if (isNativeButton(event.target)) return;
         if (options.disabled) return;
 
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          e.target.dispatchEvent(
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          event.target.dispatchEvent(
             new MouseEvent("click", {
               view: window,
               bubbles: true,

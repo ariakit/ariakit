@@ -22,12 +22,12 @@ export function useMenuItem(
   htmlProps = mergeProps(
     {
       role: "menuitem",
-      onKeyDown: e => {
+      onKeyDown: event => {
         const { parent, hide, placement } = options;
         if (!parent || !hide || !placement) return;
 
         const [dir] = placement.split("-");
-        const target = e.target as Element;
+        const target = event.target as Element;
         const parentIsHorizontal = parent.orientation === "horizontal";
         const isDisclosure = target.getAttribute("aria-haspopup") === "menu";
 
@@ -48,11 +48,11 @@ export function useMenuItem(
               : dir === "right" && hide
         };
 
-        if (e.key in keyMap) {
-          const key = e.key as keyof typeof keyMap;
+        if (event.key in keyMap) {
+          const key = event.key as keyof typeof keyMap;
           const action = keyMap[key];
           if (typeof action === "function") {
-            e.preventDefault();
+            event.preventDefault();
             action();
           }
         }

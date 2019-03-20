@@ -20,8 +20,8 @@ export function useForm(
     {
       role: "form",
       noValidate: true,
-      onSubmit: e => {
-        e.preventDefault();
+      onSubmit: event => {
+        event.preventDefault();
         options.submit();
       }
     } as typeof htmlProps,
