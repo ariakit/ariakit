@@ -29,11 +29,12 @@ export type unstable_HiddenStateReturn = unstable_HiddenState &
 export function useHiddenState(
   initialState: SealedInitialState<unstable_HiddenInitialState> = {}
 ): unstable_HiddenStateReturn {
-  const { visible: sealedVisible = false, ...sealed } = useSealedState(
-    initialState
-  );
+  const {
+    hiddenId = unstable_useId("hidden-"),
+    visible: sealedVisible = false
+  } = useSealedState(initialState);
+
   const [visible, setVisible] = React.useState(sealedVisible);
-  const hiddenId = unstable_useId("hidden-");
 
   const show = React.useCallback(() => setVisible(true), []);
 
@@ -42,7 +43,7 @@ export function useHiddenState(
   const toggle = React.useCallback(() => setVisible(!visible), [visible]);
 
   return {
-    hiddenId: sealed.hiddenId || hiddenId,
+    hiddenId,
     visible,
     show,
     hide,

@@ -17,14 +17,18 @@ export function unstable_createComponent<T extends As, O>(
   useHook: Hook<O>,
   useCreateElement = originalUseCreateElement
 ) {
-  return forwardRef(
-    <TT extends As = T>(
-      { as = (element as unknown) as TT, ...props }: PropsWithAs<O, TT>,
-      ref: React.Ref<any>
-    ) => {
-      const [options, htmlProps] = unstable_splitProps(props, useHook.keys);
-      const elementProps = useHook(options, { ref, ...htmlProps });
-      return useCreateElement(as, elementProps);
-    }
-  );
+  const Comp = <TT extends As = T>(
+    { as = (element as unknown) as TT, ...props }: PropsWithAs<O, TT>,
+    ref: React.Ref<any>
+  ) => {
+    const [options, htmlProps] = unstable_splitProps(props, useHook.keys);
+    const elementProps = useHook(options, { ref, ...htmlProps });
+    return useCreateElement(as, elementProps);
+  };
+
+  if (process.env.NODE_ENV !== "production") {
+    Comp.displayName = useHook.name.replace("use", "");
+  }
+
+  return forwardRef(Comp);
 }

@@ -88,3 +88,9 @@ export type PropsWithAs<P, T extends As> = {
   children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
 } & P &
   Omit<React.ComponentProps<T>, "as" | keyof P>;
+
+/**
+ * Returns the type of the items in an array
+ * @template T Array
+ */
+export type ArrayValue<T> = T extends Array<infer U> ? U : never;

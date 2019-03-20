@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { useHook } from "../system/useHook";
@@ -30,21 +31,6 @@ export type unstable_RoverOptions = unstable_ButtonOptions &
   };
 
 export type unstable_RoverProps = unstable_ButtonProps;
-
-// https://github.com/reach/reach-ui/blob/34e52b029ba8330fa705804e6b71048267c46283/packages/tabs/src/index.js#L267-L276
-function useUpdateEffect(
-  effect: React.EffectCallback,
-  deps: ReadonlyArray<any> | undefined
-) {
-  const mounted = React.useRef(false);
-  React.useEffect(() => {
-    if (mounted.current) {
-      effect();
-    } else {
-      mounted.current = true;
-    }
-  }, deps);
-}
 
 export function useRover(
   options: unstable_RoverOptions,
