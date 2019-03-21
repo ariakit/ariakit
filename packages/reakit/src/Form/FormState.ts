@@ -18,14 +18,6 @@ type ValidateReturn<V> =
   | null
   | void;
 
-interface Update<V> {
-  <P extends DeepPath<V, P>>(name: P, value: DeepPathValue<V, P>): void;
-  <P extends DeepPath<V, P>>(
-    name: P,
-    value: (value: DeepPathValue<V, P>) => DeepPathValue<V, P>
-  ): void;
-}
-
 export type unstable_FormState<V> = {
   /** TODO: Description */
   baseId: string;
@@ -59,7 +51,12 @@ export type unstable_FormActions<V> = {
   /** TODO: Description */
   submit: () => void;
   /** TODO: Description */
-  update: Update<V>;
+  update: <P extends DeepPath<V, P>>(
+    name: P,
+    value:
+      | DeepPathValue<V, P>
+      | ((value: DeepPathValue<V, P>) => DeepPathValue<V, P>)
+  ) => void;
   /** TODO: Description */
   blur: <P extends DeepPath<V, P>>(name: P) => void;
   /** TODO: Description */
@@ -233,9 +230,8 @@ export function useFormState<V = Record<any, any>>(
     async (vals = state.values) => {
       try {
         if (onValidate) {
-          const response = onValidate(filterAllEmpty(vals));
           dispatch({ type: "startValidate" });
-          const messages = await response;
+          const messages = await onValidate(filterAllEmpty(vals));
           dispatch({ type: "endValidate", messages });
           return messages;
         }
@@ -274,8 +270,7 @@ export function useFormState<V = Record<any, any>>(
         dispatch({ type: "startSubmit" });
         const validateMessages = await validate();
         if (onSubmit) {
-          const response = onSubmit(state.values as V);
-          const submitMessages = await response;
+          const submitMessages = await onSubmit(state.values as V);
           const messages = { ...validateMessages, ...submitMessages };
           dispatch({ type: "endSubmit", messages });
           if (resetOnSubmitSucceed) {
