@@ -1,4 +1,3 @@
-// TODO: Refactor
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";

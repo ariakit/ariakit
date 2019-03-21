@@ -18,7 +18,6 @@ export type unstable_HiddenActions = {
   toggle: () => void;
 };
 
-// TODO: Accept function for the entire options or for each value
 export type unstable_HiddenInitialState = Partial<
   Pick<unstable_HiddenState, "hiddenId" | "visible">
 >;

@@ -37,7 +37,7 @@ export function useFormInput<V, P extends DeepPath<V, P>>(
     {
       id: getInputId(options.name, options.baseId),
       name: formatInputName(options.name),
-      value: unstable_getIn(options.values, options.name),
+      value: unstable_getIn(options.values, options.name, ""),
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
         options.update(options.name, e.target.value as any),
       onBlur: () => options.blur(options.name),

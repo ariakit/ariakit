@@ -10,8 +10,9 @@ import {
   useStaticMenuState
 } from "..";
 
-const keyDown = (key: string) =>
+function keyDown(key: string) {
   fireEvent.keyDown(document.activeElement!, { key });
+}
 
 test("clicking on disclosure opens the menu", () => {
   const Test = () => {

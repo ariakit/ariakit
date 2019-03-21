@@ -17,7 +17,7 @@ export function unstable_getIn(
   defaultValue?: any
 ) {
   if (typeof path === "string") {
-    return object[path];
+    return object[path] == null ? defaultValue : object[path];
   }
   let result = object;
   for (const key of path) {

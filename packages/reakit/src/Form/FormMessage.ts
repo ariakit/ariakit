@@ -26,17 +26,21 @@ export function useFormMessage<V, P extends DeepPath<V, P>>(
   options: unstable_FormMessageOptions<V, P>,
   htmlProps: unstable_FormMessageProps = {}
 ) {
+  let children = shouldShowError(options, options.name)
+    ? unstable_getIn(options.errors, options.name)
+    : undefined;
+  children =
+    children ||
+    (shouldShowMessage(options, options.name)
+      ? unstable_getIn(options.messages, options.name)
+      : undefined);
+
   htmlProps = mergeProps(
     {
       role: "alert",
-      id: getMessageId(options.name, options.baseId)
+      id: getMessageId(options.name, options.baseId),
+      children
     },
-    shouldShowMessage(options, options.name)
-      ? { children: unstable_getIn(options.messages, options.name) }
-      : {},
-    shouldShowError(options, options.name)
-      ? { children: unstable_getIn(options.errors, options.name) }
-      : {},
     htmlProps
   );
 

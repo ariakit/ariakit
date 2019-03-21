@@ -2,7 +2,7 @@
 import { renderHook, act } from "react-hooks-testing-library";
 import { useFormState } from "../FormState";
 import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
-import { supressConsoleError } from "../../__utils/supressConsoleError";
+import { supressAct } from "../../__utils/supressAct";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
@@ -96,24 +96,25 @@ test("validate", () => {
   });
 });
 
-test("submit", async () => {
-  const { result, waitForNextUpdate } = renderHook(() =>
-    useFormState({
-      initialValues: { a: "a" },
-      onSubmit: values => {
-        if (values.a === "a") {
-          const error = { a: "error" };
-          throw error;
+test(
+  "submit",
+  supressAct(async () => {
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useFormState({
+        initialValues: { a: "a" },
+        onSubmit: values => {
+          if (values.a === "a") {
+            const error = { a: "error" };
+            throw error;
+          }
         }
-      }
-    })
-  );
-  const restoreConsoleError = supressConsoleError();
-  act(result.current.submit);
-  await waitForNextUpdate();
-  expect(result.current.errors).toEqual({ a: "error" });
-  restoreConsoleError();
-});
+      })
+    );
+    act(result.current.submit);
+    await waitForNextUpdate();
+    expect(result.current.errors).toEqual({ a: "error" });
+  })
+);
 
 test("blur", () => {
   const { result } = renderHook(() =>
