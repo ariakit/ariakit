@@ -15,7 +15,7 @@ export type PreviewProps = EditorState & {
 };
 
 export function Preview(props: PreviewProps) {
-  const ref = React.useRef<HTMLDivElement | null>(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const prefix = unstable_useId("preview-");
   const [error, setError] = React.useState<Error | null>(null);
 

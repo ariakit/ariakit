@@ -64,7 +64,7 @@ export function useDialog(
     autoFocusOnHide,
     ...options
   };
-  const dialog = React.useRef<HTMLElement | null>(null);
+  const dialog = React.useRef<HTMLElement>(null);
   const portal = usePortalRef(dialog, options.visible);
   const disclosure = useDisclosureRef(options.hiddenId, options.visible);
 

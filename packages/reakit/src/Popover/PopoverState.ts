@@ -55,9 +55,9 @@ export function usePopoverState(
   } = useSealedState(initialState);
 
   const popper = React.useRef<Popper | null>(null);
-  const referenceRef = React.useRef<HTMLElement | null>(null);
-  const popoverRef = React.useRef<HTMLElement | null>(null);
-  const arrowRef = React.useRef<HTMLElement | null>(null);
+  const referenceRef = React.useRef<HTMLElement>(null);
+  const popoverRef = React.useRef<HTMLElement>(null);
+  const arrowRef = React.useRef<HTMLElement>(null);
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);

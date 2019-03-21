@@ -36,7 +36,7 @@ export function useRover(
   options: unstable_RoverOptions,
   htmlProps: unstable_RoverProps = {}
 ) {
-  const ref = React.useRef<HTMLElement | null>(null);
+  const ref = React.useRef<HTMLElement>(null);
   const id = unstable_useId("rover-");
   const stopId = options.stopId || id;
 

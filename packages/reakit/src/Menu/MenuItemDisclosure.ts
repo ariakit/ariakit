@@ -23,7 +23,7 @@ export function useMenuItemDisclosure(
   { stopId, ...options }: unstable_MenuItemDisclosureOptions,
   htmlProps: unstable_MenuItemDisclosureProps = {}
 ) {
-  const ref = React.useRef<HTMLElement | null>(null);
+  const ref = React.useRef<HTMLElement>(null);
   const { parent } = options;
 
   if (!parent) {
