@@ -8,6 +8,16 @@ path: /docs/checkbox
 
 ```jsx
 import React from "react";
+import { Checkbox } from "reakit";
+
+function Example() {
+  const [checked, setChecked] = React.useState(false);
+  const toggle = () => setChecked(!checked);
+  return <Checkbox checked={checked} onChange={toggle} />;
+}
+```
+
+```jsx
 import { Checkbox, useCheckboxState } from "reakit";
 
 function Example() {
@@ -17,7 +27,6 @@ function Example() {
 ```
 
 ```jsx
-import React from "react";
 import { Checkbox, useCheckboxState } from "reakit";
 
 function Example() {

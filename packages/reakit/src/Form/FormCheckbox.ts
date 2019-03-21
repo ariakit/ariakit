@@ -1,9 +1,13 @@
 import * as React from "react";
-import { As, PropsWithAs, ArrayValue } from "../__utils/types";
+import { As, PropsWithAs, ArrayValue, Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import {
+  unstable_CheckboxOptions,
+  unstable_CheckboxProps,
+  useCheckbox
+} from "../Checkbox/Checkbox";
 import { removeItemFromArray } from "../__utils/removeItemFromArray";
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
@@ -14,10 +18,10 @@ import { formatInputName } from "./__utils/formatInputName";
 import { getMessageId } from "./__utils/getMessageId";
 import { shouldShowError } from "./__utils/shouldShowError";
 
-export type unstable_FormCheckboxOptions<
-  V,
-  P extends DeepPath<V, P>
-> = unstable_BoxOptions &
+export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
+  unstable_CheckboxOptions,
+  "value" | "update"
+> &
   Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
@@ -29,7 +33,7 @@ export type unstable_FormCheckboxOptions<
     value?: ArrayValue<DeepPathValue<V, P>>;
   };
 
-export type unstable_FormCheckboxProps = unstable_BoxProps &
+export type unstable_FormCheckboxProps = unstable_CheckboxProps &
   React.InputHTMLAttributes<any>;
 
 export function useFormCheckbox<V, P extends DeepPath<V, P>>(
@@ -41,9 +45,9 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
     ? Boolean(unstable_getIn(options.values, options.name))
     : unstable_getIn(options.values, options.name, [] as any[]).indexOf(
         options.value
-      ) >= 0;
+      ) !== -1;
 
-  const change = () => {
+  const update = () => {
     if (isBoolean) {
       options.update(options.name, !checked as any);
     } else {
@@ -59,22 +63,9 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
 
   htmlProps = mergeProps(
     {
-      checked,
-      "aria-checked": checked,
       "aria-invalid": shouldShowError(options, options.name),
-      role: "checkbox",
-      type: "checkbox",
-      tabIndex: 0,
       name: formatInputName(options.name),
-      value: options.value,
-      onChange: change,
-      onBlur: () => options.blur(options.name),
-      onKeyDown: event => {
-        if (event.target instanceof HTMLInputElement) return;
-        if (event.key === " ") {
-          change();
-        }
-      }
+      onBlur: () => options.blur(options.name)
     } as typeof htmlProps,
     isBoolean
       ? ({
@@ -86,13 +77,16 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
+  htmlProps = useCheckbox(
+    { ...options, update, checked, toggle: update },
+    htmlProps
+  );
   htmlProps = useHook("useFormCheckbox", options, htmlProps);
   return htmlProps;
 }
 
 const keys: Array<keyof unstable_FormCheckboxOptions<any, any>> = [
-  ...useBox.keys,
+  ...useCheckbox.keys,
   ...useFormState.keys,
   "name",
   "value"
