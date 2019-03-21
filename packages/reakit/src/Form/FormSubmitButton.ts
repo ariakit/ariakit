@@ -21,6 +21,7 @@ export function useFormSubmitButton(
 ) {
   htmlProps = mergeProps(
     {
+      type: "submit",
       disabled: options.submitting,
       onClick: () => {
         window.requestAnimationFrame(() => {

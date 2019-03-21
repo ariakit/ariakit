@@ -59,14 +59,14 @@ export function useFormRemoveButton<V, P extends DeepPath<V, P>>(
             );
             if (input) {
               input.focus();
+              return;
             }
-          } else {
-            const pushButtonId = getPushButtonId(options.name, options.baseId);
-            if (pushButtonId) {
-              const pushButton = document.getElementById(pushButtonId);
-              if (pushButton) {
-                pushButton.focus();
-              }
+          }
+          const pushButtonId = getPushButtonId(options.name, options.baseId);
+          if (pushButtonId) {
+            const pushButton = document.getElementById(pushButtonId);
+            if (pushButton) {
+              pushButton.focus();
             }
           }
         });

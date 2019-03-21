@@ -20,6 +20,7 @@ test("render", () => {
       aria-haspopup="dialog"
       role="button"
       tabindex="0"
+      type="button"
     >
       disclosure
     </button>
@@ -43,6 +44,7 @@ test("render visible", () => {
       aria-haspopup="dialog"
       role="button"
       tabindex="0"
+      type="button"
     >
       disclosure
     </button>

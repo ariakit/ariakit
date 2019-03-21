@@ -30,6 +30,7 @@ test("render", () => {
       id="base-tab"
       role="tab"
       tabindex="-1"
+      type="button"
     >
       tab
     </button>
@@ -53,6 +54,7 @@ test("render active", () => {
       id="base-tab"
       role="tab"
       tabindex="0"
+      type="button"
     >
       tab
     </button>
@@ -76,6 +78,7 @@ test("render active selected", () => {
       id="base-tab"
       role="tab"
       tabindex="0"
+      type="button"
     >
       tab
     </button>

@@ -39,6 +39,7 @@ export function useButton(
   htmlProps = mergeProps(
     {
       role: "button",
+      type: "button",
       disabled: reallyDisabled,
       tabIndex: reallyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,

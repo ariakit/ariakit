@@ -8,6 +8,7 @@ test("render", () => {
 <button
   role="button"
   tabindex="0"
+  type="button"
 >
   button
 </button>
@@ -21,6 +22,7 @@ test("render disabled", () => {
   aria-disabled="true"
   disabled=""
   role="button"
+  type="button"
 >
   button
 </button>
@@ -38,6 +40,7 @@ test("render disabled focusable", () => {
   aria-disabled="true"
   role="button"
   tabindex="0"
+  type="button"
 >
   button
 </button>

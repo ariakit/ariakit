@@ -166,7 +166,7 @@ function reducer<V>(
         ...state,
         values: unstable_setIn(
           state.values,
-          name as any,
+          name,
           nextValue != null ? nextValue : ""
         )
       };
@@ -250,7 +250,7 @@ export function useFormState<V = Record<any, any>>(
 
   useUpdateEffect(() => {
     if (validateOnChange) {
-      validate();
+      validate().catch(() => {});
     }
   }, [validate, validateOnChange]);
 
@@ -271,16 +271,18 @@ export function useFormState<V = Record<any, any>>(
     reset: React.useCallback(() => dispatch({ type: "reset" }), []),
     submit: React.useCallback(async () => {
       try {
+        dispatch({ type: "startSubmit" });
         const validateMessages = await validate();
         if (onSubmit) {
           const response = onSubmit(state.values as V);
-          dispatch({ type: "startSubmit" });
           const submitMessages = await response;
           const messages = { ...validateMessages, ...submitMessages };
           dispatch({ type: "endSubmit", messages });
           if (resetOnSubmitSucceed) {
             dispatch({ type: "reset" });
           }
+        } else {
+          dispatch({ type: "endSubmit", messages: validateMessages });
         }
       } catch (errors) {
         dispatch({ type: "endSubmit", errors });
@@ -294,7 +296,7 @@ export function useFormState<V = Record<any, any>>(
       name => {
         dispatch({ type: "blur", name });
         if (validateOnBlur) {
-          validate();
+          validate().catch(() => {});
         }
       },
       [validate]
@@ -312,6 +314,7 @@ export function useFormState<V = Record<any, any>>(
 
 const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "baseId",
+  "initialValues",
   "values",
   "touched",
   "messages",

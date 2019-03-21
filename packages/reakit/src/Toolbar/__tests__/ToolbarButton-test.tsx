@@ -27,6 +27,7 @@ test("render", () => {
       id="rover"
       role="button"
       tabindex="-1"
+      type="button"
     >
       button
     </button>

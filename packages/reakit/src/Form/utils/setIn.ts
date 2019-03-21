@@ -4,7 +4,7 @@ import { DeepPath, DeepPathArray } from "../__utils/types";
 
 export function unstable_setIn<
   T extends Record<any, any> | Array<any>,
-  P extends DeepPath<T, any>
+  P extends DeepPath<T, P>
 >(object: T, path: P, value: any): T {
   const pathArray = toArray(path) as DeepPathArray<T, P>;
   const [key, ...keys] = pathArray;
