@@ -3,7 +3,7 @@ import * as React from "react";
 
 export function useUpdateEffect(
   effect: React.EffectCallback,
-  deps: ReadonlyArray<any> | undefined
+  deps?: ReadonlyArray<any> | undefined
 ) {
   const mounted = React.useRef(false);
   React.useEffect(() => {
