@@ -84,7 +84,7 @@ export function usePopoverState(
             : undefined,
           updateStateModifier: {
             order: 900,
-            // For some reason, we can't act() this
+            // TODO: https://github.com/facebook/react/pull/14853
             enabled: process.env.NODE_ENV !== "test",
             fn: data => {
               setPlacement(data.placement);

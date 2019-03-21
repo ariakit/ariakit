@@ -75,7 +75,7 @@ test("update", () => {
   act(() => result.current.update("a", "b"));
   expect(result.current.values.a).toBe("b");
   expect(result.current.values.b.c).toEqual(["d", "e"]);
-  act(() => result.current.update(["b", "c", 1] as const, "f"));
+  act(() => result.current.update(["b", "c", 1] as ["b", "c", 1], "f"));
   expect(result.current.values.b.c).toEqual(["d", "f"]);
 });
 
@@ -97,7 +97,6 @@ test("validate", () => {
 });
 
 test("submit", async () => {
-  const restoreConsoleError = supressConsoleError();
   const { result, waitForNextUpdate } = renderHook(() =>
     useFormState({
       initialValues: { a: "a" },
@@ -109,6 +108,7 @@ test("submit", async () => {
       }
     })
   );
+  const restoreConsoleError = supressConsoleError();
   act(result.current.submit);
   await waitForNextUpdate();
   expect(result.current.errors).toEqual({ a: "error" });
@@ -122,7 +122,7 @@ test("blur", () => {
   expect(result.current.touched).toEqual({});
   act(() => result.current.blur("a"));
   expect(result.current.touched).toEqual({ a: true });
-  act(() => result.current.blur(["b", "c", 1] as const));
+  act(() => result.current.blur(["b", "c", 1] as ["b", "c", 1]));
   expect(result.current.touched).toEqual({ a: true, b: { c: [true] } });
 });
 
@@ -130,7 +130,7 @@ test("push", () => {
   const { result } = renderHook(() =>
     useFormState({ initialValues: { a: "a", b: { c: ["d", "e"] } } })
   );
-  act(() => result.current.push(["b", "c"] as const, "f"));
+  act(() => result.current.push(["b", "c"], "f"));
   expect(result.current.values.b.c).toEqual(["d", "e", "f"]);
 });
 
@@ -138,7 +138,7 @@ test("remove", () => {
   const { result } = renderHook(() =>
     useFormState({ initialValues: { a: "a", b: { c: ["d", "e"] } } })
   );
-  act(() => result.current.remove(["b", "c"] as const, 0));
+  act(() => result.current.remove(["b", "c"], 0));
   expect(result.current.values.b.c).toEqual([undefined, "e"]);
 });
 

@@ -18,6 +18,14 @@ type ValidateReturn<V> =
   | null
   | void;
 
+interface Update<V> {
+  <P extends DeepPath<V, P>>(name: P, value: DeepPathValue<V, P>): void;
+  <P extends DeepPath<V, P>>(
+    name: P,
+    value: (value: DeepPathValue<V, P>) => DeepPathValue<V, P>
+  ): void;
+}
+
 export type unstable_FormState<V> = {
   /** TODO: Description */
   baseId: string;
@@ -51,12 +59,7 @@ export type unstable_FormActions<V> = {
   /** TODO: Description */
   submit: () => void;
   /** TODO: Description */
-  update: <P extends DeepPath<V, P>>(
-    name: P,
-    value:
-      | DeepPathValue<V, P>
-      | ((value: DeepPathValue<V, P>) => DeepPathValue<V, P>)
-  ) => void;
+  update: Update<V>;
   /** TODO: Description */
   blur: <P extends DeepPath<V, P>>(name: P) => void;
   /** TODO: Description */
