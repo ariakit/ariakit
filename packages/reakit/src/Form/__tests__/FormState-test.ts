@@ -12,7 +12,6 @@ test("initial state", () => {
 Object {
   "baseId": "test",
   "errors": Object {},
-  "initialValues": Object {},
   "messages": Object {},
   "submitFailed": 0,
   "submitSucceed": 0,
@@ -25,26 +24,17 @@ Object {
 `);
 });
 
-test("initial state initialValues", () => {
+test("initial state values", () => {
   const { result } = renderHook(() =>
     useFormState({
       baseId: "test",
-      initialValues: { a: "a", b: { c: ["d", "e"] } }
+      values: { a: "a", b: { c: ["d", "e"] } }
     })
   );
   expect(result.current).toMatchInlineSnapshot(`
 Object {
   "baseId": "test",
   "errors": Object {},
-  "initialValues": Object {
-    "a": "a",
-    "b": Object {
-      "c": Array [
-        "d",
-        "e",
-      ],
-    },
-  },
   "messages": Object {},
   "submitFailed": 0,
   "submitSucceed": 0,
@@ -68,7 +58,7 @@ Object {
 test("update", () => {
   const { result } = renderHook(() =>
     useFormState({
-      initialValues: { a: "a", b: { c: ["d", "e"] } }
+      values: { a: "a", b: { c: ["d", "e"] } }
     })
   );
   expect(result.current.values.a).toBe("a");
@@ -82,7 +72,7 @@ test("update", () => {
 test("validate", () => {
   const { result } = renderHook(() =>
     useFormState({
-      initialValues: { a: "a" },
+      values: { a: "a" },
       onValidate: values => {
         if (values.a === "a") {
           const error = { a: "error" };
@@ -101,7 +91,7 @@ test(
   supressAct(async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       useFormState({
-        initialValues: { a: "a" },
+        values: { a: "a" },
         onSubmit: values => {
           if (values.a === "a") {
             const error = { a: "error" };
@@ -118,7 +108,7 @@ test(
 
 test("blur", () => {
   const { result } = renderHook(() =>
-    useFormState({ initialValues: { a: "a", b: { c: ["d", "e"] } } })
+    useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
   );
   expect(result.current.touched).toEqual({});
   act(() => result.current.blur("a"));
@@ -129,7 +119,7 @@ test("blur", () => {
 
 test("push", () => {
   const { result } = renderHook(() =>
-    useFormState({ initialValues: { a: "a", b: { c: ["d", "e"] } } })
+    useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
   );
   act(() => result.current.push(["b", "c"], "f"));
   expect(result.current.values.b.c).toEqual(["d", "e", "f"]);
@@ -137,16 +127,14 @@ test("push", () => {
 
 test("remove", () => {
   const { result } = renderHook(() =>
-    useFormState({ initialValues: { a: "a", b: { c: ["d", "e"] } } })
+    useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
   );
   act(() => result.current.remove(["b", "c"], 0));
   expect(result.current.values.b.c).toEqual([undefined, "e"]);
 });
 
 test("reset", () => {
-  const { result } = renderHook(() =>
-    useFormState({ initialValues: { a: "a" } })
-  );
+  const { result } = renderHook(() => useFormState({ values: { a: "a" } }));
   expect(result.current.values.a).toBe("a");
   act(() => result.current.update("a", "b"));
   expect(result.current.values.a).toBe("b");

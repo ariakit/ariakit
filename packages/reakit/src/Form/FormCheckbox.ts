@@ -8,7 +8,6 @@ import {
   unstable_CheckboxProps,
   useCheckbox
 } from "../Checkbox/Checkbox";
-import { removeItemFromArray } from "../__utils/removeItemFromArray";
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -41,25 +40,9 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
   htmlProps: unstable_FormCheckboxProps = {}
 ) {
   const isBoolean = typeof options.value === "undefined";
-  const checked = isBoolean
-    ? Boolean(unstable_getIn(options.values, options.name))
-    : unstable_getIn(options.values, options.name, [] as any[]).indexOf(
-        options.value
-      ) !== -1;
-
-  const toggle = () => {
-    if (isBoolean) {
-      options.update(options.name, !checked as any);
-    } else {
-      options.update(options.name, value => {
-        const arrayVal: any[] = Array.isArray(value) ? value : [];
-        if (checked) {
-          return removeItemFromArray(arrayVal, options.value) as typeof value;
-        }
-        return [...arrayVal, options.value] as typeof value;
-      });
-    }
-  };
+  const currentValue = unstable_getIn(options.values, options.name);
+  const setValue = (value: DeepPathValue<V, P>) =>
+    options.update(options.name, value);
 
   htmlProps = mergeProps(
     {
@@ -77,7 +60,7 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useCheckbox({ ...options, checked, toggle }, htmlProps);
+  htmlProps = useCheckbox({ ...options, currentValue, setValue }, htmlProps);
   htmlProps = useHook("useFormCheckbox", options, htmlProps);
   return htmlProps;
 }

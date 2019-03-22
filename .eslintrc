@@ -23,6 +23,7 @@
     "no-underscore-dangle": "off",
     "no-plusplus": "off",
     "no-bitwise": "off",
+    "no-nested-ternary": "off",
     "global-require": "off",
     "camelcase": "off",
     "jsx-a11y/anchor-is-valid": "off",

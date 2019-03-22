@@ -30,8 +30,6 @@ export type unstable_FormState<V> = {
   /** TODO: Description */
   baseId: string;
   /** TODO: Description */
-  initialValues: V;
-  /** TODO: Description */
   values: V;
   /** TODO: Description */
   touched: DeepPartial<DeepMap<V, boolean>>;
@@ -72,7 +70,7 @@ export type unstable_FormActions<V> = {
 };
 
 export type unstable_FormInitialState<V> = Partial<
-  Pick<unstable_FormState<V>, "baseId" | "initialValues">
+  Pick<unstable_FormState<V>, "baseId" | "values">
 > & {
   /** TODO: Description */
   validateOnBlur?: boolean;
@@ -91,7 +89,9 @@ export type unstable_FormInitialState<V> = Partial<
 export type unstable_FormStateReturn<V> = unstable_FormState<V> &
   unstable_FormActions<V>;
 
-type FormAction =
+type ReducerState<V> = unstable_FormState<V> & { initialValues: V };
+
+type ReducerAction =
   | { type: "reset" }
   | { type: "startValidate" }
   | { type: "endValidate"; errors?: any; messages?: any }
@@ -103,9 +103,9 @@ type FormAction =
   | { type: "remove"; name: any; index: number };
 
 function reducer<V>(
-  state: unstable_FormState<V>,
-  action: FormAction
-): unstable_FormState<V> {
+  state: ReducerState<V>,
+  action: ReducerAction
+): ReducerState<V> {
   switch (action.type) {
     case "reset": {
       return {
@@ -206,7 +206,7 @@ export function useFormState<V = Record<any, any>>(
 ): unstable_FormStateReturn<V> {
   const {
     baseId = unstable_useId("form-"),
-    initialValues = {} as V,
+    values: initialValues = {} as V,
     validateOnBlur = true,
     validateOnChange = true,
     resetOnSubmitSucceed = false,
@@ -215,7 +215,7 @@ export function useFormState<V = Record<any, any>>(
     onSubmit
   } = useSealedState(initialState);
 
-  const [state, dispatch] = React.useReducer(reducer, {
+  const [{ initialValues: _, ...state }, dispatch] = React.useReducer(reducer, {
     baseId,
     initialValues,
     values: initialValues,
@@ -264,7 +264,6 @@ export function useFormState<V = Record<any, any>>(
 
   return {
     ...state,
-    initialValues: state.initialValues as V,
     values: state.values as V,
     validate,
     reset: React.useCallback(() => dispatch({ type: "reset" }), []),
@@ -312,7 +311,6 @@ export function useFormState<V = Record<any, any>>(
 
 const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "baseId",
-  "initialValues",
   "values",
   "touched",
   "messages",

@@ -24,7 +24,7 @@ import {
 
 function Example() {
   const form = useFormState({
-    initialValues: {
+    values: {
       name: "",
       emails: [],
       accepted: false,

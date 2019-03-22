@@ -20,12 +20,14 @@ export type unstable_RadioOptions = unstable_RoverOptions &
 export type unstable_RadioProps = unstable_RoverProps &
   React.InputHTMLAttributes<any>;
 
-// It should be Rover
 export function useRadio(
   options: unstable_RadioOptions,
   htmlProps: unstable_RadioProps = {}
 ) {
-  const checked = options.checked || options.currentValue === options.value;
+  const checked =
+    typeof options.checked !== "undefined"
+      ? options.checked
+      : options.currentValue === options.value;
 
   htmlProps = mergeProps(
     {

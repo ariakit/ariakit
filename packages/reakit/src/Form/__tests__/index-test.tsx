@@ -67,7 +67,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           input: ""
         },
         onValidate: values => {
@@ -99,7 +99,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           input: ""
         },
         onValidate: values => {
@@ -133,7 +133,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           a: {
             b: {
               c: ["d", "e", "f"]
@@ -179,7 +179,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           a: {
             b: {
               c: ["d", "e", "f"]
@@ -225,7 +225,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           input: ["a"] as Array<"a" | "b" | "c">
         },
         onValidate: values => {
@@ -272,7 +272,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           input: false
         },
         onSubmit: values => {
@@ -314,7 +314,7 @@ test(
   supressAct(async () => {
     const Test = () => {
       const form = useFormState({
-        initialValues: {
+        values: {
           input1: "",
           input2: "",
           input3: ""
@@ -350,7 +350,7 @@ test(
 test("arrow keys control radio buttons", async () => {
   const Test = () => {
     const form = useFormState({
-      initialValues: {
+      values: {
         input: "a"
       }
     });
@@ -404,7 +404,7 @@ test("push/remove button adds/removes entry and moves focus", async () => {
   const Test = () => {
     const form = useFormState({
       baseId: "form",
-      initialValues: {
+      values: {
         people: [] as Array<{ name: string; email: string }>
       }
     });

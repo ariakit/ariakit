@@ -17,14 +17,20 @@ import {
 export type unstable_MenuState = unstable_RoverState &
   unstable_PopoverState & {
     /** TODO: Description */
+    values: Record<string, any>;
+    /** TODO: Description */
     parent?: unstable_RoverStateReturn;
   };
 
 export type unstable_MenuActions = unstable_RoverActions &
-  unstable_PopoverActions;
+  unstable_PopoverActions & {
+    /** TODO: Description */
+    update: (name: string, value?: any) => void;
+  };
 
 export type unstable_MenuInitialState = unstable_RoverInitialState &
-  unstable_PopoverInitialState;
+  unstable_PopoverInitialState &
+  Partial<Pick<unstable_MenuState, "values">>;
 
 export type unstable_MenuStateReturn = unstable_MenuState &
   unstable_MenuActions;
@@ -33,9 +39,13 @@ export function useMenuState(
   initialState: SealedInitialState<unstable_MenuInitialState> = {},
   parent?: unstable_RoverStateReturn
 ): unstable_MenuStateReturn {
-  const { orientation = "vertical", gutter = 0, ...sealed } = useSealedState(
-    initialState
-  );
+  const {
+    orientation = "vertical",
+    gutter = 0,
+    values: initialValues = {},
+    ...sealed
+  } = useSealedState(initialState);
+  const [values, setValues] = React.useState(initialValues);
 
   const placement =
     sealed.placement ||
@@ -55,14 +65,23 @@ export function useMenuState(
   return {
     ...rover,
     ...popover,
-    parent
+    parent,
+    values,
+    update: React.useCallback((name, value) => {
+      setValues(vals => ({
+        ...vals,
+        [name]: typeof value === "function" ? value(vals) : value
+      }));
+    }, [])
   };
 }
 
 const keys: Array<keyof unstable_MenuStateReturn> = [
   ...useRoverState.keys,
   ...usePopoverState.keys,
-  "parent"
+  "parent",
+  "values",
+  "update"
 ];
 
 useMenuState.keys = keys;
