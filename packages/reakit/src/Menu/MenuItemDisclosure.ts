@@ -31,13 +31,43 @@ export function useMenuItemDisclosure(
     throw new Error("Missing parent prop");
   }
 
+  const lastMouseDown = React.useRef<EventTarget | null>();
+
+  React.useEffect(() => {
+    if (!ref.current || !parent || parent.orientation !== "horizontal")
+      return undefined;
+
+    const handleFocus = (event: FocusEvent) => {
+      if (event.target !== lastMouseDown.current) {
+        options.show();
+      }
+    };
+
+    const handleBlur = () => {
+      lastMouseDown.current = null;
+    };
+
+    const handleMouseDown = (event: MouseEvent | TouchEvent) => {
+      lastMouseDown.current = event.target;
+    };
+
+    ref.current.addEventListener("focus", handleFocus);
+    ref.current.addEventListener("blur", handleBlur);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("touchstart", handleMouseDown);
+    return () => {
+      ref.current!.removeEventListener("focus", handleFocus);
+      ref.current!.removeEventListener("blur", handleBlur);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("touchstart", handleMouseDown);
+    };
+  }, []);
+
   React.useEffect(() => {
     if (!parent || parent.orientation !== "horizontal") return;
     const thisStop = parent.stops.find(s => s.ref.current === ref.current);
     const thisIsCurrent = thisStop && thisStop.id === parent.currentId;
-    if (thisIsCurrent) {
-      options.show();
-    } else {
+    if (!thisIsCurrent && options.visible) {
       options.hide();
     }
   }, [
@@ -48,7 +78,18 @@ export function useMenuItemDisclosure(
     options.hide
   ]);
 
-  htmlProps = mergeProps({ ref } as typeof htmlProps, htmlProps);
+  htmlProps = mergeProps(
+    {
+      ref,
+      onKeyDown: event => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          options.hide();
+        }
+      }
+    } as typeof htmlProps,
+    htmlProps
+  );
   htmlProps = useMenuItem({ stopId, ...parent }, htmlProps);
   htmlProps = useMenuDisclosure(options, htmlProps);
   htmlProps = useHook("useMenuItemDisclosure", options, htmlProps);

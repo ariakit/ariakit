@@ -26,7 +26,38 @@ export function useMenuItemRadio(
 
   htmlProps = mergeProps(
     {
-      role: "menuitemradio"
+      role: "menuitemradio",
+      onKeyDown: event => {
+        const { parent, hide, placement } = options;
+        if (!parent || !hide || !placement) return;
+
+        const [dir] = placement.split("-");
+        const parentIsHorizontal = parent.orientation === "horizontal";
+
+        const keyMap = {
+          ArrowRight: parentIsHorizontal
+            ? () => {
+                parent.next();
+                hide();
+              }
+            : dir === "left" && hide,
+          ArrowLeft: parentIsHorizontal
+            ? () => {
+                parent.previous();
+                hide();
+              }
+            : dir === "right" && hide
+        };
+
+        if (event.key in keyMap) {
+          const key = event.key as keyof typeof keyMap;
+          const action = keyMap[key];
+          if (typeof action === "function") {
+            event.preventDefault();
+            action();
+          }
+        }
+      }
     } as typeof htmlProps,
     htmlProps
   );

@@ -62,6 +62,7 @@ import {
   StaticMenu,
   MenuDisclosure,
   MenuItem,
+  MenuItemCheckbox,
   MenuItemDisclosure,
   MenuItemRadio,
   mergeProps
@@ -105,6 +106,15 @@ function Example() {
         <Menu {...menu2} style={menuStyle(menu2)}>
           <MenuItem {...menu2}>Stu</MenuItem>
           <MenuItem {...menu2}>Vwx</MenuItem>
+          <label>
+            <MenuItemCheckbox {...menu2} name="accept" /> Accept
+          </label>
+          <label>
+            <MenuItemCheckbox {...menu2} name="fruits" value="apple" /> Apple
+          </label>
+          <label>
+            <MenuItemCheckbox {...menu2} name="fruits" value="orange" /> Orange
+          </label>
         </Menu>
         <MenuItem {...menuBar}>Ded</MenuItem>
       </StaticMenu>
