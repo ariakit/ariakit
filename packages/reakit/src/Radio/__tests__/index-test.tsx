@@ -1,20 +1,81 @@
 import * as React from "react";
-import { fireEvent, render } from "react-testing-library";
+import { render, fireEvent } from "react-testing-library";
 import { Radio, useRadioState } from "..";
 
-test("single checkbox", () => {
+test("click on radio", () => {
   const Test = () => {
-    const checkbox = useRadioState();
+    const radio = useRadioState();
     return (
       <label>
-        <Radio {...checkbox} />
-        checkbox
+        <Radio {...radio} value="radio" />
+        radio
       </label>
     );
   };
   const { getByLabelText } = render(<Test />);
-  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
-  expect(checkbox.checked).toBe(false);
-  fireEvent.click(checkbox);
-  expect(checkbox.checked).toBe(true);
+  const radio = getByLabelText("radio") as HTMLInputElement;
+  expect(radio.checked).toBe(false);
+  fireEvent.click(radio);
+  expect(radio.checked).toBe(true);
+});
+
+test("click on non-native radio", () => {
+  const Test = () => {
+    const radio = useRadioState();
+    return (
+      <label>
+        <Radio {...radio} as="div" value="radio" />
+        radio
+      </label>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const radio = getByLabelText("radio") as HTMLInputElement;
+  expect(radio.checked).toBe(false);
+  fireEvent.click(radio);
+  expect(radio.checked).toBe(true);
+});
+
+test("onChange", () => {
+  const Test = () => {
+    const { currentValue, setValue, ...radio } = useRadioState();
+    const [checked, setChecked] = React.useState(false);
+    const toggle = () => setChecked(!checked);
+    return (
+      <label>
+        <Radio {...radio} value="radio" onChange={toggle} checked={checked} />
+        radio
+      </label>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const radio = getByLabelText("radio") as HTMLInputElement;
+  expect(radio.checked).toBe(false);
+  fireEvent.click(radio);
+  expect(radio.checked).toBe(true);
+});
+
+test("onChange non-native radio", () => {
+  const Test = () => {
+    const { currentValue, setValue, ...radio } = useRadioState();
+    const [checked, setChecked] = React.useState(false);
+    const toggle = () => setChecked(!checked);
+    return (
+      <label>
+        <Radio
+          {...radio}
+          as="div"
+          value="radio"
+          onChange={toggle}
+          checked={checked}
+        />
+        radio
+      </label>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const radio = getByLabelText("radio") as HTMLInputElement;
+  expect(radio.checked).toBe(false);
+  fireEvent.click(radio);
+  expect(radio.checked).toBe(true);
 });

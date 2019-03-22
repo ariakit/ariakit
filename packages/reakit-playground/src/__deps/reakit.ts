@@ -70,6 +70,7 @@ export default {
   "reakit/Form/FormSubmitButton": require("reakit/Form/FormSubmitButton"),
   "reakit/Form/FormState": require("reakit/Form/FormState"),
   "reakit/Form/FormRemoveButton": require("reakit/Form/FormRemoveButton"),
+  "reakit/Form/FormRadioGroup": require("reakit/Form/FormRadioGroup"),
   "reakit/Form/FormRadio": require("reakit/Form/FormRadio"),
   "reakit/Form/FormPushButton": require("reakit/Form/FormPushButton"),
   "reakit/Form/FormMessage": require("reakit/Form/FormMessage"),

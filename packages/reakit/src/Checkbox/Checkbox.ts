@@ -51,11 +51,7 @@ export function useCheckbox(
       type: "checkbox",
       onClick: event => {
         if (event.target instanceof HTMLInputElement) return;
-        if (htmlProps.onChange) {
-          htmlProps.onChange(event);
-        } else if (options.toggle) {
-          options.toggle(options.value);
-        }
+        htmlProps.onChange!(event);
       },
       onChange: () => {
         if (options.disabled || !options.toggle) return;

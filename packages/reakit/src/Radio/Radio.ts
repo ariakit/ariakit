@@ -36,11 +36,7 @@ export function useRadio(
       type: "radio",
       onClick: event => {
         if (event.target instanceof HTMLInputElement) return;
-        if (htmlProps.onChange) {
-          htmlProps.onChange(event);
-        } else if (options.setValue) {
-          options.setValue(options.value);
-        }
+        htmlProps.onChange!(event);
       },
       onChange: () => {
         if (options.disabled || !options.setValue) return;
