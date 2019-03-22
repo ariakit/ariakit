@@ -12,7 +12,8 @@ import {
   FormSubmitButton,
   FormRemoveButton,
   FormPushButton,
-  useFormState
+  useFormState,
+  FormRadioGroup
 } from "..";
 
 function keyDown(key: string) {
@@ -355,7 +356,7 @@ test("arrow keys control radio buttons", async () => {
     });
     return (
       <Form {...form}>
-        <FormGroup {...form} name="input" radio>
+        <FormRadioGroup {...form} name="input">
           <label>
             <FormRadio {...form} name="input" value="a" />a
           </label>
@@ -365,7 +366,7 @@ test("arrow keys control radio buttons", async () => {
           <label>
             <FormRadio {...form} name="input" value="c" />c
           </label>
-        </FormGroup>
+        </FormRadioGroup>
       </Form>
     );
   };

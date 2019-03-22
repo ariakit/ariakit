@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormCheckbox,
   FormGroup,
+  FormRadioGroup,
   FormRadio,
   FormRemoveButton,
   FormPushButton,
@@ -62,7 +63,7 @@ function Example() {
           <FormCheckbox name="preferences" value="JS" {...form} /> JS
         </label>
       </FormGroup>
-      <FormGroup name="choice" radio {...form}>
+      <FormRadioGroup name="choice" {...form}>
         <FormLabel as="legend" name="choice" {...form}>
           Choice
         </FormLabel>
@@ -75,7 +76,7 @@ function Example() {
         <label>
           <FormRadio name="choice" value="js" {...form} /> JS
         </label>
-      </FormGroup>
+      </FormRadioGroup>
       {form.values.emails.map((_, i) => (
         <div key={i}>
           <FormInput name={["emails", i, "name"]} {...form} />

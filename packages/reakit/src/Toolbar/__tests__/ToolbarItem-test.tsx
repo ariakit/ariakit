@@ -1,8 +1,8 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { ToolbarButton } from "../ToolbarButton";
+import { ToolbarItem } from "../ToolbarItem";
 
-const props: Parameters<typeof ToolbarButton>[0] = {
+const props: Parameters<typeof ToolbarItem>[0] = {
   stopId: "rover",
   stops: [],
   currentId: null,
@@ -17,17 +17,13 @@ const props: Parameters<typeof ToolbarButton>[0] = {
 };
 
 test("render", () => {
-  const { baseElement } = render(
-    <ToolbarButton {...props}>button</ToolbarButton>
-  );
+  const { baseElement } = render(<ToolbarItem {...props}>button</ToolbarItem>);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div>
     <button
       id="rover"
-      role="button"
       tabindex="-1"
-      type="button"
     >
       button
     </button>

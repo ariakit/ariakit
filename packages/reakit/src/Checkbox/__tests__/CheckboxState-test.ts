@@ -12,25 +12,25 @@ test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": 0,
+  "currentValue": 0,
 }
 `);
 });
 
-test("initial state state", () => {
-  const result = render({ state: 1 });
+test("initial state currentValue", () => {
+  const result = render({ currentValue: 1 });
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": 1,
+  "currentValue": 1,
 }
 `);
 });
 
-test("initial state array state", () => {
-  const result = render({ state: ["a", "b"] });
+test("initial state array currentValue", () => {
+  const result = render({ currentValue: ["a", "b"] });
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": Array [
+  "currentValue": Array [
     "a",
     "b",
   ],
@@ -40,10 +40,10 @@ Object {
 
 test("update", () => {
   const result = render();
-  act(() => result.current.update(1));
+  act(() => result.current.setValue(1));
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": 1,
+  "currentValue": 1,
 }
 `);
 });
@@ -53,7 +53,7 @@ test("toggle", () => {
   act(result.current.toggle);
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": 1,
+  "currentValue": 1,
 }
 `);
 });
@@ -63,7 +63,7 @@ test("toggle value", () => {
   act(() => result.current.toggle("a"));
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": Array [
+  "currentValue": Array [
     "a",
   ],
 }
@@ -71,11 +71,11 @@ Object {
 });
 
 test("toggle existing value", () => {
-  const result = render({ state: ["a", "b", "c"] });
+  const result = render({ currentValue: ["a", "b", "c"] });
   act(() => result.current.toggle("b"));
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": Array [
+  "currentValue": Array [
     "a",
     "c",
   ],
@@ -84,11 +84,11 @@ Object {
 });
 
 test("toggle new value", () => {
-  const result = render({ state: ["a"] });
+  const result = render({ currentValue: ["a"] });
   act(() => result.current.toggle("b"));
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "state": Array [
+  "currentValue": Array [
     "a",
     "b",
   ],

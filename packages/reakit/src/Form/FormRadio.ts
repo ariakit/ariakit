@@ -1,13 +1,15 @@
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import * as React from "react";
+import { unstable_RadioProps, useRadio } from "../Radio/Radio";
 import { useHook } from "../system/useHook";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs } from "../__utils/types";
+import { unstable_BoxOptions, useBox } from "../Box";
 import { unstable_FormStateReturn, useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { formatInputName } from "./__utils/formatInputName";
-import { getInputId } from "./__utils/getInputId";
 import { DeepPath, DeepPathValue } from "./__utils/types";
+import { FormRadioGroupContext } from "./FormRadioGroup";
 
 export type unstable_FormRadioOptions<
   V,
@@ -21,59 +23,35 @@ export type unstable_FormRadioOptions<
     value: DeepPathValue<V, P>;
   };
 
-export type unstable_FormRadioProps = unstable_BoxProps;
+export type unstable_FormRadioProps = unstable_RadioProps;
 
 export function useFormRadio<V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioOptions<V, P>,
   htmlProps: unstable_FormRadioProps = {}
 ) {
+  const rover = React.useContext(FormRadioGroupContext);
+
+  if (!rover) {
+    // TODO: Better error
+    throw new Error("Missing FormRadioGroup");
+  }
+
   const currentChecked = unstable_getIn(options.values, options.name);
   const checked = currentChecked === options.value;
+  const allOptions = { ...rover, ...options, checked };
 
   htmlProps = mergeProps(
     {
-      checked,
-      "aria-checked": checked,
-      role: "radio",
-      type: "radio",
-      tabIndex: checked || !currentChecked ? 0 : -1,
       name: formatInputName(options.name),
-      value: options.value,
       onChange: () => options.update(options.name, options.value),
       onBlur: () => options.blur(options.name),
-      onFocus: () => options.update(options.name, options.value),
-      onKeyDown: event => {
-        const groupId = getInputId(options.name, options.baseId);
-        if (!groupId) return;
-        const group = document.getElementById(groupId);
-        if (!group) return;
-        const radios = group.querySelectorAll<HTMLElement>("[role=radio]");
-        if (!radios.length) return;
-
-        const radiosArray = Array.from(radios);
-        const currentIdx = radiosArray.indexOf(event.target as HTMLElement);
-        const lastIdx = radiosArray.length - 1;
-        const nextIdx = currentIdx === lastIdx ? 0 : currentIdx + 1;
-        const previousIdx = currentIdx === 0 ? lastIdx : currentIdx - 1;
-
-        const keyMap = {
-          ArrowRight: () => radiosArray[nextIdx].focus(),
-          ArrowDown: () => radiosArray[nextIdx].focus(),
-          ArrowLeft: () => radiosArray[previousIdx].focus(),
-          ArrowUp: () => radiosArray[previousIdx].focus()
-        };
-
-        if (event.key in keyMap) {
-          event.preventDefault();
-          keyMap[event.key as keyof typeof keyMap]();
-        }
-      }
+      onFocus: () => options.update(options.name, options.value)
     } as typeof htmlProps,
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("useFormRadio", options, htmlProps);
+  htmlProps = useRadio(allOptions, htmlProps);
+  htmlProps = useHook("useFormRadio", allOptions, htmlProps);
   return htmlProps;
 }
 

@@ -30,7 +30,7 @@ function Example() {
 import { Checkbox, useCheckboxState } from "reakit";
 
 function Example() {
-  const checkbox = useCheckboxState({ state: ["apple"] });
+  const checkbox = useCheckboxState({ currentValue: ["apple"] });
 
   return (
     <div role="group">

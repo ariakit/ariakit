@@ -9,7 +9,7 @@ redirect_from:
 ```jsx
 import {
   Toolbar,
-  ToolbarButton,
+  ToolbarItem,
   ToolbarSeparator,
   useToolbarState
 } from "reakit";
@@ -18,10 +18,10 @@ function Example() {
   const toolbar = useToolbarState();
   return (
     <Toolbar {...toolbar}>
-      <ToolbarButton {...toolbar}>Item 1</ToolbarButton>
-      <ToolbarButton {...toolbar}>Item 2</ToolbarButton>
+      <ToolbarItem {...toolbar}>Item 1</ToolbarItem>
+      <ToolbarItem {...toolbar}>Item 2</ToolbarItem>
       <ToolbarSeparator {...toolbar} />
-      <ToolbarButton {...toolbar}>Item 3</ToolbarButton>
+      <ToolbarItem {...toolbar}>Item 3</ToolbarItem>
     </Toolbar>
   );
 }

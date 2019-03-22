@@ -23,9 +23,7 @@ test("render", () => {
   <div>
     <button
       id="rover"
-      role="button"
       tabindex="-1"
-      type="button"
     >
       rover
     </button>
@@ -45,9 +43,7 @@ test("render currentId equals to stopId", () => {
   <div>
     <button
       id="rover"
-      role="button"
       tabindex="0"
-      type="button"
     >
       rover
     </button>

@@ -20,7 +20,7 @@ import { shouldShowError } from "./__utils/shouldShowError";
 
 export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
   unstable_CheckboxOptions,
-  "value" | "update"
+  "value"
 > &
   Partial<unstable_FormStateReturn<V>> &
   Pick<
@@ -47,7 +47,7 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
         options.value
       ) !== -1;
 
-  const update = () => {
+  const toggle = () => {
     if (isBoolean) {
       options.update(options.name, !checked as any);
     } else {
@@ -77,10 +77,7 @@ export function useFormCheckbox<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useCheckbox(
-    { ...options, update, checked, toggle: update },
-    htmlProps
-  );
+  htmlProps = useCheckbox({ ...options, checked, toggle }, htmlProps);
   htmlProps = useHook("useFormCheckbox", options, htmlProps);
   return htmlProps;
 }

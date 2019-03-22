@@ -27,6 +27,7 @@ export function useMenuItemDisclosure(
   const { parent } = options;
 
   if (!parent) {
+    // TODO: Better error
     throw new Error("Missing parent prop");
   }
 

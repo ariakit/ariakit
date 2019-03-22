@@ -1,9 +1,9 @@
 import * as React from "react";
 import {
-  unstable_ButtonOptions,
-  unstable_ButtonProps,
-  useButton
-} from "../Button/Button";
+  unstable_TabbableOptions,
+  unstable_TabbableProps,
+  useTabbable
+} from "../Tabbable/Tabbable";
 import { useHook } from "../system/useHook";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
@@ -11,13 +11,12 @@ import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { unstable_RoverStateReturn, useRoverState } from "./RoverState";
 
-export type unstable_RoverOptions = unstable_ButtonOptions &
+export type unstable_RoverOptions = unstable_TabbableOptions &
   Partial<unstable_RoverStateReturn> &
   Pick<
     unstable_RoverStateReturn,
     | "stops"
     | "currentId"
-    | "pastId"
     | "register"
     | "unregister"
     | "move"
@@ -30,7 +29,7 @@ export type unstable_RoverOptions = unstable_ButtonOptions &
     stopId?: string;
   };
 
-export type unstable_RoverProps = unstable_ButtonProps;
+export type unstable_RoverProps = unstable_TabbableProps;
 
 export function useRover(
   options: unstable_RoverOptions,
@@ -56,7 +55,7 @@ export function useRover(
     if (ref.current && focused) {
       ref.current.focus();
     }
-  }, [options.pastId, focused]);
+  }, [focused]);
 
   htmlProps = mergeProps(
     {
@@ -89,13 +88,13 @@ export function useRover(
     htmlProps
   );
 
-  htmlProps = useButton(options, htmlProps);
+  htmlProps = useTabbable(options, htmlProps);
   htmlProps = useHook("useRover", options, htmlProps);
   return htmlProps;
 }
 
 const keys: Array<keyof unstable_RoverOptions> = [
-  ...useButton.keys,
+  ...useTabbable.keys,
   ...useRoverState.keys,
   "stopId"
 ];

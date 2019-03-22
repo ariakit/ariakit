@@ -19,8 +19,6 @@ export type unstable_FormGroupOptions<
   Pick<unstable_FormStateReturn<V>, "touched" | "errors"> & {
     /** TODO: Description */
     name: P;
-    /** TODO: Description */
-    radio?: boolean;
   };
 
 export type unstable_FormGroupProps = unstable_BoxProps &
@@ -32,7 +30,7 @@ export function useFormGroup<V, P extends DeepPath<V, P>>(
 ) {
   htmlProps = mergeProps(
     {
-      role: options.radio ? "radiogroup" : "group",
+      role: "group",
       id: getInputId(options.name, options.baseId),
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
@@ -49,8 +47,7 @@ export function useFormGroup<V, P extends DeepPath<V, P>>(
 const keys: Array<keyof unstable_FormGroupOptions<any, any>> = [
   ...useBox.keys,
   ...useFormState.keys,
-  "name",
-  "radio"
+  "name"
 ];
 
 useFormGroup.keys = keys;
