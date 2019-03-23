@@ -27,10 +27,13 @@ export function useShortcuts(
     return () => clearTimeout(timeoutId);
   }, [keys, stops, move]);
 
-  return (e: React.KeyboardEvent) => {
-    if (/^[a-z0-9_-]$/i.test(e.key)) {
-      e.preventDefault();
-      setKeys(`${keys}${e.key}`);
+  return (event: React.KeyboardEvent) => {
+    if (event.metaKey || event.altKey || event.shiftKey || event.ctrlKey) {
+      return;
+    }
+    if (/^[a-z0-9_-]$/i.test(event.key)) {
+      event.preventDefault();
+      setKeys(`${keys}${event.key}`);
     }
   };
 }
