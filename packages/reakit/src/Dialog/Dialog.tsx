@@ -64,7 +64,7 @@ export function useDialog(
     autoFocusOnHide,
     ...options
   };
-  const dialog = React.useRef<HTMLElement | null>(null);
+  const dialog = React.useRef<HTMLElement>(null);
   const portal = usePortalRef(dialog, options.visible);
   const disclosure = useDisclosureRef(options.hiddenId, options.visible);
 
@@ -121,16 +121,16 @@ export function useDialog(
       tabIndex: -1,
       "aria-modal": modal,
       "data-dialog": true,
-      onKeyDown: e => {
+      onKeyDown: event => {
         const keyMap = {
           Escape: () => {
             if (!options.hide || !hideOnEsc) return;
-            e.stopPropagation();
+            event.stopPropagation();
             options.hide();
           }
         };
-        if (e.key in keyMap) {
-          keyMap[e.key as keyof typeof keyMap]();
+        if (event.key in keyMap) {
+          keyMap[event.key as keyof typeof keyMap]();
         }
       }
     } as typeof htmlProps,

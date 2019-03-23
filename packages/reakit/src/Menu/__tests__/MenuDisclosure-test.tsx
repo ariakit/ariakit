@@ -23,6 +23,7 @@ test("render", () => {
       aria-haspopup="menu"
       role="button"
       tabindex="0"
+      type="button"
     >
       disclosure
     </button>

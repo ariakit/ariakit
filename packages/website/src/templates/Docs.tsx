@@ -13,10 +13,10 @@ import {
   Pre,
   Code
 } from "reakit-system-classic/components";
+import CoreLayout from "../components/CoreLayout";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import "./codemirror.css";
-import CoreLayout from "../components/CoreLayout";
 
 if (typeof navigator !== "undefined") {
   require("codemirror/mode/jsx/jsx");

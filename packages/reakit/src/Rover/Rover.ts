@@ -1,22 +1,22 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
 import {
-  unstable_ButtonOptions,
-  unstable_ButtonProps,
-  useButton
-} from "../Button/Button";
-import { useRoverState, unstable_RoverStateReturn } from "./RoverState";
-import { unstable_useId } from "../utils";
+  unstable_TabbableOptions,
+  unstable_TabbableProps,
+  useTabbable
+} from "../Tabbable/Tabbable";
+import { useHook } from "../system/useHook";
+import { unstable_createComponent } from "../utils/createComponent";
+import { mergeProps } from "../utils/mergeProps";
+import { unstable_useId } from "../utils/useId";
+import { useUpdateEffect } from "../__utils/useUpdateEffect";
+import { unstable_RoverStateReturn, useRoverState } from "./RoverState";
 
-export type unstable_RoverOptions = unstable_ButtonOptions &
+export type unstable_RoverOptions = unstable_TabbableOptions &
   Partial<unstable_RoverStateReturn> &
   Pick<
     unstable_RoverStateReturn,
     | "stops"
     | "currentId"
-    | "pastId"
     | "register"
     | "unregister"
     | "move"
@@ -29,28 +29,13 @@ export type unstable_RoverOptions = unstable_ButtonOptions &
     stopId?: string;
   };
 
-export type unstable_RoverProps = unstable_ButtonProps;
-
-// https://github.com/reach/reach-ui/blob/34e52b029ba8330fa705804e6b71048267c46283/packages/tabs/src/index.js#L267-L276
-function useUpdateEffect(
-  effect: React.EffectCallback,
-  deps: ReadonlyArray<any> | undefined
-) {
-  const mounted = React.useRef(false);
-  React.useEffect(() => {
-    if (mounted.current) {
-      effect();
-    } else {
-      mounted.current = true;
-    }
-  }, deps);
-}
+export type unstable_RoverProps = unstable_TabbableProps;
 
 export function useRover(
   options: unstable_RoverOptions,
   htmlProps: unstable_RoverProps = {}
 ) {
-  const ref = React.useRef<HTMLElement | null>(null);
+  const ref = React.useRef<HTMLElement>(null);
   const id = unstable_useId("rover-");
   const stopId = options.stopId || id;
 
@@ -70,7 +55,7 @@ export function useRover(
     if (ref.current && focused) {
       ref.current.focus();
     }
-  }, [options.pastId, focused]);
+  }, [focused]);
 
   htmlProps = mergeProps(
     {
@@ -78,7 +63,7 @@ export function useRover(
       id: stopId,
       tabIndex: shouldTabIndexZero ? 0 : -1,
       onFocus: () => options.move(stopId),
-      onKeyDown: e => {
+      onKeyDown: event => {
         const { orientation } = options;
         const keyMap = {
           ArrowUp: orientation !== "horizontal" && options.previous,
@@ -90,11 +75,11 @@ export function useRover(
           PageUp: options.first,
           PageDown: options.last
         };
-        if (e.key in keyMap) {
-          const key = e.key as keyof typeof keyMap;
+        if (event.key in keyMap) {
+          const key = event.key as keyof typeof keyMap;
           const action = keyMap[key];
           if (action) {
-            e.preventDefault();
+            event.preventDefault();
             action();
           }
         }
@@ -103,13 +88,13 @@ export function useRover(
     htmlProps
   );
 
-  htmlProps = useButton(options, htmlProps);
+  htmlProps = useTabbable(options, htmlProps);
   htmlProps = useHook("useRover", options, htmlProps);
   return htmlProps;
 }
 
 const keys: Array<keyof unstable_RoverOptions> = [
-  ...useButton.keys,
+  ...useTabbable.keys,
   ...useRoverState.keys,
   "stopId"
 ];

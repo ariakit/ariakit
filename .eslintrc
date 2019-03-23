@@ -23,9 +23,12 @@
     "no-underscore-dangle": "off",
     "no-plusplus": "off",
     "no-bitwise": "off",
+    "no-nested-ternary": "off",
     "global-require": "off",
     "camelcase": "off",
     "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/label-has-for": "off",
+    "jsx-a11y/label-has-associated-control": "off",
     "import/export": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
@@ -38,7 +41,19 @@
     "react/prop-types": "off",
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
-    "react/button-has-type": "off"
+    "react/button-has-type": "off",
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "never",
+        "groups": [
+          ["builtin", "external", "internal"],
+          "parent",
+          "sibling",
+          "index"
+        ]
+      }
+    ]
   },
   "overrides": [
     {

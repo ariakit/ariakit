@@ -1,7 +1,7 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
+import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
 import { Portal } from "../Portal/Portal";
 import {

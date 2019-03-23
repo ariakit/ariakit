@@ -1,4 +1,3 @@
-// TODO: Refactor
 import * as React from "react";
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";

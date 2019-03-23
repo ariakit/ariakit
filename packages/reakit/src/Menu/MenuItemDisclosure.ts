@@ -9,6 +9,7 @@ import {
   useMenuDisclosure
 } from "./MenuDisclosure";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { useKeyboardFocus } from "./__utils/useKeyboardFocus";
 
 export type unstable_MenuItemDisclosureOptions = unstable_MenuDisclosureOptions &
   Partial<unstable_MenuStateReturn> &
@@ -23,31 +24,43 @@ export function useMenuItemDisclosure(
   { stopId, ...options }: unstable_MenuItemDisclosureOptions,
   htmlProps: unstable_MenuItemDisclosureProps = {}
 ) {
-  const ref = React.useRef<HTMLElement | null>(null);
+  const ref = React.useRef<HTMLElement>(null);
   const { parent } = options;
 
   if (!parent) {
+    // TODO: Better error
     throw new Error("Missing parent prop");
   }
 
+  useKeyboardFocus(
+    ref,
+    options.show,
+    parent && parent.orientation === "horizontal"
+  );
+
   React.useEffect(() => {
     if (!parent || parent.orientation !== "horizontal") return;
-    const thisStop = parent.stops.find(s => s.ref.current === ref.current);
+    const thisStop = parent.stops.find(
+      stop => stop.ref.current === ref.current
+    );
     const thisIsCurrent = thisStop && thisStop.id === parent.currentId;
-    if (thisIsCurrent) {
-      options.show();
-    } else {
+    if (!thisIsCurrent && options.visible) {
       options.hide();
     }
-  }, [
-    parent.orientation,
-    parent.currentId,
-    parent.stops,
-    options.show,
-    options.hide
-  ]);
+  }, [parent.orientation, parent.currentId, parent.stops, options.hide]);
 
-  htmlProps = mergeProps({ ref } as typeof htmlProps, htmlProps);
+  htmlProps = mergeProps(
+    {
+      ref,
+      onKeyDown: event => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          options.hide();
+        }
+      }
+    } as typeof htmlProps,
+    htmlProps
+  );
   htmlProps = useMenuItem({ stopId, ...parent }, htmlProps);
   htmlProps = useMenuDisclosure(options, htmlProps);
   htmlProps = useHook("useMenuItemDisclosure", options, htmlProps);

@@ -7,13 +7,17 @@
 /system
 /Tooltip
 /Toolbar
+/Tabbable
 /Tab
 /Separator
 /Rover
+/Radio
 /Portal
 /Popover
 /Menu
 /Hidden
+/Form
 /Dialog
+/Checkbox
 /Button
 /Box

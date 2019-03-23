@@ -1,3 +1,4 @@
+const { join, dirname, relative } = require("path");
 const {
   readdirSync,
   ensureDirSync,
@@ -5,7 +6,6 @@ const {
   lstatSync,
   existsSync
 } = require("fs-extra");
-const { join, dirname, relative } = require("path");
 const rimraf = require("rimraf");
 const chalk = require("chalk");
 const log = require("../log");
@@ -105,7 +105,8 @@ function getPublicFiles(rootPath, prefix = "") {
     .filter(filename => isPublicModule(rootPath, filename))
     .reduce((acc, filename) => {
       const path = join(rootPath, filename);
-      const childFiles = isDirectory(path) && getPublicFiles(path, filename);
+      const childFiles =
+        isDirectory(path) && getPublicFiles(path, join(prefix, filename));
       return {
         ...(childFiles || { [removeExt(join(prefix, filename))]: path }),
         ...acc

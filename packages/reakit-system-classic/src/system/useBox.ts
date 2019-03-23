@@ -1,6 +1,6 @@
+import { css } from "emotion";
 import { unstable_BoxProps } from "reakit/Box/Box";
 import { mergeProps } from "reakit/utils/mergeProps";
-import { css } from "emotion";
 
 const className = css`
   color: red;
