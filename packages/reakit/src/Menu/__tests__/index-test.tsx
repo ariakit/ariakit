@@ -7,7 +7,10 @@ import {
   MenuItemDisclosure,
   useMenuState,
   StaticMenu,
-  useStaticMenuState
+  useStaticMenuState,
+  MenuGroup,
+  MenuItemRadio,
+  MenuItemCheckbox
 } from "..";
 
 function keyDown(key: string) {
@@ -100,6 +103,44 @@ test("clicking item disclosure opens the submenu", () => {
   expect(menu2).toBeVisible();
 });
 
+test("clicking on radio selects it", () => {
+  const Test = () => {
+    const menu = useMenuState({ visible: true });
+    return (
+      <Menu aria-label="menu" {...menu}>
+        <label>
+          <MenuItemRadio {...menu} name="fruit" value="apple" />
+          apple
+        </label>
+      </Menu>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const apple = getByLabelText("apple") as HTMLInputElement;
+  expect(apple.checked).toBe(false);
+  fireEvent.click(apple);
+  expect(apple.checked).toBe(true);
+});
+
+test("clicking on checkbox selects it", () => {
+  const Test = () => {
+    const menu = useMenuState({ visible: true });
+    return (
+      <Menu aria-label="menu" {...menu}>
+        <label>
+          <MenuItemCheckbox {...menu} name="accept" />
+          accept
+        </label>
+      </Menu>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const accept = getByLabelText("accept") as HTMLInputElement;
+  expect(accept.checked).toBe(false);
+  fireEvent.click(accept);
+  expect(accept.checked).toBe(true);
+});
+
 test("move focus with arrow keys", () => {
   const Test = () => {
     const menu = useMenuState({ visible: true });
@@ -108,15 +149,34 @@ test("move focus with arrow keys", () => {
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>item2</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
+        <MenuGroup>
+          <label>
+            <MenuItemRadio {...menu} name="fruit" value="apple" />
+            apple
+          </label>
+          <label>
+            <MenuItemRadio {...menu} name="fruit" value="orange" />
+            orange
+          </label>
+        </MenuGroup>
       </Menu>
     );
   };
-  const { getByText } = render(<Test />);
+  const { getByText, getByLabelText } = render(<Test />);
   const item1 = getByText("item1");
   const item2 = getByText("item2");
+  const item3 = getByText("item3");
+  const apple = getByLabelText("apple");
+  const orange = getByLabelText("orange");
   expect(item1).toHaveFocus();
   keyDown("ArrowDown");
   expect(item2).toHaveFocus();
+  keyDown("ArrowDown");
+  expect(item3).toHaveFocus();
+  keyDown("ArrowDown");
+  expect(apple).toHaveFocus();
+  keyDown("ArrowDown");
+  expect(orange).toHaveFocus();
 });
 
 test("move focus with ascii keys", () => {
@@ -516,6 +576,34 @@ test("focusing a disclosure in menubar automatically opens submenu without movin
   expect(disclosure).toHaveFocus();
 });
 
+test("esc on disclosure in menubar closes menu", () => {
+  const Test = () => {
+    const menubar = useStaticMenuState({ orientation: "horizontal" });
+    const menu = useMenuState({}, menubar);
+    return (
+      <StaticMenu aria-label="menubar" {...menubar}>
+        <MenuItem {...menubar}>item1</MenuItem>
+        <MenuItemDisclosure {...menu}>disclosure</MenuItemDisclosure>
+        <Menu aria-label="menu" {...menu}>
+          <MenuItem {...menu}>menuitem1</MenuItem>
+          <MenuItem {...menu}>menuitem2</MenuItem>
+          <MenuItem {...menu}>menuitem3</MenuItem>
+        </Menu>
+        <MenuItem {...menubar}>item3</MenuItem>
+      </StaticMenu>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const menu = getByLabelText("menu");
+  fireEvent.focus(disclosure);
+  expect(menu).toBeVisible();
+  expect(disclosure).toHaveFocus();
+  keyDown("Escape");
+  expect(menu).not.toBeVisible();
+  expect(disclosure).toHaveFocus();
+});
+
 test("move focus to submenu in menubar with arrow keys", () => {
   const Test = () => {
     const menubar = useStaticMenuState({ orientation: "horizontal" });
@@ -556,7 +644,10 @@ test("left/right arrow keys in submenu in menubar move focus within menubar", ()
         <MenuItemDisclosure {...menu1}>disclosure1</MenuItemDisclosure>
         <Menu aria-label="menu1" {...menu1}>
           <MenuItem {...menu1}>menu1item1</MenuItem>
-          <MenuItem {...menu1}>menu1item2</MenuItem>
+          <label>
+            <MenuItemRadio {...menu1} name="menu1item2" value="menu1item2" />
+            menu1item2
+          </label>
           <MenuItem {...menu1}>menu1item3</MenuItem>
         </Menu>
         <MenuItemDisclosure {...menu2}>disclosure2</MenuItemDisclosure>
@@ -568,11 +659,11 @@ test("left/right arrow keys in submenu in menubar move focus within menubar", ()
       </StaticMenu>
     );
   };
-  const { getByText } = render(<Test />);
+  const { getByText, getByLabelText } = render(<Test />);
   const item1 = getByText("item1");
   const disclosure1 = getByText("disclosure1");
   const menu1item1 = getByText("menu1item1");
-  const menu1item2 = getByText("menu1item2");
+  const menu1item2 = getByLabelText("menu1item2");
   const disclosure2 = getByText("disclosure2");
   const menu2item1 = getByText("menu2item1");
   fireEvent.focus(disclosure1);

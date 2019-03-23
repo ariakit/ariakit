@@ -9,6 +9,7 @@ import {
   useMenuDisclosure
 } from "./MenuDisclosure";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { useKeyboardFocus } from "./__utils/useKeyboardFocus";
 
 export type unstable_MenuItemDisclosureOptions = unstable_MenuDisclosureOptions &
   Partial<unstable_MenuStateReturn> &
@@ -31,52 +32,22 @@ export function useMenuItemDisclosure(
     throw new Error("Missing parent prop");
   }
 
-  const lastMouseDown = React.useRef<EventTarget | null>();
-
-  React.useEffect(() => {
-    if (!ref.current || !parent || parent.orientation !== "horizontal")
-      return undefined;
-
-    const handleFocus = (event: FocusEvent) => {
-      if (event.target !== lastMouseDown.current) {
-        options.show();
-      }
-    };
-
-    const handleBlur = () => {
-      lastMouseDown.current = null;
-    };
-
-    const handleMouseDown = (event: MouseEvent | TouchEvent) => {
-      lastMouseDown.current = event.target;
-    };
-
-    ref.current.addEventListener("focus", handleFocus);
-    ref.current.addEventListener("blur", handleBlur);
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("touchstart", handleMouseDown);
-    return () => {
-      ref.current!.removeEventListener("focus", handleFocus);
-      ref.current!.removeEventListener("blur", handleBlur);
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("touchstart", handleMouseDown);
-    };
-  }, []);
+  useKeyboardFocus(
+    ref,
+    options.show,
+    parent && parent.orientation === "horizontal"
+  );
 
   React.useEffect(() => {
     if (!parent || parent.orientation !== "horizontal") return;
-    const thisStop = parent.stops.find(s => s.ref.current === ref.current);
+    const thisStop = parent.stops.find(
+      stop => stop.ref.current === ref.current
+    );
     const thisIsCurrent = thisStop && thisStop.id === parent.currentId;
     if (!thisIsCurrent && options.visible) {
       options.hide();
     }
-  }, [
-    parent.orientation,
-    parent.currentId,
-    parent.stops,
-    options.show,
-    options.hide
-  ]);
+  }, [parent.orientation, parent.currentId, parent.stops, options.hide]);
 
   htmlProps = mergeProps(
     {

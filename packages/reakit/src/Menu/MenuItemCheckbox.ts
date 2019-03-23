@@ -30,7 +30,8 @@ export function useMenuItemCheckbox(
 
   htmlProps = mergeProps(
     {
-      role: "menuitemcheckbox"
+      role: "menuitemcheckbox",
+      name: options.name
     } as typeof htmlProps,
     htmlProps
   );
