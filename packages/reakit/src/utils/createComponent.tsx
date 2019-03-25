@@ -1,33 +1,44 @@
 import * as React from "react";
 import { forwardRef } from "../__utils/forwardRef";
 import { As, PropsWithAs } from "../__utils/types";
-import { unstable_splitProps } from "./splitProps";
-import { unstable_useCreateElement as originalUseCreateElement } from "./useCreateElement";
+import { splitProps } from "../__utils/splitProps";
+import { unstable_useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 
-type Hook<Options> = {
+type Hook<O> = {
   (
-    options: Options,
-    props: React.HTMLAttributes<any> & React.RefAttributes<any>
+    options?: O,
+    props?: React.HTMLAttributes<any> & React.RefAttributes<any>
   ): typeof props;
-  keys: any[];
+  __keys?: Array<keyof O>;
 };
 
-export function unstable_createComponent<T extends As, O>(
-  element: T,
-  useHook: Hook<O>,
-  useCreateElement = originalUseCreateElement
-) {
+type Options<T extends As, O> = {
+  as: T;
+  useHook?: Hook<O>;
+  keys?: Array<keyof O>;
+  useCreateElement?: typeof defaultUseCreateElement;
+};
+
+export function unstable_createComponent<T extends As, O>({
+  as: type,
+  useHook,
+  keys = (useHook && useHook.__keys) || [],
+  useCreateElement = defaultUseCreateElement
+}: Options<T, O>) {
   const Comp = <TT extends As = T>(
-    { as = (element as unknown) as TT, ...props }: PropsWithAs<O, TT>,
+    { as = (type as unknown) as TT, ...props }: PropsWithAs<O, TT>,
     ref: React.Ref<any>
   ) => {
-    const [options, htmlProps] = unstable_splitProps(props, useHook.keys);
-    const elementProps = useHook(options, { ref, ...htmlProps });
-    return useCreateElement(as, elementProps);
+    if (useHook) {
+      const [options, htmlProps] = splitProps(props, keys as any[]);
+      const elementProps = useHook(options, { ref, ...htmlProps });
+      return useCreateElement(as, elementProps || {});
+    }
+    return useCreateElement(as, props);
   };
 
-  if (process.env.NODE_ENV !== "production") {
-    (Comp as any).displayName = useHook.name.replace("use", "");
+  if (process.env.NODE_ENV !== "production" && useHook) {
+    (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
   return forwardRef(Comp);

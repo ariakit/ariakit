@@ -4,16 +4,18 @@ import { MenuItem } from "../MenuItem";
 
 const props: Parameters<typeof MenuItem>[0] = {
   stopId: "item",
-  stops: [],
-  currentId: null,
-  pastId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
-  move: jest.fn(),
-  next: jest.fn(),
-  previous: jest.fn(),
-  first: jest.fn(),
-  last: jest.fn()
+  placement: "top",
+  hide: jest.fn(),
+  unstable_stops: [],
+  unstable_currentId: null,
+  unstable_pastId: null,
+  unstable_register: jest.fn(),
+  unstable_unregister: jest.fn(),
+  unstable_move: jest.fn(),
+  unstable_next: jest.fn(),
+  unstable_previous: jest.fn(),
+  unstable_first: jest.fn(),
+  unstable_last: jest.fn()
 };
 
 test("render", () => {

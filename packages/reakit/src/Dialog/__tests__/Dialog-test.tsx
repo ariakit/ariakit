@@ -3,7 +3,7 @@ import { render } from "react-testing-library";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
-  hiddenId: "dialog",
+  unstable_hiddenId: "dialog",
   "aria-label": "dialog"
 };
 
@@ -72,7 +72,7 @@ test("render visible", () => {
 
 test("render non-modal", () => {
   const { baseElement } = render(
-    <Dialog {...props} modal={false}>
+    <Dialog {...props} unstable_modal={false}>
       test
     </Dialog>
   );

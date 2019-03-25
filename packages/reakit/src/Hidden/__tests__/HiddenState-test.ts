@@ -9,24 +9,24 @@ function render(...args: Parameters<typeof useHiddenState>) {
 }
 
 test("initial state", () => {
-  const result = render({ hiddenId: "test" });
+  const result = render({ unstable_hiddenId: "test" });
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "hiddenId": "test",
+  "unstable_hiddenId": "test",
   "visible": false,
 }
 `);
 });
 
 test("initial state visible", () => {
-  const result = render({ hiddenId: "test", visible: true });
+  const result = render({ unstable_hiddenId: "test", visible: true });
   expect(result.current).toMatchInlineSnapshot(
     {
       visible: true
     },
     `
 Object {
-  "hiddenId": "test",
+  "unstable_hiddenId": "test",
   "visible": true,
 }
 `
@@ -34,14 +34,14 @@ Object {
 });
 
 test("initial state lazy", () => {
-  const result = render(() => ({ hiddenId: "test", visible: true }));
+  const result = render(() => ({ unstable_hiddenId: "test", visible: true }));
   expect(result.current).toMatchInlineSnapshot(
     {
       visible: true
     },
     `
 Object {
-  "hiddenId": "test",
+  "unstable_hiddenId": "test",
   "visible": true,
 }
 `
@@ -49,13 +49,13 @@ Object {
 });
 
 test("show", () => {
-  const result = render({ hiddenId: "test" });
+  const result = render({ unstable_hiddenId: "test" });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
     `
 Object {
-  "hiddenId": "test",
+  "unstable_hiddenId": "test",
   "visible": true,
 }
 `
@@ -63,13 +63,13 @@ Object {
 });
 
 test("hide", () => {
-  const result = render({ hiddenId: "test", visible: true });
+  const result = render({ unstable_hiddenId: "test", visible: true });
   act(result.current.hide);
   expect(result.current).toMatchInlineSnapshot(
     { visible: false },
     `
 Object {
-  "hiddenId": "test",
+  "unstable_hiddenId": "test",
   "visible": false,
 }
 `
@@ -77,13 +77,13 @@ Object {
 });
 
 test("toggle", () => {
-  const result = render({ hiddenId: "test" });
+  const result = render({ unstable_hiddenId: "test" });
   act(result.current.toggle);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
     `
 Object {
-  "hiddenId": "test",
+  "unstable_hiddenId": "test",
   "visible": true,
 }
 `

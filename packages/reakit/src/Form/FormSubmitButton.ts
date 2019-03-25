@@ -6,16 +6,17 @@ import {
 import { useHook } from "../system/useHook";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_FormStateReturn, useFormState } from "./FormState";
+import { Keys } from "../__utils/types";
+import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
 
 export type unstable_FormSubmitButtonOptions = unstable_ButtonOptions &
   Partial<unstable_FormStateReturn<any>> &
-  Pick<unstable_FormStateReturn<any>, "submit">;
+  Pick<unstable_FormStateReturn<any>, "baseId" | "submit">;
 
 export type unstable_FormSubmitButtonProps = unstable_ButtonProps;
 
-export function useFormSubmitButton(
+export function unstable_useFormSubmitButton(
   options: unstable_FormSubmitButtonOptions,
   htmlProps: unstable_FormSubmitButtonProps = {}
 ) {
@@ -25,7 +26,6 @@ export function useFormSubmitButton(
       disabled: options.submitting,
       onClick: () => {
         window.requestAnimationFrame(() => {
-          if (!options.baseId) return;
           const input = getFirstInvalidInput(options.baseId);
           if (input) {
             input.select();
@@ -42,14 +42,14 @@ export function useFormSubmitButton(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_FormSubmitButtonOptions> = [
-  ...useButton.keys,
-  ...useFormState.keys
+const keys: Keys<unstable_FormSubmitButtonOptions> = [
+  ...useButton.__keys,
+  ...unstable_useFormState.__keys
 ];
 
-useFormSubmitButton.keys = keys;
+unstable_useFormSubmitButton.__keys = keys;
 
-export const FormSubmitButton = unstable_createComponent(
-  "button",
-  useFormSubmitButton
-);
+export const unstable_FormSubmitButton = unstable_createComponent({
+  as: "button",
+  useHook: unstable_useFormSubmitButton
+});

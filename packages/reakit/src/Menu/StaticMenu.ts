@@ -4,22 +4,26 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { Keys } from "../__utils/types";
 import { useShortcuts } from "./__utils/useShortcuts";
-import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import {
+  unstable_StaticMenuStateReturn,
+  unstable_useStaticMenuState
+} from "./StaticMenuState";
 
 export type unstable_StaticMenuOptions = unstable_BoxOptions &
-  Partial<unstable_MenuStateReturn> &
-  Pick<unstable_MenuStateReturn, "stops" | "move">;
+  Partial<unstable_StaticMenuStateReturn> &
+  Pick<unstable_StaticMenuStateReturn, "unstable_stops" | "unstable_move">;
 
 export type unstable_StaticMenuProps = unstable_BoxProps;
 
-export function useStaticMenu(
+export function unstable_useStaticMenu(
   options: unstable_StaticMenuOptions,
   htmlProps: unstable_StaticMenuProps = {}
 ) {
   const onKeyDown = useShortcuts(options);
 
-  const ariaOwns = options.stops
+  const ariaOwns = options.unstable_stops
     .map(stop => {
       const ariaControls = stop.ref.current!.getAttribute("aria-controls");
       if (ariaControls) return `${stop.id} ${ariaControls}`;
@@ -42,21 +46,21 @@ export function useStaticMenu(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_StaticMenuOptions> = [
-  ...useBox.keys,
-  ...useMenuState.keys
+const keys: Keys<unstable_StaticMenuOptions> = [
+  ...useBox.__keys,
+  ...unstable_useStaticMenuState.__keys
 ];
 
-useStaticMenu.keys = keys;
+unstable_useStaticMenu.__keys = keys;
 
-export const StaticMenu = unstable_createComponent(
-  "div",
-  useStaticMenu,
-  (type, props, children) => {
+export const unstable_StaticMenu = unstable_createComponent({
+  as: "div",
+  useHook: unstable_useStaticMenu,
+  useCreateElement: (type, props, children) => {
     warning(
-      props["aria-label"] ||
-        props["aria-labelledby"] ||
-        props.role === "menubar",
+      !props["aria-label"] &&
+        !props["aria-labelledby"] &&
+        props.role !== "menubar",
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
 See https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-properties-13`,
       "StaticMenu"
@@ -64,4 +68,4 @@ See https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-prop
 
     return unstable_useCreateElement(type, props, children);
   }
-);
+});

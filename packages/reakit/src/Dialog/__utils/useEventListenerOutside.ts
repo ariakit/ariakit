@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLiveRef } from "../../__utils/useLiveRef";
 
 export function useEventListenerOutside<T extends keyof DocumentEventMap>(
   targetRef: React.RefObject<HTMLElement>,
@@ -6,11 +7,7 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
   listener: (e: DocumentEventMap[T]) => void,
   shouldListen?: boolean
 ) {
-  const listenerRef = React.useRef(listener);
-
-  React.useEffect(() => {
-    listenerRef.current = listener;
-  });
+  const listenerRef = useLiveRef(listener);
 
   React.useEffect(() => {
     if (!shouldListen) return undefined;

@@ -7,6 +7,7 @@ import {
   unstable_TabbableProps,
   useTabbable
 } from "../Tabbable/Tabbable";
+import { Keys } from "../__utils/types";
 
 export type unstable_ButtonOptions = unstable_TabbableOptions;
 
@@ -14,10 +15,13 @@ export type unstable_ButtonProps = unstable_TabbableProps &
   React.ButtonHTMLAttributes<any>;
 
 export function useButton(
-  { clickKeys = ["Enter", " "], ...options }: unstable_ButtonOptions = {},
+  {
+    unstable_clickKeys = ["Enter", " "],
+    ...options
+  }: unstable_ButtonOptions = {},
   htmlProps: unstable_ButtonProps = {}
 ) {
-  const allOptions = { clickKeys, ...options };
+  const allOptions: unstable_ButtonOptions = { unstable_clickKeys, ...options };
 
   htmlProps = mergeProps(
     {
@@ -32,8 +36,11 @@ export function useButton(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_ButtonOptions> = [...useTabbable.keys];
+const keys: Keys<unstable_ButtonOptions> = [...useTabbable.__keys];
 
-useButton.keys = keys;
+useButton.__keys = keys;
 
-export const Button = unstable_createComponent("button", useButton);
+export const Button = unstable_createComponent({
+  as: "button",
+  useHook: useButton
+});

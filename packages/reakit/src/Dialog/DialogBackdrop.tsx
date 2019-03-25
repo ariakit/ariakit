@@ -9,6 +9,7 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
+import { Keys } from "../__utils/types";
 import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogBackdropOptions = unstable_HiddenOptions &
@@ -39,18 +40,18 @@ export function useDialogBackdrop(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_DialogBackdropOptions> = [
-  ...useHidden.keys,
-  ...useDialogState.keys
+const keys: Keys<unstable_DialogBackdropOptions> = [
+  ...useHidden.__keys,
+  ...useDialogState.__keys
 ];
 
-useDialogBackdrop.keys = keys;
+useDialogBackdrop.__keys = keys;
 
-export const DialogBackdrop = unstable_createComponent(
-  "div",
-  useDialogBackdrop,
-  (type, props, children) => {
+export const DialogBackdrop = unstable_createComponent({
+  as: "div",
+  useHook: useDialogBackdrop,
+  useCreateElement: (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;
   }
-);
+});

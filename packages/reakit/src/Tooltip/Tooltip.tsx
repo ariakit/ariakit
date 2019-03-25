@@ -9,6 +9,7 @@ import {
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
+import { Keys } from "../__utils/types";
 import { unstable_TooltipStateReturn, useTooltipState } from "./TooltipState";
 
 export type unstable_TooltipOptions = unstable_HiddenOptions &
@@ -23,9 +24,9 @@ export function useTooltip(
   htmlProps = mergeProps(
     {
       role: "tooltip",
-      ref: options.popoverRef,
+      ref: options.unstable_popoverRef,
       style: {
-        ...options.popoverStyles,
+        ...options.unstable_popoverStyles,
         pointerEvents: "none"
       }
     } as typeof htmlProps,
@@ -36,18 +37,18 @@ export function useTooltip(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_TooltipOptions> = [
-  ...useHidden.keys,
-  ...useTooltipState.keys
+const keys: Keys<unstable_TooltipOptions> = [
+  ...useHidden.__keys,
+  ...useTooltipState.__keys
 ];
 
-useTooltip.keys = keys;
+useTooltip.__keys = keys;
 
-export const Tooltip = unstable_createComponent(
-  "div",
-  useTooltip,
-  (type, props, children) => {
+export const Tooltip = unstable_createComponent({
+  as: "div",
+  useHook: useTooltip,
+  useCreateElement: (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;
   }
-);
+});

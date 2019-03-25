@@ -10,9 +10,12 @@ function createRef(id: string) {
 }
 
 const props: Parameters<typeof Menu>[0] = {
-  hiddenId: "hidden",
-  stops: [{ id: "a", ref: createRef("a") }, { id: "b", ref: createRef("b") }],
-  move: jest.fn(),
+  unstable_hiddenId: "hidden",
+  unstable_stops: [
+    { id: "a", ref: createRef("a") },
+    { id: "b", ref: createRef("b") }
+  ],
+  unstable_move: jest.fn(),
   "aria-label": "menu"
 };
 

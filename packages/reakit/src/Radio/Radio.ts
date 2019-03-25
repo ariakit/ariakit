@@ -7,20 +7,28 @@ import {
   unstable_RoverProps,
   useRover
 } from "../Rover/Rover";
-import { useRadioState, unstable_RadioStateReturn } from "./RadioState";
+import { Keys } from "../__utils/types";
+import {
+  unstable_useRadioState,
+  unstable_RadioStateReturn
+} from "./RadioState";
 
 export type unstable_RadioOptions = unstable_RoverOptions &
   Partial<unstable_RadioStateReturn> & {
-    /** TODO: Descriptions */
+    /**
+     * Same as the `value` attribute.
+     */
     value: any;
-    /** TODO: Descriptions */
+    /**
+     * Same as the `checked` attribute.
+     */
     checked?: boolean;
   };
 
 export type unstable_RadioProps = unstable_RoverProps &
   React.InputHTMLAttributes<any>;
 
-export function useRadio(
+export function unstable_useRadio(
   options: unstable_RadioOptions,
   htmlProps: unstable_RadioProps = {}
 ) {
@@ -52,13 +60,16 @@ export function useRadio(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_RadioOptions> = [
-  ...useRover.keys,
-  ...useRadioState.keys,
+const keys: Keys<unstable_RadioOptions> = [
+  ...useRover.__keys,
+  ...unstable_useRadioState.__keys,
   "value",
   "checked"
 ];
 
-useRadio.keys = keys;
+unstable_useRadio.__keys = keys;
 
-export const Radio = unstable_createComponent("input", useRadio);
+export const unstable_Radio = unstable_createComponent({
+  as: "input",
+  useHook: unstable_useRadio
+});

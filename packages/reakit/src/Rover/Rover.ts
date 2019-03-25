@@ -9,23 +9,26 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
+import { Keys } from "../__utils/types";
 import { unstable_RoverStateReturn, useRoverState } from "./RoverState";
 
 export type unstable_RoverOptions = unstable_TabbableOptions &
   Partial<unstable_RoverStateReturn> &
   Pick<
     unstable_RoverStateReturn,
-    | "stops"
-    | "currentId"
-    | "register"
-    | "unregister"
-    | "move"
-    | "next"
-    | "previous"
-    | "first"
-    | "last"
+    | "unstable_stops"
+    | "unstable_currentId"
+    | "unstable_register"
+    | "unstable_unregister"
+    | "unstable_move"
+    | "unstable_next"
+    | "unstable_previous"
+    | "unstable_first"
+    | "unstable_last"
   > & {
-    /** TODO: Descriptions */
+    /**
+     * Element ID.
+     */
     stopId?: string;
   };
 
@@ -39,17 +42,23 @@ export function useRover(
   const id = unstable_useId("rover-");
   const stopId = options.stopId || id;
 
-  const reallyDisabled = options.disabled && !options.focusable;
-  const noFocused = options.currentId == null;
-  const focused = options.currentId === stopId;
-  const isFirst = options.stops[0] && options.stops[0].id === stopId;
+  const reallyDisabled = options.disabled && !options.unstable_focusable;
+  const noFocused = options.unstable_currentId == null;
+  const focused = options.unstable_currentId === stopId;
+  const isFirst =
+    options.unstable_stops[0] && options.unstable_stops[0].id === stopId;
   const shouldTabIndexZero = focused || (isFirst && noFocused);
 
   React.useEffect(() => {
     if (reallyDisabled) return undefined;
-    options.register(stopId, ref);
-    return () => options.unregister(stopId);
-  }, [stopId, reallyDisabled, options.register, options.unregister]);
+    options.unstable_register(stopId, ref);
+    return () => options.unstable_unregister(stopId);
+  }, [
+    stopId,
+    reallyDisabled,
+    options.unstable_register,
+    options.unstable_unregister
+  ]);
 
   useUpdateEffect(() => {
     if (ref.current && focused) {
@@ -62,18 +71,18 @@ export function useRover(
       ref,
       id: stopId,
       tabIndex: shouldTabIndexZero ? 0 : -1,
-      onFocus: () => options.move(stopId),
+      onFocus: () => options.unstable_move(stopId),
       onKeyDown: event => {
         const { orientation } = options;
         const keyMap = {
-          ArrowUp: orientation !== "horizontal" && options.previous,
-          ArrowRight: orientation !== "vertical" && options.next,
-          ArrowDown: orientation !== "horizontal" && options.next,
-          ArrowLeft: orientation !== "vertical" && options.previous,
-          Home: options.first,
-          End: options.last,
-          PageUp: options.first,
-          PageDown: options.last
+          ArrowUp: orientation !== "horizontal" && options.unstable_previous,
+          ArrowRight: orientation !== "vertical" && options.unstable_next,
+          ArrowDown: orientation !== "horizontal" && options.unstable_next,
+          ArrowLeft: orientation !== "vertical" && options.unstable_previous,
+          Home: options.unstable_first,
+          End: options.unstable_last,
+          PageUp: options.unstable_first,
+          PageDown: options.unstable_last
         };
         if (event.key in keyMap) {
           const key = event.key as keyof typeof keyMap;
@@ -93,12 +102,15 @@ export function useRover(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_RoverOptions> = [
-  ...useTabbable.keys,
-  ...useRoverState.keys,
+const keys: Keys<unstable_RoverOptions> = [
+  ...useTabbable.__keys,
+  ...useRoverState.__keys,
   "stopId"
 ];
 
-useRover.keys = keys;
+useRover.__keys = keys;
 
-export const Rover = unstable_createComponent("button", useRover);
+export const Rover = unstable_createComponent({
+  as: "button",
+  useHook: useRover
+});

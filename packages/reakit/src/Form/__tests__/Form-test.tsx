@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
-import { Form } from "../Form";
+import { unstable_Form as Form } from "../Form";
 
 const props: Parameters<typeof Form>[0] = {
   submit: jest.fn()

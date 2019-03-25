@@ -2,6 +2,7 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+import { Keys } from "../__utils/types";
 
 type Stop = {
   id: string;
@@ -9,41 +10,72 @@ type Stop = {
 };
 
 export type unstable_RoverState = {
-  /** TODO: Description */
+  /**
+   * Defines the orientation of the rover list.
+   */
   orientation?: "horizontal" | "vertical";
-  /** TODO: Description */
-  stops: Stop[];
-  /** TODO: Description */
-  currentId: Stop["id"] | null;
-  /** TODO: Description */
-  pastId: Stop["id"] | null;
-  /** TODO: Description */
-  loop: boolean;
+  /**
+   * A list of element refs and IDs of the roving items.
+   */
+  unstable_stops: Stop[];
+  /**
+   * The current focused element ID.
+   */
+  unstable_currentId: Stop["id"] | null;
+  /**
+   * The last focused element ID.
+   */
+  unstable_pastId: Stop["id"] | null;
+  /**
+   * If enabled, the next item after the last one will be the first one.
+   */
+  unstable_loop: boolean;
 };
 
 export type unstable_RoverActions = {
-  /** TODO: Description */
-  register: (id: Stop["id"], ref: Stop["ref"]) => void;
-  /** TODO: Description */
-  unregister: (id: Stop["id"]) => void;
-  /** TODO: Description */
-  move: (id: Stop["id"]) => void;
-  /** TODO: Description */
-  next: () => void;
-  /** TODO: Description */
-  previous: () => void;
-  /** TODO: Description */
-  first: () => void;
-  /** TODO: Description */
-  last: () => void;
-  /** TODO: Description */
-  reset: () => void;
-  /** TODO: Description */
-  orientate: (orientation: unstable_RoverState["orientation"]) => void;
+  /**
+   * Registers the element ID and ref in the roving tab index list.
+   */
+  unstable_register: (id: Stop["id"], ref: Stop["ref"]) => void;
+  /**
+   * Unregisters the roving item.
+   */
+  unstable_unregister: (id: Stop["id"]) => void;
+  /**
+   * Moves focus onto a given element ID.
+   */
+  unstable_move: (id: Stop["id"]) => void;
+  /**
+   * Moves focus onto the next element.
+   */
+  unstable_next: () => void;
+  /**
+   * Moves focus onto the previous element.
+   */
+  unstable_previous: () => void;
+  /**
+   * Moves focus onto the first element.
+   */
+  unstable_first: () => void;
+  /**
+   * Moves focus onto the last element.
+   */
+  unstable_last: () => void;
+  /**
+   * Resets `currentId` and `pastId` states.
+   */
+  unstable_reset: () => void;
+  /**
+   * Changes the `orientation` state of the roving tab index list.
+   */
+  unstable_orientate: (orientation: unstable_RoverState["orientation"]) => void;
 };
 
 export type unstable_RoverInitialState = Partial<
-  Pick<unstable_RoverState, "orientation" | "currentId" | "loop">
+  Pick<
+    unstable_RoverState,
+    "orientation" | "unstable_currentId" | "unstable_loop"
+  >
 >;
 
 export type unstable_RoverStateReturn = unstable_RoverState &
@@ -67,7 +99,12 @@ function reducer(
   state: unstable_RoverState,
   action: RoverAction
 ): unstable_RoverState {
-  const { stops, currentId, pastId, loop } = state;
+  const {
+    unstable_stops: stops,
+    unstable_currentId: currentId,
+    unstable_pastId: pastId,
+    unstable_loop: loop
+  } = state;
 
   switch (action.type) {
     case "register": {
@@ -75,14 +112,14 @@ function reducer(
       if (stops.length === 0) {
         return {
           ...state,
-          stops: [{ id, ref }]
+          unstable_stops: [{ id, ref }]
         };
       }
 
       const index = stops.findIndex(stop => stop.id === id);
 
       if (index >= 0) {
-        warning(false, `${id} stop is already registered`, "RoverState");
+        warning(true, `${id} stop is already registered`, "RoverState");
         return state;
       }
 
@@ -97,12 +134,12 @@ function reducer(
       if (afterRefIndex === -1) {
         return {
           ...state,
-          stops: [...stops, { id, ref }]
+          unstable_stops: [...stops, { id, ref }]
         };
       }
       return {
         ...state,
-        stops: [
+        unstable_stops: [
           ...stops.slice(0, afterRefIndex),
           { id, ref },
           ...stops.slice(afterRefIndex)
@@ -113,15 +150,15 @@ function reducer(
       const { id } = action;
       const nextStops = stops.filter(stop => stop.id !== id);
       if (nextStops.length === stops.length) {
-        warning(false, `${id} stop is not registered`, "RoverState");
+        warning(true, `${id} stop is not registered`, "RoverState");
         return state;
       }
 
       return {
         ...state,
-        stops: nextStops,
-        pastId: pastId && pastId === id ? null : pastId,
-        currentId: currentId && currentId === id ? null : currentId
+        unstable_stops: nextStops,
+        unstable_pastId: pastId && pastId === id ? null : pastId,
+        unstable_currentId: currentId && currentId === id ? null : currentId
       };
     }
     case "move": {
@@ -134,8 +171,8 @@ function reducer(
 
       return {
         ...state,
-        currentId: stops[index].id,
-        pastId: currentId
+        unstable_currentId: stops[index].id,
+        unstable_pastId: currentId
       };
     }
     case "next": {
@@ -161,13 +198,13 @@ function reducer(
     }
     case "previous": {
       const nextState = reducer(
-        { ...state, stops: stops.slice().reverse() },
+        { ...state, unstable_stops: stops.slice().reverse() },
         { type: "next" }
       );
       return {
         ...state,
-        currentId: nextState.currentId,
-        pastId: nextState.pastId
+        unstable_currentId: nextState.unstable_currentId,
+        unstable_pastId: nextState.unstable_pastId
       };
     }
     case "first": {
@@ -181,8 +218,8 @@ function reducer(
     case "reset": {
       return {
         ...state,
-        currentId: null,
-        pastId: null
+        unstable_currentId: null,
+        unstable_pastId: null
       };
     }
     case "orientate":
@@ -195,55 +232,60 @@ function reducer(
 export function useRoverState(
   initialState: SealedInitialState<unstable_RoverInitialState> = {}
 ): unstable_RoverStateReturn {
-  const { currentId = null, loop = false, ...sealed } = useSealedState(
-    initialState
-  );
+  const {
+    unstable_currentId: currentId = null,
+    unstable_loop: loop = false,
+    ...sealed
+  } = useSealedState(initialState);
   const [state, dispatch] = React.useReducer(reducer, {
     ...sealed,
-    stops: [],
-    currentId,
-    pastId: null,
-    loop
+    unstable_stops: [],
+    unstable_currentId: currentId,
+    unstable_pastId: null,
+    unstable_loop: loop
   });
 
   return {
     ...state,
-    register: React.useCallback(
+    unstable_register: React.useCallback(
       (id, ref) => dispatch({ type: "register", id, ref }),
       []
     ),
-    unregister: React.useCallback(
+    unstable_unregister: React.useCallback(
       id => dispatch({ type: "unregister", id }),
       []
     ),
-    move: React.useCallback(id => dispatch({ type: "move", id }), []),
-    next: React.useCallback(() => dispatch({ type: "next" }), []),
-    previous: React.useCallback(() => dispatch({ type: "previous" }), []),
-    first: React.useCallback(() => dispatch({ type: "first" }), []),
-    last: React.useCallback(() => dispatch({ type: "last" }), []),
-    reset: React.useCallback(() => dispatch({ type: "reset" }), []),
-    orientate: React.useCallback(
+    unstable_move: React.useCallback(id => dispatch({ type: "move", id }), []),
+    unstable_next: React.useCallback(() => dispatch({ type: "next" }), []),
+    unstable_previous: React.useCallback(
+      () => dispatch({ type: "previous" }),
+      []
+    ),
+    unstable_first: React.useCallback(() => dispatch({ type: "first" }), []),
+    unstable_last: React.useCallback(() => dispatch({ type: "last" }), []),
+    unstable_reset: React.useCallback(() => dispatch({ type: "reset" }), []),
+    unstable_orientate: React.useCallback(
       o => dispatch({ type: "orientate", orientation: o }),
       []
     )
   };
 }
 
-const keys: Array<keyof unstable_RoverStateReturn> = [
+const keys: Keys<unstable_RoverStateReturn> = [
   "orientation",
-  "stops",
-  "currentId",
-  "pastId",
-  "loop",
-  "register",
-  "unregister",
-  "move",
-  "next",
-  "previous",
-  "first",
-  "last",
-  "reset",
-  "orientate"
+  "unstable_stops",
+  "unstable_currentId",
+  "unstable_pastId",
+  "unstable_loop",
+  "unstable_register",
+  "unstable_unregister",
+  "unstable_move",
+  "unstable_next",
+  "unstable_previous",
+  "unstable_first",
+  "unstable_last",
+  "unstable_reset",
+  "unstable_orientate"
 ];
 
-useRoverState.keys = keys;
+useRoverState.__keys = keys;

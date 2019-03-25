@@ -2,6 +2,7 @@ import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
+import { Keys } from "../__utils/types";
 import { useMenuItem } from "./MenuItem";
 import {
   unstable_MenuDisclosureOptions,
@@ -13,41 +14,42 @@ import { useKeyboardFocus } from "./__utils/useKeyboardFocus";
 
 export type unstable_MenuItemDisclosureOptions = unstable_MenuDisclosureOptions &
   Partial<unstable_MenuStateReturn> &
-  Pick<unstable_MenuStateReturn, "hide"> & {
+  Pick<unstable_MenuStateReturn, "show" | "hide"> & {
     /** TODO: Description */
     stopId?: string;
   };
 
 export type unstable_MenuItemDisclosureProps = unstable_MenuDisclosureProps;
 
-export function useMenuItemDisclosure(
+export function unstable_useMenuItemDisclosure(
   { stopId, ...options }: unstable_MenuItemDisclosureOptions,
   htmlProps: unstable_MenuItemDisclosureProps = {}
 ) {
   const ref = React.useRef<HTMLElement>(null);
-  const { parent } = options;
+  const { unstable_parent: parent } = options;
 
   if (!parent) {
     // TODO: Better error
     throw new Error("Missing parent prop");
   }
 
-  useKeyboardFocus(
-    ref,
-    options.show,
-    parent && parent.orientation === "horizontal"
-  );
+  useKeyboardFocus(ref, options.show, parent.orientation === "horizontal");
 
   React.useEffect(() => {
-    if (!parent || parent.orientation !== "horizontal") return;
-    const thisStop = parent.stops.find(
+    if (parent.orientation !== "horizontal") return;
+    const thisStop = parent.unstable_stops.find(
       stop => stop.ref.current === ref.current
     );
-    const thisIsCurrent = thisStop && thisStop.id === parent.currentId;
+    const thisIsCurrent = thisStop && thisStop.id === parent.unstable_currentId;
     if (!thisIsCurrent && options.visible) {
       options.hide();
     }
-  }, [parent.orientation, parent.currentId, parent.stops, options.hide]);
+  }, [
+    parent.orientation,
+    parent.unstable_currentId,
+    parent.unstable_stops,
+    options.hide
+  ]);
 
   htmlProps = mergeProps(
     {
@@ -67,15 +69,15 @@ export function useMenuItemDisclosure(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_MenuItemDisclosureOptions> = [
-  ...useMenuDisclosure.keys,
-  ...useMenuState.keys,
+const keys: Keys<unstable_MenuItemDisclosureOptions> = [
+  ...useMenuDisclosure.__keys,
+  ...useMenuState.__keys,
   "stopId"
 ];
 
-useMenuItemDisclosure.keys = keys;
+unstable_useMenuItemDisclosure.__keys = keys;
 
-export const MenuItemDisclosure = unstable_createComponent(
-  "button",
-  useMenuItemDisclosure
-);
+export const unstable_MenuItemDisclosure = unstable_createComponent({
+  as: "button",
+  useHook: unstable_useMenuItemDisclosure
+});

@@ -4,6 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { Keys } from "../__utils/types";
 import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
 export type unstable_ToolbarOptions = unstable_BoxOptions &
@@ -27,25 +28,23 @@ export function useToolbar(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_ToolbarOptions> = [
-  ...useBox.keys,
-  ...useToolbarState.keys
+const keys: Keys<unstable_ToolbarOptions> = [
+  ...useBox.__keys,
+  ...useToolbarState.__keys
 ];
 
-useToolbar.keys = keys;
+useToolbar.__keys = keys;
 
-export const Toolbar = unstable_createComponent(
-  "div",
-  useToolbar,
-  (type, props, children) => {
+export const Toolbar = unstable_createComponent({
+  as: "div",
+  useHook: useToolbar,
+  useCreateElement: (type, props, children) => {
     warning(
-      props["aria-label"] || props["aria-labelledby"],
+      !props["aria-label"] && !props["aria-labelledby"],
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
 See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props-21`,
       "Toolbar"
     );
-
-    const element = unstable_useCreateElement(type, props, children);
-    return element;
+    return unstable_useCreateElement(type, props, children);
   }
-);
+});

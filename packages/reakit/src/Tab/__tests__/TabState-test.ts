@@ -9,36 +9,36 @@ function render(...args: Parameters<typeof useTabState>) {
 }
 
 test("initial state", () => {
-  const result = render({ baseId: "base" });
+  const result = render({ unstable_baseId: "base" });
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "baseId": "base",
-  "currentId": null,
-  "loop": true,
-  "manual": false,
-  "pastId": null,
-  "selectedId": null,
-  "stops": Array [],
+  "unstable_baseId": "base",
+  "unstable_currentId": null,
+  "unstable_loop": true,
+  "unstable_manual": false,
+  "unstable_pastId": null,
+  "unstable_selectedId": null,
+  "unstable_stops": Array [],
 }
 `);
 });
 
 test("initial state selectedId", () => {
-  const result = render({ baseId: "base", selectedId: "a" });
+  const result = render({ unstable_baseId: "base", unstable_selectedId: "a" });
   expect(result.current).toMatchInlineSnapshot(
     {
-      currentId: "a",
-      selectedId: "a"
+      unstable_currentId: "a",
+      unstable_selectedId: "a"
     },
     `
 Object {
-  "baseId": "base",
-  "currentId": "a",
-  "loop": true,
-  "manual": false,
-  "pastId": null,
-  "selectedId": "a",
-  "stops": Array [],
+  "unstable_baseId": "base",
+  "unstable_currentId": "a",
+  "unstable_loop": true,
+  "unstable_manual": false,
+  "unstable_pastId": null,
+  "unstable_selectedId": "a",
+  "unstable_stops": Array [],
 }
 `
   );

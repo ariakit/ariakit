@@ -10,6 +10,7 @@ import {
   unstable_DialogProps,
   useDialog
 } from "../Dialog/Dialog";
+import { Keys } from "../__utils/types";
 import { unstable_PopoverStateReturn, usePopoverState } from "./PopoverState";
 
 export type unstable_PopoverOptions = unstable_DialogOptions &
@@ -18,14 +19,17 @@ export type unstable_PopoverOptions = unstable_DialogOptions &
 export type unstable_PopoverProps = unstable_DialogProps;
 
 export function usePopover(
-  { preventBodyScroll = false, ...options }: unstable_PopoverOptions,
+  { unstable_preventBodyScroll = false, ...options }: unstable_PopoverOptions,
   htmlProps: unstable_PopoverProps = {}
 ) {
-  const allOptions = { preventBodyScroll, ...options };
+  const allOptions: unstable_PopoverOptions = {
+    unstable_preventBodyScroll,
+    ...options
+  };
   htmlProps = mergeProps(
     {
-      ref: options.popoverRef,
-      style: options.popoverStyles
+      ref: options.unstable_popoverRef,
+      style: options.unstable_popoverStyles
     } as typeof htmlProps,
     htmlProps
   );
@@ -34,19 +38,19 @@ export function usePopover(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_PopoverOptions> = [
-  ...useDialog.keys,
-  ...usePopoverState.keys
+const keys: Keys<unstable_PopoverOptions> = [
+  ...useDialog.__keys,
+  ...usePopoverState.__keys
 ];
 
-usePopover.keys = keys;
+usePopover.__keys = keys;
 
-export const Popover = unstable_createComponent(
-  "div",
-  usePopover,
-  (type, props, children) => {
+export const Popover = unstable_createComponent({
+  as: "div",
+  useHook: usePopover,
+  useCreateElement: (type, props, children) => {
     warning(
-      props["aria-label"] || props["aria-labelledby"],
+      !props["aria-label"] && !props["aria-labelledby"],
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
 See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
       "Popover"
@@ -55,4 +59,4 @@ See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;
   }
-);
+});

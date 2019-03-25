@@ -1,15 +1,18 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { FormLabel } from "../FormLabel";
+import { unstable_FormLabel as FormLabel } from "../FormLabel";
 
 test("render", () => {
   const { baseElement } = render(
-    <FormLabel name="a" label="b" values={{ a: "" }} />
+    <FormLabel baseId="base" name="a" label="b" values={{ a: "" }} />
   );
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div>
-    <label>
+    <label
+      for="base-a"
+      id="base-a-label"
+    >
       b
     </label>
   </div>

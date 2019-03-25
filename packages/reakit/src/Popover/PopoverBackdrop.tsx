@@ -8,6 +8,7 @@ import {
   unstable_DialogBackdropProps,
   useDialogBackdrop
 } from "../Dialog/DialogBackdrop";
+import { Keys } from "../__utils/types";
 import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
 
 export type unstable_PopoverBackdropOptions = unstable_DialogBackdropOptions &
@@ -24,18 +25,18 @@ export function usePopoverBackdrop(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_PopoverBackdropOptions> = [
-  ...useDialogBackdrop.keys,
-  ...usePopoverState.keys
+const keys: Keys<unstable_PopoverBackdropOptions> = [
+  ...useDialogBackdrop.__keys,
+  ...usePopoverState.__keys
 ];
 
-usePopoverBackdrop.keys = keys;
+usePopoverBackdrop.__keys = keys;
 
-export const PopoverBackdrop = unstable_createComponent(
-  "div",
-  usePopoverBackdrop,
-  (type, props, children) => {
+export const PopoverBackdrop = unstable_createComponent({
+  as: "div",
+  useHook: usePopoverBackdrop,
+  useCreateElement: (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;
   }
-);
+});

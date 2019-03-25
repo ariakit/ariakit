@@ -1,5 +1,5 @@
 import * as React from "react";
-import { As, PropsWithAs } from "../__utils/types";
+import { As, PropsWithAs, Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
@@ -11,7 +11,7 @@ import { getLabelId } from "./__utils/getLabelId";
 import { shouldShowError } from "./__utils/shouldShowError";
 import { formatInputName } from "./__utils/formatInputName";
 import { unstable_getIn } from "./utils/getIn";
-import { unstable_FormStateReturn, useFormState } from "./FormState";
+import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormInputOptions<
   V,
@@ -20,7 +20,7 @@ export type unstable_FormInputOptions<
   Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
-    "values" | "touched" | "errors" | "update" | "blur"
+    "baseId" | "values" | "touched" | "errors" | "update" | "blur"
   > & {
     /** TODO: Description */
     name: P;
@@ -29,7 +29,7 @@ export type unstable_FormInputOptions<
 export type unstable_FormInputProps = unstable_BoxProps &
   React.InputHTMLAttributes<any>;
 
-export function useFormInput<V, P extends DeepPath<V, P>>(
+export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,
   htmlProps: unstable_FormInputProps = {}
 ) {
@@ -53,17 +53,17 @@ export function useFormInput<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_FormInputOptions<any, any>> = [
-  ...useBox.keys,
-  ...useFormState.keys,
+const keys: Keys<unstable_FormInputOptions<any, any>> = [
+  ...useBox.__keys,
+  ...unstable_useFormState.__keys,
   "name"
 ];
 
-useFormInput.keys = keys;
+unstable_useFormInput.__keys = keys;
 
-export const FormInput = (unstable_createComponent(
-  "input",
-  useFormInput
-) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
+export const unstable_FormInput = (unstable_createComponent({
+  as: "input",
+  useHook: unstable_useFormInput
+}) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormInputOptions<V, P>, T>
 ) => JSX.Element;

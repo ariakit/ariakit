@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@types/lodash": "4.14.123",
-    "gatsby": "2.2.3",
+    "gatsby": "2.2.9",
     "gatsby-image": "2.0.34",
     "gatsby-plugin-manifest": "2.0.24",
     "gatsby-plugin-react-helmet": "3.0.10",
@@ -28,14 +28,14 @@
     "gatsby-remark-autolink-headers": "2.0.16",
     "gatsby-remark-external-links": "0.0.4",
     "gatsby-remark-smartypants": "2.0.9",
-    "gatsby-source-filesystem": "2.0.27",
-    "gatsby-transformer-remark": "2.3.7",
+    "gatsby-source-filesystem": "2.0.28",
+    "gatsby-transformer-remark": "2.3.8",
     "gatsby-transformer-sharp": "2.1.17",
     "lodash": "4.17.11",
     "mdast-util-to-string": "1.0.5",
     "prop-types": "15.7.2",
-    "react": "16.8.4",
-    "react-dom": "16.8.4",
+    "react": "16.8.5",
+    "react-dom": "16.8.5",
     "react-helmet": "5.2.0",
     "reakit": "0.16.0",
     "reakit-system-classic": "0.0.1",
@@ -49,8 +49,8 @@
   },
   "devDependencies": {
     "babel-jest": "24.5.0",
-    "babel-preset-gatsby": "0.1.9",
+    "babel-preset-gatsby": "0.1.10",
     "jest": "24.5.0",
-    "react-test-renderer": "16.8.4"
+    "react-test-renderer": "16.8.5"
   }
 }

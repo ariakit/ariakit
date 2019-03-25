@@ -5,6 +5,7 @@ import {
   unstable_RoverInitialState,
   useRoverState
 } from "../Rover/RoverState";
+import { Keys } from "../__utils/types";
 
 export type unstable_StaticMenuState = unstable_RoverState;
 
@@ -15,15 +16,17 @@ export type unstable_StaticMenuInitialState = unstable_RoverInitialState;
 export type unstable_StaticMenuStateReturn = unstable_StaticMenuState &
   unstable_StaticMenuActions;
 
-export function useStaticMenuState(
+export function unstable_useStaticMenuState(
   initialState: SealedInitialState<unstable_StaticMenuInitialState> = {}
 ): unstable_StaticMenuStateReturn {
   const { orientation = "vertical", ...sealed } = useSealedState(initialState);
-  return useRoverState({ ...sealed, orientation });
+  return useRoverState({
+    unstable_loop: orientation === "horizontal",
+    ...sealed,
+    orientation
+  });
 }
 
-const keys: Array<keyof unstable_StaticMenuStateReturn> = [
-  ...useRoverState.keys
-];
+const keys: Keys<unstable_StaticMenuStateReturn> = [...useRoverState.__keys];
 
-useStaticMenuState.keys = keys;
+unstable_useStaticMenuState.__keys = keys;

@@ -5,7 +5,11 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { warning } from "../__utils/warning";
-import { unstable_RadioStateReturn } from "./RadioState";
+import { Keys } from "../__utils/types";
+import {
+  unstable_useRadioState,
+  unstable_RadioStateReturn
+} from "./RadioState";
 
 export type unstable_RadioGroupOptions = unstable_BoxOptions &
   Partial<unstable_RadioStateReturn>;
@@ -28,20 +32,23 @@ export function useRadioGroup(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_RadioGroupOptions> = [...useBox.keys];
+const keys: Keys<unstable_RadioGroupOptions> = [
+  ...useBox.__keys,
+  ...unstable_useRadioState.__keys
+];
 
-useRadioGroup.keys = keys;
+useRadioGroup.__keys = keys;
 
-export const RadioGroup = unstable_createComponent(
-  "fieldset",
-  useRadioGroup,
-  (type, props, children) => {
+export const RadioGroup = unstable_createComponent({
+  as: "fieldset",
+  useHook: useRadioGroup,
+  useCreateElement: (type, props, children) => {
     warning(
-      props["aria-label"] || props["aria-labelledby"],
+      !props["aria-label"] && !props["aria-labelledby"],
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
 See https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-properties-15`,
       "RadioGroup"
     );
     return unstable_useCreateElement(type, props, children);
   }
-);
+});

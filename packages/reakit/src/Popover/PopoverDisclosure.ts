@@ -6,6 +6,7 @@ import {
   unstable_DialogDisclosureProps,
   useDialogDisclosure
 } from "../Dialog/DialogDisclosure";
+import { Keys } from "../__utils/types";
 import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
 
 export type unstable_PopoverDisclosureOptions = unstable_DialogDisclosureOptions &
@@ -19,7 +20,7 @@ export function usePopoverDisclosure(
 ) {
   htmlProps = mergeProps(
     {
-      ref: options.referenceRef
+      ref: options.unstable_referenceRef
     } as typeof htmlProps,
     htmlProps
   );
@@ -28,14 +29,14 @@ export function usePopoverDisclosure(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_PopoverDisclosureOptions> = [
-  ...useDialogDisclosure.keys,
-  ...usePopoverState.keys
+const keys: Keys<unstable_PopoverDisclosureOptions> = [
+  ...useDialogDisclosure.__keys,
+  ...usePopoverState.__keys
 ];
 
-usePopoverDisclosure.keys = keys;
+usePopoverDisclosure.__keys = keys;
 
-export const PopoverDisclosure = unstable_createComponent(
-  "button",
-  usePopoverDisclosure
-);
+export const PopoverDisclosure = unstable_createComponent({
+  as: "button",
+  useHook: usePopoverDisclosure
+});

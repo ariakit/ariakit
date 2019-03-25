@@ -2,21 +2,21 @@ import * as React from "react";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { useHook } from "../system/useHook";
 import { mergeProps } from "../utils/mergeProps";
-import { As, PropsWithAs } from "../__utils/types";
+import { As, PropsWithAs, Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
 import { getLabelId } from "./__utils/getLabelId";
 import { shouldShowError } from "./__utils/shouldShowError";
-import { unstable_FormStateReturn, useFormState } from "./FormState";
+import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormGroupOptions<
   V,
   P extends DeepPath<V, P>
 > = unstable_BoxOptions &
   Partial<unstable_FormStateReturn<V>> &
-  Pick<unstable_FormStateReturn<V>, "touched" | "errors"> & {
+  Pick<unstable_FormStateReturn<V>, "baseId" | "touched" | "errors"> & {
     /** TODO: Description */
     name: P;
   };
@@ -24,7 +24,7 @@ export type unstable_FormGroupOptions<
 export type unstable_FormGroupProps = unstable_BoxProps &
   React.FieldsetHTMLAttributes<any>;
 
-export function useFormGroup<V, P extends DeepPath<V, P>>(
+export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
   options: unstable_FormGroupOptions<V, P>,
   htmlProps: unstable_FormGroupProps = {}
 ) {
@@ -44,17 +44,17 @@ export function useFormGroup<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_FormGroupOptions<any, any>> = [
-  ...useBox.keys,
-  ...useFormState.keys,
+const keys: Keys<unstable_FormGroupOptions<any, any>> = [
+  ...useBox.__keys,
+  ...unstable_useFormState.__keys,
   "name"
 ];
 
-useFormGroup.keys = keys;
+unstable_useFormGroup.__keys = keys;
 
-export const FormGroup = (unstable_createComponent(
-  "fieldset",
-  useFormGroup
-) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(
+export const unstable_FormGroup = (unstable_createComponent({
+  as: "fieldset",
+  useHook: unstable_useFormGroup
+}) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(
   props: PropsWithAs<unstable_FormGroupOptions<V, P>, T>
 ) => JSX.Element;

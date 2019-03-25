@@ -4,13 +4,13 @@ import {
   Menu,
   MenuDisclosure,
   MenuItem,
-  MenuItemDisclosure,
+  unstable_MenuItemDisclosure as MenuItemDisclosure,
   useMenuState,
-  StaticMenu,
-  useStaticMenuState,
+  unstable_StaticMenu as StaticMenu,
+  unstable_useStaticMenuState,
   MenuGroup,
-  MenuItemRadio,
-  MenuItemCheckbox
+  unstable_MenuItemRadio as MenuItemRadio,
+  unstable_MenuItemCheckbox as MenuItemCheckbox
 } from "..";
 
 function keyDown(key: string) {
@@ -516,7 +516,7 @@ test("arrow right closes left submenu and focus disclosure", () => {
 
 test("static menu is always visible and does not receive auto focus", () => {
   const Test = () => {
-    const menu = useStaticMenuState();
+    const menu = unstable_useStaticMenuState();
     return (
       <StaticMenu aria-label="menu" {...menu}>
         <MenuItem {...menu}>item1</MenuItem>
@@ -533,7 +533,7 @@ test("static menu is always visible and does not receive auto focus", () => {
 
 test("move focus in menubar with arrow keys", () => {
   const Test = () => {
-    const menu = useStaticMenuState({ orientation: "horizontal" });
+    const menu = unstable_useStaticMenuState({ orientation: "horizontal" });
     return (
       <StaticMenu aria-label="menu" {...menu}>
         <MenuItem {...menu}>item1</MenuItem>
@@ -552,7 +552,7 @@ test("move focus in menubar with arrow keys", () => {
 
 test("focusing a disclosure in menubar automatically opens submenu without moving focus", () => {
   const Test = () => {
-    const menubar = useStaticMenuState({ orientation: "horizontal" });
+    const menubar = unstable_useStaticMenuState({ orientation: "horizontal" });
     const menu = useMenuState({}, menubar);
     return (
       <StaticMenu aria-label="menubar" {...menubar}>
@@ -578,7 +578,7 @@ test("focusing a disclosure in menubar automatically opens submenu without movin
 
 test("esc on disclosure in menubar closes menu", () => {
   const Test = () => {
-    const menubar = useStaticMenuState({ orientation: "horizontal" });
+    const menubar = unstable_useStaticMenuState({ orientation: "horizontal" });
     const menu = useMenuState({}, menubar);
     return (
       <StaticMenu aria-label="menubar" {...menubar}>
@@ -606,7 +606,7 @@ test("esc on disclosure in menubar closes menu", () => {
 
 test("move focus to submenu in menubar with arrow keys", () => {
   const Test = () => {
-    const menubar = useStaticMenuState({ orientation: "horizontal" });
+    const menubar = unstable_useStaticMenuState({ orientation: "horizontal" });
     const menu = useMenuState({}, menubar);
     return (
       <StaticMenu aria-label="menubar" {...menubar}>
@@ -632,9 +632,9 @@ test("move focus to submenu in menubar with arrow keys", () => {
 
 test("left/right arrow keys in submenu in menubar move focus within menubar", () => {
   const Test = () => {
-    const menubar = useStaticMenuState({
+    const menubar = unstable_useStaticMenuState({
       orientation: "horizontal",
-      loop: true
+      unstable_loop: true
     });
     const menu1 = useMenuState({}, menubar);
     const menu2 = useMenuState({}, menubar);
@@ -692,7 +692,7 @@ test("left/right arrow keys in submenu in menubar move focus within menubar", ()
 
 test("left/arrow keys in submenu in menubar do not move focus within menubar if item is disclosure", () => {
   const Test = () => {
-    const menubar = useStaticMenuState({ orientation: "horizontal" });
+    const menubar = unstable_useStaticMenuState({ orientation: "horizontal" });
     const menu1 = useMenuState({}, menubar);
     const menu2 = useMenuState({}, menu1);
     return (
@@ -737,7 +737,7 @@ test("left/arrow keys in submenu in menubar do not move focus within menubar if 
 
 test("clicking outside a submenu in menubar closes submenu and focus disclosure", () => {
   const Test = () => {
-    const menubar = useStaticMenuState({
+    const menubar = unstable_useStaticMenuState({
       orientation: "horizontal"
     });
     const menu = useMenuState({}, menubar);

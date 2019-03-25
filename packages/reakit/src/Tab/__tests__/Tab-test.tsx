@@ -3,20 +3,20 @@ import { render } from "react-testing-library";
 import { Tab } from "../Tab";
 
 const props: Parameters<typeof Tab>[0] = {
-  baseId: "base",
+  unstable_baseId: "base",
   stopId: "tab",
-  stops: [],
-  currentId: null,
-  selectedId: null,
-  pastId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
-  move: jest.fn(),
-  select: jest.fn(),
-  next: jest.fn(),
-  previous: jest.fn(),
-  first: jest.fn(),
-  last: jest.fn()
+  unstable_stops: [],
+  unstable_currentId: null,
+  unstable_selectedId: null,
+  unstable_pastId: null,
+  unstable_register: jest.fn(),
+  unstable_unregister: jest.fn(),
+  unstable_move: jest.fn(),
+  unstable_select: jest.fn(),
+  unstable_next: jest.fn(),
+  unstable_previous: jest.fn(),
+  unstable_first: jest.fn(),
+  unstable_last: jest.fn()
 };
 
 test("render", () => {
@@ -40,7 +40,7 @@ test("render", () => {
 
 test("render active", () => {
   const { baseElement } = render(
-    <Tab {...props} currentId="tab">
+    <Tab {...props} unstable_currentId="tab">
       tab
     </Tab>
   );
@@ -63,7 +63,7 @@ test("render active", () => {
 
 test("render active selected", () => {
   const { baseElement } = render(
-    <Tab {...props} currentId="tab" selectedId="tab">
+    <Tab {...props} unstable_currentId="tab" unstable_selectedId="tab">
       tab
     </Tab>
   );

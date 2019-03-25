@@ -3,7 +3,8 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
-import { unstable_FormStateReturn, useFormState } from "./FormState";
+import { Keys } from "../__utils/types";
+import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormOptions = unstable_BoxOptions &
   Partial<unstable_FormStateReturn<any>> &
@@ -12,7 +13,7 @@ export type unstable_FormOptions = unstable_BoxOptions &
 export type unstable_FormProps = unstable_BoxProps &
   React.FormHTMLAttributes<any>;
 
-export function useForm(
+export function unstable_useForm(
   options: unstable_FormOptions,
   htmlProps: unstable_FormProps = {}
 ) {
@@ -33,11 +34,14 @@ export function useForm(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_FormOptions> = [
-  ...useBox.keys,
-  ...useFormState.keys
+const keys: Keys<unstable_FormOptions> = [
+  ...useBox.__keys,
+  ...unstable_useFormState.__keys
 ];
 
-useForm.keys = keys;
+unstable_useForm.__keys = keys;
 
-export const Form = unstable_createComponent("form", useForm);
+export const unstable_Form = unstable_createComponent({
+  as: "form",
+  useHook: unstable_useForm
+});

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { useHook } from "../system/useHook";
+import { Keys } from "../__utils/types";
 
 export type unstable_BoxOptions = {
   /** Options passed to `reakit-system-*` */
@@ -18,8 +19,11 @@ export function useBox(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_BoxOptions> = ["system"];
+const keys: Keys<unstable_BoxOptions> = ["system"];
 
-useBox.keys = keys;
+useBox.__keys = keys;
 
-export const Box = unstable_createComponent("div", useBox);
+export const Box = unstable_createComponent({
+  as: "div",
+  useHook: useBox
+});

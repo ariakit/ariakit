@@ -1,13 +1,15 @@
 /* eslint-disable no-console */
 import { renderHook, act } from "react-hooks-testing-library";
-import { useFormState } from "../FormState";
+import { unstable_useFormState } from "../FormState";
 import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
 import { supressAct } from "../../__utils/supressAct";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
 test("initial state", () => {
-  const { result } = renderHook(() => useFormState({ baseId: "test" }));
+  const { result } = renderHook(() =>
+    unstable_useFormState({ baseId: "test" })
+  );
   expect(result.current).toMatchInlineSnapshot(`
 Object {
   "baseId": "test",
@@ -26,7 +28,7 @@ Object {
 
 test("initial state values", () => {
   const { result } = renderHook(() =>
-    useFormState({
+    unstable_useFormState({
       baseId: "test",
       values: { a: "a", b: { c: ["d", "e"] } }
     })
@@ -57,7 +59,7 @@ Object {
 
 test("update", () => {
   const { result } = renderHook(() =>
-    useFormState({
+    unstable_useFormState({
       values: { a: "a", b: { c: ["d", "e"] } }
     })
   );
@@ -71,7 +73,7 @@ test("update", () => {
 
 test("validate", () => {
   const { result } = renderHook(() =>
-    useFormState({
+    unstable_useFormState({
       values: { a: "a" },
       onValidate: values => {
         if (values.a === "a") {
@@ -90,7 +92,7 @@ test(
   "submit",
   supressAct(async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
-      useFormState({
+      unstable_useFormState({
         values: { a: "a" },
         onSubmit: values => {
           if (values.a === "a") {
@@ -108,7 +110,7 @@ test(
 
 test("blur", () => {
   const { result } = renderHook(() =>
-    useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
+    unstable_useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
   );
   expect(result.current.touched).toEqual({});
   act(() => result.current.blur("a"));
@@ -119,7 +121,7 @@ test("blur", () => {
 
 test("push", () => {
   const { result } = renderHook(() =>
-    useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
+    unstable_useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
   );
   act(() => result.current.push(["b", "c"], "f"));
   expect(result.current.values.b.c).toEqual(["d", "e", "f"]);
@@ -127,14 +129,16 @@ test("push", () => {
 
 test("remove", () => {
   const { result } = renderHook(() =>
-    useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
+    unstable_useFormState({ values: { a: "a", b: { c: ["d", "e"] } } })
   );
   act(() => result.current.remove(["b", "c"], 0));
   expect(result.current.values.b.c).toEqual([undefined, "e"]);
 });
 
 test("reset", () => {
-  const { result } = renderHook(() => useFormState({ values: { a: "a" } }));
+  const { result } = renderHook(() =>
+    unstable_useFormState({ values: { a: "a" } })
+  );
   expect(result.current.values.a).toBe("a");
   act(() => result.current.update("a", "b"));
   expect(result.current.values.a).toBe("b");

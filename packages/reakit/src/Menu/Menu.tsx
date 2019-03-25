@@ -10,10 +10,11 @@ import {
   unstable_PopoverProps,
   usePopover
 } from "../Popover/Popover";
+import { Keys } from "../__utils/types";
 import {
   unstable_StaticMenuOptions,
   unstable_StaticMenuProps,
-  useStaticMenu
+  unstable_useStaticMenu
 } from "./StaticMenu";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
@@ -28,33 +29,34 @@ export function useMenu(
   options: unstable_MenuOptions,
   htmlProps: unstable_MenuProps = {}
 ) {
-  const allOptions = {
-    autoFocusOnShow:
-      !options.parent || options.parent.orientation !== "horizontal",
-    ...options
+  const allOptions: unstable_MenuOptions = {
+    ...options,
+    unstable_autoFocusOnShow:
+      !options.unstable_parent ||
+      options.unstable_parent.orientation !== "horizontal"
   };
 
   htmlProps = mergeProps({ role: "menu" } as typeof htmlProps, htmlProps);
-  htmlProps = useStaticMenu(allOptions, htmlProps);
+  htmlProps = unstable_useStaticMenu(allOptions, htmlProps);
   htmlProps = usePopover(allOptions, htmlProps);
   htmlProps = useHook("useMenu", allOptions, htmlProps);
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_MenuOptions> = [
-  ...usePopover.keys,
-  ...useStaticMenu.keys,
-  ...useMenuState.keys
+const keys: Keys<unstable_MenuOptions> = [
+  ...usePopover.__keys,
+  ...unstable_useStaticMenu.__keys,
+  ...useMenuState.__keys
 ];
 
-useMenu.keys = keys;
+useMenu.__keys = keys;
 
-export const Menu = unstable_createComponent(
-  "div",
-  useMenu,
-  (type, props, children) => {
+export const Menu = unstable_createComponent({
+  as: "div",
+  useHook: useMenu,
+  useCreateElement: (type, props, children) => {
     warning(
-      props["aria-label"] || props["aria-labelledby"],
+      !props["aria-label"] && !props["aria-labelledby"],
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
 See https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-properties-13`,
       "Menu"
@@ -63,4 +65,4 @@ See https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-prop
     const element = unstable_useCreateElement(type, props, children);
     return <Portal>{element}</Portal>;
   }
-);
+});

@@ -4,16 +4,16 @@ import { Rover } from "../Rover";
 
 const props: Parameters<typeof Rover>[0] = {
   stopId: "rover",
-  stops: [],
-  currentId: null,
-  pastId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
-  move: jest.fn(),
-  next: jest.fn(),
-  previous: jest.fn(),
-  first: jest.fn(),
-  last: jest.fn()
+  unstable_stops: [],
+  unstable_currentId: null,
+  unstable_pastId: null,
+  unstable_register: jest.fn(),
+  unstable_unregister: jest.fn(),
+  unstable_move: jest.fn(),
+  unstable_next: jest.fn(),
+  unstable_previous: jest.fn(),
+  unstable_first: jest.fn(),
+  unstable_last: jest.fn()
 };
 
 test("render", () => {
@@ -34,7 +34,7 @@ test("render", () => {
 
 test("render currentId equals to stopId", () => {
   const { baseElement } = render(
-    <Rover {...props} currentId="rover">
+    <Rover {...props} unstable_currentId="rover">
       rover
     </Rover>
   );

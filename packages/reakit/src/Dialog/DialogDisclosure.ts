@@ -6,6 +6,7 @@ import {
   unstable_HiddenDisclosureProps,
   useHiddenDisclosure
 } from "../Hidden/HiddenDisclosure";
+import { Keys } from "../__utils/types";
 import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
 
 export type unstable_DialogDisclosureOptions = unstable_HiddenDisclosureOptions &
@@ -28,14 +29,14 @@ export function useDialogDisclosure(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_DialogDisclosureOptions> = [
-  ...useHiddenDisclosure.keys,
-  ...useDialogState.keys
+const keys: Keys<unstable_DialogDisclosureOptions> = [
+  ...useHiddenDisclosure.__keys,
+  ...useDialogState.__keys
 ];
 
-useDialogDisclosure.keys = keys;
+useDialogDisclosure.__keys = keys;
 
-export const DialogDisclosure = unstable_createComponent(
-  "button",
-  useDialogDisclosure
-);
+export const DialogDisclosure = unstable_createComponent({
+  as: "button",
+  useHook: useDialogDisclosure
+});

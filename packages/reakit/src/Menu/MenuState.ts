@@ -13,61 +13,69 @@ import {
   unstable_PopoverInitialState,
   usePopoverState
 } from "../Popover/PopoverState";
+import { Keys } from "../__utils/types";
 
 export type unstable_MenuState = unstable_RoverState &
   unstable_PopoverState & {
     /** TODO: Description */
-    values: Record<string, any>;
+    unstable_values: Record<string, any>;
     /** TODO: Description */
-    parent?: unstable_RoverStateReturn;
+    unstable_parent?: unstable_RoverStateReturn;
   };
 
 export type unstable_MenuActions = unstable_RoverActions &
   unstable_PopoverActions & {
     /** TODO: Description */
-    update: (name: string, value?: any) => void;
+    unstable_update: (name: string, value?: any) => void;
   };
 
 export type unstable_MenuInitialState = unstable_RoverInitialState &
   unstable_PopoverInitialState &
-  Partial<Pick<unstable_MenuState, "values">>;
+  Partial<Pick<unstable_MenuState, "unstable_values">>;
 
 export type unstable_MenuStateReturn = unstable_MenuState &
   unstable_MenuActions;
 
 export function useMenuState(
   initialState: SealedInitialState<unstable_MenuInitialState> = {},
-  parent?: unstable_RoverStateReturn
+  unstable_parent?: unstable_RoverStateReturn
 ): unstable_MenuStateReturn {
   const {
     orientation = "vertical",
-    gutter = 0,
-    values: initialValues = {},
+    unstable_gutter: gutter = 0,
+    unstable_values: initialValues = {},
     ...sealed
   } = useSealedState(initialState);
   const [values, setValues] = React.useState(initialValues);
 
   const placement =
     sealed.placement ||
-    (parent && parent.orientation === "vertical"
+    (unstable_parent && unstable_parent.orientation === "vertical"
       ? "right-start"
       : "bottom-start");
 
   const rover = useRoverState({ ...sealed, orientation });
-  const popover = usePopoverState({ ...sealed, placement, gutter });
+  const popover = usePopoverState({
+    ...sealed,
+    placement,
+    unstable_gutter: gutter
+  });
 
   React.useEffect(() => {
     if (!popover.visible) {
-      rover.reset();
+      rover.unstable_reset();
     }
   }, [popover.visible]);
 
   return {
     ...rover,
     ...popover,
-    parent,
-    values,
-    update: React.useCallback((name, value) => {
+    unstable_parent: React.useMemo(
+      () => unstable_parent,
+      Object.values(unstable_parent || {})
+    ),
+    unstable_values: values,
+    unstable_update: React.useCallback((name, value) => {
       setValues(vals => ({
         ...vals,
         [name]: typeof value === "function" ? value(vals) : value
@@ -76,12 +84,12 @@ export function useMenuState(
   };
 }
 
-const keys: Array<keyof unstable_MenuStateReturn> = [
-  ...useRoverState.keys,
-  ...usePopoverState.keys,
-  "parent",
-  "values",
-  "update"
+const keys: Keys<unstable_MenuStateReturn> = [
+  ...useRoverState.__keys,
+  ...usePopoverState.__keys,
+  "unstable_parent",
+  "unstable_values",
+  "unstable_update"
 ];
 
-useMenuState.keys = keys;
+useMenuState.__keys = keys;

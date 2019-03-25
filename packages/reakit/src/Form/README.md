@@ -8,18 +8,18 @@ path: /docs/form
 
 ```jsx
 import {
-  Form,
-  FormLabel,
-  FormCheckbox,
-  FormGroup,
-  FormRadioGroup,
-  FormRadio,
-  FormRemoveButton,
-  FormPushButton,
-  FormSubmitButton,
-  FormInput,
-  FormMessage,
-  useFormState
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormCheckbox as FormCheckbox,
+  unstable_FormGroup as FormGroup,
+  unstable_FormRadioGroup as FormRadioGroup,
+  unstable_FormRadio as FormRadio,
+  unstable_FormRemoveButton as FormRemoveButton,
+  unstable_FormPushButton as FormPushButton,
+  unstable_FormSubmitButton as FormSubmitButton,
+  unstable_FormInput as FormInput,
+  unstable_FormMessage as FormMessage,
+  unstable_useFormState as useFormState
 } from "reakit";
 
 function Example() {

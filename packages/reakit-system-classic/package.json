@@ -34,8 +34,8 @@
     "reakit-system-palette": "0.0.1"
   },
   "devDependencies": {
-    "react": "16.8.4",
-    "react-dom": "16.8.4",
+    "react": "16.8.5",
+    "react-dom": "16.8.5",
     "reakit": "0.16.0"
   },
   "peerDependencies": {

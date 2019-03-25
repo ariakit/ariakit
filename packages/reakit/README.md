@@ -5,13 +5,9 @@
 </p>
 
 <p align="center">
-  <em>Toolkit for building <a href="https://reakit.io/docs/accessibility">accessible</a> UIs with <a href="https://reactjs.org">React</a>.</em>
-</p>
-
-
-<p align="center">
-  <a href="https://reakit.io"><strong>🌎 Website</strong></a> &nbsp; &nbsp;
-  <a href="https://reakit.io/docs"><strong>📚 Documentation</strong></a>
+  Toolkit for building <a href="https://reakit.io/docs/accessibility">accessible</a> UIs with <a href="https://reactjs.org">React</a>.
+  <br>
+  <a href="https://reakit.io"><strong>Explore website »</strong></a>
 </p>
 
 <hr>
@@ -24,7 +20,6 @@
   <a href="https://opencollective.com/reakit"><img alt="Sponsors" src="https://opencollective.com/reakit/tiers/sponsor/badge.svg?label=sponsors&style=flat-square" /></a>
   <a href="https://opencollective.com/reakit"><img alt="Backers" src="https://opencollective.com/reakit/tiers/backer/badge.svg?label=backers&style=flat-square" /></a>
   <a href="https://spectrum.chat/reakit"><img src="https://img.shields.io/badge/community-spectrum-7A2DFB.svg?style=flat-square" alt="Spectrum" /></a>
-  <a href="https://join.slack.com/t/reakit/shared_invite/enQtNDExMDcwNTk2MTMwLWI1Mzk1Y2YzMTAzZGUyMGIzMjQxZGU4OGM3MDI0OTcyYWU0NzZjZmIxNDcxZTVlODZiODA3YjE5N2FiOWMxZWQ"><img src="https://img.shields.io/badge/chat-slack-DE215B.svg?style=flat-square" alt="Slack" /></a>
   <a href="https://twitter.com/reakitjs">
     <img alt="Follow Reakit on Twitter" src="https://img.shields.io/twitter/follow/reakitjs.svg?label=follow+@reakitjs&style=flat-square"></a>
 </p>

@@ -1,8 +1,10 @@
 import * as React from "react";
-import { ArrayValue } from "../__utils/types";
+import { ArrayValue, Keys } from "../__utils/types";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
+import { isPromise } from "../__utils/isPromise";
+import { isEmpty } from "../__utils/isEmpty";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
 import { hasMessages } from "./__utils/hasMessages";
@@ -102,6 +104,17 @@ type ReducerAction =
   | { type: "push"; name: any; value: any }
   | { type: "remove"; name: any; index: number };
 
+function getMessages<V>(
+  stateMessages: Messages<V>,
+  actionMessages: Messages<V>
+) {
+  return !isEmpty(actionMessages)
+    ? actionMessages
+    : isEmpty(stateMessages)
+    ? stateMessages
+    : {};
+}
+
 function reducer<V>(
   state: ReducerState<V>,
   action: ReducerAction
@@ -131,8 +144,8 @@ function reducer<V>(
       return {
         ...state,
         validating: false,
-        errors: action.errors || {},
-        messages: action.messages || state.messages,
+        errors: getMessages(state.errors, action.errors),
+        messages: getMessages(state.messages, action.messages),
         valid: !hasMessages(action.errors)
       };
     }
@@ -150,8 +163,8 @@ function reducer<V>(
         ...state,
         valid,
         submitting: false,
-        errors: action.errors || {},
-        messages: action.messages || {},
+        errors: getMessages(state.errors, action.errors),
+        messages: getMessages(state.messages, action.messages),
         submitSucceed: valid ? state.submitSucceed + 1 : state.submitSucceed,
         submitFailed: valid ? state.submitFailed : state.submitFailed + 1
       };
@@ -201,7 +214,7 @@ function reducer<V>(
   }
 }
 
-export function useFormState<V = Record<any, any>>(
+export function unstable_useFormState<V = Record<any, any>>(
   initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
   const {
@@ -233,8 +246,11 @@ export function useFormState<V = Record<any, any>>(
     async (vals = state.values) => {
       try {
         if (onValidate) {
-          dispatch({ type: "startValidate" });
-          const messages = await onValidate(filterAllEmpty(vals));
+          const response = onValidate(filterAllEmpty(vals));
+          if (isPromise(response)) {
+            dispatch({ type: "startValidate" });
+          }
+          const messages = await response;
           dispatch({ type: "endValidate", messages });
           return messages;
         }
@@ -309,7 +325,7 @@ export function useFormState<V = Record<any, any>>(
   };
 }
 
-const keys: Array<keyof unstable_FormStateReturn<any>> = [
+const keys: Keys<unstable_FormStateReturn<any>> = [
   "baseId",
   "values",
   "touched",
@@ -329,4 +345,4 @@ const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "remove"
 ];
 
-useFormState.keys = keys;
+unstable_useFormState.__keys = keys;

@@ -1,22 +1,22 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { MenuItemCheckbox } from "../MenuItemCheckbox";
+import { unstable_MenuItemCheckbox as MenuItemCheckbox } from "../MenuItemCheckbox";
 
 const props: Parameters<typeof MenuItemCheckbox>[0] = {
   name: "checkbox",
-  values: {},
+  unstable_values: {},
   stopId: "item",
-  stops: [],
-  currentId: null,
-  pastId: null,
-  update: jest.fn(),
-  register: jest.fn(),
-  unregister: jest.fn(),
-  move: jest.fn(),
-  next: jest.fn(),
-  previous: jest.fn(),
-  first: jest.fn(),
-  last: jest.fn()
+  unstable_stops: [],
+  unstable_currentId: null,
+  unstable_pastId: null,
+  unstable_update: jest.fn(),
+  unstable_register: jest.fn(),
+  unstable_unregister: jest.fn(),
+  unstable_move: jest.fn(),
+  unstable_next: jest.fn(),
+  unstable_previous: jest.fn(),
+  unstable_first: jest.fn(),
+  unstable_last: jest.fn()
 };
 
 test("render", () => {

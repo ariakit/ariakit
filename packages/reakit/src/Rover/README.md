@@ -10,7 +10,7 @@ path: /docs/rover
 import { useRoverState, Rover } from "reakit";
 
 function Example() {
-  const roving = useRoverState({ currentId: "test" });
+  const roving = useRoverState({ unstable_currentId: "test" });
   return (
     <>
       <Rover {...roving}>Item 1</Rover>
@@ -34,7 +34,7 @@ import React from "react";
 import { useRoverState, Rover } from "reakit";
 
 function Example() {
-  const roving = useRoverState({ currentId: "test" });
+  const roving = useRoverState({ unstable_currentId: "test" });
   const [visible, setVisible] = React.useState(false);
   return (
     <>
@@ -47,7 +47,7 @@ function Example() {
         Item 3
       </Rover>
       {visible && <Rover {...roving}>Item 3.5</Rover>}
-      <Rover {...roving} disabled focusable>
+      <Rover {...roving} disabled unstable_focusable>
         Item 4
       </Rover>
       <Rover {...roving}>Item 5</Rover>

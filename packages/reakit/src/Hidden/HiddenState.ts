@@ -1,25 +1,37 @@
 import * as React from "react";
 import { useSealedState, SealedInitialState } from "../__utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
+import { Keys } from "../__utils/types";
 
 export type unstable_HiddenState = {
-  /** TODO: Description */
-  hiddenId: string;
-  /** Tell whether it's visible or not */
+  /**
+   * Hidden element id.
+   */
+  unstable_hiddenId: string;
+  /**
+   * Whether it's visible or not.
+   * @default false
+   */
   visible: boolean;
 };
 
 export type unstable_HiddenActions = {
-  /** Change the `visible` state to `true` */
+  /**
+   * Changes the `visible` state to `true`
+   */
   show: () => void;
-  /** Change the `visible` state to `false` */
+  /**
+   * Changes the `visible` state to `false`
+   */
   hide: () => void;
-  /** Toggle the `visible` state */
+  /**
+   * Toggles the `visible` state
+   */
   toggle: () => void;
 };
 
 export type unstable_HiddenInitialState = Partial<
-  Pick<unstable_HiddenState, "hiddenId" | "visible">
+  Pick<unstable_HiddenState, "unstable_hiddenId" | "visible">
 >;
 
 export type unstable_HiddenStateReturn = unstable_HiddenState &
@@ -29,7 +41,7 @@ export function useHiddenState(
   initialState: SealedInitialState<unstable_HiddenInitialState> = {}
 ): unstable_HiddenStateReturn {
   const {
-    hiddenId = unstable_useId("hidden-"),
+    unstable_hiddenId: hiddenId = unstable_useId("hidden-"),
     visible: sealedVisible = false
   } = useSealedState(initialState);
 
@@ -39,10 +51,10 @@ export function useHiddenState(
 
   const hide = React.useCallback(() => setVisible(false), []);
 
-  const toggle = React.useCallback(() => setVisible(!visible), [visible]);
+  const toggle = React.useCallback(() => setVisible(v => !v), []);
 
   return {
-    hiddenId,
+    unstable_hiddenId: hiddenId,
     visible,
     show,
     hide,
@@ -50,12 +62,12 @@ export function useHiddenState(
   };
 }
 
-const keys: Array<keyof unstable_HiddenStateReturn> = [
-  "hiddenId",
+const keys: Keys<unstable_HiddenStateReturn> = [
+  "unstable_hiddenId",
   "visible",
   "show",
   "hide",
   "toggle"
 ];
 
-useHiddenState.keys = keys;
+useHiddenState.__keys = keys;

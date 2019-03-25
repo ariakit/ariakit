@@ -1,29 +1,30 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { MenuItemDisclosure } from "../MenuItemDisclosure";
+import { unstable_MenuItemDisclosure as MenuItemDisclosure } from "../MenuItemDisclosure";
 
 const props: Parameters<typeof MenuItemDisclosure>[0] = {
   stopId: "item",
-  hiddenId: "hidden",
+  unstable_hiddenId: "hidden",
   toggle: jest.fn(),
   placement: "bottom",
   show: jest.fn(),
-  last: jest.fn(),
+  unstable_first: jest.fn(),
+  unstable_last: jest.fn(),
   hide: jest.fn(),
-  parent: {
-    stops: [],
-    currentId: null,
-    loop: false,
-    pastId: null,
-    register: jest.fn(),
-    unregister: jest.fn(),
-    move: jest.fn(),
-    next: jest.fn(),
-    previous: jest.fn(),
-    first: jest.fn(),
-    last: jest.fn(),
-    reset: jest.fn(),
-    orientate: jest.fn()
+  unstable_parent: {
+    unstable_stops: [],
+    unstable_currentId: null,
+    unstable_loop: false,
+    unstable_pastId: null,
+    unstable_register: jest.fn(),
+    unstable_unregister: jest.fn(),
+    unstable_move: jest.fn(),
+    unstable_next: jest.fn(),
+    unstable_previous: jest.fn(),
+    unstable_first: jest.fn(),
+    unstable_last: jest.fn(),
+    unstable_reset: jest.fn(),
+    unstable_orientate: jest.fn()
   }
 };
 

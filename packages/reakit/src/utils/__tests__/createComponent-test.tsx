@@ -4,8 +4,8 @@ import { unstable_createComponent } from "../createComponent";
 
 test("createComponent", () => {
   const useHook = ({ children }: { children: string }) => ({ children });
-  useHook.keys = ["children"] as ["children"];
-  const Component = unstable_createComponent("div", useHook);
+  useHook.__keys = ["children"] as ["children"];
+  const Component = unstable_createComponent({ as: "div", useHook });
   const { getByText } = render(<Component>component</Component>);
   expect(getByText("component")).toBeDefined();
 });

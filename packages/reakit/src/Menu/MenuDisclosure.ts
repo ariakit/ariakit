@@ -6,11 +6,15 @@ import {
   unstable_PopoverDisclosureProps,
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
+import { Keys } from "../__utils/types";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
 export type unstable_MenuDisclosureOptions = unstable_PopoverDisclosureOptions &
   Partial<unstable_MenuStateReturn> &
-  Pick<unstable_MenuStateReturn, "placement" | "show" | "last">;
+  Pick<
+    unstable_MenuStateReturn,
+    "placement" | "show" | "unstable_first" | "unstable_last"
+  >;
 
 export type unstable_MenuDisclosureProps = unstable_PopoverDisclosureProps;
 
@@ -25,10 +29,12 @@ export function useMenuDisclosure(
       "aria-haspopup": "menu",
       onKeyDown: event => {
         const keyMap = {
-          ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
-          ArrowRight: dir === "right" && options.first,
-          ArrowDown: dir === "bottom" || dir === "top" ? options.first : false,
-          ArrowLeft: dir === "left" && options.first
+          ArrowUp:
+            dir === "top" || dir === "bottom" ? options.unstable_last : false,
+          ArrowRight: dir === "right" && options.unstable_first,
+          ArrowDown:
+            dir === "bottom" || dir === "top" ? options.unstable_first : false,
+          ArrowLeft: dir === "left" && options.unstable_first
         };
         if (event.key in keyMap) {
           const key = event.key as keyof typeof keyMap;
@@ -49,14 +55,14 @@ export function useMenuDisclosure(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_MenuDisclosureOptions> = [
-  ...usePopoverDisclosure.keys,
-  ...useMenuState.keys
+const keys: Keys<unstable_MenuDisclosureOptions> = [
+  ...usePopoverDisclosure.__keys,
+  ...useMenuState.__keys
 ];
 
-useMenuDisclosure.keys = keys;
+useMenuDisclosure.__keys = keys;
 
-export const MenuDisclosure = unstable_createComponent(
-  "button",
-  useMenuDisclosure
-);
+export const MenuDisclosure = unstable_createComponent({
+  as: "button",
+  useHook: useMenuDisclosure
+});

@@ -4,6 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
+import { Keys } from "../__utils/types";
 import { useTabState, unstable_TabStateReturn } from "./TabState";
 
 export type unstable_TabListOptions = unstable_BoxOptions &
@@ -27,25 +28,23 @@ export function useTabList(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_TabListOptions> = [
-  ...useBox.keys,
-  ...useTabState.keys
+const keys: Keys<unstable_TabListOptions> = [
+  ...useBox.__keys,
+  ...useTabState.__keys
 ];
 
-useTabList.keys = keys;
+useTabList.__keys = keys;
 
-export const TabList = unstable_createComponent(
-  "div",
-  useTabList,
-  (type, props, children) => {
+export const TabList = unstable_createComponent({
+  as: "div",
+  useHook: useTabList,
+  useCreateElement: (type, props, children) => {
     warning(
-      props["aria-label"] || props["aria-labelledby"],
+      !props["aria-label"] && !props["aria-labelledby"],
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
 See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props-20`,
       "TabList"
     );
-
-    const element = unstable_useCreateElement(type, props, children);
-    return element;
+    return unstable_useCreateElement(type, props, children);
   }
-);
+});

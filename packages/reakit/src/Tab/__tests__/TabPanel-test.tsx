@@ -3,9 +3,9 @@ import { render } from "react-testing-library";
 import { TabPanel } from "../TabPanel";
 
 const props: Parameters<typeof TabPanel>[0] = {
-  baseId: "base",
+  unstable_baseId: "base",
   stopId: "tab",
-  selectedId: null
+  unstable_selectedId: null
 };
 
 test("render", () => {
@@ -53,7 +53,7 @@ test("render visible", () => {
 
 test("render selected", () => {
   const { baseElement } = render(
-    <TabPanel {...props} selectedId="tab">
+    <TabPanel {...props} unstable_selectedId="tab">
       tabpanel
     </TabPanel>
   );

@@ -8,7 +8,7 @@ test("render", () => {
 <body>
   <div>
     <fieldset
-      role="menuitemradio"
+      role="group"
     />
   </div>
 </body>

@@ -2,9 +2,16 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { Keys } from "../__utils/types";
 
 export type unstable_SeparatorOptions = unstable_BoxOptions & {
-  /** TODO: Description */
+  /**
+   * Separator's context orientation.
+   * The actual separator's oriention will be flipped based on this prop.
+   * So a `"vertical"` orientation means that the separator will have a
+   * `"horizontal"` orientation.
+   * @default "vertical"
+   */
   orientation?: "horizontal" | "vertical";
 };
 
@@ -31,11 +38,11 @@ export function useSeparator(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_SeparatorOptions> = [
-  ...useBox.keys,
-  "orientation"
-];
+const keys: Keys<unstable_SeparatorOptions> = [...useBox.__keys, "orientation"];
 
-useSeparator.keys = keys;
+useSeparator.__keys = keys;
 
-export const Separator = unstable_createComponent("hr", useSeparator);
+export const Separator = unstable_createComponent({
+  as: "hr",
+  useHook: useSeparator
+});

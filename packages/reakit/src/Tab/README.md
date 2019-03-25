@@ -49,7 +49,10 @@ function Example() {
 import { useTabState, Tab, TabList, TabPanel } from "reakit";
 
 function Example() {
-  const tab = useTabState({ manual: true, selectedId: "tab2" });
+  const tab = useTabState({
+    unstable_manual: true,
+    unstable_selectedId: "tab2"
+  });
   return (
     <>
       <TabList>

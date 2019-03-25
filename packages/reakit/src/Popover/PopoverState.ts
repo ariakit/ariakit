@@ -7,37 +7,64 @@ import {
   unstable_DialogInitialState,
   useDialogState
 } from "../Dialog/DialogState";
+import { Keys } from "../__utils/types";
 
 export type unstable_PopoverState = unstable_DialogState & {
-  /** TODO: Description */
-  referenceRef: React.RefObject<HTMLElement | null>;
-  /** TODO: Description */
-  popoverRef: React.RefObject<HTMLElement | null>;
-  /** TODO: Description */
-  arrowRef: React.RefObject<HTMLElement | null>;
-  /** TODO: Description */
-  popoverStyles: Partial<CSSStyleDeclaration>;
-  /** TODO: Description */
-  arrowStyles: Partial<CSSStyleDeclaration>;
-  /** TODO: Description */
-  originalPlacement: Placement;
-  /** TODO: Description */
+  /**
+   * The reference element.
+   */
+  unstable_referenceRef: React.RefObject<HTMLElement | null>;
+  /**
+   * The popover element.
+   */
+  unstable_popoverRef: React.RefObject<HTMLElement | null>;
+  /**
+   * The arrow element.
+   */
+  unstable_arrowRef: React.RefObject<HTMLElement | null>;
+  /**
+   * Popover styles.
+   */
+  unstable_popoverStyles: Partial<CSSStyleDeclaration>;
+  /**
+   * Arrow styles.
+   */
+  unstable_arrowStyles: Partial<CSSStyleDeclaration>;
+  /**
+   * `placement` passed to the hook.
+   */
+  unstable_originalPlacement: Placement;
+  /**
+   * Actual `placement`.
+   * @default "bottom"
+   */
   placement: Placement;
 };
 
 export type unstable_PopoverActions = unstable_DialogActions & {
-  /** TODO: Description */
+  /**
+   * Change the `placement` state.
+   */
   place: React.Dispatch<React.SetStateAction<Placement>>;
 };
 
 export type unstable_PopoverInitialState = unstable_DialogInitialState &
   Partial<Pick<unstable_PopoverState, "placement">> & {
-    /** TODO: Description */
-    flip?: boolean;
-    /** TODO: Description */
-    shift?: boolean;
-    /** TODO: Description */
-    gutter?: number;
+    /**
+     * Whether or not flip the popover.
+     * @default true
+     */
+    unstable_flip?: boolean;
+    /**
+     * Whether or not shift the popover.
+     * @default true
+     */
+    unstable_shift?: boolean;
+    /**
+     * Offset between the reference and the popover.
+     * @default 12
+     */
+    unstable_gutter?: number;
   };
 
 export type unstable_PopoverStateReturn = unstable_PopoverState &
@@ -48,9 +75,9 @@ export function usePopoverState(
 ): unstable_PopoverStateReturn {
   const {
     placement: sealedPlacement = "bottom",
-    flip = true,
-    shift = true,
-    gutter = 12,
+    unstable_flip: flip = true,
+    unstable_shift: shift = true,
+    unstable_gutter: gutter = 12,
     ...sealed
   } = useSealedState(initialState);
 
@@ -115,27 +142,27 @@ export function usePopoverState(
 
   return {
     ...dialog,
-    referenceRef,
-    popoverRef,
-    arrowRef,
-    popoverStyles,
-    arrowStyles,
-    originalPlacement,
+    unstable_referenceRef: referenceRef,
+    unstable_popoverRef: popoverRef,
+    unstable_arrowRef: arrowRef,
+    unstable_popoverStyles: popoverStyles,
+    unstable_arrowStyles: arrowStyles,
+    unstable_originalPlacement: originalPlacement,
     placement,
     place: React.useCallback(place, [])
   };
 }
 
-const keys: Array<keyof unstable_PopoverStateReturn> = [
-  ...useDialogState.keys,
-  "referenceRef",
-  "popoverRef",
-  "arrowRef",
-  "popoverStyles",
-  "arrowStyles",
-  "originalPlacement",
+const keys: Keys<unstable_PopoverStateReturn> = [
+  ...useDialogState.__keys,
+  "unstable_referenceRef",
+  "unstable_popoverRef",
+  "unstable_arrowRef",
+  "unstable_popoverStyles",
+  "unstable_arrowStyles",
+  "unstable_originalPlacement",
   "placement",
   "place"
 ];
 
-usePopoverState.keys = keys;
+usePopoverState.__keys = keys;

@@ -6,8 +6,8 @@ import {
 import { useHook } from "../system/useHook";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_FormStateReturn, useFormState } from "./FormState";
+import { As, PropsWithAs, Keys } from "../__utils/types";
+import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getInputId } from "./__utils/getInputId";
 import { getPushButtonId } from "./__utils/getPushButtonId";
 import { DeepPath } from "./__utils/types";
@@ -17,7 +17,7 @@ export type unstable_FormRemoveButtonOptions<
   P extends DeepPath<V, P>
 > = unstable_ButtonOptions &
   Partial<unstable_FormStateReturn<V>> &
-  Pick<unstable_FormStateReturn<V>, "values" | "remove"> & {
+  Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "remove"> & {
     /** TODO: Description */
     name: P;
     /** TODO: Description */
@@ -26,7 +26,7 @@ export type unstable_FormRemoveButtonOptions<
 
 export type unstable_FormRemoveButtonProps = unstable_ButtonProps;
 
-export function useFormRemoveButton<V, P extends DeepPath<V, P>>(
+export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormRemoveButtonOptions<V, P>,
   htmlProps: unstable_FormRemoveButtonProps = {}
 ) {
@@ -80,18 +80,18 @@ export function useFormRemoveButton<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_FormRemoveButtonOptions<any, any>> = [
-  ...useButton.keys,
-  ...useFormState.keys,
+const keys: Keys<unstable_FormRemoveButtonOptions<any, any>> = [
+  ...useButton.__keys,
+  ...unstable_useFormState.__keys,
   "name",
   "index"
 ];
 
-useFormRemoveButton.keys = keys;
+unstable_useFormRemoveButton.__keys = keys;
 
-export const FormRemoveButton = (unstable_createComponent(
-  "button",
-  useFormRemoveButton
-) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "button">(
+export const unstable_FormRemoveButton = (unstable_createComponent({
+  as: "button",
+  useHook: unstable_useFormRemoveButton
+}) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "button">(
   props: PropsWithAs<unstable_FormRemoveButtonOptions<V, P>, T>
 ) => JSX.Element;

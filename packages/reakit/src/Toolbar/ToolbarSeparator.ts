@@ -5,7 +5,8 @@ import {
   unstable_SeparatorProps,
   useSeparator
 } from "../Separator/Separator";
-import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
+import { Keys } from "../__utils/types";
+import { useToolbarState, unstable_ToolbarStateReturn } from "./ToolbarState";
 
 export type unstable_ToolbarSeparatorOptions = unstable_SeparatorOptions &
   Partial<unstable_ToolbarStateReturn>;
@@ -21,14 +22,14 @@ export function useToolbarSeparator(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_ToolbarSeparatorOptions> = [
-  ...useSeparator.keys,
-  ...useToolbarState.keys
+const keys: Keys<unstable_ToolbarSeparatorOptions> = [
+  ...useSeparator.__keys,
+  ...useToolbarState.__keys
 ];
 
-useToolbarSeparator.keys = keys;
+useToolbarSeparator.__keys = keys;
 
-export const ToolbarSeparator = unstable_createComponent(
-  "hr",
-  useToolbarSeparator
-);
+export const ToolbarSeparator = unstable_createComponent({
+  as: "hr",
+  useHook: useToolbarSeparator
+});

@@ -4,7 +4,6 @@ export default {
   "reakit": require("reakit"),
   "reakit/utils/useId": require("reakit/utils/useId"),
   "reakit/utils/useCreateElement": require("reakit/utils/useCreateElement"),
-  "reakit/utils/splitProps": require("reakit/utils/splitProps"),
   "reakit/utils/mergeProps": require("reakit/utils/mergeProps"),
   "reakit/utils": require("reakit/utils"),
   "reakit/utils/createComponent": require("reakit/utils/createComponent"),

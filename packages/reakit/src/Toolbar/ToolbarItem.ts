@@ -6,7 +6,8 @@ import {
   unstable_RoverProps,
   useRover
 } from "../Rover/Rover";
-import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
+import { Keys } from "../__utils/types";
+import { useToolbarState, unstable_ToolbarStateReturn } from "./ToolbarState";
 
 export type unstable_ToolbarItemOptions = unstable_RoverOptions &
   Partial<unstable_ToolbarStateReturn>;
@@ -23,11 +24,14 @@ export function useToolbarItem(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_ToolbarItemOptions> = [
-  ...useRover.keys,
-  ...useToolbarState.keys
+const keys: Keys<unstable_ToolbarItemOptions> = [
+  ...useRover.__keys,
+  ...useToolbarState.__keys
 ];
 
-useToolbarItem.keys = keys;
+useToolbarItem.__keys = keys;
 
-export const ToolbarItem = unstable_createComponent("button", useToolbarItem);
+export const ToolbarItem = unstable_createComponent({
+  as: "button",
+  useHook: useToolbarItem
+});

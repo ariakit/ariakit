@@ -3,7 +3,7 @@ import { render } from "react-testing-library";
 import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {
-  hiddenId: "popover",
+  unstable_hiddenId: "popover",
   "aria-label": "popover"
 };
 
@@ -72,7 +72,7 @@ test("render visible", () => {
 
 test("render non-modal", () => {
   const { baseElement } = render(
-    <Popover {...props} modal={false}>
+    <Popover {...props} unstable_modal={false}>
       test
     </Popover>
   );

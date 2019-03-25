@@ -1,15 +1,22 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { FormPushButton } from "../FormPushButton";
+import { unstable_FormPushButton as FormPushButton } from "../FormPushButton";
 
 test("render", () => {
   const { baseElement } = render(
-    <FormPushButton name="a" value="c" values={{ a: ["b"] }} push={jest.fn()} />
+    <FormPushButton
+      baseId="base"
+      name="a"
+      value="c"
+      values={{ a: ["b"] }}
+      push={jest.fn()}
+    />
   );
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div>
     <button
+      id="base-a-push"
       role="button"
       tabindex="0"
       type="button"

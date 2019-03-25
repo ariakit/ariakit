@@ -12,8 +12,8 @@ import {
   Menu,
   MenuDisclosure,
   MenuItem,
-  MenuItemCheckbox,
-  MenuItemDisclosure,
+  unstable_MenuItemCheckbox as MenuItemCheckbox,
+  unstable_MenuItemDisclosure as MenuItemDisclosure,
   mergeProps
 } from "reakit";
 
@@ -57,14 +57,14 @@ function Example() {
 ```jsx
 import {
   useMenuState,
-  useStaticMenuState,
+  unstable_useStaticMenuState as useStaticMenuState,
   Menu,
-  StaticMenu,
+  unstable_StaticMenu as StaticMenu,
   MenuDisclosure,
   MenuItem,
-  MenuItemCheckbox,
-  MenuItemDisclosure,
-  MenuItemRadio,
+  unstable_MenuItemCheckbox as MenuItemCheckbox,
+  unstable_MenuItemDisclosure as MenuItemDisclosure,
+  unstable_MenuItemRadio as MenuItemRadio,
   mergeProps
 } from "reakit";
 

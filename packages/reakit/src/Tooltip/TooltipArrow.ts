@@ -5,6 +5,7 @@ import {
   unstable_PopoverArrowProps,
   usePopoverArrow
 } from "../Popover/PopoverArrow";
+import { Keys } from "../__utils/types";
 import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
 
 export type unstable_TooltipArrowOptions = unstable_PopoverArrowOptions &
@@ -21,11 +22,14 @@ export function useTooltipArrow(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_TooltipArrowOptions> = [
-  ...usePopoverArrow.keys,
-  ...useTooltipState.keys
+const keys: Keys<unstable_TooltipArrowOptions> = [
+  ...usePopoverArrow.__keys,
+  ...useTooltipState.__keys
 ];
 
-useTooltipArrow.keys = keys;
+useTooltipArrow.__keys = keys;
 
-export const TooltipArrow = unstable_createComponent("div", useTooltipArrow);
+export const TooltipArrow = unstable_createComponent({
+  as: "div",
+  useHook: useTooltipArrow
+});

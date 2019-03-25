@@ -69,7 +69,7 @@ test("move focus with keys disabled", () => {
     return (
       <>
         <Rover {...rover}>rover1</Rover>
-        <Rover {...rover} disabled focusable>
+        <Rover {...rover} disabled unstable_focusable>
           rover2
         </Rover>
         <Rover {...rover} disabled>

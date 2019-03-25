@@ -6,14 +6,19 @@ import {
   unstable_RoverInitialState,
   useRoverState
 } from "../Rover";
+import { Keys } from "../__utils/types";
 
 export type unstable_RadioState = unstable_RoverState & {
-  /** TODO: Description */
+  /**
+   * The `value` attribute of the current checked radio.
+   */
   currentValue: any;
 };
 
 export type unstable_RadioActions = unstable_RoverActions & {
-  /** TODO: Description */
+  /**
+   * Changes the `currentValue` state.
+   */
   setValue: React.Dispatch<React.SetStateAction<any>>;
 };
 
@@ -23,18 +28,18 @@ export type unstable_RadioInitialState = unstable_RoverInitialState &
 export type unstable_RadioStateReturn = unstable_RadioState &
   unstable_RadioActions;
 
-export function useRadioState(
+export function unstable_useRadioState(
   initialState: SealedInitialState<unstable_RadioInitialState> = {}
 ): unstable_RadioStateReturn {
   const {
     currentValue: initialCurrentValue,
-    loop = true,
+    unstable_loop: loop = true,
     ...sealed
   } = useSealedState(initialState);
 
   const [currentValue, setValue] = React.useState(initialCurrentValue);
 
-  const rover = useRoverState({ ...sealed, loop });
+  const rover = useRoverState({ ...sealed, unstable_loop: loop });
 
   return {
     ...rover,
@@ -43,10 +48,10 @@ export function useRadioState(
   };
 }
 
-const keys: Array<keyof unstable_RadioStateReturn> = [
-  ...useRoverState.keys,
+const keys: Keys<unstable_RadioStateReturn> = [
+  ...useRoverState.__keys,
   "currentValue",
   "setValue"
 ];
 
-useRadioState.keys = keys;
+unstable_useRadioState.__keys = keys;

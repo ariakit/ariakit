@@ -1,10 +1,11 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { FormCheckbox } from "../FormCheckbox";
+import { unstable_FormCheckbox as FormCheckbox } from "../FormCheckbox";
 
 test("render", () => {
   const { baseElement } = render(
     <FormCheckbox
+      baseId="base"
       name="a"
       values={{ a: false }}
       touched={{}}
@@ -18,7 +19,10 @@ test("render", () => {
   <div>
     <input
       aria-checked="false"
+      aria-describedby="base-a-message"
       aria-invalid="false"
+      aria-labelledby="base-a-label"
+      id="base-a"
       name="a"
       role="checkbox"
       tabindex="0"
@@ -33,6 +37,7 @@ test("render", () => {
 test("render value", () => {
   const { baseElement } = render(
     <FormCheckbox
+      baseId="base"
       name="a"
       value="b"
       values={{ a: ["b"] as Array<"a" | "b" | "c"> }}

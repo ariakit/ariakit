@@ -6,6 +6,7 @@ import {
   unstable_RoverProps,
   useRover
 } from "../Rover/Rover";
+import { Keys } from "../__utils/types";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
 export type unstable_MenuItemOptions = unstable_RoverOptions &
@@ -14,16 +15,19 @@ export type unstable_MenuItemOptions = unstable_RoverOptions &
 export type unstable_MenuItemProps = unstable_RoverProps;
 
 export function useMenuItem(
-  { focusable = true, ...options }: unstable_MenuItemOptions,
+  { unstable_focusable = true, ...options }: unstable_MenuItemOptions,
   htmlProps: unstable_MenuItemProps = {}
 ) {
-  const allOptions = { focusable, ...options };
+  const allOptions: unstable_MenuItemOptions = {
+    unstable_focusable,
+    ...options
+  };
 
   htmlProps = mergeProps(
     {
       role: "menuitem",
       onKeyDown: event => {
-        const { parent, hide, placement } = options;
+        const { unstable_parent: parent, hide, placement } = options;
         if (!parent || !hide || !placement) return;
 
         const [dir] = placement.split("-");
@@ -35,14 +39,14 @@ export function useMenuItem(
           ArrowRight:
             parentIsHorizontal && !isDisclosure
               ? () => {
-                  parent.next();
+                  parent.unstable_next();
                   hide();
                 }
               : dir === "left" && hide,
           ArrowLeft:
             parentIsHorizontal && !isDisclosure
               ? () => {
-                  parent.previous();
+                  parent.unstable_previous();
                   hide();
                 }
               : dir === "right" && hide
@@ -66,11 +70,14 @@ export function useMenuItem(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_MenuItemOptions> = [
-  ...useRover.keys,
-  ...useMenuState.keys
+const keys: Keys<unstable_MenuItemOptions> = [
+  ...useRover.__keys,
+  ...useMenuState.__keys
 ];
 
-useMenuItem.keys = keys;
+useMenuItem.__keys = keys;
 
-export const MenuItem = unstable_createComponent("button", useMenuItem);
+export const MenuItem = unstable_createComponent({
+  as: "button",
+  useHook: useMenuItem
+});

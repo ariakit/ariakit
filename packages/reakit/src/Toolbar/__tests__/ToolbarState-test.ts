@@ -12,10 +12,10 @@ test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
 Object {
-  "currentId": null,
-  "loop": false,
-  "pastId": null,
-  "stops": Array [],
+  "unstable_currentId": null,
+  "unstable_loop": false,
+  "unstable_pastId": null,
+  "unstable_stops": Array [],
 }
 `);
 });

@@ -3,6 +3,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { Keys } from "../__utils/types";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
 export type unstable_MenuGroupOptions = unstable_BoxOptions &
@@ -17,7 +18,7 @@ export function useMenuGroup(
 ) {
   htmlProps = mergeProps(
     {
-      role: "menuitemradio"
+      role: "group"
     } as typeof htmlProps,
     htmlProps
   );
@@ -27,11 +28,14 @@ export function useMenuGroup(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_MenuGroupOptions> = [
-  ...useBox.keys,
-  ...useMenuState.keys
+const keys: Keys<unstable_MenuGroupOptions> = [
+  ...useBox.__keys,
+  ...useMenuState.__keys
 ];
 
-useMenuGroup.keys = keys;
+useMenuGroup.__keys = keys;
 
-export const MenuGroup = unstable_createComponent("fieldset", useMenuGroup);
+export const MenuGroup = unstable_createComponent({
+  as: "fieldset",
+  useHook: useMenuGroup
+});

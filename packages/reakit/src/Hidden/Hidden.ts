@@ -2,6 +2,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { useHook } from "../system/useHook";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { Keys } from "../__utils/types";
 import { useHiddenState, unstable_HiddenStateReturn } from "./HiddenState";
 
 export type unstable_HiddenOptions = unstable_BoxOptions &
@@ -16,7 +17,7 @@ export function useHidden(
   htmlProps = mergeProps(
     {
       role: "region",
-      id: options.hiddenId,
+      id: options.unstable_hiddenId,
       hidden: !options.visible,
       "aria-hidden": !options.visible
     } as typeof htmlProps,
@@ -27,11 +28,14 @@ export function useHidden(
   return htmlProps;
 }
 
-const keys: Array<keyof unstable_HiddenOptions> = [
-  ...useBox.keys,
-  ...useHiddenState.keys
+const keys: Keys<unstable_HiddenOptions> = [
+  ...useBox.__keys,
+  ...useHiddenState.__keys
 ];
 
-useHidden.keys = keys;
+useHidden.__keys = keys;
 
-export const Hidden = unstable_createComponent("div", useHidden);
+export const Hidden = unstable_createComponent({
+  as: "div",
+  useHook: useHidden
+});
