@@ -7,7 +7,7 @@
 <br>
 
 <p align="center">
-  Toolkit for building <a href="https://reakit.io/guide/composability">composable</a>, <a href="https://reakit.io/guide/accessibility">accessible</a> and <a href="https://reakit.io/guide/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
+  Toolkit for building <a href="https://reakit.io/guide/composition">composable</a>, <a href="https://reakit.io/guide/accessibility">accessible</a> and <a href="https://reakit.io/guide/reliability">reliable</a> UIs with <a href="https://reactjs.org">React</a>.
 </p>
 
 <br>
