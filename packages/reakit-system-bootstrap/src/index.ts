@@ -1,6 +1,7 @@
 export * from "./Box";
 export * from "./Button";
 export * from "./Dialog";
+export * from "./Form";
 export * from "./Group";
 export * from "./Hidden";
 export * from "./Menu";

@@ -12,6 +12,7 @@ redirect_from:
 
 ```jsx
 import {
+  Group,
   unstable_Form as Form,
   unstable_FormLabel as FormLabel,
   unstable_FormCheckbox as FormCheckbox,
@@ -47,7 +48,7 @@ function Example() {
       <FormLabel name="name" {...form}>
         Name
       </FormLabel>
-      <FormInput name="name" {...form} />
+      <FormInput name="name" placeholder="Name" {...form} />
       <FormMessage name="name" {...form} />
       <FormCheckbox name="accepted" {...form} />
       <FormLabel name="accepted" {...form}>
@@ -82,13 +83,13 @@ function Example() {
         </label>
       </FormRadioGroup>
       {form.values.emails.map((_, i) => (
-        <div key={i}>
+        <Group key={i}>
           <FormInput name={["emails", i, "name"]} {...form} />
           <FormInput type="email" name={["emails", i, "email"]} {...form} />
           <FormRemoveButton name="emails" index={i} {...form}>
             x
           </FormRemoveButton>
-        </div>
+        </Group>
       ))}
       <FormPushButton name="emails" value={{ name: "", email: "" }} {...form}>
         Add email

@@ -1,5 +1,9 @@
 import * as React from "react";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import {
+  unstable_GroupOptions,
+  unstable_GroupProps,
+  useGroup
+} from "../Group/Group";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { mergeProps } from "../utils/mergeProps";
@@ -15,14 +19,14 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 export type unstable_FormGroupOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_BoxOptions &
+> = unstable_GroupOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "touched" | "errors"> & {
     /** TODO: Description */
     name: P;
   };
 
-export type unstable_FormGroupProps = unstable_BoxProps &
+export type unstable_FormGroupProps = unstable_GroupProps &
   React.FieldsetHTMLAttributes<any>;
 
 export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
@@ -32,7 +36,6 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
   options = unstable_useOptions("useFormGroup", options, htmlProps);
   htmlProps = mergeProps(
     {
-      role: "group",
       id: getInputId(options.name, options.baseId),
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
@@ -41,13 +44,13 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
+  htmlProps = useGroup(options, htmlProps);
   htmlProps = unstable_useProps("useFormGroup", options, htmlProps);
   return htmlProps;
 }
 
 const keys: Keys<unstable_FormGroupOptions<any, any>> = [
-  ...useBox.__keys,
+  ...useGroup.__keys,
   ...unstable_useFormState.__keys,
   "name"
 ];

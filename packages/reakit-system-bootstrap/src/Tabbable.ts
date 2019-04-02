@@ -43,6 +43,8 @@ export function useTabbableProps(
 
       &:focus {
         box-shadow: 0 0 0 0.2em ${boxShadowColor};
+        position: relative;
+        z-index: 2;
       }
     }
 

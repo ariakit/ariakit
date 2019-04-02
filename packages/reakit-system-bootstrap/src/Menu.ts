@@ -20,46 +20,26 @@ import {
   unstable_StaticMenuProps,
   unstable_StaticMenuOptions
 } from "reakit/Menu/StaticMenu";
-import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
   unstable_StaticMenuOptions;
 
-export function useStaticMenuOptions({
-  unstable_system: { palette = "background", fill = "opaque", ...system } = {},
-  ...options
-}: BootstrapStaticMenuOptions): BootstrapStaticMenuOptions {
-  return {
-    unstable_system: { palette, fill, ...system },
-    ...options
-  };
-}
-
 export function useStaticMenuProps(
   { unstable_system, ...options }: BootstrapStaticMenuOptions,
   { className, ...htmlProps }: unstable_StaticMenuProps = {}
 ) {
-  const {
-    style: { color, backgroundColor }
-  } = usePaletteBoxProps({ unstable_system });
-
   const primary = usePalette("primary") || "blue";
   const primaryContrast = useContrast(primary);
   const darkPrimary = useDarken(primary, 0.2);
-  const foreground = useContrast(backgroundColor) || "black";
-  const borderColor = useFade(foreground, 0.75);
   const isHorizontal = options.orientation === "horizontal";
 
   const staticMenu = css`
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
-    border: 1px solid ${borderColor};
-    color: ${color};
 
     &[aria-orientation="vertical"] {
       padding: 0.25em 0;
@@ -75,7 +55,6 @@ export function useStaticMenuProps(
       text-align: left;
       border: 0;
       background-color: transparent;
-      color: ${foreground};
       font-size: 100%;
       margin: 0;
       user-select: none;
@@ -98,6 +77,16 @@ export function useStaticMenuProps(
 }
 
 export type BootstrapMenuOptions = BootstrapBoxOptions & unstable_MenuOptions;
+
+export function useMenuOptions({
+  unstable_system: { palette = "background", fill = "opaque", ...system } = {},
+  ...options
+}: BootstrapMenuOptions): BootstrapMenuOptions {
+  return {
+    unstable_system: { palette, fill, ...system },
+    ...options
+  };
+}
 
 export function useMenuProps(
   options: BootstrapMenuOptions,
