@@ -9,6 +9,7 @@
   ],
   "command": {
     "publish": {
+      "conventionalCommits": true,
       "allowBranch": ["master", "next"],
       "message": "chore(release): Publish"
     }
