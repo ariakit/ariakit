@@ -36,12 +36,12 @@
     "codemirror": "5.45.0",
     "react-codemirror2": "5.1.0",
     "reakit": "^0.16.0",
-    "reakit-system-classic": "^0.0.1",
+    "reakit-system-bootstrap": "^0.0.1",
     "reakit-system-palette": "^0.0.1"
   },
   "devDependencies": {
-    "react": "16.8.5",
-    "react-dom": "16.8.5"
+    "react": "16.8.6",
+    "react-dom": "16.8.6"
   },
   "peerDependencies": {
     "react": "^16.8.0",

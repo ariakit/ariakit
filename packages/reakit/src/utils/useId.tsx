@@ -21,7 +21,7 @@ export function unstable_IdProvider({
 }: unstable_IdProviderProps) {
   const count = React.useRef(0);
   const genId = React.useMemo(
-    () => (localPrefix = defaultPrefix) =>
+    () => (localPrefix: string = defaultPrefix) =>
       `${prefix}${localPrefix}${++count.current}`,
     [count]
   );

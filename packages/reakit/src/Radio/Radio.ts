@@ -1,7 +1,8 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_RoverOptions,
   unstable_RoverProps,
@@ -32,6 +33,8 @@ export function unstable_useRadio(
   options: unstable_RadioOptions,
   htmlProps: unstable_RadioProps = {}
 ) {
+  options = unstable_useOptions("useRadio", options, htmlProps);
+
   const checked =
     typeof options.checked !== "undefined"
       ? options.checked
@@ -56,7 +59,7 @@ export function unstable_useRadio(
     htmlProps
   );
   htmlProps = useRover(options, htmlProps);
-  htmlProps = useHook("useRadio", options, htmlProps);
+  htmlProps = unstable_useProps("useRadio", options, htmlProps);
   return htmlProps;
 }
 

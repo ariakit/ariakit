@@ -1,6 +1,7 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_PopoverDisclosureOptions,
   unstable_PopoverDisclosureProps,
@@ -11,10 +12,7 @@ import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
 
 export type unstable_MenuDisclosureOptions = unstable_PopoverDisclosureOptions &
   Partial<unstable_MenuStateReturn> &
-  Pick<
-    unstable_MenuStateReturn,
-    "placement" | "show" | "unstable_first" | "unstable_last"
-  >;
+  Pick<unstable_MenuStateReturn, "show">;
 
 export type unstable_MenuDisclosureProps = unstable_PopoverDisclosureProps;
 
@@ -22,12 +20,16 @@ export function useMenuDisclosure(
   options: unstable_MenuDisclosureOptions,
   htmlProps: unstable_MenuDisclosureProps = {}
 ) {
-  const [dir] = options.placement.split("-");
+  options = unstable_useOptions("useMenuDisclosure", options, htmlProps);
+
+  const dir = options.placement ? options.placement.split("-")[0] : undefined;
 
   htmlProps = mergeProps(
     {
       "aria-haspopup": "menu",
       onKeyDown: event => {
+        if (options.disabled) return;
+
         const keyMap = {
           ArrowUp:
             dir === "top" || dir === "bottom" ? options.unstable_last : false,
@@ -51,7 +53,7 @@ export function useMenuDisclosure(
   );
 
   htmlProps = usePopoverDisclosure(options, htmlProps);
-  htmlProps = useHook("useMenuDisclosure", options, htmlProps);
+  htmlProps = unstable_useProps("useMenuDisclosure", options, htmlProps);
   return htmlProps;
 }
 

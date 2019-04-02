@@ -2,7 +2,8 @@ import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
@@ -21,6 +22,7 @@ export function useTooltip(
   options: unstable_TooltipOptions = {},
   htmlProps: unstable_TooltipProps = {}
 ) {
+  options = unstable_useOptions("useTooltip", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "tooltip",
@@ -33,7 +35,7 @@ export function useTooltip(
     htmlProps
   );
   htmlProps = useHidden(options, htmlProps);
-  htmlProps = useHook("useTooltip", options, htmlProps);
+  htmlProps = unstable_useProps("useTooltip", options, htmlProps);
   return htmlProps;
 }
 

@@ -1,13 +1,5 @@
 # Reakit Logo
 
-### icon
+Reakit logo was kindly designed by [Leonardo Elias](https://github.com/leonardoelias).
 
-<img src="icon.png" alt="icon" height="100">
-
-### logo
-
-<img src="logo.png" alt="logo" height="100">
-
-### symbol
-
-<img src="symbol.png" alt="symbol" height="100">
+<img src="logo-white-spaced-bg-color.png" alt="logo-white-spaced-bg-color" width="370">

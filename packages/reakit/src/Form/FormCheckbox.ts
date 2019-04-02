@@ -2,7 +2,8 @@ import * as React from "react";
 import { As, PropsWithAs, ArrayValue, Omit, Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_CheckboxOptions,
   unstable_CheckboxProps,
@@ -39,6 +40,8 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   options: unstable_FormCheckboxOptions<V, P>,
   htmlProps: unstable_FormCheckboxProps = {}
 ) {
+  options = unstable_useOptions("useFormCheckbox", options, htmlProps);
+
   const isBoolean = typeof options.value === "undefined";
   const currentValue = unstable_getIn(options.values, options.name);
   const setValue = (value: DeepPathValue<V, P>) =>
@@ -60,8 +63,15 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useCheckbox({ ...options, currentValue, setValue }, htmlProps);
-  htmlProps = useHook("useFormCheckbox", options, htmlProps);
+  htmlProps = useCheckbox(
+    {
+      ...options,
+      currentValue: currentValue as any,
+      setValue: setValue as any
+    },
+    htmlProps
+  );
+  htmlProps = unstable_useProps("useFormCheckbox", options, htmlProps);
   return htmlProps;
 }
 

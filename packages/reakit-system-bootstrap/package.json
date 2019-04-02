@@ -1,0 +1,47 @@
+{
+  "name": "reakit-system-bootstrap",
+  "version": "0.0.1",
+  "description": "Reakit bootstrap system",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "unpkg": "dist/reakit-system-bootstrap.min.js",
+  "types": "ts",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "start": "parcel example/index.html",
+    "test": "jest",
+    "coverage": "yarn test --coverage",
+    "postcoverage": "opn coverage/lcov-report/index.html",
+    "lint": "eslint . --ext js,ts,tsx",
+    "clean": "../../scripts/build/clean.js",
+    "build": "../../scripts/build/build.js",
+    "preversion": "yarn lint && yarn test && yarn build",
+    "postpublish": "yarn clean"
+  },
+  "keywords": [
+    "reakit",
+    "react",
+    "system"
+  ],
+  "dependencies": {
+    "emotion": "10.0.9",
+    "reakit-system-palette": "0.0.1"
+  },
+  "devDependencies": {
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "reakit": "0.16.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "reakit": "^1.0.0-alpha.0"
+  }
+}

@@ -2,8 +2,13 @@ import * as React from "react";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { useHook } from "../system/useHook";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
+import {
+  unstable_TabbableOptions,
+  unstable_TabbableProps,
+  useTabbable
+} from "../Tabbable/Tabbable";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
@@ -16,7 +21,7 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 export type unstable_FormInputOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_BoxOptions &
+> = unstable_TabbableOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
@@ -26,13 +31,15 @@ export type unstable_FormInputOptions<
     name: P;
   };
 
-export type unstable_FormInputProps = unstable_BoxProps &
+export type unstable_FormInputProps = unstable_TabbableProps &
   React.InputHTMLAttributes<any>;
 
 export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,
   htmlProps: unstable_FormInputProps = {}
 ) {
+  options = unstable_useOptions("useFormInput", options, htmlProps);
+
   htmlProps = mergeProps(
     {
       id: getInputId(options.name, options.baseId),
@@ -48,13 +55,13 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("useFormInput", options, htmlProps);
+  htmlProps = useTabbable(options, htmlProps);
+  htmlProps = unstable_useProps("useFormInput", options, htmlProps);
   return htmlProps;
 }
 
 const keys: Keys<unstable_FormInputOptions<any, any>> = [
-  ...useBox.__keys,
+  ...useTabbable.__keys,
   ...unstable_useFormState.__keys,
   "name"
 ];

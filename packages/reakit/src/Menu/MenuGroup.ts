@@ -1,7 +1,8 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
@@ -16,15 +17,10 @@ export function useMenuGroup(
   options: unstable_MenuGroupOptions,
   htmlProps: unstable_MenuGroupProps = {}
 ) {
-  htmlProps = mergeProps(
-    {
-      role: "group"
-    } as typeof htmlProps,
-    htmlProps
-  );
-
+  options = unstable_useOptions("useMenuGroup", options, htmlProps);
+  htmlProps = mergeProps({ role: "group" } as typeof htmlProps, htmlProps);
   htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("useMenuGroup", options, htmlProps);
+  htmlProps = unstable_useProps("useMenuGroup", options, htmlProps);
   return htmlProps;
 }
 

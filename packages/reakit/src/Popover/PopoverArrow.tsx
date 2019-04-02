@@ -1,7 +1,8 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
@@ -16,6 +17,8 @@ export function usePopoverArrow(
   options: unstable_PopoverArrowOptions,
   htmlProps: unstable_PopoverArrowProps = {}
 ) {
+  options = unstable_useOptions("usePopoverArrow", options, htmlProps);
+
   const [placement] = options.placement.split("-");
   const transformMap = {
     top: "rotateZ(180deg)",
@@ -53,7 +56,7 @@ export function usePopoverArrow(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("usePopoverArrow", options, htmlProps);
+  htmlProps = unstable_useProps("usePopoverArrow", options, htmlProps);
   return htmlProps;
 }
 

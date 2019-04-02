@@ -1,6 +1,7 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_HiddenDisclosureOptions,
   unstable_HiddenDisclosureProps,
@@ -18,6 +19,7 @@ export function useDialogDisclosure(
   options: unstable_DialogDisclosureOptions,
   htmlProps: unstable_DialogDisclosureProps = {}
 ) {
+  options = unstable_useOptions("useDialogDisclosure", options, htmlProps);
   htmlProps = mergeProps(
     {
       "aria-haspopup": "dialog"
@@ -25,7 +27,7 @@ export function useDialogDisclosure(
     htmlProps
   );
   htmlProps = useHiddenDisclosure(options, htmlProps);
-  htmlProps = useHook("useDialogDisclosure", options, htmlProps);
+  htmlProps = unstable_useProps("useDialogDisclosure", options, htmlProps);
   return htmlProps;
 }
 

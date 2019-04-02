@@ -1,8 +1,12 @@
 <br>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/reakit/reakit/master/logo/logo.png" alt="reakit" width="320" />
+  <a href="https://github.com/reakit/reakit/tree/master/logo">
+    <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="Reakit symbol" width="80" />
+  </a>
 </p>
+
+<h1 align="center">Reakit</h1>
 
 <p align="center">
   Toolkit for building <a href="https://reakit.io/docs/accessibility">accessible</a> UIs with <a href="https://reactjs.org">React</a>.
@@ -10,7 +14,7 @@
   <a href="https://reakit.io"><strong>Explore website »</strong></a>
 </p>
 
-<hr>
+<br>
 
 <p align="center">
   <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
@@ -101,6 +105,8 @@ Read the [documentation](https://reakit.io/docs) to learn more.
 This project exists thanks to all the people who contribute.
 
 <a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1260&button=false" /></a>
+
+- <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
 
 
 ## License

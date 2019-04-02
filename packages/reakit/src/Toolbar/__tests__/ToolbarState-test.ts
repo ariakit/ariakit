@@ -12,6 +12,7 @@ test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
 Object {
+  "orientation": "horizontal",
   "unstable_currentId": null,
   "unstable_loop": false,
   "unstable_pastId": null,

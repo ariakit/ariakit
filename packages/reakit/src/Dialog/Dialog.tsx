@@ -3,7 +3,8 @@ import { warning } from "../__utils/warning";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
@@ -86,7 +87,7 @@ export function useDialog(
   }: unstable_DialogOptions,
   htmlProps: unstable_DialogProps = {}
 ) {
-  const allOptions: unstable_DialogOptions = {
+  let _options: unstable_DialogOptions = {
     unstable_modal,
     unstable_hideOnEsc,
     unstable_hideOnClickOutside,
@@ -95,40 +96,42 @@ export function useDialog(
     unstable_autoFocusOnHide,
     ...options
   };
+  _options = unstable_useOptions("useDialog", _options, htmlProps);
+
   const dialog = React.useRef<HTMLElement>(null);
-  const portal = usePortalRef(dialog, options.visible);
+  const portal = usePortalRef(dialog, _options.visible);
   const disclosure = useDisclosureRef(
-    options.unstable_hiddenId,
-    options.visible
+    _options.unstable_hiddenId,
+    _options.visible
   );
 
   unstable_preventBodyScroll = !unstable_modal
     ? false
     : unstable_preventBodyScroll;
-  usePreventBodyScroll(dialog, options.visible && unstable_preventBodyScroll);
+  usePreventBodyScroll(dialog, _options.visible && unstable_preventBodyScroll);
 
-  useFocusTrap(dialog, portal, options.visible && unstable_modal);
+  useFocusTrap(dialog, portal, _options.visible && unstable_modal);
 
   useFocusOnShow(
     dialog,
     portal,
-    options.unstable_initialFocusRef,
-    options.visible && unstable_autoFocusOnShow
+    _options.unstable_initialFocusRef,
+    _options.visible && unstable_autoFocusOnShow
   );
 
   useFocusOnHide(
     dialog,
-    options.unstable_finalFocusRef || disclosure,
-    !options.visible && unstable_autoFocusOnHide
+    _options.unstable_finalFocusRef || disclosure,
+    !_options.visible && unstable_autoFocusOnHide
   );
 
   // Close all nested dialogs when parent dialog closes
-  useAttachAndInvoke(dialog, portal, "hide", options.hide, !options.visible);
+  useAttachAndInvoke(dialog, portal, "hide", _options.hide, !_options.visible);
 
   const hide = (e: Event) => {
     // Ignore disclosure since a click on it will already close the dialog
-    if (e.target !== disclosure.current && options.hide) {
-      options.hide();
+    if (e.target !== disclosure.current && _options.hide) {
+      _options.hide();
     }
   };
 
@@ -139,7 +142,7 @@ export function useDialog(
     portal,
     "click",
     hide,
-    options.visible && unstable_hideOnClickOutside
+    _options.visible && unstable_hideOnClickOutside
   );
 
   // Hide on focus outside
@@ -147,7 +150,7 @@ export function useDialog(
     portal,
     "focus",
     hide,
-    options.visible && !unstable_modal && unstable_hideOnClickOutside
+    _options.visible && !unstable_modal && unstable_hideOnClickOutside
   );
 
   htmlProps = mergeProps(
@@ -160,9 +163,9 @@ export function useDialog(
       onKeyDown: event => {
         const keyMap = {
           Escape: () => {
-            if (!options.hide || !unstable_hideOnEsc) return;
+            if (!_options.hide || !unstable_hideOnEsc) return;
             event.stopPropagation();
-            options.hide();
+            _options.hide();
           }
         };
         if (event.key in keyMap) {
@@ -173,8 +176,8 @@ export function useDialog(
     htmlProps
   );
 
-  htmlProps = useHidden(allOptions, htmlProps);
-  htmlProps = useHook("useDialog", allOptions, htmlProps);
+  htmlProps = useHidden(_options, htmlProps);
+  htmlProps = unstable_useProps("useDialog", _options, htmlProps);
   return htmlProps;
 }
 

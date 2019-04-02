@@ -5,12 +5,12 @@ import {
 } from "./SystemContext";
 
 export type unstable_SystemProviderProps = {
-  system?: unstable_SystemContextType;
+  unstable_system?: unstable_SystemContextType;
   children: React.ReactNode;
 };
 
 export function unstable_SystemProvider({
-  system = {},
+  unstable_system: system = {},
   children
 }: unstable_SystemProviderProps) {
   return (

@@ -4,7 +4,8 @@ import {
   unstable_TabbableProps,
   useTabbable
 } from "../Tabbable/Tabbable";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useId } from "../utils/useId";
@@ -36,8 +37,10 @@ export type unstable_RoverProps = unstable_TabbableProps;
 
 export function useRover(
   options: unstable_RoverOptions,
-  htmlProps: unstable_RoverProps = {}
+  { tabIndex, ...htmlProps }: unstable_RoverProps = {}
 ) {
+  options = unstable_useOptions("useRover", options, htmlProps);
+
   const ref = React.useRef<HTMLElement>(null);
   const id = unstable_useId("rover-");
   const stopId = options.stopId || id;
@@ -47,7 +50,7 @@ export function useRover(
   const focused = options.unstable_currentId === stopId;
   const isFirst =
     options.unstable_stops[0] && options.unstable_stops[0].id === stopId;
-  const shouldTabIndexZero = focused || (isFirst && noFocused);
+  const shouldTabIndex = focused || (isFirst && noFocused);
 
   React.useEffect(() => {
     if (reallyDisabled) return undefined;
@@ -70,7 +73,7 @@ export function useRover(
     {
       ref,
       id: stopId,
-      tabIndex: shouldTabIndexZero ? 0 : -1,
+      tabIndex: shouldTabIndex ? tabIndex : -1,
       onFocus: () => options.unstable_move(stopId),
       onKeyDown: event => {
         const { orientation } = options;
@@ -98,7 +101,7 @@ export function useRover(
   );
 
   htmlProps = useTabbable(options, htmlProps);
-  htmlProps = useHook("useRover", options, htmlProps);
+  htmlProps = unstable_useProps("useRover", options, htmlProps);
   return htmlProps;
 }
 

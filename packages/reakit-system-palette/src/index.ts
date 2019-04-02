@@ -1,1 +1,2 @@
-export * from "./system";
+export * from "./palette";
+export * from "./Box";

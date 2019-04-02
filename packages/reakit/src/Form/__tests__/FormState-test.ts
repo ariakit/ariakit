@@ -67,7 +67,7 @@ test("update", () => {
   act(() => result.current.update("a", "b"));
   expect(result.current.values.a).toBe("b");
   expect(result.current.values.b.c).toEqual(["d", "e"]);
-  act(() => result.current.update(["b", "c", 1] as ["b", "c", 1], "f"));
+  act(() => result.current.update(["b", "c", 1] as const, "f"));
   expect(result.current.values.b.c).toEqual(["d", "f"]);
 });
 
@@ -115,7 +115,7 @@ test("blur", () => {
   expect(result.current.touched).toEqual({});
   act(() => result.current.blur("a"));
   expect(result.current.touched).toEqual({ a: true });
-  act(() => result.current.blur(["b", "c", 1] as ["b", "c", 1]));
+  act(() => result.current.blur(["b", "c", 1] as const));
   expect(result.current.touched).toEqual({ a: true, b: { c: [true] } });
 });
 

@@ -3,6 +3,7 @@ export * from "./Button";
 export * from "./Checkbox";
 export * from "./Dialog";
 export * from "./Form";
+export * from "./Group";
 export * from "./Hidden";
 export * from "./Menu";
 export * from "./Popover";

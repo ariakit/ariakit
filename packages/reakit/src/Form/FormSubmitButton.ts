@@ -3,7 +3,8 @@ import {
   unstable_ButtonProps,
   useButton
 } from "../Button/Button";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { Keys } from "../__utils/types";
@@ -20,6 +21,8 @@ export function unstable_useFormSubmitButton(
   options: unstable_FormSubmitButtonOptions,
   htmlProps: unstable_FormSubmitButtonProps = {}
 ) {
+  options = unstable_useOptions("useFormSubmitButton", options, htmlProps);
+
   htmlProps = mergeProps(
     {
       type: "submit",
@@ -38,7 +41,7 @@ export function unstable_useFormSubmitButton(
   );
 
   htmlProps = useButton(options, htmlProps);
-  htmlProps = useHook("useFormSubmitButton", options, htmlProps);
+  htmlProps = unstable_useProps("useFormSubmitButton", options, htmlProps);
   return htmlProps;
 }
 

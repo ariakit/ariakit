@@ -34,7 +34,7 @@ function mergeObjectsInObjects(systems: Array<Record<string, any>>) {
   return result;
 }
 
-export function mergeSystem<T extends unstable_SystemContextType[]>(
+export function unstable_mergeSystem<T extends unstable_SystemContextType[]>(
   ...systems: T
 ) {
   return Object.assign(

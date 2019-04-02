@@ -1,5 +1,7 @@
 ---
 path: /docs/separator
+redirect_from:
+  - /components/divider
 ---
 
 # Separator

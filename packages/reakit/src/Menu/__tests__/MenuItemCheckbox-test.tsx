@@ -29,7 +29,7 @@ test("render", () => {
       id="item"
       name="checkbox"
       role="menuitemcheckbox"
-      tabindex="0"
+      tabindex="-1"
       type="checkbox"
       value=""
     />

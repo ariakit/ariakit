@@ -302,7 +302,7 @@ export function unstable_useFormState<V = Record<any, any>>(
       }
     }, [validate]),
     update: React.useCallback(
-      (name, value) => dispatch({ type: "update", name, value }),
+      (name: any, value: any) => dispatch({ type: "update", name, value }),
       []
     ),
     blur: React.useCallback(

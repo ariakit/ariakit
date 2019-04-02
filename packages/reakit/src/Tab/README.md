@@ -20,7 +20,7 @@ function Example() {
   const tab = useTabState();
   return (
     <>
-      <TabList>
+      <TabList {...tab}>
         <Tab stopId="tab1" {...tab}>
           Tab 1
         </Tab>
@@ -50,12 +50,13 @@ import { useTabState, Tab, TabList, TabPanel } from "reakit";
 
 function Example() {
   const tab = useTabState({
+    orientation: "vertical",
     unstable_manual: true,
     unstable_selectedId: "tab2"
   });
   return (
-    <>
-      <TabList>
+    <div style={{ display: "flex" }}>
+      <TabList {...tab}>
         <Tab stopId="tab1" {...tab}>
           Tab 1
         </Tab>
@@ -75,7 +76,7 @@ function Example() {
       <TabPanel stopId="tab3" {...tab}>
         Tab 3
       </TabPanel>
-    </>
+    </div>
   );
 }
 ```

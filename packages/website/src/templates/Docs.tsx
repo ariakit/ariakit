@@ -2,17 +2,6 @@ import * as React from "react";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
 import { Preview, Editor, useEditorState } from "reakit-playground";
-import {
-  H1,
-  H2,
-  H3,
-  H4,
-  H5,
-  H6,
-  P,
-  Pre,
-  Code
-} from "reakit-system-classic/components";
 import CoreLayout from "../components/CoreLayout";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
@@ -44,7 +33,7 @@ function getChildrenCode(props: { children?: React.ReactNode }) {
   const children = React.Children.toArray(props.children);
   const [first] = children;
   if (typeof first === "object" && first !== null && "type" in first) {
-    return first.type === "code" || first.type === Code ? first : null;
+    return first.type === "code" ? first : null;
   }
   return null;
 }
@@ -65,14 +54,6 @@ function getText(props: { children?: React.ReactNode }): string {
 const { Compiler: renderAst } = new RehypeReact({
   createElement: React.createElement,
   components: {
-    h1: H1,
-    h2: H2,
-    h3: H3,
-    h4: H4,
-    h5: H5,
-    h6: H6,
-    p: P,
-    code: Code,
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
@@ -80,7 +61,7 @@ const { Compiler: renderAst } = new RehypeReact({
         const [, lang] =
           className.match(/language-((?:j|t)sx?)/) || ([] as any[]);
         if (!lang) {
-          return <Pre {...props} />;
+          return <pre {...props} />;
         }
         const state = useEditorState({ code: () => getText(props) });
         if (isStatic) {
@@ -93,7 +74,7 @@ const { Compiler: renderAst } = new RehypeReact({
           </>
         );
       }
-      return <Pre {...props} />;
+      return <pre {...props} />;
     }
   }
 });

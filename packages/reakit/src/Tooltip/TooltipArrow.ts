@@ -1,5 +1,6 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_PopoverArrowOptions,
   unstable_PopoverArrowProps,
@@ -17,8 +18,9 @@ export function useTooltipArrow(
   options: unstable_TooltipArrowOptions,
   htmlProps: unstable_TooltipArrowProps = {}
 ) {
+  options = unstable_useOptions("useTooltipArrow", options, htmlProps);
   htmlProps = usePopoverArrow(options, htmlProps);
-  htmlProps = useHook("useTooltipArrow", options, htmlProps);
+  htmlProps = unstable_useProps("useTooltipArrow", options, htmlProps);
   return htmlProps;
 }
 

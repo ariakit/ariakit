@@ -1,7 +1,8 @@
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { Keys } from "../__utils/types";
@@ -16,6 +17,7 @@ export function useTabList(
   options: unstable_TabListOptions,
   htmlProps: unstable_TabListProps = {}
 ) {
+  options = unstable_useOptions("useTabList", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "tablist",
@@ -24,7 +26,7 @@ export function useTabList(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("useTabList", options, htmlProps);
+  htmlProps = unstable_useProps("useTabList", options, htmlProps);
   return htmlProps;
 }
 

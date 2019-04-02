@@ -1,5 +1,9 @@
 ---
 path: /docs/form
+redirect_from:
+  - /components/field
+  - /components/input
+  - /components/label
 ---
 
 # Form

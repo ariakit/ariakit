@@ -1,6 +1,7 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
@@ -15,6 +16,7 @@ export function useTooltipReference(
   options: unstable_TooltipReferenceOptions,
   htmlProps: unstable_TooltipReferenceProps = {}
 ) {
+  options = unstable_useOptions("useTooltipReference", options, htmlProps);
   htmlProps = mergeProps(
     {
       ref: options.unstable_referenceRef,
@@ -28,7 +30,7 @@ export function useTooltipReference(
     htmlProps
   );
   htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("useTooltipReference", options, htmlProps);
+  htmlProps = unstable_useProps("useTooltipReference", options, htmlProps);
   return htmlProps;
 }
 

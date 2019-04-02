@@ -1,12 +1,13 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_RoverOptions,
   unstable_RoverProps,
   useRover
 } from "../Rover/Rover";
 import { Keys } from "../__utils/types";
+import { unstable_useOptions } from "../system";
 import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, unstable_TabStateReturn } from "./TabState";
 
@@ -26,31 +27,33 @@ export function useTab(
   { unstable_focusable = true, ...options }: unstable_TabOptions,
   htmlProps: unstable_TabProps = {}
 ) {
-  const allOptions: unstable_TabOptions = { unstable_focusable, ...options };
-  const selected = options.unstable_selectedId === options.stopId;
+  let _options: unstable_TabOptions = { unstable_focusable, ...options };
+  _options = unstable_useOptions("useTab", _options, htmlProps);
+
+  const selected = _options.unstable_selectedId === _options.stopId;
 
   htmlProps = mergeProps(
     {
       role: "tab",
-      id: getTabId(options.stopId, options.unstable_baseId),
+      id: getTabId(_options.stopId, _options.unstable_baseId),
       "aria-selected": selected,
-      "aria-controls": getTabPanelId(options.stopId, options.unstable_baseId),
+      "aria-controls": getTabPanelId(_options.stopId, _options.unstable_baseId),
       onClick: () => {
-        if (!options.disabled && !selected) {
-          options.unstable_select(options.stopId);
+        if (!_options.disabled && !selected) {
+          _options.unstable_select(_options.stopId);
         }
       },
       onFocus: () => {
-        if (!options.disabled && !options.unstable_manual && !selected) {
-          options.unstable_select(options.stopId);
+        if (!_options.disabled && !_options.unstable_manual && !selected) {
+          _options.unstable_select(_options.stopId);
         }
       }
     } as typeof htmlProps,
     htmlProps
   );
 
-  htmlProps = useRover(allOptions, htmlProps);
-  htmlProps = useHook("useTab", allOptions, htmlProps);
+  htmlProps = useRover(_options, htmlProps);
+  htmlProps = unstable_useProps("useTab", _options, htmlProps);
   return htmlProps;
 }
 

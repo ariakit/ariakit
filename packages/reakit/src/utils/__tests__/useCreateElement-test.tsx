@@ -37,7 +37,7 @@ test("context", () => {
     {
       wrapper: ({ children }) => (
         <Provider
-          system={{
+          unstable_system={{
             useCreateElement: (_, props, c) => <p {...props}>{c}</p>
           }}
         >

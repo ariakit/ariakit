@@ -1,6 +1,6 @@
 import * as React from "react";
 import { renderHook } from "react-hooks-testing-library";
-import { useToken } from "../useToken";
+import { unstable_useToken } from "../useToken";
 import {
   unstable_SystemProvider as SystemProvider,
   unstable_SystemProviderProps
@@ -9,11 +9,11 @@ import { unstable_SystemContextType } from "../SystemContext";
 
 function render(
   system: unstable_SystemContextType,
-  ...args: Parameters<typeof useToken>
+  ...args: Parameters<typeof unstable_useToken>
 ) {
-  return renderHook(() => useToken(...args), {
+  return renderHook(() => unstable_useToken(...args), {
     wrapper: (props: unstable_SystemProviderProps) => (
-      <SystemProvider system={system} {...props} />
+      <SystemProvider unstable_system={system} {...props} />
     )
   }).result;
 }

@@ -3,7 +3,8 @@ import {
   unstable_ButtonProps,
   useButton
 } from "../Button/Button";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
@@ -30,6 +31,8 @@ export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormRemoveButtonOptions<V, P>,
   htmlProps: unstable_FormRemoveButtonProps = {}
 ) {
+  options = unstable_useOptions("useFormRemoveButton", options, htmlProps);
+
   htmlProps = mergeProps(
     {
       onClick: () => {
@@ -76,7 +79,7 @@ export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
   );
 
   htmlProps = useButton(options, htmlProps);
-  htmlProps = useHook("useFormRemoveButton", options, htmlProps);
+  htmlProps = unstable_useProps("useFormRemoveButton", options, htmlProps);
   return htmlProps;
 }
 

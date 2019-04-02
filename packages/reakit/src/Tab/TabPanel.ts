@@ -1,12 +1,13 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
   useHidden
 } from "../Hidden/Hidden";
 import { Keys } from "../__utils/types";
+import { unstable_useOptions } from "../system";
 import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, unstable_TabStateReturn } from "./TabState";
 
@@ -23,8 +24,11 @@ export function useTabPanel(
   options: unstable_TabPanelOptions,
   htmlProps: unstable_TabPanelProps = {}
 ) {
-  const visible = options.unstable_selectedId === options.stopId;
-  const allOptions: unstable_TabPanelOptions = { visible, ...options };
+  let _options: unstable_TabPanelOptions = {
+    visible: options.unstable_selectedId === options.stopId,
+    ...options
+  };
+  _options = unstable_useOptions("useTabPanel", _options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -35,8 +39,8 @@ export function useTabPanel(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useHidden(allOptions, htmlProps);
-  htmlProps = useHook("useTabPanel", allOptions, htmlProps);
+  htmlProps = useHidden(_options, htmlProps);
+  htmlProps = unstable_useProps("useTabPanel", _options, htmlProps);
   return htmlProps;
 }
 

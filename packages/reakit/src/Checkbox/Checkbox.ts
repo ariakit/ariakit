@@ -1,5 +1,6 @@
 import * as React from "react";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_TabbableOptions,
   unstable_TabbableProps,
@@ -35,6 +36,8 @@ export function useCheckbox(
   options: unstable_CheckboxOptions = {},
   htmlProps: unstable_CheckboxProps = {}
 ) {
+  options = unstable_useOptions("useCheckbox", options, htmlProps);
+
   const ref = React.useRef<HTMLInputElement>(null);
   const isBoolean = typeof options.value === "undefined";
   const checked =
@@ -83,7 +86,7 @@ export function useCheckbox(
     htmlProps
   );
   htmlProps = useTabbable(options, htmlProps);
-  htmlProps = useHook("useCheckbox", options, htmlProps);
+  htmlProps = unstable_useProps("useCheckbox", options, htmlProps);
   return htmlProps;
 }
 

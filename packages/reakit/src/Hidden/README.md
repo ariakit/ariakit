@@ -23,13 +23,15 @@ function Example() {
 ```
 
 ```jsx
-import { Hidden, useHiddenState } from "reakit";
+import { HiddenDisclosure, Hidden, useHiddenState } from "reakit";
 
 function Example() {
   const state = useHiddenState({ visible: true });
   return (
     <div>
-      <button onClick={state.toggle}>Toggle</button>
+      <HiddenDisclosure {...state} disabled unstable_focusable>
+        Toggle
+      </HiddenDisclosure>
       <Hidden {...state}>Hidden</Hidden>
     </div>
   );

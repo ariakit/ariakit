@@ -1,8 +1,9 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { useHook } from "../system/useHook";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
+import { unstable_useOptions } from "../system";
 
 export type unstable_SeparatorOptions = unstable_BoxOptions & {
   /**
@@ -21,6 +22,9 @@ export function useSeparator(
   { orientation = "vertical", ...options }: unstable_SeparatorOptions = {},
   htmlProps: unstable_SeparatorProps = {}
 ) {
+  let _options: unstable_SeparatorOptions = { orientation, ...options };
+  _options = unstable_useOptions("useSeparator", _options, htmlProps);
+
   const flipMap = {
     horizontal: "vertical",
     vertical: "horizontal"
@@ -29,12 +33,14 @@ export function useSeparator(
   htmlProps = mergeProps(
     {
       role: "separator",
-      "aria-orientation": flipMap[orientation]
+      "aria-orientation": _options.orientation
+        ? flipMap[_options.orientation]
+        : undefined
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(options, htmlProps);
-  htmlProps = useHook("useSeparator", options, htmlProps);
+  htmlProps = useBox(_options, htmlProps);
+  htmlProps = unstable_useProps("useSeparator", _options, htmlProps);
   return htmlProps;
 }
 

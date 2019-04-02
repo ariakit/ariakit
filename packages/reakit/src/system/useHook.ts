@@ -1,13 +1,13 @@
 import * as React from "react";
-import { useToken } from "./useToken";
+import { unstable_useToken } from "./useToken";
 
-export function useHook(
+export function unstable_useProps(
   hookName: string,
   options: Record<string, any> = {},
   htmlProps: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ): React.HTMLAttributes<any> & React.RefAttributes<any> {
   React.useDebugValue(hookName);
-  const useTokenHook = useToken(hookName);
+  const useTokenHook = unstable_useToken(hookName);
   if (useTokenHook) {
     return useTokenHook(options, htmlProps);
   }

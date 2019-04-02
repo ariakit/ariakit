@@ -3,7 +3,8 @@ import {
   unstable_ButtonProps,
   useButton
 } from "../Button/Button";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { ArrayValue, As, PropsWithAs, Keys } from "../__utils/types";
@@ -32,6 +33,8 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormPushButtonOptions<V, P>,
   htmlProps: unstable_FormPushButtonProps = {}
 ) {
+  options = unstable_useOptions("useFormPushButton", options, htmlProps);
+
   htmlProps = mergeProps(
     {
       id: getPushButtonId(options.name, options.baseId),
@@ -57,7 +60,7 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
   );
 
   htmlProps = useButton(options, htmlProps);
-  htmlProps = useHook("useFormPushButton", options, htmlProps);
+  htmlProps = unstable_useProps("useFormPushButton", options, htmlProps);
   return htmlProps;
 }
 

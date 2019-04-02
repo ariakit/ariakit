@@ -6,6 +6,7 @@ redirect_from:
   - /components/overlay/overlayhide
   - /components/overlay/overlayshow
   - /components/overlay/overlaytoggle
+  - /components/backdrop
 ---
 
 # Dialog
@@ -19,33 +20,32 @@ import {
   useDialogState,
   Button
 } from "reakit";
-import { A } from "reakit-system-classic/components";
 
 function Example() {
   const focusInRef = React.useRef(null);
   const focusOutRef = React.useRef(null);
   const dialog = useDialogState();
   const dialog2 = useDialogState();
-  const style = {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "white",
-    padding: 20,
-    maxHeight: 100,
-    overflow: "auto",
-    border: "2px solid red",
-    "-webkit-overflow-scrolling": "touch"
-  };
-  const backdropStyle = {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    background: "rgba(0, 0, 0, 0.5)"
-  };
+  // const style = {
+  //   position: "fixed",
+  //   top: "50%",
+  //   left: "50%",
+  //   transform: "translate(-50%, -50%)",
+  //   background: "white",
+  //   padding: 20,
+  //   maxHeight: 100,
+  //   overflow: "auto",
+  //   border: "2px solid red",
+  //   "-webkit-overflow-scrolling": "touch"
+  // };
+  // const backdropStyle = {
+  //   position: "fixed",
+  //   top: 0,
+  //   right: 0,
+  //   bottom: 0,
+  //   left: 0,
+  //   background: "rgba(0, 0, 0, 0.5)"
+  // };
   return (
     <>
       <Button ref={focusOutRef}>Focus out</Button>
@@ -54,17 +54,13 @@ function Example() {
       <Dialog
         unstable_modal={false}
         unstable_hideOnClickOutside={false}
-        style={style}
         aria-label="test"
         {...dialog}
       >
         <Button onClick={dialog.hide}>X</Button>
         <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
-        <A href="#" ref={focusInRef}>
-          Focus In
-        </A>
         <div style={{ height: 500 }}>Hi</div>
-        <Dialog unstable_hideOnClickOutside={false} style={style} {...dialog2}>
+        <Dialog unstable_hideOnClickOutside={false} {...dialog2}>
           <div style={{ height: 500 }}>Hi</div>
           <Button>Button</Button>
         </Dialog>
@@ -83,7 +79,6 @@ import {
   useDialogState,
   Button
 } from "reakit";
-import { A } from "reakit-system-classic/components";
 
 function Example() {
   const focusInRef = React.useRef(null);
@@ -123,9 +118,6 @@ function Example() {
       >
         <Button onClick={dialog.hide}>X</Button>
         <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
-        <A href="#" ref={focusInRef}>
-          Focus In
-        </A>
         <Dialog style={style} {...dialog2}>
           Hi
         </Dialog>

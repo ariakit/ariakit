@@ -12,8 +12,8 @@ import * as system from "reakit-system-palette";
 
 function Example() {
   return (
-    <Provider system={system}>
-      <Button system={{ bgColor: "primary.0", color: "primaryText" }}>
+    <Provider unstable_system={system}>
+      <Button unstable_system={{ bgColor: "primary.0", color: "primaryText" }}>
         Button
       </Button>
     </Provider>

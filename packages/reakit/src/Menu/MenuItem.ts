@@ -1,6 +1,7 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import {
   unstable_RoverOptions,
   unstable_RoverProps,
@@ -18,16 +19,17 @@ export function useMenuItem(
   { unstable_focusable = true, ...options }: unstable_MenuItemOptions,
   htmlProps: unstable_MenuItemProps = {}
 ) {
-  const allOptions: unstable_MenuItemOptions = {
+  let _options: unstable_MenuItemOptions = {
     unstable_focusable,
     ...options
   };
+  _options = unstable_useOptions("useMenuItem", _options, htmlProps);
 
   htmlProps = mergeProps(
     {
       role: "menuitem",
       onKeyDown: event => {
-        const { unstable_parent: parent, hide, placement } = options;
+        const { unstable_parent: parent, hide, placement } = _options;
         if (!parent || !hide || !placement) return;
 
         const [dir] = placement.split("-");
@@ -65,8 +67,8 @@ export function useMenuItem(
     htmlProps
   );
 
-  htmlProps = useRover(allOptions, htmlProps);
-  htmlProps = useHook("useMenuItem", allOptions, htmlProps);
+  htmlProps = useRover(_options, htmlProps);
+  htmlProps = unstable_useProps("useMenuItem", _options, htmlProps);
   return htmlProps;
 }
 

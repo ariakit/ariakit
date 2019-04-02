@@ -1,5 +1,4 @@
 coverage
-/index.ts
 *.log
 *.config.js
 *.lock

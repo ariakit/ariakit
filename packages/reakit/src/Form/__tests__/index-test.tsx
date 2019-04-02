@@ -477,6 +477,7 @@ test("push/remove button adds/removes entry and moves focus", async () => {
         id="form-people-0-name"
         name="people.0.name"
         placeholder="name0"
+        tabindex="0"
         value=""
       />
       <input
@@ -486,6 +487,7 @@ test("push/remove button adds/removes entry and moves focus", async () => {
         id="form-people-0-email"
         name="people.0.email"
         placeholder="email0"
+        tabindex="0"
         value=""
       />
       <button

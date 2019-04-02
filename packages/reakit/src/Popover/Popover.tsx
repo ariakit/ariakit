@@ -3,7 +3,8 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { useHook } from "../system/useHook";
+import { unstable_useOptions } from "../system/useOptions";
+import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
 import {
   unstable_DialogOptions,
@@ -22,19 +23,21 @@ export function usePopover(
   { unstable_preventBodyScroll = false, ...options }: unstable_PopoverOptions,
   htmlProps: unstable_PopoverProps = {}
 ) {
-  const allOptions: unstable_PopoverOptions = {
+  let _options: unstable_PopoverOptions = {
     unstable_preventBodyScroll,
     ...options
   };
+  _options = unstable_useOptions("usePopover", _options, htmlProps);
+
   htmlProps = mergeProps(
     {
-      ref: options.unstable_popoverRef,
-      style: options.unstable_popoverStyles
+      ref: _options.unstable_popoverRef,
+      style: _options.unstable_popoverStyles
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useDialog(allOptions, htmlProps);
-  htmlProps = useHook("usePopover", allOptions, htmlProps);
+  htmlProps = useDialog(_options, htmlProps);
+  htmlProps = unstable_useProps("usePopover", _options, htmlProps);
   return htmlProps;
 }
 

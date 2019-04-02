@@ -24,6 +24,7 @@ test("render", () => {
       aria-labelledby="base-a-label"
       id="base-a"
       name="a"
+      tabindex="0"
       value="b"
     />
   </div>

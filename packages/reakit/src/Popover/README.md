@@ -16,22 +16,51 @@ import {
   Popover,
   PopoverArrow,
   PopoverDisclosure,
-  PopoverHide,
-  usePopoverState
+  usePopoverState,
+  Dialog,
+  DialogDisclosure,
+  useDialogState,
+  Menu,
+  MenuDisclosure,
+  MenuItem,
+  unstable_MenuItemDisclosure as MenuItemDisclosure,
+  MenuSeparator,
+  useMenuState
 } from "reakit";
-import { A } from "reakit-system-classic/components";
 
 function Example() {
   const focusInRef = React.useRef();
   const popover = usePopoverState();
+  const dialog = useDialogState();
+  const subdialog = useDialogState();
+  const menu = useMenuState();
+  const submenu = useMenuState({}, menu);
   return (
     <div style={{ padding: 100 }}>
-      <PopoverDisclosure {...popover}>Disclosure</PopoverDisclosure>
-      <Popover style={{ width: 100, background: "pink" }} {...popover}>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover}>
         <PopoverArrow {...popover} />
-        dsada
+        <DialogDisclosure {...dialog}>Open Dialog</DialogDisclosure>
+        <Dialog {...dialog}>
+          <MenuDisclosure {...menu}>Open Menu</MenuDisclosure>
+          <Menu {...menu}>
+            <MenuItem {...menu}>New File</MenuItem>
+            <MenuItem {...menu}>New Window</MenuItem>
+            <MenuSeparator {...menu} />
+            <MenuItemDisclosure unstable_parent={menu} {...subdialog}>
+              Open...
+            </MenuItemDisclosure>
+            <Dialog {...subdialog}>
+              I&apos;m a Dialog triggered by a menu item. Press ESC to close.
+            </Dialog>
+            <MenuItemDisclosure {...submenu}>Open Recent</MenuItemDisclosure>
+            <Menu {...submenu}>
+              <MenuItem {...submenu}>Reopen Closed Editor</MenuItem>
+              <MenuItem {...submenu}>Clear Recently Opened</MenuItem>
+            </Menu>
+          </Menu>
+        </Dialog>
       </Popover>
-      <input />
     </div>
   );
 }
@@ -47,7 +76,6 @@ import {
   PopoverBackdrop,
   usePopoverState
 } from "reakit";
-import { A } from "reakit-system-classic/components";
 
 function Example() {
   const focusInRef = React.useRef();
@@ -56,7 +84,7 @@ function Example() {
     <div style={{ padding: 100 }}>
       <PopoverDisclosure {...popover}>Disclosure</PopoverDisclosure>
       <PopoverBackdrop {...popover} />
-      <Popover style={{ width: 100, background: "pink" }} {...popover}>
+      <Popover {...popover}>
         <PopoverArrow {...popover} />
         dsada
       </Popover>
