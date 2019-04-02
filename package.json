@@ -18,8 +18,7 @@
     "website:build": "lerna exec --scope website -- npm run build",
     "website:serve": "lerna exec --scope website -- npm run serve",
     "prerelease": "patch-package",
-    "release": "lerna publish",
-    "release:next": "npm run release -- --dist-tag=next"
+    "release": "lerna publish"
   },
   "husky": {
     "hooks": {
