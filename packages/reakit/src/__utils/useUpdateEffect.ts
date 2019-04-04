@@ -8,9 +8,9 @@ export function useUpdateEffect(
   const mounted = React.useRef(false);
   React.useEffect(() => {
     if (mounted.current) {
-      effect();
-    } else {
-      mounted.current = true;
+      return effect();
     }
+    mounted.current = true;
+    return undefined;
   }, deps);
 }

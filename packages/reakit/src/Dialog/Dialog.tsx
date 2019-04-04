@@ -129,8 +129,9 @@ export function useDialog(
   useAttachAndInvoke(dialog, portal, "hide", _options.hide, !_options.visible);
 
   const hide = (e: Event) => {
+    if (!_options.hide) return;
     // Ignore disclosure since a click on it will already close the dialog
-    if (e.target !== disclosure.current && _options.hide) {
+    if (!disclosure.current || !disclosure.current.contains(e.target as Node)) {
       _options.hide();
     }
   };

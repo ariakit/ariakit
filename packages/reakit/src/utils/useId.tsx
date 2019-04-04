@@ -23,7 +23,7 @@ export function unstable_IdProvider({
   const genId = React.useMemo(
     () => (localPrefix: string = defaultPrefix) =>
       `${prefix}${localPrefix}${++count.current}`,
-    [count]
+    []
   );
   return <Context.Provider value={genId}>{children}</Context.Provider>;
 }

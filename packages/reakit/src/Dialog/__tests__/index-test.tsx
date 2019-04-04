@@ -291,6 +291,26 @@ test("clicking on disclosure closes the dialog", () => {
   expect(dialog).not.toBeVisible();
 });
 
+test("clicking on an element inside disclosure closes the dialog", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>
+          <span data-testid="inside">disclosure</span>
+        </DialogDisclosure>
+        <Dialog aria-label="dialog" {...dialog} />
+      </>
+    );
+  };
+  const { getByTestId, getByLabelText } = render(<Test />);
+  const inside = getByTestId("inside");
+  const dialog = getByLabelText("dialog");
+  expect(dialog).toBeVisible();
+  fireEvent.click(inside);
+  expect(dialog).not.toBeVisible();
+});
+
 test("clicking outside does not close the dialog when hideOnClickOutside is falsy", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });

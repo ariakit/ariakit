@@ -25,7 +25,7 @@
   <a href="https://opencollective.com/reakit"><img alt="Backers" src="https://opencollective.com/reakit/tiers/backer/badge.svg?label=backers&style=flat-square" /></a>
   <a href="https://spectrum.chat/reakit"><img src="https://img.shields.io/badge/community-spectrum-7A2DFB.svg?style=flat-square" alt="Spectrum" /></a>
   <a href="https://twitter.com/reakitjs">
-    <img alt="Follow Reakit on Twitter" src="https://img.shields.io/twitter/follow/reakitjs.svg?label=follow+@reakitjs&style=flat-square"></a>
+    <img alt="Follow Reakit on Twitter" src="https://img.shields.io/twitter/follow/reakitjs.svg"></a>
 </p>
 
 

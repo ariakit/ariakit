@@ -1,16 +1,13 @@
 import * as React from "react";
+import { useLiveRef } from "../../__utils/useLiveRef";
 
 export function useKeyboardFocus(
   targetRef: React.RefObject<HTMLElement>,
   handler: (event?: FocusEvent) => void,
   enabled?: boolean
 ) {
-  const handlerRef = React.useRef(handler);
+  const handlerRef = useLiveRef(handler);
   const lastMouseDown = React.useRef<EventTarget | null>();
-
-  React.useEffect(() => {
-    handlerRef.current = handler;
-  });
 
   React.useEffect(() => {
     if (!enabled || !targetRef.current) return undefined;
