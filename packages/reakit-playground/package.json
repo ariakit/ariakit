@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@types/buble": "0.19.2",
-    "@types/codemirror": "0.0.72",
+    "@types/codemirror": "0.0.73",
     "buble": "0.19.7",
     "codemirror": "5.45.0",
     "react-codemirror2": "5.1.0",

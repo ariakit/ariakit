@@ -1,3 +1,5 @@
+// Deep paths: https://github.com/Microsoft/TypeScript/issues/12290
+
 /**
  * Creates an array like object with specified length
  * @template N Length
@@ -76,28 +78,6 @@ export interface DeepPathArray<T, P> extends ReadonlyArray<string | number> {
         : never
       : never
     : never;
-  ["6"]?: P extends {
-    ["0"]: infer K0;
-    ["1"]: infer K1;
-    ["2"]: infer K2;
-    ["3"]: infer K3;
-    ["4"]: infer K4;
-    ["5"]: infer K5;
-  }
-    ? K0 extends keyof T
-      ? K1 extends keyof T[K0]
-        ? K2 extends keyof T[K0][K1]
-          ? K3 extends keyof T[K0][K1][K2]
-            ? K4 extends keyof T[K0][K1][K2][K3]
-              ? K5 extends keyof T[K0][K1][K2][K3][K4]
-                ? keyof T[K0][K1][K2][K3][K4][K5]
-                : never
-              : never
-            : never
-          : never
-        : never
-      : never
-    : never;
 }
 
 /**
@@ -108,10 +88,8 @@ export interface DeepPathArray<T, P> extends ReadonlyArray<string | number> {
 export type DeepPathArrayValue<
   T,
   P extends DeepPathArray<T, P>
-> = P extends ArrayWithLength<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>
+> = P extends ArrayWithLength<0 | 1 | 2 | 3 | 4 | 5 | 6>
   ? any
-  : P extends ArrayWithLength<0 | 1 | 2 | 3 | 4 | 5 | 6>
-  ? T[P[0]][P[1]][P[2]][P[3]][P[4]][P[5]][P[6]]
   : P extends ArrayWithLength<0 | 1 | 2 | 3 | 4 | 5>
   ? T[P[0]][P[1]][P[2]][P[3]][P[4]][P[5]]
   : P extends ArrayWithLength<0 | 1 | 2 | 3 | 4>
