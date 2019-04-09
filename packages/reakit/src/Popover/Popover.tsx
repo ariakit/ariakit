@@ -20,11 +20,11 @@ export type unstable_PopoverOptions = unstable_DialogOptions &
 export type unstable_PopoverProps = unstable_DialogProps;
 
 export function usePopover(
-  { unstable_preventBodyScroll = false, ...options }: unstable_PopoverOptions,
+  { unstable_modal = false, ...options }: unstable_PopoverOptions,
   htmlProps: unstable_PopoverProps = {}
 ) {
   let _options: unstable_PopoverOptions = {
-    unstable_preventBodyScroll,
+    unstable_modal,
     ...options
   };
   _options = unstable_useOptions("usePopover", _options, htmlProps);
@@ -60,6 +60,10 @@ See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
     );
 
     const element = unstable_useCreateElement(type, props, children);
-    return <Portal>{element}</Portal>;
+
+    if (props["aria-modal"]) {
+      return <Portal>{element}</Portal>;
+    }
+    return element;
   }
 });

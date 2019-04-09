@@ -7,6 +7,7 @@ path: /docs/menu
 ## Usage
 
 ```jsx
+import React from "react";
 import {
   useMenuState,
   Menu,
@@ -14,35 +15,43 @@ import {
   MenuItem,
   MenuSeparator,
   unstable_MenuItemCheckbox as MenuItemCheckbox,
-  unstable_MenuItemDisclosure as MenuItemDisclosure,
   mergeProps
 } from "reakit";
 
+const Menu1 = React.forwardRef((props, ref) => {
+  const menu = useMenuState();
+  return (
+    <>
+      <MenuDisclosure {...props} {...menu} ref={ref}>
+        Item 3
+      </MenuDisclosure>
+      <Menu {...menu}>
+        <MenuItemCheckbox {...menu} name="accept">
+          Accept
+        </MenuItemCheckbox>
+        <MenuItemCheckbox {...menu} name="fruits" value="apple">
+          Apple
+        </MenuItemCheckbox>
+        <MenuItemCheckbox {...menu} name="fruits" value="orange">
+          Orange
+        </MenuItemCheckbox>
+        <MenuSeparator {...menu} />
+        <MenuItem {...menu}>Item 1</MenuItem>
+        <MenuItem {...menu}>Item 2</MenuItem>
+      </Menu>
+    </>
+  );
+});
+
 function Example() {
   const menu = useMenuState();
-  const menu2 = useMenuState({}, menu);
   return (
     <div style={{ margin: 150 }}>
       <MenuDisclosure {...menu}>disclosure</MenuDisclosure>
       <Menu aria-label="menu" {...menu}>
         <MenuItem {...menu}>Item 1</MenuItem>
         <MenuItem {...menu}>Item 2</MenuItem>
-        <MenuItemDisclosure {...menu2}>Item 3</MenuItemDisclosure>
-        <Menu {...menu2}>
-          <label>
-            <MenuItemCheckbox {...menu2} name="accept" /> Accept
-          </label>
-          <label>
-            <MenuItemCheckbox {...menu2} name="fruits" value="apple" /> Apple
-          </label>
-          <label>
-            <MenuItemCheckbox {...menu2} name="fruits" value="orange" /> Orange
-          </label>
-          <MenuSeparator {...menu2} />
-          <MenuItem {...menu2}>Item 1</MenuItem>
-          <MenuItem {...menu2}>Item 2</MenuItem>
-        </Menu>
-        <MenuItem {...menu}>Item 4</MenuItem>
+        <MenuItem {...menu}>{props => <Menu1 {...props} />}</MenuItem>
       </Menu>
     </div>
   );
@@ -50,63 +59,80 @@ function Example() {
 ```
 
 ```jsx
+import React from "react";
 import {
   useMenuState,
-  unstable_useStaticMenuState as useStaticMenuState,
   Menu,
-  unstable_StaticMenu as StaticMenu,
   MenuDisclosure,
   MenuItem,
   MenuSeparator,
+  unstable_StaticMenu as StaticMenu,
   unstable_MenuItemCheckbox as MenuItemCheckbox,
-  unstable_MenuItemDisclosure as MenuItemDisclosure,
   unstable_MenuItemRadio as MenuItemRadio,
   mergeProps
 } from "reakit";
 
+const Menu1 = React.forwardRef((props, ref) => {
+  const menu = useMenuState({ unstable_values: { language: "css" } });
+  return (
+    <>
+      <MenuDisclosure {...props} {...menu} ref={ref}>
+        Ghi
+      </MenuDisclosure>
+      <Menu {...menu}>
+        <MenuItem {...menu}>Jkl</MenuItem>
+        <MenuItem {...menu}>Jkld</MenuItem>
+        <MenuItem {...menu}>Mno</MenuItem>
+        <MenuItemRadio {...menu} name="language" value="html">
+          HTML
+        </MenuItemRadio>
+        <MenuItemRadio {...menu} name="language" value="js">
+          JS
+        </MenuItemRadio>
+        <MenuItemRadio {...menu} name="language" value="css">
+          CSS
+        </MenuItemRadio>
+      </Menu>
+    </>
+  );
+});
+
+const Menu2 = React.forwardRef((props, ref) => {
+  const menu = useMenuState();
+  return (
+    <>
+      <MenuDisclosure {...props} {...menu} ref={ref}>
+        Pqr
+      </MenuDisclosure>
+      <Menu {...menu}>
+        <MenuItem {...menu}>Stu</MenuItem>
+        <MenuItem {...menu}>Vwx</MenuItem>
+        <MenuItem {...menu}>{p => <Menu1 {...p} />}</MenuItem>
+        <MenuItemCheckbox {...menu} name="accept">
+          Accept
+        </MenuItemCheckbox>
+        <MenuItemCheckbox {...menu} name="fruits" value="apple">
+          Apple
+        </MenuItemCheckbox>
+        <MenuItemCheckbox {...menu} name="fruits" value="orange">
+          Orange
+        </MenuItemCheckbox>
+      </Menu>
+    </>
+  );
+});
+
 function Example() {
-  const menuBar = useStaticMenuState({ orientation: "horizontal" });
-  const menu1 = useMenuState({ unstable_values: { language: "css" } }, menuBar);
-  const menu2 = useMenuState({}, menuBar);
+  const menu = useMenuState({ orientation: "horizontal" });
   return (
     <div style={{ margin: 150 }}>
-      <StaticMenu aria-label="menu" {...menuBar}>
-        <MenuItem {...menuBar}>Abc</MenuItem>
-        <MenuItem {...menuBar}>Def</MenuItem>
-        <MenuSeparator {...menuBar} />
-        <MenuItemDisclosure {...menu1}>Ghi</MenuItemDisclosure>
-        <Menu {...menu1}>
-          <MenuItem {...menu1}>Jkl</MenuItem>
-          <MenuItem {...menu1}>Jkld</MenuItem>
-          <MenuItem {...menu1}>Mno</MenuItem>
-          <label>
-            <MenuItemRadio {...menu1} name="language" value="html" />
-            HTML
-          </label>
-          <label>
-            <MenuItemRadio {...menu1} name="language" value="js" />
-            JS
-          </label>
-          <label>
-            <MenuItemRadio {...menu1} name="language" value="css" />
-            CSS
-          </label>
-        </Menu>
-        <MenuItemDisclosure {...menu2}>Pqr</MenuItemDisclosure>
-        <Menu {...menu2}>
-          <MenuItem {...menu2}>Stu</MenuItem>
-          <MenuItem {...menu2}>Vwx</MenuItem>
-          <label>
-            <MenuItemCheckbox {...menu2} name="accept" /> Accept
-          </label>
-          <label>
-            <MenuItemCheckbox {...menu2} name="fruits" value="apple" /> Apple
-          </label>
-          <label>
-            <MenuItemCheckbox {...menu2} name="fruits" value="orange" /> Orange
-          </label>
-        </Menu>
-        <MenuItem {...menuBar}>Ded</MenuItem>
+      <StaticMenu aria-label="menu" {...menu}>
+        <MenuItem {...menu}>Abc</MenuItem>
+        <MenuItem {...menu}>Def</MenuItem>
+        <MenuSeparator {...menu} />
+        <MenuItem {...menu}>{props => <Menu1 {...props} />}</MenuItem>
+        <MenuItem {...menu}>{props => <Menu2 {...props} />}</MenuItem>
+        <MenuItem {...menu}>Ded</MenuItem>
       </StaticMenu>
     </div>
   );

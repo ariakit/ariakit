@@ -40,10 +40,14 @@ function isNativeTabbable(element: EventTarget) {
 
 export function useTabbable(
   { unstable_clickKeys = [" "], ...options }: unstable_TabbableOptions = {},
-  { tabIndex = 0, onClick, disabled, ...htmlProps }: unstable_TabbableProps = {}
+  {
+    tabIndex = 0,
+    onClick,
+    onMouseOver,
+    disabled,
+    ...htmlProps
+  }: unstable_TabbableProps = {}
 ) {
-  const clickKeysRef = useLiveRef(unstable_clickKeys);
-
   let _options: unstable_TabbableOptions = {
     unstable_clickKeys,
     disabled,
@@ -51,6 +55,7 @@ export function useTabbable(
   };
   _options = unstable_useOptions("useTabbable", _options, htmlProps);
 
+  const clickKeysRef = useLiveRef(_options.unstable_clickKeys);
   const reallyDisabled = _options.disabled && !_options.unstable_focusable;
 
   htmlProps = mergeProps(
@@ -66,10 +71,21 @@ export function useTabbable(
           onClick(event);
         }
       },
+      onMouseOver: event => {
+        if (_options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+        } else if (onMouseOver) {
+          onMouseOver(event);
+        }
+      },
       onKeyDown: event => {
         if (isNativeTabbable(event.target) || _options.disabled) return;
 
-        if (clickKeysRef.current.indexOf(event.key) !== -1) {
+        if (
+          clickKeysRef.current &&
+          clickKeysRef.current.indexOf(event.key) !== -1
+        ) {
           event.preventDefault();
           event.target.dispatchEvent(
             new MouseEvent("click", {

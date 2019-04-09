@@ -35,6 +35,7 @@ export function useShortcuts(
       return;
     }
     if (/^[a-z0-9_-]$/i.test(event.key)) {
+      event.stopPropagation();
       event.preventDefault();
       setKeys(`${keys}${event.key}`);
     }

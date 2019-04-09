@@ -20,5 +20,5 @@ export function useBoxProps(
     ${style as any}
   `;
 
-  return { ...htmlProps, className: cx(className, box) };
+  return { ...htmlProps, className: cx(box, className) };
 }

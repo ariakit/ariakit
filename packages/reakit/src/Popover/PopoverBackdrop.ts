@@ -1,9 +1,6 @@
-import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { Portal } from "../Portal/Portal";
 import {
   unstable_DialogBackdropOptions,
   unstable_DialogBackdropProps,
@@ -36,9 +33,5 @@ usePopoverBackdrop.__keys = keys;
 
 export const PopoverBackdrop = unstable_createComponent({
   as: "div",
-  useHook: usePopoverBackdrop,
-  useCreateElement: (type, props, children) => {
-    const element = unstable_useCreateElement(type, props, children);
-    return <Portal>{element}</Portal>;
-  }
+  useHook: usePopoverBackdrop
 });

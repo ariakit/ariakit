@@ -1,22 +1,27 @@
 import * as React from "react";
+import { useUpdateEffect } from "../../__utils/useUpdateEffect";
+import { unstable_DialogOptions } from "../Dialog";
 import { getFirstTabbableIn } from "./tabbable";
-
-function hasNestedOpenDialogs(portal: Element) {
-  return portal.querySelectorAll("[data-dialog][aria-hidden=false]").length > 1;
-}
 
 export function useFocusOnShow(
   dialogRef: React.RefObject<HTMLElement>,
-  portalRef: React.RefObject<HTMLElement>,
-  initialFocusRef?: React.RefObject<HTMLElement>,
-  shouldFocus?: boolean
+  nestedDialogs: Array<React.RefObject<HTMLElement>>,
+  options: unstable_DialogOptions
 ) {
-  React.useEffect(() => {
+  const initialFocusRef = options.unstable_initialFocusRef;
+  const shouldFocus = options.visible && options.unstable_autoFocusOnShow;
+
+  useUpdateEffect(() => {
     const dialog = dialogRef.current;
-    const portal = portalRef.current;
 
     // If there're nested open dialogs, let them handle focus
-    if (!shouldFocus || !dialog || !portal || hasNestedOpenDialogs(portal)) {
+    if (
+      !shouldFocus ||
+      !dialog ||
+      nestedDialogs.find(child =>
+        Boolean(child.current && !child.current.hidden)
+      )
+    ) {
       return;
     }
 
@@ -30,5 +35,5 @@ export function useFocusOnShow(
         dialog.focus();
       }
     }
-  }, [dialogRef, initialFocusRef, shouldFocus]);
+  }, [dialogRef, initialFocusRef, shouldFocus, nestedDialogs]);
 }

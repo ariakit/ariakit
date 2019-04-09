@@ -1,3 +1,4 @@
+import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
@@ -9,6 +10,7 @@ import {
 } from "../Popover/PopoverDisclosure";
 import { Keys } from "../__utils/types";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { MenuContext } from "./__utils/MenuContext";
 
 export type unstable_MenuDisclosureOptions = unstable_PopoverDisclosureOptions &
   Partial<unstable_MenuStateReturn> &
@@ -18,19 +20,51 @@ export type unstable_MenuDisclosureProps = unstable_PopoverDisclosureProps;
 
 export function useMenuDisclosure(
   options: unstable_MenuDisclosureOptions,
-  htmlProps: unstable_MenuDisclosureProps = {}
+  { onKeyDown, ...htmlProps }: unstable_MenuDisclosureProps = {}
 ) {
+  const parent = React.useContext(MenuContext);
+  const ref = React.useRef<HTMLElement>(null);
+
   options = unstable_useOptions("useMenuDisclosure", options, htmlProps);
 
   const dir = options.placement ? options.placement.split("-")[0] : undefined;
 
   htmlProps = mergeProps(
     {
+      ref,
       "aria-haspopup": "menu",
-      onKeyDown: event => {
-        if (options.disabled) return;
+      onFocus: () => {
+        if (parent && parent.orientation === "horizontal") {
+          options.show();
+        }
+      },
+      onMouseOver: () => {
+        if (!parent || !options.placement) return;
 
+        const parentIsHorizontal = parent.orientation === "horizontal";
+
+        if (!parentIsHorizontal) {
+          setTimeout(() => {
+            if (ref.current && ref.current.contains(document.activeElement)) {
+              options.show();
+              ref.current.focus();
+            }
+          }, 200);
+        } else if (ref.current) {
+          const parentMenu = ref.current.closest("[role=menu],[role=menubar]");
+          const subjacentOpenMenu =
+            parentMenu &&
+            parentMenu.querySelector("[role=menu][aria-hidden=false]");
+          if (subjacentOpenMenu) {
+            ref.current.focus();
+          }
+        }
+      },
+      onKeyDown: event => {
         const keyMap = {
+          Escape: options.hide,
+          Enter: parent && options.unstable_first,
+          " ": parent && options.unstable_first,
           ArrowUp:
             dir === "top" || dir === "bottom" ? options.unstable_last : false,
           ArrowRight: dir === "right" && options.unstable_first,
@@ -38,6 +72,7 @@ export function useMenuDisclosure(
             dir === "bottom" || dir === "top" ? options.unstable_first : false,
           ArrowLeft: dir === "left" && options.unstable_first
         };
+
         if (event.key in keyMap) {
           const key = event.key as keyof typeof keyMap;
           const action = keyMap[key];
@@ -45,14 +80,26 @@ export function useMenuDisclosure(
             event.preventDefault();
             options.show();
             action();
+            // Prevent onKeyDown from being called twice for the same keys.
+            return;
           }
         }
+
+        if (onKeyDown) {
+          onKeyDown(event);
+        }
       }
-    } as typeof htmlProps,
+    } as unstable_MenuDisclosureProps,
     htmlProps
   );
 
-  htmlProps = usePopoverDisclosure(options, htmlProps);
+  htmlProps = usePopoverDisclosure(
+    {
+      ...options,
+      toggle: parent ? options.show : options.toggle
+    },
+    htmlProps
+  );
   htmlProps = unstable_useProps("useMenuDisclosure", options, htmlProps);
   return htmlProps;
 }

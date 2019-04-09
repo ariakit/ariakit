@@ -1,6 +1,7 @@
 import * as React from "react";
 import { reduceObjects } from "../__utils/reduceObjects";
 import { UnionToIntersection } from "../__utils/types";
+import { isObject } from "../__utils/isObject";
 
 function extractPropFromObjects<T, K extends keyof T>(objects: T[], prop: K) {
   const props: Array<NonNullable<T[K]>> = [];
@@ -70,6 +71,7 @@ function mergeStylesInObjects(objects: Array<{ style?: any }>) {
 }
 
 export function mergeProps<T extends any[]>(...objects: T) {
+  objects = objects.filter(isObject) as T;
   return Object.assign(
     {},
     ...objects,

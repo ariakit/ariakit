@@ -23,9 +23,9 @@ import {
   Menu,
   MenuDisclosure,
   MenuItem,
-  unstable_MenuItemDisclosure as MenuItemDisclosure,
   MenuSeparator,
-  useMenuState
+  useMenuState,
+  Button
 } from "reakit";
 
 function Example() {
@@ -34,12 +34,12 @@ function Example() {
   const dialog = useDialogState();
   const subdialog = useDialogState();
   const menu = useMenuState();
-  const submenu = useMenuState({}, menu);
   return (
     <div style={{ padding: 100 }}>
       <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
       <Popover {...popover}>
         <PopoverArrow {...popover} />
+        <Button onClick={popover.hide}>Hide</Button>
         <DialogDisclosure {...dialog}>Open Dialog</DialogDisclosure>
         <Dialog {...dialog}>
           <MenuDisclosure {...menu}>Open Menu</MenuDisclosure>
@@ -47,17 +47,16 @@ function Example() {
             <MenuItem {...menu}>New File</MenuItem>
             <MenuItem {...menu}>New Window</MenuItem>
             <MenuSeparator {...menu} />
-            <MenuItemDisclosure unstable_parent={menu} {...subdialog}>
-              Open...
-            </MenuItemDisclosure>
+            <MenuItem {...menu}>
+              {props => (
+                <DialogDisclosure {...props} {...subdialog}>
+                  Open...
+                </DialogDisclosure>
+              )}
+            </MenuItem>
             <Dialog {...subdialog}>
               I&apos;m a Dialog triggered by a menu item. Press ESC to close.
             </Dialog>
-            <MenuItemDisclosure {...submenu}>Open Recent</MenuItemDisclosure>
-            <Menu {...submenu}>
-              <MenuItem {...submenu}>Reopen Closed Editor</MenuItem>
-              <MenuItem {...submenu}>Clear Recently Opened</MenuItem>
-            </Menu>
           </Menu>
         </Dialog>
       </Popover>

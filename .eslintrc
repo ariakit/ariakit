@@ -35,6 +35,7 @@
     "import/no-named-as-default": "off",
     "import/no-webpack-loader-syntax": "off",
     "import/no-extraneous-dependencies": "off",
+    "react/no-multi-comp": "off",
     "react/require-default-props": "off",
     "react/default-props-match-prop-types": "off",
     "react/no-array-index-key": "off",

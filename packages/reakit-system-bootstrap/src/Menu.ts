@@ -9,10 +9,6 @@ import {
   unstable_MenuItemCheckboxOptions
 } from "reakit/Menu/MenuItemCheckbox";
 import {
-  unstable_MenuItemDisclosureProps,
-  unstable_MenuItemDisclosureOptions
-} from "reakit/Menu/MenuItemDisclosure";
-import {
   unstable_MenuItemRadioProps,
   unstable_MenuItemRadioOptions
 } from "reakit/Menu/MenuItemRadio";
@@ -20,6 +16,10 @@ import {
   unstable_StaticMenuProps,
   unstable_StaticMenuOptions
 } from "reakit/Menu/StaticMenu";
+import {
+  unstable_MenuItemOptions,
+  unstable_MenuItemProps
+} from "reakit/Menu/MenuItem";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
@@ -29,17 +29,15 @@ export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
   unstable_StaticMenuOptions;
 
 export function useStaticMenuProps(
-  { unstable_system, ...options }: BootstrapStaticMenuOptions,
+  options: BootstrapStaticMenuOptions,
   { className, ...htmlProps }: unstable_StaticMenuProps = {}
 ) {
-  const primary = usePalette("primary") || "blue";
-  const primaryContrast = useContrast(primary);
-  const darkPrimary = useDarken(primary, 0.2);
   const isHorizontal = options.orientation === "horizontal";
 
   const staticMenu = css`
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
+    white-space: nowrap;
 
     &[aria-orientation="vertical"] {
       padding: 0.25em 0;
@@ -48,20 +46,39 @@ export function useStaticMenuProps(
     &[aria-orientation="horizontal"] {
       padding: 0;
     }
+  `;
 
-    & > *:not(hr) {
+  return { ...htmlProps, className: cx(className, staticMenu) };
+}
+
+export type BootstrapMenuItemOptions = BootstrapBoxOptions &
+  unstable_MenuItemOptions;
+
+export function useMenuItemProps(
+  { unstable_system, ...options }: BootstrapMenuItemOptions,
+  { className, ...htmlProps }: unstable_MenuItemProps = {}
+) {
+  const foreground = usePalette("foreground") || "black";
+  const primary = usePalette("primary") || "blue";
+  const primaryContrast = useContrast(primary);
+  const darkPrimary = useDarken(primary, 0.2);
+  const isHorizontal = options.orientation === "horizontal";
+
+  const menuItem = css`
+    &&& {
       line-height: 1.5;
       padding: 0 ${isHorizontal ? "0.5em" : "1.5em"};
       text-align: left;
       border: 0;
-      background-color: transparent;
+      border-radius: 0;
       font-size: 100%;
+      background: transparent;
+      color: ${foreground};
       margin: 0;
       user-select: none;
 
       &:focus,
-      &:focus-within,
-      &:hover {
+      &[aria-expanded="true"] {
         background-color: ${primary};
         color: ${primaryContrast};
         box-shadow: none !important;
@@ -73,7 +90,7 @@ export function useStaticMenuProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, staticMenu) };
+  return { ...htmlProps, className: cx(className, menuItem) };
 }
 
 export type BootstrapMenuOptions = BootstrapBoxOptions & unstable_MenuOptions;
@@ -89,23 +106,16 @@ export function useMenuOptions({
 }
 
 export function useMenuProps(
-  options: BootstrapMenuOptions,
+  _: BootstrapMenuOptions,
   { className, ...htmlProps }: unstable_MenuProps = {}
 ) {
-  const parentIsVertical =
-    options.unstable_parent &&
-    options.unstable_parent.orientation !== "horizontal";
-
   const menu = css`
     display: flex;
     border-radius: 0;
 
-    ${parentIsVertical &&
-      css`
-        &[aria-orientation="vertical"] {
-          margin-top: -0.3em;
-        }
-      `};
+    &:not([aria-orientation="horizontal"]) > &[aria-orientation="vertical"] {
+      margin-top: -0.3em;
+    }
   `;
 
   return { ...htmlProps, className: cx(className, menu) };
@@ -118,10 +128,6 @@ export function useMenuDisclosureProps(
   options: BootstrapMenuDisclosureOptions,
   { className, ...htmlProps }: unstable_MenuDisclosureProps = {}
 ) {
-  const parentIsHorizontal =
-    options.unstable_parent &&
-    options.unstable_parent.orientation === "horizontal";
-
   const dir = options.placement ? options.placement.split("-")[0] : undefined;
 
   const arrowMap: Record<string, any> = {
@@ -133,15 +139,15 @@ export function useMenuDisclosureProps(
 
   const menuDisclosure = css`
     position: relative;
-    ${dir !== "left" &&
-      !parentIsHorizontal &&
-      css`
-        padding-right: 1.6em;
-      `};
 
-    ${dir &&
-      !parentIsHorizontal &&
-      css`&:after {
+    *:not([aria-orientation="horizontal"]) > & {
+      ${dir !== "left" &&
+        css`
+          padding-right: 1.6em;
+        `}
+      ${dir &&
+        css`
+      &:after {
       content: "${arrowMap[dir]}";
       position: absolute;
       font-size: 0.7em;
@@ -149,6 +155,7 @@ export function useMenuDisclosureProps(
       padding: 0.42em 0;
       ${dir === "left" ? "left" : "right"}: 0.75em;
     }`}
+    }
   `;
 
   return { ...htmlProps, className: cx(className, menuDisclosure) };
@@ -162,53 +169,22 @@ export function useMenuItemCheckboxProps(
   { className, ...htmlProps }: unstable_MenuItemCheckboxProps = {}
 ) {
   const menuItemCheckbox = css`
-    appearance: none;
-    margin: 0 0 0 -1.3em;
-    width: 1em;
-    height: 1em;
-    color: inherit;
+    position: relative;
     outline: 0;
 
-    &:checked {
-      &:after {
+    &[aria-checked="true"] {
+      &:before {
         content: "✓";
+        position: absolute;
+        top: 0;
+        left: 0.4em;
+        width: 1em;
+        height: 1em;
       }
     }
   `;
 
   return { ...htmlProps, className: cx(className, menuItemCheckbox) };
-}
-
-export type BootstrapMenuItemDisclosureOptions = BootstrapBoxOptions &
-  unstable_MenuItemDisclosureOptions;
-
-export function useMenuItemDisclosureProps(
-  _: BootstrapMenuItemDisclosureOptions,
-  { className, ...htmlProps }: unstable_MenuItemDisclosureProps = {}
-) {
-  const primary = usePalette("primary") || "blue";
-  const primaryContrast = useContrast(primary);
-
-  const menuItemDisclosure = css`
-    position: relative;
-    line-height: 1.5;
-    border-radius: 0;
-    border: none;
-    background: none;
-    color: inherit;
-    cursor: auto;
-    transition: none;
-
-    &:focus,
-    &:hover,
-    &[aria-expanded="true"] {
-      background-color: ${primary};
-      color: ${primaryContrast};
-      box-shadow: none;
-    }
-  `;
-
-  return { ...htmlProps, className: cx(className, menuItemDisclosure) };
 }
 
 export type BootstrapMenuItemRadioOptions = BootstrapBoxOptions &
@@ -219,17 +195,18 @@ export function useMenuItemRadioProps(
   { className, ...htmlProps }: unstable_MenuItemRadioProps = {}
 ) {
   const menuItemRadio = css`
-    appearance: none;
-    margin: 0 0.3em 0 -1.3em;
-    width: 1em;
-    height: 1em;
-    color: inherit;
+    position: relative;
     outline: 0;
 
-    &:checked {
-      &:after {
+    &[aria-checked="true"] {
+      &:before {
         content: "•";
-        font-size: 1.5em;
+        position: absolute;
+        font-size: 1.4em;
+        top: -0.25em;
+        left: 0.3em;
+        width: 0.7142857143em;
+        height: 0.7142857143em;
       }
     }
   `;

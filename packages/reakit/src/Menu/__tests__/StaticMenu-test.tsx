@@ -11,14 +11,13 @@ const props: Parameters<typeof StaticMenu>[0] = {
 test("render", () => {
   const { baseElement } = render(<StaticMenu {...props} />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-label="menu"
-      aria-owns=""
-      role="menu"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-label="menu"
+          role="menu"
+        />
+      </div>
+    </body>
+  `);
 });

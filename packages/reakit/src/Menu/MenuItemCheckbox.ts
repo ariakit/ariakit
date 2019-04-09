@@ -1,9 +1,12 @@
-import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_CheckboxOptions, useCheckbox } from "../Checkbox/Checkbox";
+import {
+  unstable_CheckboxOptions,
+  useCheckbox,
+  unstable_CheckboxProps
+} from "../Checkbox/Checkbox";
 import { Keys } from "../__utils/types";
 import {
   unstable_MenuItemOptions,
@@ -20,8 +23,8 @@ export type unstable_MenuItemCheckboxOptions = unstable_CheckboxOptions &
     name: string;
   };
 
-export type unstable_MenuItemCheckboxProps = unstable_MenuItemProps &
-  React.InputHTMLAttributes<any>;
+export type unstable_MenuItemCheckboxProps = unstable_CheckboxProps &
+  unstable_MenuItemProps;
 
 export function unstable_useMenuItemCheckbox(
   options: unstable_MenuItemCheckboxOptions,
@@ -56,6 +59,6 @@ const keys: Keys<unstable_MenuItemCheckboxOptions> = [
 unstable_useMenuItemCheckbox.__keys = keys;
 
 export const unstable_MenuItemCheckbox = unstable_createComponent({
-  as: "input",
+  as: "button",
   useHook: unstable_useMenuItemCheckbox
 });

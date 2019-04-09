@@ -101,6 +101,7 @@ export function usePopoverState(
     if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
         placement: originalPlacement,
+        eventsEnabled: false,
         modifiers: {
           applyStyle: { enabled: false },
           flip: { enabled: flip, padding: 16 },

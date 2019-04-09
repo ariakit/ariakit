@@ -9,15 +9,22 @@ import {
 } from "../Radio/Radio";
 import { Keys } from "../__utils/types";
 import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import {
+  useMenuItem,
+  unstable_MenuItemOptions,
+  unstable_MenuItemProps
+} from "./MenuItem";
 
 export type unstable_MenuItemRadioOptions = unstable_RadioOptions &
+  unstable_MenuItemOptions &
   Partial<unstable_MenuStateReturn> &
   Pick<unstable_MenuStateReturn, "unstable_values" | "unstable_update"> & {
     /** TODO: Description */
     name: string;
   };
 
-export type unstable_MenuItemRadioProps = unstable_RadioProps;
+export type unstable_MenuItemRadioProps = unstable_RadioProps &
+  unstable_MenuItemProps;
 
 export function unstable_useMenuItemRadio(
   options: unstable_MenuItemRadioOptions,
@@ -29,47 +36,14 @@ export function unstable_useMenuItemRadio(
   const setValue = (value: any) => options.unstable_update(options.name, value);
 
   htmlProps = mergeProps(
-    {
-      role: "menuitemradio",
-      onKeyDown: event => {
-        const { unstable_parent: parent, hide, placement } = options;
-        if (!parent || !hide || !placement) return;
-
-        const [dir] = placement.split("-");
-        const parentIsHorizontal = parent.orientation === "horizontal";
-
-        const keyMap = {
-          ArrowRight: parentIsHorizontal
-            ? () => {
-                parent.unstable_next();
-                hide();
-              }
-            : dir === "left" && hide,
-          ArrowLeft: parentIsHorizontal
-            ? () => {
-                parent.unstable_previous();
-                hide();
-              }
-            : dir === "right" && hide
-        };
-
-        if (event.key in keyMap) {
-          const key = event.key as keyof typeof keyMap;
-          const action = keyMap[key];
-          if (typeof action === "function") {
-            event.preventDefault();
-            action();
-          }
-        }
-      }
-    } as typeof htmlProps,
+    { role: "menuitemradio" } as typeof htmlProps,
     htmlProps
   );
-
   htmlProps = unstable_useRadio(
     { ...options, currentValue, setValue },
     htmlProps
   );
+  htmlProps = useMenuItem(options, htmlProps);
   htmlProps = unstable_useProps("useMenuItemRadio", options, htmlProps);
   return htmlProps;
 }
@@ -83,6 +57,6 @@ const keys: Keys<unstable_MenuItemRadioOptions> = [
 unstable_useMenuItemRadio.__keys = keys;
 
 export const unstable_MenuItemRadio = unstable_createComponent({
-  as: "input",
+  as: "button",
   useHook: unstable_useMenuItemRadio
 });

@@ -37,13 +37,13 @@ export type unstable_RoverProps = unstable_TabbableProps;
 
 export function useRover(
   options: unstable_RoverOptions,
-  { tabIndex, ...htmlProps }: unstable_RoverProps = {}
+  { tabIndex, onKeyDown, ...htmlProps }: unstable_RoverProps = {}
 ) {
   options = unstable_useOptions("useRover", options, htmlProps);
 
   const ref = React.useRef<HTMLElement>(null);
   const id = unstable_useId("rover-");
-  const stopId = options.stopId || id;
+  const stopId = options.stopId || htmlProps.id || id;
 
   const reallyDisabled = options.disabled && !options.unstable_focusable;
   const noFocused = options.unstable_currentId == null;
@@ -93,10 +93,15 @@ export function useRover(
           if (action) {
             event.preventDefault();
             action();
+            // Prevent onKeyDown from being called twice for the same keys.
+            return;
           }
         }
+        if (onKeyDown) {
+          onKeyDown(event);
+        }
       }
-    } as typeof htmlProps,
+    } as unstable_RoverProps,
     htmlProps
   );
 

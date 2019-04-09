@@ -22,23 +22,21 @@ const props: Parameters<typeof Menu>[0] = {
 test("render", () => {
   const { baseElement } = render(<Menu {...props} />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    <div
-      aria-hidden="true"
-      aria-label="menu"
-      aria-modal="true"
-      aria-owns="a b"
-      data-dialog="true"
-      hidden=""
-      id="hidden"
-      role="menu"
-      tabindex="-1"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="true"
+          aria-label="menu"
+          aria-modal="false"
+          class="__reakit-portal"
+          data-dialog="true"
+          hidden=""
+          id="hidden"
+          role="menu"
+          style="z-index: 999;"
+          tabindex="-1"
+        />
+      </div>
+    </body>
+  `);
 });

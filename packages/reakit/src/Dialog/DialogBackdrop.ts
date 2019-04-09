@@ -1,10 +1,7 @@
-import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { Portal } from "../Portal/Portal";
 import {
   unstable_HiddenOptions,
   unstable_HiddenProps,
@@ -27,13 +24,14 @@ export function useDialogBackdrop(
   htmlProps = mergeProps(
     {
       id: undefined,
-      role: undefined,
+      role: "presentation",
       style: {
         position: "fixed",
         top: 0,
         right: 0,
         bottom: 0,
-        left: 0
+        left: 0,
+        zIndex: 998
       }
     } as typeof htmlProps,
     htmlProps
@@ -52,9 +50,5 @@ useDialogBackdrop.__keys = keys;
 
 export const DialogBackdrop = unstable_createComponent({
   as: "div",
-  useHook: useDialogBackdrop,
-  useCreateElement: (type, props, children) => {
-    const element = unstable_useCreateElement(type, props, children);
-    return <Portal>{element}</Portal>;
-  }
+  useHook: useDialogBackdrop
 });

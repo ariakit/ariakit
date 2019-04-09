@@ -1,26 +1,24 @@
 import * as React from "react";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import {
-  unstable_RoverState,
-  unstable_RoverActions,
-  unstable_RoverInitialState,
-  unstable_RoverStateReturn,
-  useRoverState
-} from "../Rover/RoverState";
-import {
   unstable_PopoverState,
   unstable_PopoverActions,
   unstable_PopoverInitialState,
   usePopoverState
 } from "../Popover/PopoverState";
 import { Keys } from "../__utils/types";
+import {
+  unstable_RoverState,
+  unstable_RoverActions,
+  unstable_RoverInitialState,
+  useRoverState
+} from "../Rover";
+import { MenuContext } from "./__utils/MenuContext";
 
 export type unstable_MenuState = unstable_RoverState &
   unstable_PopoverState & {
     /** TODO: Description */
     unstable_values: Record<string, any>;
-    /** TODO: Description */
-    unstable_parent?: unstable_RoverStateReturn;
   };
 
 export type unstable_MenuActions = unstable_RoverActions &
@@ -37,20 +35,21 @@ export type unstable_MenuStateReturn = unstable_MenuState &
   unstable_MenuActions;
 
 export function useMenuState(
-  initialState: SealedInitialState<unstable_MenuInitialState> = {},
-  unstable_parent?: unstable_RoverStateReturn
+  initialState: SealedInitialState<unstable_MenuInitialState> = {}
 ): unstable_MenuStateReturn {
   const {
     orientation = "vertical",
-    unstable_gutter: gutter = 0,
+    unstable_gutter: initialGutter = 0,
     unstable_values: initialValues = {},
     ...sealed
   } = useSealedState(initialState);
+
   const [values, setValues] = React.useState(initialValues);
+  const parent = React.useContext(MenuContext);
 
   const placement =
     sealed.placement ||
-    (unstable_parent && unstable_parent.orientation === "vertical"
+    (parent && parent.orientation === "vertical"
       ? "right-start"
       : "bottom-start");
 
@@ -58,7 +57,7 @@ export function useMenuState(
   const popover = usePopoverState({
     ...sealed,
     placement,
-    unstable_gutter: gutter
+    unstable_gutter: initialGutter
   });
 
   React.useEffect(() => {
@@ -70,10 +69,6 @@ export function useMenuState(
   return {
     ...rover,
     ...popover,
-    unstable_parent: React.useMemo(
-      () => unstable_parent,
-      Object.values(unstable_parent || {})
-    ),
     unstable_values: values,
     unstable_update: React.useCallback((name, value) => {
       setValues(vals => ({
@@ -87,7 +82,6 @@ export function useMenuState(
 const keys: Keys<unstable_MenuStateReturn> = [
   ...useRoverState.__keys,
   ...usePopoverState.__keys,
-  "unstable_parent",
   "unstable_values",
   "unstable_update"
 ];

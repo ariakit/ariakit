@@ -1,4 +1,5 @@
 import * as React from "react";
+import { unstable_DialogOptions } from "../Dialog";
 import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 
 function hasNestedOpenModals(portal: Element) {
@@ -8,11 +9,18 @@ function hasNestedOpenModals(portal: Element) {
   );
 }
 
+const focusTrapClassName = "__reakit-focus-trap";
+
+export function isFocusTrap(element: Element) {
+  return element.classList.contains(focusTrapClassName);
+}
+
 export function useFocusTrap(
   dialogRef: React.RefObject<HTMLElement>,
   portalRef: React.RefObject<HTMLElement>,
-  shouldTrap?: boolean
+  options: unstable_DialogOptions
 ) {
+  const shouldTrap = options.visible && options.unstable_modal;
   const beforeElement = React.useRef<HTMLElement | null>(null);
   const afterElement = React.useRef<HTMLElement | null>(null);
 
@@ -25,6 +33,7 @@ export function useFocusTrap(
 
     if (!beforeElement.current) {
       beforeElement.current = document.createElement("div");
+      beforeElement.current.className = focusTrapClassName;
       beforeElement.current.tabIndex = 0;
       beforeElement.current.style.position = "fixed";
       beforeElement.current.setAttribute("aria-hidden", "true");

@@ -10,26 +10,25 @@ const props: Parameters<typeof Popover>[0] = {
 test("render", () => {
   const { baseElement } = render(<Popover {...props}>popover</Popover>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    <div
-      aria-hidden="true"
-      aria-label="popover"
-      aria-modal="true"
-      data-dialog="true"
-      hidden=""
-      id="popover"
-      role="dialog"
-      tabindex="-1"
-    >
-      popover
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="true"
+          aria-label="popover"
+          aria-modal="false"
+          class="__reakit-portal"
+          data-dialog="true"
+          hidden=""
+          id="popover"
+          role="dialog"
+          style="z-index: 999;"
+          tabindex="-1"
+        >
+          popover
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render visible", () => {
@@ -39,35 +38,24 @@ test("render visible", () => {
     </Popover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    aria-hidden="true"
-    style="position: fixed;"
-    tabindex="0"
-  />
-  <div
-    class="__reakit-portal"
-  >
-    <div
-      aria-hidden="false"
-      aria-label="popover"
-      aria-modal="true"
-      data-dialog="true"
-      id="popover"
-      role="dialog"
-      tabindex="-1"
-    >
-      popover
-    </div>
-  </div>
-  <div
-    aria-hidden="true"
-    style="position: fixed;"
-    tabindex="0"
-  />
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="false"
+          aria-label="popover"
+          aria-modal="false"
+          class="__reakit-portal"
+          data-dialog="true"
+          id="popover"
+          role="dialog"
+          style="z-index: 999;"
+          tabindex="-1"
+        >
+          popover
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render non-modal", () => {
@@ -77,24 +65,23 @@ test("render non-modal", () => {
     </Popover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    <div
-      aria-hidden="true"
-      aria-label="popover"
-      aria-modal="false"
-      data-dialog="true"
-      hidden=""
-      id="popover"
-      role="dialog"
-      tabindex="-1"
-    >
-      test
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="true"
+          aria-label="popover"
+          aria-modal="false"
+          class="__reakit-portal"
+          data-dialog="true"
+          hidden=""
+          id="popover"
+          role="dialog"
+          style="z-index: 999;"
+          tabindex="-1"
+        >
+          test
+        </div>
+      </div>
+    </body>
+  `);
 });

@@ -1,6 +1,12 @@
 import * as React from "react";
 import { mergeProps } from "../mergeProps";
 
+test("non object", () => {
+  expect(mergeProps(undefined, { a: "a" }, false, "", null)).toEqual({
+    a: "a"
+  });
+});
+
 test("single ref", () => {
   const ref = jest.fn();
   const merged = mergeProps({ a: "a", ref }, { b: "b" });
