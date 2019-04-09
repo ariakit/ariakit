@@ -5,8 +5,8 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_CheckboxOptions,
-  unstable_CheckboxProps,
+  CheckboxOptions,
+  CheckboxProps,
   useCheckbox
 } from "../Checkbox/Checkbox";
 import { DeepPath, DeepPathValue } from "./__utils/types";
@@ -19,7 +19,7 @@ import { getMessageId } from "./__utils/getMessageId";
 import { shouldShowError } from "./__utils/shouldShowError";
 
 export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
-  unstable_CheckboxOptions,
+  CheckboxOptions,
   "value"
 > &
   Partial<unstable_FormStateReturn<V>> &
@@ -33,7 +33,7 @@ export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
     value?: ArrayValue<DeepPathValue<V, P>>;
   };
 
-export type unstable_FormCheckboxProps = unstable_CheckboxProps &
+export type unstable_FormCheckboxProps = CheckboxProps &
   React.InputHTMLAttributes<any>;
 
 export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(

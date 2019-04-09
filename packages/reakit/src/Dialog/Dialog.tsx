@@ -7,11 +7,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
-import {
-  unstable_HiddenOptions,
-  unstable_HiddenProps,
-  useHidden
-} from "../Hidden/Hidden";
+import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -21,11 +17,11 @@ import { useFocusOnHide } from "./__utils/useFocusOnHide";
 import { useNestedDialogs } from "./__utils/useNestedDialogs";
 import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
 import { useHideOnFocusOutside } from "./__utils/useHideOnFocusOutside";
-import { useDialogState, unstable_DialogStateReturn } from "./DialogState";
+import { useDialogState, DialogStateReturn } from "./DialogState";
 
-export type unstable_DialogOptions = unstable_HiddenOptions &
-  Partial<unstable_DialogStateReturn> &
-  Pick<unstable_DialogStateReturn, "unstable_hiddenId"> & {
+export type DialogOptions = HiddenOptions &
+  Partial<DialogStateReturn> &
+  Pick<DialogStateReturn, "unstable_hiddenId"> & {
     /**
      * Toggles Dialog's `modal` state.
      *  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
@@ -33,23 +29,23 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
      * trapped within the dialog.
      * @default true
      */
-    unstable_modal?: boolean;
+    modal?: boolean;
     /**
      * When enabled, user can hide the dialog by pressing `Escape`.
      * @default true
      */
-    unstable_hideOnEsc?: boolean;
+    hideOnEsc?: boolean;
     /**
      * When enabled, user can hide the dialog by clicking outside it.
      * @default true
      */
-    unstable_hideOnClickOutside?: boolean;
+    hideOnClickOutside?: boolean;
     /**
      * When enabled, user can't scroll on body when the dialog is visible.
      * This option doesn't work if the dialog isn't modal.
      * @default true
      */
-    unstable_preventBodyScroll?: boolean;
+    preventBodyScroll?: boolean;
     /**
      * The element that will be focused when the dialog shows.
      * When not set, the first tabbable element within the dialog will be used.
@@ -74,25 +70,25 @@ export type unstable_DialogOptions = unstable_HiddenOptions &
     unstable_autoFocusOnHide?: boolean;
   };
 
-export type unstable_DialogProps = unstable_HiddenProps;
+export type DialogProps = HiddenProps;
 
 export function useDialog(
   {
-    unstable_modal = true,
-    unstable_hideOnEsc = true,
-    unstable_hideOnClickOutside = true,
-    unstable_preventBodyScroll = true,
+    modal = true,
+    hideOnEsc = true,
+    hideOnClickOutside = true,
+    preventBodyScroll = true,
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
     ...options
-  }: unstable_DialogOptions,
-  { children, ...htmlProps }: unstable_DialogProps = {}
+  }: DialogOptions,
+  { children, ...htmlProps }: DialogProps = {}
 ) {
-  let _options: unstable_DialogOptions = {
-    unstable_modal,
-    unstable_hideOnEsc,
-    unstable_hideOnClickOutside,
-    unstable_preventBodyScroll,
+  let _options: DialogOptions = {
+    modal,
+    hideOnEsc,
+    hideOnClickOutside,
+    preventBodyScroll,
     unstable_autoFocusOnShow,
     unstable_autoFocusOnHide,
     ...options
@@ -116,24 +112,20 @@ export function useDialog(
       ref: dialog,
       role: "dialog",
       tabIndex: -1,
-      "aria-modal": _options.unstable_modal,
+      "aria-modal": _options.modal,
       "data-dialog": true,
       style: { zIndex: 999 },
       children: wrapChildren(children),
       onKeyDown: event => {
-        if (
-          event.key === "Escape" &&
-          _options.hide &&
-          _options.unstable_hideOnEsc
-        ) {
+        if (event.key === "Escape" && _options.hide && _options.hideOnEsc) {
           event.stopPropagation();
           _options.hide();
         }
       }
-    } as unstable_DialogProps,
+    } as DialogProps,
     // If it's not modal, it doesn't have a portal
     // So we define dialog itself as portal
-    !_options.unstable_modal && {
+    !_options.modal && {
       className: Portal.__className
     },
     htmlProps
@@ -144,13 +136,13 @@ export function useDialog(
   return htmlProps;
 }
 
-const keys: Keys<unstable_DialogOptions> = [
+const keys: Keys<DialogOptions> = [
   ...useHidden.__keys,
   ...useDialogState.__keys,
-  "unstable_modal",
-  "unstable_hideOnEsc",
-  "unstable_hideOnClickOutside",
-  "unstable_preventBodyScroll",
+  "modal",
+  "hideOnEsc",
+  "hideOnClickOutside",
+  "preventBodyScroll",
   "unstable_initialFocusRef",
   "unstable_finalFocusRef",
   "unstable_autoFocusOnShow",

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useUpdateEffect } from "../../__utils/useUpdateEffect";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 import { isTabbable } from "./tabbable";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
   disclosureRef: React.RefObject<HTMLElement>,
-  options: unstable_DialogOptions
+  options: DialogOptions
 ) {
   const finalFocusRef = options.unstable_finalFocusRef || disclosureRef;
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;

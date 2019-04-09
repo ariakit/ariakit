@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -7,20 +7,15 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { warning } from "../__utils/warning";
 import { Keys } from "../__utils/types";
-import {
-  unstable_useRadioState,
-  unstable_RadioStateReturn
-} from "./RadioState";
+import { useRadioState, RadioStateReturn } from "./RadioState";
 
-export type unstable_RadioGroupOptions = unstable_BoxOptions &
-  Partial<unstable_RadioStateReturn>;
+export type RadioGroupOptions = BoxOptions & Partial<RadioStateReturn>;
 
-export type unstable_RadioGroupProps = unstable_BoxProps &
-  React.FieldsetHTMLAttributes<any>;
+export type RadioGroupProps = BoxProps & React.FieldsetHTMLAttributes<any>;
 
 export function useRadioGroup(
-  options: unstable_RadioGroupOptions = {},
-  htmlProps: unstable_RadioGroupProps = {}
+  options: RadioGroupOptions = {},
+  htmlProps: RadioGroupProps = {}
 ) {
   options = unstable_useOptions("useRadioGroup", options, htmlProps);
   htmlProps = mergeProps(
@@ -34,9 +29,9 @@ export function useRadioGroup(
   return htmlProps;
 }
 
-const keys: Keys<unstable_RadioGroupOptions> = [
+const keys: Keys<RadioGroupOptions> = [
   ...useBox.__keys,
-  ...unstable_useRadioState.__keys
+  ...useRadioState.__keys
 ];
 
 useRadioGroup.__keys = keys;

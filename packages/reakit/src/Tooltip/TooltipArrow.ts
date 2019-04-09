@@ -2,21 +2,21 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_PopoverArrowOptions,
-  unstable_PopoverArrowProps,
+  PopoverArrowOptions,
+  PopoverArrowProps,
   usePopoverArrow
 } from "../Popover/PopoverArrow";
 import { Keys } from "../__utils/types";
-import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
+import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
-export type unstable_TooltipArrowOptions = unstable_PopoverArrowOptions &
-  Partial<unstable_TooltipStateReturn>;
+export type TooltipArrowOptions = PopoverArrowOptions &
+  Partial<TooltipStateReturn>;
 
-export type unstable_TooltipArrowProps = unstable_PopoverArrowProps;
+export type TooltipArrowProps = PopoverArrowProps;
 
 export function useTooltipArrow(
-  options: unstable_TooltipArrowOptions,
-  htmlProps: unstable_TooltipArrowProps = {}
+  options: TooltipArrowOptions,
+  htmlProps: TooltipArrowProps = {}
 ) {
   options = unstable_useOptions("useTooltipArrow", options, htmlProps);
   htmlProps = usePopoverArrow(options, htmlProps);
@@ -24,7 +24,7 @@ export function useTooltipArrow(
   return htmlProps;
 }
 
-const keys: Keys<unstable_TooltipArrowOptions> = [
+const keys: Keys<TooltipArrowOptions> = [
   ...usePopoverArrow.__keys,
   ...useTooltipState.__keys
 ];

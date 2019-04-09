@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-export type unstable_PortalProps = {
+export type PortalProps = {
   /** TODO: Description */
   children: React.ReactNode;
 };
@@ -10,7 +10,7 @@ const PortalContext = React.createContext<HTMLElement | null>(
   typeof document !== "undefined" ? document.body : null
 );
 
-export function Portal({ children }: unstable_PortalProps) {
+export function Portal({ children }: PortalProps) {
   // if it's a nested portal, context is the parent portal
   // otherwise it's document.body
   const context = React.useContext(PortalContext);

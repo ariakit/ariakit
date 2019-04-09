@@ -4,7 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -13,7 +13,7 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 export type unstable_FormLabelOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_BoxOptions &
+> = BoxOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId"> & {
     /** TODO: Description */
@@ -22,8 +22,7 @@ export type unstable_FormLabelOptions<
     label?: any;
   };
 
-export type unstable_FormLabelProps = unstable_BoxProps &
-  React.LabelHTMLAttributes<any>;
+export type unstable_FormLabelProps = BoxProps & React.LabelHTMLAttributes<any>;
 
 export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
   options: unstable_FormLabelOptions<V, P>,

@@ -89,7 +89,7 @@ test("focus the first tabbable element when non-modal dialog opens", () => {
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog aria-label="dialog" unstable_modal={false} {...dialog}>
+        <Dialog aria-label="dialog" modal={false} {...dialog}>
           <button>button1</button>
           <button>button2</button>
         </Dialog>
@@ -112,7 +112,7 @@ test("does not auto focus non-modal when autoFocusOnShow is falsy", () => {
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog
           aria-label="dialog"
-          unstable_modal={false}
+          modal={false}
           unstable_autoFocusOnShow={false}
           {...dialog}
         >
@@ -207,11 +207,7 @@ test("focus is trapped within the dialog when hideOnClickOutside is falsy", () =
       <>
         <button>button1</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog
-          aria-label="dialog"
-          unstable_hideOnClickOutside={false}
-          {...dialog}
-        >
+        <Dialog aria-label="dialog" hideOnClickOutside={false} {...dialog}>
           <button>button2</button>
           <button>button3</button>
         </Dialog>
@@ -270,8 +266,8 @@ test("focus is not trapped within the non-modal dialog", async () => {
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog
           aria-label="dialog"
-          unstable_modal={false}
-          unstable_hideOnClickOutside={false}
+          modal={false}
+          hideOnClickOutside={false}
           {...dialog}
         >
           <button>button2</button>
@@ -320,9 +316,7 @@ test("esc closes the dialog", () => {
 test("esc does not close the dialog when hideOnEsc is falsy", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
-    return (
-      <Dialog aria-label="dialog" unstable_hideOnEsc={false} {...dialog} />
-    );
+    return <Dialog aria-label="dialog" hideOnEsc={false} {...dialog} />;
   };
   const { getByLabelText } = render(<Test />);
   const dialog = getByLabelText("dialog");
@@ -385,11 +379,7 @@ test("clicking outside does not close the dialog when hideOnClickOutside is fals
   const Test = () => {
     const dialog = useDialogState({ visible: true });
     return (
-      <Dialog
-        aria-label="dialog"
-        unstable_hideOnClickOutside={false}
-        {...dialog}
-      />
+      <Dialog aria-label="dialog" hideOnClickOutside={false} {...dialog} />
     );
   };
   const { getByLabelText, baseElement } = render(<Test />);
@@ -405,11 +395,7 @@ test("clicking outside puts focus on the dialog when hideOnClickOutside is falsy
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog
-          aria-label="dialog"
-          unstable_hideOnClickOutside={false}
-          {...dialog}
-        >
+        <Dialog aria-label="dialog" hideOnClickOutside={false} {...dialog}>
           <button>button</button>
         </Dialog>
       </>
@@ -432,7 +418,7 @@ test("focusing outside closes the non-modal dialog", () => {
     return (
       <>
         <button>button</button>
-        <Dialog aria-label="dialog" unstable_modal={false} {...dialog} />
+        <Dialog aria-label="dialog" modal={false} {...dialog} />
       </>
     );
   };
@@ -453,8 +439,8 @@ test("focusing outside does not close the non-modal dialog when hideOnClickOutsi
         <button>button</button>
         <Dialog
           aria-label="dialog"
-          unstable_modal={false}
-          unstable_hideOnClickOutside={false}
+          modal={false}
+          hideOnClickOutside={false}
           {...dialog}
         />
       </>
@@ -475,7 +461,7 @@ test("focusing disclosure does not close the non-modal dialog", () => {
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog aria-label="dialog" unstable_modal={false} {...dialog} />
+        <Dialog aria-label="dialog" modal={false} {...dialog} />
       </>
     );
   };
@@ -514,7 +500,7 @@ test("focus disclosure when non-modal dialog closes", () => {
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog aria-label="dialog" unstable_modal={false} {...dialog} />
+        <Dialog aria-label="dialog" modal={false} {...dialog} />
       </>
     );
   };
@@ -553,7 +539,7 @@ test("focusing an element outside keeps focus on it after the non-modal dialog c
       <>
         <button>button</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog aria-label="dialog" unstable_modal={false} {...dialog} />
+        <Dialog aria-label="dialog" modal={false} {...dialog} />
       </>
     );
   };
@@ -575,7 +561,7 @@ test("focus a given element when non-modal dialog closes", () => {
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog
           aria-label="dialog"
-          unstable_modal={false}
+          modal={false}
           unstable_finalFocusRef={ref}
           {...dialog}
         />
@@ -703,8 +689,8 @@ test("focus is not trapped within the nested non-modal dialog", async () => {
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog
             aria-label="dialog2"
-            unstable_modal={false}
-            unstable_hideOnClickOutside={false}
+            modal={false}
+            hideOnClickOutside={false}
             {...dialog2}
           >
             <button>button3</button>
@@ -752,16 +738,16 @@ test("focus is not trapped within two nested non-modal dialog", async () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog
           aria-label="dialog1"
-          unstable_modal={false}
-          unstable_hideOnClickOutside={false}
+          modal={false}
+          hideOnClickOutside={false}
           {...dialog}
         >
           <button>button2</button>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog
             aria-label="dialog2"
-            unstable_modal={false}
-            unstable_hideOnClickOutside={false}
+            modal={false}
+            hideOnClickOutside={false}
             {...dialog2}
           >
             <button>button3</button>
@@ -845,7 +831,7 @@ test("clicking on the nested non-modal dialog does not close the parent dialog",
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog aria-label="dialog1" {...dialog}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog aria-label="dialog2" unstable_modal={false} {...dialog2} />
+          <Dialog aria-label="dialog2" modal={false} {...dialog2} />
         </Dialog>
       </>
     );
@@ -872,7 +858,7 @@ test("clicking on the nested dialog does not close the parent non-modal dialog",
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog aria-label="dialog1" unstable_modal={false} {...dialog}>
+        <Dialog aria-label="dialog1" modal={false} {...dialog}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog aria-label="dialog2" {...dialog2} />
         </Dialog>
@@ -902,7 +888,7 @@ test("clicking on the nested dialog does not close the grandparent non-modal dia
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog aria-label="dialog1" unstable_modal={false} {...dialog}>
+        <Dialog aria-label="dialog1" modal={false} {...dialog}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog aria-label="dialog2" {...dialog2}>
             <DialogDisclosure {...dialog3}>disclosure3</DialogDisclosure>
@@ -970,7 +956,7 @@ test("clicking on the parent dialog closes the nested non-modal dialog", () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog aria-label="dialog1" {...dialog}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog aria-label="dialog2" unstable_modal={false} {...dialog2} />
+          <Dialog aria-label="dialog2" modal={false} {...dialog2} />
         </Dialog>
       </>
     );
@@ -997,9 +983,9 @@ test("clicking on the parent non-modal dialog closes the nested non-modal dialog
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog aria-label="dialog1" unstable_modal={false} {...dialog}>
+        <Dialog aria-label="dialog1" modal={false} {...dialog}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog aria-label="dialog2" unstable_modal={false} {...dialog2} />
+          <Dialog aria-label="dialog2" modal={false} {...dialog2} />
         </Dialog>
       </>
     );
@@ -1026,7 +1012,7 @@ test("clicking on the parent non-modal dialog closes the nested dialog", () => {
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog aria-label="dialog1" unstable_modal={false} {...dialog}>
+        <Dialog aria-label="dialog1" modal={false} {...dialog}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog aria-label="dialog2" {...dialog2} />
         </Dialog>

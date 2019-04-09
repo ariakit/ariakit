@@ -1,42 +1,41 @@
 import * as React from "react";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import {
-  unstable_PopoverState,
-  unstable_PopoverActions,
-  unstable_PopoverInitialState,
+  PopoverState,
+  PopoverActions,
+  PopoverInitialState,
   usePopoverState
 } from "../Popover/PopoverState";
 import { Keys } from "../__utils/types";
 import {
-  unstable_RoverState,
-  unstable_RoverActions,
-  unstable_RoverInitialState,
+  RoverState,
+  RoverActions,
+  RoverInitialState,
   useRoverState
 } from "../Rover";
 import { MenuContext } from "./__utils/MenuContext";
 
-export type unstable_MenuState = unstable_RoverState &
-  unstable_PopoverState & {
+export type MenuState = RoverState &
+  PopoverState & {
     /** TODO: Description */
     unstable_values: Record<string, any>;
   };
 
-export type unstable_MenuActions = unstable_RoverActions &
-  unstable_PopoverActions & {
+export type MenuActions = RoverActions &
+  PopoverActions & {
     /** TODO: Description */
     unstable_update: (name: string, value?: any) => void;
   };
 
-export type unstable_MenuInitialState = unstable_RoverInitialState &
-  unstable_PopoverInitialState &
-  Partial<Pick<unstable_MenuState, "unstable_values">>;
+export type MenuInitialState = RoverInitialState &
+  PopoverInitialState &
+  Partial<Pick<MenuState, "unstable_values">>;
 
-export type unstable_MenuStateReturn = unstable_MenuState &
-  unstable_MenuActions;
+export type MenuStateReturn = MenuState & MenuActions;
 
 export function useMenuState(
-  initialState: SealedInitialState<unstable_MenuInitialState> = {}
-): unstable_MenuStateReturn {
+  initialState: SealedInitialState<MenuInitialState> = {}
+): MenuStateReturn {
   const {
     orientation = "vertical",
     unstable_gutter: initialGutter = 0,
@@ -79,7 +78,7 @@ export function useMenuState(
   };
 }
 
-const keys: Keys<unstable_MenuStateReturn> = [
+const keys: Keys<MenuStateReturn> = [
   ...useRoverState.__keys,
   ...usePopoverState.__keys,
   "unstable_values",

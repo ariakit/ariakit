@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Portal } from "../../Portal/Portal";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 
 export function usePortalRef(
   dialogRef: React.RefObject<HTMLElement>,
-  options: unstable_DialogOptions
+  options: DialogOptions
 ) {
   const portalRef = React.useRef<HTMLElement | null>(null);
 

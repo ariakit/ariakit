@@ -1,10 +1,10 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
-import { unstable_Radio as Radio, unstable_useRadioState } from "..";
+import { Radio, useRadioState } from "..";
 
 test("click on radio", () => {
   const Test = () => {
-    const radio = unstable_useRadioState();
+    const radio = useRadioState();
     return (
       <label>
         <Radio {...radio} value="radio" />
@@ -21,7 +21,7 @@ test("click on radio", () => {
 
 test("click on non-native radio", () => {
   const Test = () => {
-    const radio = unstable_useRadioState();
+    const radio = useRadioState();
     return (
       <label>
         <Radio {...radio} as="div" value="radio" />
@@ -38,7 +38,7 @@ test("click on non-native radio", () => {
 
 test("onChange", () => {
   const Test = () => {
-    const { currentValue, setValue, ...radio } = unstable_useRadioState();
+    const { currentValue, setValue, ...radio } = useRadioState();
     const [checked, setChecked] = React.useState(false);
     const toggle = () => setChecked(!checked);
     return (
@@ -57,7 +57,7 @@ test("onChange", () => {
 
 test("onChange non-native radio", () => {
   const Test = () => {
-    const { currentValue, setValue, ...radio } = unstable_useRadioState();
+    const { currentValue, setValue, ...radio } = useRadioState();
     const [checked, setChecked] = React.useState(false);
     const toggle = () => setChecked(!checked);
     return (

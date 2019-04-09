@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_RoverStateReturn, useRoverState } from "../Rover/RoverState";
+import { RoverStateReturn, useRoverState } from "../Rover/RoverState";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -26,7 +26,7 @@ export type unstable_FormRadioGroupOptions<
 export type unstable_FormRadioGroupProps = unstable_FormGroupProps &
   React.FieldsetHTMLAttributes<any>;
 
-export const FormRadioGroupContext = React.createContext<unstable_RoverStateReturn | null>(
+export const FormRadioGroupContext = React.createContext<RoverStateReturn | null>(
   null
 );
 

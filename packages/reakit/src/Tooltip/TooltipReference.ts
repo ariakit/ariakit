@@ -2,19 +2,19 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
-import { useTooltipState, unstable_TooltipStateReturn } from "./TooltipState";
+import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
-export type unstable_TooltipReferenceOptions = unstable_BoxOptions &
-  Partial<unstable_TooltipStateReturn> &
-  Pick<unstable_TooltipStateReturn, "show" | "hide">;
+export type TooltipReferenceOptions = BoxOptions &
+  Partial<TooltipStateReturn> &
+  Pick<TooltipStateReturn, "show" | "hide">;
 
-export type unstable_TooltipReferenceProps = unstable_BoxProps;
+export type TooltipReferenceProps = BoxProps;
 
 export function useTooltipReference(
-  options: unstable_TooltipReferenceOptions,
-  htmlProps: unstable_TooltipReferenceProps = {}
+  options: TooltipReferenceOptions,
+  htmlProps: TooltipReferenceProps = {}
 ) {
   options = unstable_useOptions("useTooltipReference", options, htmlProps);
   htmlProps = mergeProps(
@@ -34,7 +34,7 @@ export function useTooltipReference(
   return htmlProps;
 }
 
-const keys: Keys<unstable_TooltipReferenceOptions> = [
+const keys: Keys<TooltipReferenceOptions> = [
   ...useBox.__keys,
   ...useTooltipState.__keys
 ];

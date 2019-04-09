@@ -1,8 +1,4 @@
-import {
-  unstable_ButtonOptions,
-  unstable_ButtonProps,
-  useButton
-} from "../Button/Button";
+import { ButtonOptions, ButtonProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -16,7 +12,7 @@ import { DeepPath } from "./__utils/types";
 export type unstable_FormRemoveButtonOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_ButtonOptions &
+> = ButtonOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "remove"> & {
     /** TODO: Description */
@@ -25,7 +21,7 @@ export type unstable_FormRemoveButtonOptions<
     index: number;
   };
 
-export type unstable_FormRemoveButtonProps = unstable_ButtonProps;
+export type unstable_FormRemoveButtonProps = ButtonProps;
 
 export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormRemoveButtonOptions<V, P>,

@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
-  unstable_TabbableOptions,
-  unstable_TabbableProps,
+  TabbableOptions,
+  TabbableProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_useOptions } from "../system/useOptions";
@@ -11,12 +11,12 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { Keys } from "../__utils/types";
-import { unstable_RoverStateReturn, useRoverState } from "./RoverState";
+import { RoverStateReturn, useRoverState } from "./RoverState";
 
-export type unstable_RoverOptions = unstable_TabbableOptions &
-  Partial<unstable_RoverStateReturn> &
+export type RoverOptions = TabbableOptions &
+  Partial<RoverStateReturn> &
   Pick<
-    unstable_RoverStateReturn,
+    RoverStateReturn,
     | "unstable_stops"
     | "unstable_currentId"
     | "unstable_register"
@@ -33,11 +33,11 @@ export type unstable_RoverOptions = unstable_TabbableOptions &
     stopId?: string;
   };
 
-export type unstable_RoverProps = unstable_TabbableProps;
+export type RoverProps = TabbableProps;
 
 export function useRover(
-  options: unstable_RoverOptions,
-  { tabIndex, onKeyDown, ...htmlProps }: unstable_RoverProps = {}
+  options: RoverOptions,
+  { tabIndex, onKeyDown, ...htmlProps }: RoverProps = {}
 ) {
   options = unstable_useOptions("useRover", options, htmlProps);
 
@@ -101,7 +101,7 @@ export function useRover(
           onKeyDown(event);
         }
       }
-    } as unstable_RoverProps,
+    } as RoverProps,
     htmlProps
   );
 
@@ -110,7 +110,7 @@ export function useRover(
   return htmlProps;
 }
 
-const keys: Keys<unstable_RoverOptions> = [
+const keys: Keys<RoverOptions> = [
   ...useTabbable.__keys,
   ...useRoverState.__keys,
   "stopId"

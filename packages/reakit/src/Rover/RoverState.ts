@@ -9,7 +9,7 @@ type Stop = {
   ref: React.RefObject<HTMLElement>;
 };
 
-export type unstable_RoverState = {
+export type RoverState = {
   /**
    * Defines the orientation of the rover list.
    */
@@ -32,7 +32,7 @@ export type unstable_RoverState = {
   unstable_loop: boolean;
 };
 
-export type unstable_RoverActions = {
+export type RoverActions = {
   /**
    * Registers the element ID and ref in the roving tab index list.
    */
@@ -68,18 +68,14 @@ export type unstable_RoverActions = {
   /**
    * Changes the `orientation` state of the roving tab index list.
    */
-  unstable_orientate: (orientation: unstable_RoverState["orientation"]) => void;
+  unstable_orientate: (orientation: RoverState["orientation"]) => void;
 };
 
-export type unstable_RoverInitialState = Partial<
-  Pick<
-    unstable_RoverState,
-    "orientation" | "unstable_currentId" | "unstable_loop"
-  >
+export type RoverInitialState = Partial<
+  Pick<RoverState, "orientation" | "unstable_currentId" | "unstable_loop">
 >;
 
-export type unstable_RoverStateReturn = unstable_RoverState &
-  unstable_RoverActions;
+export type RoverStateReturn = RoverState & RoverActions;
 
 type RoverAction =
   | { type: "register"; id: Stop["id"]; ref: Stop["ref"] }
@@ -92,13 +88,10 @@ type RoverAction =
   | { type: "reset" }
   | {
       type: "orientate";
-      orientation?: unstable_RoverState["orientation"];
+      orientation?: RoverState["orientation"];
     };
 
-function reducer(
-  state: unstable_RoverState,
-  action: RoverAction
-): unstable_RoverState {
+function reducer(state: RoverState, action: RoverAction): RoverState {
   const {
     unstable_stops: stops,
     unstable_currentId: currentId,
@@ -229,8 +222,8 @@ function reducer(
 }
 
 export function useRoverState(
-  initialState: SealedInitialState<unstable_RoverInitialState> = {}
-): unstable_RoverStateReturn {
+  initialState: SealedInitialState<RoverInitialState> = {}
+): RoverStateReturn {
   const {
     unstable_currentId: currentId = null,
     unstable_loop: loop = false,
@@ -270,7 +263,7 @@ export function useRoverState(
   };
 }
 
-const keys: Keys<unstable_RoverStateReturn> = [
+const keys: Keys<RoverStateReturn> = [
   "orientation",
   "unstable_stops",
   "unstable_currentId",

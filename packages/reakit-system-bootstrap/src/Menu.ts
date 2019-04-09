@@ -1,36 +1,30 @@
 import { css, cx } from "emotion";
-import { unstable_MenuProps, unstable_MenuOptions } from "reakit/Menu/Menu";
+import { MenuProps, MenuOptions } from "reakit/Menu/Menu";
 import {
-  unstable_MenuDisclosureProps,
-  unstable_MenuDisclosureOptions
+  MenuDisclosureProps,
+  MenuDisclosureOptions
 } from "reakit/Menu/MenuDisclosure";
 import {
-  unstable_MenuItemCheckboxProps,
-  unstable_MenuItemCheckboxOptions
+  MenuItemCheckboxProps,
+  MenuItemCheckboxOptions
 } from "reakit/Menu/MenuItemCheckbox";
 import {
-  unstable_MenuItemRadioProps,
-  unstable_MenuItemRadioOptions
+  MenuItemRadioProps,
+  MenuItemRadioOptions
 } from "reakit/Menu/MenuItemRadio";
-import {
-  unstable_StaticMenuProps,
-  unstable_StaticMenuOptions
-} from "reakit/Menu/StaticMenu";
-import {
-  unstable_MenuItemOptions,
-  unstable_MenuItemProps
-} from "reakit/Menu/MenuItem";
+import { StaticMenuProps, StaticMenuOptions } from "reakit/Menu/StaticMenu";
+import { MenuItemOptions, MenuItemProps } from "reakit/Menu/MenuItem";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
-  unstable_StaticMenuOptions;
+  StaticMenuOptions;
 
 export function useStaticMenuProps(
   options: BootstrapStaticMenuOptions,
-  { className, ...htmlProps }: unstable_StaticMenuProps = {}
+  { className, ...htmlProps }: StaticMenuProps = {}
 ) {
   const isHorizontal = options.orientation === "horizontal";
 
@@ -51,12 +45,11 @@ export function useStaticMenuProps(
   return { ...htmlProps, className: cx(className, staticMenu) };
 }
 
-export type BootstrapMenuItemOptions = BootstrapBoxOptions &
-  unstable_MenuItemOptions;
+export type BootstrapMenuItemOptions = BootstrapBoxOptions & MenuItemOptions;
 
 export function useMenuItemProps(
   { unstable_system, ...options }: BootstrapMenuItemOptions,
-  { className, ...htmlProps }: unstable_MenuItemProps = {}
+  { className, ...htmlProps }: MenuItemProps = {}
 ) {
   const foreground = usePalette("foreground") || "black";
   const primary = usePalette("primary") || "blue";
@@ -93,7 +86,7 @@ export function useMenuItemProps(
   return { ...htmlProps, className: cx(className, menuItem) };
 }
 
-export type BootstrapMenuOptions = BootstrapBoxOptions & unstable_MenuOptions;
+export type BootstrapMenuOptions = BootstrapBoxOptions & MenuOptions;
 
 export function useMenuOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
@@ -107,7 +100,7 @@ export function useMenuOptions({
 
 export function useMenuProps(
   _: BootstrapMenuOptions,
-  { className, ...htmlProps }: unstable_MenuProps = {}
+  { className, ...htmlProps }: MenuProps = {}
 ) {
   const menu = css`
     display: flex;
@@ -122,11 +115,11 @@ export function useMenuProps(
 }
 
 export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
-  unstable_MenuDisclosureOptions;
+  MenuDisclosureOptions;
 
 export function useMenuDisclosureProps(
   options: BootstrapMenuDisclosureOptions,
-  { className, ...htmlProps }: unstable_MenuDisclosureProps = {}
+  { className, ...htmlProps }: MenuDisclosureProps = {}
 ) {
   const dir = options.placement ? options.placement.split("-")[0] : undefined;
 
@@ -162,11 +155,11 @@ export function useMenuDisclosureProps(
 }
 
 export type BootstrapMenuItemCheckboxOptions = BootstrapBoxOptions &
-  unstable_MenuItemCheckboxOptions;
+  MenuItemCheckboxOptions;
 
 export function useMenuItemCheckboxProps(
   _: BootstrapMenuItemCheckboxOptions,
-  { className, ...htmlProps }: unstable_MenuItemCheckboxProps = {}
+  { className, ...htmlProps }: MenuItemCheckboxProps = {}
 ) {
   const menuItemCheckbox = css`
     position: relative;
@@ -188,11 +181,11 @@ export function useMenuItemCheckboxProps(
 }
 
 export type BootstrapMenuItemRadioOptions = BootstrapBoxOptions &
-  unstable_MenuItemRadioOptions;
+  MenuItemRadioOptions;
 
 export function useMenuItemRadioProps(
   _: BootstrapMenuItemRadioOptions,
-  { className, ...htmlProps }: unstable_MenuItemRadioProps = {}
+  { className, ...htmlProps }: MenuItemRadioProps = {}
 ) {
   const menuItemRadio = css`
     position: relative;

@@ -60,7 +60,7 @@ test("render visible", () => {
 
 test("render non-modal", () => {
   const { baseElement } = render(
-    <Popover {...props} unstable_modal={false}>
+    <Popover {...props} modal={false}>
       test
     </Popover>
   );

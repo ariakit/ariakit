@@ -1,8 +1,5 @@
 import { css, cx } from "emotion";
-import {
-  unstable_TabbableProps,
-  unstable_TabbableOptions
-} from "reakit/Tabbable/Tabbable";
+import { TabbableProps, TabbableOptions } from "reakit/Tabbable/Tabbable";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { usePalette } from "reakit-system-palette/utils/palette";
@@ -12,8 +9,7 @@ import { useLighten } from "reakit-system-palette/utils/lighten";
 import { useContrastRatio } from "reakit-system-palette/utils/contrast";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapTabbableOptions = BootstrapBoxOptions &
-  unstable_TabbableOptions;
+export type BootstrapTabbableOptions = BootstrapBoxOptions & TabbableOptions;
 
 export function useTabbableProps(
   {
@@ -21,7 +17,7 @@ export function useTabbableProps(
     // it to default to `primary` only for the tabbable `box-shadow`
     unstable_system: { palette = "primary", ...system } = {}
   }: BootstrapTabbableOptions,
-  { className, ...htmlProps }: unstable_TabbableProps = {}
+  { className, ...htmlProps }: TabbableProps = {}
 ) {
   const {
     style: { color, backgroundColor }

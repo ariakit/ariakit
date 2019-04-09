@@ -4,25 +4,21 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_TabbableOptions,
-  unstable_TabbableProps,
+  TabbableOptions,
+  TabbableProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { Keys } from "../__utils/types";
 
-export type unstable_ButtonOptions = unstable_TabbableOptions;
+export type ButtonOptions = TabbableOptions;
 
-export type unstable_ButtonProps = unstable_TabbableProps &
-  React.ButtonHTMLAttributes<any>;
+export type ButtonProps = TabbableProps & React.ButtonHTMLAttributes<any>;
 
 export function useButton(
-  {
-    unstable_clickKeys = ["Enter", " "],
-    ...options
-  }: unstable_ButtonOptions = {},
-  htmlProps: unstable_ButtonProps = {}
+  { unstable_clickKeys = ["Enter", " "], ...options }: ButtonOptions = {},
+  htmlProps: ButtonProps = {}
 ) {
-  let _options: unstable_ButtonOptions = { unstable_clickKeys, ...options };
+  let _options: ButtonOptions = { unstable_clickKeys, ...options };
   _options = unstable_useOptions("useButton", _options, htmlProps);
 
   htmlProps = mergeProps(
@@ -38,7 +34,7 @@ export function useButton(
   return htmlProps;
 }
 
-const keys: Keys<unstable_ButtonOptions> = [...useTabbable.__keys];
+const keys: Keys<ButtonOptions> = [...useTabbable.__keys];
 
 useButton.__keys = keys;
 

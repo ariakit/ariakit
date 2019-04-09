@@ -1,10 +1,6 @@
 import * as React from "react";
-import { unstable_BoxOptions, useBox } from "../Box";
-import {
-  unstable_RadioOptions,
-  unstable_RadioProps,
-  unstable_useRadio
-} from "../Radio/Radio";
+import { BoxOptions, useBox } from "../Box";
+import { RadioOptions, RadioProps, useRadio } from "../Radio/Radio";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -19,7 +15,7 @@ import { DeepPath, DeepPathValue } from "./__utils/types";
 export type unstable_FormRadioOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_BoxOptions &
+> = BoxOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "values" | "update" | "blur"> & {
     /** TODO: Description */
@@ -28,7 +24,7 @@ export type unstable_FormRadioOptions<
     value: DeepPathValue<V, P>;
   };
 
-export type unstable_FormRadioProps = unstable_RadioProps;
+export type unstable_FormRadioProps = RadioProps;
 
 export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioOptions<V, P>,
@@ -45,7 +41,7 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
 
   const currentChecked = unstable_getIn(options.values, options.name);
   const checked = currentChecked === options.value;
-  const allOptions: unstable_RadioOptions = { ...rover, ...options, checked };
+  const allOptions: RadioOptions = { ...rover, ...options, checked };
 
   htmlProps = mergeProps(
     {
@@ -57,7 +53,7 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = unstable_useRadio(allOptions, htmlProps);
+  htmlProps = useRadio(allOptions, htmlProps);
   htmlProps = unstable_useProps("useFormRadio", allOptions, htmlProps);
   return htmlProps;
 }

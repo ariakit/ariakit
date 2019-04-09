@@ -3,32 +3,26 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_CheckboxOptions,
+  CheckboxOptions,
   useCheckbox,
-  unstable_CheckboxProps
+  CheckboxProps
 } from "../Checkbox/Checkbox";
 import { Keys } from "../__utils/types";
-import {
-  unstable_MenuItemOptions,
-  unstable_MenuItemProps,
-  useMenuItem
-} from "./MenuItem";
-import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { MenuItemOptions, MenuItemProps, useMenuItem } from "./MenuItem";
+import { MenuStateReturn } from "./MenuState";
 
-export type unstable_MenuItemCheckboxOptions = unstable_CheckboxOptions &
-  unstable_MenuItemOptions &
-  Partial<unstable_MenuStateReturn> &
-  Pick<unstable_MenuStateReturn, "unstable_values" | "unstable_update"> & {
+export type MenuItemCheckboxOptions = CheckboxOptions &
+  MenuItemOptions &
+  Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
     /** TODO: Description */
     name: string;
   };
 
-export type unstable_MenuItemCheckboxProps = unstable_CheckboxProps &
-  unstable_MenuItemProps;
+export type MenuItemCheckboxProps = CheckboxProps & MenuItemProps;
 
-export function unstable_useMenuItemCheckbox(
-  options: unstable_MenuItemCheckboxOptions,
-  htmlProps: unstable_MenuItemCheckboxProps = {}
+export function useMenuItemCheckbox(
+  options: MenuItemCheckboxOptions,
+  htmlProps: MenuItemCheckboxProps = {}
 ) {
   options = unstable_useOptions("useMenuItemCheckbox", options, htmlProps);
 
@@ -49,16 +43,15 @@ export function unstable_useMenuItemCheckbox(
   return htmlProps;
 }
 
-const keys: Keys<unstable_MenuItemCheckboxOptions> = [
+const keys: Keys<MenuItemCheckboxOptions> = [
   ...useCheckbox.__keys,
   ...useMenuItem.__keys,
-  ...useMenuState.__keys,
   "name"
 ];
 
-unstable_useMenuItemCheckbox.__keys = keys;
+useMenuItemCheckbox.__keys = keys;
 
-export const unstable_MenuItemCheckbox = unstable_createComponent({
+export const MenuItemCheckbox = unstable_createComponent({
   as: "button",
-  useHook: unstable_useMenuItemCheckbox
+  useHook: useMenuItemCheckbox
 });

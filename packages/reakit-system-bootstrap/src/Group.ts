@@ -1,12 +1,12 @@
 import { css, cx } from "emotion";
-import { unstable_GroupProps, unstable_GroupOptions } from "reakit/Group/Group";
+import { GroupProps, GroupOptions } from "reakit/Group/Group";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapGroupOptions = BootstrapBoxOptions & unstable_GroupOptions;
+export type BootstrapGroupOptions = BootstrapBoxOptions & GroupOptions;
 
 export function useGroupProps(
   _: BootstrapGroupOptions,
-  { className, ...htmlProps }: unstable_GroupProps = {}
+  { className, ...htmlProps }: GroupProps = {}
 ) {
   const group = css`
     display: flex;

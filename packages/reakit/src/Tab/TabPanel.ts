@@ -1,30 +1,26 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useProps } from "../system/useProps";
-import {
-  unstable_HiddenOptions,
-  unstable_HiddenProps,
-  useHidden
-} from "../Hidden/Hidden";
+import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
 import { Keys } from "../__utils/types";
 import { unstable_useOptions } from "../system";
 import { getTabPanelId, getTabId } from "./__utils";
-import { useTabState, unstable_TabStateReturn } from "./TabState";
+import { useTabState, TabStateReturn } from "./TabState";
 
-export type unstable_TabPanelOptions = unstable_HiddenOptions &
-  Partial<unstable_TabStateReturn> &
-  Pick<unstable_TabStateReturn, "unstable_baseId" | "unstable_selectedId"> & {
+export type TabPanelOptions = HiddenOptions &
+  Partial<TabStateReturn> &
+  Pick<TabStateReturn, "unstable_baseId" | "unstable_selectedId"> & {
     /** TODO: Description */
     stopId: string;
   };
 
-export type unstable_TabPanelProps = unstable_HiddenProps;
+export type TabPanelProps = HiddenProps;
 
 export function useTabPanel(
-  options: unstable_TabPanelOptions,
-  htmlProps: unstable_TabPanelProps = {}
+  options: TabPanelOptions,
+  htmlProps: TabPanelProps = {}
 ) {
-  let _options: unstable_TabPanelOptions = {
+  let _options: TabPanelOptions = {
     visible: options.unstable_selectedId === options.stopId,
     ...options
   };
@@ -44,7 +40,7 @@ export function useTabPanel(
   return htmlProps;
 }
 
-const keys: Keys<unstable_TabPanelOptions> = [
+const keys: Keys<TabPanelOptions> = [
   ...useHidden.__keys,
   ...useTabState.__keys,
   "stopId"

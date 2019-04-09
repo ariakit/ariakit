@@ -2,11 +2,11 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { useLiveRef } from "../__utils/useLiveRef";
 import { Keys } from "../__utils/types";
 
-export type unstable_TabbableOptions = unstable_BoxOptions & {
+export type TabbableOptions = BoxOptions & {
   /**
    * Same as the HTML attribute.
    */
@@ -23,7 +23,7 @@ export type unstable_TabbableOptions = unstable_BoxOptions & {
   unstable_clickKeys?: string[];
 };
 
-export type unstable_TabbableProps = unstable_BoxProps & {
+export type TabbableProps = BoxProps & {
   disabled?: boolean;
 };
 
@@ -39,16 +39,16 @@ function isNativeTabbable(element: EventTarget) {
 }
 
 export function useTabbable(
-  { unstable_clickKeys = [" "], ...options }: unstable_TabbableOptions = {},
+  { unstable_clickKeys = [" "], ...options }: TabbableOptions = {},
   {
     tabIndex = 0,
     onClick,
     onMouseOver,
     disabled,
     ...htmlProps
-  }: unstable_TabbableProps = {}
+  }: TabbableProps = {}
 ) {
-  let _options: unstable_TabbableOptions = {
+  let _options: TabbableOptions = {
     unstable_clickKeys,
     disabled,
     ...options
@@ -96,7 +96,7 @@ export function useTabbable(
           );
         }
       }
-    } as unstable_TabbableProps,
+    } as TabbableProps,
     htmlProps
   );
 
@@ -105,7 +105,7 @@ export function useTabbable(
   return htmlProps;
 }
 
-const keys: Keys<unstable_TabbableOptions> = [
+const keys: Keys<TabbableOptions> = [
   ...useBox.__keys,
   "disabled",
   "unstable_focusable",

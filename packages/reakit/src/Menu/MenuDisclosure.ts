@@ -4,23 +4,23 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_PopoverDisclosureOptions,
-  unstable_PopoverDisclosureProps,
+  PopoverDisclosureOptions,
+  PopoverDisclosureProps,
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
 import { Keys } from "../__utils/types";
-import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
-export type unstable_MenuDisclosureOptions = unstable_PopoverDisclosureOptions &
-  Partial<unstable_MenuStateReturn> &
-  Pick<unstable_MenuStateReturn, "show">;
+export type MenuDisclosureOptions = PopoverDisclosureOptions &
+  Partial<MenuStateReturn> &
+  Pick<MenuStateReturn, "show">;
 
-export type unstable_MenuDisclosureProps = unstable_PopoverDisclosureProps;
+export type MenuDisclosureProps = PopoverDisclosureProps;
 
 export function useMenuDisclosure(
-  options: unstable_MenuDisclosureOptions,
-  { onKeyDown, ...htmlProps }: unstable_MenuDisclosureProps = {}
+  options: MenuDisclosureOptions,
+  { onKeyDown, ...htmlProps }: MenuDisclosureProps = {}
 ) {
   const parent = React.useContext(MenuContext);
   const ref = React.useRef<HTMLElement>(null);
@@ -89,7 +89,7 @@ export function useMenuDisclosure(
           onKeyDown(event);
         }
       }
-    } as unstable_MenuDisclosureProps,
+    } as MenuDisclosureProps,
     htmlProps
   );
 
@@ -104,7 +104,7 @@ export function useMenuDisclosure(
   return htmlProps;
 }
 
-const keys: Keys<unstable_MenuDisclosureOptions> = [
+const keys: Keys<MenuDisclosureOptions> = [
   ...usePopoverDisclosure.__keys,
   ...useMenuState.__keys
 ];

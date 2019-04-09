@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useUpdateEffect } from "../../__utils/useUpdateEffect";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 import { getFirstTabbableIn } from "./tabbable";
 
 export function useFocusOnShow(
   dialogRef: React.RefObject<HTMLElement>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
-  options: unstable_DialogOptions
+  options: DialogOptions
 ) {
   const initialFocusRef = options.unstable_initialFocusRef;
   const shouldFocus = options.visible && options.unstable_autoFocusOnShow;

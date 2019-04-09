@@ -1,8 +1,4 @@
-import {
-  unstable_ButtonOptions,
-  unstable_ButtonProps,
-  useButton
-} from "../Button/Button";
+import { ButtonOptions, ButtonProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -11,11 +7,11 @@ import { Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
 
-export type unstable_FormSubmitButtonOptions = unstable_ButtonOptions &
+export type unstable_FormSubmitButtonOptions = ButtonOptions &
   Partial<unstable_FormStateReturn<any>> &
   Pick<unstable_FormStateReturn<any>, "baseId" | "submit">;
 
-export type unstable_FormSubmitButtonProps = unstable_ButtonProps;
+export type unstable_FormSubmitButtonProps = ButtonProps;
 
 export function unstable_useFormSubmitButton(
   options: unstable_FormSubmitButtonOptions,

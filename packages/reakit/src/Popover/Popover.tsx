@@ -6,27 +6,23 @@ import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
-import {
-  unstable_DialogOptions,
-  unstable_DialogProps,
-  useDialog
-} from "../Dialog/Dialog";
+import { DialogOptions, DialogProps, useDialog } from "../Dialog/Dialog";
 import { Keys } from "../__utils/types";
-import { unstable_PopoverStateReturn, usePopoverState } from "./PopoverState";
+import { PopoverStateReturn, usePopoverState } from "./PopoverState";
 
-export type unstable_PopoverOptions = unstable_DialogOptions &
-  Partial<unstable_PopoverStateReturn>;
+export type PopoverOptions = DialogOptions & Partial<PopoverStateReturn>;
 
-export type unstable_PopoverProps = unstable_DialogProps;
+export type PopoverProps = DialogProps;
 
 export function usePopover(
-  { unstable_modal = false, ...options }: unstable_PopoverOptions,
-  htmlProps: unstable_PopoverProps = {}
+  { modal = false, ...options }: PopoverOptions,
+  htmlProps: PopoverProps = {}
 ) {
-  let _options: unstable_PopoverOptions = {
-    unstable_modal,
+  let _options: PopoverOptions = {
+    modal,
     ...options
   };
+
   _options = unstable_useOptions("usePopover", _options, htmlProps);
 
   htmlProps = mergeProps(
@@ -41,7 +37,7 @@ export function usePopover(
   return htmlProps;
 }
 
-const keys: Keys<unstable_PopoverOptions> = [
+const keys: Keys<PopoverOptions> = [
   ...useDialog.__keys,
   ...usePopoverState.__keys
 ];

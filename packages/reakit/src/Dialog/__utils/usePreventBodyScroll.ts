@@ -1,14 +1,14 @@
 import * as React from "react";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 
 export function usePreventBodyScroll(
   targetRef: React.RefObject<HTMLElement>,
-  options: unstable_DialogOptions
+  options: DialogOptions
 ) {
-  const shouldPrevent = !options.unstable_modal
+  const shouldPrevent = !options.modal
     ? false
-    : Boolean(options.unstable_preventBodyScroll && options.visible);
+    : Boolean(options.preventBodyScroll && options.visible);
 
   React.useEffect(() => {
     const element = targetRef.current;

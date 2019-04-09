@@ -5,22 +5,17 @@ import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
-import {
-  unstable_HiddenOptions,
-  unstable_HiddenProps,
-  useHidden
-} from "../Hidden/Hidden";
+import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
 import { Keys } from "../__utils/types";
-import { unstable_TooltipStateReturn, useTooltipState } from "./TooltipState";
+import { TooltipStateReturn, useTooltipState } from "./TooltipState";
 
-export type unstable_TooltipOptions = unstable_HiddenOptions &
-  Partial<unstable_TooltipStateReturn>;
+export type TooltipOptions = HiddenOptions & Partial<TooltipStateReturn>;
 
-export type unstable_TooltipProps = unstable_HiddenProps;
+export type TooltipProps = HiddenProps;
 
 export function useTooltip(
-  options: unstable_TooltipOptions = {},
-  htmlProps: unstable_TooltipProps = {}
+  options: TooltipOptions = {},
+  htmlProps: TooltipProps = {}
 ) {
   options = unstable_useOptions("useTooltip", options, htmlProps);
   htmlProps = mergeProps(
@@ -39,7 +34,7 @@ export function useTooltip(
   return htmlProps;
 }
 
-const keys: Keys<unstable_TooltipOptions> = [
+const keys: Keys<TooltipOptions> = [
   ...useHidden.__keys,
   ...useTooltipState.__keys
 ];

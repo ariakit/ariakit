@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { unstable_StaticMenu as StaticMenu } from "../StaticMenu";
+import { StaticMenu } from "../StaticMenu";
 
 const props: Parameters<typeof StaticMenu>[0] = {
   unstable_stops: [],

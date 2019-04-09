@@ -2,18 +2,17 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
-import { useHiddenState, unstable_HiddenStateReturn } from "./HiddenState";
+import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
-export type unstable_HiddenOptions = unstable_BoxOptions &
-  Partial<unstable_HiddenStateReturn>;
+export type HiddenOptions = BoxOptions & Partial<HiddenStateReturn>;
 
-export type unstable_HiddenProps = unstable_BoxProps;
+export type HiddenProps = BoxProps;
 
 export function useHidden(
-  options: unstable_HiddenOptions = {},
-  htmlProps: unstable_HiddenProps = {}
+  options: HiddenOptions = {},
+  htmlProps: HiddenProps = {}
 ) {
   options = unstable_useOptions("useHidden", options, htmlProps);
   htmlProps = mergeProps(
@@ -30,10 +29,7 @@ export function useHidden(
   return htmlProps;
 }
 
-const keys: Keys<unstable_HiddenOptions> = [
-  ...useBox.__keys,
-  ...useHiddenState.__keys
-];
+const keys: Keys<HiddenOptions> = [...useBox.__keys, ...useHiddenState.__keys];
 
 useHidden.__keys = keys;
 

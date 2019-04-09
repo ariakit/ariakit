@@ -6,39 +6,30 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
+import { PopoverOptions, PopoverProps, usePopover } from "../Popover/Popover";
 import {
-  unstable_PopoverOptions,
-  unstable_PopoverProps,
-  usePopover
-} from "../Popover/Popover";
-import {
-  unstable_StaticMenuOptions,
-  unstable_StaticMenuProps,
-  unstable_useStaticMenu
+  StaticMenuOptions,
+  StaticMenuProps,
+  useStaticMenu
 } from "./StaticMenu";
 import { useMenuState } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
-export type unstable_MenuOptions = unstable_PopoverOptions &
-  unstable_StaticMenuOptions;
+export type MenuOptions = PopoverOptions & StaticMenuOptions;
 
-export type unstable_MenuProps = unstable_PopoverProps &
-  unstable_StaticMenuProps;
+export type MenuProps = PopoverProps & StaticMenuProps;
 
-export function useMenu(
-  options: unstable_MenuOptions,
-  htmlProps: unstable_MenuProps = {}
-) {
+export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   const parent = React.useContext(MenuContext);
   const parentIsHorizontal = parent && parent.orientation === "horizontal";
 
-  let _options: unstable_MenuOptions = {
+  let _options: MenuOptions = {
     unstable_autoFocusOnShow: !parent,
     unstable_autoFocusOnHide: !parentIsHorizontal,
     ...options,
-    unstable_modal: false,
+    modal: false,
     // We'll handle esc differently
-    unstable_hideOnEsc: false
+    hideOnEsc: false
   };
 
   _options = unstable_useOptions("useMenu", _options, htmlProps);
@@ -60,15 +51,15 @@ export function useMenu(
     htmlProps
   );
 
-  htmlProps = unstable_useStaticMenu(_options, htmlProps);
+  htmlProps = useStaticMenu(_options, htmlProps);
   htmlProps = usePopover(_options, htmlProps);
   htmlProps = unstable_useProps("useMenu", _options, htmlProps);
   return htmlProps;
 }
 
-const keys: Keys<unstable_MenuOptions> = [
+const keys: Keys<MenuOptions> = [
   ...usePopover.__keys,
-  ...unstable_useStaticMenu.__keys,
+  ...useStaticMenu.__keys,
   ...useMenuState.__keys
 ];
 

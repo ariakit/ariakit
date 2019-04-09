@@ -52,15 +52,15 @@ function Example() {
       <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
       {/* <DialogBackdrop {...dialog} style={backdropStyle} /> */}
       <Dialog
-        unstable_modal={false}
-        unstable_hideOnClickOutside={false}
+        modal={false}
+        hideOnClickOutside={false}
         aria-label="test"
         {...dialog}
       >
         <Button onClick={dialog.hide}>X</Button>
         <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
         <div style={{ height: 500 }}>Hi</div>
-        <Dialog unstable_hideOnClickOutside={false} {...dialog2}>
+        <Dialog hideOnClickOutside={false} {...dialog2}>
           <div style={{ height: 500 }}>Hi</div>
           <Button>Button</Button>
         </Dialog>
@@ -110,12 +110,7 @@ function Example() {
     <>
       <Button ref={focusOutRef}>Focus out</Button>
       <DialogDisclosure {...dialog}>Show Dialog</DialogDisclosure>
-      <Dialog
-        unstable_modal={false}
-        style={style}
-        aria-label="test"
-        {...dialog}
-      >
+      <Dialog modal={false} style={style} aria-label="test" {...dialog}>
         <Button onClick={dialog.hide}>X</Button>
         <DialogDisclosure {...dialog2}>Show Dialog 2</DialogDisclosure>
         <Dialog style={style} {...dialog2}>

@@ -2,21 +2,20 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_SeparatorOptions,
-  unstable_SeparatorProps,
+  SeparatorOptions,
+  SeparatorProps,
   useSeparator
 } from "../Separator/Separator";
 import { Keys } from "../__utils/types";
-import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { useMenuState, MenuStateReturn } from "./MenuState";
 
-export type unstable_MenuSeparatorOptions = unstable_SeparatorOptions &
-  Partial<unstable_MenuStateReturn>;
+export type MenuSeparatorOptions = SeparatorOptions & Partial<MenuStateReturn>;
 
-export type unstable_MenuSeparatorProps = unstable_SeparatorProps;
+export type MenuSeparatorProps = SeparatorProps;
 
 export function useMenuSeparator(
-  options: unstable_MenuSeparatorOptions,
-  htmlProps: unstable_MenuSeparatorProps = {}
+  options: MenuSeparatorOptions,
+  htmlProps: MenuSeparatorProps = {}
 ) {
   options = unstable_useOptions("useMenuSeparator", options, htmlProps);
   htmlProps = useSeparator(options, htmlProps);
@@ -24,7 +23,7 @@ export function useMenuSeparator(
   return htmlProps;
 }
 
-const keys: Keys<unstable_MenuSeparatorOptions> = [
+const keys: Keys<MenuSeparatorOptions> = [
   ...useSeparator.__keys,
   ...useMenuState.__keys
 ];

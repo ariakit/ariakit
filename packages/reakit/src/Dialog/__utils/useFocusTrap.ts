@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 
 function hasNestedOpenModals(portal: Element) {
@@ -18,9 +18,9 @@ export function isFocusTrap(element: Element) {
 export function useFocusTrap(
   dialogRef: React.RefObject<HTMLElement>,
   portalRef: React.RefObject<HTMLElement>,
-  options: unstable_DialogOptions
+  options: DialogOptions
 ) {
-  const shouldTrap = options.visible && options.unstable_modal;
+  const shouldTrap = options.visible && options.modal;
   const beforeElement = React.useRef<HTMLElement | null>(null);
   const afterElement = React.useRef<HTMLElement | null>(null);
 

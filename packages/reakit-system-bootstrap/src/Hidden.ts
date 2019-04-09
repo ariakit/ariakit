@@ -1,16 +1,12 @@
-import {
-  unstable_HiddenProps,
-  unstable_HiddenOptions
-} from "reakit/Hidden/Hidden";
+import { HiddenProps, HiddenOptions } from "reakit/Hidden/Hidden";
 import { mergeProps } from "reakit/utils/mergeProps";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapHiddenOptions = BootstrapBoxOptions &
-  unstable_HiddenOptions;
+export type BootstrapHiddenOptions = BootstrapBoxOptions & HiddenOptions;
 
 export function useHiddenProps(
   options: BootstrapHiddenOptions,
-  htmlProps: unstable_HiddenProps = {}
+  htmlProps: HiddenProps = {}
 ) {
   return mergeProps(
     {

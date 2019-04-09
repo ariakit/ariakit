@@ -1,11 +1,8 @@
 import { css, cx } from "emotion";
+import { DialogProps, DialogOptions } from "reakit/Dialog/Dialog";
 import {
-  unstable_DialogProps,
-  unstable_DialogOptions
-} from "reakit/Dialog/Dialog";
-import {
-  unstable_DialogBackdropProps,
-  unstable_DialogBackdropOptions
+  DialogBackdropProps,
+  DialogBackdropOptions
 } from "reakit/Dialog/DialogBackdrop";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
@@ -13,8 +10,7 @@ import { usePalette } from "reakit-system-palette/utils/palette";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapDialogOptions = BootstrapBoxOptions &
-  unstable_DialogOptions;
+export type BootstrapDialogOptions = BootstrapBoxOptions & DialogOptions;
 
 export function useDialogOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
@@ -28,7 +24,7 @@ export function useDialogOptions({
 
 export function useDialogProps(
   { unstable_system }: BootstrapDialogOptions,
-  { className, ...htmlProps }: unstable_DialogProps = {}
+  { className, ...htmlProps }: DialogProps = {}
 ) {
   const {
     style: { color, backgroundColor }
@@ -60,11 +56,11 @@ export function useDialogProps(
 }
 
 export type BootstrapDialogBackdropOptions = BootstrapBoxOptions &
-  unstable_DialogBackdropOptions;
+  DialogBackdropOptions;
 
 export function useDialogBackdropProps(
   _: BootstrapDialogBackdropOptions,
-  { className, ...htmlProps }: unstable_DialogBackdropProps = {}
+  { className, ...htmlProps }: DialogBackdropProps = {}
 ) {
   const dialogBackdrop = css`
     background-color: rgba(0, 0, 0, 0.5);

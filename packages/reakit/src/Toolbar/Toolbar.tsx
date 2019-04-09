@@ -4,18 +4,17 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
-import { unstable_ToolbarStateReturn, useToolbarState } from "./ToolbarState";
+import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
-export type unstable_ToolbarOptions = unstable_BoxOptions &
-  Partial<unstable_ToolbarStateReturn>;
+export type ToolbarOptions = BoxOptions & Partial<ToolbarStateReturn>;
 
-export type unstable_ToolbarProps = unstable_BoxProps;
+export type ToolbarProps = BoxProps;
 
 export function useToolbar(
-  options: unstable_ToolbarOptions,
-  htmlProps: unstable_ToolbarProps = {}
+  options: ToolbarOptions,
+  htmlProps: ToolbarProps = {}
 ) {
   options = unstable_useOptions("useToolbar", options, htmlProps);
   htmlProps = mergeProps(
@@ -30,7 +29,7 @@ export function useToolbar(
   return htmlProps;
 }
 
-const keys: Keys<unstable_ToolbarOptions> = [
+const keys: Keys<ToolbarOptions> = [
   ...useBox.__keys,
   ...useToolbarState.__keys
 ];

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
 import { Tab, TabList, TabPanel, useTabState } from "..";
-import { unstable_TabInitialState } from "../TabState";
+import { TabInitialState } from "../TabState";
 
-function SimpleTest(props: unstable_TabInitialState = {}) {
+function SimpleTest(props: TabInitialState = {}) {
   const tab = useTabState(props);
   return (
     <>

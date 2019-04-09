@@ -1,11 +1,11 @@
 import * as React from "react";
-import { unstable_MenuStateReturn } from "../MenuState";
+import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(
   {
     unstable_stops: stops,
     unstable_move: move
-  }: Pick<unstable_MenuStateReturn, "unstable_stops" | "unstable_move">,
+  }: Pick<MenuStateReturn, "unstable_stops" | "unstable_move">,
   timeout = 500
 ) {
   const [keys, setKeys] = React.useState("");

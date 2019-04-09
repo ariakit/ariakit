@@ -3,21 +3,21 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_DialogDisclosureOptions,
-  unstable_DialogDisclosureProps,
+  DialogDisclosureOptions,
+  DialogDisclosureProps,
   useDialogDisclosure
 } from "../Dialog/DialogDisclosure";
 import { Keys } from "../__utils/types";
-import { usePopoverState, unstable_PopoverStateReturn } from "./PopoverState";
+import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
-export type unstable_PopoverDisclosureOptions = unstable_DialogDisclosureOptions &
-  Partial<unstable_PopoverStateReturn>;
+export type PopoverDisclosureOptions = DialogDisclosureOptions &
+  Partial<PopoverStateReturn>;
 
-export type unstable_PopoverDisclosureProps = unstable_DialogDisclosureProps;
+export type PopoverDisclosureProps = DialogDisclosureProps;
 
 export function usePopoverDisclosure(
-  options: unstable_PopoverDisclosureOptions,
-  htmlProps: unstable_PopoverDisclosureProps = {}
+  options: PopoverDisclosureOptions,
+  htmlProps: PopoverDisclosureProps = {}
 ) {
   options = unstable_useOptions("usePopoverDisclosure", options, htmlProps);
   htmlProps = mergeProps(
@@ -31,7 +31,7 @@ export function usePopoverDisclosure(
   return htmlProps;
 }
 
-const keys: Keys<unstable_PopoverDisclosureOptions> = [
+const keys: Keys<PopoverDisclosureOptions> = [
   ...useDialogDisclosure.__keys,
   ...usePopoverState.__keys
 ];

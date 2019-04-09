@@ -1,18 +1,15 @@
 import { css, cx } from "emotion";
-import { unstable_TabProps, unstable_TabOptions } from "reakit/Tab/Tab";
-import {
-  unstable_TabListProps,
-  unstable_TabListOptions
-} from "reakit/Tab/TabList";
+import { TabProps, TabOptions } from "reakit/Tab/Tab";
+import { TabListProps, TabListOptions } from "reakit/Tab/TabList";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapTabOptions = BootstrapBoxOptions & unstable_TabOptions;
+export type BootstrapTabOptions = BootstrapBoxOptions & TabOptions;
 
 export function useTabProps(
   _: BootstrapTabOptions,
-  { className, ...htmlProps }: unstable_TabProps = {}
+  { className, ...htmlProps }: TabProps = {}
 ) {
   const background = usePalette("background") || "white";
   const foreground = usePalette("foreground") || "black";
@@ -42,12 +39,11 @@ export function useTabProps(
   return { ...htmlProps, className: cx(className, tab) };
 }
 
-export type BootstrapTabListOptions = BootstrapBoxOptions &
-  unstable_TabListOptions;
+export type BootstrapTabListOptions = BootstrapBoxOptions & TabListOptions;
 
 export function useTabListProps(
   _: BootstrapTabListOptions,
-  { className, ...htmlProps }: unstable_TabListProps = {}
+  { className, ...htmlProps }: TabListProps = {}
 ) {
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);

@@ -2,21 +2,18 @@ import * as React from "react";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_TabbableOptions,
-  unstable_TabbableProps,
+  TabbableOptions,
+  TabbableProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
 import { Keys } from "../__utils/types";
-import {
-  unstable_CheckboxStateReturn,
-  useCheckboxState
-} from "./CheckboxState";
+import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
-export type unstable_CheckboxOptions = unstable_TabbableOptions &
-  Partial<unstable_CheckboxStateReturn> & {
+export type CheckboxOptions = TabbableOptions &
+  Partial<CheckboxStateReturn> & {
     /**
      * Checkbox's value is going to be used when multiple checkboxes share the
      * same state. Checking a checkbox with value will add it to the state
@@ -29,12 +26,11 @@ export type unstable_CheckboxOptions = unstable_TabbableOptions &
     checked?: boolean;
   };
 
-export type unstable_CheckboxProps = unstable_TabbableProps &
-  React.InputHTMLAttributes<any>;
+export type CheckboxProps = TabbableProps & React.InputHTMLAttributes<any>;
 
 export function useCheckbox(
-  options: unstable_CheckboxOptions = {},
-  htmlProps: unstable_CheckboxProps = {}
+  options: CheckboxOptions = {},
+  htmlProps: CheckboxProps = {}
 ) {
   options = unstable_useOptions("useCheckbox", options, htmlProps);
 
@@ -90,7 +86,7 @@ export function useCheckbox(
   return htmlProps;
 }
 
-const keys: Keys<unstable_CheckboxOptions> = [
+const keys: Keys<CheckboxOptions> = [
   ...useTabbable.__keys,
   ...useCheckboxState.__keys,
   "value",

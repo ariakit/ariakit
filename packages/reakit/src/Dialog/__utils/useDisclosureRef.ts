@@ -1,7 +1,7 @@
 import * as React from "react";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 
-export function useDisclosureRef(options: unstable_DialogOptions) {
+export function useDisclosureRef(options: DialogOptions) {
   const disclosureRef = React.useRef<HTMLElement | null>(null);
 
   React.useEffect(() => {

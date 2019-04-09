@@ -2,14 +2,14 @@ import * as React from "react";
 import Popper, { Placement } from "popper.js";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import {
-  unstable_DialogState,
-  unstable_DialogActions,
-  unstable_DialogInitialState,
+  DialogState,
+  DialogActions,
+  DialogInitialState,
   useDialogState
 } from "../Dialog/DialogState";
 import { Keys } from "../__utils/types";
 
-export type unstable_PopoverState = unstable_DialogState & {
+export type PopoverState = DialogState & {
   /**
    * The reference element.
    */
@@ -41,15 +41,15 @@ export type unstable_PopoverState = unstable_DialogState & {
   placement: Placement;
 };
 
-export type unstable_PopoverActions = unstable_DialogActions & {
+export type PopoverActions = DialogActions & {
   /**
    * Change the `placement` state.
    */
   place: React.Dispatch<React.SetStateAction<Placement>>;
 };
 
-export type unstable_PopoverInitialState = unstable_DialogInitialState &
-  Partial<Pick<unstable_PopoverState, "placement">> & {
+export type PopoverInitialState = DialogInitialState &
+  Partial<Pick<PopoverState, "placement">> & {
     /**
      * Whether or not flip the popover.
      * @default true
@@ -67,12 +67,11 @@ export type unstable_PopoverInitialState = unstable_DialogInitialState &
     unstable_gutter?: number;
   };
 
-export type unstable_PopoverStateReturn = unstable_PopoverState &
-  unstable_PopoverActions;
+export type PopoverStateReturn = PopoverState & PopoverActions;
 
 export function usePopoverState(
-  initialState: SealedInitialState<unstable_PopoverInitialState> = {}
-): unstable_PopoverStateReturn {
+  initialState: SealedInitialState<PopoverInitialState> = {}
+): PopoverStateReturn {
   const {
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
@@ -154,7 +153,7 @@ export function usePopoverState(
   };
 }
 
-const keys: Keys<unstable_PopoverStateReturn> = [
+const keys: Keys<PopoverStateReturn> = [
   ...useDialogState.__keys,
   "unstable_referenceRef",
   "unstable_popoverRef",

@@ -14,7 +14,7 @@ import {
   MenuDisclosure,
   MenuItem,
   MenuSeparator,
-  unstable_MenuItemCheckbox as MenuItemCheckbox,
+  MenuItemCheckbox,
   mergeProps
 } from "reakit";
 
@@ -66,9 +66,9 @@ import {
   MenuDisclosure,
   MenuItem,
   MenuSeparator,
-  unstable_StaticMenu as StaticMenu,
-  unstable_MenuItemCheckbox as MenuItemCheckbox,
-  unstable_MenuItemRadio as MenuItemRadio,
+  StaticMenu,
+  MenuItemCheckbox,
+  MenuItemRadio,
   mergeProps
 } from "reakit";
 

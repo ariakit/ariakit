@@ -3,7 +3,7 @@ import { useSealedState, SealedInitialState } from "../__utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
 import { Keys } from "../__utils/types";
 
-export type unstable_HiddenState = {
+export type HiddenState = {
   /**
    * Hidden element id.
    */
@@ -15,7 +15,7 @@ export type unstable_HiddenState = {
   visible: boolean;
 };
 
-export type unstable_HiddenActions = {
+export type HiddenActions = {
   /**
    * Changes the `visible` state to `true`
    */
@@ -30,16 +30,15 @@ export type unstable_HiddenActions = {
   toggle: () => void;
 };
 
-export type unstable_HiddenInitialState = Partial<
-  Pick<unstable_HiddenState, "unstable_hiddenId" | "visible">
+export type HiddenInitialState = Partial<
+  Pick<HiddenState, "unstable_hiddenId" | "visible">
 >;
 
-export type unstable_HiddenStateReturn = unstable_HiddenState &
-  unstable_HiddenActions;
+export type HiddenStateReturn = HiddenState & HiddenActions;
 
 export function useHiddenState(
-  initialState: SealedInitialState<unstable_HiddenInitialState> = {}
-): unstable_HiddenStateReturn {
+  initialState: SealedInitialState<HiddenInitialState> = {}
+): HiddenStateReturn {
   const {
     unstable_hiddenId: hiddenId = unstable_useId("hidden-"),
     visible: sealedVisible = false
@@ -62,7 +61,7 @@ export function useHiddenState(
   };
 }
 
-const keys: Keys<unstable_HiddenStateReturn> = [
+const keys: Keys<HiddenStateReturn> = [
   "unstable_hiddenId",
   "visible",
   "show",

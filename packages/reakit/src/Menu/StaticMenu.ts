@@ -4,20 +4,20 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { useShortcuts } from "./__utils/useShortcuts";
-import { unstable_MenuStateReturn, useMenuState } from "./MenuState";
+import { MenuStateReturn, useMenuState } from "./MenuState";
 
-export type unstable_StaticMenuOptions = unstable_BoxOptions &
-  Partial<unstable_MenuStateReturn> &
-  Pick<unstable_MenuStateReturn, "unstable_stops" | "unstable_move">;
+export type StaticMenuOptions = BoxOptions &
+  Partial<MenuStateReturn> &
+  Pick<MenuStateReturn, "unstable_stops" | "unstable_move">;
 
-export type unstable_StaticMenuProps = unstable_BoxProps;
+export type StaticMenuProps = BoxProps;
 
-export function unstable_useStaticMenu(
-  options: unstable_StaticMenuOptions,
-  htmlProps: unstable_StaticMenuProps = {}
+export function useStaticMenu(
+  options: StaticMenuOptions,
+  htmlProps: StaticMenuProps = {}
 ) {
   options = unstable_useOptions("useStaticMenu", options, htmlProps);
 
@@ -37,16 +37,16 @@ export function unstable_useStaticMenu(
   return htmlProps;
 }
 
-const keys: Keys<unstable_StaticMenuOptions> = [
+const keys: Keys<StaticMenuOptions> = [
   ...useBox.__keys,
   ...useMenuState.__keys
 ];
 
-unstable_useStaticMenu.__keys = keys;
+useStaticMenu.__keys = keys;
 
-export const unstable_StaticMenu = unstable_createComponent({
+export const StaticMenu = unstable_createComponent({
   as: "div",
-  useHook: unstable_useStaticMenu,
+  useHook: useStaticMenu,
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] &&

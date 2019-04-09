@@ -76,7 +76,7 @@ test("render visible", () => {
 
 test("render non-modal", () => {
   const { baseElement } = render(
-    <Dialog {...props} unstable_modal={false}>
+    <Dialog {...props} modal={false}>
       test
     </Dialog>
   );

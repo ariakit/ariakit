@@ -1,27 +1,26 @@
 import { SealedInitialState } from "../__utils/useSealedState";
 import {
   useHiddenState,
-  unstable_HiddenState,
-  unstable_HiddenActions,
-  unstable_HiddenInitialState
+  HiddenState,
+  HiddenActions,
+  HiddenInitialState
 } from "../Hidden/HiddenState";
 import { Keys } from "../__utils/types";
 
-export type unstable_DialogState = unstable_HiddenState;
+export type DialogState = HiddenState;
 
-export type unstable_DialogActions = unstable_HiddenActions;
+export type DialogActions = HiddenActions;
 
-export type unstable_DialogInitialState = unstable_HiddenInitialState;
+export type DialogInitialState = HiddenInitialState;
 
-export type unstable_DialogStateReturn = unstable_DialogState &
-  unstable_DialogActions;
+export type DialogStateReturn = DialogState & DialogActions;
 
 export function useDialogState(
-  initialState: SealedInitialState<unstable_DialogInitialState> = {}
-): unstable_DialogStateReturn {
+  initialState: SealedInitialState<DialogInitialState> = {}
+): DialogStateReturn {
   return useHiddenState(initialState);
 }
 
-const keys: Keys<unstable_DialogStateReturn> = [...useHiddenState.__keys];
+const keys: Keys<DialogStateReturn> = [...useHiddenState.__keys];
 
 useDialogState.__keys = keys;

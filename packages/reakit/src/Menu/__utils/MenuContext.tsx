@@ -1,7 +1,10 @@
 import * as React from "react";
-import { unstable_MenuStateReturn } from "../MenuState";
+import { MenuStateReturn } from "../MenuState";
 
-export type MenuContextType = unstable_MenuStateReturn & {
+export type MenuContextType = Pick<
+  MenuStateReturn,
+  "orientation" | "unstable_next" | "unstable_previous"
+> & {
   parent?: MenuContextType | null;
 };
 

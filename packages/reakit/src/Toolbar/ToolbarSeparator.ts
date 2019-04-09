@@ -2,21 +2,21 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_SeparatorOptions,
-  unstable_SeparatorProps,
+  SeparatorOptions,
+  SeparatorProps,
   useSeparator
 } from "../Separator/Separator";
 import { Keys } from "../__utils/types";
-import { useToolbarState, unstable_ToolbarStateReturn } from "./ToolbarState";
+import { useToolbarState, ToolbarStateReturn } from "./ToolbarState";
 
-export type unstable_ToolbarSeparatorOptions = unstable_SeparatorOptions &
-  Partial<unstable_ToolbarStateReturn>;
+export type ToolbarSeparatorOptions = SeparatorOptions &
+  Partial<ToolbarStateReturn>;
 
-export type unstable_ToolbarSeparatorProps = unstable_SeparatorProps;
+export type ToolbarSeparatorProps = SeparatorProps;
 
 export function useToolbarSeparator(
-  options: unstable_ToolbarSeparatorOptions,
-  htmlProps: unstable_ToolbarSeparatorProps = {}
+  options: ToolbarSeparatorOptions,
+  htmlProps: ToolbarSeparatorProps = {}
 ) {
   options = unstable_useOptions("useToolbarSeparator", options, htmlProps);
   htmlProps = useSeparator(options, htmlProps);
@@ -24,7 +24,7 @@ export function useToolbarSeparator(
   return htmlProps;
 }
 
-const keys: Keys<unstable_ToolbarSeparatorOptions> = [
+const keys: Keys<ToolbarSeparatorOptions> = [
   ...useSeparator.__keys,
   ...useToolbarState.__keys
 ];

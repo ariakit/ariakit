@@ -5,8 +5,8 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
-  unstable_TabbableOptions,
-  unstable_TabbableProps,
+  TabbableOptions,
+  TabbableProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { DeepPath } from "./__utils/types";
@@ -21,7 +21,7 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 export type unstable_FormInputOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_TabbableOptions &
+> = TabbableOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
@@ -31,7 +31,7 @@ export type unstable_FormInputOptions<
     name: P;
   };
 
-export type unstable_FormInputProps = unstable_TabbableProps &
+export type unstable_FormInputProps = TabbableProps &
   React.InputHTMLAttributes<any>;
 
 export function unstable_useFormInput<V, P extends DeepPath<V, P>>(

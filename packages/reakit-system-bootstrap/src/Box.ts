@@ -1,5 +1,5 @@
 import { css, cx } from "emotion";
-import { unstable_BoxProps } from "reakit/Box/Box";
+import { BoxProps } from "reakit/Box/Box";
 import {
   PaletteBoxOptions,
   useBoxProps as usePaletteBoxProps
@@ -9,7 +9,7 @@ export type BootstrapBoxOptions = PaletteBoxOptions;
 
 export function useBoxProps(
   { unstable_system }: BootstrapBoxOptions,
-  { className, ...htmlProps }: unstable_BoxProps = {}
+  { className, ...htmlProps }: BoxProps = {}
 ) {
   const { style } = usePaletteBoxProps({ unstable_system });
 

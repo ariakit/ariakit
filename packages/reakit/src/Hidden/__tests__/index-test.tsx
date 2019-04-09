@@ -4,10 +4,10 @@ import {
   Hidden,
   HiddenDisclosure,
   useHiddenState,
-  unstable_HiddenInitialState
+  HiddenInitialState
 } from "..";
 
-function Test(props: unstable_HiddenInitialState) {
+function Test(props: HiddenInitialState) {
   const hidden = useHiddenState(props);
   return (
     <>

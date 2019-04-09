@@ -7,11 +7,7 @@ path: /docs/radio
 ## Usage
 
 ```jsx
-import {
-  unstable_Radio as Radio,
-  RadioGroup,
-  unstable_useRadioState as useRadioState
-} from "reakit";
+import { Radio, RadioGroup, useRadioState } from "reakit";
 
 function Example() {
   const radio = useRadioState();

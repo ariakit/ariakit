@@ -1,19 +1,15 @@
 import { css, cx } from "emotion";
+import { PopoverProps, PopoverOptions } from "reakit/Popover/Popover";
 import {
-  unstable_PopoverProps,
-  unstable_PopoverOptions
-} from "reakit/Popover/Popover";
-import {
-  unstable_PopoverArrowProps,
-  unstable_PopoverArrowOptions
+  PopoverArrowProps,
+  PopoverArrowOptions
 } from "reakit/Popover/PopoverArrow";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapPopoverOptions = BootstrapBoxOptions &
-  unstable_PopoverOptions;
+export type BootstrapPopoverOptions = BootstrapBoxOptions & PopoverOptions;
 
 export function usePopoverOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
@@ -27,7 +23,7 @@ export function usePopoverOptions({
 
 export function usePopoverProps(
   { unstable_system }: BootstrapPopoverOptions,
-  { className, ...htmlProps }: unstable_PopoverProps = {}
+  { className, ...htmlProps }: PopoverProps = {}
 ) {
   const {
     style: { backgroundColor }
@@ -52,11 +48,11 @@ export function usePopoverProps(
 }
 
 export type BootstrapPopoverArrowOptions = BootstrapBoxOptions &
-  unstable_PopoverArrowOptions;
+  PopoverArrowOptions;
 
 export function usePopoverArrowProps(
   _: BootstrapPopoverArrowOptions,
-  { className, ...htmlProps }: unstable_PopoverArrowProps = {}
+  { className, ...htmlProps }: PopoverArrowProps = {}
 ) {
   return { ...htmlProps, className: cx(className, "arrow") };
 }

@@ -1,9 +1,5 @@
 import * as React from "react";
-import {
-  unstable_GroupOptions,
-  unstable_GroupProps,
-  useGroup
-} from "../Group/Group";
+import { GroupOptions, GroupProps, useGroup } from "../Group/Group";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { mergeProps } from "../utils/mergeProps";
@@ -19,14 +15,14 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 export type unstable_FormGroupOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_GroupOptions &
+> = GroupOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "touched" | "errors"> & {
     /** TODO: Description */
     name: P;
   };
 
-export type unstable_FormGroupProps = unstable_GroupProps &
+export type unstable_FormGroupProps = GroupProps &
   React.FieldsetHTMLAttributes<any>;
 
 export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(

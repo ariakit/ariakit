@@ -3,27 +3,39 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import {
-  unstable_RoverOptions,
-  unstable_RoverProps,
-  useRover
-} from "../Rover/Rover";
+import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
 import { Keys } from "../__utils/types";
-import { useMenuState, unstable_MenuStateReturn } from "./MenuState";
+import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
-export type unstable_MenuItemOptions = unstable_RoverOptions &
-  unstable_MenuStateReturn;
+export type MenuItemOptions = RoverOptions &
+  Partial<MenuStateReturn> &
+  Pick<MenuStateReturn, "unstable_next" | "unstable_previous">;
 
-export type unstable_MenuItemProps = unstable_RoverProps;
+export type MenuItemProps = RoverProps;
 
 export function useMenuItem(
-  options: unstable_MenuItemOptions,
-  { children, onKeyDown, ...htmlProps }: unstable_MenuItemProps = {}
+  options: MenuItemOptions,
+  { children, onKeyDown, ...htmlProps }: MenuItemProps = {}
 ) {
   const parent = React.useContext(MenuContext);
   const ref = React.useRef<HTMLElement>(null);
   options = unstable_useOptions("useMenuItem", options, htmlProps);
+
+  const providerValue = React.useMemo(
+    () => ({
+      orientation: options.orientation,
+      unstable_next: options.unstable_next,
+      unstable_previous: options.unstable_previous,
+      parent
+    }),
+    [
+      options.orientation,
+      options.unstable_next,
+      options.unstable_previous,
+      parent
+    ]
+  );
 
   htmlProps = mergeProps(
     {
@@ -81,7 +93,7 @@ export function useMenuItem(
           onKeyDown(event);
         }
       }
-    } as unstable_MenuItemProps,
+    } as MenuItemProps,
     htmlProps
   );
 
@@ -93,7 +105,7 @@ export function useMenuItem(
     children:
       typeof children === "function"
         ? (props: typeof htmlProps) => (
-            <MenuContext.Provider value={{ ...options, parent }}>
+            <MenuContext.Provider value={providerValue}>
               {children(props)}
             </MenuContext.Provider>
           )
@@ -101,7 +113,7 @@ export function useMenuItem(
   };
 }
 
-const keys: Keys<unstable_MenuItemOptions> = [
+const keys: Keys<MenuItemOptions> = [
   ...useRover.__keys,
   ...useMenuState.__keys
 ];

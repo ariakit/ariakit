@@ -1,6 +1,6 @@
 import * as React from "react";
 import { removeItemFromArray } from "../../__utils/removeItemFromArray";
-import { unstable_DialogOptions } from "../Dialog";
+import { DialogOptions } from "../Dialog";
 
 const DialogContext = React.createContext<{
   visible?: boolean;
@@ -10,7 +10,7 @@ const DialogContext = React.createContext<{
 
 export function useNestedDialogs(
   dialogRef: React.RefObject<HTMLElement>,
-  options: unstable_DialogOptions
+  options: DialogOptions
 ) {
   const context = React.useContext(DialogContext);
 

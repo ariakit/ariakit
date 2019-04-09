@@ -1,33 +1,29 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useProps } from "../system/useProps";
-import {
-  unstable_RoverOptions,
-  unstable_RoverProps,
-  useRover
-} from "../Rover/Rover";
+import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
 import { Keys } from "../__utils/types";
 import { unstable_useOptions } from "../system";
 import { getTabId, getTabPanelId } from "./__utils";
-import { useTabState, unstable_TabStateReturn } from "./TabState";
+import { useTabState, TabStateReturn } from "./TabState";
 
-export type unstable_TabOptions = unstable_RoverOptions &
-  Partial<unstable_TabStateReturn> &
+export type TabOptions = RoverOptions &
+  Partial<TabStateReturn> &
   Pick<
-    unstable_TabStateReturn,
+    TabStateReturn,
     "unstable_baseId" | "unstable_selectedId" | "unstable_select"
   > & {
     /** TODO: Description */
     stopId: string;
   };
 
-export type unstable_TabProps = unstable_RoverProps;
+export type TabProps = RoverProps;
 
 export function useTab(
-  { unstable_focusable = true, ...options }: unstable_TabOptions,
-  htmlProps: unstable_TabProps = {}
+  { unstable_focusable = true, ...options }: TabOptions,
+  htmlProps: TabProps = {}
 ) {
-  let _options: unstable_TabOptions = { unstable_focusable, ...options };
+  let _options: TabOptions = { unstable_focusable, ...options };
   _options = unstable_useOptions("useTab", _options, htmlProps);
 
   const selected = _options.unstable_selectedId === _options.stopId;
@@ -57,7 +53,7 @@ export function useTab(
   return htmlProps;
 }
 
-const keys: Keys<unstable_TabOptions> = [
+const keys: Keys<TabOptions> = [
   ...useRover.__keys,
   ...useTabState.__keys,
   "stopId"

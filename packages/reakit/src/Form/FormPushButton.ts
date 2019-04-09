@@ -1,8 +1,4 @@
-import {
-  unstable_ButtonOptions,
-  unstable_ButtonProps,
-  useButton
-} from "../Button/Button";
+import { ButtonOptions, ButtonProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -18,7 +14,7 @@ import { DeepPath, DeepPathValue } from "./__utils/types";
 export type unstable_FormPushButtonOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_ButtonOptions &
+> = ButtonOptions &
   Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "push"> & {
     /** TODO: Description */
@@ -27,7 +23,7 @@ export type unstable_FormPushButtonOptions<
     value: ArrayValue<DeepPathValue<V, P>>;
   };
 
-export type unstable_FormPushButtonProps = unstable_ButtonProps;
+export type unstable_FormPushButtonProps = ButtonProps;
 
 export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormPushButtonOptions<V, P>,

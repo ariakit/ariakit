@@ -1,20 +1,16 @@
 import { css, cx } from "emotion";
+import { ToolbarProps, ToolbarOptions } from "reakit/Toolbar/Toolbar";
 import {
-  unstable_ToolbarProps,
-  unstable_ToolbarOptions
-} from "reakit/Toolbar/Toolbar";
-import {
-  unstable_ToolbarItemProps,
-  unstable_ToolbarItemOptions
+  ToolbarItemProps,
+  ToolbarItemOptions
 } from "reakit/Toolbar/ToolbarItem";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapToolbarOptions = BootstrapBoxOptions &
-  unstable_ToolbarOptions;
+export type BootstrapToolbarOptions = BootstrapBoxOptions & ToolbarOptions;
 
 export function useToolbarProps(
   _: BootstrapToolbarOptions,
-  { className, ...htmlProps }: unstable_ToolbarProps = {}
+  { className, ...htmlProps }: ToolbarProps = {}
 ) {
   const toolbar = css`
     display: flex;
@@ -38,11 +34,11 @@ export function useToolbarProps(
 }
 
 export type BootstrapToolbarItemOptions = BootstrapBoxOptions &
-  unstable_ToolbarItemOptions;
+  ToolbarItemOptions;
 
 export function useToolbarItemProps(
   _: BootstrapToolbarItemOptions,
-  { className, ...htmlProps }: unstable_ToolbarItemProps = {}
+  { className, ...htmlProps }: ToolbarItemProps = {}
 ) {
   const toolbarItem = css`
     background-color: transparent;

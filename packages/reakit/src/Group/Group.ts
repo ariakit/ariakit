@@ -1,17 +1,17 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useProps } from "../system/useProps";
-import { unstable_BoxOptions, unstable_BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { unstable_useOptions } from "../system";
 
-export type unstable_GroupOptions = unstable_BoxOptions;
+export type GroupOptions = BoxOptions;
 
-export type unstable_GroupProps = unstable_BoxProps;
+export type GroupProps = BoxProps;
 
 export function useGroup(
-  options: unstable_GroupOptions = {},
-  htmlProps: unstable_GroupProps = {}
+  options: GroupOptions = {},
+  htmlProps: GroupProps = {}
 ) {
   options = unstable_useOptions("useGroup", options, htmlProps);
   htmlProps = mergeProps({ role: "group" } as typeof htmlProps, htmlProps);
@@ -20,7 +20,7 @@ export function useGroup(
   return htmlProps;
 }
 
-const keys: Keys<unstable_GroupOptions> = [...useBox.__keys];
+const keys: Keys<GroupOptions> = [...useBox.__keys];
 
 useGroup.__keys = keys;
 

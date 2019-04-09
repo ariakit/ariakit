@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { unstable_Radio as Radio } from "../Radio";
+import { Radio } from "../Radio";
 
 const props: Parameters<typeof Radio>[0] = {
   value: "radio",
