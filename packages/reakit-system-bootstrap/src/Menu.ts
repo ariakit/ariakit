@@ -32,6 +32,7 @@ export function useStaticMenuProps(
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
     white-space: nowrap;
+    box-shadow: none !important;
 
     &[aria-orientation="vertical"] {
       padding: 0.25em 0;

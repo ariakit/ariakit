@@ -46,6 +46,11 @@ export function useMenuItem(
           ref.current.focus();
         }
       },
+      onMouseOut: () => {
+        if (ref.current) {
+          ref.current.blur();
+        }
+      },
       onKeyDown: event => {
         const { hide, placement } = options;
         if (!parent || !hide || !placement) return;

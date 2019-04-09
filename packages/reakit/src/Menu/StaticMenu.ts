@@ -1,3 +1,4 @@
+import * as React from "react";
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -19,14 +20,23 @@ export function useStaticMenu(
   options: StaticMenuOptions,
   htmlProps: StaticMenuProps = {}
 ) {
+  const ref = React.useRef<HTMLElement>(null);
   options = unstable_useOptions("useStaticMenu", options, htmlProps);
 
   const onKeyDown = useShortcuts(options);
 
   htmlProps = mergeProps(
     {
+      ref,
       role: options.orientation === "horizontal" ? "menubar" : "menu",
       "aria-orientation": options.orientation,
+      onMouseOver: event => {
+        const target = event.target as HTMLElement;
+        if (target === ref.current) {
+          options.unstable_move(null);
+          target.focus();
+        }
+      },
       onKeyDown
     } as typeof htmlProps,
     htmlProps

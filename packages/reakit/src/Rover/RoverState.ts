@@ -44,7 +44,7 @@ export type RoverActions = {
   /**
    * Moves focus onto a given element ID.
    */
-  unstable_move: (id: Stop["id"]) => void;
+  unstable_move: (id: Stop["id"] | null) => void;
   /**
    * Moves focus onto the next element.
    */
@@ -155,6 +155,15 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
     }
     case "move": {
       const { id } = action;
+
+      if (id === null) {
+        return {
+          ...state,
+          unstable_currentId: null,
+          unstable_pastId: currentId
+        };
+      }
+
       const index = stops.findIndex(stop => stop.id === id);
 
       if (index === -1 || stops[index].id === currentId) {
