@@ -1,7 +1,7 @@
 {
   "name": "reakit",
   "version": "1.0.0-alpha.1",
-  "description": "Toolkit for building accessible UIs with React",
+  "description": "Toolkit for building accessible rich web apps with React",
   "sideEffects": false,
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit",

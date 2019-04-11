@@ -9,11 +9,16 @@
 <h1 align="center">Reakit</h1>
 
 <p align="center">
-  Toolkit for building <a href="https://reakit.io/docs/accessibility">accessible</a> UIs with <a href="https://reactjs.org">React</a>.
+  Toolkit for building <a href="https://reakit.io/docs/accessibility">accessible</a> rich web apps with <a href="https://reactjs.org">React</a>.
   <br>
   <a href="https://reakit.io"><strong>Explore website »</strong></a>
 </p>
 
+<a href="https://reakit.io">
+  <img src="https://user-images.githubusercontent.com/3068563/55928159-1722a000-5bee-11e9-865c-184fd2160fae.png" alt="Reakit thumbnail" width="100%" />
+</a>
+
+<br>
 <br>
 
 <p align="center">
