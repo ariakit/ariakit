@@ -148,7 +148,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
+| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_loop</code>&nbsp;⚠️</strong> | <code>boolean</code> | If enabled, the next item after the last one will be the first one. |
 | <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
 | <strong><code>placement</code>&nbsp;</strong> | <code title="&#34;auto-start&#34; &#124; &#34;auto&#34; &#124; &#34;auto-end&#34; &#124; &#34;top-start&#34; &#124; &#34;top&#34; &#124; &#34;top-end&#34; &#124; &#34;right-start&#34; &#124; &#34;right&#34; &#124; &#34;right-end&#34; &#124; &#34;bottom-end&#34; &#124; &#34;bottom&#34; &#124; &#34;bottom-start&#34; &#124; &#34;left-end&#34; &#124; &#34;left&#34; &#124; &#34;left-start&#34;">&#34;auto&#x2011;start&#34;&nbsp;&#124;&nbsp;&#34;auto&#34;&nbsp;&#124;&nbsp;&#34;au...</code> | Actual `placement`. |
@@ -200,7 +200,7 @@ No props to show
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
 | <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
+| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_stops</code>&nbsp;⚠️</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |
 | <strong><code>unstable_move</code>&nbsp;⚠️</strong> | <code>(id:&nbsp;string&nbsp;&#124;&nbsp;null)&nbsp;=&#62;&nbsp;void</code> | Moves focus onto a given element ID. |
 | <strong><code>unstable_register</code>&nbsp;⚠️</strong> | <code title="(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void">(id:&nbsp;string,&nbsp;ref:&nbsp;RefObject...</code> | Registers the element ID and ref in the roving tab index list. |
@@ -224,7 +224,7 @@ No props to show
 | <strong><code>value</code>&nbsp;</strong> | <code>any</code> | Checkbox's value is going to be used when multiple checkboxes share the same state. Checking a checkbox with value will add it to the state array. |
 | <strong><code>checked</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Checkbox's checked state. If present, it's used instead of currentValue. |
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
+| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_stops</code>&nbsp;⚠️</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |
 | <strong><code>unstable_move</code>&nbsp;⚠️</strong> | <code>(id:&nbsp;string&nbsp;&#124;&nbsp;null)&nbsp;=&#62;&nbsp;void</code> | Moves focus onto a given element ID. |
 | <strong><code>unstable_register</code>&nbsp;⚠️</strong> | <code title="(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void">(id:&nbsp;string,&nbsp;ref:&nbsp;RefObject...</code> | Registers the element ID and ref in the roving tab index list. |
@@ -247,7 +247,7 @@ No props to show
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
 | <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
+| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_stops</code>&nbsp;⚠️</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |
 | <strong><code>unstable_move</code>&nbsp;⚠️</strong> | <code>(id:&nbsp;string&nbsp;&#124;&nbsp;null)&nbsp;=&#62;&nbsp;void</code> | Moves focus onto a given element ID. |
 | <strong><code>unstable_register</code>&nbsp;⚠️</strong> | <code title="(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void">(id:&nbsp;string,&nbsp;ref:&nbsp;RefObject...</code> | Registers the element ID and ref in the roving tab index list. |

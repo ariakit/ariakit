@@ -10,7 +10,7 @@ path: /docs/rover
 import { useRoverState, Rover } from "reakit";
 
 function Example() {
-  const roving = useRoverState({ unstable_currentId: "test" });
+  const roving = useRoverState({ currentId: "test" });
   return (
     <>
       <Rover {...roving}>Item 1</Rover>
@@ -34,7 +34,7 @@ import React from "react";
 import { useRoverState, Rover } from "reakit";
 
 function Example() {
-  const roving = useRoverState({ unstable_currentId: "test" });
+  const roving = useRoverState({ currentId: "test" });
   const [visible, setVisible] = React.useState(false);
   return (
     <>
@@ -65,7 +65,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
+| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_loop</code>&nbsp;⚠️</strong> | <code>boolean</code> | If enabled, the next item after the last one will be the first one. |
 
 ### `Rover`
@@ -75,7 +75,7 @@ function Example() {
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
 | <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
+| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_stops</code>&nbsp;⚠️</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |
 | <strong><code>unstable_register</code>&nbsp;⚠️</strong> | <code title="(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void">(id:&nbsp;string,&nbsp;ref:&nbsp;RefObject...</code> | Registers the element ID and ref in the roving tab index list. |
 | <strong><code>unstable_unregister</code>&nbsp;⚠️</strong> | <code>(id:&nbsp;string)&nbsp;=&#62;&nbsp;void</code> | Unregisters the roving item. |

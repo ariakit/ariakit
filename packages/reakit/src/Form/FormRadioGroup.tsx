@@ -54,7 +54,7 @@ export const unstable_FormRadioGroup = (unstable_createComponent({
     const rover = useRoverState({ unstable_loop: true });
     const value = React.useMemo(() => rover, [
       rover.unstable_stops,
-      rover.unstable_currentId,
+      rover.currentId,
       rover.unstable_pastId
     ]);
     return (

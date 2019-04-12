@@ -5,7 +5,7 @@ import { MenuItem } from "../MenuItem";
 const props: Parameters<typeof MenuItem>[0] = {
   stopId: "item",
   unstable_stops: [],
-  unstable_currentId: null,
+  currentId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),
   unstable_move: jest.fn(),

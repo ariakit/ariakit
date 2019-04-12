@@ -6,7 +6,7 @@ const props: Parameters<typeof MenuItemCheckbox>[0] = {
   name: "checkbox",
   stopId: "item",
   unstable_stops: [],
-  unstable_currentId: null,
+  currentId: null,
   unstable_pastId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),

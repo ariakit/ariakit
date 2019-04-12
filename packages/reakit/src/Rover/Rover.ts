@@ -18,7 +18,7 @@ export type RoverOptions = TabbableOptions &
   Pick<
     RoverStateReturn,
     | "unstable_stops"
-    | "unstable_currentId"
+    | "currentId"
     | "unstable_register"
     | "unstable_unregister"
     | "unstable_move"
@@ -46,8 +46,8 @@ export function useRover(
   const stopId = options.stopId || htmlProps.id || id;
 
   const reallyDisabled = options.disabled && !options.focusable;
-  const noFocused = options.unstable_currentId == null;
-  const focused = options.unstable_currentId === stopId;
+  const noFocused = options.currentId == null;
+  const focused = options.currentId === stopId;
   const isFirst =
     options.unstable_stops[0] && options.unstable_stops[0].id === stopId;
   const shouldTabIndex = focused || (isFirst && noFocused);

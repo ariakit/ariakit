@@ -5,7 +5,7 @@ import { Rover } from "../Rover";
 const props: Parameters<typeof Rover>[0] = {
   stopId: "rover",
   unstable_stops: [],
-  unstable_currentId: null,
+  currentId: null,
   unstable_pastId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),
@@ -34,7 +34,7 @@ test("render", () => {
 
 test("render currentId equals to stopId", () => {
   const { baseElement } = render(
-    <Rover {...props} unstable_currentId="rover">
+    <Rover {...props} currentId="rover">
       rover
     </Rover>
   );

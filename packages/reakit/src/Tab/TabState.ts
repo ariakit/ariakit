@@ -13,7 +13,7 @@ export type TabState = RoverState & {
   /**
    * TODO: Description
    */
-  unstable_selectedId: RoverState["unstable_currentId"];
+  unstable_selectedId: RoverState["currentId"];
   /**
    * TODO: Description
    */
@@ -45,7 +45,7 @@ export function useTabState(
   const [selectedId, select] = React.useState(sealedSelectedId);
   const rover = useRoverState({
     unstable_loop: loop,
-    unstable_currentId: selectedId,
+    currentId: selectedId,
     ...sealed
   });
 

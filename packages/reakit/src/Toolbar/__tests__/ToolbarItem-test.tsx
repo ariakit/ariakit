@@ -5,7 +5,7 @@ import { ToolbarItem } from "../ToolbarItem";
 const props: Parameters<typeof ToolbarItem>[0] = {
   stopId: "rover",
   unstable_stops: [],
-  unstable_currentId: null,
+  currentId: null,
   unstable_pastId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),

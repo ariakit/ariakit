@@ -21,7 +21,7 @@ export type RoverState = {
   /**
    * The current focused element ID.
    */
-  unstable_currentId: Stop["id"] | null;
+  currentId: Stop["id"] | null;
   /**
    * The last focused element ID.
    * @private
@@ -75,7 +75,7 @@ export type RoverActions = {
 };
 
 export type RoverInitialState = Partial<
-  Pick<RoverState, "orientation" | "unstable_currentId" | "unstable_loop">
+  Pick<RoverState, "orientation" | "currentId" | "unstable_loop">
 >;
 
 export type RoverStateReturn = RoverState & RoverActions;
@@ -97,7 +97,7 @@ type RoverAction =
 function reducer(state: RoverState, action: RoverAction): RoverState {
   const {
     unstable_stops: stops,
-    unstable_currentId: currentId,
+    currentId,
     unstable_pastId: pastId,
     unstable_loop: loop
   } = state;
@@ -153,7 +153,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
         ...state,
         unstable_stops: nextStops,
         unstable_pastId: pastId && pastId === id ? null : pastId,
-        unstable_currentId: currentId && currentId === id ? null : currentId
+        currentId: currentId && currentId === id ? null : currentId
       };
     }
     case "move": {
@@ -162,7 +162,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       if (id === null) {
         return {
           ...state,
-          unstable_currentId: null,
+          currentId: null,
           unstable_pastId: currentId
         };
       }
@@ -175,7 +175,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
 
       return {
         ...state,
-        unstable_currentId: stops[index].id,
+        currentId: stops[index].id,
         unstable_pastId: currentId
       };
     }
@@ -207,7 +207,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       );
       return {
         ...state,
-        unstable_currentId: nextState.unstable_currentId,
+        currentId: nextState.currentId,
         unstable_pastId: nextState.unstable_pastId
       };
     }
@@ -222,7 +222,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
     case "reset": {
       return {
         ...state,
-        unstable_currentId: null,
+        currentId: null,
         unstable_pastId: null
       };
     }
@@ -237,14 +237,14 @@ export function useRoverState(
   initialState: SealedInitialState<RoverInitialState> = {}
 ): RoverStateReturn {
   const {
-    unstable_currentId: currentId = null,
+    currentId: currentId = null,
     unstable_loop: loop = false,
     ...sealed
   } = useSealedState(initialState);
   const [state, dispatch] = React.useReducer(reducer, {
     ...sealed,
     unstable_stops: [],
-    unstable_currentId: currentId,
+    currentId,
     unstable_pastId: null,
     unstable_loop: loop
   });
@@ -278,7 +278,7 @@ export function useRoverState(
 const keys: Keys<RoverStateReturn> = [
   "orientation",
   "unstable_stops",
-  "unstable_currentId",
+  "currentId",
   "unstable_pastId",
   "unstable_loop",
   "unstable_register",
