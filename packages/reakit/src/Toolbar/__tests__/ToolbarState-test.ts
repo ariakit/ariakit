@@ -15,8 +15,8 @@ test("initial state", () => {
       "currentId": null,
       "loop": false,
       "orientation": "horizontal",
+      "stops": Array [],
       "unstable_pastId": null,
-      "unstable_stops": Array [],
     }
   `);
 });

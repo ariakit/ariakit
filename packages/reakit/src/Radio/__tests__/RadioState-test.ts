@@ -11,8 +11,8 @@ test("initial state", () => {
       "currentId": null,
       "currentValue": undefined,
       "loop": true,
+      "stops": Array [],
       "unstable_pastId": null,
-      "unstable_stops": Array [],
     }
   `);
 });

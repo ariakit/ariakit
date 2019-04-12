@@ -17,7 +17,7 @@ export type RoverState = {
   /**
    * A list of element refs and IDs of the roving items.
    */
-  unstable_stops: Stop[];
+  stops: Stop[];
   /**
    * The current focused element ID.
    */
@@ -37,11 +37,11 @@ export type RoverActions = {
   /**
    * Registers the element ID and ref in the roving tab index list.
    */
-  unstable_register: (id: Stop["id"], ref: Stop["ref"]) => void;
+  register: (id: Stop["id"], ref: Stop["ref"]) => void;
   /**
    * Unregisters the roving item.
    */
-  unstable_unregister: (id: Stop["id"]) => void;
+  unregister: (id: Stop["id"]) => void;
   /**
    * Moves focus onto a given element ID.
    */
@@ -95,12 +95,7 @@ type RoverAction =
     };
 
 function reducer(state: RoverState, action: RoverAction): RoverState {
-  const {
-    unstable_stops: stops,
-    currentId,
-    unstable_pastId: pastId,
-    loop
-  } = state;
+  const { stops, currentId, unstable_pastId: pastId, loop } = state;
 
   switch (action.type) {
     case "register": {
@@ -108,7 +103,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       if (stops.length === 0) {
         return {
           ...state,
-          unstable_stops: [{ id, ref }]
+          stops: [{ id, ref }]
         };
       }
 
@@ -129,12 +124,12 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       if (afterRefIndex === -1) {
         return {
           ...state,
-          unstable_stops: [...stops, { id, ref }]
+          stops: [...stops, { id, ref }]
         };
       }
       return {
         ...state,
-        unstable_stops: [
+        stops: [
           ...stops.slice(0, afterRefIndex),
           { id, ref },
           ...stops.slice(afterRefIndex)
@@ -151,7 +146,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
 
       return {
         ...state,
-        unstable_stops: nextStops,
+        stops: nextStops,
         unstable_pastId: pastId && pastId === id ? null : pastId,
         currentId: currentId && currentId === id ? null : currentId
       };
@@ -202,7 +197,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
     }
     case "previous": {
       const nextState = reducer(
-        { ...state, unstable_stops: stops.slice().reverse() },
+        { ...state, stops: stops.slice().reverse() },
         { type: "next" }
       );
       return {
@@ -241,7 +236,7 @@ export function useRoverState(
   );
   const [state, dispatch] = React.useReducer(reducer, {
     ...sealed,
-    unstable_stops: [],
+    stops: [],
     currentId,
     unstable_pastId: null,
     loop
@@ -249,11 +244,11 @@ export function useRoverState(
 
   return {
     ...state,
-    unstable_register: React.useCallback(
+    register: React.useCallback(
       (id, ref) => dispatch({ type: "register", id, ref }),
       []
     ),
-    unstable_unregister: React.useCallback(
+    unregister: React.useCallback(
       id => dispatch({ type: "unregister", id }),
       []
     ),
@@ -272,12 +267,12 @@ export function useRoverState(
 
 const keys: Keys<RoverStateReturn> = [
   "orientation",
-  "unstable_stops",
+  "stops",
   "currentId",
   "unstable_pastId",
   "loop",
-  "unstable_register",
-  "unstable_unregister",
+  "register",
+  "unregister",
   "move",
   "next",
   "previous",

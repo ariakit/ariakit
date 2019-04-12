@@ -16,9 +16,9 @@ test("initial state", () => {
       "loop": true,
       "manual": false,
       "selectedId": null,
+      "stops": Array [],
       "unstable_baseId": "base",
       "unstable_pastId": null,
-      "unstable_stops": Array [],
     }
   `);
 });
@@ -36,9 +36,9 @@ test("initial state selectedId", () => {
       "loop": true,
       "manual": false,
       "selectedId": "a",
+      "stops": Array [],
       "unstable_baseId": "base",
       "unstable_pastId": null,
-      "unstable_stops": Array [],
     }
   `
   );

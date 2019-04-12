@@ -3,7 +3,7 @@ import { render } from "react-testing-library";
 import { StaticMenu } from "../StaticMenu";
 
 const props: Parameters<typeof StaticMenu>[0] = {
-  unstable_stops: [],
+  stops: [],
   move: jest.fn(),
   "aria-label": "menu"
 };

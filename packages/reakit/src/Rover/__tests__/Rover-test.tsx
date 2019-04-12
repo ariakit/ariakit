@@ -4,11 +4,11 @@ import { Rover } from "../Rover";
 
 const props: Parameters<typeof Rover>[0] = {
   stopId: "rover",
-  unstable_stops: [],
+  stops: [],
   currentId: null,
   unstable_pastId: null,
-  unstable_register: jest.fn(),
-  unstable_unregister: jest.fn(),
+  register: jest.fn(),
+  unregister: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),

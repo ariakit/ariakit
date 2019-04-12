@@ -12,7 +12,7 @@ import { MenuStateReturn, useMenuState } from "./MenuState";
 
 export type StaticMenuOptions = BoxOptions &
   Pick<Partial<MenuStateReturn>, "orientation"> &
-  Pick<MenuStateReturn, "unstable_stops" | "move">;
+  Pick<MenuStateReturn, "stops" | "move">;
 
 export type StaticMenuProps = BoxProps;
 

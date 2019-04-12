@@ -17,10 +17,10 @@ export type RoverOptions = TabbableOptions &
   Pick<Partial<RoverStateReturn>, "orientation"> &
   Pick<
     RoverStateReturn,
-    | "unstable_stops"
+    | "stops"
     | "currentId"
-    | "unstable_register"
-    | "unstable_unregister"
+    | "register"
+    | "unregister"
     | "move"
     | "next"
     | "previous"
@@ -48,20 +48,14 @@ export function useRover(
   const reallyDisabled = options.disabled && !options.focusable;
   const noFocused = options.currentId == null;
   const focused = options.currentId === stopId;
-  const isFirst =
-    options.unstable_stops[0] && options.unstable_stops[0].id === stopId;
+  const isFirst = options.stops[0] && options.stops[0].id === stopId;
   const shouldTabIndex = focused || (isFirst && noFocused);
 
   React.useEffect(() => {
     if (reallyDisabled) return undefined;
-    options.unstable_register(stopId, ref);
-    return () => options.unstable_unregister(stopId);
-  }, [
-    stopId,
-    reallyDisabled,
-    options.unstable_register,
-    options.unstable_unregister
-  ]);
+    options.register(stopId, ref);
+    return () => options.unregister(stopId);
+  }, [stopId, reallyDisabled, options.register, options.unregister]);
 
   useUpdateEffect(() => {
     if (ref.current && focused) {

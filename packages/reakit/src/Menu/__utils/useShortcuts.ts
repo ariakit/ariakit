@@ -2,10 +2,7 @@ import * as React from "react";
 import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(
-  {
-    unstable_stops: stops,
-    move
-  }: Pick<MenuStateReturn, "unstable_stops" | "move">,
+  { stops, move }: Pick<MenuStateReturn, "stops" | "move">,
   timeout = 500
 ) {
   const [keys, setKeys] = React.useState("");
