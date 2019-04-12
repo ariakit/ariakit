@@ -9,7 +9,7 @@ import {
 import { Keys } from "../__utils/types";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
-export type MenuSeparatorOptions = SeparatorOptions & Partial<MenuStateReturn>;
+export type MenuSeparatorOptions = SeparatorOptions;
 
 export type MenuSeparatorProps = SeparatorProps;
 
@@ -23,7 +23,7 @@ export function useMenuSeparator(
   return htmlProps;
 }
 
-const keys: Keys<MenuSeparatorOptions> = [
+const keys: Keys<MenuStateReturn & MenuSeparatorOptions> = [
   ...useSeparator.__keys,
   ...useMenuState.__keys
 ];

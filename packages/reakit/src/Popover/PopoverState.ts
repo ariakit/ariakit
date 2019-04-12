@@ -1,5 +1,5 @@
 import * as React from "react";
-import Popper, { Placement } from "popper.js";
+import Popper from "popper.js";
 import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
 import {
   DialogState,
@@ -9,6 +9,23 @@ import {
 } from "../Dialog/DialogState";
 import { Keys } from "../__utils/types";
 
+type Placement =
+  | "auto-start"
+  | "auto"
+  | "auto-end"
+  | "top-start"
+  | "top"
+  | "top-end"
+  | "right-start"
+  | "right"
+  | "right-end"
+  | "bottom-end"
+  | "bottom"
+  | "bottom-start"
+  | "left-end"
+  | "left"
+  | "left-start";
+
 export type PopoverState = DialogState & {
   /**
    * The reference element.
@@ -16,27 +33,31 @@ export type PopoverState = DialogState & {
   unstable_referenceRef: React.RefObject<HTMLElement | null>;
   /**
    * The popover element.
+   * @Private
    */
   unstable_popoverRef: React.RefObject<HTMLElement | null>;
   /**
    * The arrow element.
+   * @private
    */
   unstable_arrowRef: React.RefObject<HTMLElement | null>;
   /**
    * Popover styles.
+   * @private
    */
   unstable_popoverStyles: Partial<CSSStyleDeclaration>;
   /**
    * Arrow styles.
+   * @private
    */
   unstable_arrowStyles: Partial<CSSStyleDeclaration>;
   /**
    * `placement` passed to the hook.
+   * @private
    */
   unstable_originalPlacement: Placement;
   /**
    * Actual `placement`.
-   * @default "bottom"
    */
   placement: Placement;
 };
@@ -52,17 +73,14 @@ export type PopoverInitialState = DialogInitialState &
   Partial<Pick<PopoverState, "placement">> & {
     /**
      * Whether or not flip the popover.
-     * @default true
      */
     unstable_flip?: boolean;
     /**
      * Whether or not shift the popover.
-     * @default true
      */
     unstable_shift?: boolean;
     /**
      * Offset between the reference and the popover.
-     * @default 12
      */
     unstable_gutter?: number;
   };

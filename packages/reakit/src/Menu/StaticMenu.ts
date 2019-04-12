@@ -11,7 +11,7 @@ import { useShortcuts } from "./__utils/useShortcuts";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 
 export type StaticMenuOptions = BoxOptions &
-  Partial<MenuStateReturn> &
+  Pick<Partial<MenuStateReturn>, "orientation"> &
   Pick<MenuStateReturn, "unstable_stops" | "unstable_move">;
 
 export type StaticMenuProps = BoxProps;
@@ -47,7 +47,7 @@ export function useStaticMenu(
   return htmlProps;
 }
 
-const keys: Keys<StaticMenuOptions> = [
+const keys: Keys<MenuStateReturn & StaticMenuOptions> = [
   ...useBox.__keys,
   ...useMenuState.__keys
 ];

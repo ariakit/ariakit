@@ -1,16 +1,24 @@
-const { join, dirname, relative } = require("path");
+const { join, dirname, relative, basename } = require("path");
+const ast = require("markdown-to-ast");
+const inject = require("md-node-inject");
+const toMarkdown = require("ast-to-markdown");
 const {
   readdirSync,
   ensureDirSync,
   writeFileSync,
+  readFileSync,
   lstatSync,
   existsSync
 } = require("fs-extra");
+const { Project, ts } = require("ts-morph");
 const rimraf = require("rimraf");
 const chalk = require("chalk");
 const log = require("../log");
 
-/** converts ./path/to/file.js to ./path/to */
+/**
+ * Converts ./path/to/file.js to ./path/to
+ * @param {string} dir
+ */
 function resolveDir(dir) {
   if (!/\.(t|j)s$/.test(dir)) {
     return dir;
@@ -18,11 +26,17 @@ function resolveDir(dir) {
   return dirname(dir);
 }
 
+/**
+ * @param {string} rootPath
+ */
 function getPackage(rootPath) {
   // eslint-disable-next-line import/no-dynamic-require
   return require(join(rootPath, "package.json"));
 }
 
+/**
+ * @param {string} rootPath
+ */
 function getModuleDir(rootPath) {
   const pkg = getPackage(rootPath);
   try {
@@ -34,6 +48,9 @@ function getModuleDir(rootPath) {
   }
 }
 
+/**
+ * @param {string} rootPath
+ */
 function getUnpkgDir(rootPath) {
   const pkg = getPackage(rootPath);
   try {
@@ -43,6 +60,9 @@ function getUnpkgDir(rootPath) {
   }
 }
 
+/**
+ * @param {string} rootPath
+ */
 function getTypesDir(rootPath) {
   const pkg = getPackage(rootPath);
   try {
@@ -52,20 +72,33 @@ function getTypesDir(rootPath) {
   }
 }
 
+/**
+ * @param {string} rootPath
+ */
 function getMainDir(rootPath) {
   const { main } = getPackage(rootPath);
   return resolveDir(main);
 }
 
+/**
+ * @param {string} path
+ */
 function removeExt(path) {
   return path.replace(/\.[^.]+$/, "");
 }
 
+/**
+ * @param {string} path
+ */
 function isRootModule(path) {
   return !/\//.test(path);
 }
 
-/** Filters out /dist, /es, /lib, /ts etc. */
+/**
+ * Filters out /dist, /es, /lib, /ts etc.
+ * @param {string} rootPath
+ * @param {string} filename
+ */
 function isSourceModule(rootPath, filename) {
   const dists = [
     getModuleDir(rootPath),
@@ -76,10 +109,16 @@ function isSourceModule(rootPath, filename) {
   return !dists.includes(filename);
 }
 
+/**
+ * @param {string} path
+ */
 function isDirectory(path) {
   return lstatSync(path).isDirectory();
 }
 
+/**
+ * @param {string} rootPath
+ */
 function getSourcePath(rootPath) {
   return join(rootPath, "src");
 }
@@ -87,6 +126,8 @@ function getSourcePath(rootPath) {
 /**
  * Filters out files starting with __
  * Includes directories and TS/JS files.
+ * @param {string} rootPath
+ * @param {string} filename
  */
 function isPublicModule(rootPath, filename) {
   const isPrivate = /^__/.test(filename);
@@ -99,7 +140,11 @@ function isPublicModule(rootPath, filename) {
   return /\.(j|t)sx?$/.test(filename);
 }
 
-/** Returns { index: "path/to/index", moduleName: "path/to/moduleName" } */
+/**
+ * Returns { index: "path/to/index", moduleName: "path/to/moduleName" }
+ * @param {string} rootPath
+ * @param {string} prefix
+ */
 function getPublicFiles(rootPath, prefix = "") {
   return readdirSync(rootPath)
     .filter(filename => isPublicModule(rootPath, filename))
@@ -114,7 +159,10 @@ function getPublicFiles(rootPath, prefix = "") {
     }, {});
 }
 
-/** Returns ["module", "path/to/module", ...] */
+/**
+ * Returns ["module", "path/to/module", ...]
+ * @param {string} rootPath
+ */
 function getProxyFolders(rootPath) {
   const publicFiles = getPublicFiles(getSourcePath(rootPath));
   return Object.keys(publicFiles)
@@ -122,7 +170,10 @@ function getProxyFolders(rootPath) {
     .filter(name => name !== "index");
 }
 
-/** returns ["lib", "es", "dist", "ts", "moduleName", ...] */
+/**
+ * Returns ["lib", "es", "dist", "ts", "moduleName", ...]
+ * @param {string} rootPath
+ */
 function getBuildFolders(rootPath) {
   return [
     getMainDir(rootPath),
@@ -133,6 +184,9 @@ function getBuildFolders(rootPath) {
   ].filter(Boolean);
 }
 
+/**
+ * @param {string} rootPath
+ */
 function cleanBuild(rootPath) {
   const pkg = getPackage(rootPath);
   const cleaned = [];
@@ -151,6 +205,9 @@ function cleanBuild(rootPath) {
   }
 }
 
+/**
+ * @param {string} path
+ */
 function getIndexPath(path) {
   return join(
     path,
@@ -158,6 +215,9 @@ function getIndexPath(path) {
   );
 }
 
+/**
+ * @param {string} rootPath
+ */
 function makeGitignore(rootPath) {
   const pkg = getPackage(rootPath);
   const buildFolders = getBuildFolders(rootPath);
@@ -179,6 +239,9 @@ function makeGitignore(rootPath) {
   );
 }
 
+/**
+ * @param {string} rootPath
+ */
 function makePlaygroundDeps(rootPath) {
   const { name } = getPackage(rootPath);
   const playPath = join(__dirname, "../../packages/reakit-playground");
@@ -206,6 +269,10 @@ ${objectContents}
   );
 }
 
+/**
+ * @param {string} rootPath
+ * @param {string} moduleName
+ */
 function getProxyPackageContents(rootPath, moduleName) {
   const { name } = getPackage(rootPath);
   const mainDir = getMainDir(rootPath);
@@ -222,6 +289,9 @@ function getProxyPackageContents(rootPath, moduleName) {
   return JSON.stringify(json, null, 2);
 }
 
+/**
+ * @param {string} rootPath
+ */
 function makeProxies(rootPath) {
   const pkg = getPackage(rootPath);
   const created = [];
@@ -244,8 +314,249 @@ function makeProxies(rootPath) {
   }
 }
 
+/**
+ * @param {string} rootPath
+ */
 function hasTSConfig(rootPath) {
   return existsSync(join(rootPath, "tsconfig.json"));
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function getEscapedName(node) {
+  const symbol = node.getSymbol();
+  return symbol && symbol.getEscapedName();
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function isPropsDeclaration(node) {
+  const kindName = node.getKindName();
+  const escapedName = getEscapedName(node);
+  return (
+    kindName === "TypeAliasDeclaration" &&
+    /.+(Options|InitialState)$/.test(escapedName)
+  );
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function getModuleName(node) {
+  return getEscapedName(node)
+    .replace("unstable_", "")
+    .replace(/^(.+)InitialState$/, "use$1State")
+    .replace("Options", "");
+}
+
+/**
+ * @param {import("ts-morph").Symbol} symbol
+ */
+function getDeclaration(symbol) {
+  const declarations = symbol.getDeclarations();
+  return declarations[0];
+}
+
+/**
+ * @param {import("ts-morph").Symbol} symbol
+ */
+function getJsDocs(symbol) {
+  const jsDocs = getDeclaration(symbol).getJsDocs();
+  return jsDocs[jsDocs.length - 1];
+}
+
+/**
+ * @param {import("ts-morph").Symbol} symbol
+ * @returns {string}
+ */
+function getComment(symbol) {
+  const jsDocs = getJsDocs(symbol);
+  if (!jsDocs) return "";
+  return jsDocs.getComment();
+}
+
+/**
+ * @param {import("ts-morph").Symbol} prop
+ * @returns {string[]}
+ */
+function getTagNames(prop) {
+  const jsDocs = getJsDocs(prop);
+  if (!jsDocs) return [];
+  return jsDocs.getTags().map(tag => tag.getTagName());
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function getProps(node) {
+  return node
+    .getType()
+    .getProperties()
+    .filter(prop => !getTagNames(prop).includes("private"));
+}
+
+/**
+ * @param {string} rootPath
+ * @param {import("ts-morph").Symbol} prop
+ */
+function getPropType(rootPath, prop) {
+  const declaration = getDeclaration(prop);
+  const type = declaration
+    .getType()
+    .getText(undefined, ts.TypeFormatFlags.InTypeAlias);
+
+  const encode = text =>
+    text.replace(/[\u00A0-\u9999<>&"|]/gim, i => `&#${i.charCodeAt(0)};`);
+
+  const replaceBreaks = text =>
+    text.replace(/-/g, "&#x2011;").replace(/\s/g, "&nbsp;");
+
+  if (type.length > 30) {
+    return `<code title="${encode(type)}">${replaceBreaks(
+      encode(type.substring(0, 27))
+    )}...</code>`;
+  }
+  return `<code>${replaceBreaks(encode(type))}</code>`;
+}
+
+/**
+ * @param {string} rootPath
+ */
+function getReadmePaths(rootPath) {
+  const publicFiles = getPublicFiles(getSourcePath(rootPath));
+  const readmePaths = Object.values(publicFiles).reduce((acc, filePath) => {
+    const readmePath = join(dirname(filePath), "README.md");
+    if (!acc.includes(readmePath) && existsSync(readmePath)) {
+      return [...acc, readmePath];
+    }
+    return acc;
+  }, []);
+  return readmePaths;
+}
+
+/**
+ * @param {string} dir
+ */
+function getPublicPathsInReadmeDir(dir) {
+  return Object.values(getPublicFiles(dir)).sort((a, b) => {
+    if (/State/.test(a)) return -1;
+    if (/State/.test(b) || a > b) return 1;
+    if (a < b) return -1;
+    return 0;
+  });
+}
+
+/**
+ * @param {string} rootPath
+ * @param {import("ts-morph").Symbol} prop
+ */
+function createPropTypeObject(rootPath, prop) {
+  return {
+    name: prop.getEscapedName(),
+    description: getComment(prop),
+    type: getPropType(rootPath, prop)
+  };
+}
+
+/**
+ * @param {ReturnType<typeof createPropTypeObject>} prop
+ */
+function getPropTypesRow(prop) {
+  const symbol = /unstable_/.test(prop.name) ? "⚠️" : "";
+  const name = `<strong><code>${prop.name}</code>&nbsp;${symbol}</strong>`;
+  // replace line breaks
+  const description = prop.description
+    .replace(/\n\n/g, "<br>")
+    .replace(/\n(\s+)/g, "<br>$1")
+    .replace(/\n/g, " ");
+
+  return `| ${name} | ${prop.type} | ${description} |`;
+}
+
+/**
+ * @param {Record<string, ReturnType<typeof createPropTypeObject>>} types
+ */
+function getPropTypesMarkdown(types) {
+  const tableHead = `
+| Name | Type | Description |
+|------|------|-------------|`;
+
+  const content = Object.keys(types)
+    .map(title => {
+      const rows = types[title].map(getPropTypesRow).join("\n");
+      return `
+### \`${title}\`
+
+${rows ? tableHead : ""}
+${rows || "No props to show"}`;
+    })
+    .join("");
+
+  return `
+<!-- Automatically generated -->
+  
+${content}`;
+}
+
+/**
+ * Inject prop types tables into README.md files
+ * @param {string} rootPath
+ */
+function injectPropTypes(rootPath) {
+  const pkg = getPackage(rootPath);
+  const readmePaths = getReadmePaths(rootPath);
+  const created = [];
+
+  const project = new Project({
+    tsConfigFilePath: join(rootPath, "tsconfig.json"),
+    addFilesFromTsConfig: false
+  });
+
+  readmePaths.forEach(readmePath => {
+    const mdContents = readFileSync(readmePath, { encoding: "utf-8" });
+
+    if (/#\s?Props/.test(mdContents)) {
+      const dir = dirname(readmePath);
+      const tree = ast.parse(mdContents);
+      const sourceFiles = project.addExistingSourceFiles(
+        getPublicPathsInReadmeDir(dir)
+      );
+      project.resolveSourceFileDependencies();
+      const types = {};
+
+      sourceFiles.forEach(sourceFile => {
+        sourceFile.forEachChild(node => {
+          if (isPropsDeclaration(node)) {
+            types[getModuleName(node)] = getProps(node).map(prop =>
+              createPropTypeObject(rootPath, prop)
+            );
+          }
+        });
+      });
+
+      const propTypesMarkdown = getPropTypesMarkdown(types);
+      try {
+        const merged = inject("Props", tree, ast.parse(propTypesMarkdown));
+        const markdown = toMarkdown(merged).trimLeft();
+        writeFileSync(readmePath, markdown);
+        created.push(chalk.bold(chalk.green(basename(dir))));
+      } catch (e) {
+        // do nothing
+      }
+    }
+  });
+
+  if (created.length) {
+    log(
+      [
+        "",
+        `Injected prop types in ${chalk.bold(pkg.name)}:`,
+        `${created.join(", ")}`
+      ].join("\n")
+    );
+  }
 }
 
 module.exports = {
@@ -263,5 +574,6 @@ module.exports = {
   makeGitignore,
   makePlaygroundDeps,
   makeProxies,
-  hasTSConfig
+  hasTSConfig,
+  injectPropTypes
 };

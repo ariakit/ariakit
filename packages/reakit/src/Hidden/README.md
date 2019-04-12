@@ -40,50 +40,27 @@ function Example() {
 return <Example />;
 ```
 
-## API
+## Props
+
+<!-- Automatically generated -->
 
 ### `useHiddenState`
 
-```ts static
-type HiddenStateOptions = {
-  /** @default false */
-  visible?: boolean;
-};
+| Name | Type | Description |
+|------|------|-------------|
+| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
 
-type HiddenState = {
-  visible: boolean;
-  show: () => void;
-  hide: () => void;
-  toggle: () => void;
-};
+### `Hidden`
 
-function useHiddenState(options?: HiddenStateOptions): HiddenState;
-```
+| Name | Type | Description |
+|------|------|-------------|
+| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
 
-### `useHidden`
+### `HiddenDisclosure`
 
-```ts static
-type UseHiddenOptions = UseBoxOptions & HiddenStateOptions;
-
-export function useHidden(
-  options: UseHiddenOptions = {},
-  props: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
-```
-
-```ts static
-type HiddenState = {
-  visible: boolean;
-  show: () => void;
-  hide: () => void;
-  toggle: () => void;
-};
-
-type Hidden = Box & {
-  visible: boolean;
-  hide: () => void;
-};
-
-type HiddenToggle = Box & {
-  toggle: () => void;
-};
-```
+| Name | Type | Description |
+|------|------|-------------|
+| <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
+| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
+| <strong><code>toggle</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Toggles the `visible` state |

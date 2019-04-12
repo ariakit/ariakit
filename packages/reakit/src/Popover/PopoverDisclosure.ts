@@ -11,7 +11,7 @@ import { Keys } from "../__utils/types";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
 export type PopoverDisclosureOptions = DialogDisclosureOptions &
-  Partial<PopoverStateReturn>;
+  Pick<Partial<PopoverStateReturn>, "unstable_referenceRef">;
 
 export type PopoverDisclosureProps = DialogDisclosureProps;
 
@@ -31,7 +31,7 @@ export function usePopoverDisclosure(
   return htmlProps;
 }
 
-const keys: Keys<PopoverDisclosureOptions> = [
+const keys: Keys<PopoverStateReturn & PopoverDisclosureOptions> = [
   ...useDialogDisclosure.__keys,
   ...usePopoverState.__keys
 ];

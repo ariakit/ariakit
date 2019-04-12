@@ -9,7 +9,7 @@ import { warning } from "../__utils/warning";
 import { Keys } from "../__utils/types";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
-export type RadioGroupOptions = BoxOptions & Partial<RadioStateReturn>;
+export type RadioGroupOptions = BoxOptions;
 
 export type RadioGroupProps = BoxProps & React.FieldsetHTMLAttributes<any>;
 
@@ -29,7 +29,7 @@ export function useRadioGroup(
   return htmlProps;
 }
 
-const keys: Keys<RadioGroupOptions> = [
+const keys: Keys<RadioStateReturn & RadioGroupOptions> = [
   ...useBox.__keys,
   ...useRadioState.__keys
 ];

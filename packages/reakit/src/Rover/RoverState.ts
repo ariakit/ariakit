@@ -24,6 +24,7 @@ export type RoverState = {
   unstable_currentId: Stop["id"] | null;
   /**
    * The last focused element ID.
+   * @private
    */
   unstable_pastId: Stop["id"] | null;
   /**
@@ -63,10 +64,12 @@ export type RoverActions = {
   unstable_last: () => void;
   /**
    * Resets `currentId` and `pastId` states.
+   * @private
    */
   unstable_reset: () => void;
   /**
    * Changes the `orientation` state of the roving tab index list.
+   * @private
    */
   unstable_orientate: (orientation: RoverState["orientation"]) => void;
 };

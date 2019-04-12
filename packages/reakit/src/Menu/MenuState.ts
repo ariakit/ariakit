@@ -17,13 +17,17 @@ import { MenuContext } from "./__utils/MenuContext";
 
 export type MenuState = RoverState &
   PopoverState & {
-    /** TODO: Description */
+    /**
+     * TODO: Description
+     */
     unstable_values: Record<string, any>;
   };
 
 export type MenuActions = RoverActions &
   PopoverActions & {
-    /** TODO: Description */
+    /**
+     * TODO: Description
+     */
     unstable_update: (name: string, value?: any) => void;
   };
 

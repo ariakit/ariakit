@@ -22,7 +22,6 @@ export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
   CheckboxOptions,
   "value"
 > &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "update" | "blur" | "touched" | "errors"
@@ -75,12 +74,9 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormCheckboxOptions<any, any>> = [
-  ...useCheckbox.__keys,
-  ...unstable_useFormState.__keys,
-  "name",
-  "value"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormCheckboxOptions<any, any>
+> = [...useCheckbox.__keys, ...unstable_useFormState.__keys, "name", "value"];
 
 unstable_useFormCheckbox.__keys = keys;
 

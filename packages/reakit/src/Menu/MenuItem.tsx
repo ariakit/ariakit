@@ -9,7 +9,7 @@ import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
 export type MenuItemOptions = RoverOptions &
-  Partial<MenuStateReturn> &
+  Pick<Partial<MenuStateReturn>, "hide" | "placement"> &
   Pick<MenuStateReturn, "unstable_next" | "unstable_previous">;
 
 export type MenuItemProps = RoverProps;
@@ -118,7 +118,7 @@ export function useMenuItem(
   };
 }
 
-const keys: Keys<MenuItemOptions> = [
+const keys: Keys<MenuStateReturn & MenuItemOptions> = [
   ...useRover.__keys,
   ...useMenuState.__keys
 ];

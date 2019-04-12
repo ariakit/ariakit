@@ -16,7 +16,6 @@ export type unstable_FormGroupOptions<
   V,
   P extends DeepPath<V, P>
 > = GroupOptions &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "touched" | "errors"> & {
     /** TODO: Description */
     name: P;
@@ -45,11 +44,9 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormGroupOptions<any, any>> = [
-  ...useGroup.__keys,
-  ...unstable_useFormState.__keys,
-  "name"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormGroupOptions<any, any>
+> = [...useGroup.__keys, ...unstable_useFormState.__keys, "name"];
 
 unstable_useFormGroup.__keys = keys;
 

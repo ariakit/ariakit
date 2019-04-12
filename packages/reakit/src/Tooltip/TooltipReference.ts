@@ -7,7 +7,10 @@ import { Keys } from "../__utils/types";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
 export type TooltipReferenceOptions = BoxOptions &
-  Partial<TooltipStateReturn> &
+  Pick<
+    Partial<TooltipStateReturn>,
+    "unstable_referenceRef" | "unstable_hiddenId"
+  > &
   Pick<TooltipStateReturn, "show" | "hide">;
 
 export type TooltipReferenceProps = BoxProps;
@@ -34,7 +37,7 @@ export function useTooltipReference(
   return htmlProps;
 }
 
-const keys: Keys<TooltipReferenceOptions> = [
+const keys: Keys<TooltipStateReturn & TooltipReferenceOptions> = [
   ...useBox.__keys,
   ...useTooltipState.__keys
 ];

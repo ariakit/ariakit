@@ -9,13 +9,13 @@ type Hook<O> = {
     options?: O,
     props?: React.HTMLAttributes<any> & React.RefAttributes<any>
   ): typeof props;
-  __keys?: Array<keyof O>;
+  __keys?: any[];
 };
 
 type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
-  keys?: Array<keyof O>;
+  keys?: any[];
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
@@ -30,7 +30,7 @@ export function unstable_createComponent<T extends As, O>({
     ref: React.Ref<any>
   ) => {
     if (useHook) {
-      const [options, htmlProps] = splitProps(props, keys as any[]);
+      const [options, htmlProps] = splitProps(props, keys);
       const elementProps = useHook(options, { ref, ...htmlProps });
       return useCreateElement(as, elementProps || {});
     }

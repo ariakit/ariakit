@@ -13,7 +13,10 @@ import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
 export type MenuDisclosureOptions = PopoverDisclosureOptions &
-  Partial<MenuStateReturn> &
+  Pick<
+    Partial<MenuStateReturn>,
+    "placement" | "hide" | "unstable_first" | "unstable_last"
+  > &
   Pick<MenuStateReturn, "show">;
 
 export type MenuDisclosureProps = PopoverDisclosureProps;
@@ -104,7 +107,7 @@ export function useMenuDisclosure(
   return htmlProps;
 }
 
-const keys: Keys<MenuDisclosureOptions> = [
+const keys: Keys<MenuStateReturn & MenuDisclosureOptions> = [
   ...usePopoverDisclosure.__keys,
   ...useMenuState.__keys
 ];

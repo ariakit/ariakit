@@ -10,8 +10,7 @@ import {
 import { Keys } from "../__utils/types";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 
-export type DialogDisclosureOptions = HiddenDisclosureOptions &
-  Partial<DialogStateReturn>;
+export type DialogDisclosureOptions = HiddenDisclosureOptions;
 
 export type DialogDisclosureProps = HiddenDisclosureProps;
 
@@ -31,7 +30,7 @@ export function useDialogDisclosure(
   return htmlProps;
 }
 
-const keys: Keys<DialogDisclosureOptions> = [
+const keys: Keys<DialogStateReturn & DialogDisclosureOptions> = [
   ...useHiddenDisclosure.__keys,
   ...useDialogState.__keys
 ];

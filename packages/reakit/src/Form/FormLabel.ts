@@ -14,8 +14,7 @@ export type unstable_FormLabelOptions<
   V,
   P extends DeepPath<V, P>
 > = BoxOptions &
-  Partial<unstable_FormStateReturn<V>> &
-  Pick<unstable_FormStateReturn<V>, "baseId"> & {
+  Pick<unstable_FormStateReturn<V>, "baseId" | "values"> & {
     /** TODO: Description */
     name: P;
     /** TODO: Description */
@@ -44,12 +43,9 @@ export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormLabelOptions<any, any>> = [
-  ...useBox.__keys,
-  ...unstable_useFormState.__keys,
-  "name",
-  "label"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormLabelOptions<any, any>
+> = [...useBox.__keys, ...unstable_useFormState.__keys, "name", "label"];
 
 unstable_useFormLabel.__keys = keys;
 

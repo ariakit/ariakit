@@ -7,7 +7,7 @@ import { Keys } from "../__utils/types";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenDisclosureOptions = ButtonOptions &
-  Partial<HiddenStateReturn> &
+  Pick<Partial<HiddenStateReturn>, "visible"> &
   Pick<HiddenStateReturn, "toggle" | "unstable_hiddenId">;
 
 export type HiddenDisclosureProps = ButtonProps;
@@ -30,7 +30,7 @@ export function useHiddenDisclosure(
   return htmlProps;
 }
 
-const keys: Keys<HiddenDisclosureOptions> = [
+const keys: Keys<HiddenStateReturn & HiddenDisclosureOptions> = [
   ...useButton.__keys,
   ...useHiddenState.__keys
 ];

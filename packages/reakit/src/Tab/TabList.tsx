@@ -8,7 +8,8 @@ import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { Keys } from "../__utils/types";
 import { useTabState, TabStateReturn } from "./TabState";
 
-export type TabListOptions = BoxOptions & Partial<TabStateReturn>;
+export type TabListOptions = BoxOptions &
+  Pick<Partial<TabStateReturn>, "orientation">;
 
 export type TabListProps = BoxProps;
 
@@ -29,7 +30,10 @@ export function useTabList(
   return htmlProps;
 }
 
-const keys: Keys<TabListOptions> = [...useBox.__keys, ...useTabState.__keys];
+const keys: Keys<TabStateReturn & TabListOptions> = [
+  ...useBox.__keys,
+  ...useTabState.__keys
+];
 
 useTabList.__keys = keys;
 

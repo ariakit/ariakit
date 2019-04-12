@@ -8,7 +8,7 @@ import { Keys } from "../__utils/types";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
 export type RadioOptions = RoverOptions &
-  Partial<RadioStateReturn> & {
+  Pick<Partial<RadioStateReturn>, "currentValue" | "setValue"> & {
     /**
      * Same as the `value` attribute.
      */
@@ -52,7 +52,7 @@ export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
   return htmlProps;
 }
 
-const keys: Keys<RadioOptions> = [
+const keys: Keys<RadioStateReturn & RadioOptions> = [
   ...useRover.__keys,
   ...useRadioState.__keys,
   "value",

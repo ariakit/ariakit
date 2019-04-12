@@ -9,7 +9,11 @@ import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
 import { Keys } from "../__utils/types";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
 
-export type TooltipOptions = HiddenOptions & Partial<TooltipStateReturn>;
+export type TooltipOptions = HiddenOptions &
+  Pick<
+    Partial<TooltipStateReturn>,
+    "unstable_popoverRef" | "unstable_popoverStyles"
+  >;
 
 export type TooltipProps = HiddenProps;
 
@@ -34,7 +38,7 @@ export function useTooltip(
   return htmlProps;
 }
 
-const keys: Keys<TooltipOptions> = [
+const keys: Keys<TooltipStateReturn & TooltipOptions> = [
   ...useHidden.__keys,
   ...useTooltipState.__keys
 ];

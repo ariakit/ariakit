@@ -8,7 +8,6 @@ import { Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormOptions = BoxOptions &
-  Partial<unstable_FormStateReturn<any>> &
   Pick<unstable_FormStateReturn<any>, "submit">;
 
 export type unstable_FormProps = BoxProps & React.FormHTMLAttributes<any>;
@@ -36,7 +35,7 @@ export function unstable_useForm(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormOptions> = [
+const keys: Keys<unstable_FormStateReturn<any> & unstable_FormOptions> = [
   ...useBox.__keys,
   ...unstable_useFormState.__keys
 ];

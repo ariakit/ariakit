@@ -15,7 +15,6 @@ export type unstable_FormPushButtonOptions<
   V,
   P extends DeepPath<V, P>
 > = ButtonOptions &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "push"> & {
     /** TODO: Description */
     name: P;
@@ -60,12 +59,9 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormPushButtonOptions<any, any>> = [
-  ...useButton.__keys,
-  ...unstable_useFormState.__keys,
-  "name",
-  "value"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormPushButtonOptions<any, any>
+> = [...useButton.__keys, ...unstable_useFormState.__keys, "name", "value"];
 
 unstable_useFormPushButton.__keys = keys;
 

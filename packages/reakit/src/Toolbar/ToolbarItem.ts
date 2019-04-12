@@ -6,7 +6,7 @@ import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
 import { Keys } from "../__utils/types";
 import { useToolbarState, ToolbarStateReturn } from "./ToolbarState";
 
-export type ToolbarItemOptions = RoverOptions & Partial<ToolbarStateReturn>;
+export type ToolbarItemOptions = RoverOptions;
 
 export type ToolbarItemProps = RoverProps & React.LiHTMLAttributes<any>;
 
@@ -20,7 +20,7 @@ export function useToolbarItem(
   return htmlProps;
 }
 
-const keys: Keys<ToolbarItemOptions> = [
+const keys: Keys<ToolbarStateReturn & ToolbarItemOptions> = [
   ...useRover.__keys,
   ...useToolbarState.__keys
 ];

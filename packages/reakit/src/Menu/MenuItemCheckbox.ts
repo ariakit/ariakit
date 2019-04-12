@@ -43,7 +43,7 @@ export function useMenuItemCheckbox(
   return htmlProps;
 }
 
-const keys: Keys<MenuItemCheckboxOptions> = [
+const keys: Keys<MenuStateReturn & MenuItemCheckboxOptions> = [
   ...useCheckbox.__keys,
   ...useMenuItem.__keys,
   "name"

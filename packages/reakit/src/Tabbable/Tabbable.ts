@@ -18,7 +18,7 @@ export type TabbableOptions = BoxOptions & {
   unstable_focusable?: boolean;
   /**
    * Keyboard keys to trigger click.
-   * @default [" "] // (space)
+   * @private
    */
   unstable_clickKeys?: string[];
 };

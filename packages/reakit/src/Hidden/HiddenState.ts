@@ -6,11 +6,11 @@ import { Keys } from "../__utils/types";
 export type HiddenState = {
   /**
    * Hidden element id.
+   * @private
    */
   unstable_hiddenId: string;
   /**
    * Whether it's visible or not.
-   * @default false
    */
   visible: boolean;
 };

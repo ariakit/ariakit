@@ -5,15 +5,25 @@ import { useRoverState, RoverState, RoverActions } from "../Rover/RoverState";
 import { Keys } from "../__utils/types";
 
 export type TabState = RoverState & {
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   * @private
+   */
   unstable_baseId: string;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   unstable_selectedId: RoverState["unstable_currentId"];
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   unstable_manual: boolean;
 };
 
 export type TabActions = RoverActions & {
+  /**
+   * TODO: Description
+   */
   unstable_select: (id: TabState["unstable_selectedId"]) => void;
 };
 

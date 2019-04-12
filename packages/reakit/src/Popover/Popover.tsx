@@ -10,7 +10,11 @@ import { DialogOptions, DialogProps, useDialog } from "../Dialog/Dialog";
 import { Keys } from "../__utils/types";
 import { PopoverStateReturn, usePopoverState } from "./PopoverState";
 
-export type PopoverOptions = DialogOptions & Partial<PopoverStateReturn>;
+export type PopoverOptions = DialogOptions &
+  Pick<
+    Partial<PopoverStateReturn>,
+    "unstable_popoverRef" | "unstable_popoverStyles"
+  >;
 
 export type PopoverProps = DialogProps;
 
@@ -37,7 +41,7 @@ export function usePopover(
   return htmlProps;
 }
 
-const keys: Keys<PopoverOptions> = [
+const keys: Keys<PopoverStateReturn & PopoverOptions> = [
   ...useDialog.__keys,
   ...usePopoverState.__keys
 ];

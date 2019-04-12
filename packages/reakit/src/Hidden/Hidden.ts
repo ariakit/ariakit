@@ -6,7 +6,8 @@ import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
-export type HiddenOptions = BoxOptions & Partial<HiddenStateReturn>;
+export type HiddenOptions = BoxOptions &
+  Pick<Partial<HiddenStateReturn>, "unstable_hiddenId" | "visible">;
 
 export type HiddenProps = BoxProps;
 
@@ -29,7 +30,10 @@ export function useHidden(
   return htmlProps;
 }
 
-const keys: Keys<HiddenOptions> = [...useBox.__keys, ...useHiddenState.__keys];
+const keys: Keys<HiddenStateReturn & HiddenOptions> = [
+  ...useBox.__keys,
+  ...useHiddenState.__keys
+];
 
 useHidden.__keys = keys;
 

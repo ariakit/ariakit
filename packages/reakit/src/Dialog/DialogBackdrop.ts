@@ -6,7 +6,7 @@ import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
 import { Keys } from "../__utils/types";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 
-export type DialogBackdropOptions = HiddenOptions & Partial<DialogStateReturn>;
+export type DialogBackdropOptions = HiddenOptions;
 
 export type DialogBackdropProps = HiddenProps;
 
@@ -36,7 +36,7 @@ export function useDialogBackdrop(
   return htmlProps;
 }
 
-const keys: Keys<DialogBackdropOptions> = [
+const keys: Keys<DialogStateReturn & DialogBackdropOptions> = [
   ...useHidden.__keys,
   ...useDialogState.__keys
 ];

@@ -9,8 +9,7 @@ import {
 import { Keys } from "../__utils/types";
 import { useToolbarState, ToolbarStateReturn } from "./ToolbarState";
 
-export type ToolbarSeparatorOptions = SeparatorOptions &
-  Partial<ToolbarStateReturn>;
+export type ToolbarSeparatorOptions = SeparatorOptions;
 
 export type ToolbarSeparatorProps = SeparatorProps;
 
@@ -24,7 +23,7 @@ export function useToolbarSeparator(
   return htmlProps;
 }
 
-const keys: Keys<ToolbarSeparatorOptions> = [
+const keys: Keys<ToolbarStateReturn & ToolbarSeparatorOptions> = [
   ...useSeparator.__keys,
   ...useToolbarState.__keys
 ];

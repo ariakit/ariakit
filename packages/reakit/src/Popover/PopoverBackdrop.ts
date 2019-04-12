@@ -9,8 +9,7 @@ import {
 import { Keys } from "../__utils/types";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
-export type PopoverBackdropOptions = DialogBackdropOptions &
-  Partial<PopoverStateReturn>;
+export type PopoverBackdropOptions = DialogBackdropOptions;
 
 export type PopoverBackdropProps = DialogBackdropProps;
 
@@ -24,7 +23,7 @@ export function usePopoverBackdrop(
   return htmlProps;
 }
 
-const keys: Keys<PopoverBackdropOptions> = [
+const keys: Keys<PopoverStateReturn & PopoverBackdropOptions> = [
   ...useDialogBackdrop.__keys,
   ...usePopoverState.__keys
 ];

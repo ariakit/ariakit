@@ -13,7 +13,6 @@ export type unstable_FormRemoveButtonOptions<
   V,
   P extends DeepPath<V, P>
 > = ButtonOptions &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "remove"> & {
     /** TODO: Description */
     name: P;
@@ -79,12 +78,9 @@ export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormRemoveButtonOptions<any, any>> = [
-  ...useButton.__keys,
-  ...unstable_useFormState.__keys,
-  "name",
-  "index"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormRemoveButtonOptions<any, any>
+> = [...useButton.__keys, ...unstable_useFormState.__keys, "name", "index"];
 
 unstable_useFormRemoveButton.__keys = keys;
 

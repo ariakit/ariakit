@@ -15,7 +15,6 @@ export type unstable_FormMessageOptions<
   V,
   P extends DeepPath<V, P>
 > = BoxOptions &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
     "baseId" | "touched" | "errors" | "messages"
@@ -55,11 +54,9 @@ export function unstable_useFormMessage<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormMessageOptions<any, any>> = [
-  ...useBox.__keys,
-  ...unstable_useFormState.__keys,
-  "name"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormMessageOptions<any, any>
+> = [...useBox.__keys, ...unstable_useFormState.__keys, "name"];
 
 unstable_useFormMessage.__keys = keys;
 

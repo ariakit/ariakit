@@ -35,7 +35,7 @@ export function useMenuItemRadio(
   return htmlProps;
 }
 
-const keys: Keys<MenuItemRadioOptions> = [
+const keys: Keys<MenuStateReturn & MenuItemRadioOptions> = [
   ...useRadio.__keys,
   ...useMenuItem.__keys,
   "name"

@@ -12,7 +12,7 @@ import {
   StaticMenuProps,
   useStaticMenu
 } from "./StaticMenu";
-import { useMenuState } from "./MenuState";
+import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
 export type MenuOptions = PopoverOptions & StaticMenuOptions;
@@ -57,7 +57,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   return htmlProps;
 }
 
-const keys: Keys<MenuOptions> = [
+const keys: Keys<MenuStateReturn & MenuOptions> = [
   ...usePopover.__keys,
   ...useStaticMenu.__keys,
   ...useMenuState.__keys

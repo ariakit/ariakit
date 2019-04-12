@@ -14,7 +14,7 @@ import { Keys } from "../__utils/types";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
-  Partial<RoverStateReturn> &
+  Pick<Partial<RoverStateReturn>, "orientation"> &
   Pick<
     RoverStateReturn,
     | "unstable_stops"
@@ -110,7 +110,7 @@ export function useRover(
   return htmlProps;
 }
 
-const keys: Keys<RoverOptions> = [
+const keys: Keys<RoverStateReturn & RoverOptions> = [
   ...useTabbable.__keys,
   ...useRoverState.__keys,
   "stopId"

@@ -29,62 +29,108 @@ interface Update<V> {
 }
 
 export type unstable_FormState<V> = {
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   baseId: string;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   values: V;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   touched: DeepPartial<DeepMap<V, boolean>>;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   messages: Messages<V>;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   errors: Messages<V>;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   validating: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   valid: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   submitting: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   submitSucceed: number;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   submitFailed: number;
 };
 
 export type unstable_FormActions<V> = {
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   reset: () => void;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   validate: (values?: V) => ValidateReturn<V>;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   submit: () => void;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   update: Update<V>;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   blur: <P extends DeepPath<V, P>>(name: P) => void;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   push: <P extends DeepPath<V, P>>(
     name: P,
     value?: ArrayValue<DeepPathValue<V, P>>
   ) => void;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   remove: <P extends DeepPath<V, P>>(name: P, index: number) => void;
 };
 
 export type unstable_FormInitialState<V> = Partial<
   Pick<unstable_FormState<V>, "baseId" | "values">
 > & {
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   validateOnBlur?: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   validateOnChange?: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   resetOnSubmitSucceed?: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   resetOnUnmount?: boolean;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   onValidate?: (values: V) => ValidateReturn<V>;
-  /** TODO: Description */
+  /**
+   * TODO: Description
+   */
   onSubmit?: (values: V) => ValidateReturn<V>;
 };
 

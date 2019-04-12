@@ -17,11 +17,10 @@ import { DeepPath } from "./__utils/types";
 export type unstable_FormRadioGroupOptions<
   V,
   P extends DeepPath<V, P>
-> = unstable_FormGroupOptions<V, P> &
-  Partial<unstable_FormStateReturn<V>> & {
-    /** TODO: Description */
-    name: P;
-  };
+> = unstable_FormGroupOptions<V, P> & {
+  /** TODO: Description */
+  name: P;
+};
 
 export type unstable_FormRadioGroupProps = unstable_FormGroupProps &
   React.FieldsetHTMLAttributes<any>;
@@ -41,11 +40,9 @@ export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormRadioGroupOptions<any, any>> = [
-  ...unstable_useFormGroup.__keys,
-  ...unstable_useFormState.__keys,
-  "name"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormRadioGroupOptions<any, any>
+> = [...unstable_useFormGroup.__keys, ...unstable_useFormState.__keys, "name"];
 
 unstable_useFormRadioGroup.__keys = keys;
 

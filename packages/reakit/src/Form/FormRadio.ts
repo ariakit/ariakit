@@ -16,7 +16,6 @@ export type unstable_FormRadioOptions<
   V,
   P extends DeepPath<V, P>
 > = BoxOptions &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<unstable_FormStateReturn<V>, "values" | "update" | "blur"> & {
     /** TODO: Description */
     name: P;
@@ -58,12 +57,9 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormRadioOptions<any, any>> = [
-  ...useBox.__keys,
-  ...unstable_useFormState.__keys,
-  "name",
-  "value"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormRadioOptions<any, any>
+> = [...useBox.__keys, ...unstable_useFormState.__keys, "name", "value"];
 
 unstable_useFormRadio.__keys = keys;
 

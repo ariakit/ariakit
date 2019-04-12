@@ -9,8 +9,7 @@ import {
 import { Keys } from "../__utils/types";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
-export type TooltipArrowOptions = PopoverArrowOptions &
-  Partial<TooltipStateReturn>;
+export type TooltipArrowOptions = PopoverArrowOptions;
 
 export type TooltipArrowProps = PopoverArrowProps;
 
@@ -24,7 +23,7 @@ export function useTooltipArrow(
   return htmlProps;
 }
 
-const keys: Keys<TooltipArrowOptions> = [
+const keys: Keys<TooltipStateReturn & TooltipArrowOptions> = [
   ...usePopoverArrow.__keys,
   ...useTooltipState.__keys
 ];

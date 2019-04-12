@@ -8,7 +8,10 @@ import { Keys } from "../__utils/types";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
 export type PopoverArrowOptions = BoxOptions &
-  Partial<PopoverStateReturn> &
+  Pick<
+    Partial<PopoverStateReturn>,
+    "unstable_arrowRef" | "unstable_arrowStyles"
+  > &
   Pick<PopoverStateReturn, "placement">;
 
 export type PopoverArrowProps = BoxProps;
@@ -60,7 +63,7 @@ export function usePopoverArrow(
   return htmlProps;
 }
 
-const keys: Keys<PopoverArrowOptions> = [
+const keys: Keys<PopoverStateReturn & PopoverArrowOptions> = [
   ...useBox.__keys,
   ...usePopoverState.__keys
 ];

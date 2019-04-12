@@ -7,7 +7,7 @@ import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
-export type MenuGroupOptions = BoxOptions & Partial<MenuStateReturn>;
+export type MenuGroupOptions = BoxOptions;
 
 export type MenuGroupProps = BoxProps & React.FieldsetHTMLAttributes<any>;
 
@@ -22,7 +22,10 @@ export function useMenuGroup(
   return htmlProps;
 }
 
-const keys: Keys<MenuGroupOptions> = [...useBox.__keys, ...useMenuState.__keys];
+const keys: Keys<MenuStateReturn & MenuGroupOptions> = [
+  ...useBox.__keys,
+  ...useMenuState.__keys
+];
 
 useMenuGroup.__keys = keys;
 

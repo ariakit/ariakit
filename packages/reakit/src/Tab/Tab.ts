@@ -8,7 +8,7 @@ import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabOptions = RoverOptions &
-  Partial<TabStateReturn> &
+  Pick<Partial<TabStateReturn>, "unstable_manual"> &
   Pick<
     TabStateReturn,
     "unstable_baseId" | "unstable_selectedId" | "unstable_select"
@@ -53,7 +53,7 @@ export function useTab(
   return htmlProps;
 }
 
-const keys: Keys<TabOptions> = [
+const keys: Keys<TabStateReturn & TabOptions> = [
   ...useRover.__keys,
   ...useTabState.__keys,
   "stopId"

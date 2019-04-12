@@ -22,7 +22,6 @@ export type unstable_FormInputOptions<
   V,
   P extends DeepPath<V, P>
 > = TabbableOptions &
-  Partial<unstable_FormStateReturn<V>> &
   Pick<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "touched" | "errors" | "update" | "blur"
@@ -60,11 +59,9 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   return htmlProps;
 }
 
-const keys: Keys<unstable_FormInputOptions<any, any>> = [
-  ...useTabbable.__keys,
-  ...unstable_useFormState.__keys,
-  "name"
-];
+const keys: Keys<
+  unstable_FormStateReturn<any> & unstable_FormInputOptions<any, any>
+> = [...useTabbable.__keys, ...unstable_useFormState.__keys, "name"];
 
 unstable_useFormInput.__keys = keys;
 

@@ -6,7 +6,8 @@ const {
   makeGitignore,
   makePlaygroundDeps,
   cleanBuild,
-  hasTSConfig
+  hasTSConfig,
+  injectPropTypes
 } = require("./utils");
 
 process.env.NODE_ENV = "production";
@@ -14,6 +15,7 @@ process.env.NODE_ENV = "production";
 const cwd = process.cwd();
 
 cleanBuild(cwd);
+injectPropTypes(cwd);
 makeGitignore(cwd);
 makePlaygroundDeps(cwd);
 makeProxies(cwd);

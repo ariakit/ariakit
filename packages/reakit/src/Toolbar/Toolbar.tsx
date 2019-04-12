@@ -8,7 +8,8 @@ import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
-export type ToolbarOptions = BoxOptions & Partial<ToolbarStateReturn>;
+export type ToolbarOptions = BoxOptions &
+  Pick<Partial<ToolbarStateReturn>, "orientation">;
 
 export type ToolbarProps = BoxProps;
 
@@ -29,7 +30,7 @@ export function useToolbar(
   return htmlProps;
 }
 
-const keys: Keys<ToolbarOptions> = [
+const keys: Keys<ToolbarStateReturn & ToolbarOptions> = [
   ...useBox.__keys,
   ...useToolbarState.__keys
 ];
