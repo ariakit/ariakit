@@ -9,7 +9,7 @@ import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabPanelOptions = HiddenOptions &
-  Pick<TabStateReturn, "unstable_baseId" | "unstable_selectedId"> & {
+  Pick<TabStateReturn, "unstable_baseId" | "selectedId"> & {
     /** TODO: Description */
     stopId: string;
   };
@@ -21,7 +21,7 @@ export function useTabPanel(
   htmlProps: TabPanelProps = {}
 ) {
   let _options: TabPanelOptions = {
-    visible: options.unstable_selectedId === options.stopId,
+    visible: options.selectedId === options.stopId,
     ...options
   };
   _options = unstable_useOptions("useTabPanel", _options, htmlProps);

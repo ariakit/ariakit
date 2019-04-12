@@ -50,7 +50,6 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
-| <strong><code>unstable_popoverRef</code>&nbsp;⚠️</strong> | <code>RefObject&#60;HTMLElement&nbsp;&#124;&nbsp;null&#62;</code> | The popover element. |
 
 ### `TooltipArrow`
 

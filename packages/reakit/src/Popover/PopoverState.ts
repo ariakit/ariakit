@@ -33,7 +33,7 @@ export type PopoverState = DialogState & {
   unstable_referenceRef: React.RefObject<HTMLElement | null>;
   /**
    * The popover element.
-   * @Private
+   * @private
    */
   unstable_popoverRef: React.RefObject<HTMLElement | null>;
   /**

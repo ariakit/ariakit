@@ -8,11 +8,8 @@ import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabOptions = RoverOptions &
-  Pick<Partial<TabStateReturn>, "unstable_manual"> &
-  Pick<
-    TabStateReturn,
-    "unstable_baseId" | "unstable_selectedId" | "unstable_select"
-  > & {
+  Pick<Partial<TabStateReturn>, "manual"> &
+  Pick<TabStateReturn, "unstable_baseId" | "selectedId" | "select"> & {
     /** TODO: Description */
     stopId: string;
   };
@@ -26,7 +23,7 @@ export function useTab(
   let _options: TabOptions = { focusable, ...options };
   _options = unstable_useOptions("useTab", _options, htmlProps);
 
-  const selected = _options.unstable_selectedId === _options.stopId;
+  const selected = _options.selectedId === _options.stopId;
 
   htmlProps = mergeProps(
     {
@@ -36,12 +33,12 @@ export function useTab(
       "aria-controls": getTabPanelId(_options.stopId, _options.unstable_baseId),
       onClick: () => {
         if (!_options.disabled && !selected) {
-          _options.unstable_select(_options.stopId);
+          _options.select(_options.stopId);
         }
       },
       onFocus: () => {
-        if (!_options.disabled && !_options.unstable_manual && !selected) {
-          _options.unstable_select(_options.stopId);
+        if (!_options.disabled && !_options.manual && !selected) {
+          _options.select(_options.stopId);
         }
       }
     } as typeof htmlProps,

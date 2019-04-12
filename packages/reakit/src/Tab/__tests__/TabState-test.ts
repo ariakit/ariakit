@@ -14,30 +14,30 @@ test("initial state", () => {
     Object {
       "currentId": null,
       "loop": true,
+      "manual": false,
+      "selectedId": null,
       "unstable_baseId": "base",
-      "unstable_manual": false,
       "unstable_pastId": null,
-      "unstable_selectedId": null,
       "unstable_stops": Array [],
     }
   `);
 });
 
 test("initial state selectedId", () => {
-  const result = render({ unstable_baseId: "base", unstable_selectedId: "a" });
+  const result = render({ unstable_baseId: "base", selectedId: "a" });
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
-      unstable_selectedId: "a"
+      selectedId: "a"
     },
     `
     Object {
       "currentId": "a",
       "loop": true,
+      "manual": false,
+      "selectedId": "a",
       "unstable_baseId": "base",
-      "unstable_manual": false,
       "unstable_pastId": null,
-      "unstable_selectedId": "a",
       "unstable_stops": Array [],
     }
   `

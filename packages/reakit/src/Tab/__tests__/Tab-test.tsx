@@ -7,12 +7,12 @@ const props: Parameters<typeof Tab>[0] = {
   stopId: "tab",
   unstable_stops: [],
   currentId: null,
-  unstable_selectedId: null,
+  selectedId: null,
   unstable_pastId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),
   move: jest.fn(),
-  unstable_select: jest.fn(),
+  select: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
@@ -63,7 +63,7 @@ test("render active", () => {
 
 test("render active selected", () => {
   const { baseElement } = render(
-    <Tab {...props} currentId="tab" unstable_selectedId="tab">
+    <Tab {...props} currentId="tab" selectedId="tab">
       tab
     </Tab>
   );

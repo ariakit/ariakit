@@ -55,7 +55,7 @@ test("focusing tab reveals the panel", () => {
 });
 
 test("focusing tab does not reveal the panel when manual is truthy", () => {
-  const { getByText } = render(<SimpleTest unstable_manual />);
+  const { getByText } = render(<SimpleTest manual />);
   const tab2 = getByText("tab2");
   const tabpanel2 = getByText("tabpanel2");
   expect(tabpanel2).not.toBeVisible();

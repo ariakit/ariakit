@@ -13,18 +13,18 @@ export type TabState = RoverState & {
   /**
    * TODO: Description
    */
-  unstable_selectedId: RoverState["currentId"];
+  selectedId: RoverState["currentId"];
   /**
    * TODO: Description
    */
-  unstable_manual: boolean;
+  manual: boolean;
 };
 
 export type TabActions = RoverActions & {
   /**
    * TODO: Description
    */
-  unstable_select: (id: TabState["unstable_selectedId"]) => void;
+  select: (id: TabState["selectedId"]) => void;
 };
 
 export type TabInitialState = Partial<TabState>;
@@ -36,9 +36,9 @@ export function useTabState(
 ): TabStateReturn {
   const {
     unstable_baseId: baseId = unstable_useId("tab-"),
-    unstable_selectedId: sealedSelectedId = null,
-    loop: loop = true,
-    unstable_manual: manual = false,
+    selectedId: sealedSelectedId = null,
+    loop = true,
+    manual = false,
     ...sealed
   } = useSealedState(initialState);
 
@@ -52,18 +52,18 @@ export function useTabState(
   return {
     ...rover,
     unstable_baseId: baseId,
-    unstable_selectedId: selectedId,
-    unstable_manual: manual,
-    unstable_select: select
+    selectedId,
+    manual,
+    select
   };
 }
 
 const keys: Keys<TabStateReturn> = [
   ...useRoverState.__keys,
   "unstable_baseId",
-  "unstable_selectedId",
-  "unstable_select",
-  "unstable_manual"
+  "selectedId",
+  "select",
+  "manual"
 ];
 
 useTabState.__keys = keys;

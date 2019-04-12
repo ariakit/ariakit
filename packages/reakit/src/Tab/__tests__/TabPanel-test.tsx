@@ -5,7 +5,7 @@ import { TabPanel } from "../TabPanel";
 const props: Parameters<typeof TabPanel>[0] = {
   unstable_baseId: "base",
   stopId: "tab",
-  unstable_selectedId: null
+  selectedId: null
 };
 
 test("render", () => {
@@ -53,7 +53,7 @@ test("render visible", () => {
 
 test("render selected", () => {
   const { baseElement } = render(
-    <TabPanel {...props} unstable_selectedId="tab">
+    <TabPanel {...props} selectedId="tab">
       tabpanel
     </TabPanel>
   );
