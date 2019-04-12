@@ -7,11 +7,14 @@ import {
   useCheckbox,
   CheckboxProps
 } from "../Checkbox/Checkbox";
-import { Keys } from "../__utils/types";
+import { Keys, Omit } from "../__utils/types";
 import { MenuItemOptions, MenuItemProps, useMenuItem } from "./MenuItem";
 import { MenuStateReturn } from "./MenuState";
 
-export type MenuItemCheckboxOptions = CheckboxOptions &
+export type MenuItemCheckboxOptions = Omit<
+  CheckboxOptions,
+  "currentValue" | "setValue"
+> &
   MenuItemOptions &
   Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
     /** TODO: Description */
@@ -43,11 +46,9 @@ export function useMenuItemCheckbox(
   return htmlProps;
 }
 
-const keys: Keys<MenuStateReturn & MenuItemCheckboxOptions> = [
-  ...useCheckbox.__keys,
-  ...useMenuItem.__keys,
-  "name"
-];
+const keys: Keys<
+  MenuStateReturn & CheckboxOptions & MenuItemCheckboxOptions
+> = [...useCheckbox.__keys, ...useMenuItem.__keys, "name"];
 
 useMenuItemCheckbox.__keys = keys;
 

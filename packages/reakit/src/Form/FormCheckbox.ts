@@ -20,7 +20,7 @@ import { shouldShowError } from "./__utils/shouldShowError";
 
 export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
   CheckboxOptions,
-  "value"
+  "value" | "currentValue" | "setValue"
 > &
   Pick<
     unstable_FormStateReturn<V>,
@@ -75,7 +75,9 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
 }
 
 const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormCheckboxOptions<any, any>
+  CheckboxOptions &
+    unstable_FormStateReturn<any> &
+    unstable_FormCheckboxOptions<any, any>
 > = [...useCheckbox.__keys, ...unstable_useFormState.__keys, "name", "value"];
 
 unstable_useFormCheckbox.__keys = keys;

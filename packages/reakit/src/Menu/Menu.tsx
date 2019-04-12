@@ -1,7 +1,7 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
-import { Keys } from "../__utils/types";
+import { Keys, Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
@@ -15,7 +15,8 @@ import {
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
-export type MenuOptions = PopoverOptions & StaticMenuOptions;
+export type MenuOptions = Omit<PopoverOptions, "modal" | "hideOnEsc"> &
+  StaticMenuOptions;
 
 export type MenuProps = PopoverProps & StaticMenuProps;
 
@@ -26,10 +27,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   let _options: MenuOptions = {
     unstable_autoFocusOnShow: !parent,
     unstable_autoFocusOnHide: !parentIsHorizontal,
-    ...options,
-    modal: false,
-    // We'll handle esc differently
-    hideOnEsc: false
+    ...options
   };
 
   _options = unstable_useOptions("useMenu", _options, htmlProps);
@@ -52,12 +50,15 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   );
 
   htmlProps = useStaticMenu(_options, htmlProps);
-  htmlProps = usePopover(_options, htmlProps);
+  htmlProps = usePopover(
+    { ..._options, modal: false, hideOnEsc: false },
+    htmlProps
+  );
   htmlProps = unstable_useProps("useMenu", _options, htmlProps);
   return htmlProps;
 }
 
-const keys: Keys<MenuStateReturn & MenuOptions> = [
+const keys: Keys<MenuStateReturn & PopoverOptions & MenuOptions> = [
   ...usePopover.__keys,
   ...useStaticMenu.__keys,
   ...useMenuState.__keys
