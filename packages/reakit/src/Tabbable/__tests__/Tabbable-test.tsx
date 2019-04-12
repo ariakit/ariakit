@@ -27,7 +27,7 @@ test("render disabled", () => {
 
 test("render disabled focusable", () => {
   const { getByText } = render(
-    <Tabbable disabled unstable_focusable>
+    <Tabbable disabled focusable>
       button
     </Tabbable>
   );
@@ -65,7 +65,7 @@ test("click disabled", () => {
 test("click disabled focusable", () => {
   const fn = jest.fn();
   const { getByText } = render(
-    <Tabbable onClick={fn} disabled unstable_focusable>
+    <Tabbable onClick={fn} disabled focusable>
       button
     </Tabbable>
   );
@@ -92,7 +92,7 @@ test("focus disabled", () => {
 
 test("focus disabled focusable", () => {
   const { getByText } = render(
-    <Tabbable disabled unstable_focusable>
+    <Tabbable disabled focusable>
       button
     </Tabbable>
   );
@@ -130,7 +130,7 @@ test("non-native button click disabled", () => {
 test("non-native button click disabled focusable", () => {
   const fn = jest.fn();
   const { getByText } = render(
-    <Tabbable as="div" onClick={fn} disabled unstable_focusable>
+    <Tabbable as="div" onClick={fn} disabled focusable>
       button
     </Tabbable>
   );
@@ -161,7 +161,7 @@ test("non-native button focus disabled", () => {
 
 test("non-native button focus disabled focusable", () => {
   const { getByText } = render(
-    <Tabbable as="div" disabled unstable_focusable>
+    <Tabbable as="div" disabled focusable>
       button
     </Tabbable>
   );
@@ -209,7 +209,7 @@ test("non-native button space/enter disabled focusable", () => {
     <Tabbable
       as="div"
       disabled
-      unstable_focusable
+      focusable
       onClick={fn}
       unstable_clickKeys={["Enter", " "]}
     >

@@ -131,7 +131,7 @@ function Example() {
 | <strong><code>currentValue</code>&nbsp;</strong> | <code title="boolean &#124; any[] &#124; &#34;indeterminate&#34;">boolean&nbsp;&#124;&nbsp;any[]&nbsp;&#124;&nbsp;&#34;indeterm...</code> | Stores the state of the checkbox. If checkboxes that share this state have defined a `value` prop, it's going to be an array. |
 | <strong><code>setValue</code>&nbsp;</strong> | <code title="(value: SetStateAction&#60;boolean &#124; any[] &#124; &#34;indeterminate&#34;&#62;) =&#62; void">(value:&nbsp;SetStateAction&#60;bool...</code> | Sets `currentValue`. |
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>checked</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Checkbox's checked state. If present, it's used instead of currentValue. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | TODO: Description |
@@ -156,7 +156,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | TODO: Description |
 | <strong><code>update</code>&nbsp;</strong> | <code>Update&#60;V&#62;</code> | TODO: Description |
@@ -189,7 +189,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | TODO: Description |
 | <strong><code>push</code>&nbsp;</strong> | <code title="&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P, value?: ArrayValue&#60;DeepPathValue&#60;V, P&#62;&#62; &#124; undefined) =&#62; void">&#60;P&nbsp;extends&nbsp;DeepPath&#60;V,&nbsp;P&#62;&#62;(...</code> | TODO: Description |
@@ -220,7 +220,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | TODO: Description |
 | <strong><code>remove</code>&nbsp;</strong> | <code title="&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P, index: number) =&#62; void">&#60;P&nbsp;extends&nbsp;DeepPath&#60;V,&nbsp;P&#62;&#62;(...</code> | TODO: Description |
@@ -232,7 +232,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>submitting</code>&nbsp;</strong> | <code>boolean</code> | TODO: Description |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
 | <strong><code>submit</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | TODO: Description |

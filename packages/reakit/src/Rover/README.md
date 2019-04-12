@@ -47,7 +47,7 @@ function Example() {
         Item 3
       </Rover>
       {visible && <Rover {...roving}>Item 3.5</Rover>}
-      <Rover {...roving} disabled unstable_focusable>
+      <Rover {...roving} disabled focusable>
         Item 4
       </Rover>
       <Rover {...roving}>Item 5</Rover>
@@ -73,7 +73,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>unstable_focusable</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
 | <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
 | <strong><code>unstable_currentId</code>&nbsp;⚠️</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>unstable_stops</code>&nbsp;⚠️</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |

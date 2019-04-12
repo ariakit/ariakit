@@ -38,7 +38,7 @@ test("render disabled", () => {
 });
 
 test("render disabled focusable", () => {
-  const { baseElement } = render(<Checkbox disabled unstable_focusable />);
+  const { baseElement } = render(<Checkbox disabled focusable />);
   expect(baseElement).toMatchInlineSnapshot(`
 <body>
   <div>
@@ -102,7 +102,7 @@ test("click disabled focusable", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
     <label>
-      <Checkbox onClick={fn} disabled unstable_focusable /> checkbox
+      <Checkbox onClick={fn} disabled focusable /> checkbox
     </label>
   );
   const checkbox = getByLabelText("checkbox");
@@ -137,7 +137,7 @@ test("focus disabled", () => {
 test("focus disabled focusable", () => {
   const { getByLabelText } = render(
     <label>
-      <Checkbox disabled unstable_focusable /> checkbox
+      <Checkbox disabled focusable /> checkbox
     </label>
   );
   const checkbox = getByLabelText("checkbox");
@@ -175,7 +175,7 @@ test("non-native checkbox click disabled focusable", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
     <label>
-      <Checkbox as="div" onClick={fn} disabled unstable_focusable /> checkbox
+      <Checkbox as="div" onClick={fn} disabled focusable /> checkbox
     </label>
   );
   const checkbox = getByLabelText("checkbox");
@@ -210,7 +210,7 @@ test("non-native checkbox focus disabled", () => {
 test("non-native checkbox focus disabled focusable", () => {
   const { getByLabelText } = render(
     <label>
-      <Checkbox as="div" disabled unstable_focusable /> checkbox
+      <Checkbox as="div" disabled focusable /> checkbox
     </label>
   );
   const checkbox = getByLabelText("checkbox");
@@ -247,7 +247,7 @@ test("non-native checkbox space disabled focusable", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
     <label>
-      <Checkbox as="div" onClick={fn} disabled unstable_focusable /> checkbox
+      <Checkbox as="div" onClick={fn} disabled focusable /> checkbox
     </label>
   );
   const checkbox = getByLabelText("checkbox");

@@ -15,7 +15,7 @@ export type TabbableOptions = BoxOptions & {
    * When an element is `disabled`, it may still be `focusable`.
    * In this case, only `aria-disabled` will be set.
    */
-  unstable_focusable?: boolean;
+  focusable?: boolean;
   /**
    * Keyboard keys to trigger click.
    * @private
@@ -56,7 +56,7 @@ export function useTabbable(
   _options = unstable_useOptions("useTabbable", _options, htmlProps);
 
   const clickKeysRef = useLiveRef(_options.unstable_clickKeys);
-  const reallyDisabled = _options.disabled && !_options.unstable_focusable;
+  const reallyDisabled = _options.disabled && !_options.focusable;
 
   htmlProps = mergeProps(
     {
@@ -108,7 +108,7 @@ export function useTabbable(
 const keys: Keys<TabbableOptions> = [
   ...useBox.__keys,
   "disabled",
-  "unstable_focusable",
+  "focusable",
   "unstable_clickKeys"
 ];
 

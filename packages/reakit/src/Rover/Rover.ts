@@ -45,7 +45,7 @@ export function useRover(
   const id = unstable_useId("rover-");
   const stopId = options.stopId || htmlProps.id || id;
 
-  const reallyDisabled = options.disabled && !options.unstable_focusable;
+  const reallyDisabled = options.disabled && !options.focusable;
   const noFocused = options.unstable_currentId == null;
   const focused = options.unstable_currentId === stopId;
   const isFirst =

@@ -20,10 +20,10 @@ export type TabOptions = RoverOptions &
 export type TabProps = RoverProps;
 
 export function useTab(
-  { unstable_focusable = true, ...options }: TabOptions,
+  { focusable = true, ...options }: TabOptions,
   htmlProps: TabProps = {}
 ) {
-  let _options: TabOptions = { unstable_focusable, ...options };
+  let _options: TabOptions = { focusable, ...options };
   _options = unstable_useOptions("useTab", _options, htmlProps);
 
   const selected = _options.unstable_selectedId === _options.stopId;
