@@ -933,7 +933,7 @@ test("move focus within menubar with arrow keys", () => {
   const Test = () => {
     const menu = useMenuState({
       orientation: "horizontal",
-      unstable_loop: true
+      loop: true
     });
     return (
       <StaticMenu aria-label="menu" {...menu}>
@@ -999,7 +999,7 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   const Test = () => {
     const menu = useMenuState({
       orientation: "horizontal",
-      unstable_loop: true
+      loop: true
     });
     return (
       <StaticMenu aria-label="menu" {...menu}>
@@ -1071,7 +1071,7 @@ test("arrow right/left in a sub-submenu moves focus between disclosures in menub
   const Test = () => {
     const menu = useMenuState({
       orientation: "horizontal",
-      unstable_loop: true
+      loop: true
     });
     return (
       <StaticMenu aria-label="menu" {...menu}>

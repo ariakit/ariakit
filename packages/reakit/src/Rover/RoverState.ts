@@ -30,7 +30,7 @@ export type RoverState = {
   /**
    * If enabled, the next item after the last one will be the first one.
    */
-  unstable_loop: boolean;
+  loop: boolean;
 };
 
 export type RoverActions = {
@@ -45,23 +45,23 @@ export type RoverActions = {
   /**
    * Moves focus onto a given element ID.
    */
-  unstable_move: (id: Stop["id"] | null) => void;
+  move: (id: Stop["id"] | null) => void;
   /**
    * Moves focus onto the next element.
    */
-  unstable_next: () => void;
+  next: () => void;
   /**
    * Moves focus onto the previous element.
    */
-  unstable_previous: () => void;
+  previous: () => void;
   /**
    * Moves focus onto the first element.
    */
-  unstable_first: () => void;
+  first: () => void;
   /**
    * Moves focus onto the last element.
    */
-  unstable_last: () => void;
+  last: () => void;
   /**
    * Resets `currentId` and `pastId` states.
    * @private
@@ -75,7 +75,7 @@ export type RoverActions = {
 };
 
 export type RoverInitialState = Partial<
-  Pick<RoverState, "orientation" | "currentId" | "unstable_loop">
+  Pick<RoverState, "orientation" | "currentId" | "loop">
 >;
 
 export type RoverStateReturn = RoverState & RoverActions;
@@ -99,7 +99,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
     unstable_stops: stops,
     currentId,
     unstable_pastId: pastId,
-    unstable_loop: loop
+    loop
   } = state;
 
   switch (action.type) {
@@ -238,7 +238,7 @@ export function useRoverState(
 ): RoverStateReturn {
   const {
     currentId: currentId = null,
-    unstable_loop: loop = false,
+    loop: loop = false,
     ...sealed
   } = useSealedState(initialState);
   const [state, dispatch] = React.useReducer(reducer, {
@@ -246,7 +246,7 @@ export function useRoverState(
     unstable_stops: [],
     currentId,
     unstable_pastId: null,
-    unstable_loop: loop
+    loop
   });
 
   return {
@@ -259,14 +259,11 @@ export function useRoverState(
       id => dispatch({ type: "unregister", id }),
       []
     ),
-    unstable_move: React.useCallback(id => dispatch({ type: "move", id }), []),
-    unstable_next: React.useCallback(() => dispatch({ type: "next" }), []),
-    unstable_previous: React.useCallback(
-      () => dispatch({ type: "previous" }),
-      []
-    ),
-    unstable_first: React.useCallback(() => dispatch({ type: "first" }), []),
-    unstable_last: React.useCallback(() => dispatch({ type: "last" }), []),
+    move: React.useCallback(id => dispatch({ type: "move", id }), []),
+    next: React.useCallback(() => dispatch({ type: "next" }), []),
+    previous: React.useCallback(() => dispatch({ type: "previous" }), []),
+    first: React.useCallback(() => dispatch({ type: "first" }), []),
+    last: React.useCallback(() => dispatch({ type: "last" }), []),
     unstable_reset: React.useCallback(() => dispatch({ type: "reset" }), []),
     unstable_orientate: React.useCallback(
       o => dispatch({ type: "orientate", orientation: o }),
@@ -280,14 +277,14 @@ const keys: Keys<RoverStateReturn> = [
   "unstable_stops",
   "currentId",
   "unstable_pastId",
-  "unstable_loop",
+  "loop",
   "unstable_register",
   "unstable_unregister",
-  "unstable_move",
-  "unstable_next",
-  "unstable_previous",
-  "unstable_first",
-  "unstable_last",
+  "move",
+  "next",
+  "previous",
+  "first",
+  "last",
   "unstable_reset",
   "unstable_orientate"
 ];

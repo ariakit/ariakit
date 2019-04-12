@@ -21,11 +21,11 @@ export type RoverOptions = TabbableOptions &
     | "currentId"
     | "unstable_register"
     | "unstable_unregister"
-    | "unstable_move"
-    | "unstable_next"
-    | "unstable_previous"
-    | "unstable_first"
-    | "unstable_last"
+    | "move"
+    | "next"
+    | "previous"
+    | "first"
+    | "last"
   > & {
     /**
      * Element ID.
@@ -74,18 +74,18 @@ export function useRover(
       ref,
       id: stopId,
       tabIndex: shouldTabIndex ? tabIndex : -1,
-      onFocus: () => options.unstable_move(stopId),
+      onFocus: () => options.move(stopId),
       onKeyDown: event => {
         const { orientation } = options;
         const keyMap = {
-          ArrowUp: orientation !== "horizontal" && options.unstable_previous,
-          ArrowRight: orientation !== "vertical" && options.unstable_next,
-          ArrowDown: orientation !== "horizontal" && options.unstable_next,
-          ArrowLeft: orientation !== "vertical" && options.unstable_previous,
-          Home: options.unstable_first,
-          End: options.unstable_last,
-          PageUp: options.unstable_first,
-          PageDown: options.unstable_last
+          ArrowUp: orientation !== "horizontal" && options.previous,
+          ArrowRight: orientation !== "vertical" && options.next,
+          ArrowDown: orientation !== "horizontal" && options.next,
+          ArrowLeft: orientation !== "vertical" && options.previous,
+          Home: options.first,
+          End: options.last,
+          PageUp: options.first,
+          PageDown: options.last
         };
         if (event.key in keyMap) {
           const key = event.key as keyof typeof keyMap;

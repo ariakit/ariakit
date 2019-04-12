@@ -10,7 +10,7 @@ import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
 export type MenuItemOptions = RoverOptions &
   Pick<Partial<MenuStateReturn>, "hide" | "placement"> &
-  Pick<MenuStateReturn, "unstable_next" | "unstable_previous">;
+  Pick<MenuStateReturn, "next" | "previous">;
 
 export type MenuItemProps = RoverProps;
 
@@ -25,16 +25,11 @@ export function useMenuItem(
   const providerValue = React.useMemo(
     () => ({
       orientation: options.orientation,
-      unstable_next: options.unstable_next,
-      unstable_previous: options.unstable_previous,
+      next: options.next,
+      previous: options.previous,
       parent
     }),
-    [
-      options.orientation,
-      options.unstable_next,
-      options.unstable_previous,
-      parent
-    ]
+    [options.orientation, options.next, options.previous, parent]
   );
 
   htmlProps = mergeProps(
@@ -71,14 +66,14 @@ export function useMenuItem(
             horizontalParent && dir !== "left"
               ? () => {
                   hide();
-                  horizontalParent!.unstable_next();
+                  horizontalParent!.next();
                 }
               : dir === "left" && hide,
           ArrowLeft:
             horizontalParent && dir !== "right"
               ? () => {
                   hide();
-                  horizontalParent!.unstable_previous();
+                  horizontalParent!.previous();
                 }
               : dir === "right" && hide
         };

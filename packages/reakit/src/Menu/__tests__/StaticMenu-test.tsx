@@ -4,7 +4,7 @@ import { StaticMenu } from "../StaticMenu";
 
 const props: Parameters<typeof StaticMenu>[0] = {
   unstable_stops: [],
-  unstable_move: jest.fn(),
+  move: jest.fn(),
   "aria-label": "menu"
 };
 

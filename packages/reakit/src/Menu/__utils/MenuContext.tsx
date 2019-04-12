@@ -3,7 +3,7 @@ import { MenuStateReturn } from "../MenuState";
 
 export type MenuContextType = Pick<
   MenuStateReturn,
-  "orientation" | "unstable_next" | "unstable_previous"
+  "orientation" | "next" | "previous"
 > & {
   parent?: MenuContextType | null;
 };

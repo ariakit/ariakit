@@ -19,13 +19,13 @@ function createRef(id: string) {
 test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [],
-        }
-    `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [],
+            }
+      `);
 });
 
 test("initial state activeRef", () => {
@@ -33,28 +33,28 @@ test("initial state activeRef", () => {
   expect(result.current).toMatchInlineSnapshot(
     { currentId: "a" },
     `
-        Object {
-          "currentId": "a",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [],
-        }
-    `
+            Object {
+              "currentId": "a",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [],
+            }
+      `
   );
 });
 
 test("initial state loop", () => {
-  const result = render({ unstable_loop: true });
+  const result = render({ loop: true });
   expect(result.current).toMatchInlineSnapshot(
-    { unstable_loop: true },
+    { loop: true },
     `
-        Object {
-          "currentId": null,
-          "unstable_loop": true,
-          "unstable_pastId": null,
-          "unstable_stops": Array [],
-        }
-    `
+            Object {
+              "currentId": null,
+              "loop": true,
+              "unstable_pastId": null,
+              "unstable_stops": Array [],
+            }
+      `
   );
 });
 
@@ -65,8 +65,8 @@ test("initial state orientation", () => {
     `
     Object {
       "currentId": null,
+      "loop": false,
       "orientation": "vertical",
-      "unstable_loop": false,
       "unstable_pastId": null,
       "unstable_stops": Array [],
     }
@@ -78,22 +78,22 @@ test("register", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
   expect(result.current).toMatchInlineSnapshot(`
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-          ],
-        }
-    `);
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+            }
+      `);
 });
 
 test("register already registered", () => {
@@ -102,44 +102,44 @@ test("register already registered", () => {
   act(() => result.current.unstable_register("a", ref));
   act(() => result.current.unstable_register("a", ref));
   expect(result.current).toMatchInlineSnapshot(`
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-          ],
-        }
-    `);
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+            }
+      `);
 });
 
 test("register currentId", () => {
   const result = render({ currentId: "a" });
   act(() => result.current.unstable_register("a", createRef("a")));
   expect(result.current).toMatchInlineSnapshot(`
-        Object {
-          "currentId": "a",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-          ],
-        }
-    `);
+              "currentId": "a",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+            }
+      `);
 });
 
 test("unregister", () => {
@@ -147,26 +147,26 @@ test("unregister", () => {
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_unregister("a"));
   expect(result.current).toMatchInlineSnapshot(`
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [],
-        }
-    `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [],
+            }
+      `);
 });
 
 test("unregister inexistent", () => {
   const result = render();
   act(() => result.current.unstable_unregister("a"));
   expect(result.current).toMatchInlineSnapshot(`
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [],
-        }
-    `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [],
+            }
+      `);
 });
 
 test("unregister currentId", () => {
@@ -179,13 +179,13 @@ test("unregister currentId", () => {
       unstable_stops: []
     },
     `
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [],
-        }
-    `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [],
+            }
+      `
   );
 });
 
@@ -193,7 +193,7 @@ test("unregister pastId", () => {
   const result = render({ currentId: "a" });
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
-  act(() => result.current.unstable_move("b"));
+  act(() => result.current.move("b"));
   act(() => result.current.unstable_unregister("a"));
   expect(result.current).toMatchInlineSnapshot(
     {
@@ -201,50 +201,50 @@ test("unregister pastId", () => {
       unstable_pastId: null
     },
     `
-        Object {
-          "currentId": "b",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "b",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
 test("move", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
-  act(() => result.current.unstable_move("a"));
+  act(() => result.current.move("a"));
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a"
     },
     `
-        Object {
-          "currentId": "a",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "a",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -252,38 +252,38 @@ test("move twice", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
-  act(() => result.current.unstable_move("a"));
-  act(() => result.current.unstable_move("b"));
+  act(() => result.current.move("a"));
+  act(() => result.current.move("b"));
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
       unstable_pastId: "a"
     },
     `
-        Object {
-          "currentId": "b",
-          "unstable_loop": false,
-          "unstable_pastId": "a",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "b",
+              "loop": false,
+              "unstable_pastId": "a",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -291,38 +291,38 @@ test("move to the same ref", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
-  act(() => result.current.unstable_move("b"));
-  act(() => result.current.unstable_move("b"));
+  act(() => result.current.move("b"));
+  act(() => result.current.move("b"));
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
       unstable_pastId: null
     },
     `
-        Object {
-          "currentId": "b",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "b",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -330,38 +330,38 @@ test("move to null", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
-  act(() => result.current.unstable_move("b"));
-  act(() => result.current.unstable_move(null));
+  act(() => result.current.move("b"));
+  act(() => result.current.move(null));
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: null,
       unstable_pastId: "b"
     },
     `
-        Object {
-          "currentId": null,
-          "unstable_loop": false,
-          "unstable_pastId": "b",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": null,
+              "loop": false,
+              "unstable_pastId": "b",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -370,46 +370,46 @@ test("next", () => {
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
   act(() => result.current.unstable_register("c", createRef("c")));
-  act(() => result.current.unstable_move("a"));
-  act(() => result.current.unstable_next());
+  act(() => result.current.move("a"));
+  act(() => result.current.next());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
       unstable_pastId: "a"
     },
     `
-        Object {
-          "currentId": "b",
-          "unstable_loop": false,
-          "unstable_pastId": "a",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-            Object {
-              "id": "c",
-              "ref": Object {
-                "current": <div
-                  id="c"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "b",
+              "loop": false,
+              "unstable_pastId": "a",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -418,98 +418,98 @@ test("next thrice", () => {
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
   act(() => result.current.unstable_register("c", createRef("c")));
-  act(() => result.current.unstable_move("a"));
-  act(() => result.current.unstable_next());
-  act(() => result.current.unstable_next());
-  act(() => result.current.unstable_next());
+  act(() => result.current.move("a"));
+  act(() => result.current.next());
+  act(() => result.current.next());
+  act(() => result.current.next());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "c",
       unstable_pastId: "b"
     },
     `
-        Object {
-          "currentId": "c",
-          "unstable_loop": false,
-          "unstable_pastId": "b",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-            Object {
-              "id": "c",
-              "ref": Object {
-                "current": <div
-                  id="c"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "c",
+              "loop": false,
+              "unstable_pastId": "b",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
 test("next thrice loop", () => {
-  const result = render({ unstable_loop: true });
+  const result = render({ loop: true });
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
   act(() => result.current.unstable_register("c", createRef("c")));
-  act(() => result.current.unstable_move("a"));
-  act(() => result.current.unstable_next());
-  act(() => result.current.unstable_next());
-  act(() => result.current.unstable_next());
+  act(() => result.current.move("a"));
+  act(() => result.current.next());
+  act(() => result.current.next());
+  act(() => result.current.next());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
       unstable_pastId: "c"
     },
     `
-        Object {
-          "currentId": "a",
-          "unstable_loop": true,
-          "unstable_pastId": "c",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-            Object {
-              "id": "c",
-              "ref": Object {
-                "current": <div
-                  id="c"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "a",
+              "loop": true,
+              "unstable_pastId": "c",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -518,94 +518,94 @@ test("previous", () => {
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
   act(() => result.current.unstable_register("c", createRef("c")));
-  act(() => result.current.unstable_move("b"));
-  act(() => result.current.unstable_previous());
+  act(() => result.current.move("b"));
+  act(() => result.current.previous());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
       unstable_pastId: "b"
     },
     `
-        Object {
-          "currentId": "a",
-          "unstable_loop": false,
-          "unstable_pastId": "b",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-            Object {
-              "id": "c",
-              "ref": Object {
-                "current": <div
-                  id="c"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "a",
+              "loop": false,
+              "unstable_pastId": "b",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
 test("previous loop", () => {
-  const result = render({ unstable_loop: true });
+  const result = render({ loop: true });
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
   act(() => result.current.unstable_register("c", createRef("c")));
-  act(() => result.current.unstable_move("a"));
-  act(() => result.current.unstable_previous());
+  act(() => result.current.move("a"));
+  act(() => result.current.previous());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "c",
       unstable_pastId: "a"
     },
     `
-        Object {
-          "currentId": "c",
-          "unstable_loop": true,
-          "unstable_pastId": "a",
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-            Object {
-              "id": "c",
-              "ref": Object {
-                "current": <div
-                  id="c"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "c",
+              "loop": true,
+              "unstable_pastId": "a",
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -613,37 +613,37 @@ test("first", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
-  act(() => result.current.unstable_first());
+  act(() => result.current.first());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
       unstable_pastId: null
     },
     `
-        Object {
-          "currentId": "a",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "a",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -651,37 +651,37 @@ test("last", () => {
   const result = render();
   act(() => result.current.unstable_register("a", createRef("a")));
   act(() => result.current.unstable_register("b", createRef("b")));
-  act(() => result.current.unstable_last());
+  act(() => result.current.last());
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
       unstable_pastId: null
     },
     `
-        Object {
-          "currentId": "b",
-          "unstable_loop": false,
-          "unstable_pastId": null,
-          "unstable_stops": Array [
             Object {
-              "id": "a",
-              "ref": Object {
-                "current": <div
-                  id="a"
-                />,
-              },
-            },
-            Object {
-              "id": "b",
-              "ref": Object {
-                "current": <div
-                  id="b"
-                />,
-              },
-            },
-          ],
-        }
-    `
+              "currentId": "b",
+              "loop": false,
+              "unstable_pastId": null,
+              "unstable_stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+            }
+      `
   );
 });
 
@@ -695,8 +695,8 @@ test("orientate", () => {
     `
     Object {
       "currentId": null,
+      "loop": false,
       "orientation": "horizontal",
-      "unstable_loop": false,
       "unstable_pastId": null,
       "unstable_stops": Array [],
     }

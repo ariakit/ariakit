@@ -8,11 +8,11 @@ const props: Parameters<typeof MenuItem>[0] = {
   currentId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),
-  unstable_move: jest.fn(),
-  unstable_next: jest.fn(),
-  unstable_previous: jest.fn(),
-  unstable_first: jest.fn(),
-  unstable_last: jest.fn()
+  move: jest.fn(),
+  next: jest.fn(),
+  previous: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn()
 };
 
 test("render", () => {

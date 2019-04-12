@@ -15,7 +15,7 @@ const props: Parameters<typeof Menu>[0] = {
     { id: "a", ref: createRef("a") },
     { id: "b", ref: createRef("b") }
   ],
-  unstable_move: jest.fn(),
+  move: jest.fn(),
   "aria-label": "menu"
 };
 

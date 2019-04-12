@@ -13,8 +13,8 @@ test("initial state", () => {
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "currentId": null,
+      "loop": true,
       "unstable_baseId": "base",
-      "unstable_loop": true,
       "unstable_manual": false,
       "unstable_pastId": null,
       "unstable_selectedId": null,
@@ -33,8 +33,8 @@ test("initial state selectedId", () => {
     `
     Object {
       "currentId": "a",
+      "loop": true,
       "unstable_baseId": "base",
-      "unstable_loop": true,
       "unstable_manual": false,
       "unstable_pastId": null,
       "unstable_selectedId": "a",

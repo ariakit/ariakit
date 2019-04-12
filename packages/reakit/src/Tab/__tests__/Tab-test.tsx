@@ -11,12 +11,12 @@ const props: Parameters<typeof Tab>[0] = {
   unstable_pastId: null,
   unstable_register: jest.fn(),
   unstable_unregister: jest.fn(),
-  unstable_move: jest.fn(),
+  move: jest.fn(),
   unstable_select: jest.fn(),
-  unstable_next: jest.fn(),
-  unstable_previous: jest.fn(),
-  unstable_first: jest.fn(),
-  unstable_last: jest.fn()
+  next: jest.fn(),
+  previous: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn()
 };
 
 test("render", () => {

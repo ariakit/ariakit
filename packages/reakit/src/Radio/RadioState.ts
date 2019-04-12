@@ -32,13 +32,13 @@ export function useRadioState(
 ): RadioStateReturn {
   const {
     currentValue: initialCurrentValue,
-    unstable_loop: loop = true,
+    loop: loop = true,
     ...sealed
   } = useSealedState(initialState);
 
   const [currentValue, setValue] = React.useState(initialCurrentValue);
 
-  const rover = useRoverState({ ...sealed, unstable_loop: loop });
+  const rover = useRoverState({ ...sealed, loop });
 
   return {
     ...rover,

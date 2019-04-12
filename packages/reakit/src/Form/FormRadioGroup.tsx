@@ -51,7 +51,7 @@ export const unstable_FormRadioGroup = (unstable_createComponent({
   useHook: unstable_useFormRadioGroup,
   useCreateElement: (type, props, children) => {
     const element = unstable_useCreateElement(type, props, children);
-    const rover = useRoverState({ unstable_loop: true });
+    const rover = useRoverState({ loop: true });
     const value = React.useMemo(() => rover, [
       rover.unstable_stops,
       rover.currentId,

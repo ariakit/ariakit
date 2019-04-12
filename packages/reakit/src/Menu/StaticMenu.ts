@@ -12,7 +12,7 @@ import { MenuStateReturn, useMenuState } from "./MenuState";
 
 export type StaticMenuOptions = BoxOptions &
   Pick<Partial<MenuStateReturn>, "orientation"> &
-  Pick<MenuStateReturn, "unstable_stops" | "unstable_move">;
+  Pick<MenuStateReturn, "unstable_stops" | "move">;
 
 export type StaticMenuProps = BoxProps;
 
@@ -33,7 +33,7 @@ export function useStaticMenu(
       onMouseOver: event => {
         const target = event.target as HTMLElement;
         if (target === ref.current) {
-          options.unstable_move(null);
+          options.move(null);
           target.focus();
         }
       },

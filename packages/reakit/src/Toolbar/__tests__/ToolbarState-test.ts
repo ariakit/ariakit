@@ -13,8 +13,8 @@ test("initial state", () => {
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "currentId": null,
+      "loop": false,
       "orientation": "horizontal",
-      "unstable_loop": false,
       "unstable_pastId": null,
       "unstable_stops": Array [],
     }

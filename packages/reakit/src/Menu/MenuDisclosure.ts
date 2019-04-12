@@ -13,10 +13,7 @@ import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
 export type MenuDisclosureOptions = PopoverDisclosureOptions &
-  Pick<
-    Partial<MenuStateReturn>,
-    "placement" | "hide" | "unstable_first" | "unstable_last"
-  > &
+  Pick<Partial<MenuStateReturn>, "placement" | "hide" | "first" | "last"> &
   Pick<MenuStateReturn, "show">;
 
 export type MenuDisclosureProps = PopoverDisclosureProps;
@@ -66,14 +63,12 @@ export function useMenuDisclosure(
       onKeyDown: event => {
         const keyMap = {
           Escape: options.hide,
-          Enter: parent && options.unstable_first,
-          " ": parent && options.unstable_first,
-          ArrowUp:
-            dir === "top" || dir === "bottom" ? options.unstable_last : false,
-          ArrowRight: dir === "right" && options.unstable_first,
-          ArrowDown:
-            dir === "bottom" || dir === "top" ? options.unstable_first : false,
-          ArrowLeft: dir === "left" && options.unstable_first
+          Enter: parent && options.first,
+          " ": parent && options.first,
+          ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
+          ArrowRight: dir === "right" && options.first,
+          ArrowDown: dir === "bottom" || dir === "top" ? options.first : false,
+          ArrowLeft: dir === "left" && options.first
         };
 
         if (event.key in keyMap) {

@@ -37,14 +37,14 @@ export function useTabState(
   const {
     unstable_baseId: baseId = unstable_useId("tab-"),
     unstable_selectedId: sealedSelectedId = null,
-    unstable_loop: loop = true,
+    loop: loop = true,
     unstable_manual: manual = false,
     ...sealed
   } = useSealedState(initialState);
 
   const [selectedId, select] = React.useState(sealedSelectedId);
   const rover = useRoverState({
-    unstable_loop: loop,
+    loop,
     currentId: selectedId,
     ...sealed
   });
