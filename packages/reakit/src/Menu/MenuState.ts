@@ -18,7 +18,7 @@ import { MenuContext } from "./__utils/MenuContext";
 export type MenuState = RoverState &
   PopoverState & {
     /**
-     * TODO: Description
+     * Stores the values of radios and checkboxes within the menu.
      */
     unstable_values: Record<string, any>;
   };
@@ -26,7 +26,7 @@ export type MenuState = RoverState &
 export type MenuActions = RoverActions &
   PopoverActions & {
     /**
-     * TODO: Description
+     * Updates checkboxes and radios values within the menu.
      */
     unstable_update: (name: string, value?: any) => void;
   };

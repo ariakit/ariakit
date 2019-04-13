@@ -8,11 +8,9 @@ import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabOptions = RoverOptions &
+  Pick<Required<RoverOptions>, "stopId"> &
   Pick<Partial<TabStateReturn>, "manual"> &
-  Pick<TabStateReturn, "unstable_baseId" | "selectedId" | "select"> & {
-    /** TODO: Description */
-    stopId: string;
-  };
+  Pick<TabStateReturn, "unstable_baseId" | "selectedId" | "select">;
 
 export type TabProps = RoverProps;
 
@@ -52,8 +50,7 @@ export function useTab(
 
 const keys: Keys<TabStateReturn & TabOptions> = [
   ...useRover.__keys,
-  ...useTabState.__keys,
-  "stopId"
+  ...useTabState.__keys
 ];
 
 useTab.__keys = keys;

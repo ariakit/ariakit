@@ -16,9 +16,13 @@ export type unstable_FormPushButtonOptions<
   P extends DeepPath<V, P>
 > = ButtonOptions &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "push"> & {
-    /** TODO: Description */
+    /**
+     * FormInput's name as in form values. This should point to array value.
+     */
     name: P;
-    /** TODO: Description */
+    /**
+     * The value that is going to be pushed to `form.values[name]`.
+     */
     value: ArrayValue<DeepPathValue<V, P>>;
   };
 

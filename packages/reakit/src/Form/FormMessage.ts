@@ -19,7 +19,9 @@ export type unstable_FormMessageOptions<
     unstable_FormStateReturn<V>,
     "baseId" | "touched" | "errors" | "messages"
   > & {
-    /** TODO: Description */
+    /**
+     * FormInput's name as in form values.
+     */
     name: P;
   };
 

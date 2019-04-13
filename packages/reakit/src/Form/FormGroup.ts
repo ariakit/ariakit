@@ -17,7 +17,9 @@ export type unstable_FormGroupOptions<
   P extends DeepPath<V, P>
 > = GroupOptions &
   Pick<unstable_FormStateReturn<V>, "baseId" | "touched" | "errors"> & {
-    /** TODO: Description */
+    /**
+     * FormGroup's name as in form values.
+     */
     name: P;
   };
 

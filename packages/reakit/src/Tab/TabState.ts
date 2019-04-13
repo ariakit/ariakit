@@ -6,23 +6,23 @@ import { Keys } from "../__utils/types";
 
 export type TabState = RoverState & {
   /**
-   * TODO: Description
+   * An ID that will serve as a base for the tab elements.
    * @private
    */
   unstable_baseId: string;
   /**
-   * TODO: Description
+   * The current selected tab's `stopId`.
    */
   selectedId: RoverState["currentId"];
   /**
-   * TODO: Description
+   * Whether the tab selection should be manual.
    */
   manual: boolean;
 };
 
 export type TabActions = RoverActions & {
   /**
-   * TODO: Description
+   * Selects a tab by its `stopId`.
    */
   select: (id: TabState["selectedId"]) => void;
 };

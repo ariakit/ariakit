@@ -26,7 +26,9 @@ export type unstable_FormInputOptions<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "touched" | "errors" | "update" | "blur"
   > & {
-    /** TODO: Description */
+    /**
+     * FormInput's name as in form values.
+     */
     name: P;
   };
 

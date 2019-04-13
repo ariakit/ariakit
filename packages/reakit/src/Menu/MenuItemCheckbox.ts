@@ -17,7 +17,9 @@ export type MenuItemCheckboxOptions = Omit<
 > &
   MenuItemOptions &
   Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
-    /** TODO: Description */
+    /**
+     * MenuItemCheckbox's name as in `menu.values`.
+     */
     name: string;
   };
 

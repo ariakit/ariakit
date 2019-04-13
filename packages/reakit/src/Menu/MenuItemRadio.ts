@@ -10,7 +10,9 @@ import { useMenuItem, MenuItemOptions, MenuItemProps } from "./MenuItem";
 export type MenuItemRadioOptions = RadioOptions &
   MenuItemOptions &
   Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
-    /** TODO: Description */
+    /**
+     * MenuItemRadio's name as in `menu.values`.
+     */
     name: string;
   };
 

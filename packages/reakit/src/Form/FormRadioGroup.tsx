@@ -18,7 +18,9 @@ export type unstable_FormRadioGroupOptions<
   V,
   P extends DeepPath<V, P>
 > = unstable_FormGroupOptions<V, P> & {
-  /** TODO: Description */
+  /**
+   * FormRadioGroup's name as in form values.
+   */
   name: P;
 };
 

@@ -30,77 +30,82 @@ interface Update<V> {
 
 export type unstable_FormState<V> = {
   /**
-   * TODO: Description
+   * An ID that will serve as a base for the form elements.
    */
   baseId: string;
   /**
-   * TODO: Description
+   * Form values.
    */
   values: V;
   /**
-   * TODO: Description
+   * An object with the same shape as `form.values` with `boolean` values.
+   * This keeps the touched state of each field. That is, whether a field has
+   * been blurred.
    */
   touched: DeepPartial<DeepMap<V, boolean>>;
   /**
-   * TODO: Description
+   * An object with the same shape as `form.values` with string messages.
+   * This stores the messages returned by `onValidate` and `onSubmit`.
    */
   messages: Messages<V>;
   /**
-   * TODO: Description
+   * An object with the same shape as `form.values` with string error messages.
+   * This stores the error messages throwed by `onValidate` and `onSubmit`.
    */
   errors: Messages<V>;
   /**
-   * TODO: Description
+   * Whether form is validating or not.
    */
   validating: boolean;
   /**
-   * TODO: Description
+   * Whether `form.errors` is empty or not.
    */
   valid: boolean;
   /**
-   * TODO: Description
+   * Whether form is submitting or not.
    */
   submitting: boolean;
   /**
-   * TODO: Description
+   * Stores the number of times that the form has been successfully submitted.
    */
   submitSucceed: number;
   /**
-   * TODO: Description
+   * Stores the number of times that the form submission has failed.
    */
   submitFailed: number;
 };
 
 export type unstable_FormActions<V> = {
   /**
-   * TODO: Description
+   * Resets the form state.
    */
   reset: () => void;
   /**
-   * TODO: Description
+   * Triggers form validation (calling `onValidate` underneath).
+   * Optionally, new `values` can be passed in.
    */
   validate: (values?: V) => ValidateReturn<V>;
   /**
-   * TODO: Description
+   * Triggers form submission (calling `onValidate` and `onSubmit` underneath).
    */
   submit: () => void;
   /**
-   * TODO: Description
+   * Updates a form value.
    */
   update: Update<V>;
   /**
-   * TODO: Description
+   * Sets field's touched state to `true`.
    */
   blur: <P extends DeepPath<V, P>>(name: P) => void;
   /**
-   * TODO: Description
+   * Pushes a new item into `form.values[name]`, which should be an array.
    */
   push: <P extends DeepPath<V, P>>(
     name: P,
     value?: ArrayValue<DeepPathValue<V, P>>
   ) => void;
   /**
-   * TODO: Description
+   * Removes `form.values[name][index]`.
    */
   remove: <P extends DeepPath<V, P>>(name: P, index: number) => void;
 };
@@ -109,27 +114,36 @@ export type unstable_FormInitialState<V> = Partial<
   Pick<unstable_FormState<V>, "baseId" | "values">
 > & {
   /**
-   * TODO: Description
+   * Whether the form should trigger `onValidate` on blur.
    */
   validateOnBlur?: boolean;
   /**
-   * TODO: Description
+   * Whether the form should trigger `onValidate` on change.
    */
   validateOnChange?: boolean;
   /**
-   * TODO: Description
+   * Whether the form should reset when it has been successfully submitted.
    */
   resetOnSubmitSucceed?: boolean;
   /**
-   * TODO: Description
+   * Whether the form should reset when the component (which called
+   * `useFormState`) has been unmounted.
    */
   resetOnUnmount?: boolean;
   /**
-   * TODO: Description
+   * A function that receives `form.values` and return or throw messages.
+   * If it returns, messages will be interpreted as successful messages.
+   * If it throws, they will be interpreted as errors.
+   * It can also return a promise for asynchronous validation.
    */
   onValidate?: (values: V) => ValidateReturn<V>;
   /**
-   * TODO: Description
+   * A function that receives `form.values` and performs form submission.
+   * If it's triggered by `form.submit()`, `onValidate` will be called before.
+   * If `onValidate` throws, `onSubmit` will not be called.
+   * `onSubmit` can also return promises, messages and throw error messages
+   * just like `onValidate`. The only difference is that this validation will
+   * only occur on submit.
    */
   onSubmit?: (values: V) => ValidateReturn<V>;
 };

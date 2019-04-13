@@ -10,7 +10,9 @@ import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabPanelOptions = HiddenOptions &
   Pick<TabStateReturn, "unstable_baseId" | "selectedId"> & {
-    /** TODO: Description */
+    /**
+     * Tab's `stopId`.
+     */
     stopId: string;
   };
 

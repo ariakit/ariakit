@@ -93,8 +93,8 @@ function Example() {
 | <strong><code>stops</code>&nbsp;</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |
 | <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
 | <strong><code>loop</code>&nbsp;</strong> | <code>boolean</code> | If enabled, the next item after the last one will be the first one. |
-| <strong><code>selectedId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | TODO: Description |
-| <strong><code>manual</code>&nbsp;</strong> | <code>boolean</code> | TODO: Description |
+| <strong><code>selectedId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current selected tab's `stopId`. |
+| <strong><code>manual</code>&nbsp;</strong> | <code>boolean</code> | Whether the tab selection should be manual. |
 
 ### `Tab`
 
@@ -113,9 +113,9 @@ function Example() {
 | <strong><code>first</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Moves focus onto the first element. |
 | <strong><code>last</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Moves focus onto the last element. |
 | <strong><code>stopId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;undefined</code> | Element ID. |
-| <strong><code>manual</code>&nbsp;</strong> | <code>boolean</code> | TODO: Description |
-| <strong><code>selectedId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | TODO: Description |
-| <strong><code>select</code>&nbsp;</strong> | <code>(id:&nbsp;string&nbsp;&#124;&nbsp;null)&nbsp;=&#62;&nbsp;void</code> | TODO: Description |
+| <strong><code>manual</code>&nbsp;</strong> | <code>boolean</code> | Whether the tab selection should be manual. |
+| <strong><code>selectedId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current selected tab's `stopId`. |
+| <strong><code>select</code>&nbsp;</strong> | <code>(id:&nbsp;string&nbsp;&#124;&nbsp;null)&nbsp;=&#62;&nbsp;void</code> | Selects a tab by its `stopId`. |
 
 ### `TabList`
 
@@ -128,5 +128,5 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
-| <strong><code>selectedId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | TODO: Description |
-| <strong><code>stopId</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
+| <strong><code>selectedId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current selected tab's `stopId`. |
+| <strong><code>stopId</code>&nbsp;</strong> | <code>string</code> | Tab's `stopId`. |

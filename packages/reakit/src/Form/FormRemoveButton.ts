@@ -14,9 +14,13 @@ export type unstable_FormRemoveButtonOptions<
   P extends DeepPath<V, P>
 > = ButtonOptions &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values" | "remove"> & {
-    /** TODO: Description */
+    /**
+     * FormInput's name as in form values. This should point to array value.
+     */
     name: P;
-    /** TODO: Description */
+    /**
+     * The index in `form.values[name]` that will be removed.
+     */
     index: number;
   };
 

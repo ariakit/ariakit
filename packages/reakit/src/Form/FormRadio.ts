@@ -17,9 +17,13 @@ export type unstable_FormRadioOptions<
   P extends DeepPath<V, P>
 > = BoxOptions &
   Pick<unstable_FormStateReturn<V>, "values" | "update" | "blur"> & {
-    /** TODO: Description */
+    /**
+     * FormRadio's name as in form values.
+     */
     name: P;
-    /** TODO: Description */
+    /**
+     * FormRadio's value.
+     */
     value: DeepPathValue<V, P>;
   };
 

@@ -155,7 +155,7 @@ function Example() {
 | <strong><code>unstable_flip</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Whether or not flip the popover. |
 | <strong><code>unstable_shift</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Whether or not shift the popover. |
 | <strong><code>unstable_gutter</code>&nbsp;⚠️</strong> | <code>number&nbsp;&#124;&nbsp;undefined</code> | Offset between the reference and the popover. |
-| <strong><code>unstable_values</code>&nbsp;⚠️</strong> | <code>{&nbsp;[x:&nbsp;string]:&nbsp;any;&nbsp;}</code> | TODO: Description |
+| <strong><code>unstable_values</code>&nbsp;⚠️</strong> | <code>{&nbsp;[x:&nbsp;string]:&nbsp;any;&nbsp;}</code> | Stores the values of radios and checkboxes within the menu. |
 
 ### `Menu`
 
@@ -231,9 +231,9 @@ No props to show
 | <strong><code>stopId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;undefined</code> | Element ID. |
 | <strong><code>placement</code>&nbsp;</strong> | <code title="&#34;auto-start&#34; &#124; &#34;auto&#34; &#124; &#34;auto-end&#34; &#124; &#34;top-start&#34; &#124; &#34;top&#34; &#124; &#34;top-end&#34; &#124; &#34;right-start&#34; &#124; &#34;right&#34; &#124; &#34;right-end&#34; &#124; &#34;bottom-end&#34; &#124; &#34;bottom&#34; &#124; &#34;bottom-start&#34; &#124; &#34;left-end&#34; &#124; &#34;left&#34; &#124; &#34;left-start&#34;">&#34;auto&#x2011;start&#34;&nbsp;&#124;&nbsp;&#34;auto&#34;&nbsp;&#124;&nbsp;&#34;au...</code> | Actual `placement`. |
 | <strong><code>hide</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Changes the `visible` state to `false` |
-| <strong><code>unstable_values</code>&nbsp;⚠️</strong> | <code>{&nbsp;[x:&nbsp;string]:&nbsp;any;&nbsp;}</code> | TODO: Description |
-| <strong><code>unstable_update</code>&nbsp;⚠️</strong> | <code title="(name: string, value?: any) =&#62; void">(name:&nbsp;string,&nbsp;value?:&nbsp;any)...</code> | TODO: Description |
-| <strong><code>name</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
+| <strong><code>unstable_values</code>&nbsp;⚠️</strong> | <code>{&nbsp;[x:&nbsp;string]:&nbsp;any;&nbsp;}</code> | Stores the values of radios and checkboxes within the menu. |
+| <strong><code>unstable_update</code>&nbsp;⚠️</strong> | <code title="(name: string, value?: any) =&#62; void">(name:&nbsp;string,&nbsp;value?:&nbsp;any)...</code> | Updates checkboxes and radios values within the menu. |
+| <strong><code>name</code>&nbsp;</strong> | <code>string</code> | MenuItemCheckbox's name as in `menu.values`. |
 
 ### `MenuItemRadio`
 
@@ -258,9 +258,9 @@ No props to show
 | <strong><code>checked</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the `checked` attribute. |
 | <strong><code>placement</code>&nbsp;</strong> | <code title="&#34;auto-start&#34; &#124; &#34;auto&#34; &#124; &#34;auto-end&#34; &#124; &#34;top-start&#34; &#124; &#34;top&#34; &#124; &#34;top-end&#34; &#124; &#34;right-start&#34; &#124; &#34;right&#34; &#124; &#34;right-end&#34; &#124; &#34;bottom-end&#34; &#124; &#34;bottom&#34; &#124; &#34;bottom-start&#34; &#124; &#34;left-end&#34; &#124; &#34;left&#34; &#124; &#34;left-start&#34;">&#34;auto&#x2011;start&#34;&nbsp;&#124;&nbsp;&#34;auto&#34;&nbsp;&#124;&nbsp;&#34;au...</code> | Actual `placement`. |
 | <strong><code>hide</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Changes the `visible` state to `false` |
-| <strong><code>unstable_values</code>&nbsp;⚠️</strong> | <code>{&nbsp;[x:&nbsp;string]:&nbsp;any;&nbsp;}</code> | TODO: Description |
-| <strong><code>unstable_update</code>&nbsp;⚠️</strong> | <code title="(name: string, value?: any) =&#62; void">(name:&nbsp;string,&nbsp;value?:&nbsp;any)...</code> | TODO: Description |
-| <strong><code>name</code>&nbsp;</strong> | <code>string</code> | TODO: Description |
+| <strong><code>unstable_values</code>&nbsp;⚠️</strong> | <code>{&nbsp;[x:&nbsp;string]:&nbsp;any;&nbsp;}</code> | Stores the values of radios and checkboxes within the menu. |
+| <strong><code>unstable_update</code>&nbsp;⚠️</strong> | <code title="(name: string, value?: any) =&#62; void">(name:&nbsp;string,&nbsp;value?:&nbsp;any)...</code> | Updates checkboxes and radios values within the menu. |
+| <strong><code>name</code>&nbsp;</strong> | <code>string</code> | MenuItemRadio's name as in `menu.values`. |
 
 ### `MenuSeparator`
 

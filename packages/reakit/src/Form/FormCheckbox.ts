@@ -26,9 +26,15 @@ export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "update" | "blur" | "touched" | "errors"
   > & {
-    /** TODO: Description */
+    /**
+     * Checkbox's name as in form values.
+     */
     name: P;
-    /** TODO: Description */
+    /**
+     * Checkbox's value is going to be used when multiple checkboxes share the
+     * same state. Checking a checkbox with value will add it to the state
+     * array.
+     */
     value?: ArrayValue<DeepPathValue<V, P>>;
   };
 

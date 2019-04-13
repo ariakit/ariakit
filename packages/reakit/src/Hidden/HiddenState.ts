@@ -5,7 +5,7 @@ import { Keys } from "../__utils/types";
 
 export type HiddenState = {
   /**
-   * Hidden element id.
+   * Hidden element ID.
    * @private
    */
   unstable_hiddenId: string;

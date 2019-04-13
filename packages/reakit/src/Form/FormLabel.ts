@@ -15,9 +15,13 @@ export type unstable_FormLabelOptions<
   P extends DeepPath<V, P>
 > = BoxOptions &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values"> & {
-    /** TODO: Description */
+    /**
+     * FormInput's name as in form values.
+     */
     name: P;
-    /** TODO: Description */
+    /**
+     * Label can be passed as the `label` prop or `children`.
+     */
     label?: any;
   };
 
