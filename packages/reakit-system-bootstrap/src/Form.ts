@@ -16,6 +16,7 @@ import {
   unstable_FormGroupProps,
   unstable_FormGroupOptions
 } from "reakit/Form/FormGroup";
+import { unstable_FormRemoveButtonOptions } from "reakit/Form/FormRemoveButton";
 import { unstable_getIn } from "reakit/Form/utils/getIn";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { useContrast } from "reakit-system-palette/utils/contrast";
@@ -187,4 +188,14 @@ export function useFormGroupProps(
   `;
 
   return { ...htmlProps, className: cx(className, formGroup) };
+}
+
+export type BootstrapFormRemoveButtonOptions = BootstrapBoxOptions &
+  unstable_FormRemoveButtonOptions<any, any>;
+
+export function useFormRemoveButtonOptions({
+  unstable_system: { palette = "danger", ...system } = {},
+  ...options
+}: BootstrapFormRemoveButtonOptions): BootstrapFormRemoveButtonOptions {
+  return { unstable_system: { palette, ...system }, ...options };
 }
