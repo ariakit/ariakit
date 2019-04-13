@@ -24,10 +24,21 @@ export function useMenuDisclosure(
 ) {
   const parent = React.useContext(MenuContext);
   const ref = React.useRef<HTMLElement>(null);
+  // This avoids race condition between focus and click.
+  // On some browsers, focus is triggered right before click.
+  // So we use it to disable toggling.
+  const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
 
   options = unstable_useOptions("useMenuDisclosure", options, htmlProps);
 
   const dir = options.placement ? options.placement.split("-")[0] : undefined;
+
+  // Restores hasShownOnFocus state when it's closed
+  React.useEffect(() => {
+    if (!options.visible) {
+      setHasShownOnFocus(false);
+    }
+  }, [options.visible]);
 
   htmlProps = mergeProps(
     {
@@ -35,6 +46,7 @@ export function useMenuDisclosure(
       "aria-haspopup": "menu",
       onFocus: () => {
         if (parent && parent.orientation === "horizontal") {
+          setHasShownOnFocus(true);
           options.show();
         }
       },
@@ -95,7 +107,7 @@ export function useMenuDisclosure(
     {
       ...options,
       toggle:
-        parent && parent.orientation !== "horizontal"
+        parent && (parent.orientation !== "horizontal" || hasShownOnFocus)
           ? options.show
           : options.toggle
     },
