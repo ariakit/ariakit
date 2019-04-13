@@ -42,6 +42,10 @@ export function useTabbableProps(
         position: relative;
         z-index: 2;
       }
+
+      &:hover {
+        z-index: 2;
+      }
     }
 
     &[aria-disabled="true"] {

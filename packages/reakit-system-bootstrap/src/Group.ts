@@ -11,18 +11,22 @@ export function useGroupProps(
   const group = css`
     display: flex;
 
-    & > *:not(:first-child):not(:last-child) {
-      border-left-width: 0;
-      border-right-width: 0;
+    & > :not(:first-child) {
+      margin-left: -1px;
+    }
+
+    & > :not(:first-child):not(:last-child):not(.first-child):not(.last-child) {
       border-radius: 0;
     }
 
-    & > *:first-child {
+    & > :first-child:not(:last-child),
+    & > .first-child {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
 
-    & > *:last-child {
+    & > :last-child:not(:first-child),
+    & > .last-child {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
