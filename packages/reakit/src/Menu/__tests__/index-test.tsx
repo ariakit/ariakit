@@ -581,6 +581,8 @@ test("clicking on menubar item disclosure opens the submenu without moving focus
   expect(submenu).not.toBeVisible();
   fireEvent.click(subdisclosure);
   expect(submenu).toBeVisible();
+  fireEvent.click(subdisclosure); // should close
+  expect(submenu).not.toBeVisible();
 });
 
 test("hovering menubar item disclosure does not move focus into it", () => {

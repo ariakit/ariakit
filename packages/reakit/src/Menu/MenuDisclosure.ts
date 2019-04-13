@@ -94,7 +94,10 @@ export function useMenuDisclosure(
   htmlProps = usePopoverDisclosure(
     {
       ...options,
-      toggle: parent ? options.show : options.toggle
+      toggle:
+        parent && parent.orientation !== "horizontal"
+          ? options.show
+          : options.toggle
     },
     htmlProps
   );
