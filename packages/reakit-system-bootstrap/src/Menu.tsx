@@ -1,3 +1,4 @@
+import * as React from "react";
 import { css, cx } from "emotion";
 import { MenuProps, MenuOptions } from "reakit/Menu/Menu";
 import {
@@ -120,39 +121,87 @@ export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
 
 export function useMenuDisclosureProps(
   options: BootstrapMenuDisclosureOptions,
-  { className, ...htmlProps }: MenuDisclosureProps = {}
+  { className, children, ...htmlProps }: MenuDisclosureProps = {}
 ) {
-  const dir = options.placement ? options.placement.split("-")[0] : undefined;
+  const dir = options.placement
+    ? (options.placement.split("-")[0] as "top" | "bottom" | "right" | "left")
+    : undefined;
 
-  const arrowMap: Record<string, any> = {
-    top: "▲",
-    right: "▶",
-    bottom: "▼",
-    left: "◀"
-  };
+  const svg = dir
+    ? {
+        top: (
+          <svg viewBox="0 0 50 43.3">
+            <polygon points="25 0 0 43.3 50 43.3 25 0" />
+          </svg>
+        ),
+        bottom: (
+          <svg viewBox="0 0 50 43.3">
+            <polygon points="25 43.3 50 0 0 0 25 43.3" />
+          </svg>
+        ),
+        right: (
+          <svg viewBox="0 0 43.3 50">
+            <polygon points="43.3 25 0 0 0 50 43.3 25" />
+          </svg>
+        ),
+        left: (
+          <svg viewBox="0 0 43.3 50">
+            <polygon points="0 25 43.3 50 43.3 0 0 25" />
+          </svg>
+        )
+      }[dir]
+    : null;
 
   const menuDisclosure = css`
     position: relative;
 
-    *:not([aria-orientation="horizontal"]) > & {
-      ${dir !== "left" &&
+    [role="menu"] > & {
+      ${children &&
         css`
-          padding-right: 1.6em;
+      padding-${dir === "left" ? "left" : "right"}: 2em !important;
+    `}
+    }
+
+    svg {
+      fill: currentColor;
+      width: 0.65em;
+      height: 0.65em;
+
+      [role="menu"] > & {
+        position: absolute;
+        top: 0.45em;
+        ${dir === "left" ? "left" : "right"}: 0.5em;
+      }
+
+      [role="menubar"] > & {
+        display: none;
+      }
+
+      ${children &&
+        css`
+          margin-${dir === "left" ? "right" : "left"}: 0.5em;
         `}
-      ${dir &&
-        css`
-      &:after {
-      content: "${arrowMap[dir]}";
-      position: absolute;
-      font-size: 0.7em;
-      line-height: inherit;
-      padding: 0.42em 0;
-      ${dir === "left" ? "left" : "right"}: 0.75em;
-    }`}
     }
   `;
 
-  return { ...htmlProps, className: cx(className, menuDisclosure) };
+  return {
+    ...htmlProps,
+    children:
+      typeof children === "function" ? (
+        (props: any) => (
+          <>
+            {children(props)}
+            {svg}
+          </>
+        )
+      ) : (
+        <>
+          {children}
+          {svg}
+        </>
+      ),
+    className: cx(className, menuDisclosure)
+  };
 }
 
 export type BootstrapMenuItemCheckboxOptions = BootstrapBoxOptions &
