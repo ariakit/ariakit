@@ -129,7 +129,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
 | <strong><code>checked</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Checkbox's checked state. If present, it's used instead of currentValue. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | An ID that will serve as a base for the form elements. |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | Form values. |
@@ -154,7 +154,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | An ID that will serve as a base for the form elements. |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | Form values. |
 | <strong><code>update</code>&nbsp;</strong> | <code>Update&#60;V&#62;</code> | Updates a form value. |
@@ -187,7 +187,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | An ID that will serve as a base for the form elements. |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | Form values. |
 | <strong><code>push</code>&nbsp;</strong> | <code title="&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P, value?: ArrayValue&#60;DeepPathValue&#60;V, P&#62;&#62; &#124; undefined) =&#62; void">&#60;P&nbsp;extends&nbsp;DeepPath&#60;V,&nbsp;P&#62;&#62;(...</code> | Pushes a new item into `form.values[name]`, which should be an array. |
@@ -218,7 +218,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | An ID that will serve as a base for the form elements. |
 | <strong><code>values</code>&nbsp;</strong> | <code>V</code> | Form values. |
 | <strong><code>remove</code>&nbsp;</strong> | <code title="&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P, index: number) =&#62; void">&#60;P&nbsp;extends&nbsp;DeepPath&#60;V,&nbsp;P&#62;&#62;(...</code> | Removes `form.values[name][index]`. |
@@ -230,7 +230,7 @@ function Example() {
 | Name | Type | Description |
 |------|------|-------------|
 | <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. In this case, only `aria-disabled` will be set. |
+| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
 | <strong><code>submitting</code>&nbsp;</strong> | <code>boolean</code> | Whether form is submitting or not. |
 | <strong><code>baseId</code>&nbsp;</strong> | <code>string</code> | An ID that will serve as a base for the form elements. |
 | <strong><code>submit</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Triggers form submission (calling `onValidate` and `onSubmit` underneath). |

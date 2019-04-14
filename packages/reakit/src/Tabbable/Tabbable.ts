@@ -12,8 +12,9 @@ export type TabbableOptions = BoxOptions & {
    */
   disabled?: boolean;
   /**
-   * When an element is `disabled`, it may still be `focusable`.
-   * In this case, only `aria-disabled` will be set.
+   * When an element is `disabled`, it may still be `focusable`. It works
+   * similarly to `readOnly` on form elements. In this case, only
+   * `aria-disabled` will be set.
    */
   focusable?: boolean;
   /**
