@@ -71,6 +71,7 @@ export function useMenuItemProps(
       color: ${foreground};
       margin: 0;
       user-select: none;
+      cursor: default;
 
       &:focus,
       &[aria-expanded="true"] {
