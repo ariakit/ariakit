@@ -33,12 +33,12 @@ export function useMenuDisclosure(
 
   const dir = options.placement ? options.placement.split("-")[0] : undefined;
 
-  // Restores hasShownOnFocus state when it's closed
+  // Restores hasShownOnFocus
   React.useEffect(() => {
-    if (!options.visible) {
-      setHasShownOnFocus(false);
+    if (hasShownOnFocus) {
+      setTimeout(() => setHasShownOnFocus(false), 200);
     }
-  }, [options.visible]);
+  }, [hasShownOnFocus]);
 
   htmlProps = mergeProps(
     {
