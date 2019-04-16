@@ -3,7 +3,7 @@ import * as React from "react";
 
 export type unstable_IdProviderProps = {
   children: React.ReactNode;
-  prefix?: string;
+  unstable_prefix?: string;
 };
 
 const defaultPrefix = "id-";
@@ -17,7 +17,7 @@ const Context = React.createContext(generateId);
 
 export function unstable_IdProvider({
   children,
-  prefix = ""
+  unstable_prefix: prefix = ""
 }: unstable_IdProviderProps) {
   const count = React.useRef(0);
   const genId = React.useMemo(

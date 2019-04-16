@@ -21,6 +21,7 @@
     "no-param-reassign": "off",
     "no-sparse-arrays": "off",
     "no-underscore-dangle": "off",
+    "no-unused-expressions": "off",
     "no-plusplus": "off",
     "no-bitwise": "off",
     "no-nested-ternary": "off",

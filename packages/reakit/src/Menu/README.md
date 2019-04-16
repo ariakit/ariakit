@@ -46,7 +46,7 @@ const Menu1 = React.forwardRef((props, ref) => {
 function Example() {
   const menu = useMenuState();
   return (
-    <div style={{ margin: 150 }}>
+    <div>
       <MenuDisclosure {...menu}>disclosure</MenuDisclosure>
       <Menu aria-label="menu" {...menu}>
         <MenuItem {...menu}>Item 1</MenuItem>
@@ -125,7 +125,7 @@ const Menu2 = React.forwardRef((props, ref) => {
 function Example() {
   const menu = useMenuState({ orientation: "horizontal" });
   return (
-    <div style={{ margin: 150 }}>
+    <div>
       <StaticMenu aria-label="menu" {...menu}>
         <MenuItem {...menu}>Abc</MenuItem>
         <MenuItem {...menu}>Def</MenuItem>

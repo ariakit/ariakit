@@ -1,4 +1,7 @@
-import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+import {
+  unstable_SealedInitialState,
+  unstable_useSealedState
+} from "../utils/useSealedState";
 import {
   useRoverState,
   RoverState,
@@ -16,9 +19,9 @@ export type ToolbarInitialState = RoverInitialState;
 export type ToolbarStateReturn = ToolbarState & ToolbarActions;
 
 export function useToolbarState(
-  initialState: SealedInitialState<ToolbarInitialState> = {}
+  initialState: unstable_SealedInitialState<ToolbarInitialState> = {}
 ): ToolbarStateReturn {
-  const { orientation = "horizontal", ...sealed } = useSealedState(
+  const { orientation = "horizontal", ...sealed } = unstable_useSealedState(
     initialState
   );
   return useRoverState({ orientation, ...sealed });

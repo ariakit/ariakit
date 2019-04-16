@@ -1,4 +1,7 @@
-import { useSealedState, SealedInitialState } from "../__utils/useSealedState";
+import {
+  unstable_useSealedState,
+  unstable_SealedInitialState
+} from "../utils/useSealedState";
 import {
   PopoverState,
   PopoverActions,
@@ -16,9 +19,11 @@ export type TooltipInitialState = PopoverInitialState;
 export type TooltipStateReturn = TooltipState & TooltipActions;
 
 export function useTooltipState(
-  initialState: SealedInitialState<TooltipInitialState> = {}
+  initialState: unstable_SealedInitialState<TooltipInitialState> = {}
 ): TooltipStateReturn {
-  const { placement = "top", ...sealed } = useSealedState(initialState);
+  const { placement = "top", ...sealed } = unstable_useSealedState(
+    initialState
+  );
   return usePopoverState({ ...sealed, placement });
 }
 

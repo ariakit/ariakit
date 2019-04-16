@@ -1,4 +1,4 @@
-import { SealedInitialState } from "../__utils/useSealedState";
+import { unstable_SealedInitialState } from "../utils/useSealedState";
 import {
   useHiddenState,
   HiddenState,
@@ -16,7 +16,7 @@ export type DialogInitialState = HiddenInitialState;
 export type DialogStateReturn = DialogState & DialogActions;
 
 export function useDialogState(
-  initialState: SealedInitialState<DialogInitialState> = {}
+  initialState: unstable_SealedInitialState<DialogInitialState> = {}
 ): DialogStateReturn {
   return useHiddenState(initialState);
 }

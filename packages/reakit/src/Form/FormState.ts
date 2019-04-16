@@ -1,7 +1,10 @@
 import * as React from "react";
 import { ArrayValue, Keys } from "../__utils/types";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
-import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+import {
+  unstable_SealedInitialState,
+  unstable_useSealedState
+} from "../utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
 import { isPromise } from "../__utils/isPromise";
 import { isEmpty } from "../__utils/isEmpty";
@@ -275,7 +278,7 @@ function reducer<V>(
 }
 
 export function unstable_useFormState<V = Record<any, any>>(
-  initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
+  initialState: unstable_SealedInitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
   const {
     baseId = unstable_useId("form-"),
@@ -286,7 +289,7 @@ export function unstable_useFormState<V = Record<any, any>>(
     resetOnUnmount = true,
     onValidate,
     onSubmit
-  } = useSealedState(initialState);
+  } = unstable_useSealedState(initialState);
 
   const [{ initialValues: _, ...state }, dispatch] = React.useReducer(reducer, {
     baseId,

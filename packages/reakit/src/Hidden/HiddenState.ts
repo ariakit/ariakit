@@ -1,5 +1,8 @@
 import * as React from "react";
-import { useSealedState, SealedInitialState } from "../__utils/useSealedState";
+import {
+  unstable_useSealedState,
+  unstable_SealedInitialState
+} from "../utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
 import { Keys } from "../__utils/types";
 
@@ -37,12 +40,12 @@ export type HiddenInitialState = Partial<
 export type HiddenStateReturn = HiddenState & HiddenActions;
 
 export function useHiddenState(
-  initialState: SealedInitialState<HiddenInitialState> = {}
+  initialState: unstable_SealedInitialState<HiddenInitialState> = {}
 ): HiddenStateReturn {
   const {
     unstable_hiddenId: hiddenId = unstable_useId("hidden-"),
     visible: sealedVisible = false
-  } = useSealedState(initialState);
+  } = unstable_useSealedState(initialState);
 
   const [visible, setVisible] = React.useState(sealedVisible);
 

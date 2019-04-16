@@ -1,5 +1,8 @@
 import * as React from "react";
-import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+import {
+  unstable_SealedInitialState,
+  unstable_useSealedState
+} from "../utils/useSealedState";
 import {
   PopoverState,
   PopoverActions,
@@ -38,14 +41,14 @@ export type MenuInitialState = RoverInitialState &
 export type MenuStateReturn = MenuState & MenuActions;
 
 export function useMenuState(
-  initialState: SealedInitialState<MenuInitialState> = {}
+  initialState: unstable_SealedInitialState<MenuInitialState> = {}
 ): MenuStateReturn {
   const {
     orientation = "vertical",
     unstable_gutter: initialGutter = 0,
     unstable_values: initialValues = {},
     ...sealed
-  } = useSealedState(initialState);
+  } = unstable_useSealedState(initialState);
 
   const [values, setValues] = React.useState(initialValues);
   const parent = React.useContext(MenuContext);

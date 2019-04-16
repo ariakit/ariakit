@@ -1,6 +1,9 @@
 import * as React from "react";
 import Popper from "popper.js";
-import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+import {
+  unstable_SealedInitialState,
+  unstable_useSealedState
+} from "../utils/useSealedState";
 import {
   DialogState,
   DialogActions,
@@ -88,7 +91,7 @@ export type PopoverInitialState = DialogInitialState &
 export type PopoverStateReturn = PopoverState & PopoverActions;
 
 export function usePopoverState(
-  initialState: SealedInitialState<PopoverInitialState> = {}
+  initialState: unstable_SealedInitialState<PopoverInitialState> = {}
 ): PopoverStateReturn {
   const {
     placement: sealedPlacement = "bottom",
@@ -96,7 +99,7 @@ export function usePopoverState(
     unstable_shift: shift = true,
     unstable_gutter: gutter = 12,
     ...sealed
-  } = useSealedState(initialState);
+  } = unstable_useSealedState(initialState);
 
   const popper = React.useRef<Popper | null>(null);
   const referenceRef = React.useRef<HTMLElement>(null);

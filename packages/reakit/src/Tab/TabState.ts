@@ -1,5 +1,8 @@
 import * as React from "react";
-import { SealedInitialState, useSealedState } from "../__utils/useSealedState";
+import {
+  unstable_SealedInitialState,
+  unstable_useSealedState
+} from "../utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
 import { useRoverState, RoverState, RoverActions } from "../Rover/RoverState";
 import { Keys } from "../__utils/types";
@@ -32,7 +35,7 @@ export type TabInitialState = Partial<TabState>;
 export type TabStateReturn = TabState & TabActions;
 
 export function useTabState(
-  initialState: SealedInitialState<TabInitialState> = {}
+  initialState: unstable_SealedInitialState<TabInitialState> = {}
 ): TabStateReturn {
   const {
     unstable_baseId: baseId = unstable_useId("tab-"),
@@ -40,7 +43,7 @@ export function useTabState(
     loop = true,
     manual = false,
     ...sealed
-  } = useSealedState(initialState);
+  } = unstable_useSealedState(initialState);
 
   const [selectedId, select] = React.useState(sealedSelectedId);
   const rover = useRoverState({
