@@ -1,22 +1,37 @@
-// TODO: Refactor
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as system from "reakit-system-bootstrap";
 import { unstable_useId } from "reakit/utils/useId";
 import { Provider } from "reakit/utils/Provider";
+import { unstable_useOptions } from "reakit/system/useOptions";
+import { unstable_useProps } from "reakit/system/useProps";
 import { compileComponent } from "./__utils/compileComponent";
-import { EditorState } from "./useEditorState";
+import { PlaygroundStateReturn } from "./usePlaygroundState";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { ErrorMessage } from "./ErrorMessage";
 
-export type PreviewProps = EditorState & {
+export type PlaygroundPreviewOptions = PlaygroundStateReturn & {
   /** TODO: Description */
   modules?: Record<string, any>;
 };
 
-export function Preview(props: PreviewProps) {
+export type PlaygroundPreviewProps = { className?: string };
+
+export function PlaygroundPreview({
+  code,
+  modules,
+  update,
+  ...htmlProps
+}: PlaygroundPreviewOptions & PlaygroundPreviewProps) {
+  const options = unstable_useOptions(
+    "usePlaygroundPreview",
+    { code, modules },
+    htmlProps
+  );
+
   const ref = React.useRef<HTMLDivElement>(null);
   const prefix = unstable_useId("preview-");
+  const [initialCode] = React.useState(options.code);
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((e: Error) => {
@@ -24,10 +39,9 @@ export function Preview(props: PreviewProps) {
     console.error(e); // eslint-disable-line no-console
   }, []);
 
-  const [initialCode] = React.useState(props.code);
   const [rendered, setRendered] = React.useState(() => {
     try {
-      return compileComponent(props.code, props.modules);
+      return compileComponent(options.code, options.modules);
     } catch (e) {
       handleError(e);
     }
@@ -41,36 +55,41 @@ export function Preview(props: PreviewProps) {
     }
   }, []);
 
+  const renderChildren = React.useCallback(
+    (children: React.ReactNode) => (
+      <Provider unstable_system={system} unstable_prefix={`${prefix}-`}>
+        {children}
+      </Provider>
+    ),
+    []
+  );
+
   React.useEffect(() => {
-    if (!props.code || props.code === initialCode) {
+    // Code hasn't change, do nothing
+    if (!options.code || options.code === initialCode) {
       return undefined;
     }
     const timer = setTimeout(() => {
       setError(null);
       try {
-        const exampleComponent = compileComponent(props.code);
+        const exampleComponent = compileComponent(options.code);
         unmount();
-        ReactDOM.render(
-          <Provider unstable_system={system} prefix={`${prefix}-`}>
-            {exampleComponent}
-          </Provider>,
-          ref.current
-        );
+        ReactDOM.render(renderChildren(exampleComponent), ref.current);
       } catch (e) {
         unmount();
         handleError(e);
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [props.code, handleError, unmount]);
+  }, [options.code, handleError, unmount]);
+
+  htmlProps = unstable_useProps("usePlaygroundPreview", options, htmlProps);
 
   return (
     <ErrorBoundary>
-      {error && <ErrorMessage error={error} />}
-      <div ref={ref} style={{ padding: 50 }}>
-        <Provider unstable_system={system} prefix={`${prefix}-`}>
-          {rendered}
-        </Provider>
+      <div {...htmlProps}>
+        {error && <ErrorMessage error={error} />}
+        <div ref={ref}>{renderChildren(rendered)}</div>
       </div>
     </ErrorBoundary>
   );

@@ -35,12 +35,14 @@
     "@types/codemirror": "0.0.73",
     "buble": "0.19.7",
     "codemirror": "5.45.0",
+    "emotion": "10.0.9",
     "react-codemirror2": "5.1.0",
     "reakit": "^1.0.0-alpha.1",
     "reakit-system-bootstrap": "^0.1.1",
     "reakit-system-palette": "^0.1.1"
   },
   "devDependencies": {
+    "raw.macro": "0.3.0",
     "react": "16.8.6",
     "react-dom": "16.8.6"
   },

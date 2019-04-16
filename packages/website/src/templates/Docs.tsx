@@ -1,16 +1,48 @@
 import * as React from "react";
+import { injectGlobal } from "emotion";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
-import { Preview, Editor, useEditorState } from "reakit-playground";
+import {
+  PlaygroundPreview,
+  PlaygroundEditor,
+  usePlaygroundState
+} from "reakit-playground";
 import CoreLayout from "../components/CoreLayout";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/dracula.css";
-import "./codemirror.css";
+import FiraCodeBold from "../fonts/FiraCode-Bold.woff";
+import FiraCodeLight from "../fonts/FiraCode-Light.woff";
+import FiraCodeMedium from "../fonts/FiraCode-Medium.woff";
+import FiraCodeRegular from "../fonts/FiraCode-Regular.woff";
 
-if (typeof navigator !== "undefined") {
-  require("codemirror/mode/jsx/jsx");
-  require("codemirror/mode/htmlmixed/htmlmixed");
-}
+injectGlobal`
+  @font-face {
+    font-family: "Fira Code";
+    src: url(${FiraCodeLight});
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Fira Code";
+    src: url(${FiraCodeRegular});
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Fira Code";
+    src: url(${FiraCodeMedium});
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Fira Code";
+    src: url(${FiraCodeBold});
+    font-weight: 700;
+    font-style: normal;
+  }
+  .CodeMirror {
+    font-family: "Fira Code", monospace !important;
+    font-size: 1em !important;
+  }
+`;
 
 type DocsProps = {
   data: {
@@ -60,18 +92,18 @@ const { Compiler: renderAst } = new RehypeReact({
         const { static: isStatic, className } = codeElement.props;
         const [, lang] =
           className.match(/language-((?:j|t)sx?)/) || ([] as any[]);
+        const state = usePlaygroundState(() => ({ code: getText(props) }));
         if (!lang) {
-          return <pre {...props} />;
+          return <PlaygroundEditor readOnly="nocursor" {...state} {...props} />;
         }
-        const state = useEditorState({ code: () => getText(props) });
         if (isStatic) {
-          return <Editor readOnly {...state} />;
+          return <PlaygroundEditor readOnly="nocursor" {...state} />;
         }
         return (
-          <>
-            <Preview {...state} />
-            <Editor {...state} />
-          </>
+          <div>
+            <PlaygroundPreview {...state} />
+            <PlaygroundEditor {...state} />
+          </div>
         );
       }
       return <pre {...props} />;

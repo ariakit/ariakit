@@ -4,85 +4,50 @@
 
 ## Installation
 
+npm:
 ```sh
 npm i reakit-playground
+```
+
+Yarn:
+```sh
+yarn add reakit-playground
 ```
 
 ## Usage
 
 ```jsx
 import React from "react";
-import { Playground } from "reakit-playground";
+import ReactDOM from "react-dom";
+import {
+  usePlaygroundState,
+  PlaygroundEditor,
+  PlaygroundPreview
+} from "reakit-playground";
 
-function App() {
-  const playground = usePlaygroundState({
-    language: "jsx",
-    code: "foo",
-    html: true,
-    readonly: true
-  });
-  return <Playground {...playground} />;
-}
+const initialCode = `import React from "react";
+import { Provider, Button } from "reakit";
 
-function App() {
-  const editor = useEditorState({
-    language: "jsx",
-    code: "foo",
-    html: true,
-    readonly: true
-  });
-  return <PlaygroundEditor readonly code="foo" language="jsx" />;
-}
-
-function App() {
-  // there will be no tabs
-  const playgroundApp = usePlaygroundState({
-    title: "App",
-    language: "jsx",
-    code: "foo",
-    html: true,
-    readonly: true
-  });
-  const playgroundHeader = usePlaygroundState({
-    title: "Header",
-    language: "jsx",
-    code: "foo"
-  });
-  return <Playground readonly html disableToolbar {...playground} />;
-}
-
-function App() {
-  const playground = usePlaygroundState({});
+function Example() {
   return (
-    <PlaygroundLayout>
-      <PlaygroundPreview {...playground} />
-      <PlaygroundHeader>
-        <PlaygroundTabList>
-          <PlaygroundTab tabId="jsx" {...playground}>
-            JSX
-          </PlaygroundTab>
-          <PlaygroundTab tabId="html" {...playground}>
-            HTML
-          </PlaygroundTab>
-        </PlaygroundTabList>
-        <PlaygroundToolbar>
-          <PlaygroundToolbarItem {...playground}>
-            <PlaygroundToolbarTheme {...playground} />
-          </PlaygroundToolbarItem>
-          <PlaygroundToolbarItem {...playground}>
-            <PlaygroundToolbarFullscreen {...playground} />
-          </PlaygroundToolbarItem>
-        </PlaygroundToolbar>
-        <PlaygroundTabPanel tabId="jsx" {...playground}>
-          <PlaygroundEditor {...playground} />
-        </PlaygroundTabPanel>
-        <PlaygroundTabPanel tabId="html" {...playground}>
-          <PlaygroundHTML {...playground} />
-        </PlaygroundTabPanel>
-      </PlaygroundHeader>
-    </PlaygroundLayout>
+    <Provider>
+      <Button>Button</Button>
+    </Provider>
   );
 }
+`;
+
+function App() {
+  const playground = usePlaygroundState({ code: initialCode });
+  return (
+    <div>
+      <PlaygroundPreview {...playground} />
+      <PlaygroundEditor {...playground} readOnly />
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
 ## License

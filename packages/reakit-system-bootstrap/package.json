@@ -2,7 +2,6 @@
   "name": "reakit-system-bootstrap",
   "version": "0.1.1",
   "description": "Reakit bootstrap system",
-  "sideEffects": false,
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap",
   "main": "lib/index.js",

@@ -3,8 +3,9 @@
 /dist
 /es
 /ts
-/useEditorState
-/Preview
+/usePlaygroundState
+/system
+/PlaygroundPreview
+/PlaygroundEditor
 /ErrorMessage
 /ErrorBoundary
-/Editor

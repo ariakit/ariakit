@@ -1,6 +1,9 @@
 import * as React from "react";
-import { Provider } from "reakit";
-import * as system from "reakit-system-bootstrap";
+import { Provider, unstable_mergeSystem as mergeSystem } from "reakit";
+import * as bootstrapSystem from "reakit-system-bootstrap";
+import * as playgroundSystem from "reakit-playground/system";
+
+const system = mergeSystem(bootstrapSystem, playgroundSystem);
 
 function CoreLayout(props: { children: React.ReactNode }) {
   return (
