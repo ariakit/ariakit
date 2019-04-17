@@ -12,6 +12,14 @@ const {
 
 process.env.NODE_ENV = "production";
 
+if (process.argv.includes("--no-umd")) {
+  process.env.NO_UMD = true;
+}
+
+if (process.argv.includes("--no-es")) {
+  process.env.NO_ES = true;
+}
+
 const cwd = process.cwd();
 
 cleanBuild(cwd);

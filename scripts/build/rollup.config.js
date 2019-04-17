@@ -83,10 +83,11 @@ function getOutput(isUMD) {
   const moduleDir = getModuleDir(cwd);
 
   return [
-    moduleDir && {
-      format: "es",
-      dir: moduleDir
-    },
+    moduleDir &&
+      !process.env.NO_ES && {
+        format: "es",
+        dir: moduleDir
+      },
     {
       format: "cjs",
       dir: getMainDir(cwd),
@@ -111,4 +112,7 @@ function getConfig(isUMD) {
   };
 }
 
-module.exports = [getConfig(), pkg.unpkg && getConfig(true)].filter(Boolean);
+module.exports = [
+  getConfig(),
+  pkg.unpkg && !process.env.NO_UMD && getConfig(true)
+].filter(Boolean);

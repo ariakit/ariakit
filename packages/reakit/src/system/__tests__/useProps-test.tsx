@@ -23,13 +23,13 @@ test("useProps", () => {
     {
       useAProps: (options: { a: string }) => options.a
     },
-    "useA",
+    "A",
     { a: "a" }
   );
   expect(result.current).toBe("a");
 });
 
 test("default return", () => {
-  const result = render(undefined, "useA", undefined, { id: "id" });
+  const result = render(undefined, "A", undefined, { id: "id" });
   expect(result.current).toEqual({ id: "id" });
 });
