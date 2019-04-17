@@ -7,7 +7,7 @@ export type BootstrapHiddenOptions = BootstrapBoxOptions & HiddenOptions;
 export function useHiddenProps(
   options: BootstrapHiddenOptions,
   htmlProps: HiddenProps = {}
-) {
+): HiddenProps {
   return mergeProps(
     {
       style: options.visible ? {} : { display: "none" }

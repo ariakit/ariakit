@@ -25,8 +25,8 @@ export function useHidden(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useHidden", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

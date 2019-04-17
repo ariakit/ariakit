@@ -42,8 +42,8 @@ export function useStaticMenu(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useStaticMenu", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

@@ -15,8 +15,8 @@ export function useToolbarItem(
   htmlProps: ToolbarItemProps = {}
 ) {
   options = unstable_useOptions("useToolbarItem", options, htmlProps);
-  htmlProps = useRover(options, htmlProps);
   htmlProps = unstable_useProps("useToolbarItem", options, htmlProps);
+  htmlProps = useRover(options, htmlProps);
   return htmlProps;
 }
 

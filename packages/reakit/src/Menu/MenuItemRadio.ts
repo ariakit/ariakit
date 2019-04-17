@@ -31,9 +31,9 @@ export function useMenuItemRadio(
     { role: "menuitemradio" } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useRadio({ ...options, currentValue, setValue }, htmlProps);
-  htmlProps = useMenuItem(options, htmlProps);
   htmlProps = unstable_useProps("useMenuItemRadio", options, htmlProps);
+  htmlProps = useMenuItem(options, htmlProps);
+  htmlProps = useRadio({ ...options, currentValue, setValue }, htmlProps);
   return htmlProps;
 }
 

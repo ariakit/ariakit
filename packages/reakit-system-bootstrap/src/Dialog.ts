@@ -24,8 +24,8 @@ export function useDialogOptions({
 
 export function useDialogProps(
   { unstable_system }: BootstrapDialogOptions,
-  { className, ...htmlProps }: DialogProps = {}
-) {
+  htmlProps: DialogProps = {}
+): DialogProps {
   const {
     style: { color, backgroundColor }
   } = usePaletteBoxProps({ unstable_system });
@@ -35,7 +35,7 @@ export function useDialogProps(
   const borderColor = useFade(foreground, 0.75);
   const boxShadowColor = useFade(primaryColor || color || foreground, 0.5);
 
-  const dialog = css`
+  const className = css`
     position: fixed;
     top: 28px;
     left: 50%;
@@ -52,7 +52,7 @@ export function useDialogProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, dialog) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapDialogBackdropOptions = BootstrapBoxOptions &
@@ -60,11 +60,11 @@ export type BootstrapDialogBackdropOptions = BootstrapBoxOptions &
 
 export function useDialogBackdropProps(
   _: BootstrapDialogBackdropOptions,
-  { className, ...htmlProps }: DialogBackdropProps = {}
-) {
-  const dialogBackdrop = css`
+  htmlProps: DialogBackdropProps = {}
+): DialogBackdropProps {
+  const className = css`
     background-color: rgba(0, 0, 0, 0.5);
   `;
 
-  return { ...htmlProps, className: cx(className, dialogBackdrop) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

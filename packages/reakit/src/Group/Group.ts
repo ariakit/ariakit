@@ -15,8 +15,8 @@ export function useGroup(
 ) {
   options = unstable_useOptions("useGroup", options, htmlProps);
   htmlProps = mergeProps({ role: "group" } as typeof htmlProps, htmlProps);
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useGroup", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

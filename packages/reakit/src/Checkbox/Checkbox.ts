@@ -81,8 +81,8 @@ export function useCheckbox(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useTabbable(options, htmlProps);
   htmlProps = unstable_useProps("useCheckbox", options, htmlProps);
+  htmlProps = useTabbable(options, htmlProps);
   return htmlProps;
 }
 

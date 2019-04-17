@@ -43,8 +43,8 @@ export function useTab(
     htmlProps
   );
 
-  htmlProps = useRover(_options, htmlProps);
   htmlProps = unstable_useProps("useTab", _options, htmlProps);
+  htmlProps = useRover(_options, htmlProps);
   return htmlProps;
 }
 

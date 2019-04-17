@@ -17,8 +17,8 @@ export function useMenuGroup(
 ) {
   options = unstable_useOptions("useMenuGroup", options, htmlProps);
   htmlProps = mergeProps({ role: "group" } as typeof htmlProps, htmlProps);
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useMenuGroup", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

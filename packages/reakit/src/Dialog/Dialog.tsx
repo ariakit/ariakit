@@ -127,8 +127,8 @@ export function useDialog(
     htmlProps
   );
 
-  htmlProps = useHidden(_options, htmlProps);
   htmlProps = unstable_useProps("useDialog", _options, htmlProps);
+  htmlProps = useHidden(_options, htmlProps);
   return htmlProps;
 }
 

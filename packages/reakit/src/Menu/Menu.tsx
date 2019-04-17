@@ -49,12 +49,12 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
     htmlProps
   );
 
+  htmlProps = unstable_useProps("useMenu", _options, htmlProps);
   htmlProps = useStaticMenu(_options, htmlProps);
   htmlProps = usePopover(
     { ..._options, modal: false, hideOnEsc: false },
     htmlProps
   );
-  htmlProps = unstable_useProps("useMenu", _options, htmlProps);
   return htmlProps;
 }
 

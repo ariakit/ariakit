@@ -68,6 +68,7 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
+  htmlProps = unstable_useProps("useFormCheckbox", options, htmlProps);
   htmlProps = useCheckbox(
     {
       ...options,
@@ -76,7 +77,6 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
     },
     htmlProps
   );
-  htmlProps = unstable_useProps("useFormCheckbox", options, htmlProps);
   return htmlProps;
 }
 

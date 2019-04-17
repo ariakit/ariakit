@@ -25,8 +25,8 @@ export function useDialogDisclosure(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useHiddenDisclosure(options, htmlProps);
   htmlProps = unstable_useProps("useDialogDisclosure", options, htmlProps);
+  htmlProps = useHiddenDisclosure(options, htmlProps);
   return htmlProps;
 }
 

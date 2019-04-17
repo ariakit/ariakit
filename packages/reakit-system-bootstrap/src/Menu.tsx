@@ -25,11 +25,11 @@ export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
 
 export function useStaticMenuProps(
   options: BootstrapStaticMenuOptions,
-  { className, ...htmlProps }: StaticMenuProps = {}
-) {
+  htmlProps: StaticMenuProps = {}
+): StaticMenuProps {
   const isHorizontal = options.orientation === "horizontal";
 
-  const staticMenu = css`
+  const className = css`
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
     white-space: nowrap;
@@ -44,22 +44,22 @@ export function useStaticMenuProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, staticMenu) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapMenuItemOptions = BootstrapBoxOptions & MenuItemOptions;
 
 export function useMenuItemProps(
   { unstable_system, ...options }: BootstrapMenuItemOptions,
-  { className, ...htmlProps }: MenuItemProps = {}
-) {
+  htmlProps: MenuItemProps = {}
+): MenuItemProps {
   const foreground = usePalette("foreground") || "black";
   const primary = usePalette("primary") || "blue";
   const primaryContrast = useContrast(primary);
   const darkPrimary = useDarken(primary, 0.2);
   const isHorizontal = options.orientation === "horizontal";
 
-  const menuItem = css`
+  const className = css`
     &&& {
       line-height: 1.5;
       padding: 0 ${isHorizontal ? "0.5em" : "1.5em"};
@@ -86,7 +86,7 @@ export function useMenuItemProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, menuItem) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapMenuOptions = BootstrapBoxOptions & MenuOptions;
@@ -103,9 +103,9 @@ export function useMenuOptions({
 
 export function useMenuProps(
   _: BootstrapMenuOptions,
-  { className, ...htmlProps }: MenuProps = {}
-) {
-  const menu = css`
+  htmlProps: MenuProps = {}
+): MenuProps {
+  const className = css`
     display: flex;
     border-radius: 0;
 
@@ -114,7 +114,7 @@ export function useMenuProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, menu) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
@@ -122,8 +122,8 @@ export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
 
 export function useMenuDisclosureProps(
   options: BootstrapMenuDisclosureOptions,
-  { className, children, ...htmlProps }: MenuDisclosureProps = {}
-) {
+  { children, ...htmlProps }: MenuDisclosureProps = {}
+): MenuDisclosureProps {
   const dir = options.placement
     ? (options.placement.split("-")[0] as "top" | "bottom" | "right" | "left")
     : undefined;
@@ -153,7 +153,7 @@ export function useMenuDisclosureProps(
       }[dir]
     : null;
 
-  const menuDisclosure = css`
+  const className = css`
     position: relative;
 
     [role="menu"] > & {
@@ -201,7 +201,7 @@ export function useMenuDisclosureProps(
           {svg}
         </>
       ),
-    className: cx(className, menuDisclosure)
+    className: cx(className, htmlProps.className)
   };
 }
 
@@ -210,9 +210,9 @@ export type BootstrapMenuItemCheckboxOptions = BootstrapBoxOptions &
 
 export function useMenuItemCheckboxProps(
   _: BootstrapMenuItemCheckboxOptions,
-  { className, ...htmlProps }: MenuItemCheckboxProps = {}
-) {
-  const menuItemCheckbox = css`
+  htmlProps: MenuItemCheckboxProps = {}
+): MenuItemCheckboxProps {
+  const className = css`
     position: relative;
     outline: 0;
 
@@ -228,7 +228,7 @@ export function useMenuItemCheckboxProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, menuItemCheckbox) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapMenuItemRadioOptions = BootstrapBoxOptions &
@@ -236,9 +236,9 @@ export type BootstrapMenuItemRadioOptions = BootstrapBoxOptions &
 
 export function useMenuItemRadioProps(
   _: BootstrapMenuItemRadioOptions,
-  { className, ...htmlProps }: MenuItemRadioProps = {}
-) {
-  const menuItemRadio = css`
+  htmlProps: MenuItemRadioProps = {}
+): MenuItemRadioProps {
+  const className = css`
     position: relative;
     outline: 0;
 
@@ -255,5 +255,5 @@ export function useMenuItemRadioProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, menuItemRadio) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

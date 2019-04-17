@@ -18,8 +18,8 @@ export function usePopoverBackdrop(
   htmlProps: PopoverBackdropProps = {}
 ) {
   options = unstable_useOptions("usePopoverBackdrop", options, htmlProps);
-  htmlProps = useDialogBackdrop(options, htmlProps);
   htmlProps = unstable_useProps("usePopoverBackdrop", options, htmlProps);
+  htmlProps = useDialogBackdrop(options, htmlProps);
   return htmlProps;
 }
 

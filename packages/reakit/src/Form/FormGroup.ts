@@ -41,8 +41,8 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useGroup(options, htmlProps);
   htmlProps = unstable_useProps("useFormGroup", options, htmlProps);
+  htmlProps = useGroup(options, htmlProps);
   return htmlProps;
 }
 

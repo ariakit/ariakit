@@ -30,8 +30,8 @@ export function unstable_useForm(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useForm", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

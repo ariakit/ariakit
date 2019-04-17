@@ -42,9 +42,9 @@ export function useMenuItemCheckbox(
     htmlProps
   );
 
-  htmlProps = useCheckbox({ ...options, currentValue, setValue }, htmlProps);
-  htmlProps = useMenuItem(options, htmlProps);
   htmlProps = unstable_useProps("useMenuItemCheckbox", options, htmlProps);
+  htmlProps = useMenuItem(options, htmlProps);
+  htmlProps = useCheckbox({ ...options, currentValue, setValue }, htmlProps);
   return htmlProps;
 }
 

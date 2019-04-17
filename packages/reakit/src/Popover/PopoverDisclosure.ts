@@ -26,8 +26,8 @@ export function usePopoverDisclosure(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useDialogDisclosure(options, htmlProps);
   htmlProps = unstable_useProps("usePopoverDisclosure", options, htmlProps);
+  htmlProps = useDialogDisclosure(options, htmlProps);
   return htmlProps;
 }
 

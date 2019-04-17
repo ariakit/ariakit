@@ -51,8 +51,8 @@ export function unstable_useFormMessage<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useFormMessage", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

@@ -99,8 +99,8 @@ export function useRover(
     htmlProps
   );
 
-  htmlProps = useTabbable(options, htmlProps);
   htmlProps = unstable_useProps("useRover", options, htmlProps);
+  htmlProps = useTabbable(options, htmlProps);
   return htmlProps;
 }
 

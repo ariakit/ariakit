@@ -32,8 +32,8 @@ export function useTooltipReference(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useTooltipReference", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

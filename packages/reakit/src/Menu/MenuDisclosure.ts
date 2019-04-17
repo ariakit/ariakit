@@ -103,6 +103,7 @@ export function useMenuDisclosure(
     htmlProps
   );
 
+  htmlProps = unstable_useProps("useMenuDisclosure", options, htmlProps);
   htmlProps = usePopoverDisclosure(
     {
       ...options,
@@ -113,7 +114,6 @@ export function useMenuDisclosure(
     },
     htmlProps
   );
-  htmlProps = unstable_useProps("useMenuDisclosure", options, htmlProps);
   return htmlProps;
 }
 

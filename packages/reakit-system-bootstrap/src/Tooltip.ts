@@ -15,15 +15,15 @@ export function useTooltipOptions({
 
 export function useTooltipProps(
   { unstable_system }: BootstrapTooltipOptions,
-  { className, ...htmlProps }: TooltipProps = {}
-) {
+  htmlProps: TooltipProps = {}
+): TooltipProps {
   const {
     style: { backgroundColor }
   } = usePaletteBoxProps({ unstable_system });
 
   const fadeBackgroundColor = useFade(backgroundColor || "black", 0.15);
 
-  const tooltip = css`
+  const className = css`
     background-color: ${fadeBackgroundColor};
     font-size: 0.8em;
     padding: 0.5rem;
@@ -40,5 +40,5 @@ export function useTooltipProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, tooltip) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

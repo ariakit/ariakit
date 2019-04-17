@@ -97,8 +97,8 @@ export function useMenuItem(
     htmlProps
   );
 
-  htmlProps = useRover(options, htmlProps);
   htmlProps = unstable_useProps("useMenuItem", options, htmlProps);
+  htmlProps = useRover(options, htmlProps);
 
   return {
     ...htmlProps,

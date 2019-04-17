@@ -42,8 +42,8 @@ export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useFormLabel", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

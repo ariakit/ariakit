@@ -17,8 +17,8 @@ export function useTabbableProps(
     // it to default to `primary` only for the tabbable `box-shadow`
     unstable_system: { palette = "primary", ...system } = {}
   }: BootstrapTabbableOptions,
-  { className, ...htmlProps }: TabbableProps = {}
-) {
+  htmlProps: TabbableProps = {}
+): TabbableProps {
   const {
     style: { color, backgroundColor }
   } = usePaletteBoxProps({ unstable_system: { palette, ...system } });
@@ -32,7 +32,7 @@ export function useTabbableProps(
   const lighter = useLighten(strokeColor, contrastRatio < 1.2 ? 0.25 : 0);
   const boxShadowColor = useFade(backgroundIsLight ? darker : lighter, 0.6);
 
-  const tabbable = css`
+  const className = css`
     &:not([type="checkbox"]):not([type="radio"]) {
       transition: box-shadow 0.15s ease-in-out;
       outline: 0;
@@ -53,5 +53,5 @@ export function useTabbableProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, tabbable) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

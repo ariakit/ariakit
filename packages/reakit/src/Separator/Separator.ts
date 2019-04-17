@@ -38,8 +38,8 @@ export function useSeparator(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(_options, htmlProps);
   htmlProps = unstable_useProps("useSeparator", _options, htmlProps);
+  htmlProps = useBox(_options, htmlProps);
   return htmlProps;
 }
 

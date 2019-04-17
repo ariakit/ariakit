@@ -25,8 +25,8 @@ export function useTabList(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useTabList", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

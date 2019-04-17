@@ -25,8 +25,8 @@ export function useHiddenDisclosure(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useButton(options, htmlProps);
   htmlProps = unstable_useProps("useHiddenDisclosure", options, htmlProps);
+  htmlProps = useButton(options, htmlProps);
   return htmlProps;
 }
 

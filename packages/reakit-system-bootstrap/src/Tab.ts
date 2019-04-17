@@ -9,13 +9,13 @@ export type BootstrapTabOptions = BootstrapBoxOptions & TabOptions;
 
 export function useTabProps(
   _: BootstrapTabOptions,
-  { className, ...htmlProps }: TabProps = {}
-) {
+  htmlProps: TabProps = {}
+): TabProps {
   const background = usePalette("background") || "white";
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const tab = css`
+  const className = css`
     background-color: transparent;
     border: 1px solid transparent;
     border-width: 1px 1px 0 1px;
@@ -36,19 +36,19 @@ export function useTabProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, tab) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapTabListOptions = BootstrapBoxOptions & TabListOptions;
 
 export function useTabListProps(
   _: BootstrapTabListOptions,
-  { className, ...htmlProps }: TabListProps = {}
-) {
+  htmlProps: TabListProps = {}
+): TabListProps {
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const tabList = css`
+  const className = css`
     display: flex;
     flex-direction: row;
     border: 1px solid ${borderColor};
@@ -62,5 +62,5 @@ export function useTabListProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, tabList) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

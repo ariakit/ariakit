@@ -101,8 +101,8 @@ export function useTabbable(
     htmlProps
   );
 
-  htmlProps = useBox(_options, htmlProps);
   htmlProps = unstable_useProps("useTabbable", _options, htmlProps);
+  htmlProps = useBox(_options, htmlProps);
   return htmlProps;
 }
 

@@ -9,16 +9,16 @@ export type BootstrapBoxOptions = PaletteBoxOptions;
 
 export function useBoxProps(
   { unstable_system }: BootstrapBoxOptions,
-  { className, ...htmlProps }: BoxProps = {}
-) {
+  htmlProps: BoxProps = {}
+): BoxProps {
   const { style } = usePaletteBoxProps({ unstable_system });
 
-  const box = css`
+  const className = css`
     box-sizing: border-box;
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
       Roboto, "Helvetica Neue", Arial, sans-serif;
     ${style as any}
   `;
 
-  return { ...htmlProps, className: cx(box, className) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

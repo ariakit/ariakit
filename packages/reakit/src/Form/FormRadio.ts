@@ -56,8 +56,8 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useRadio(allOptions, htmlProps);
   htmlProps = unstable_useProps("useFormRadio", allOptions, htmlProps);
+  htmlProps = useRadio(allOptions, htmlProps);
   return htmlProps;
 }
 

@@ -6,9 +6,9 @@ export type BootstrapGroupOptions = BootstrapBoxOptions & GroupOptions;
 
 export function useGroupProps(
   _: BootstrapGroupOptions,
-  { className, ...htmlProps }: GroupProps = {}
-) {
-  const group = css`
+  htmlProps: GroupProps = {}
+): GroupProps {
+  const className = css`
     display: flex;
 
     & > :not(:first-child) {
@@ -32,5 +32,5 @@ export function useGroupProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, group) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

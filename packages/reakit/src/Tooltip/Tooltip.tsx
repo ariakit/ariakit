@@ -33,8 +33,8 @@ export function useTooltip(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useHidden(options, htmlProps);
   htmlProps = unstable_useProps("useTooltip", options, htmlProps);
+  htmlProps = useHidden(options, htmlProps);
   return htmlProps;
 }
 

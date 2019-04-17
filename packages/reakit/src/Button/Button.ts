@@ -29,8 +29,8 @@ export function useButton(
     htmlProps
   );
 
-  htmlProps = useTabbable(_options, htmlProps);
   htmlProps = unstable_useProps("useButton", _options, htmlProps);
+  htmlProps = useTabbable(_options, htmlProps);
   return htmlProps;
 }
 

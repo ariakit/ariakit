@@ -36,8 +36,8 @@ export function unstable_useFormSubmitButton(
     htmlProps
   );
 
-  htmlProps = useButton(options, htmlProps);
   htmlProps = unstable_useProps("useFormSubmitButton", options, htmlProps);
+  htmlProps = useButton(options, htmlProps);
   return htmlProps;
 }
 

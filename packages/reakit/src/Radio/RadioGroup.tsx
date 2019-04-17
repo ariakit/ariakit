@@ -24,8 +24,8 @@ export function useRadioGroup(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useRadioGroup", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

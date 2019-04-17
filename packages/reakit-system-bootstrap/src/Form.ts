@@ -29,15 +29,15 @@ export type BootstrapFormOptions = BootstrapBoxOptions & unstable_FormOptions;
 
 export function useFormProps(
   _: BootstrapFormOptions,
-  { className, ...htmlProps }: unstable_FormProps = {}
-) {
-  const form = css`
+  htmlProps: unstable_FormProps = {}
+): unstable_FormProps {
+  const className = css`
     > *:not(:first-child) {
       margin-top: 1rem;
     }
   `;
 
-  return { ...htmlProps, className: cx(className, form) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapFormInputOptions = BootstrapBoxOptions &
@@ -63,8 +63,8 @@ export function useFormInputOptions({
 
 export function useFormInputProps(
   { unstable_system }: BootstrapFormInputOptions,
-  { className, ...htmlProps }: unstable_FormInputProps = {}
-) {
+  htmlProps: unstable_FormInputProps = {}
+): unstable_FormInputProps {
   const {
     style: { backgroundColor, borderColor: originalBorderColor }
   } = usePaletteBoxProps({ unstable_system });
@@ -75,7 +75,7 @@ export function useFormInputProps(
   const borderColor = useFade(foreground, 0.75);
   const focusBorderColor = useLighten(primary, 0.4);
 
-  const formInput = css`
+  const className = css`
     display: block;
     width: 100%;
     border-radius: 0.2rem;
@@ -90,7 +90,7 @@ export function useFormInputProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, formInput) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapFormMessageOptions = BootstrapBoxOptions &
@@ -112,14 +112,14 @@ export function useFormMessageOptions({
 
 export function useFormMessageProps(
   _: BootstrapFormMessageOptions,
-  { className, ...htmlProps }: unstable_FormMessageProps = {}
-) {
-  const formMessage = css`
+  htmlProps: unstable_FormMessageProps = {}
+): unstable_FormMessageProps {
+  const className = css`
     font-size: 0.8em;
     margin-top: 0.5rem !important;
   `;
 
-  return { ...htmlProps, className: cx(className, formMessage) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapFormLabelOptions = BootstrapBoxOptions &
@@ -127,9 +127,9 @@ export type BootstrapFormLabelOptions = BootstrapBoxOptions &
 
 export function useFormLabelProps(
   _: BootstrapFormLabelOptions,
-  { className, ...htmlProps }: unstable_FormLabelProps = {}
-) {
-  const formLabel = css`
+  htmlProps: unstable_FormLabelProps = {}
+): unstable_FormLabelProps {
+  const className = css`
     display: block;
     margin: 0 0 0.5rem 0 !important;
 
@@ -140,7 +140,7 @@ export function useFormLabelProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, formLabel) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapFormGroupOptions = BootstrapBoxOptions &
@@ -166,8 +166,8 @@ export function useFormGroupOptions({
 
 export function useFormGroupProps(
   { unstable_system }: BootstrapFormGroupOptions,
-  { className, ...htmlProps }: unstable_FormGroupProps = {}
-) {
+  htmlProps: unstable_FormGroupProps = {}
+): unstable_FormGroupProps {
   const {
     style: { backgroundColor, borderColor: originalBorderColor }
   } = usePaletteBoxProps({ unstable_system });
@@ -176,7 +176,7 @@ export function useFormGroupProps(
   const color = useLighten(foreground, 0.3);
   const borderColor = useFade(foreground, 0.75);
 
-  const formGroup = css`
+  const className = css`
     display: block;
     color: ${color};
     border: 1px solid ${originalBorderColor || borderColor};
@@ -187,7 +187,7 @@ export function useFormGroupProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, formGroup) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapFormRemoveButtonOptions = BootstrapBoxOptions &

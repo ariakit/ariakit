@@ -23,8 +23,8 @@ export function usePopoverOptions({
 
 export function usePopoverProps(
   { unstable_system }: BootstrapPopoverOptions,
-  { className, ...htmlProps }: PopoverProps = {}
-) {
+  htmlProps: PopoverProps = {}
+): PopoverProps {
   const {
     style: { backgroundColor }
   } = usePaletteBoxProps({ unstable_system });
@@ -32,7 +32,7 @@ export function usePopoverProps(
   const foreground = useContrast(backgroundColor) || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const popover = css`
+  const className = css`
     & > .arrow {
       background-color: transparent;
       & .stroke {
@@ -44,7 +44,7 @@ export function usePopoverProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, popover) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }
 
 export type BootstrapPopoverArrowOptions = BootstrapBoxOptions &
@@ -52,7 +52,7 @@ export type BootstrapPopoverArrowOptions = BootstrapBoxOptions &
 
 export function usePopoverArrowProps(
   _: BootstrapPopoverArrowOptions,
-  { className, ...htmlProps }: PopoverArrowProps = {}
-) {
-  return { ...htmlProps, className: cx(className, "arrow") };
+  htmlProps: PopoverArrowProps = {}
+): PopoverArrowProps {
+  return { ...htmlProps, className: cx("arrow", htmlProps.className) };
 }

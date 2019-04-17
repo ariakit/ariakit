@@ -47,8 +47,8 @@ export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useRover(options, htmlProps);
   htmlProps = unstable_useProps("useRadio", options, htmlProps);
+  htmlProps = useRover(options, htmlProps);
   return htmlProps;
 }
 

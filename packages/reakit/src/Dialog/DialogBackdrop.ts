@@ -31,8 +31,8 @@ export function useDialogBackdrop(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useHidden(options, htmlProps);
   htmlProps = unstable_useProps("useDialogBackdrop", options, htmlProps);
+  htmlProps = useHidden(options, htmlProps);
   return htmlProps;
 }
 

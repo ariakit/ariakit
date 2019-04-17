@@ -25,8 +25,8 @@ export function useToolbar(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useBox(options, htmlProps);
   htmlProps = unstable_useProps("useToolbar", options, htmlProps);
+  htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }
 

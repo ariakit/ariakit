@@ -36,8 +36,8 @@ export function usePopover(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = useDialog(_options, htmlProps);
   htmlProps = unstable_useProps("usePopover", _options, htmlProps);
+  htmlProps = useDialog(_options, htmlProps);
   return htmlProps;
 }
 

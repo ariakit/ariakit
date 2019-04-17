@@ -77,8 +77,8 @@ export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = useButton(options, htmlProps);
   htmlProps = unstable_useProps("useFormRemoveButton", options, htmlProps);
+  htmlProps = useButton(options, htmlProps);
   return htmlProps;
 }
 

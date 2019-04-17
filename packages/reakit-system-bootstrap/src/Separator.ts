@@ -8,12 +8,12 @@ export type BootstrapSeparatorOptions = BootstrapBoxOptions & SeparatorOptions;
 
 export function useSeparatorProps(
   _: BootstrapSeparatorOptions,
-  { className, ...htmlProps }: SeparatorProps = {}
-) {
+  htmlProps: SeparatorProps = {}
+): SeparatorProps {
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const separator = css`
+  const className = css`
     border: 1px solid ${borderColor};
     border-width: 0 1px 0 0;
     margin: 0 0.5em;
@@ -29,5 +29,5 @@ export function useSeparatorProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, separator) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

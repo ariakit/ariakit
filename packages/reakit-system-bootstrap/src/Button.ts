@@ -16,8 +16,8 @@ export function useButtonOptions({
 
 export function useButtonProps(
   { unstable_system }: BootstrapButtonOptions,
-  { className, ...htmlProps }: ButtonProps = {}
-) {
+  htmlProps: ButtonProps = {}
+): ButtonProps {
   const {
     style: { color, backgroundColor, borderColor = "transparent" }
   } = usePaletteBoxProps({ unstable_system });
@@ -29,7 +29,7 @@ export function useButtonProps(
   const hoverColor = useContrast(hoverBackgroundColor);
   const activeColor = useContrast(activeBackgroundColor);
 
-  const button = css`
+  const className = css`
     display: inline-block;
     font-weight: 400;
     text-align: center;
@@ -62,5 +62,5 @@ export function useButtonProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, button) };
+  return { ...htmlProps, className: cx(className, htmlProps.className) };
 }

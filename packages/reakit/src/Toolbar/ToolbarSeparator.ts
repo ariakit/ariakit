@@ -18,8 +18,8 @@ export function useToolbarSeparator(
   htmlProps: ToolbarSeparatorProps = {}
 ) {
   options = unstable_useOptions("useToolbarSeparator", options, htmlProps);
-  htmlProps = useSeparator(options, htmlProps);
   htmlProps = unstable_useProps("useToolbarSeparator", options, htmlProps);
+  htmlProps = useSeparator(options, htmlProps);
   return htmlProps;
 }
 
