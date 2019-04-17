@@ -158,9 +158,10 @@ export function useMenuDisclosureProps(
 
     [role="menu"] > & {
       ${children &&
+        dir !== "left" &&
         css`
-      padding-${dir === "left" ? "left" : "right"}: 2em !important;
-    `}
+          padding-right: 2em !important;
+        `}
     }
 
     svg {
