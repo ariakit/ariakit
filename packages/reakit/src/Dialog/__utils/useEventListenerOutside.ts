@@ -20,7 +20,7 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
 
       const element = targetRef.current;
       const disclosure = disclosureRef.current;
-      const target = e.target as Element;
+      const target = (e.relatedTarget || e.target) as Element;
 
       // Click inside
       if (!element || element.contains(target)) return;
