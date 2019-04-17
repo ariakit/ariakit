@@ -45,6 +45,7 @@ export function useTabbable(
     tabIndex = 0,
     onClick,
     onMouseOver,
+    onMouseDown,
     disabled,
     ...htmlProps
   }: TabbableProps = {}
@@ -64,6 +65,17 @@ export function useTabbable(
       disabled: reallyDisabled,
       tabIndex: reallyDisabled ? undefined : tabIndex,
       "aria-disabled": _options.disabled,
+      onMouseDown: event => {
+        event.preventDefault();
+        if (_options.disabled) {
+          event.stopPropagation();
+        } else {
+          (event.target as HTMLElement).focus();
+          if (onMouseDown) {
+            onMouseDown(event);
+          }
+        }
+      },
       onClick: event => {
         if (_options.disabled) {
           event.stopPropagation();

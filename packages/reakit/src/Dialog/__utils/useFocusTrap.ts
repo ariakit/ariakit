@@ -58,14 +58,14 @@ export function useFocusTrap(
     const after = afterElement.current;
     if (!shouldTrap || !before || !after) return undefined;
 
-    const handleFocus = (e: FocusEvent) => {
+    const handleFocus = (event: FocusEvent) => {
       const portal = portalRef.current;
       const dialog = dialogRef.current;
       if (!portal || !dialog || hasNestedOpenModals(portal)) return;
 
-      e.preventDefault();
+      event.preventDefault();
 
-      const isAfter = e.target === after;
+      const isAfter = event.target === after;
 
       const tabbable = isAfter
         ? getFirstTabbableIn(dialog)
