@@ -40,6 +40,7 @@ export function useButtonProps(
     border-radius: 0.25rem;
     border: 1px solid ${borderColor};
     cursor: pointer;
+    white-space: nowrap;
     color: ${color};
     background-color: ${backgroundColor || "transparent"};
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
