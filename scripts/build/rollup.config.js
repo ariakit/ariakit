@@ -83,11 +83,10 @@ function getOutput(isUMD) {
   const moduleDir = getModuleDir(cwd);
 
   return [
-    moduleDir &&
-      !process.env.NO_ES && {
-        format: "es",
-        dir: moduleDir
-      },
+    moduleDir && {
+      format: "es",
+      dir: moduleDir
+    },
     {
       format: "cjs",
       dir: getMainDir(cwd),

@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build && yarn website:build"
+  command = "yarn build:fast && yarn website:build"
   publish = "packages/website/public"
 
 [[redirects]]
