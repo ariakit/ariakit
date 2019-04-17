@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@0.17.1...website@0.18.0) (2019-04-17)
+
+
+### Features
+
+* **reakit-playground:** `PlaygroundEditor`, `PlaygroundPreview` and system ([c7a8c9f](https://github.com/reakit/reakit/tree/master/packages/website/commit/c7a8c9f))
+
+
+
+
+
 ## [0.17.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@0.17.0...website@0.17.1) (2019-04-09)
 
 **Note:** Version bump only for package website

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.1.1...reakit-playground@0.2.0) (2019-04-17)
+
+
+### Features
+
+* **reakit-playground:** `PlaygroundEditor`, `PlaygroundPreview` and system ([c7a8c9f](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/c7a8c9f))
+* Add `use` prefix automatically in `useProps`/`useOptions` ([167fda1](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/167fda1))
+* Expose `unstable_useSealedState` util ([1540eab](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/1540eab))
+
+
+
+
+
 ## [0.1.1](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.1.0...reakit-playground@0.1.1) (2019-04-09)
 
 
