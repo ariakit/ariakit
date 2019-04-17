@@ -13,12 +13,12 @@ export function useBoxProps(
 ): BoxProps {
   const { style } = usePaletteBoxProps({ unstable_system });
 
-  const className = css`
+  const box = css`
     box-sizing: border-box;
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
       Roboto, "Helvetica Neue", Arial, sans-serif;
     ${style as any}
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(box, htmlProps.className) };
 }

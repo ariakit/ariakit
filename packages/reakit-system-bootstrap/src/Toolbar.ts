@@ -12,7 +12,7 @@ export function useToolbarProps(
   _: BootstrapToolbarOptions,
   htmlProps: ToolbarProps = {}
 ): ToolbarProps {
-  const className = css`
+  const toolbar = css`
     display: flex;
     flex-direction: row;
 
@@ -30,7 +30,7 @@ export function useToolbarProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(toolbar, htmlProps.className) };
 }
 
 export type BootstrapToolbarItemOptions = BootstrapBoxOptions &
@@ -40,10 +40,10 @@ export function useToolbarItemProps(
   _: BootstrapToolbarItemOptions,
   htmlProps: ToolbarItemProps = {}
 ): ToolbarItemProps {
-  const className = css`
+  const toolbarItem = css`
     background-color: transparent;
     font-size: 100%;
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(toolbarItem, htmlProps.className) };
 }

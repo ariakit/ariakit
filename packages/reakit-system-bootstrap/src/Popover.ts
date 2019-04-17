@@ -32,7 +32,7 @@ export function usePopoverProps(
   const foreground = useContrast(backgroundColor) || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const className = css`
+  const popover = css`
     & > .arrow {
       background-color: transparent;
       & .stroke {
@@ -44,7 +44,7 @@ export function usePopoverProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(popover, htmlProps.className) };
 }
 
 export type BootstrapPopoverArrowOptions = BootstrapBoxOptions &

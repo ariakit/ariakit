@@ -29,7 +29,7 @@ export function useButtonProps(
   const hoverColor = useContrast(hoverBackgroundColor);
   const activeColor = useContrast(activeBackgroundColor);
 
-  const className = css`
+  const button = css`
     display: inline-block;
     font-weight: 400;
     text-align: center;
@@ -63,5 +63,5 @@ export function useButtonProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(button, htmlProps.className) };
 }

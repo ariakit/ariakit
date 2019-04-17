@@ -15,7 +15,7 @@ export function useTabProps(
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const className = css`
+  const tab = css`
     background-color: transparent;
     border: 1px solid transparent;
     border-width: 1px 1px 0 1px;
@@ -36,7 +36,7 @@ export function useTabProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(tab, htmlProps.className) };
 }
 
 export type BootstrapTabListOptions = BootstrapBoxOptions & TabListOptions;
@@ -48,7 +48,7 @@ export function useTabListProps(
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const className = css`
+  const tabList = css`
     display: flex;
     flex-direction: row;
     border: 1px solid ${borderColor};
@@ -62,5 +62,5 @@ export function useTabListProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(tabList, htmlProps.className) };
 }

@@ -23,7 +23,7 @@ export function useTooltipProps(
 
   const fadeBackgroundColor = useFade(backgroundColor || "black", 0.15);
 
-  const className = css`
+  const tooltip = css`
     background-color: ${fadeBackgroundColor};
     font-size: 0.8em;
     padding: 0.5rem;
@@ -40,5 +40,5 @@ export function useTooltipProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(tooltip, htmlProps.className) };
 }

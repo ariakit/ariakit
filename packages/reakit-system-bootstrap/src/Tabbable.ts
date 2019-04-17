@@ -32,7 +32,7 @@ export function useTabbableProps(
   const lighter = useLighten(strokeColor, contrastRatio < 1.2 ? 0.25 : 0);
   const boxShadowColor = useFade(backgroundIsLight ? darker : lighter, 0.6);
 
-  const className = css`
+  const tabbable = css`
     &:not([type="checkbox"]):not([type="radio"]) {
       transition: box-shadow 0.15s ease-in-out;
       outline: 0;
@@ -53,5 +53,5 @@ export function useTabbableProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(tabbable, htmlProps.className) };
 }

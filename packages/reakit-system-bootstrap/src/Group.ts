@@ -8,7 +8,7 @@ export function useGroupProps(
   _: BootstrapGroupOptions,
   htmlProps: GroupProps = {}
 ): GroupProps {
-  const className = css`
+  const group = css`
     display: flex;
 
     & > :not(:first-child) {
@@ -32,5 +32,5 @@ export function useGroupProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(group, htmlProps.className) };
 }

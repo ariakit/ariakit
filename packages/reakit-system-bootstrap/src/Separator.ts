@@ -13,7 +13,7 @@ export function useSeparatorProps(
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 
-  const className = css`
+  const separator = css`
     border: 1px solid ${borderColor};
     border-width: 0 1px 0 0;
     margin: 0 0.5em;
@@ -29,5 +29,5 @@ export function useSeparatorProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(className, htmlProps.className) };
+  return { ...htmlProps, className: cx(separator, htmlProps.className) };
 }
