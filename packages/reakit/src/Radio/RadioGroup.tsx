@@ -17,14 +17,14 @@ export function useRadioGroup(
   options: RadioGroupOptions = {},
   htmlProps: RadioGroupProps = {}
 ) {
-  options = unstable_useOptions("useRadioGroup", options, htmlProps);
+  options = unstable_useOptions("RadioGroup", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "radiogroup"
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useRadioGroup", options, htmlProps);
+  htmlProps = unstable_useProps("RadioGroup", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

@@ -30,7 +30,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
     ...options
   };
 
-  _options = unstable_useOptions("useMenu", _options, htmlProps);
+  _options = unstable_useOptions("Menu", _options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -49,7 +49,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useMenu", _options, htmlProps);
+  htmlProps = unstable_useProps("Menu", _options, htmlProps);
   htmlProps = useStaticMenu(_options, htmlProps);
   htmlProps = usePopover(
     { ..._options, modal: false, hideOnEsc: false },

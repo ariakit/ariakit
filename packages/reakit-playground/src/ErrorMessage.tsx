@@ -16,12 +16,12 @@ export function ErrorMessage({
   ...htmlProps
 }: ErrorMessageOptions & ErrorMessageProps) {
   const options = unstable_useOptions(
-    "useErrorMessage",
+    "ErrorMessage",
     { error, unstable_system },
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useErrorMessage", options, htmlProps);
+  htmlProps = unstable_useProps("ErrorMessage", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
 
   return <pre {...htmlProps}>{options.error.toString()}</pre>;

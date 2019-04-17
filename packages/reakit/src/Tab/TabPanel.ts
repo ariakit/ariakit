@@ -26,7 +26,7 @@ export function useTabPanel(
     visible: options.selectedId === options.stopId,
     ...options
   };
-  _options = unstable_useOptions("useTabPanel", _options, htmlProps);
+  _options = unstable_useOptions("TabPanel", _options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -37,7 +37,7 @@ export function useTabPanel(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useTabPanel", _options, htmlProps);
+  htmlProps = unstable_useProps("TabPanel", _options, htmlProps);
   htmlProps = useHidden(_options, htmlProps);
   return htmlProps;
 }

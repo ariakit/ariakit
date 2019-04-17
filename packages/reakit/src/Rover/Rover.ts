@@ -39,7 +39,7 @@ export function useRover(
   options: RoverOptions,
   { tabIndex, onKeyDown, ...htmlProps }: RoverProps = {}
 ) {
-  options = unstable_useOptions("useRover", options, htmlProps);
+  options = unstable_useOptions("Rover", options, htmlProps);
 
   const ref = React.useRef<HTMLElement>(null);
   const id = unstable_useId("rover-");
@@ -99,7 +99,7 @@ export function useRover(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useRover", options, htmlProps);
+  htmlProps = unstable_useProps("Rover", options, htmlProps);
   htmlProps = useTabbable(options, htmlProps);
   return htmlProps;
 }

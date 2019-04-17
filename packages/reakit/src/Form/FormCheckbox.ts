@@ -45,7 +45,7 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   options: unstable_FormCheckboxOptions<V, P>,
   htmlProps: unstable_FormCheckboxProps = {}
 ) {
-  options = unstable_useOptions("useFormCheckbox", options, htmlProps);
+  options = unstable_useOptions("FormCheckbox", options, htmlProps);
 
   const isBoolean = typeof options.value === "undefined";
   const currentValue = unstable_getIn(options.values, options.name);
@@ -68,7 +68,7 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useFormCheckbox", options, htmlProps);
+  htmlProps = unstable_useProps("FormCheckbox", options, htmlProps);
   htmlProps = useCheckbox(
     {
       ...options,

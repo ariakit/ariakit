@@ -17,8 +17,8 @@ export function useToolbarSeparator(
   options: ToolbarSeparatorOptions,
   htmlProps: ToolbarSeparatorProps = {}
 ) {
-  options = unstable_useOptions("useToolbarSeparator", options, htmlProps);
-  htmlProps = unstable_useProps("useToolbarSeparator", options, htmlProps);
+  options = unstable_useOptions("ToolbarSeparator", options, htmlProps);
+  htmlProps = unstable_useProps("ToolbarSeparator", options, htmlProps);
   htmlProps = useSeparator(options, htmlProps);
   return htmlProps;
 }

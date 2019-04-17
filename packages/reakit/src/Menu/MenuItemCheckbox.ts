@@ -29,7 +29,7 @@ export function useMenuItemCheckbox(
   options: MenuItemCheckboxOptions,
   htmlProps: MenuItemCheckboxProps = {}
 ) {
-  options = unstable_useOptions("useMenuItemCheckbox", options, htmlProps);
+  options = unstable_useOptions("MenuItemCheckbox", options, htmlProps);
 
   const currentValue = options.unstable_values[options.name];
   const setValue = (value: any) => options.unstable_update(options.name, value);
@@ -42,7 +42,7 @@ export function useMenuItemCheckbox(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useMenuItemCheckbox", options, htmlProps);
+  htmlProps = unstable_useProps("MenuItemCheckbox", options, htmlProps);
   htmlProps = useMenuItem(options, htmlProps);
   htmlProps = useCheckbox({ ...options, currentValue, setValue }, htmlProps);
   return htmlProps;

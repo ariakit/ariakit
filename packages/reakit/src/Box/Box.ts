@@ -15,8 +15,8 @@ export type BoxOptions = {
 export type BoxProps = React.HTMLAttributes<any> & React.RefAttributes<any>;
 
 export function useBox(options: BoxOptions = {}, htmlProps: BoxProps = {}) {
-  options = unstable_useOptions("useBox", options, htmlProps);
-  htmlProps = unstable_useProps("useBox", options, htmlProps);
+  options = unstable_useOptions("Box", options, htmlProps);
+  htmlProps = unstable_useProps("Box", options, htmlProps);
   return htmlProps;
 }
 

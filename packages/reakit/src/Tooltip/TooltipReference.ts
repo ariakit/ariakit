@@ -19,7 +19,7 @@ export function useTooltipReference(
   options: TooltipReferenceOptions,
   htmlProps: TooltipReferenceProps = {}
 ) {
-  options = unstable_useOptions("useTooltipReference", options, htmlProps);
+  options = unstable_useOptions("TooltipReference", options, htmlProps);
   htmlProps = mergeProps(
     {
       ref: options.unstable_referenceRef,
@@ -32,7 +32,7 @@ export function useTooltipReference(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useTooltipReference", options, htmlProps);
+  htmlProps = unstable_useProps("TooltipReference", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

@@ -35,9 +35,9 @@ export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioGroupOptions<V, P>,
   htmlProps: unstable_FormRadioGroupProps = {}
 ) {
-  options = unstable_useOptions("useFormRadioGroup", options, htmlProps);
+  options = unstable_useOptions("FormRadioGroup", options, htmlProps);
   htmlProps = mergeProps({ role: "radiogroup" } as typeof htmlProps, htmlProps);
-  htmlProps = unstable_useProps("useFormRadioGroup", options, htmlProps);
+  htmlProps = unstable_useProps("FormRadioGroup", options, htmlProps);
   htmlProps = unstable_useFormGroup(options, htmlProps);
   return htmlProps;
 }

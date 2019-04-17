@@ -22,7 +22,7 @@ export function useSeparator(
   htmlProps: SeparatorProps = {}
 ) {
   let _options: SeparatorOptions = { orientation, ...options };
-  _options = unstable_useOptions("useSeparator", _options, htmlProps);
+  _options = unstable_useOptions("Separator", _options, htmlProps);
 
   const flipMap = {
     horizontal: "vertical",
@@ -38,7 +38,7 @@ export function useSeparator(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useSeparator", _options, htmlProps);
+  htmlProps = unstable_useProps("Separator", _options, htmlProps);
   htmlProps = useBox(_options, htmlProps);
   return htmlProps;
 }

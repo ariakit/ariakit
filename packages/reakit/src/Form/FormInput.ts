@@ -39,7 +39,7 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,
   htmlProps: unstable_FormInputProps = {}
 ) {
-  options = unstable_useOptions("useFormInput", options, htmlProps);
+  options = unstable_useOptions("FormInput", options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -56,7 +56,7 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useFormInput", options, htmlProps);
+  htmlProps = unstable_useProps("FormInput", options, htmlProps);
   htmlProps = useTabbable(options, htmlProps);
   return htmlProps;
 }

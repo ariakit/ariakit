@@ -32,7 +32,7 @@ export function useCheckbox(
   options: CheckboxOptions = {},
   htmlProps: CheckboxProps = {}
 ) {
-  options = unstable_useOptions("useCheckbox", options, htmlProps);
+  options = unstable_useOptions("Checkbox", options, htmlProps);
 
   const ref = React.useRef<HTMLInputElement>(null);
   const isBoolean = typeof options.value === "undefined";
@@ -81,7 +81,7 @@ export function useCheckbox(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useCheckbox", options, htmlProps);
+  htmlProps = unstable_useProps("Checkbox", options, htmlProps);
   htmlProps = useTabbable(options, htmlProps);
   return htmlProps;
 }

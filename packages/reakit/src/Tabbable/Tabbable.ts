@@ -54,7 +54,7 @@ export function useTabbable(
     disabled,
     ...options
   };
-  _options = unstable_useOptions("useTabbable", _options, htmlProps);
+  _options = unstable_useOptions("Tabbable", _options, htmlProps);
 
   const clickKeysRef = useLiveRef(_options.unstable_clickKeys);
   const reallyDisabled = _options.disabled && !_options.focusable;
@@ -101,7 +101,7 @@ export function useTabbable(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useTabbable", _options, htmlProps);
+  htmlProps = unstable_useProps("Tabbable", _options, htmlProps);
   htmlProps = useBox(_options, htmlProps);
   return htmlProps;
 }

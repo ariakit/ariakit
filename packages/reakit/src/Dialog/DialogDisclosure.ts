@@ -18,14 +18,14 @@ export function useDialogDisclosure(
   options: DialogDisclosureOptions,
   htmlProps: DialogDisclosureProps = {}
 ) {
-  options = unstable_useOptions("useDialogDisclosure", options, htmlProps);
+  options = unstable_useOptions("DialogDisclosure", options, htmlProps);
   htmlProps = mergeProps(
     {
       "aria-haspopup": "dialog"
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useDialogDisclosure", options, htmlProps);
+  htmlProps = unstable_useProps("DialogDisclosure", options, htmlProps);
   htmlProps = useHiddenDisclosure(options, htmlProps);
   return htmlProps;
 }

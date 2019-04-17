@@ -24,7 +24,7 @@ export function PlaygroundPreview({
   ...htmlProps
 }: PlaygroundPreviewOptions & PlaygroundPreviewProps) {
   const options = unstable_useOptions(
-    "usePlaygroundPreview",
+    "PlaygroundPreview",
     { code, modules },
     htmlProps
   );
@@ -83,7 +83,7 @@ export function PlaygroundPreview({
     return () => clearTimeout(timer);
   }, [options.code, handleError, unmount]);
 
-  htmlProps = unstable_useProps("usePlaygroundPreview", options, htmlProps);
+  htmlProps = unstable_useProps("PlaygroundPreview", options, htmlProps);
 
   return (
     <ErrorBoundary>

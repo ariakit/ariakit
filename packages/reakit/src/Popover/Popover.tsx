@@ -27,7 +27,7 @@ export function usePopover(
     ...options
   };
 
-  _options = unstable_useOptions("usePopover", _options, htmlProps);
+  _options = unstable_useOptions("Popover", _options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -36,7 +36,7 @@ export function usePopover(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("usePopover", _options, htmlProps);
+  htmlProps = unstable_useProps("Popover", _options, htmlProps);
   htmlProps = useDialog(_options, htmlProps);
   return htmlProps;
 }

@@ -15,7 +15,7 @@ export function useHidden(
   options: HiddenOptions = {},
   htmlProps: HiddenProps = {}
 ) {
-  options = unstable_useOptions("useHidden", options, htmlProps);
+  options = unstable_useOptions("Hidden", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "region",
@@ -25,7 +25,7 @@ export function useHidden(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useHidden", options, htmlProps);
+  htmlProps = unstable_useProps("Hidden", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

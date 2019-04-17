@@ -30,7 +30,7 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
   options: unstable_FormGroupOptions<V, P>,
   htmlProps: unstable_FormGroupProps = {}
 ) {
-  options = unstable_useOptions("useFormGroup", options, htmlProps);
+  options = unstable_useOptions("FormGroup", options, htmlProps);
   htmlProps = mergeProps(
     {
       id: getInputId(options.name, options.baseId),
@@ -41,7 +41,7 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useFormGroup", options, htmlProps);
+  htmlProps = unstable_useProps("FormGroup", options, htmlProps);
   htmlProps = useGroup(options, htmlProps);
   return htmlProps;
 }

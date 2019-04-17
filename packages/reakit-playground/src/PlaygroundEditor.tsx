@@ -45,7 +45,7 @@ export function PlaygroundEditor({
   ...htmlProps
 }: PlaygroundEditorOptions & PlaygroundEditorProps) {
   const options = unstable_useOptions(
-    "usePlaygroundEditor",
+    "PlaygroundEditor",
     {
       code,
       update,
@@ -64,7 +64,7 @@ export function PlaygroundEditor({
     typeof options.readOnly !== "undefined" ? options.readOnly : !enabled;
 
   htmlProps = unstable_useProps(
-    "usePlaygroundEditor",
+    "PlaygroundEditor",
     { ...options, readOnly: _readOnly },
     htmlProps
   );

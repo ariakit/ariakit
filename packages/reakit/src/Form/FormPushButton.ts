@@ -32,7 +32,7 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormPushButtonOptions<V, P>,
   htmlProps: unstable_FormPushButtonProps = {}
 ) {
-  options = unstable_useOptions("useFormPushButton", options, htmlProps);
+  options = unstable_useOptions("FormPushButton", options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -58,7 +58,7 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useFormPushButton", options, htmlProps);
+  htmlProps = unstable_useProps("FormPushButton", options, htmlProps);
   htmlProps = useButton(options, htmlProps);
   return htmlProps;
 }

@@ -20,7 +20,7 @@ export function useMenuItem(
 ) {
   const parent = React.useContext(MenuContext);
   const ref = React.useRef<HTMLElement>(null);
-  options = unstable_useOptions("useMenuItem", options, htmlProps);
+  options = unstable_useOptions("MenuItem", options, htmlProps);
 
   const providerValue = React.useMemo(
     () => ({
@@ -97,7 +97,7 @@ export function useMenuItem(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useMenuItem", options, htmlProps);
+  htmlProps = unstable_useProps("MenuItem", options, htmlProps);
   htmlProps = useRover(options, htmlProps);
 
   return {

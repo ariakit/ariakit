@@ -29,7 +29,7 @@ export function useMenuDisclosure(
   // So we use it to disable toggling.
   const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
 
-  options = unstable_useOptions("useMenuDisclosure", options, htmlProps);
+  options = unstable_useOptions("MenuDisclosure", options, htmlProps);
 
   const dir = options.placement ? options.placement.split("-")[0] : undefined;
 
@@ -103,7 +103,7 @@ export function useMenuDisclosure(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useMenuDisclosure", options, htmlProps);
+  htmlProps = unstable_useProps("MenuDisclosure", options, htmlProps);
   htmlProps = usePopoverDisclosure(
     {
       ...options,

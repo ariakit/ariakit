@@ -17,7 +17,7 @@ export function useTabList(
   options: TabListOptions,
   htmlProps: TabListProps = {}
 ) {
-  options = unstable_useOptions("useTabList", options, htmlProps);
+  options = unstable_useOptions("TabList", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "tablist",
@@ -25,7 +25,7 @@ export function useTabList(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useTabList", options, htmlProps);
+  htmlProps = unstable_useProps("TabList", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

@@ -19,7 +19,7 @@ export function useTab(
   htmlProps: TabProps = {}
 ) {
   let _options: TabOptions = { focusable, ...options };
-  _options = unstable_useOptions("useTab", _options, htmlProps);
+  _options = unstable_useOptions("Tab", _options, htmlProps);
 
   const selected = _options.selectedId === _options.stopId;
 
@@ -43,7 +43,7 @@ export function useTab(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useTab", _options, htmlProps);
+  htmlProps = unstable_useProps("Tab", _options, htmlProps);
   htmlProps = useRover(_options, htmlProps);
   return htmlProps;
 }

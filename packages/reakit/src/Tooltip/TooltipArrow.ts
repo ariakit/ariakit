@@ -17,8 +17,8 @@ export function useTooltipArrow(
   options: TooltipArrowOptions,
   htmlProps: TooltipArrowProps = {}
 ) {
-  options = unstable_useOptions("useTooltipArrow", options, htmlProps);
-  htmlProps = unstable_useProps("useTooltipArrow", options, htmlProps);
+  options = unstable_useOptions("TooltipArrow", options, htmlProps);
+  htmlProps = unstable_useProps("TooltipArrow", options, htmlProps);
   htmlProps = usePopoverArrow(options, htmlProps);
   return htmlProps;
 }

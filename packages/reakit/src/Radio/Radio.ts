@@ -22,7 +22,7 @@ export type RadioOptions = RoverOptions &
 export type RadioProps = RoverProps & React.InputHTMLAttributes<any>;
 
 export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
-  options = unstable_useOptions("useRadio", options, htmlProps);
+  options = unstable_useOptions("Radio", options, htmlProps);
 
   const checked =
     typeof options.checked !== "undefined"
@@ -47,7 +47,7 @@ export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useRadio", options, htmlProps);
+  htmlProps = unstable_useProps("Radio", options, htmlProps);
   htmlProps = useRover(options, htmlProps);
   return htmlProps;
 }

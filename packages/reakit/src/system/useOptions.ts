@@ -6,7 +6,7 @@ export function unstable_useOptions<T = {}>(
   options: T = {} as T,
   htmlProps: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ): T {
-  const hookName = `${name}Options`;
+  const hookName = `use${name}Options`;
   React.useDebugValue(hookName);
   const useHook = unstable_useToken(hookName);
   if (useHook) {

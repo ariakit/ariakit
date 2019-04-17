@@ -17,7 +17,7 @@ export function useToolbar(
   options: ToolbarOptions,
   htmlProps: ToolbarProps = {}
 ) {
-  options = unstable_useOptions("useToolbar", options, htmlProps);
+  options = unstable_useOptions("Toolbar", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "toolbar",
@@ -25,7 +25,7 @@ export function useToolbar(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useToolbar", options, htmlProps);
+  htmlProps = unstable_useProps("Toolbar", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

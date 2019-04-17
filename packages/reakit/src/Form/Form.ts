@@ -16,7 +16,7 @@ export function unstable_useForm(
   options: unstable_FormOptions,
   htmlProps: unstable_FormProps = {}
 ) {
-  options = unstable_useOptions("useForm", options, htmlProps);
+  options = unstable_useOptions("Form", options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -30,7 +30,7 @@ export function unstable_useForm(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useForm", options, htmlProps);
+  htmlProps = unstable_useProps("Form", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

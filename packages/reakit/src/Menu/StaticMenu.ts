@@ -21,7 +21,7 @@ export function useStaticMenu(
   htmlProps: StaticMenuProps = {}
 ) {
   const ref = React.useRef<HTMLElement>(null);
-  options = unstable_useOptions("useStaticMenu", options, htmlProps);
+  options = unstable_useOptions("StaticMenu", options, htmlProps);
 
   const onKeyDown = useShortcuts(options);
 
@@ -42,7 +42,7 @@ export function useStaticMenu(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useStaticMenu", options, htmlProps);
+  htmlProps = unstable_useProps("StaticMenu", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

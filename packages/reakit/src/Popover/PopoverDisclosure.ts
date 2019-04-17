@@ -19,14 +19,14 @@ export function usePopoverDisclosure(
   options: PopoverDisclosureOptions,
   htmlProps: PopoverDisclosureProps = {}
 ) {
-  options = unstable_useOptions("usePopoverDisclosure", options, htmlProps);
+  options = unstable_useOptions("PopoverDisclosure", options, htmlProps);
   htmlProps = mergeProps(
     {
       ref: options.unstable_referenceRef
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("usePopoverDisclosure", options, htmlProps);
+  htmlProps = unstable_useProps("PopoverDisclosure", options, htmlProps);
   htmlProps = useDialogDisclosure(options, htmlProps);
   return htmlProps;
 }

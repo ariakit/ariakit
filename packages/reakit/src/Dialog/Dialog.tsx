@@ -89,7 +89,7 @@ export function useDialog(
     unstable_autoFocusOnHide,
     ...options
   };
-  _options = unstable_useOptions("useDialog", _options, htmlProps);
+  _options = unstable_useOptions("Dialog", _options, htmlProps);
 
   const dialog = React.useRef<HTMLElement>(null);
   const portal = usePortalRef(dialog, _options);
@@ -127,7 +127,7 @@ export function useDialog(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useDialog", _options, htmlProps);
+  htmlProps = unstable_useProps("Dialog", _options, htmlProps);
   htmlProps = useHidden(_options, htmlProps);
   return htmlProps;
 }

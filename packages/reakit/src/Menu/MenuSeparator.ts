@@ -17,8 +17,8 @@ export function useMenuSeparator(
   options: MenuSeparatorOptions,
   htmlProps: MenuSeparatorProps = {}
 ) {
-  options = unstable_useOptions("useMenuSeparator", options, htmlProps);
-  htmlProps = unstable_useProps("useMenuSeparator", options, htmlProps);
+  options = unstable_useOptions("MenuSeparator", options, htmlProps);
+  htmlProps = unstable_useProps("MenuSeparator", options, htmlProps);
   htmlProps = useSeparator(options, htmlProps);
   return htmlProps;
 }

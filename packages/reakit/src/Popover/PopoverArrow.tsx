@@ -20,7 +20,7 @@ export function usePopoverArrow(
   options: PopoverArrowOptions,
   htmlProps: PopoverArrowProps = {}
 ) {
-  options = unstable_useOptions("usePopoverArrow", options, htmlProps);
+  options = unstable_useOptions("PopoverArrow", options, htmlProps);
 
   const [placement] = options.placement.split("-");
   const transformMap = {
@@ -58,7 +58,7 @@ export function usePopoverArrow(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("usePopoverArrow", options, htmlProps);
+  htmlProps = unstable_useProps("PopoverArrow", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

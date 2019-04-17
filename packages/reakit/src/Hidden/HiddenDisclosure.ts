@@ -16,7 +16,7 @@ export function useHiddenDisclosure(
   options: HiddenDisclosureOptions,
   htmlProps: HiddenDisclosureProps = {}
 ) {
-  options = unstable_useOptions("useHiddenDisclosure", options, htmlProps);
+  options = unstable_useOptions("HiddenDisclosure", options, htmlProps);
   htmlProps = mergeProps(
     {
       onClick: options.toggle,
@@ -25,7 +25,7 @@ export function useHiddenDisclosure(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useHiddenDisclosure", options, htmlProps);
+  htmlProps = unstable_useProps("HiddenDisclosure", options, htmlProps);
   htmlProps = useButton(options, htmlProps);
   return htmlProps;
 }

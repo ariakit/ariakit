@@ -22,7 +22,7 @@ export function useMenuItemRadio(
   options: MenuItemRadioOptions,
   htmlProps: MenuItemRadioProps = {}
 ) {
-  options = unstable_useOptions("useMenuItemRadio", options, htmlProps);
+  options = unstable_useOptions("MenuItemRadio", options, htmlProps);
 
   const currentValue = options.unstable_values[options.name];
   const setValue = (value: any) => options.unstable_update(options.name, value);
@@ -31,7 +31,7 @@ export function useMenuItemRadio(
     { role: "menuitemradio" } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useMenuItemRadio", options, htmlProps);
+  htmlProps = unstable_useProps("MenuItemRadio", options, htmlProps);
   htmlProps = useMenuItem(options, htmlProps);
   htmlProps = useRadio({ ...options, currentValue, setValue }, htmlProps);
   return htmlProps;

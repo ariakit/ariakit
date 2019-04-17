@@ -6,7 +6,7 @@ export function unstable_useProps(
   options: Record<string, any> = {},
   htmlProps: React.HTMLAttributes<any> & React.RefAttributes<any> = {}
 ): React.HTMLAttributes<any> & React.RefAttributes<any> {
-  const hookName = `${name}Props`;
+  const hookName = `use${name}Props`;
   React.useDebugValue(hookName);
   const useHook = unstable_useToken(hookName);
   if (useHook) {

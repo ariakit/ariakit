@@ -31,7 +31,7 @@ export function unstable_useFormMessage<V, P extends DeepPath<V, P>>(
   options: unstable_FormMessageOptions<V, P>,
   htmlProps: unstable_FormMessageProps = {}
 ) {
-  options = unstable_useOptions("useFormMessage", options, htmlProps);
+  options = unstable_useOptions("FormMessage", options, htmlProps);
 
   let children = shouldShowError(options, options.name)
     ? unstable_getIn(options.errors, options.name as any)
@@ -51,7 +51,7 @@ export function unstable_useFormMessage<V, P extends DeepPath<V, P>>(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useFormMessage", options, htmlProps);
+  htmlProps = unstable_useProps("FormMessage", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
   return htmlProps;
 }

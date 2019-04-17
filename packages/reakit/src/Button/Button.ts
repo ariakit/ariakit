@@ -19,7 +19,7 @@ export function useButton(
   htmlProps: ButtonProps = {}
 ) {
   let _options: ButtonOptions = { unstable_clickKeys, ...options };
-  _options = unstable_useOptions("useButton", _options, htmlProps);
+  _options = unstable_useOptions("Button", _options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -29,7 +29,7 @@ export function useButton(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("useButton", _options, htmlProps);
+  htmlProps = unstable_useProps("Button", _options, htmlProps);
   htmlProps = useTabbable(_options, htmlProps);
   return htmlProps;
 }

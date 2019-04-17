@@ -21,7 +21,7 @@ export function useTooltip(
   options: TooltipOptions = {},
   htmlProps: TooltipProps = {}
 ) {
-  options = unstable_useOptions("useTooltip", options, htmlProps);
+  options = unstable_useOptions("Tooltip", options, htmlProps);
   htmlProps = mergeProps(
     {
       role: "tooltip",
@@ -33,7 +33,7 @@ export function useTooltip(
     } as typeof htmlProps,
     htmlProps
   );
-  htmlProps = unstable_useProps("useTooltip", options, htmlProps);
+  htmlProps = unstable_useProps("Tooltip", options, htmlProps);
   htmlProps = useHidden(options, htmlProps);
   return htmlProps;
 }
