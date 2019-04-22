@@ -50,6 +50,28 @@ test("clicking on disclosure opens menu and focus the first menu item", () => {
   expect(item1).toHaveFocus();
 });
 
+test("hovering menu item moves focus to it", () => {
+  const Test = () => {
+    const menu = useMenuState({ visible: true });
+    return (
+      <Menu aria-label="menu" {...menu}>
+        <MenuItem {...menu}>item1</MenuItem>
+        <MenuItem {...menu}>item2</MenuItem>
+        <MenuItem {...menu}>item3</MenuItem>
+      </Menu>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const menu = getByLabelText("menu");
+  const item1 = getByText("item1");
+  expect(menu).toBeVisible();
+  expect(item1).not.toHaveFocus();
+  fireEvent.mouseOver(item1);
+  expect(item1).toHaveFocus();
+  fireEvent.mouseOut(item1);
+  expect(item1).not.toHaveFocus();
+});
+
 test("clicking on menu item disclosure opens submenu without moving focus", () => {
   const Submenu = React.forwardRef(
     (props: MenuDisclosureProps, ref: React.RefObject<any>) => {
@@ -73,7 +95,7 @@ test("clicking on menu item disclosure opens submenu without moving focus", () =
     return (
       <StaticMenu aria-label="menu" {...menu}>
         <MenuItem {...menu}>item1</MenuItem>
-        <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+        <MenuItem {...menu} as={Submenu} />
         <MenuItem {...menu}>item3</MenuItem>
       </StaticMenu>
     );

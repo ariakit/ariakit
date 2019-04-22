@@ -18,6 +18,7 @@ import { useNestedDialogs } from "./__utils/useNestedDialogs";
 import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
 import { useHideOnFocusOutside } from "./__utils/useHideOnFocusOutside";
 import { useDialogState, DialogStateReturn } from "./DialogState";
+import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
 
 export type DialogOptions = HiddenOptions &
   Pick<Partial<DialogStateReturn>, "hide"> &
@@ -110,6 +111,7 @@ export function useDialog(
   useFocusOnHide(dialog, disclosure, _options);
   useHideOnClickOutside(portal, disclosure, dialogs, _options);
   useHideOnFocusOutside(dialog, disclosure, dialogs, _options);
+  useDisableHoverOutside(dialog, dialogs, _options);
 
   htmlProps = mergeProps(
     {

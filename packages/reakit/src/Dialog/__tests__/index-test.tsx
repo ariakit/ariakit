@@ -1073,3 +1073,24 @@ test("esc on parent dialog closes nested dialogs", () => {
   expect(dialog1).not.toBeVisible();
   expect(dialog2).not.toBeVisible();
 });
+
+test("disables hover outside", () => {
+  const fn = jest.fn();
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <button onMouseOver={fn} onFocus={fn}>
+          button
+        </button>
+        <Dialog aria-label="dialog" {...dialog} />
+      </>
+    );
+  };
+  const { getByLabelText, getByText } = render(<Test />);
+  const button = getByText("button");
+  const dialog = getByLabelText("dialog");
+  expect(dialog).toBeVisible();
+  fireEvent.mouseOver(button);
+  expect(fn).not.toBeCalled();
+});

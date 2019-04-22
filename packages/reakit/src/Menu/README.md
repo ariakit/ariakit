@@ -116,7 +116,6 @@ const UpdatesDialog = React.forwardRef((props, ref) => {
       <DialogDisclosure ref={ref} {...dialog} {...props}>
         Check for Updates...
       </DialogDisclosure>
-      <DialogBackdrop {...dialog} style={{ background: "transparent" }} />
       <Dialog {...dialog} aria-label="Check for Updates">
         <p>There are currently no updates available.</p>
         <Button onClick={dialog.hide}>OK</Button>
