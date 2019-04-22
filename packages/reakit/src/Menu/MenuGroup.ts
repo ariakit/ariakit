@@ -1,4 +1,3 @@
-import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useOptions } from "../system/useOptions";
@@ -9,7 +8,7 @@ import { useMenuState, MenuStateReturn } from "./MenuState";
 
 export type MenuGroupOptions = BoxOptions;
 
-export type MenuGroupProps = BoxProps & React.FieldsetHTMLAttributes<any>;
+export type MenuGroupProps = BoxProps;
 
 export function useMenuGroup(
   options: MenuGroupOptions,
@@ -30,6 +29,6 @@ const keys: Keys<MenuStateReturn & MenuGroupOptions> = [
 useMenuGroup.__keys = keys;
 
 export const MenuGroup = unstable_createComponent({
-  as: "fieldset",
+  as: "div",
   useHook: useMenuGroup
 });

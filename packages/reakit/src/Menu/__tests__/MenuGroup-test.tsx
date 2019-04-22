@@ -5,12 +5,12 @@ import { MenuGroup } from "../MenuGroup";
 test("render", () => {
   const { baseElement } = render(<MenuGroup />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <fieldset
-      role="group"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          role="group"
+        />
+      </div>
+    </body>
+  `);
 });
