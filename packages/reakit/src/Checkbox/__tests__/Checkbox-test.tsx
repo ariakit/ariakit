@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
-import { Checkbox } from "../Checkbox";
+import { Checkbox, CheckboxOptions, CheckboxProps } from "../Checkbox";
 
 test("render", () => {
   const { baseElement } = render(<Checkbox />);
@@ -253,4 +253,19 @@ test("non-native checkbox space disabled focusable", () => {
   const checkbox = getByLabelText("checkbox");
   fireEvent.keyDown(checkbox, { key: " " });
   expect(fn).toHaveBeenCalledTimes(0);
+});
+
+test("indeterminate", () => {
+  const Comp = (props: CheckboxOptions & CheckboxProps) => (
+    <label>
+      <Checkbox {...props} /> checkbox
+    </label>
+  );
+  const { getByLabelText, rerender } = render(<Comp />);
+  const checkbox = getByLabelText("checkbox");
+  expect(checkbox).toHaveAttribute("aria-checked", "false");
+  rerender(<Comp currentValue="indeterminate" />);
+  expect(checkbox).toHaveAttribute("aria-checked", "mixed");
+  rerender(<Comp currentValue />);
+  expect(checkbox).toHaveAttribute("aria-checked", "true");
 });
