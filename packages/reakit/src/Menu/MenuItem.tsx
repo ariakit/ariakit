@@ -54,17 +54,11 @@ export function useMenuItem(
         const keyMap = {
           ArrowRight:
             horizontalParent && dir !== "left"
-              ? () => {
-                  hide();
-                  horizontalParent!.next();
-                }
+              ? horizontalParent.next
               : dir === "left" && hide,
           ArrowLeft:
             horizontalParent && dir !== "right"
-              ? () => {
-                  hide();
-                  horizontalParent!.previous();
-                }
+              ? horizontalParent.previous
               : dir === "right" && hide
         };
 

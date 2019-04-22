@@ -1021,10 +1021,7 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
     }
   );
   const Test = () => {
-    const menu = useMenuState({
-      orientation: "horizontal",
-      loop: true
-    });
+    const menu = useMenuState({ orientation: "horizontal" });
     return (
       <StaticMenu aria-label="menu" {...menu}>
         <MenuItem {...menu}>
@@ -1040,7 +1037,6 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   const item1 = getByText("item1");
   const submenu1item1 = getByText("submenu1item1");
   const item2 = getByText("item2");
-  const submenu2item1 = getByText("submenu2item1");
   const submenu2item3 = getByText("submenu2item3");
   const submenu1 = getByLabelText("submenu1");
   const submenu2 = getByLabelText("submenu2");
@@ -1060,11 +1056,12 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   expect(submenu2).not.toBeVisible();
   expect(item1).toHaveFocus();
   keyDown("ArrowLeft");
-  expect(item2).toHaveFocus();
+  expect(item1).toHaveFocus(); // not loop
   keyDown("ArrowDown");
-  expect(submenu2item1).toHaveFocus();
-  keyDown("ArrowRight");
-  expect(item1).toHaveFocus();
+  expect(submenu1item1).toHaveFocus();
+  keyDown("ArrowLeft");
+  expect(submenu1).toBeVisible();
+  expect(submenu1item1).toHaveFocus(); // not loop
 });
 
 test("arrow right/left in a sub-submenu moves focus between disclosures in menubar", () => {
