@@ -221,3 +221,11 @@ test("non-native button space/enter disabled focusable", () => {
   fireEvent.keyDown(button, { key: " " });
   expect(fn).toHaveBeenCalledTimes(0);
 });
+
+test("focus on mouse down", () => {
+  const { getByText } = render(<Tabbable>button</Tabbable>);
+  const button = getByText("button");
+  expect(button).not.toHaveFocus();
+  fireEvent.mouseDown(button);
+  expect(button).toHaveFocus();
+});
