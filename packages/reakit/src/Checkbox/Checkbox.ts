@@ -44,8 +44,12 @@ export function useCheckbox(
       : ((options.currentValue || []) as any[]).indexOf(options.value) !== -1;
 
   React.useEffect(() => {
-    if (ref.current && options.currentValue === "indeterminate") {
+    if (!ref.current) return;
+
+    if (options.currentValue === "indeterminate") {
       ref.current.indeterminate = true;
+    } else if (ref.current.indeterminate) {
+      ref.current.indeterminate = false;
     }
   }, [options.currentValue]);
 
