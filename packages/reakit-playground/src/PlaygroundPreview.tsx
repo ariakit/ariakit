@@ -13,6 +13,8 @@ import { ErrorMessage } from "./ErrorMessage";
 export type PlaygroundPreviewOptions = PlaygroundStateReturn & {
   /** TODO: Description */
   modules?: Record<string, any>;
+  /** TODO: Description */
+  noSystem?: boolean;
 };
 
 export type PlaygroundPreviewProps = { className?: string };
@@ -21,6 +23,7 @@ export function PlaygroundPreview({
   code,
   modules,
   update,
+  noSystem,
   ...htmlProps
 }: PlaygroundPreviewOptions & PlaygroundPreviewProps) {
   const options = unstable_useOptions(
@@ -57,7 +60,10 @@ export function PlaygroundPreview({
 
   const renderChildren = React.useCallback(
     (children: React.ReactNode) => (
-      <Provider unstable_system={system} unstable_prefix={`${prefix}-`}>
+      <Provider
+        unstable_system={noSystem ? undefined : system}
+        unstable_prefix={`${prefix}-`}
+      >
         {children}
       </Provider>
     ),

@@ -8,7 +8,7 @@ import { unstable_useOptions } from "../system";
 export type SeparatorOptions = BoxOptions & {
   /**
    * Separator's context orientation.
-   * The actual separator's oriention will be flipped based on this prop.
+   * The actual separator's orientation will be flipped based on this prop.
    * So a `"vertical"` orientation means that the separator will have a
    * `"horizontal"` orientation.
    */

@@ -6,30 +6,49 @@ redirect_from:
 
 # Tooltip
 
+`Tooltip` follows the [WAI-ARIA Tooltip Pattern](https://www.w3.org/TR/wai-aria-practices/#tooltip). It's a popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+
+## Installation
+
+```sh
+npm install reakit
+```
+
+Learn more in [Get started](/docs/get-started).
+
+## Usage
+
 ```jsx
-import {
-  Tooltip,
-  TooltipArrow,
-  TooltipReference,
-  useTooltipState,
-  Button
-} from "reakit";
+import { Button } from "reakit/Button";
+import { Tooltip, TooltipReference, useTooltipState } from "reakit/Tooltip";
 
 function Example() {
   const tooltip = useTooltipState();
   return (
-    <div style={{ padding: 100 }}>
+    <>
       <TooltipReference as={Button} {...tooltip}>
         Reference
       </TooltipReference>
-      <Tooltip {...tooltip}>
-        <TooltipArrow {...tooltip} />
-        tooltip
-      </Tooltip>
-    </div>
+      <Tooltip {...tooltip}>Tooltip</Tooltip>
+    </>
   );
 }
 ```
+
+## Accessibility
+
+- `Tooltip` has role `tooltip`.
+- `TooltipReference` has `aria-describedby` referring to `Tooltip`.
+
+Learn more in [Accessibility](/docs/accessibility).
+
+## Composition
+
+- `Tooltip` uses [Hidden](/docs/hidden).
+- `TooltipArrow` uses [PopoverArrow](/docs/popover).
+- `TooltipReference` uses [Box](/docs/box).
+
+Learn more in [Composition](/docs/composition#props-hooks).
 
 ## Props
 

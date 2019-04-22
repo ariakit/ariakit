@@ -11,17 +11,33 @@ redirect_from:
 
 First, make sure to have `react` and `react-dom` installed:
 ```sh
-npm install --save react react-dom
+npm install react react-dom
 ```
 
-Then, install `reakit` and `reakit-system-bootstrap` (optional):
+Then, install `reakit`:
 ```sh
-npm install --save reakit reakit-system-bootstrap
+npm install reakit
 ```
 
 ## Usage
 
 Play with an example on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj).
+
+The code below will render an **unstyled** [Button](/docs/button).
+
+```jsx static
+import React from "react";
+import ReactDOM from "react-dom";
+import { Button } from "reakit/Button";
+
+function App() {
+  return <Button>Button</Button>;
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+```
+
+If you want to include default styles, you can use the **experimental** system feature with [`reakit-system-bootstrap`](https://github.com/reakit/reakit/tree/next/packages/reakit-system-bootstrap#readme). The code below will render a button with bootstrap-like styling.
 
 ```jsx static
 import React from "react";
@@ -29,31 +45,44 @@ import ReactDOM from "react-dom";
 import { Provider, Button } from "reakit";
 import * as system from "reakit-system-bootstrap";
 
-const App = () => (
-  <Provider unstable_system={system}>
-    <Button>Button</Button>
-  </Provider>
-);
+function App() {
+  return (
+    <Provider unstable_system={system}>
+      <Button>Button</Button>
+    </Provider>
+  );
+}
 
 ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
 ## CDN
 
+You can also use the UMD version of Reakit. Play with an example on [JSBin](https://jsbin.com/celiwun/edit?html,output).
+
 ```html
+<!DOCTYPE html>
 <html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Reakit</title>
+</head>
 <body>
   <div id="root"></div>
   <!-- Peer dependencies -->
-  <script src="https://unpkg.com/react@16.4.1/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@16.4.1/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/prop-types@15.6.2/prop-types.js"></script>
+  <script src="https://unpkg.com/react/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom/umd/react-dom.development.js"></script>
   <!-- Reakit UMD package -->
   <script src="https://unpkg.com/reakit"></script>
+  <script src="https://unpkg.com/reakit-system-bootstrap"></script>
   <!-- Usage -->
   <script>
-    const { Button } = Reakit;
-    const App = React.createElement(Button, {}, "Button");
+    const App = React.createElement(
+      Reakit.Provider, 
+      { unstable_system: ReakitSystemBootstrap }, 
+      React.createElement(Reakit.Button, {}, "Button")
+    );
     ReactDOM.render(App, document.getElementById("root"));
   </script>
 </body>

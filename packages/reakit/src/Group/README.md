@@ -7,10 +7,19 @@ redirect_from:
 
 # Group
 
+## Installation
+
+```sh
+npm install reakit
+```
+
+Learn more in [Get started](/docs/get-started).
+
 ## Usage
 
 ```jsx
-import { Group, Button } from "reakit";
+import { Group } from "reakit/Group";
+import { Button } from "reakit/Button";
 
 function Example() {
   return (
@@ -22,6 +31,18 @@ function Example() {
   );
 }
 ```
+
+## Accessibility
+
+- `Group` has role `group`.
+
+Learn more in [Accessibility](/docs/accessibility).
+
+## Composition
+
+- `Group` uses [Box](/docs/box).
+
+Learn more in [Composition](/docs/composition#props-hooks).
 
 ## Props
 

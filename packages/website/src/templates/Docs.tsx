@@ -7,6 +7,8 @@ import {
   PlaygroundEditor,
   usePlaygroundState
 } from "reakit-playground";
+import createUseContext from "constate";
+import * as fa from "react-icons/fa";
 import CoreLayout from "../components/CoreLayout";
 import FiraCodeBold from "../fonts/FiraCode-Bold.woff";
 import FiraCodeLight from "../fonts/FiraCode-Light.woff";
@@ -70,18 +72,18 @@ function getChildrenCode(props: { children?: React.ReactNode }) {
   return null;
 }
 
-function getText(props: { children?: React.ReactNode }): string {
-  const children = React.Children.toArray(props.children);
-  return children.reduce<string>((acc, curr) => {
-    if (typeof curr === "string") {
-      return `${acc}${curr}`;
-    }
-    if (typeof curr === "object" && curr !== null && "props" in curr) {
-      return `${acc}${getText(curr.props)}`;
-    }
-    return acc;
-  }, "");
-}
+// function getText(props: { children?: React.ReactNode }): string {
+//   const children = React.Children.toArray(props.children);
+//   return children.reduce<string>((acc, curr) => {
+//     if (typeof curr === "string") {
+//       return `${acc}${curr}`;
+//     }
+//     if (typeof curr === "object" && curr !== null && "props" in curr) {
+//       return `${acc}${getText(curr.props)}`;
+//     }
+//     return acc;
+//   }, "");
+// }
 
 const { Compiler: renderAst } = new RehypeReact({
   createElement: React.createElement,
@@ -89,21 +91,53 @@ const { Compiler: renderAst } = new RehypeReact({
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
-        const { static: isStatic, className } = codeElement.props;
-        const [, lang] =
-          className.match(/language-((?:j|t)sx?)/) || ([] as any[]);
-        const state = usePlaygroundState(() => ({ code: getText(props) }));
-        if (!lang) {
-          return <PlaygroundEditor readOnly="nocursor" {...state} {...props} />;
+        const {
+          static: isStatic,
+          noSystem,
+          maxHeight,
+          className
+        } = codeElement.props;
+        let [, mode] = className.match(/language-(.+)/) || ([] as any[]);
+
+        const modeMap = {
+          html: "htmlmixed",
+          js: "javascript"
+        };
+
+        if (mode in modeMap) {
+          mode = modeMap[mode as keyof typeof modeMap];
         }
-        if (isStatic) {
-          return <PlaygroundEditor readOnly="nocursor" {...state} />;
+
+        const isDynamic =
+          !isStatic && ["js", "jsx", "ts", "tsx"].indexOf(mode) !== -1;
+        const [code] = codeElement.props.children;
+        const state = usePlaygroundState({ code });
+
+        React.useEffect(() => {
+          state.update(code);
+        }, [code]);
+
+        if (isDynamic) {
+          return (
+            <div>
+              <PlaygroundPreview
+                noSystem={noSystem}
+                modules={{ constate: createUseContext, "react-icons/fa": fa }}
+                {...state}
+              />
+              <PlaygroundEditor mode={mode} maxHeight={maxHeight} {...state} />
+            </div>
+          );
         }
+
         return (
-          <div>
-            <PlaygroundPreview {...state} />
-            <PlaygroundEditor {...state} />
-          </div>
+          <PlaygroundEditor
+            readOnly="nocursor"
+            mode={mode}
+            maxHeight={maxHeight}
+            {...state}
+            {...props}
+          />
         );
       }
       return <pre {...props} />;

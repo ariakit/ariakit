@@ -68,9 +68,6 @@ injectGlobal`
     border-radius: 0.25em;
     height: auto;
   }
-  .cm-s-reakit .CodeMirror-scroll {
-    max-height: 300px;
-  }
   .cm-s-reakit .CodeMirror-lines {
     padding: 1em 0;
   }
@@ -181,6 +178,9 @@ export function usePlaygroundEditorProps(
   const contrast = useContrast(primary);
   const playgroundEditor = css`
     margin: 2em 0;
+    .CodeMirror-scroll {
+      max-height: ${options.maxHeight ? options.maxHeight : "300px"};
+    }
     &.disabled:focus-within {
       position: relative;
       &:before {

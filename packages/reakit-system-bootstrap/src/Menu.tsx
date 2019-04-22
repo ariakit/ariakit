@@ -13,6 +13,7 @@ import {
   MenuItemRadioProps,
   MenuItemRadioOptions
 } from "reakit/Menu/MenuItemRadio";
+import { MenuGroupProps, MenuGroupOptions } from "reakit/Menu/MenuGroup";
 import { StaticMenuProps, StaticMenuOptions } from "reakit/Menu/StaticMenu";
 import { MenuItemOptions, MenuItemProps } from "reakit/Menu/MenuItem";
 import { useContrast } from "reakit-system-palette/utils/contrast";
@@ -257,4 +258,18 @@ export function useMenuItemRadioProps(
   `;
 
   return { ...htmlProps, className: cx(menuItemRadio, htmlProps.className) };
+}
+
+export type BootstrapMenuGroupOptions = BootstrapBoxOptions & MenuGroupOptions;
+
+export function useMenuGroupProps(
+  _: BootstrapMenuGroupOptions,
+  htmlProps: MenuGroupProps = {}
+): MenuGroupProps {
+  const menuGroup = css`
+    display: inherit;
+    flex-direction: inherit;
+  `;
+
+  return { ...htmlProps, className: cx(menuGroup, htmlProps.className) };
 }

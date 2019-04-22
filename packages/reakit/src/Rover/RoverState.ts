@@ -31,7 +31,9 @@ export type RoverState = {
    */
   unstable_pastId: Stop["id"] | null;
   /**
-   * If enabled, the next item after the last one will be the first one.
+   * If enabled:
+   *  - Jumps to the first item when moving next from the last item.
+   *  - Jumps to the last item when moving previous from the first item.
    */
   loop: boolean;
 };
@@ -46,23 +48,23 @@ export type RoverActions = {
    */
   unregister: (id: Stop["id"]) => void;
   /**
-   * Moves focus onto a given element ID.
+   * Moves focus to a given element ID.
    */
   move: (id: Stop["id"] | null) => void;
   /**
-   * Moves focus onto the next element.
+   * Moves focus to the next element.
    */
   next: () => void;
   /**
-   * Moves focus onto the previous element.
+   * Moves focus to the previous element.
    */
   previous: () => void;
   /**
-   * Moves focus onto the first element.
+   * Moves focus to the first element.
    */
   first: () => void;
   /**
-   * Moves focus onto the last element.
+   * Moves focus to the last element.
    */
   last: () => void;
   /**

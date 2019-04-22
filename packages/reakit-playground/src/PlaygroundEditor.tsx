@@ -30,6 +30,8 @@ export type PlaygroundEditorOptions = PlaygroundStateReturn &
     tabSize?: number;
     /** TODO: Description */
     lineWrapping?: boolean;
+    /** TODO: Description */
+    maxHeight?: string;
   };
 
 export type PlaygroundEditorProps = { className?: string };
@@ -42,6 +44,7 @@ export function PlaygroundEditor({
   theme = "reakit",
   tabSize = 2,
   mode = "jsx",
+  maxHeight = "300px",
   ...htmlProps
 }: PlaygroundEditorOptions & PlaygroundEditorProps) {
   const options = unstable_useOptions(
@@ -53,7 +56,8 @@ export function PlaygroundEditor({
       lineWrapping,
       theme,
       tabSize,
-      mode
+      mode,
+      maxHeight
     },
     htmlProps
   );

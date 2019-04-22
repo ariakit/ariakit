@@ -10,35 +10,46 @@ redirect_from:
 
 # Hidden
 
-`Hidden` is a highly generic yet powerful Reakit component. It simply hides itself away and waits for a `visible` prop to show up.
+`Hidden` is an abstract component based on the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
+
+## Installation
+
+```sh
+npm install reakit
+```
+
+Learn more in [Get started](/docs/get-started).
 
 ## Usage
 
 ```jsx
-import { Hidden } from "reakit";
-
-function Example() {
-  return <Hidden visible>Hidden</Hidden>;
-}
-```
-
-```jsx
-import { HiddenDisclosure, Hidden, useHiddenState } from "reakit";
+import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
 
 function Example() {
   const state = useHiddenState({ visible: true });
   return (
-    <div>
-      <HiddenDisclosure {...state} disabled focusable>
-        Toggle
-      </HiddenDisclosure>
+    <>
+      <HiddenDisclosure {...state}>Toggle</HiddenDisclosure>
       <Hidden {...state}>Hidden</Hidden>
-    </div>
+    </>
   );
 }
-
-return <Example />;
 ```
+
+## Accessibility
+
+- `HiddenDisclosure` extends the accessibility features of [Button](/docs/button#accessibility).
+- `HiddenDisclosure` has a value specified for `aria-controls` that refers to `Hidden`.
+- When `Hidden` is visible, `HiddenDisclosure` has `aria-expanded` set to `true`. When `Hidden` is hidden, it is set to `false`.
+
+Learn more in [Accessibility](/docs/accessibility).
+
+## Composition
+
+- `Hidden` uses [Box](/docs/box), and is used by [Dialog](/docs/dialog), [DialogBackdrop](/docs/dialog), [TabPanel](/docs/tab), [Tooltip](/docs/tooltip) and all their derivatives.
+- `HiddenDisclosure` uses [Button](/docs/button), and is used by [DialogDisclosure](/docs/dialog).
+
+Learn more in [Composition](/docs/composition#props-hooks).
 
 ## Props
 

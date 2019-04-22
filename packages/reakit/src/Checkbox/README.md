@@ -4,11 +4,23 @@ path: /docs/checkbox
 
 # Checkbox
 
+`Checkbox` follows the [WAI-ARIA Checkbox Pattern](https://www.w3.org/TR/wai-aria-practices/#checkbox), which means you'll have a working dual or tri-state toggle button regardless of the type of the underlying element. By default, it renders the native `<input type="checkbox">`.
+
+## Installation
+
+```sh
+npm install reakit
+```
+
+Learn more in [Get started](/docs/get-started).
+
 ## Usage
+
+It receives the same props as [controlled inputs](https://reactjs.org/docs/forms.html), such as `checked` and `onChange`:
 
 ```jsx
 import React from "react";
-import { Checkbox } from "reakit";
+import { Checkbox } from "reakit/Checkbox";
 
 function Example() {
   const [checked, setChecked] = React.useState(false);
@@ -17,35 +29,109 @@ function Example() {
 }
 ```
 
+### `useCheckboxState`
+
+For convenience, Reakit provides a `useCheckboxState` that already implements the state logic:
+
 ```jsx
-import { Checkbox, useCheckboxState } from "reakit";
+import { useCheckboxState, Checkbox } from "reakit/Checkbox";
 
 function Example() {
-  const checkbox = useCheckboxState();
+  const checkbox = useCheckboxState({ currentValue: true });
   return <Checkbox {...checkbox} />;
 }
 ```
 
+### `indeterminate` state
+
+You can programmatically set checkbox value as `indeterminate`:
+
 ```jsx
-import { Checkbox, useCheckboxState } from "reakit";
+import React from "react";
+import { Checkbox, useCheckboxState } from "reakit/Checkbox";
+
+function useTreeState({ values }) {
+  const group = useCheckboxState();
+  const items = useCheckboxState();
+
+  // updates items when group is toggled
+  React.useEffect(() => {
+    if (group.currentValue === true) {
+      items.setValue(values);
+    } else if (group.currentValue === false) {
+      items.setValue([]);
+    }
+  }, [group.currentValue]);
+
+  // updates group when items is toggled
+  React.useEffect(() => {
+    if (items.currentValue.length === values.length) {
+      group.setValue(true);
+    } else if (items.currentValue.length) {
+      group.setValue("indeterminate");
+    } else {
+      group.setValue(false);
+    }
+  }, [items.currentValue]);
+
+  return { group, items };
+}
 
 function Example() {
-  const checkbox = useCheckboxState({ currentValue: ["apple"] });
-
+  const values = ["Apple", "Orange", "Watermelon"];
+  const { group, items } = useTreeState({ values });
   return (
-    <div role="group">
-      <Checkbox {...checkbox} value="apple" />
-      <Checkbox
-        {...checkbox}
-        as="div"
-        style={{ width: 20, height: 20, background: "red" }}
-        value="orange"
-      />
-      <Checkbox {...checkbox} value="watermelon" />
-    </div>
+    <ul>
+      <li>
+        <label>
+          <Checkbox {...group} /> Fruits
+        </label>
+      </li>
+      <ul>
+        {values.map((value, i) => (
+          <li key={i}>
+            <label>
+              <Checkbox {...items} value={value} /> {value}
+            </label>
+          </li>
+        ))}
+      </ul>
+    </ul>
   );
 }
 ```
+
+### `as` prop
+
+You can render the checkbox as any element. Reakit will add the props and interactions necessary for accessibility. You may need to add some styling though. You can use selectors like `[aria-checked]` for doing so.
+
+```jsx
+import { useCheckboxState, Checkbox } from "reakit/Checkbox";
+
+function Example() {
+  const checkbox = useCheckboxState();
+  return (
+    <Checkbox {...checkbox} as="button">
+      {checkbox.currentValue ? "Checked" : "Unchecked"}
+    </Checkbox>
+  );
+}
+```
+
+## Accessibility
+
+- `Checkbox` has role `checkbox`.
+- When checked, `Checkbox` has `aria-checked` set to `true`.
+- When not checked, `Checkbox` has `aria-checked` set to `false`.
+- When partially checked, `Checkbox` has `aria-checked` set to `mixed`.
+
+Learn more in [Accessibility](/docs/accessibility).
+
+## Composition
+
+- `Checkbox` uses [Tabbable](/docs/tabbable), and is used by [FormCheckbox](/docs/form) and [MenuItemCheckbox](/docs/menu).
+
+Learn more in [Composition](/docs/composition#props-hooks).
 
 ## Props
 

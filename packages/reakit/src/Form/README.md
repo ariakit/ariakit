@@ -8,11 +8,23 @@ redirect_from:
 
 # Form
 
+> **This is experimental** and may have breaking changes in minor or patch version updates. Issues for this module will have lower priority. Even so, if you use it, feel free to [give us feedback](https://github.com/reakit/reakit/issues/new/choose).
+
+`Form` is a component with a collection of other components, such as `FormLabel` and `FormInput`.
+
+## Installation
+
+```sh
+npm install reakit
+```
+
+Learn more in [Get started](/docs/get-started).
+
 ## Usage
 
 ```jsx
+import { Group } from "reakit/Group";
 import {
-  Group,
   unstable_Form as Form,
   unstable_FormLabel as FormLabel,
   unstable_FormCheckbox as FormCheckbox,
@@ -25,7 +37,7 @@ import {
   unstable_FormInput as FormInput,
   unstable_FormMessage as FormMessage,
   unstable_useFormState as useFormState
-} from "reakit";
+} from "reakit/Form";
 
 function Example() {
   const form = useFormState({
@@ -100,6 +112,31 @@ function Example() {
   );
 }
 ```
+
+## Accessibility
+
+- `Form` has role `form`.
+- Clicking on `FormSubmitButton` on a form with errors will move focus to the first failed input.
+- Clicking on `FormPushButton` will move focus to the first input in the added row.
+- Clicking on `FormRemoveButton` will move focus to the first input in the next row. If there's no next row, it will move focus to the first input in the previous row. If there's no previous row, it will move focus to `FormPushButton`.
+
+Learn more in [Accessibility](/docs/accessibility).
+
+## Composition
+
+- `Form` uses [Box](/docs/box).
+- `FormCheckbox` uses [Checkbox](/docs/checkbox).
+- `FormGroup` uses [Group](/docs/group).
+- `FormInput` uses [Tabbable](/docs/tabbable).
+- `FormLabel` uses [Box](/docs/box).
+- `FormMessage` uses [Box](/docs/box).
+- `FormPushButton` uses [Button](/docs/button).
+- `FormRadio` uses [Radio](/docs/radio).
+- `FormRadioGroup` uses `FormGroup`.
+- `FormRemoveButton` uses [Button](/docs/button).
+- `FormSubmitButton` uses [Button](/docs/button).
+
+Learn more in [Composition](/docs/composition#props-hooks).
 
 ## Props
 

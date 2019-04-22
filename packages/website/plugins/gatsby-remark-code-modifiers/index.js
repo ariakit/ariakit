@@ -2,7 +2,7 @@ const visit = require("unist-util-visit");
 const { get, set } = require("lodash");
 
 function plugin({ markdownAST }) {
-  visit(markdownAST, `code`, node => {
+  visit(markdownAST, "code", node => {
     if (typeof node.lang !== "string" || !/\s/.test(node.lang)) {
       return;
     }
