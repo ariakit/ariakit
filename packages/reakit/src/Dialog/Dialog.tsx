@@ -25,8 +25,9 @@ export type DialogOptions = HiddenOptions &
     /**
      * Toggles Dialog's `modal` state.
      *  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-     *  - Modal: `preventBodyScroll` is automatically enabled and focus is
-     * trapped within the dialog.
+     *  - Modal: `preventBodyScroll` is automatically enabled, focus is
+     * trapped within the dialog and the dialog is rendered within a `Portal`
+     * by default.
      */
     modal?: boolean;
     /**
@@ -55,6 +56,11 @@ export type DialogOptions = HiddenOptions &
      */
     unstable_finalFocusRef?: React.RefObject<HTMLElement>;
     /**
+     * Whether or not the dialog should be rendered within `Portal`.
+     * It's `true` by default if `modal` is `true`.
+     */
+    unstable_portal?: boolean;
+    /**
      * Whether or not to move focus when the dialog shows.
      * @private
      */
@@ -76,9 +82,10 @@ export function useDialog(
     preventBodyScroll = true,
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
+    unstable_portal: isPortal = modal,
     ...options
   }: DialogOptions,
-  { children, ...htmlProps }: DialogProps = {}
+  htmlProps: DialogProps = {}
 ) {
   let _options: DialogOptions = {
     modal,
@@ -87,6 +94,7 @@ export function useDialog(
     preventBodyScroll,
     unstable_autoFocusOnShow,
     unstable_autoFocusOnHide,
+    unstable_portal: isPortal,
     ...options
   };
   _options = unstable_useOptions("Dialog", _options, htmlProps);
@@ -94,7 +102,7 @@ export function useDialog(
   const dialog = React.useRef<HTMLElement>(null);
   const portal = usePortalRef(dialog, _options);
   const disclosure = useDisclosureRef(_options);
-  const { dialogs, wrapChildren } = useNestedDialogs(dialog, _options);
+  const { dialogs, wrap } = useNestedDialogs(dialog, _options);
 
   usePreventBodyScroll(dialog, _options);
   useFocusTrap(dialog, portal, _options);
@@ -111,13 +119,18 @@ export function useDialog(
       "aria-modal": _options.modal,
       "data-dialog": true,
       style: { zIndex: 999 },
-      children: wrapChildren(children),
       onKeyDown: event => {
         if (event.key === "Escape" && _options.hide && _options.hideOnEsc) {
           event.stopPropagation();
           _options.hide();
         }
-      }
+      },
+      unstable_wrap: children =>
+        _options.unstable_portal ? (
+          <Portal>{wrap(children)}</Portal>
+        ) : (
+          wrap(children)
+        )
     } as DialogProps,
     // If it's not modal, it doesn't have a portal
     // So we define dialog itself as portal
@@ -142,7 +155,8 @@ const keys: Keys<DialogStateReturn & DialogOptions> = [
   "unstable_initialFocusRef",
   "unstable_finalFocusRef",
   "unstable_autoFocusOnShow",
-  "unstable_autoFocusOnHide"
+  "unstable_autoFocusOnHide",
+  "unstable_portal"
 ];
 
 useDialog.__keys = keys;
@@ -157,12 +171,6 @@ export const Dialog = unstable_createComponent({
 See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
       "Dialog"
     );
-
-    const element = unstable_useCreateElement(type, props, children);
-
-    if (props["aria-modal"]) {
-      return <Portal>{element}</Portal>;
-    }
-    return element;
+    return unstable_useCreateElement(type, props, children);
   }
 });

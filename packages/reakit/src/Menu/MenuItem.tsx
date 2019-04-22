@@ -16,21 +16,11 @@ export type MenuItemProps = RoverProps;
 
 export function useMenuItem(
   options: MenuItemOptions,
-  { children, onKeyDown, ...htmlProps }: MenuItemProps = {}
+  { onKeyDown, ...htmlProps }: MenuItemProps = {}
 ) {
-  const parent = React.useContext(MenuContext);
+  const { parent } = React.useContext(MenuContext) || ({} as MenuContextType);
   const ref = React.useRef<HTMLElement>(null);
   options = unstable_useOptions("MenuItem", options, htmlProps);
-
-  const providerValue = React.useMemo(
-    () => ({
-      orientation: options.orientation,
-      next: options.next,
-      previous: options.previous,
-      parent
-    }),
-    [options.orientation, options.next, options.previous, parent]
-  );
 
   htmlProps = mergeProps(
     {
@@ -100,17 +90,7 @@ export function useMenuItem(
   htmlProps = unstable_useProps("MenuItem", options, htmlProps);
   htmlProps = useRover(options, htmlProps);
 
-  return {
-    ...htmlProps,
-    children:
-      typeof children === "function"
-        ? (props: typeof htmlProps) => (
-            <MenuContext.Provider value={providerValue}>
-              {children(props)}
-            </MenuContext.Provider>
-          )
-        : children
-  };
+  return htmlProps;
 }
 
 const keys: Keys<MenuStateReturn & MenuItemOptions> = [

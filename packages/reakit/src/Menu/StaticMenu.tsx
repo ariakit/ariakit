@@ -8,11 +8,12 @@ import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { Keys } from "../__utils/types";
 import { useShortcuts } from "./__utils/useShortcuts";
+import { MenuContext } from "./__utils/MenuContext";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 
 export type StaticMenuOptions = BoxOptions &
   Pick<Partial<MenuStateReturn>, "orientation"> &
-  Pick<MenuStateReturn, "stops" | "move">;
+  Pick<MenuStateReturn, "stops" | "move" | "next" | "previous">;
 
 export type StaticMenuProps = BoxProps;
 
@@ -20,8 +21,19 @@ export function useStaticMenu(
   options: StaticMenuOptions,
   htmlProps: StaticMenuProps = {}
 ) {
+  const parent = React.useContext(MenuContext);
   const ref = React.useRef<HTMLElement>(null);
   options = unstable_useOptions("StaticMenu", options, htmlProps);
+
+  const providerValue = React.useMemo(
+    () => ({
+      orientation: options.orientation,
+      next: options.next,
+      previous: options.previous,
+      parent
+    }),
+    [options.orientation, options.next, options.previous, parent]
+  );
 
   const onKeyDown = useShortcuts(options);
 
@@ -37,7 +49,12 @@ export function useStaticMenu(
           target.focus();
         }
       },
-      onKeyDown
+      onKeyDown,
+      unstable_wrap: (children: React.ReactNode) => (
+        <MenuContext.Provider value={providerValue}>
+          {children}
+        </MenuContext.Provider>
+      )
     } as typeof htmlProps,
     htmlProps
   );

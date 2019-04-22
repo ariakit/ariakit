@@ -5,6 +5,8 @@ import { StaticMenu } from "../StaticMenu";
 const props: Parameters<typeof StaticMenu>[0] = {
   stops: [],
   move: jest.fn(),
+  next: jest.fn(),
+  previous: jest.fn(),
   "aria-label": "menu"
 };
 

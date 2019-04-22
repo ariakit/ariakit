@@ -12,7 +12,13 @@ export type BoxOptions = {
   unstable_system?: unknown;
 };
 
-export type BoxProps = React.HTMLAttributes<any> & React.RefAttributes<any>;
+export type BoxProps = React.HTMLAttributes<any> &
+  React.RefAttributes<any> & {
+    /**
+     * Function returned by hook to wrap children.
+     */
+    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+  };
 
 export function useBox(options: BoxOptions = {}, htmlProps: BoxProps = {}) {
   options = unstable_useOptions("Box", options, htmlProps);

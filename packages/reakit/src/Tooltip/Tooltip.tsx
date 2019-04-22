@@ -1,7 +1,6 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
@@ -29,7 +28,8 @@ export function useTooltip(
       style: {
         ...options.unstable_popoverStyles,
         pointerEvents: "none"
-      }
+      },
+      unstable_wrap: children => <Portal>{children}</Portal>
     } as typeof htmlProps,
     htmlProps
   );
@@ -47,9 +47,5 @@ useTooltip.__keys = keys;
 
 export const Tooltip = unstable_createComponent({
   as: "div",
-  useHook: useTooltip,
-  useCreateElement: (type, props, children) => {
-    const element = unstable_useCreateElement(type, props, children);
-    return <Portal>{element}</Portal>;
-  }
+  useHook: useTooltip
 });

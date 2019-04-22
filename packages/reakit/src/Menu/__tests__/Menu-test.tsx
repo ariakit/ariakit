@@ -13,6 +13,8 @@ const props: Parameters<typeof Menu>[0] = {
   unstable_hiddenId: "hidden",
   stops: [{ id: "a", ref: createRef("a") }, { id: "b", ref: createRef("b") }],
   move: jest.fn(),
+  next: jest.fn(),
+  previous: jest.fn(),
   "aria-label": "menu"
 };
 

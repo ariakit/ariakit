@@ -15,7 +15,10 @@ import {
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
-export type MenuOptions = Omit<PopoverOptions, "modal" | "hideOnEsc"> &
+export type MenuOptions = Omit<
+  PopoverOptions,
+  "modal" | "unstable_portal" | "hideOnEsc"
+> &
   StaticMenuOptions;
 
 export type MenuProps = PopoverProps & StaticMenuProps;
@@ -52,7 +55,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   htmlProps = unstable_useProps("Menu", _options, htmlProps);
   htmlProps = useStaticMenu(_options, htmlProps);
   htmlProps = usePopover(
-    { ..._options, modal: false, hideOnEsc: false },
+    { ..._options, modal: false, unstable_portal: false, hideOnEsc: false },
     htmlProps
   );
   return htmlProps;

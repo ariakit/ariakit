@@ -1077,12 +1077,8 @@ test("arrow right/left in a sub-submenu moves focus between disclosures in menub
     });
     return (
       <StaticMenu aria-label="menu" {...menu}>
-        <MenuItem {...menu}>
-          {props => <Submenu {...props} index={1} />}
-        </MenuItem>
-        <MenuItem {...menu}>
-          {props => <Submenu {...props} index={2} />}
-        </MenuItem>
+        <MenuItem {...menu} as={Submenu} index={1} />
+        <MenuItem {...menu} as={Submenu} index={2} />
       </StaticMenu>
     );
   };

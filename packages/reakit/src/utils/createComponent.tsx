@@ -2,13 +2,11 @@ import * as React from "react";
 import { forwardRef } from "../__utils/forwardRef";
 import { As, PropsWithAs } from "../__utils/types";
 import { splitProps } from "../__utils/splitProps";
+import { BoxProps } from "../Box/Box";
 import { unstable_useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 
 type Hook<O> = {
-  (
-    options?: O,
-    props?: React.HTMLAttributes<any> & React.RefAttributes<any>
-  ): typeof props;
+  (options?: O, props?: BoxProps): NonNullable<typeof props>;
   __keys?: any[];
 };
 
@@ -31,11 +29,23 @@ export function unstable_createComponent<T extends As, O>({
   ) => {
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
-      const elementProps = useHook(options, { ref, ...htmlProps });
-      return useCreateElement(as, elementProps || {});
+      const { unstable_wrap, ...elementProps } = useHook(options, {
+        ref,
+        ...htmlProps
+      });
+      // @ts-ignore
+      const asKeys = as.render ? as.render.__keys : as.__keys;
+      const asOptions = asKeys ? splitProps(props, asKeys)[0] : {};
+      const element = useCreateElement(as, { ...elementProps, ...asOptions });
+      if (unstable_wrap) {
+        return unstable_wrap(element);
+      }
+      return element;
     }
     return useCreateElement(as, props);
   };
+
+  (Comp as any).__keys = keys;
 
   if (process.env.NODE_ENV !== "production" && useHook) {
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");

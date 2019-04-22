@@ -34,6 +34,22 @@ function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {
   return result;
 }
 
+function mergeWrapInObjects(
+  objects: Array<{
+    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+  }>
+) {
+  const wrappers = extractPropFromObjects(objects, "unstable_wrap");
+  const { length } = wrappers;
+  if (length === 0) return {};
+  if (length === 1) return { unstable_wrap: wrappers[0] };
+  return {
+    unstable_wrap: wrappers.reduce((acc, curr) => (children: React.ReactNode) =>
+      curr(acc(children))
+    )
+  };
+}
+
 function mergeRefsInObjects(objects: Array<{ ref?: React.Ref<any> }>) {
   const refs = extractPropFromObjects(objects, "ref");
   const { length } = refs;
@@ -76,6 +92,7 @@ export function mergeProps<T extends any[]>(...objects: T) {
     {},
     ...objects,
     mergeFunctionsInObjects(objects),
+    mergeWrapInObjects(objects),
     mergeRefsInObjects(objects),
     mergeClassNamesInObjects(objects),
     mergeStylesInObjects(objects)

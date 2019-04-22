@@ -4,7 +4,6 @@ import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import {
   unstable_FormGroupOptions,
@@ -35,8 +34,24 @@ export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioGroupOptions<V, P>,
   htmlProps: unstable_FormRadioGroupProps = {}
 ) {
+  const rover = useRoverState({ loop: true });
+  const providerValue = React.useMemo(() => rover, [
+    rover.stops,
+    rover.currentId,
+    rover.unstable_pastId
+  ]);
   options = unstable_useOptions("FormRadioGroup", options, htmlProps);
-  htmlProps = mergeProps({ role: "radiogroup" } as typeof htmlProps, htmlProps);
+  htmlProps = mergeProps(
+    {
+      role: "radiogroup",
+      unstable_wrap: (children: React.ReactNode) => (
+        <FormRadioGroupContext.Provider value={providerValue}>
+          {children}
+        </FormRadioGroupContext.Provider>
+      )
+    } as typeof htmlProps,
+    htmlProps
+  );
   htmlProps = unstable_useProps("FormRadioGroup", options, htmlProps);
   htmlProps = unstable_useFormGroup(options, htmlProps);
   return htmlProps;
@@ -50,21 +65,7 @@ unstable_useFormRadioGroup.__keys = keys;
 
 export const unstable_FormRadioGroup = (unstable_createComponent({
   as: "fieldset",
-  useHook: unstable_useFormRadioGroup,
-  useCreateElement: (type, props, children) => {
-    const element = unstable_useCreateElement(type, props, children);
-    const rover = useRoverState({ loop: true });
-    const value = React.useMemo(() => rover, [
-      rover.stops,
-      rover.currentId,
-      rover.unstable_pastId
-    ]);
-    return (
-      <FormRadioGroupContext.Provider value={value}>
-        {element}
-      </FormRadioGroupContext.Provider>
-    );
-  }
+  useHook: unstable_useFormRadioGroup
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(
   props: PropsWithAs<unstable_FormRadioGroupOptions<V, P>, T>
 ) => JSX.Element;
