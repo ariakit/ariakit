@@ -50,16 +50,19 @@ export function useButtonProps(
     &[aria-disabled="true"] {
       cursor: auto;
     }
-    &:hover {
-      color: ${hoverColor};
-      border-color: ${hoverBorderColor};
-      background-color: ${hoverBackgroundColor};
-    }
-    &:active,
-    &[aria-expanded="true"] {
-      color: ${activeColor};
-      border-color: ${activeBorderColor};
-      background-color: ${activeBackgroundColor};
+
+    &[aria-disabled="false"] {
+      &:hover {
+        color: ${hoverColor};
+        border-color: ${hoverBorderColor};
+        background-color: ${hoverBackgroundColor};
+      }
+      &:active,
+      &[aria-expanded="true"] {
+        color: ${activeColor};
+        border-color: ${activeBorderColor};
+        background-color: ${activeBackgroundColor};
+      }
     }
   `;
 
