@@ -78,7 +78,10 @@ export function PlaygroundPreview({
     const timer = setTimeout(() => {
       setError(null);
       try {
-        const exampleComponent = compileComponent(options.code);
+        const exampleComponent = compileComponent(
+          options.code,
+          options.modules
+        );
         unmount();
         ReactDOM.render(renderChildren(exampleComponent), ref.current);
       } catch (e) {
