@@ -19,6 +19,7 @@ import { MenuItemOptions, MenuItemProps } from "reakit/Menu/MenuItem";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
+import { MenuStateReturn } from "reakit/Menu/MenuState";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
@@ -119,14 +120,16 @@ export function useMenuProps(
 }
 
 export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
-  MenuDisclosureOptions;
+  MenuDisclosureOptions &
+  Pick<Partial<MenuStateReturn>, "unstable_originalPlacement">;
 
 export function useMenuDisclosureProps(
   options: BootstrapMenuDisclosureOptions,
   { children, ...htmlProps }: MenuDisclosureProps = {}
 ): MenuDisclosureProps {
-  const dir = options.placement
-    ? (options.placement.split("-")[0] as "top" | "bottom" | "right" | "left")
+  const placement = options.unstable_originalPlacement || options.placement;
+  const dir = placement
+    ? (placement.split("-")[0] as "top" | "bottom" | "right" | "left")
     : undefined;
 
   const svg = dir
