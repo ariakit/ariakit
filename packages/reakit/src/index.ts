@@ -17,3 +17,4 @@ export * from "./Tabbable";
 export * from "./Toolbar";
 export * from "./Tooltip";
 export * from "./utils";
+export * from "./VisuallyHidden";
