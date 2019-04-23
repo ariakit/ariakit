@@ -172,7 +172,6 @@ export function useMenuDisclosureProps(
 
       [role="menu"] > & {
         position: absolute;
-        top: 0.45em;
         ${dir === "left" ? "left" : "right"}: 0.5em;
       }
 

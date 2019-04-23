@@ -30,10 +30,11 @@ export function useButtonProps(
   const activeColor = useContrast(activeBackgroundColor);
 
   const button = css`
-    display: inline-block;
+    display: inline-flex;
     font-weight: 400;
     text-align: center;
     vertical-align: middle;
+    align-items: center;
     user-select: none;
     padding: 0.375em 0.75em;
     line-height: 1.5;
