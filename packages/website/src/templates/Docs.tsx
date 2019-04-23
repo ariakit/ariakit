@@ -8,7 +8,7 @@ import {
   usePlaygroundState
 } from "reakit-playground";
 import createUseContext from "constate";
-import * as fa from "react-icons/fa";
+import { FaUniversalAccess } from "react-icons/fa";
 import CoreLayout from "../components/CoreLayout";
 import FiraCodeBold from "../fonts/FiraCode-Bold.woff";
 import FiraCodeLight from "../fonts/FiraCode-Light.woff";
@@ -122,7 +122,10 @@ const { Compiler: renderAst } = new RehypeReact({
             <div>
               <PlaygroundPreview
                 noSystem={noSystem}
-                modules={{ constate: createUseContext, "react-icons/fa": fa }}
+                modules={{
+                  constate: createUseContext,
+                  "./UniversalAccess": FaUniversalAccess
+                }}
                 {...state}
               />
               <PlaygroundEditor mode={mode} maxHeight={maxHeight} {...state} />

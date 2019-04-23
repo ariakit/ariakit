@@ -16,6 +16,8 @@ export default {
   "reakit/system": require("reakit/system"),
   "reakit/system/SystemProvider": require("reakit/system/SystemProvider"),
   "reakit/system/SystemContext": require("reakit/system/SystemContext"),
+  "reakit/VisuallyHidden": require("reakit/VisuallyHidden"),
+  "reakit/VisuallyHidden/VisuallyHidden": require("reakit/VisuallyHidden/VisuallyHidden"),
   "reakit/Tooltip": require("reakit/Tooltip"),
   "reakit/Tooltip/TooltipState": require("reakit/Tooltip/TooltipState"),
   "reakit/Tooltip/TooltipReference": require("reakit/Tooltip/TooltipReference"),
