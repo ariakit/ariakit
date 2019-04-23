@@ -66,6 +66,7 @@ export function useMenuItemProps(
       line-height: 1.5;
       padding: 0 ${isHorizontal ? "0.5em" : "1.5em"};
       text-align: left;
+      justify-content: flex-start;
       border: 0;
       border-radius: 0;
       font-size: 100%;
