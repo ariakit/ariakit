@@ -11,11 +11,11 @@ function render(...args: Parameters<typeof useHiddenState>) {
 test("initial state", () => {
   const result = render({ unstable_hiddenId: "test" });
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "unstable_hiddenId": "test",
-  "visible": false,
-}
-`);
+    Object {
+      "unstable_hiddenId": "test",
+      "visible": false,
+    }
+  `);
 });
 
 test("initial state visible", () => {
@@ -25,11 +25,11 @@ test("initial state visible", () => {
       visible: true
     },
     `
-Object {
-  "unstable_hiddenId": "test",
-  "visible": true,
-}
-`
+    Object {
+      "unstable_hiddenId": "test",
+      "visible": true,
+    }
+  `
   );
 });
 
@@ -40,11 +40,11 @@ test("initial state lazy", () => {
       visible: true
     },
     `
-Object {
-  "unstable_hiddenId": "test",
-  "visible": true,
-}
-`
+    Object {
+      "unstable_hiddenId": "test",
+      "visible": true,
+    }
+  `
   );
 });
 
@@ -54,11 +54,11 @@ test("show", () => {
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
     `
-Object {
-  "unstable_hiddenId": "test",
-  "visible": true,
-}
-`
+    Object {
+      "unstable_hiddenId": "test",
+      "visible": true,
+    }
+  `
   );
 });
 
@@ -68,11 +68,11 @@ test("hide", () => {
   expect(result.current).toMatchInlineSnapshot(
     { visible: false },
     `
-Object {
-  "unstable_hiddenId": "test",
-  "visible": false,
-}
-`
+    Object {
+      "unstable_hiddenId": "test",
+      "visible": false,
+    }
+  `
   );
 });
 
@@ -82,10 +82,10 @@ test("toggle", () => {
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
     `
-Object {
-  "unstable_hiddenId": "test",
-  "visible": true,
-}
-`
+    Object {
+      "unstable_hiddenId": "test",
+      "visible": true,
+    }
+  `
   );
 });

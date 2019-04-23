@@ -10,27 +10,27 @@ const props: Parameters<typeof Dialog>[0] = {
 test("render", () => {
   const { baseElement } = render(<Dialog {...props}>dialog</Dialog>);
   expect(baseElement).toMatchInlineSnapshot(`
-        <body>
-          <div />
-          <div
-            class="__reakit-portal"
-          >
-            <div
-              aria-hidden="true"
-              aria-label="dialog"
-              aria-modal="true"
-              data-dialog="true"
-              hidden=""
-              id="dialog"
-              role="dialog"
-              style="z-index: 999;"
-              tabindex="-1"
-            >
-              dialog
-            </div>
-          </div>
-        </body>
-    `);
+    <body>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
+        <div
+          aria-hidden="true"
+          aria-label="dialog"
+          aria-modal="true"
+          data-dialog="true"
+          hidden=""
+          id="dialog"
+          role="dialog"
+          style="z-index: 999;"
+          tabindex="-1"
+        >
+          dialog
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render visible", () => {
@@ -40,38 +40,38 @@ test("render visible", () => {
     </Dialog>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-        <body>
-          <div />
-          <div
-            aria-hidden="true"
-            class="__reakit-focus-trap"
-            style="position: fixed;"
-            tabindex="0"
-          />
-          <div
-            class="__reakit-portal"
-          >
-            <div
-              aria-hidden="false"
-              aria-label="dialog"
-              aria-modal="true"
-              data-dialog="true"
-              id="dialog"
-              role="dialog"
-              style="z-index: 999;"
-              tabindex="-1"
-            >
-              dialog
-            </div>
-          </div>
-          <div
-            aria-hidden="true"
-            class="__reakit-focus-trap"
-            style="position: fixed;"
-            tabindex="0"
-          />
-        </body>
-    `);
+    <body>
+      <div />
+      <div
+        aria-hidden="true"
+        class="__reakit-focus-trap"
+        style="position: fixed;"
+        tabindex="0"
+      />
+      <div
+        class="__reakit-portal"
+      >
+        <div
+          aria-hidden="false"
+          aria-label="dialog"
+          aria-modal="true"
+          data-dialog="true"
+          id="dialog"
+          role="dialog"
+          style="z-index: 999;"
+          tabindex="-1"
+        >
+          dialog
+        </div>
+      </div>
+      <div
+        aria-hidden="true"
+        class="__reakit-focus-trap"
+        style="position: fixed;"
+        tabindex="0"
+      />
+    </body>
+  `);
 });
 
 test("render non-modal", () => {

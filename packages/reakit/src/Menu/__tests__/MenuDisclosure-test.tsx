@@ -16,19 +16,19 @@ test("render", () => {
     <MenuDisclosure {...props}>disclosure</MenuDisclosure>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="disclosure"
-      aria-expanded="false"
-      aria-haspopup="menu"
-      role="button"
-      tabindex="0"
-      type="button"
-    >
-      disclosure
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="disclosure"
+          aria-expanded="false"
+          aria-haspopup="menu"
+          role="button"
+          tabindex="0"
+          type="button"
+        >
+          disclosure
+        </button>
+      </div>
+    </body>
+  `);
 });

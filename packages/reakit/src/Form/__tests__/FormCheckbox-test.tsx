@@ -15,23 +15,23 @@ test("render", () => {
     />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <input
-      aria-checked="false"
-      aria-describedby="base-a-message"
-      aria-invalid="false"
-      aria-labelledby="base-a-label"
-      id="base-a"
-      name="a"
-      role="checkbox"
-      tabindex="0"
-      type="checkbox"
-      value=""
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <input
+          aria-checked="false"
+          aria-describedby="base-a-message"
+          aria-invalid="false"
+          aria-labelledby="base-a-label"
+          id="base-a"
+          name="a"
+          role="checkbox"
+          tabindex="0"
+          type="checkbox"
+          value=""
+        />
+      </div>
+    </body>
+  `);
 });
 
 test("render value", () => {
@@ -48,19 +48,19 @@ test("render value", () => {
     />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <input
-      aria-checked="true"
-      aria-invalid="false"
-      checked=""
-      name="a"
-      role="checkbox"
-      tabindex="0"
-      type="checkbox"
-      value="b"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <input
+          aria-checked="true"
+          aria-invalid="false"
+          checked=""
+          name="a"
+          role="checkbox"
+          tabindex="0"
+          type="checkbox"
+          value="b"
+        />
+      </div>
+    </body>
+  `);
 });

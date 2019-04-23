@@ -8,7 +8,6 @@ const props: Parameters<typeof MenuItemRadio>[0] = {
   stopId: "item",
   stops: [],
   currentId: null,
-  unstable_pastId: null,
   register: jest.fn(),
   unregister: jest.fn(),
   move: jest.fn(),

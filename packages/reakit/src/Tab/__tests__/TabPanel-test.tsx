@@ -11,21 +11,21 @@ const props: Parameters<typeof TabPanel>[0] = {
 test("render", () => {
   const { baseElement } = render(<TabPanel {...props}>tabpanel</TabPanel>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-hidden="true"
-      aria-labelledby="base-tab"
-      hidden=""
-      id="base-tab-panel"
-      role="tabpanel"
-      tabindex="0"
-    >
-      tabpanel
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="true"
+          aria-labelledby="base-tab"
+          hidden=""
+          id="base-tab-panel"
+          role="tabpanel"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render visible", () => {
@@ -35,20 +35,20 @@ test("render visible", () => {
     </TabPanel>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-hidden="false"
-      aria-labelledby="base-tab"
-      id="base-tab-panel"
-      role="tabpanel"
-      tabindex="0"
-    >
-      tabpanel
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="false"
+          aria-labelledby="base-tab"
+          id="base-tab-panel"
+          role="tabpanel"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render selected", () => {
@@ -58,18 +58,18 @@ test("render selected", () => {
     </TabPanel>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-hidden="false"
-      aria-labelledby="base-tab"
-      id="base-tab-panel"
-      role="tabpanel"
-      tabindex="0"
-    >
-      tabpanel
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-hidden="false"
+          aria-labelledby="base-tab"
+          id="base-tab-panel"
+          role="tabpanel"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
 });

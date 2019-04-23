@@ -8,12 +8,12 @@ test("useCreateElement", () => {
     unstable_useCreateElement("div", { a: "a" }, "div")
   );
   expect(result.current).toMatchInlineSnapshot(`
-<div
-  a="a"
->
-  div
-</div>
-`);
+    <div
+      a="a"
+    >
+      div
+    </div>
+  `);
 });
 
 test("render props", () => {
@@ -23,12 +23,12 @@ test("render props", () => {
     ))
   );
   expect(result.current).toMatchInlineSnapshot(`
-<div
-  id="a"
->
-  div
-</div>
-`);
+    <div
+      id="a"
+    >
+      div
+    </div>
+  `);
 });
 
 test("context", () => {
@@ -47,10 +47,10 @@ test("context", () => {
     }
   );
   expect(result.current).toMatchInlineSnapshot(`
-<p
-  a="a"
->
-  div
-</p>
-`);
+    <p
+      a="a"
+    >
+      div
+    </p>
+  `);
 });

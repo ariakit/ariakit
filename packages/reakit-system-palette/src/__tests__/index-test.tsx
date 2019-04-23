@@ -10,14 +10,14 @@ test("useBox", () => {
     </Provider>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      style="color: rgb(255, 255, 255); background-color: rgb(0, 123, 255);"
-    >
-      Box
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          style="color: rgb(255, 255, 255); background-color: rgb(0, 123, 255);"
+        >
+          Box
+        </div>
+      </div>
+    </body>
+  `);
 });

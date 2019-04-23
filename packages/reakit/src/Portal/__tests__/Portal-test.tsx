@@ -5,15 +5,15 @@ import { Portal } from "../Portal";
 test("render", () => {
   const { baseElement } = render(<Portal>portal</Portal>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    portal
-  </div>
-</body>
-`);
+    <body>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
+        portal
+      </div>
+    </body>
+  `);
 });
 
 test("render nested", () => {
@@ -24,20 +24,20 @@ test("render nested", () => {
     </Portal>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    portal1
-    <div
-      class="__reakit-portal"
-    >
-      portal2
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
+        portal1
+        <div
+          class="__reakit-portal"
+        >
+          portal2
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render nested and sibling", () => {
@@ -51,23 +51,23 @@ test("render nested and sibling", () => {
     </>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    portal1
-    <div
-      class="__reakit-portal"
-    >
-      portal2
-    </div>
-  </div>
-  <div
-    class="__reakit-portal"
-  >
-    portal3
-  </div>
-</body>
-`);
+    <body>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
+        portal1
+        <div
+          class="__reakit-portal"
+        >
+          portal2
+        </div>
+      </div>
+      <div
+        class="__reakit-portal"
+      >
+        portal3
+      </div>
+    </body>
+  `);
 });

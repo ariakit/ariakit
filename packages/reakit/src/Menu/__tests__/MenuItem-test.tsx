@@ -18,16 +18,16 @@ const props: Parameters<typeof MenuItem>[0] = {
 test("render", () => {
   const { baseElement } = render(<MenuItem {...props}>item</MenuItem>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      id="item"
-      role="menuitem"
-      tabindex="-1"
-    >
-      item
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          id="item"
+          role="menuitem"
+          tabindex="-1"
+        >
+          item
+        </button>
+      </div>
+    </body>
+  `);
 });

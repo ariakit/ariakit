@@ -11,39 +11,39 @@ function render(...args: Parameters<typeof useCheckboxState>) {
 test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "currentValue": false,
-}
-`);
+    Object {
+      "currentValue": false,
+    }
+  `);
 });
 
 test("initial state currentValue", () => {
   const result = render({ currentValue: true });
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "currentValue": true,
-}
-`);
+    Object {
+      "currentValue": true,
+    }
+  `);
 });
 
 test("initial state array currentValue", () => {
   const result = render({ currentValue: ["a", "b"] });
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "currentValue": Array [
-    "a",
-    "b",
-  ],
-}
-`);
+    Object {
+      "currentValue": Array [
+        "a",
+        "b",
+      ],
+    }
+  `);
 });
 
 test("setValue", () => {
   const result = render();
   act(() => result.current.setValue(true));
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "currentValue": true,
-}
-`);
+    Object {
+      "currentValue": true,
+    }
+  `);
 });

@@ -7,7 +7,6 @@ const props: Parameters<typeof Radio>[0] = {
   stopId: "radio",
   stops: [],
   currentId: null,
-  unstable_pastId: null,
   register: jest.fn(),
   unregister: jest.fn(),
   move: jest.fn(),
@@ -20,17 +19,17 @@ const props: Parameters<typeof Radio>[0] = {
 test("render", () => {
   const { baseElement } = render(<Radio {...props} />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <input
-      aria-checked="false"
-      id="radio"
-      role="radio"
-      tabindex="-1"
-      type="radio"
-      value="radio"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <input
+          aria-checked="false"
+          id="radio"
+          role="radio"
+          tabindex="-1"
+          type="radio"
+          value="radio"
+        />
+      </div>
+    </body>
+  `);
 });

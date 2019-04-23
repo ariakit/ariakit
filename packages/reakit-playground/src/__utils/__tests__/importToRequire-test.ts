@@ -24,26 +24,26 @@ test("importToRequire", () => {
       ].join("\n")
     )
   ).toMatchInlineSnapshot(`
-"const foo = require('foo').default || require('foo');
-const bar = require('bar/baz').default || require('bar/baz');
-const { foo } = require('bar');
-const { foo, bar } = require('bar');
-const { foo: bar } = require('foo');
-const foo = require('foo').default || require('foo');
-const { bar } = require('foo');
-const foo = require('foo').default || require('foo');
-const { bar, baz } = require('foo');
-const foo = require('foo').default || require('foo');
-const { bar, baz: qux } = require('foo');
-const foo = require('foo');
-const foo = require('foo').default || require('foo');
-const {
-  bar,
-  baz: qux
-} = require('foo');
-const {
-  foo: bar,
-  baz: qux
-} = require('foo');"
-`);
+    "const foo = require('foo').default || require('foo');
+    const bar = require('bar/baz').default || require('bar/baz');
+    const { foo } = require('bar');
+    const { foo, bar } = require('bar');
+    const { foo: bar } = require('foo');
+    const foo = require('foo').default || require('foo');
+    const { bar } = require('foo');
+    const foo = require('foo').default || require('foo');
+    const { bar, baz } = require('foo');
+    const foo = require('foo').default || require('foo');
+    const { bar, baz: qux } = require('foo');
+    const foo = require('foo');
+    const foo = require('foo').default || require('foo');
+    const {
+      bar,
+      baz: qux
+    } = require('foo');
+    const {
+      foo: bar,
+      baz: qux
+    } = require('foo');"
+  `);
 });

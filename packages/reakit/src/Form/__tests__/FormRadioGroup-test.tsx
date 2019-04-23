@@ -7,16 +7,16 @@ test("render", () => {
     <FormRadioGroup baseId="base" touched={{ a: true }} errors={{}} name="a" />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <fieldset
-      aria-describedby="base-a-message"
-      aria-invalid="false"
-      aria-labelledby="base-a-label"
-      id="base-a"
-      role="radiogroup"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <fieldset
+          aria-describedby="base-a-message"
+          aria-invalid="false"
+          aria-labelledby="base-a-label"
+          id="base-a"
+          role="radiogroup"
+        />
+      </div>
+    </body>
+  `);
 });

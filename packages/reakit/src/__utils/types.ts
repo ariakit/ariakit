@@ -80,14 +80,14 @@ export type PickByValue<T, V> = Pick<
  * @template P Additional props
  * @template T React component or string element
  */
-export type PropsWithAs<P, T extends As> = {
-  /**
-   * Replace the underlying element
-   */
-  as?: T;
-  children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
-} & P &
-  Omit<React.ComponentProps<T>, "as" | keyof P>;
+export type PropsWithAs<P, T extends As> = P &
+  Omit<React.ComponentProps<T>, "as" | keyof P> & {
+    /**
+     * Replaces the underlying element
+     */
+    as?: T;
+    children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
+  };
 
 /**
  * Returns the type of the items in an array

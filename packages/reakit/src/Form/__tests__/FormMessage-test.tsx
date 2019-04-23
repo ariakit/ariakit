@@ -13,15 +13,15 @@ test("render", () => {
     />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      id="base-a-message"
-      role="alert"
-    >
-      b
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          id="base-a-message"
+          role="alert"
+        >
+          b
+        </div>
+      </div>
+    </body>
+  `);
 });

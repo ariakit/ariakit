@@ -6,7 +6,6 @@ const props: Parameters<typeof Rover>[0] = {
   stopId: "rover",
   stops: [],
   currentId: null,
-  unstable_pastId: null,
   register: jest.fn(),
   unregister: jest.fn(),
   move: jest.fn(),
@@ -19,17 +18,17 @@ const props: Parameters<typeof Rover>[0] = {
 test("render", () => {
   const { baseElement } = render(<Rover {...props}>rover</Rover>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      id="rover"
-      tabindex="-1"
-    >
-      rover
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          id="rover"
+          tabindex="-1"
+        >
+          rover
+        </button>
+      </div>
+    </body>
+  `);
 });
 
 test("render currentId equals to stopId", () => {
@@ -39,15 +38,15 @@ test("render currentId equals to stopId", () => {
     </Rover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      id="rover"
-      tabindex="0"
-    >
-      rover
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          id="rover"
+          tabindex="0"
+        >
+          rover
+        </button>
+      </div>
+    </body>
+  `);
 });

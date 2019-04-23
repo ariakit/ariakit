@@ -11,19 +11,19 @@ test("initial state", () => {
     unstable_useFormState({ baseId: "test" })
   );
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "baseId": "test",
-  "errors": Object {},
-  "messages": Object {},
-  "submitFailed": 0,
-  "submitSucceed": 0,
-  "submitting": false,
-  "touched": Object {},
-  "valid": true,
-  "validating": false,
-  "values": Object {},
-}
-`);
+    Object {
+      "baseId": "test",
+      "errors": Object {},
+      "messages": Object {},
+      "submitFailed": 0,
+      "submitSucceed": 0,
+      "submitting": false,
+      "touched": Object {},
+      "valid": true,
+      "validating": false,
+      "values": Object {},
+    }
+  `);
 });
 
 test("initial state values", () => {
@@ -34,27 +34,27 @@ test("initial state values", () => {
     })
   );
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "baseId": "test",
-  "errors": Object {},
-  "messages": Object {},
-  "submitFailed": 0,
-  "submitSucceed": 0,
-  "submitting": false,
-  "touched": Object {},
-  "valid": true,
-  "validating": false,
-  "values": Object {
-    "a": "a",
-    "b": Object {
-      "c": Array [
-        "d",
-        "e",
-      ],
-    },
-  },
-}
-`);
+    Object {
+      "baseId": "test",
+      "errors": Object {},
+      "messages": Object {},
+      "submitFailed": 0,
+      "submitSucceed": 0,
+      "submitting": false,
+      "touched": Object {},
+      "valid": true,
+      "validating": false,
+      "values": Object {
+        "a": "a",
+        "b": Object {
+          "c": Array [
+            "d",
+            "e",
+          ],
+        },
+      },
+    }
+  `);
 });
 
 test("update", () => {

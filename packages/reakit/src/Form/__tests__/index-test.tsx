@@ -443,70 +443,70 @@ test("push/remove button adds/removes entry and moves focus", async () => {
   const push = getByTestId("push");
 
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <form
-      novalidate=""
-      role="form"
-    >
-      <button
-        data-testid="push"
-        id="form-people-push"
-        role="button"
-        tabindex="0"
-        type="button"
-      />
-    </form>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <form
+          novalidate=""
+          role="form"
+        >
+          <button
+            data-testid="push"
+            id="form-people-push"
+            role="button"
+            tabindex="0"
+            type="button"
+          />
+        </form>
+      </div>
+    </body>
+  `);
 
   fireEvent.click(push);
 
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <form
-      novalidate=""
-      role="form"
-    >
-      <input
-        aria-describedby="form-people-0-name-message"
-        aria-invalid="false"
-        aria-labelledby="form-people-0-name-label"
-        id="form-people-0-name"
-        name="people.0.name"
-        placeholder="name0"
-        tabindex="0"
-        value=""
-      />
-      <input
-        aria-describedby="form-people-0-email-message"
-        aria-invalid="false"
-        aria-labelledby="form-people-0-email-label"
-        id="form-people-0-email"
-        name="people.0.email"
-        placeholder="email0"
-        tabindex="0"
-        value=""
-      />
-      <button
-        data-testid="remove0"
-        role="button"
-        tabindex="0"
-        type="button"
-      />
-      <button
-        data-testid="push"
-        id="form-people-push"
-        role="button"
-        tabindex="0"
-        type="button"
-      />
-    </form>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <form
+          novalidate=""
+          role="form"
+        >
+          <input
+            aria-describedby="form-people-0-name-message"
+            aria-invalid="false"
+            aria-labelledby="form-people-0-name-label"
+            id="form-people-0-name"
+            name="people.0.name"
+            placeholder="name0"
+            tabindex="0"
+            value=""
+          />
+          <input
+            aria-describedby="form-people-0-email-message"
+            aria-invalid="false"
+            aria-labelledby="form-people-0-email-label"
+            id="form-people-0-email"
+            name="people.0.email"
+            placeholder="email0"
+            tabindex="0"
+            value=""
+          />
+          <button
+            data-testid="remove0"
+            role="button"
+            tabindex="0"
+            type="button"
+          />
+          <button
+            data-testid="push"
+            id="form-people-push"
+            role="button"
+            tabindex="0"
+            type="button"
+          />
+        </form>
+      </div>
+    </body>
+  `);
 
   await wait(expect(getByPlaceholderText("name0")).toHaveFocus);
 

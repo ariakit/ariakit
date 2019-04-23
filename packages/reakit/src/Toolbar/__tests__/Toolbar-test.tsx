@@ -9,17 +9,17 @@ const props: Parameters<typeof Toolbar>[0] = {
 test("render", () => {
   const { baseElement } = render(<Toolbar {...props}>toolbar</Toolbar>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-label="toolbar"
-      role="toolbar"
-    >
-      toolbar
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-label="toolbar"
+          role="toolbar"
+        >
+          toolbar
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render orientation", () => {
@@ -29,16 +29,16 @@ test("render orientation", () => {
     </Toolbar>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-label="toolbar"
-      aria-orientation="horizontal"
-      role="toolbar"
-    >
-      toolbar
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-label="toolbar"
+          aria-orientation="horizontal"
+          role="toolbar"
+        >
+          toolbar
+        </div>
+      </div>
+    </body>
+  `);
 });

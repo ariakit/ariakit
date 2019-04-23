@@ -9,15 +9,15 @@ const props: Parameters<typeof Form>[0] = {
 test("render", () => {
   const { baseElement } = render(<Form {...props} />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <form
-      novalidate=""
-      role="form"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <form
+          novalidate=""
+          role="form"
+        />
+      </div>
+    </body>
+  `);
 });
 
 test("submit", () => {

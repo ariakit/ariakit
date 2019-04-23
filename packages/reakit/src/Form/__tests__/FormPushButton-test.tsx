@@ -13,15 +13,15 @@ test("render", () => {
     />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      id="base-a-push"
-      role="button"
-      tabindex="0"
-      type="button"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          id="base-a-push"
+          role="button"
+          tabindex="0"
+          type="button"
+        />
+      </div>
+    </body>
+  `);
 });

@@ -9,17 +9,17 @@ const props: Parameters<typeof TabList>[0] = {
 test("render", () => {
   const { baseElement } = render(<TabList {...props}>tablist</TabList>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-label="tablist"
-      role="tablist"
-    >
-      tablist
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-label="tablist"
+          role="tablist"
+        >
+          tablist
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render orientation", () => {
@@ -29,16 +29,16 @@ test("render orientation", () => {
     </TabList>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-label="tablist"
-      aria-orientation="horizontal"
-      role="tablist"
-    >
-      tablist
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-label="tablist"
+          aria-orientation="horizontal"
+          role="tablist"
+        >
+          tablist
+        </div>
+      </div>
+    </body>
+  `);
 });

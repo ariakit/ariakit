@@ -12,21 +12,21 @@ test("render", () => {
     <PopoverDisclosure {...props}>disclosure</PopoverDisclosure>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="popover"
-      aria-expanded="false"
-      aria-haspopup="dialog"
-      role="button"
-      tabindex="0"
-      type="button"
-    >
-      disclosure
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="popover"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          role="button"
+          tabindex="0"
+          type="button"
+        >
+          disclosure
+        </button>
+      </div>
+    </body>
+  `);
 });
 
 test("render visible", () => {
@@ -36,19 +36,19 @@ test("render visible", () => {
     </PopoverDisclosure>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="popover"
-      aria-expanded="true"
-      aria-haspopup="dialog"
-      role="button"
-      tabindex="0"
-      type="button"
-    >
-      disclosure
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="popover"
+          aria-expanded="true"
+          aria-haspopup="dialog"
+          role="button"
+          tabindex="0"
+          type="button"
+        >
+          disclosure
+        </button>
+      </div>
+    </body>
+  `);
 });

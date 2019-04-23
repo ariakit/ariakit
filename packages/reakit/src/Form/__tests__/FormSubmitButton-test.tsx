@@ -7,14 +7,14 @@ test("render", () => {
     <FormSubmitButton baseId="base" submit={jest.fn()} />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      role="button"
-      tabindex="0"
-      type="submit"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          role="button"
+          tabindex="0"
+          type="submit"
+        />
+      </div>
+    </body>
+  `);
 });

@@ -8,7 +8,6 @@ const props: Parameters<typeof Tab>[0] = {
   stops: [],
   currentId: null,
   selectedId: null,
-  unstable_pastId: null,
   register: jest.fn(),
   unregister: jest.fn(),
   move: jest.fn(),
@@ -22,20 +21,20 @@ const props: Parameters<typeof Tab>[0] = {
 test("render", () => {
   const { baseElement } = render(<Tab {...props}>tab</Tab>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="base-tab-panel"
-      aria-selected="false"
-      id="base-tab"
-      role="tab"
-      tabindex="-1"
-    >
-      tab
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="base-tab-panel"
+          aria-selected="false"
+          id="base-tab"
+          role="tab"
+          tabindex="-1"
+        >
+          tab
+        </button>
+      </div>
+    </body>
+  `);
 });
 
 test("render active", () => {
@@ -45,20 +44,20 @@ test("render active", () => {
     </Tab>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="base-tab-panel"
-      aria-selected="false"
-      id="base-tab"
-      role="tab"
-      tabindex="0"
-    >
-      tab
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="base-tab-panel"
+          aria-selected="false"
+          id="base-tab"
+          role="tab"
+          tabindex="0"
+        >
+          tab
+        </button>
+      </div>
+    </body>
+  `);
 });
 
 test("render active selected", () => {
@@ -68,18 +67,18 @@ test("render active selected", () => {
     </Tab>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="base-tab-panel"
-      aria-selected="true"
-      id="base-tab"
-      role="tab"
-      tabindex="0"
-    >
-      tab
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="base-tab-panel"
+          aria-selected="true"
+          id="base-tab"
+          role="tab"
+          tabindex="0"
+        >
+          tab
+        </button>
+      </div>
+    </body>
+  `);
 });

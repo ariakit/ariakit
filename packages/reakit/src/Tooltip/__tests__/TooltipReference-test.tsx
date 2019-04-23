@@ -13,15 +13,15 @@ test("render", () => {
     <TooltipReference {...props}>reference</TooltipReference>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      aria-describedby="tooltip"
-      tabindex="0"
-    >
-      reference
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          aria-describedby="tooltip"
+          tabindex="0"
+        >
+          reference
+        </div>
+      </div>
+    </body>
+  `);
 });

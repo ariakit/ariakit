@@ -1,3 +1,4 @@
+// TODO: Refactor
 import * as React from "react";
 import { forwardRef } from "../__utils/forwardRef";
 import { As, PropsWithAs } from "../__utils/types";
@@ -7,15 +8,26 @@ import { unstable_useCreateElement as defaultUseCreateElement } from "./useCreat
 
 type Hook<O> = {
   (options?: O, props?: BoxProps): NonNullable<typeof props>;
-  __keys?: any[];
+  __keys?: ReadonlyArray<any>;
 };
 
 type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
-  keys?: any[];
+  keys?: ReadonlyArray<any>;
   useCreateElement?: typeof defaultUseCreateElement;
 };
+
+export interface Component<T extends As, O> {
+  // This is the desired type
+  // <TT extends As = T>(props: PropsWithAs<O, TT>): JSX.Element;
+  // Unfortunately, TypeScript doesn't like it. It works for string elements
+  // and functional components without generics, but it breaks on generics.
+  // See ./__tests__/createComponent-test.tsx
+  // The following two types are a workaround.
+  <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
+  (props: PropsWithAs<O, T>): JSX.Element;
+}
 
 export function unstable_createComponent<T extends As, O>({
   as: type,
@@ -23,8 +35,8 @@ export function unstable_createComponent<T extends As, O>({
   keys = (useHook && useHook.__keys) || [],
   useCreateElement = defaultUseCreateElement
 }: Options<T, O>) {
-  const Comp = <TT extends As = T>(
-    { as = (type as unknown) as TT, ...props }: PropsWithAs<O, TT>,
+  const Comp = (
+    { as = type, ...props }: PropsWithAs<O, T>,
     ref: React.Ref<any>
   ) => {
     if (useHook) {
@@ -51,5 +63,5 @@ export function unstable_createComponent<T extends As, O>({
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
-  return forwardRef(Comp);
+  return forwardRef(Comp as Component<T, O>);
 }
