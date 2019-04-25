@@ -1080,7 +1080,7 @@ test("disables hover outside", () => {
     const dialog = useDialogState({ visible: true });
     return (
       <>
-        <button onMouseOver={fn} onFocus={fn}>
+        <button onMouseOver={fn} onMouseOut={fn} onBlur={fn} onFocus={fn}>
           button
         </button>
         <Dialog aria-label="dialog" {...dialog} />
@@ -1092,5 +1092,7 @@ test("disables hover outside", () => {
   const dialog = getByLabelText("dialog");
   expect(dialog).toBeVisible();
   fireEvent.mouseOver(button);
+  expect(fn).not.toBeCalled();
+  fireEvent.mouseOut(button);
   expect(fn).not.toBeCalled();
 });
