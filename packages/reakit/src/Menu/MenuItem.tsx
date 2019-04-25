@@ -6,19 +6,17 @@ import { unstable_useProps } from "../system/useProps";
 import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
 import { Keys } from "../__utils/types";
 import { useMenuState, MenuStateReturn } from "./MenuState";
-import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
 export type MenuItemOptions = RoverOptions &
   Pick<Partial<MenuStateReturn>, "hide" | "placement"> &
-  Pick<MenuStateReturn, "next" | "previous">;
+  Pick<MenuStateReturn, "next" | "previous" | "move">;
 
 export type MenuItemProps = RoverProps;
 
 export function useMenuItem(
   options: MenuItemOptions,
-  { onKeyDown, ...htmlProps }: MenuItemProps = {}
+  htmlProps: MenuItemProps = {}
 ) {
-  const { parent } = React.useContext(MenuContext) || ({} as MenuContextType);
   const ref = React.useRef<HTMLElement>(null);
   options = unstable_useOptions("MenuItem", options, htmlProps);
 
@@ -33,48 +31,18 @@ export function useMenuItem(
       },
       onMouseOut: () => {
         if (ref.current) {
-          ref.current.blur();
-        }
-      },
-      onKeyDown: event => {
-        const { hide, placement } = options;
-        if (!parent || !hide || !placement) return;
-
-        let horizontalParent: MenuContextType | undefined | null = parent;
-
-        while (
-          horizontalParent &&
-          horizontalParent.orientation !== "horizontal"
-        ) {
-          horizontalParent = horizontalParent.parent;
-        }
-
-        const [dir] = placement.split("-");
-
-        const keyMap = {
-          ArrowRight:
-            horizontalParent && dir !== "left"
-              ? horizontalParent.next
-              : dir === "left" && hide,
-          ArrowLeft:
-            horizontalParent && dir !== "right"
-              ? horizontalParent.previous
-              : dir === "right" && hide
-        };
-
-        if (event.key in keyMap) {
-          const key = event.key as keyof typeof keyMap;
-          const action = keyMap[key];
-          if (typeof action === "function") {
-            event.preventDefault();
-            action();
-            // Prevent onKeyDown from being called twice for the same keys.
-            return;
+          options.move(null);
+          const menu = ref.current.closest(
+            "[role=menu],[role=menubar]"
+          ) as HTMLElement;
+          if (menu) {
+            const nestedMenu = menu.querySelector(
+              "[role=menu][aria-hidden=false],[role=menubar][aria-hidden=false]"
+            );
+            if (!nestedMenu) {
+              menu.focus();
+            }
           }
-        }
-
-        if (onKeyDown) {
-          onKeyDown(event);
         }
       }
     } as MenuItemProps,

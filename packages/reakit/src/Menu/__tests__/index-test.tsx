@@ -532,6 +532,54 @@ test("arrow left on menu item disclosure opens left submenu and focus first item
   expect(subdisclosure).toHaveFocus();
 });
 
+test("arrow up on menu focus last item", () => {
+  const Test = () => {
+    const menu = useMenuState({ visible: true });
+    return (
+      <Menu aria-label="menu" {...menu}>
+        <MenuItem {...menu}>item1</MenuItem>
+        <MenuItem {...menu}>item2</MenuItem>
+        <MenuItem {...menu}>item3</MenuItem>
+      </Menu>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const menu = getByLabelText("menu");
+  const item3 = getByText("item3");
+  expect(menu).toBeVisible();
+  act(() => menu.focus());
+  expect(menu).toHaveFocus();
+  keyDown("ArrowRight");
+  keyDown("ArrowLeft");
+  expect(menu).toHaveFocus();
+  keyDown("ArrowUp");
+  expect(item3).toHaveFocus();
+});
+
+test("arrow down on menu focus first item", () => {
+  const Test = () => {
+    const menu = useMenuState({ visible: true });
+    return (
+      <Menu aria-label="menu" {...menu}>
+        <MenuItem {...menu}>item1</MenuItem>
+        <MenuItem {...menu}>item2</MenuItem>
+        <MenuItem {...menu}>item3</MenuItem>
+      </Menu>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const menu = getByLabelText("menu");
+  const item1 = getByText("item1");
+  expect(menu).toBeVisible();
+  act(() => menu.focus());
+  expect(menu).toHaveFocus();
+  keyDown("ArrowRight");
+  keyDown("ArrowLeft");
+  expect(menu).toHaveFocus();
+  keyDown("ArrowDown");
+  expect(item1).toHaveFocus();
+});
+
 test("focusing menubar item disclosure opens the submenu without moving focus", () => {
   const Submenu = React.forwardRef(
     (props: MenuDisclosureProps, ref: React.RefObject<any>) => {

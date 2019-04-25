@@ -9,6 +9,7 @@ import {
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
 import { Keys } from "../__utils/types";
+import { unstable_useKeyBinder } from "../KeyBinder/KeyBinder";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -20,7 +21,7 @@ export type MenuDisclosureProps = PopoverDisclosureProps;
 
 export function useMenuDisclosure(
   options: MenuDisclosureOptions,
-  { onKeyDown, ...htmlProps }: MenuDisclosureProps = {}
+  htmlProps: MenuDisclosureProps = {}
 ) {
   const parent = React.useContext(MenuContext);
   const ref = React.useRef<HTMLElement>(null);
@@ -39,6 +40,20 @@ export function useMenuDisclosure(
       setTimeout(() => setHasShownOnFocus(false), 200);
     }
   }, [hasShownOnFocus]);
+
+  const { onKeyDown } = unstable_useKeyBinder({
+    stopPropagation: event => event.key !== "Escape",
+    onKey: options.show,
+    keyMap: {
+      Escape: options.hide,
+      Enter: parent && options.first,
+      " ": parent && options.first,
+      ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
+      ArrowRight: dir === "right" && options.first,
+      ArrowDown: dir === "bottom" || dir === "top" ? options.first : false,
+      ArrowLeft: dir === "left" && options.first
+    }
+  });
 
   htmlProps = mergeProps(
     {
@@ -72,33 +87,7 @@ export function useMenuDisclosure(
           }
         }
       },
-      onKeyDown: event => {
-        const keyMap = {
-          Escape: options.hide,
-          Enter: parent && options.first,
-          " ": parent && options.first,
-          ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
-          ArrowRight: dir === "right" && options.first,
-          ArrowDown: dir === "bottom" || dir === "top" ? options.first : false,
-          ArrowLeft: dir === "left" && options.first
-        };
-
-        if (event.key in keyMap) {
-          const key = event.key as keyof typeof keyMap;
-          const action = keyMap[key];
-          if (typeof action === "function") {
-            event.preventDefault();
-            options.show();
-            action();
-            // Prevent onKeyDown from being called twice for the same keys.
-            return;
-          }
-        }
-
-        if (onKeyDown) {
-          onKeyDown(event);
-        }
-      }
+      onKeyDown
     } as MenuDisclosureProps,
     htmlProps
   );

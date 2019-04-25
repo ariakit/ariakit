@@ -22,7 +22,6 @@ export function useStaticMenu(
   htmlProps: StaticMenuProps = {}
 ) {
   const parent = React.useContext(MenuContext);
-  const ref = React.useRef<HTMLElement>(null);
   options = unstable_useOptions("StaticMenu", options, htmlProps);
 
   const providerValue = React.useMemo(
@@ -39,16 +38,8 @@ export function useStaticMenu(
 
   htmlProps = mergeProps(
     {
-      ref,
       role: options.orientation === "horizontal" ? "menubar" : "menu",
       "aria-orientation": options.orientation,
-      onMouseOver: event => {
-        const target = event.target as HTMLElement;
-        if (target === ref.current) {
-          options.move(null);
-          target.focus();
-        }
-      },
       onKeyDown,
       unstable_wrap: (children: React.ReactNode) => (
         <MenuContext.Provider value={providerValue}>

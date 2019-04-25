@@ -7,18 +7,20 @@ import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { PopoverOptions, PopoverProps, usePopover } from "../Popover/Popover";
+import { unstable_useKeyBinder } from "../KeyBinder/KeyBinder";
 import {
   StaticMenuOptions,
   StaticMenuProps,
   useStaticMenu
 } from "./StaticMenu";
 import { useMenuState, MenuStateReturn } from "./MenuState";
-import { MenuContext } from "./__utils/MenuContext";
+import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
 export type MenuOptions = Omit<
   PopoverOptions,
   "modal" | "unstable_portal" | "hideOnEsc"
 > &
+  Pick<Partial<MenuStateReturn>, "first" | "last" | "placement"> &
   StaticMenuOptions;
 
 export type MenuProps = PopoverProps & StaticMenuProps;
@@ -26,6 +28,7 @@ export type MenuProps = PopoverProps & StaticMenuProps;
 export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   const parent = React.useContext(MenuContext);
   const parentIsHorizontal = parent && parent.orientation === "horizontal";
+  const ref = React.useRef<HTMLElement>(null);
 
   let _options: MenuOptions = {
     unstable_autoFocusOnShow: !parent,
@@ -35,20 +38,71 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
 
   _options = unstable_useOptions("Menu", _options, htmlProps);
 
+  const isHorizontal = _options.orientation === "horizontal";
+  const isVertical = _options.orientation === "vertical";
+
+  const rovingBindings = unstable_useKeyBinder({
+    stopPropagation: event => {
+      // On Esc, only stop propagation if there's no parent menu
+      // Otherwise, pressing Esc should close all menus
+      if (event.key === "Escape" && parent) return false;
+      return true;
+    },
+    keyMap: event => {
+      const targetIsMenu = event.target === ref.current;
+      return {
+        Escape: _options.hide,
+        ArrowUp: targetIsMenu && !isHorizontal && _options.last,
+        ArrowRight: targetIsMenu && !isVertical && _options.first,
+        ArrowDown: targetIsMenu && !isHorizontal && _options.first,
+        ArrowLeft: targetIsMenu && !isVertical && _options.last,
+        Home: targetIsMenu && _options.first,
+        End: targetIsMenu && _options.last,
+        PageUp: targetIsMenu && _options.first,
+        PageDown: targetIsMenu && _options.last
+      };
+    }
+  });
+
+  const parentBindings = unstable_useKeyBinder({
+    stopPropagation: true,
+    keyMap: () => {
+      const { hide, placement } = _options;
+      if (!parent || !hide || !placement) return {};
+
+      let horizontalParent: MenuContextType | undefined | null = parent;
+
+      while (
+        horizontalParent &&
+        horizontalParent.orientation !== "horizontal"
+      ) {
+        horizontalParent = horizontalParent.parent;
+      }
+
+      const [dir] = placement.split("-");
+
+      return {
+        ArrowRight:
+          horizontalParent && dir !== "left"
+            ? horizontalParent.next
+            : dir === "left" && hide,
+        ArrowLeft:
+          horizontalParent && dir !== "right"
+            ? horizontalParent.previous
+            : dir === "right" && hide
+      };
+    }
+  });
+
   htmlProps = mergeProps(
     {
+      ref,
       role: "menu",
       onKeyDown: event => {
-        if (event.key === "Escape" && _options.hide) {
-          // Only stop propagtion if there's no parent menu
-          // Otherwise, pressing Esc should close all menus
-          if (!parent) {
-            event.stopPropagation();
-          }
-          _options.hide();
-        }
+        rovingBindings.onKeyDown!(event);
+        parentBindings.onKeyDown!(event);
       }
-    } as typeof htmlProps,
+    } as MenuProps,
     htmlProps
   );
 
