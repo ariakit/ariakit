@@ -68,7 +68,7 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 | Name | Type | Description |
 |------|------|-------------|
-| <strong><code>keyMap</code>&nbsp;</strong> | <code title="{ [key: string]: false &#124; ((event: KeyboardEvent&#60;any&#62;) =&#62; any) &#124; null &#124; undefined; } &#124; undefined">{&nbsp;[key:&nbsp;string]:&nbsp;false&nbsp;&#124;&nbsp;((...</code> | TODO: Description |
-| <strong><code>onKey</code>&nbsp;</strong> | <code title="((event: KeyboardEvent&#60;any&#62;) =&#62; any) &#124; undefined">((event:&nbsp;KeyboardEvent&#60;any&#62;...</code> | TODO: Description |
-| <strong><code>preventDefault</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | TODO: Description |
-| <strong><code>stopPropagation</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | TODO: Description |
+| <strong><code>keyMap</code>&nbsp;</strong> | <code title="KeyMap &#124; ((event: KeyboardEvent&#60;Element&#62;) =&#62; KeyMap) &#124; undefined">KeyMap&nbsp;&#124;&nbsp;((event:&nbsp;KeyboardE...</code> | TODO: Description |
+| <strong><code>onKey</code>&nbsp;</strong> | <code title="((event: KeyboardEvent&#60;Element&#62;) =&#62; any) &#124; undefined">((event:&nbsp;KeyboardEvent&#60;Elem...</code> | TODO: Description |
+| <strong><code>preventDefault</code>&nbsp;</strong> | <code title="boolean &#124; ((event: KeyboardEvent&#60;Element&#62;) =&#62; boolean) &#124; undefined">boolean&nbsp;&#124;&nbsp;((event:&nbsp;Keyboard...</code> | TODO: Description |
+| <strong><code>stopPropagation</code>&nbsp;</strong> | <code title="boolean &#124; ((event: KeyboardEvent&#60;Element&#62;) =&#62; boolean) &#124; undefined">boolean&nbsp;&#124;&nbsp;((event:&nbsp;Keyboard...</code> | TODO: Description |

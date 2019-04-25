@@ -1,8 +1,8 @@
 diff --git a/node_modules/@lerna/version/index.js b/node_modules/@lerna/version/index.js
-index 55dee28..e9bff6a 100644
+index 01dcee7..d03ac26 100644
 --- a/node_modules/@lerna/version/index.js
 +++ b/node_modules/@lerna/version/index.js
-@@ -303,9 +303,9 @@ class VersionCommand extends Command {
+@@ -302,9 +302,9 @@ class VersionCommand extends Command {
        const nextVersion = semver.inc(this.project.version, increment, resolvePrereleaseId(prereleaseId));
  
        predicate = makeGlobalVersionPredicate(nextVersion);
