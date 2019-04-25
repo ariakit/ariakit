@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.2.0...reakit-system-bootstrap@0.3.0) (2019-04-25)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix `MenuDisclosure`'s arrow pointing to the wrong direction ([6010f6d](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/6010f6d))
+* **reakit-system-bootstrap:** Fix disabled `Button` changing style on hover/active ([8c2cf33](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/8c2cf33))
+* **reakit-system-bootstrap:** Fix horizontal alignment of text inside `Button` ([4c14fdc](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/4c14fdc))
+
+
+### Features
+
+* **reakit-system-bootstrap:** Better alignment for items inside `Button` ([c8f7ca5](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/c8f7ca5))
+
+
+
+
+
 # [0.2.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.1.1...reakit-system-bootstrap@0.2.0) (2019-04-17)
 
 

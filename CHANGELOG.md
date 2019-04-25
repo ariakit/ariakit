@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.3](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.2...reakit@1.0.0-alpha.3) (2019-04-25)
+
+
+### Bug Fixes
+
+* Fix `Checkbox` not reverting `indeterminate` state when `currentValue` changes ([2ee7455](https://github.com/reakit/reakit/commit/2ee7455))
+* Fix `mouseOut` events triggering outside `Dialog`. ([d814ddf](https://github.com/reakit/reakit/commit/d814ddf))
+* Fix arrow keys not working on `Menu` when cursor leaves it ([9f278ac](https://github.com/reakit/reakit/commit/9f278ac))
+* Fix arrow keys on `MenuItem` incorrectly hiding `Menu` ([94bd9db](https://github.com/reakit/reakit/commit/94bd9db))
+* Fix focusing `MenuItem` on mouse over outside an open `Dialog` ([aac7f3c](https://github.com/reakit/reakit/commit/aac7f3c))
+
+
+### Features
+
+* Add `VisuallyHidden` component ([7b1d826](https://github.com/reakit/reakit/commit/7b1d826))
+* Add experimental `KeyBinder` component ([7eb739a](https://github.com/reakit/reakit/commit/7eb739a))
+* Render `MenuGroup` as a `div` instead of `fieldset` ([5d4b476](https://github.com/reakit/reakit/commit/5d4b476))
+* Return `unstable_wrap` method from props hooks ([f668ae4](https://github.com/reakit/reakit/commit/f668ae4))
+
+
+
+
+
 # [1.0.0-alpha.2](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.1...reakit@1.0.0-alpha.2) (2019-04-17)
 
 

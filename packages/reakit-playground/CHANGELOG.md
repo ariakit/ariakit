@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.2.0...reakit-playground@0.3.0) (2019-04-25)
+
+
+### Bug Fixes
+
+* **reakit-playground:** Consider `modules` when updating. ([5c464f8](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/5c464f8))
+
+
+### Features
+
+* Add `VisuallyHidden` component ([7b1d826](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/7b1d826))
+* Add experimental `KeyBinder` component ([7eb739a](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/7eb739a))
+
+
+
+
+
 # [0.2.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.1.1...reakit-playground@0.2.0) (2019-04-17)
 
 
