@@ -67,38 +67,105 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useToolbarState`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
-| <strong><code>loop</code>&nbsp;</strong> | <code>boolean</code> | If enabled:<br>  - Jumps to the first item when moving next from the last item.<br>  - Jumps to the last item when moving previous from the first item. |
+- **`orientation`** 
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.  
+
+- **`currentId`** 
+  <code>string | null</code>
+
+  The current focused element ID.  
+
+- **`loop`** 
+  <code>boolean</code>
+
+  If enabled:
+  - Jumps to the first item when moving next from the last item.
+  - Jumps to the last item when moving previous from the first item.  
 
 ### `Toolbar`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
+- **`orientation`** 
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.  
 
 ### `ToolbarItem`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
-| <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Defines the orientation of the rover list. |
-| <strong><code>currentId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;null</code> | The current focused element ID. |
-| <strong><code>stops</code>&nbsp;</strong> | <code>Stop[]</code> | A list of element refs and IDs of the roving items. |
-| <strong><code>register</code>&nbsp;</strong> | <code title="(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void">(id:&nbsp;string,&nbsp;ref:&nbsp;RefObject...</code> | Registers the element ID and ref in the roving tab index list. |
-| <strong><code>unregister</code>&nbsp;</strong> | <code>(id:&nbsp;string)&nbsp;=&#62;&nbsp;void</code> | Unregisters the roving item. |
-| <strong><code>move</code>&nbsp;</strong> | <code>(id:&nbsp;string&nbsp;&#124;&nbsp;null)&nbsp;=&#62;&nbsp;void</code> | Moves focus to a given element ID. |
-| <strong><code>next</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Moves focus to the next element. |
-| <strong><code>previous</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Moves focus to the previous element. |
-| <strong><code>first</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Moves focus to the first element. |
-| <strong><code>last</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Moves focus to the last element. |
-| <strong><code>stopId</code>&nbsp;</strong> | <code>string&nbsp;&#124;&nbsp;undefined</code> | Element ID. |
+- **`disabled`** 
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.  
+
+- **`focusable`** 
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.  
+
+- **`orientation`** 
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.  
+
+- **`currentId`** 
+  <code>string | null</code>
+
+  The current focused element ID.  
+
+- **`stops`** 
+  <code>Stop[]</code>
+
+  A list of element refs and IDs of the roving items.  
+
+- **`register`** 
+  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
+
+  Registers the element ID and ref in the roving tab index list.  
+
+- **`unregister`** 
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters the roving item.  
+
+- **`move`** 
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given element ID.  
+
+- **`next`** 
+  <code>() =&#62; void</code>
+
+  Moves focus to the next element.  
+
+- **`previous`** 
+  <code>() =&#62; void</code>
+
+  Moves focus to the previous element.  
+
+- **`first`** 
+  <code>() =&#62; void</code>
+
+  Moves focus to the first element.  
+
+- **`last`** 
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.  
+
+- **`stopId`** 
+  <code>string | undefined</code>
+
+  Element ID.  
 
 ### `ToolbarSeparator`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>orientation</code>&nbsp;</strong> | <code title="&#34;horizontal&#34; &#124; &#34;vertical&#34; &#124; undefined">&#34;horizontal&#34;&nbsp;&#124;&nbsp;&#34;vertical&#34;&nbsp;&#124;...</code> | Separator's context orientation. The actual separator's orientation will be flipped based on this prop. So a `"vertical"` orientation means that the separator will have a `"horizontal"` orientation. |
+- **`orientation`** 
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Separator's context orientation.
+The actual separator's orientation will be flipped based on this prop.
+So a `"vertical"` orientation means that the separator will have a
+`"horizontal"` orientation.  

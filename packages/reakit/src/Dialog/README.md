@@ -227,35 +227,95 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useDialogState`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
 
 ### `Dialog`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
-| <strong><code>hide</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Changes the `visible` state to `false` |
-| <strong><code>modal</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Toggles Dialog's `modal` state.<br>  - Non-modal: `preventBodyScroll` doesn't work and focus is free.<br>  - Modal: `preventBodyScroll` is automatically enabled, focus is trapped within the dialog and the dialog is rendered within a `Portal` by default. |
-| <strong><code>hideOnEsc</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When enabled, user can hide the dialog by pressing `Escape`. |
-| <strong><code>hideOnClickOutside</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When enabled, user can hide the dialog by clicking outside it. |
-| <strong><code>preventBodyScroll</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When enabled, user can't scroll on body when the dialog is visible. This option doesn't work if the dialog isn't modal. |
-| <strong><code>unstable_initialFocusRef</code>&nbsp;⚠️</strong> | <code title="RefObject&#60;HTMLElement&#62; &#124; undefined">RefObject&#60;HTMLElement&#62;&nbsp;&#124;&nbsp;un...</code> | The element that will be focused when the dialog shows. When not set, the first tabbable element within the dialog will be used. `autoFocusOnShow` disables it. |
-| <strong><code>unstable_finalFocusRef</code>&nbsp;⚠️</strong> | <code title="RefObject&#60;HTMLElement&#62; &#124; undefined">RefObject&#60;HTMLElement&#62;&nbsp;&#124;&nbsp;un...</code> | The element that will be focused when the dialog hides. When not set, the disclosure component will be used. `autoFocusOnHide` disables it. |
-| <strong><code>unstable_portal</code>&nbsp;⚠️</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Whether or not the dialog should be rendered within `Portal`. It's `true` by default if `modal` is `true`. |
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
+
+- **`hide`** 
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`  
+
+- **`modal`** 
+  <code>boolean | undefined</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.  
+
+- **`hideOnEsc`** 
+  <code>boolean | undefined</code>
+
+  When enabled, user can hide the dialog by pressing `Escape`.  
+
+- **`hideOnClickOutside`** 
+  <code>boolean | undefined</code>
+
+  When enabled, user can hide the dialog by clicking outside it.  
+
+- **`preventBodyScroll`** 
+  <code>boolean | undefined</code>
+
+  When enabled, user can't scroll on body when the dialog is visible.
+This option doesn't work if the dialog isn't modal.  
+
+- **`unstable_initialFocusRef`** ⚠️
+  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
+
+  The element that will be focused when the dialog shows.
+When not set, the first tabbable element within the dialog will be used.
+`autoFocusOnShow` disables it.  
+
+- **`unstable_finalFocusRef`** ⚠️
+  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
+
+  The element that will be focused when the dialog hides.
+When not set, the disclosure component will be used.
+`autoFocusOnHide` disables it.  
+
+- **`unstable_portal`** ⚠️
+  <code>boolean | undefined</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.  
 
 ### `DialogBackdrop`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
 
 ### `DialogDisclosure`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
-| <strong><code>toggle</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Toggles the `visible` state |
+- **`disabled`** 
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.  
+
+- **`focusable`** 
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.  
+
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
+
+- **`toggle`** 
+  <code>() =&#62; void</code>
+
+  Toggles the `visible` state  

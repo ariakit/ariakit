@@ -408,17 +408,14 @@ function getPropType(rootPath, prop) {
     .getText(undefined, ts.TypeFormatFlags.InTypeAlias);
 
   const encode = text =>
-    text.replace(/[\u00A0-\u9999<>&"|]/gim, i => `&#${i.charCodeAt(0)};`);
+    text.replace(/[\u00A0-\u9999<>&"]/gim, i => `&#${i.charCodeAt(0)};`);
 
-  const replaceBreaks = text =>
-    text.replace(/-/g, "&#x2011;").replace(/\s/g, "&nbsp;");
-
-  if (type.length > 30) {
-    return `<code title="${encode(type)}">${replaceBreaks(
-      encode(type.substring(0, 27))
+  if (type.length > 50) {
+    return `<code title="${encode(type)}">${encode(
+      type.substring(0, 47)
     )}...</code>`;
   }
-  return `<code>${replaceBreaks(encode(type))}</code>`;
+  return `<code>${encode(type)}</code>`;
 }
 
 /**
@@ -465,34 +462,28 @@ function createPropTypeObject(rootPath, prop) {
  */
 function getPropTypesRow(prop) {
   const symbol = /unstable_/.test(prop.name) ? "⚠️" : "";
-  const name = `<strong><code>${prop.name}</code>&nbsp;${symbol}</strong>`;
-  // replace line breaks
-  const description = prop.description
-    .replace(/\n\n/g, "<br>")
-    .replace(/\n(\s+)/g, "<br>$1")
-    .replace(/\n/g, " ");
+  const name = `**\`${prop.name}\`** ${symbol}`;
 
-  return `| ${name} | ${prop.type} | ${description} |`;
+  return `- ${name}
+  ${prop.type}
+
+  ${prop.description}  
+`;
 }
 
 /**
  * @param {Record<string, ReturnType<typeof createPropTypeObject>>} types
  */
 function getPropTypesMarkdown(types) {
-  const tableHead = `
-| Name | Type | Description |
-|------|------|-------------|`;
-
   const content = Object.keys(types)
     .map(title => {
       const rows = types[title].map(getPropTypesRow).join("\n");
       return `
 ### \`${title}\`
 
-${rows ? tableHead : ""}
 ${rows || "No props to show"}`;
     })
-    .join("");
+    .join("\n\n");
 
   return `
 <!-- Automatically generated -->

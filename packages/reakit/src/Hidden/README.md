@@ -57,21 +57,38 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useHiddenState`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
 
 ### `Hidden`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
 
 ### `HiddenDisclosure`
 
-| Name | Type | Description |
-|------|------|-------------|
-| <strong><code>disabled</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | Same as the HTML attribute. |
-| <strong><code>focusable</code>&nbsp;</strong> | <code>boolean&nbsp;&#124;&nbsp;undefined</code> | When an element is `disabled`, it may still be `focusable`. It works similarly to `readOnly` on form elements. In this case, only `aria-disabled` will be set. |
-| <strong><code>visible</code>&nbsp;</strong> | <code>boolean</code> | Whether it's visible or not. |
-| <strong><code>toggle</code>&nbsp;</strong> | <code>()&nbsp;=&#62;&nbsp;void</code> | Toggles the `visible` state |
+- **`disabled`** 
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.  
+
+- **`focusable`** 
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.  
+
+- **`visible`** 
+  <code>boolean</code>
+
+  Whether it's visible or not.  
+
+- **`toggle`** 
+  <code>() =&#62; void</code>
+
+  Toggles the `visible` state  
