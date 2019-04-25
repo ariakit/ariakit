@@ -62,6 +62,8 @@ export default {
   "reakit/Menu/MenuGroup": require("reakit/Menu/MenuGroup"),
   "reakit/Menu/MenuDisclosure": require("reakit/Menu/MenuDisclosure"),
   "reakit/Menu/Menu": require("reakit/Menu/Menu"),
+  "reakit/KeyBinder": require("reakit/KeyBinder"),
+  "reakit/KeyBinder/KeyBinder": require("reakit/KeyBinder/KeyBinder"),
   "reakit/Hidden": require("reakit/Hidden"),
   "reakit/Hidden/HiddenState": require("reakit/Hidden/HiddenState"),
   "reakit/Hidden/HiddenDisclosure": require("reakit/Hidden/HiddenDisclosure"),
