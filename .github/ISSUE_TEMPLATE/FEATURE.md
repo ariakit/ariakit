@@ -10,8 +10,12 @@ about: Suggest an idea for this project
 
 ### Motivation
 
-Please outline the motivation for the proposal.
+Outline the motivation for the proposal.
 
 ### Example
 
-Please provide an example for how this feature would be used.
+Provide an example for how this feature would be used.
+
+### Possible implementations
+
+If possible, describe how this feature could be implemented. See [CONTRIBUTING.md](https://github.com/reakit/reakit/blob/master/CONTRIBUTING.md).
