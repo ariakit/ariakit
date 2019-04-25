@@ -9,7 +9,7 @@ import {
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
 import { Keys } from "../__utils/types";
-import { unstable_useKeyBinder } from "../KeyBinder/KeyBinder";
+import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -41,7 +41,7 @@ export function useMenuDisclosure(
     }
   }, [hasShownOnFocus]);
 
-  const { onKeyDown } = unstable_useKeyBinder({
+  const onKeyDown = createOnKeyDown({
     stopPropagation: event => event.key !== "Escape",
     onKey: options.show,
     keyMap: {

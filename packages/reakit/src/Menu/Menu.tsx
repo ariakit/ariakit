@@ -7,7 +7,7 @@ import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { PopoverOptions, PopoverProps, usePopover } from "../Popover/Popover";
-import { unstable_useKeyBinder } from "../KeyBinder/KeyBinder";
+import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import {
   StaticMenuOptions,
   StaticMenuProps,
@@ -41,7 +41,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   const isHorizontal = _options.orientation === "horizontal";
   const isVertical = _options.orientation === "vertical";
 
-  const rovingBindings = unstable_useKeyBinder({
+  const rovingBindings = createOnKeyDown({
     stopPropagation: event => {
       // On Esc, only stop propagation if there's no parent menu
       // Otherwise, pressing Esc should close all menus
@@ -64,7 +64,7 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
     }
   });
 
-  const parentBindings = unstable_useKeyBinder({
+  const parentBindings = createOnKeyDown({
     stopPropagation: true,
     keyMap: () => {
       const { hide, placement } = _options;
@@ -99,8 +99,8 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
       ref,
       role: "menu",
       onKeyDown: event => {
-        rovingBindings.onKeyDown!(event);
-        parentBindings.onKeyDown!(event);
+        rovingBindings(event);
+        parentBindings(event);
       }
     } as MenuProps,
     htmlProps

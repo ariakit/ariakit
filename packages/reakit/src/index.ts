@@ -5,7 +5,6 @@ export * from "./Dialog";
 export * from "./Form";
 export * from "./Group";
 export * from "./Hidden";
-export * from "./KeyBinder";
 export * from "./Menu";
 export * from "./Popover";
 export * from "./Portal";

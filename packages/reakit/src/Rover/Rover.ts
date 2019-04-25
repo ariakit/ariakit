@@ -11,6 +11,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { Keys } from "../__utils/types";
+import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
@@ -69,32 +70,19 @@ export function useRover(
       id: stopId,
       tabIndex: shouldTabIndex ? tabIndex : -1,
       onFocus: () => options.move(stopId),
-      onKeyDown: event => {
-        const { orientation } = options;
-        const keyMap = {
-          ArrowUp: orientation !== "horizontal" && options.previous,
-          ArrowRight: orientation !== "vertical" && options.next,
-          ArrowDown: orientation !== "horizontal" && options.next,
-          ArrowLeft: orientation !== "vertical" && options.previous,
+      onKeyDown: createOnKeyDown({
+        onKeyDown,
+        keyMap: {
+          ArrowUp: options.orientation !== "horizontal" && options.previous,
+          ArrowRight: options.orientation !== "vertical" && options.next,
+          ArrowDown: options.orientation !== "horizontal" && options.next,
+          ArrowLeft: options.orientation !== "vertical" && options.previous,
           Home: options.first,
           End: options.last,
           PageUp: options.first,
           PageDown: options.last
-        };
-        if (event.key in keyMap) {
-          const key = event.key as keyof typeof keyMap;
-          const action = keyMap[key];
-          if (action) {
-            event.preventDefault();
-            action();
-            // Prevent onKeyDown from being called twice for the same keys.
-            return;
-          }
         }
-        if (onKeyDown) {
-          onKeyDown(event);
-        }
-      }
+      })
     } as RoverProps,
     htmlProps
   );
