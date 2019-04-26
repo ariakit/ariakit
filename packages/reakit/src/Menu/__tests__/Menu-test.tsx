@@ -15,6 +15,7 @@ const props: Parameters<typeof Menu>[0] = {
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
+  placement: "bottom-start",
   "aria-label": "menu"
 };
 
@@ -27,7 +28,6 @@ test("render", () => {
           aria-hidden="true"
           aria-label="menu"
           aria-modal="false"
-          class="__reakit-portal"
           data-dialog="true"
           hidden=""
           id="hidden"

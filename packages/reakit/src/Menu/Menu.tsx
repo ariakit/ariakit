@@ -20,7 +20,8 @@ export type MenuOptions = Omit<
   PopoverOptions,
   "modal" | "unstable_portal" | "hideOnEsc"
 > &
-  Pick<Partial<MenuStateReturn>, "first" | "last" | "placement"> &
+  Pick<MenuStateReturn, "placement"> &
+  Pick<Partial<MenuStateReturn>, "first" | "last"> &
   StaticMenuOptions;
 
 export type MenuProps = PopoverProps & StaticMenuProps;
@@ -40,6 +41,14 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
 
   const isHorizontal = _options.orientation === "horizontal";
   const isVertical = _options.orientation === "vertical";
+
+  let horizontalParent: MenuContextType | undefined | null = parent;
+
+  while (horizontalParent && horizontalParent.orientation !== "horizontal") {
+    horizontalParent = horizontalParent.parent;
+  }
+
+  const [dir] = _options.placement.split("-");
 
   const rovingBindings = createOnKeyDown({
     stopPropagation: event => {
@@ -66,32 +75,18 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
 
   const parentBindings = createOnKeyDown({
     stopPropagation: true,
-    keyMap: () => {
-      const { hide, placement } = _options;
-      if (!parent || !hide || !placement) return {};
-
-      let horizontalParent: MenuContextType | undefined | null = parent;
-
-      while (
-        horizontalParent &&
-        horizontalParent.orientation !== "horizontal"
-      ) {
-        horizontalParent = horizontalParent.parent;
-      }
-
-      const [dir] = placement.split("-");
-
-      return {
-        ArrowRight:
-          horizontalParent && dir !== "left"
-            ? horizontalParent.next
-            : dir === "left" && hide,
-        ArrowLeft:
-          horizontalParent && dir !== "right"
-            ? horizontalParent.previous
-            : dir === "right" && hide
-      };
-    }
+    keyMap: parent
+      ? {
+          ArrowRight:
+            horizontalParent && dir !== "left"
+              ? horizontalParent.next
+              : dir === "left" && _options.hide,
+          ArrowLeft:
+            horizontalParent && dir !== "right"
+              ? horizontalParent.previous
+              : dir === "right" && _options.hide
+        }
+      : {}
   });
 
   htmlProps = mergeProps(

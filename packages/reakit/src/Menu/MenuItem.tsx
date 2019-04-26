@@ -31,7 +31,7 @@ export function useMenuItem(
       },
       onMouseOut: () => {
         if (ref.current) {
-          options.move(null);
+          ref.current.blur();
           const menu = ref.current.closest(
             "[role=menu],[role=menubar]"
           ) as HTMLElement;
@@ -40,6 +40,7 @@ export function useMenuItem(
               "[role=menu][aria-hidden=false],[role=menubar][aria-hidden=false]"
             );
             if (!nestedMenu) {
+              options.move(null);
               menu.focus();
             }
           }
