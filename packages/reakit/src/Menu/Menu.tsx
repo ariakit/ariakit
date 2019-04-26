@@ -18,7 +18,7 @@ import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
 export type MenuOptions = Omit<
   PopoverOptions,
-  "modal" | "unstable_portal" | "hideOnEsc"
+  "modal" | "unstable_portal" | "unstable_orphan" | "hideOnEsc"
 > &
   Pick<MenuStateReturn, "placement"> &
   Pick<Partial<MenuStateReturn>, "first" | "last"> &
@@ -104,7 +104,13 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
   htmlProps = unstable_useProps("Menu", _options, htmlProps);
   htmlProps = useStaticMenu(_options, htmlProps);
   htmlProps = usePopover(
-    { ..._options, modal: false, unstable_portal: false, hideOnEsc: false },
+    {
+      ..._options,
+      modal: false,
+      unstable_portal: false,
+      unstable_orphan: false,
+      hideOnEsc: false
+    },
     htmlProps
   );
   return htmlProps;

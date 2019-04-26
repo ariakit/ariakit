@@ -668,18 +668,6 @@ array.
 
 ### `MenuItemRadio`
 
-- **`disabled`** 
-  <code>boolean | undefined</code>
-
-  Same as the HTML attribute.  
-
-- **`focusable`** 
-  <code>boolean | undefined</code>
-
-  When an element is `disabled`, it may still be `focusable`. It works
-similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
-
 - **`orientation`** 
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -729,6 +717,18 @@ similarly to `readOnly` on form elements. In this case, only
   <code>(id: string) =&#62; void</code>
 
   Unregisters the roving item.  
+
+- **`disabled`** 
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.  
+
+- **`focusable`** 
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.  
 
 - **`stopId`** 
   <code>string | undefined</code>

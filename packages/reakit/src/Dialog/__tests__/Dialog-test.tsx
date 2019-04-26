@@ -87,7 +87,6 @@ test("render non-modal", () => {
           aria-hidden="true"
           aria-label="dialog"
           aria-modal="false"
-          class="__reakit-portal"
           data-dialog="true"
           hidden=""
           id="dialog"

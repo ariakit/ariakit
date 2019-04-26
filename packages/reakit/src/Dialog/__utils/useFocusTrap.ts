@@ -1,11 +1,17 @@
 import * as React from "react";
 import { DialogOptions } from "../Dialog";
 import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
+import { usePortalRef } from "./usePortalRef";
 
-function hasNestedOpenModals(portal: Element) {
-  return (
-    portal.querySelectorAll("[role=dialog][aria-modal=true][aria-hidden=false]")
-      .length > 1
+function hasNestedOpenModals(
+  nestedDialogs: Array<React.RefObject<HTMLElement>>
+) {
+  return nestedDialogs.find(dialog =>
+    Boolean(
+      dialog.current &&
+        !dialog.current.hidden &&
+        dialog.current.getAttribute("aria-modal") === "true"
+    )
   );
 }
 
@@ -17,9 +23,10 @@ export function isFocusTrap(element: Element) {
 
 export function useFocusTrap(
   dialogRef: React.RefObject<HTMLElement>,
-  portalRef: React.RefObject<HTMLElement>,
+  nestedDialogs: Array<React.RefObject<HTMLElement>>,
   options: DialogOptions
 ) {
+  const portalRef = usePortalRef(dialogRef, options);
   const shouldTrap = options.visible && options.modal;
   const beforeElement = React.useRef<HTMLElement | null>(null);
   const afterElement = React.useRef<HTMLElement | null>(null);
@@ -50,7 +57,7 @@ export function useFocusTrap(
       if (beforeElement.current) beforeElement.current.remove();
       if (afterElement.current) afterElement.current.remove();
     };
-  }, [portalRef, shouldTrap]);
+  }, [shouldTrap]);
 
   // Focus trap
   React.useEffect(() => {
@@ -59,9 +66,8 @@ export function useFocusTrap(
     if (!shouldTrap || !before || !after) return undefined;
 
     const handleFocus = (event: FocusEvent) => {
-      const portal = portalRef.current;
       const dialog = dialogRef.current;
-      if (!portal || !dialog || hasNestedOpenModals(portal)) return;
+      if (!dialog || hasNestedOpenModals(nestedDialogs)) return;
 
       event.preventDefault();
 
@@ -85,7 +91,7 @@ export function useFocusTrap(
       before.removeEventListener("focus", handleFocus);
       after.removeEventListener("focus", handleFocus);
     };
-  }, [dialogRef, portalRef, shouldTrap]);
+  }, [dialogRef, shouldTrap]);
 
   // Click trap
   React.useEffect(() => {
@@ -95,7 +101,7 @@ export function useFocusTrap(
       const dialog = dialogRef.current;
       const portal = portalRef.current;
 
-      if (!dialog || !portal || hasNestedOpenModals(portal)) return;
+      if (!dialog || !portal || hasNestedOpenModals(nestedDialogs)) return;
 
       if (!portal.contains(document.activeElement)) {
         dialog.focus();
@@ -106,5 +112,5 @@ export function useFocusTrap(
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [dialogRef, portalRef, shouldTrap]);
+  }, [dialogRef, shouldTrap]);
 }

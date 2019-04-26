@@ -11,12 +11,10 @@ import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
-import { usePortalRef } from "./__utils/usePortalRef";
 import { useFocusTrap } from "./__utils/useFocusTrap";
 import { useFocusOnHide } from "./__utils/useFocusOnHide";
 import { useNestedDialogs } from "./__utils/useNestedDialogs";
 import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
-import { useHideOnFocusOutside } from "./__utils/useHideOnFocusOutside";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
 
@@ -62,6 +60,13 @@ export type DialogOptions = HiddenOptions &
      */
     unstable_portal?: boolean;
     /**
+     * Whether or not the dialog should be a child of its parent.
+     * Opening a nested orphan dialog will close its parent dialog if
+     * `hideOnClickOutside` is set to `true` on the parent.
+     * It will be set to `false` if `modal` is `false`.
+     */
+    unstable_orphan?: boolean;
+    /**
      * Whether or not to move focus when the dialog shows.
      * @private
      */
@@ -84,6 +89,7 @@ export function useDialog(
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
     unstable_portal: isPortal = modal,
+    unstable_orphan,
     ...options
   }: DialogOptions,
   htmlProps: DialogProps = {}
@@ -96,21 +102,20 @@ export function useDialog(
     unstable_autoFocusOnShow,
     unstable_autoFocusOnHide,
     unstable_portal: isPortal,
+    unstable_orphan: modal && unstable_orphan,
     ...options
   };
   _options = unstable_useOptions("Dialog", _options, htmlProps);
 
   const dialog = React.useRef<HTMLElement>(null);
-  const portal = usePortalRef(dialog, _options);
   const disclosure = useDisclosureRef(_options);
   const { dialogs, wrap } = useNestedDialogs(dialog, _options);
 
   usePreventBodyScroll(dialog, _options);
-  useFocusTrap(dialog, portal, _options);
+  useFocusTrap(dialog, dialogs, _options);
   useFocusOnShow(dialog, dialogs, _options);
   useFocusOnHide(dialog, disclosure, _options);
-  useHideOnClickOutside(portal, disclosure, dialogs, _options);
-  useHideOnFocusOutside(dialog, disclosure, dialogs, _options);
+  useHideOnClickOutside(dialog, disclosure, dialogs, _options);
   useDisableHoverOutside(dialog, dialogs, _options);
 
   htmlProps = mergeProps(
@@ -134,11 +139,6 @@ export function useDialog(
           wrap(children)
         )
     } as DialogProps,
-    // If it's not modal, it doesn't have a portal
-    // So we define dialog itself as portal
-    !_options.modal && {
-      className: Portal.__className
-    },
     htmlProps
   );
 
@@ -158,7 +158,8 @@ const keys: Keys<DialogStateReturn & DialogOptions> = [
   "unstable_finalFocusRef",
   "unstable_autoFocusOnShow",
   "unstable_autoFocusOnHide",
-  "unstable_portal"
+  "unstable_portal",
+  "unstable_orphan"
 ];
 
 useDialog.__keys = keys;

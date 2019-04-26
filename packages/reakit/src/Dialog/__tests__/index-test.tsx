@@ -1096,3 +1096,30 @@ test("disables hover outside", () => {
   fireEvent.mouseOut(button);
   expect(fn).not.toBeCalled();
 });
+
+test("opening a nested orphan dialog closes the parent dialog", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    const dialog2 = useDialogState();
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
+        <Dialog aria-label="dialog1" {...dialog}>
+          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
+          <Dialog aria-label="dialog2" unstable_orphan {...dialog2} />
+        </Dialog>
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const disclosure1 = getByText("disclosure1");
+  const disclosure2 = getByText("disclosure2");
+  const dialog1 = getByLabelText("dialog1");
+  const dialog2 = getByLabelText("dialog2");
+  fireEvent.click(disclosure1);
+  expect(dialog1).toBeVisible();
+  fireEvent.click(disclosure2);
+  expect(dialog1).not.toBeVisible();
+  expect(dialog2).toBeVisible();
+  expect(dialog2).toHaveFocus();
+});

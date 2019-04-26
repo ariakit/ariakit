@@ -9,6 +9,7 @@ import {
   CheckboxProps,
   useCheckbox
 } from "../Checkbox/Checkbox";
+import { TabbableOptions } from "../Tabbable/Tabbable";
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -81,7 +82,8 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
 }
 
 const keys: Keys<
-  CheckboxOptions &
+  TabbableOptions &
+    CheckboxOptions &
     unstable_FormStateReturn<any> &
     unstable_FormCheckboxOptions<any, any>
 > = [...useCheckbox.__keys, ...unstable_useFormState.__keys, "name", "value"];

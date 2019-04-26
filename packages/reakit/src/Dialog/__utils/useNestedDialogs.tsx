@@ -40,21 +40,31 @@ export function useNestedDialogs(
 
   // If it's a nested dialog, add it to context
   React.useEffect(() => {
-    if (!context.addDialog) return undefined;
+    if (!context.addDialog || options.unstable_orphan) return undefined;
     context.addDialog(dialogRef);
     return () => {
       if (context.removeDialog) {
         context.removeDialog(dialogRef);
       }
     };
-  }, [dialogRef, context.addDialog, context.removeDialog]);
+  }, [
+    dialogRef,
+    context.addDialog,
+    context.removeDialog,
+    options.unstable_orphan
+  ]);
 
   // Close all nested dialogs when parent dialog closes
   React.useEffect(() => {
-    if (context.visible === false && options.visible && options.hide) {
+    if (
+      context.visible === false &&
+      options.visible &&
+      options.hide &&
+      !options.unstable_orphan
+    ) {
       options.hide();
     }
-  }, [context.visible, options.visible, options.hide]);
+  }, [context.visible, options.visible, options.hide, options.unstable_orphan]);
 
   // Provider
   const providerValue = React.useMemo(

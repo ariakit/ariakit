@@ -148,6 +148,14 @@ When not set, the disclosure component will be used.
   Whether or not the dialog should be rendered within `Portal`.
 It's `true` by default if `modal` is `true`.  
 
+- **`unstable_orphan`** ⚠️
+  <code>boolean | undefined</code>
+
+  Whether or not the dialog should be a child of its parent.
+Opening a nested orphan dialog will close its parent dialog if
+`hideOnClickOutside` is set to `true` on the parent.
+It will be set to `false` if `modal` is `false`.  
+
 ### `PopoverArrow`
 
 - **`placement`** 
