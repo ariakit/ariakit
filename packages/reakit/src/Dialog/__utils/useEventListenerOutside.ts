@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useLiveRef } from "../../__utils/useLiveRef";
+import { warning } from "../../__utils/warning";
 import { isFocusTrap } from "./useFocusTrap";
 
 export function useEventListenerOutside<T extends keyof DocumentEventMap>(
@@ -21,6 +22,12 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
       const element = targetRef.current;
       const disclosure = disclosureRef.current;
       const target = e.target as Element;
+
+      warning(
+        !element,
+        "Can't detect events outside dialog because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/dialog",
+        "Dialog"
+      );
 
       // Click inside
       if (!element || element.contains(target)) return;

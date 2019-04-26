@@ -132,15 +132,13 @@ This option doesn't work if the dialog isn't modal.
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog shows.
-When not set, the first tabbable element within the dialog will be used.
-`autoFocusOnShow` disables it.  
+When not set, the first tabbable element within the dialog will be used.  
 
 - **`unstable_finalFocusRef`** ⚠️
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog hides.
-When not set, the disclosure component will be used.
-`autoFocusOnHide` disables it.  
+When not set, the disclosure component will be used.  
 
 - **`unstable_portal`** ⚠️
   <code>boolean | undefined</code>

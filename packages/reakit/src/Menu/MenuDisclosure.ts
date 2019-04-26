@@ -10,12 +10,13 @@ import {
 } from "../Popover/PopoverDisclosure";
 import { Keys } from "../__utils/types";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
+import { warning } from "../__utils/warning";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
 export type MenuDisclosureOptions = PopoverDisclosureOptions &
-  Pick<Partial<MenuStateReturn>, "placement" | "hide" | "first" | "last"> &
-  Pick<MenuStateReturn, "show">;
+  Pick<Partial<MenuStateReturn>, "hide" | "first" | "last"> &
+  Pick<MenuStateReturn, "show" | "placement">;
 
 export type MenuDisclosureProps = PopoverDisclosureProps;
 
@@ -32,7 +33,7 @@ export function useMenuDisclosure(
 
   options = unstable_useOptions("MenuDisclosure", options, htmlProps);
 
-  const dir = options.placement ? options.placement.split("-")[0] : undefined;
+  const [dir] = options.placement.split("-");
 
   // Restores hasShownOnFocus
   React.useEffect(() => {
@@ -66,7 +67,16 @@ export function useMenuDisclosure(
         }
       },
       onMouseOver: () => {
-        if (!parent || !options.placement) return;
+        if (!parent) return;
+
+        if (!ref.current) {
+          warning(
+            true,
+            "Can't respond to mouse over on `MenuDisclosure` because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
+            "MenuDisclosure"
+          );
+          return;
+        }
 
         const parentIsHorizontal = parent.orientation === "horizontal";
 
@@ -77,7 +87,7 @@ export function useMenuDisclosure(
               ref.current.focus();
             }
           }, 200);
-        } else if (ref.current) {
+        } else {
           const parentMenu = ref.current.closest("[role=menu],[role=menubar]");
           const subjacentOpenMenu =
             parentMenu &&

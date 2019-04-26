@@ -58,6 +58,11 @@ export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
       return true;
     },
     keyMap: event => {
+      warning(
+        !ref.current,
+        "Can't detect arrow keys because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
+        "Menu"
+      );
       const targetIsMenu = event.target === ref.current;
       return {
         Escape: _options.hide,

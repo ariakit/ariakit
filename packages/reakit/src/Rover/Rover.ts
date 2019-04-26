@@ -12,6 +12,7 @@ import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { Keys } from "../__utils/types";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
+import { warning } from "../__utils/warning";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
@@ -59,7 +60,15 @@ export function useRover(
   }, [stopId, reallyDisabled, options.register, options.unregister]);
 
   useUpdateEffect(() => {
-    if (ref.current && focused) {
+    if (!ref.current) {
+      warning(
+        true,
+        "Can't focus rover component because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/rover",
+        "Rover"
+      );
+      return;
+    }
+    if (focused) {
       ref.current.focus();
     }
   }, [focused]);

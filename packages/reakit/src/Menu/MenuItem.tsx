@@ -5,6 +5,7 @@ import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
 import { Keys } from "../__utils/types";
+import { warning } from "../__utils/warning";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
 export type MenuItemOptions = RoverOptions &
@@ -25,7 +26,15 @@ export function useMenuItem(
       ref,
       role: "menuitem",
       onMouseOver: () => {
-        if (options.orientation !== "horizontal" && ref.current) {
+        if (options.orientation !== "horizontal") {
+          if (!ref.current) {
+            warning(
+              true,
+              "Can't respond to mouse over on `MenuItem` because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
+              "MenuItem"
+            );
+            return;
+          }
           ref.current.focus();
         }
       },

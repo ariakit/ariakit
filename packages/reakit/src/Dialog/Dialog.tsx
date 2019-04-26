@@ -45,13 +45,11 @@ export type DialogOptions = HiddenOptions &
     /**
      * The element that will be focused when the dialog shows.
      * When not set, the first tabbable element within the dialog will be used.
-     * `autoFocusOnShow` disables it.
      */
     unstable_initialFocusRef?: React.RefObject<HTMLElement>;
     /**
      * The element that will be focused when the dialog hides.
      * When not set, the disclosure component will be used.
-     * `autoFocusOnHide` disables it.
      */
     unstable_finalFocusRef?: React.RefObject<HTMLElement>;
     /**
@@ -127,7 +125,15 @@ export function useDialog(
       "data-dialog": true,
       style: { zIndex: 999 },
       onKeyDown: event => {
-        if (event.key === "Escape" && _options.hide && _options.hideOnEsc) {
+        if (event.key === "Escape" && _options.hideOnEsc) {
+          if (!_options.hide) {
+            warning(
+              true,
+              "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided. See https://reakit.io/docs/dialog",
+              "Dialog"
+            );
+            return;
+          }
           event.stopPropagation();
           _options.hide();
         }

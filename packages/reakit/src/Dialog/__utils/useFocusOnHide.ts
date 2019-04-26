@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useUpdateEffect } from "../../__utils/useUpdateEffect";
 import { DialogOptions } from "../Dialog";
+import { warning } from "../../__utils/warning";
 import { isTabbable } from "./tabbable";
 
 export function useFocusOnHide(
@@ -12,13 +13,20 @@ export function useFocusOnHide(
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
 
   useUpdateEffect(() => {
+    if (!shouldFocus) return;
     const dialog = dialogRef.current;
-    if (!dialog || !shouldFocus) return;
+
+    warning(
+      !dialog,
+      "Can't detect focus outside dialog because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/dialog",
+      "Dialog"
+    );
 
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
     if (
       document.activeElement &&
+      dialog &&
       !dialog.contains(document.activeElement) &&
       (isTabbable(document.activeElement) ||
         document.activeElement.getAttribute("data-dialog") === "true")
@@ -28,6 +36,12 @@ export function useFocusOnHide(
 
     if (finalFocusRef && finalFocusRef.current) {
       finalFocusRef.current.focus();
+    } else {
+      warning(
+        true,
+        "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop. See https://reakit.io/docs/dialog",
+        "Dialog"
+      );
     }
   }, [dialogRef, finalFocusRef, shouldFocus]);
 }

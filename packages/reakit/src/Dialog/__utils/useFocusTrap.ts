@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DialogOptions } from "../Dialog";
+import { warning } from "../../__utils/warning";
 import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 import { usePortalRef } from "./usePortalRef";
 
@@ -34,9 +35,24 @@ export function useFocusTrap(
   // Create before and after elements
   // https://github.com/w3c/aria-practices/issues/545
   React.useEffect(() => {
+    if (!shouldTrap) return undefined;
     const portal = portalRef.current;
 
-    if (!portal || !shouldTrap) return undefined;
+    if (!portal) {
+      warning(
+        true,
+        [
+          "Can't trap focus within modal dialog because one of the following reasons:",
+          " 1. `ref` wasn't passed to component.",
+          " 2. the component wasn't rendered.",
+          " 3. the component wasn't rendered within a portal.",
+          "See https://reakit.io/docs/dialog"
+        ].join("\n"),
+        "Dialog"
+      );
+
+      return undefined;
+    }
 
     if (!beforeElement.current) {
       beforeElement.current = document.createElement("div");

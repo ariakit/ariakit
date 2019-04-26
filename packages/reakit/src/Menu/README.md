@@ -373,15 +373,13 @@ This option doesn't work if the dialog isn't modal.
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog shows.
-When not set, the first tabbable element within the dialog will be used.
-`autoFocusOnShow` disables it.  
+When not set, the first tabbable element within the dialog will be used.  
 
 - **`unstable_finalFocusRef`** ⚠️
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog hides.
-When not set, the disclosure component will be used.
-`autoFocusOnHide` disables it.  
+When not set, the disclosure component will be used.  
 
 - **`placement`** 
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -452,11 +450,6 @@ similarly to `readOnly` on form elements. In this case, only
 
   The reference element.  
 
-- **`placement`** 
-  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
-
-  Actual `placement`.  
-
 - **`hide`** 
   <code>() =&#62; void</code>
 
@@ -471,6 +464,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Moves focus to the last element.  
+
+- **`placement`** 
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.  
 
 - **`show`** 
   <code>() =&#62; void</code>

@@ -10,6 +10,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
 import { Keys, Omit } from "../__utils/types";
+import { warning } from "../__utils/warning";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
 export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
@@ -46,7 +47,14 @@ export function useCheckbox(
       : ((options.currentValue || []) as any[]).indexOf(options.value) !== -1;
 
   React.useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current) {
+      warning(
+        options.currentValue === "indeterminate",
+        "Can't set indeterminate state because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/checkbox",
+        "Checkbox"
+      );
+      return;
+    }
 
     if (options.currentValue === "indeterminate") {
       ref.current.indeterminate = true;

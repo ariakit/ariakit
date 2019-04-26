@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useUpdateEffect } from "../../__utils/useUpdateEffect";
 import { DialogOptions } from "../Dialog";
+import { warning } from "../../__utils/warning";
 import { getFirstTabbableIn } from "./tabbable";
 
 export function useFocusOnShow(
@@ -33,6 +34,11 @@ export function useFocusOnShow(
         tabbable.focus();
       } else {
         dialog.focus();
+        warning(
+          dialog.tabIndex === undefined || dialog.tabIndex < 0,
+          "It's recommended to have at least one tabbable element inside dialog. The dialog element has been automatically focused. If this is the intended behavior, pass `tabIndex={0}` to disable this warning. See https://reakit.io/docs/dialog",
+          "Dialog"
+        );
       }
     }
   }, [dialogRef, initialFocusRef, shouldFocus, nestedDialogs]);
