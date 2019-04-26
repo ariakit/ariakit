@@ -8,12 +8,13 @@ import {
 import { unstable_SystemContextType } from "../SystemContext";
 
 function render(
-  system?: unstable_SystemContextType,
+  system: unstable_SystemContextType,
   ...args: Parameters<typeof unstable_useProps>
 ) {
+  SystemProvider.unstable_use(system);
   return renderHook(() => unstable_useProps(...args), {
     wrapper: (props: unstable_SystemProviderProps) => (
-      <SystemProvider unstable_system={system} {...props} />
+      <SystemProvider {...props} />
     )
   }).result;
 }
@@ -30,6 +31,6 @@ test("useProps", () => {
 });
 
 test("default return", () => {
-  const result = render(undefined, "A", undefined, { id: "id" });
+  const result = render({}, "A", undefined, { id: "id" });
   expect(result.current).toEqual({ id: "id" });
 });

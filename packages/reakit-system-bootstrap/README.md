@@ -26,9 +26,11 @@ import ReactDOM from "react-dom";
 import { Provider, Button } from "reakit";
 import * as system from "reakit-system-bootstrap";
 
+Provider.unstable_use(system);
+
 function App() {
   return (
-    <Provider unstable_system={system}>
+    <Provider>
       <Button unstable_system={{ palette: "primary", fill: "outline" }}>
         Button
       </Button>

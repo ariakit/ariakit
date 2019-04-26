@@ -11,9 +11,10 @@ function render(
   system: unstable_SystemContextType,
   ...args: Parameters<typeof unstable_useToken>
 ) {
+  SystemProvider.unstable_use(system);
   return renderHook(() => unstable_useToken(...args), {
     wrapper: (props: unstable_SystemProviderProps) => (
-      <SystemProvider unstable_system={system} {...props} />
+      <SystemProvider {...props} />
     )
   }).result;
 }

@@ -4,14 +4,14 @@ import { Provider } from "reakit";
 import * as system from "../..";
 import { useContrast, useContrastRatio } from "../contrast";
 
+Provider.unstable_use(system);
+
 function render<T extends (...args: any[]) => any>(
   useHook: T,
   ...args: Parameters<T>
 ) {
   return renderHook(() => useHook(...args), {
-    wrapper: (props: { children: React.ReactNode }) => (
-      <Provider unstable_system={system} {...props} />
-    )
+    wrapper: (props: { children: React.ReactNode }) => <Provider {...props} />
   }).result;
 }
 

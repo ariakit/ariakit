@@ -37,24 +37,42 @@ function App() {
 ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
-If you want to include default styles, you can use the **experimental** system feature with [`reakit-system-bootstrap`](https://github.com/reakit/reakit/tree/next/packages/reakit-system-bootstrap#readme). The code below will render a button with bootstrap-like styling.
+### Server Side Rendering
+
+If you need SSR support, you must wrap your app with Reakit `Provider`. It will generate deterministic IDs for accessibility purposes both on the server and client.
 
 ```jsx static
-import React from "react";
-import ReactDOM from "react-dom";
 import { Provider, Button } from "reakit";
-import * as system from "reakit-system-bootstrap";
 
 function App() {
   return (
-    <Provider unstable_system={system}>
+    <Provider>
       <Button>Button</Button>
     </Provider>
   );
 }
-
-ReactDOM.render(<App />, document.getElementById("root"));
 ```
+
+### Default styles
+
+If you want to include default styles, you can use the **experimental** system feature with [`reakit-system-bootstrap`](https://github.com/reakit/reakit/tree/next/packages/reakit-system-bootstrap#readme). The code below will render a button with bootstrap-like styling.
+
+```jsx static
+import { Provider, Button } from "reakit";
+import * as system from "reakit-system-bootstrap";
+
+Provider.unstable_use(system);
+
+function App() {
+  return (
+    <Provider>
+      <Button>Button</Button>
+    </Provider>
+  );
+}
+```
+
+All the interactive examples in this documentation use [`reakit-system-bootstrap`](https://github.com/reakit/reakit/tree/next/packages/reakit-system-bootstrap#readme) by default.
 
 ## CDN
 
