@@ -9,10 +9,10 @@ import {
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
-import { Keys } from "../__utils/types";
+import { Keys, Omit } from "../__utils/types";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
-export type CheckboxOptions = TabbableOptions &
+export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
   Pick<Partial<CheckboxStateReturn>, "currentValue" | "setValue"> & {
     /**
      * Checkbox's value is going to be used when multiple checkboxes share the
@@ -27,6 +27,8 @@ export type CheckboxOptions = TabbableOptions &
   };
 
 export type CheckboxProps = TabbableProps & React.InputHTMLAttributes<any>;
+
+const defaultClickKeys = [" "];
 
 export function useCheckbox(
   options: CheckboxOptions = {},
@@ -86,11 +88,14 @@ export function useCheckbox(
     htmlProps
   );
   htmlProps = unstable_useProps("Checkbox", options, htmlProps);
-  htmlProps = useTabbable(options, htmlProps);
+  htmlProps = useTabbable(
+    { ...options, unstable_clickKeys: defaultClickKeys },
+    htmlProps
+  );
   return htmlProps;
 }
 
-const keys: Keys<CheckboxOptions> = [
+const keys: Keys<TabbableOptions & CheckboxOptions> = [
   ...useTabbable.__keys,
   ...useCheckboxState.__keys,
   "value",

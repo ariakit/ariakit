@@ -15,11 +15,10 @@ export type ButtonOptions = TabbableOptions;
 export type ButtonProps = TabbableProps & React.ButtonHTMLAttributes<any>;
 
 export function useButton(
-  { unstable_clickKeys = ["Enter", " "], ...options }: ButtonOptions = {},
+  options: ButtonOptions = {},
   htmlProps: ButtonProps = {}
 ) {
-  let _options: ButtonOptions = { unstable_clickKeys, ...options };
-  _options = unstable_useOptions("Button", _options, htmlProps);
+  options = unstable_useOptions("Button", options, htmlProps);
 
   htmlProps = mergeProps(
     {
@@ -29,8 +28,8 @@ export function useButton(
     htmlProps
   );
 
-  htmlProps = unstable_useProps("Button", _options, htmlProps);
-  htmlProps = useTabbable(_options, htmlProps);
+  htmlProps = unstable_useProps("Button", options, htmlProps);
+  htmlProps = useTabbable(options, htmlProps);
   return htmlProps;
 }
 

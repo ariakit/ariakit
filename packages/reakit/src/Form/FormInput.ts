@@ -1,5 +1,5 @@
 import * as React from "react";
-import { As, PropsWithAs, Keys } from "../__utils/types";
+import { As, PropsWithAs, Keys, Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
@@ -18,10 +18,10 @@ import { formatInputName } from "./__utils/formatInputName";
 import { unstable_getIn } from "./utils/getIn";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
-export type unstable_FormInputOptions<
-  V,
-  P extends DeepPath<V, P>
-> = TabbableOptions &
+export type unstable_FormInputOptions<V, P extends DeepPath<V, P>> = Omit<
+  TabbableOptions,
+  "unstable_clickKeys"
+> &
   Pick<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "touched" | "errors" | "update" | "blur"
@@ -34,6 +34,8 @@ export type unstable_FormInputOptions<
 
 export type unstable_FormInputProps = TabbableProps &
   React.InputHTMLAttributes<any>;
+
+const defaultClickKeys: string[] = [];
 
 export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,
@@ -57,12 +59,17 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   );
 
   htmlProps = unstable_useProps("FormInput", options, htmlProps);
-  htmlProps = useTabbable(options, htmlProps);
+  htmlProps = useTabbable(
+    { ...options, unstable_clickKeys: defaultClickKeys },
+    htmlProps
+  );
   return htmlProps;
 }
 
 const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormInputOptions<any, any>
+  TabbableOptions &
+    unstable_FormStateReturn<any> &
+    unstable_FormInputOptions<any, any>
 > = [...useTabbable.__keys, ...unstable_useFormState.__keys, "name"];
 
 unstable_useFormInput.__keys = keys;

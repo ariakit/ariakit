@@ -4,10 +4,10 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
-import { Keys } from "../__utils/types";
+import { Keys, Omit } from "../__utils/types";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
-export type RadioOptions = RoverOptions &
+export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
   Pick<Partial<RadioStateReturn>, "currentValue" | "setValue"> & {
     /**
      * Same as the `value` attribute.
@@ -20,6 +20,8 @@ export type RadioOptions = RoverOptions &
   };
 
 export type RadioProps = RoverProps & React.InputHTMLAttributes<any>;
+
+const defaultClickKeys = [" "];
 
 export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
   options = unstable_useOptions("Radio", options, htmlProps);
@@ -48,11 +50,14 @@ export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
     htmlProps
   );
   htmlProps = unstable_useProps("Radio", options, htmlProps);
-  htmlProps = useRover(options, htmlProps);
+  htmlProps = useRover(
+    { ...options, unstable_clickKeys: defaultClickKeys },
+    htmlProps
+  );
   return htmlProps;
 }
 
-const keys: Keys<RadioStateReturn & RadioOptions> = [
+const keys: Keys<RoverOptions & RadioStateReturn & RadioOptions> = [
   ...useRover.__keys,
   ...useRadioState.__keys,
   "value",

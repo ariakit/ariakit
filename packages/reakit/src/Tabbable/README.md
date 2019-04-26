@@ -4,7 +4,7 @@ path: /docs/tabbable
 
 # Tabbable
 
-`Tabbable` implements all the interactions an interactive component will need to be fully accessible when it's not rendered as its respective native element.
+`Tabbable` is an abstract component that implements all the interactions an interactive element needs to be fully accessible when it's not rendered as its respective native element.
 
 ## Installation
 
@@ -43,7 +43,7 @@ function Example() {
 
 - `Tabbable` has `tabindex` set to `0` by default. If it's `disabled` and not `focusable`, the `tabindex` attribute is removed.
 - `Tabbable` has `aria-disabled` set to `true` when the `disabled` prop is passed in.
-- Pressing <kbd>Space</kbd> triggers a click event on `Tabbable` regardless of its rendered element.
+- Pressing <kbd>Enter</kbd> or <kbd>Space</kbd> triggers a click event on `Tabbable` regardless of its rendered element.
 - `click`, `mouseDown` and `mouseOver` events aren't triggered when the `disabled` prop is passed in.
 - Focus is automatically set on `Tabbable` when it's clicked, which prevents inconsistencies between browsers.
 

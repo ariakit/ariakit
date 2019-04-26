@@ -39,8 +39,10 @@ function isNativeTabbable(element: EventTarget) {
   return false;
 }
 
+const defaultClickKeys = ["Enter", " "];
+
 export function useTabbable(
-  { unstable_clickKeys = [" "], ...options }: TabbableOptions = {},
+  { unstable_clickKeys = defaultClickKeys, ...options }: TabbableOptions = {},
   {
     tabIndex = 0,
     onClick,
@@ -93,7 +95,13 @@ export function useTabbable(
         }
       },
       onKeyDown: event => {
-        if (isNativeTabbable(event.target) || _options.disabled) return;
+        if (_options.disabled) return;
+        if (
+          clickKeysRef.current === defaultClickKeys &&
+          isNativeTabbable(event.target)
+        ) {
+          return;
+        }
 
         if (
           clickKeysRef.current &&

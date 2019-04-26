@@ -102,6 +102,21 @@ test("focus disabled focusable", () => {
   expect(tabbable).toHaveFocus();
 });
 
+test("clickKeys", () => {
+  const fn = jest.fn();
+  const { getByText } = render(
+    <Tabbable unstable_clickKeys={["a"]} onClick={fn}>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  fireEvent.keyDown(tabbable, { key: "Enter" });
+  fireEvent.keyDown(tabbable, { key: " " });
+  expect(fn).not.toHaveBeenCalled();
+  fireEvent.keyDown(tabbable, { key: "a" });
+  expect(fn).toHaveBeenCalledTimes(1);
+});
+
 test("non-native button click", () => {
   const fn = jest.fn();
   const { getByText } = render(
@@ -174,7 +189,7 @@ test("non-native button focus disabled focusable", () => {
 test("non-native button space/enter", () => {
   const fn = jest.fn();
   const { getByText } = render(
-    <Tabbable as="div" onClick={fn} unstable_clickKeys={["Enter", " "]}>
+    <Tabbable as="div" onClick={fn}>
       tabbable
     </Tabbable>
   );
@@ -188,12 +203,7 @@ test("non-native button space/enter", () => {
 test("non-native button space/enter disabled", () => {
   const fn = jest.fn();
   const { getByText } = render(
-    <Tabbable
-      as="div"
-      disabled
-      onClick={fn}
-      unstable_clickKeys={["Enter", " "]}
-    >
+    <Tabbable as="div" disabled onClick={fn}>
       tabbable
     </Tabbable>
   );
@@ -206,13 +216,7 @@ test("non-native button space/enter disabled", () => {
 test("non-native button space/enter disabled focusable", () => {
   const fn = jest.fn();
   const { getByText } = render(
-    <Tabbable
-      as="div"
-      disabled
-      focusable
-      onClick={fn}
-      unstable_clickKeys={["Enter", " "]}
-    >
+    <Tabbable as="div" disabled focusable onClick={fn}>
       tabbable
     </Tabbable>
   );
