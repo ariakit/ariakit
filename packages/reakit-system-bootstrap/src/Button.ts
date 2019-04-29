@@ -51,7 +51,7 @@ export function useButtonProps(
       cursor: auto;
     }
 
-    &[aria-disabled="false"] {
+    &:not([aria-disabled="true"]) {
       &:hover {
         color: ${hoverColor};
         border-color: ${hoverBorderColor};
