@@ -176,6 +176,8 @@ export function useMenuDisclosureProps(
 
       [role="menu"] > & {
         position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
         ${dir === "left" ? "left" : "right"}: 0.5em;
       }
 
@@ -253,7 +255,7 @@ export function useMenuItemRadioProps(
         position: absolute;
         font-size: 1.4em;
         top: -0.25em;
-        left: 0.3em;
+        left: 0.35em;
         width: 0.7142857143em;
         height: 0.7142857143em;
       }
