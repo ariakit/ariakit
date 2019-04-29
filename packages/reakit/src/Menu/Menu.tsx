@@ -1,13 +1,12 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
-import { Keys, Omit } from "../__utils/types";
+import { Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { PopoverOptions, PopoverProps, usePopover } from "../Popover/Popover";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
+import { unstable_createHook } from "../utils/createHook";
 import {
   StaticMenuOptions,
   StaticMenuProps,
@@ -26,108 +25,127 @@ export type MenuOptions = Omit<
 
 export type MenuProps = PopoverProps & StaticMenuProps;
 
-export function useMenu(options: MenuOptions, htmlProps: MenuProps = {}) {
-  const parent = React.useContext(MenuContext);
-  const parentIsHorizontal = parent && parent.orientation === "horizontal";
-  const ref = React.useRef<HTMLElement>(null);
+export const useMenu = unstable_createHook<MenuOptions, MenuProps>({
+  name: "Menu",
+  compose: [useStaticMenu, usePopover],
+  useState: useMenuState,
 
-  let _options: MenuOptions = {
-    unstable_autoFocusOnShow: !parent,
-    unstable_autoFocusOnHide: !parentIsHorizontal,
-    ...options
-  };
+  useOptions(options) {
+    const parent = React.useContext(MenuContext);
+    const parentIsHorizontal = parent && parent.orientation === "horizontal";
 
-  _options = unstable_useOptions("Menu", _options, htmlProps);
+    return {
+      unstable_autoFocusOnShow: !parent,
+      unstable_autoFocusOnHide: !parentIsHorizontal,
+      ...options
+    };
+  },
 
-  const isHorizontal = _options.orientation === "horizontal";
-  const isVertical = _options.orientation === "vertical";
+  useProps(options, htmlProps) {
+    const parent = React.useContext(MenuContext);
+    const ref = React.useRef<HTMLElement>(null);
 
-  let horizontalParent: MenuContextType | undefined | null = parent;
+    const isHorizontal = options.orientation === "horizontal";
+    const isVertical = options.orientation === "vertical";
 
-  while (horizontalParent && horizontalParent.orientation !== "horizontal") {
-    horizontalParent = horizontalParent.parent;
-  }
+    let horizontalParent: MenuContextType | undefined | null = parent;
 
-  const [dir] = _options.placement.split("-");
-
-  const rovingBindings = createOnKeyDown({
-    stopPropagation: event => {
-      // On Esc, only stop propagation if there's no parent menu
-      // Otherwise, pressing Esc should close all menus
-      if (event.key === "Escape" && parent) return false;
-      return true;
-    },
-    keyMap: event => {
-      warning(
-        !ref.current,
-        "Can't detect arrow keys because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
-        "Menu"
-      );
-      const targetIsMenu = event.target === ref.current;
-      return {
-        Escape: _options.hide,
-        ArrowUp: targetIsMenu && !isHorizontal && _options.last,
-        ArrowRight: targetIsMenu && !isVertical && _options.first,
-        ArrowDown: targetIsMenu && !isHorizontal && _options.first,
-        ArrowLeft: targetIsMenu && !isVertical && _options.last,
-        Home: targetIsMenu && _options.first,
-        End: targetIsMenu && _options.last,
-        PageUp: targetIsMenu && _options.first,
-        PageDown: targetIsMenu && _options.last
-      };
+    while (horizontalParent && horizontalParent.orientation !== "horizontal") {
+      horizontalParent = horizontalParent.parent;
     }
-  });
 
-  const parentBindings = createOnKeyDown({
-    stopPropagation: true,
-    keyMap: parent
-      ? {
-          ArrowRight:
-            horizontalParent && dir !== "left"
-              ? horizontalParent.next
-              : dir === "left" && _options.hide,
-          ArrowLeft:
-            horizontalParent && dir !== "right"
-              ? horizontalParent.previous
-              : dir === "right" && _options.hide
-        }
-      : {}
-  });
+    const [dir] = options.placement.split("-");
 
-  htmlProps = mergeProps(
-    {
-      ref,
-      role: "menu",
-      onKeyDown: event => {
+    const rovingBindings = React.useMemo(
+      () =>
+        createOnKeyDown({
+          stopPropagation: event => {
+            // On Esc, only stop propagation if there's no parent menu
+            // Otherwise, pressing Esc should close all menus
+            if (event.key === "Escape" && parent) return false;
+            return true;
+          },
+          keyMap: event => {
+            warning(
+              !ref.current,
+              "Can't detect arrow keys because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
+              "Menu"
+            );
+            const targetIsMenu = event.target === ref.current;
+            return {
+              Escape: options.hide,
+              ArrowUp: targetIsMenu && !isHorizontal && options.last,
+              ArrowRight: targetIsMenu && !isVertical && options.first,
+              ArrowDown: targetIsMenu && !isHorizontal && options.first,
+              ArrowLeft: targetIsMenu && !isVertical && options.last,
+              Home: targetIsMenu && options.first,
+              End: targetIsMenu && options.last,
+              PageUp: targetIsMenu && options.first,
+              PageDown: targetIsMenu && options.last
+            };
+          }
+        }),
+      [parent, options.hide, options.last, options.first]
+    );
+
+    const parentBindings = React.useMemo(
+      () =>
+        createOnKeyDown({
+          stopPropagation: true,
+          keyMap: parent
+            ? {
+                ArrowRight:
+                  horizontalParent && dir !== "left"
+                    ? horizontalParent.next
+                    : dir === "left" && options.hide,
+                ArrowLeft:
+                  horizontalParent && dir !== "right"
+                    ? horizontalParent.previous
+                    : dir === "right" && options.hide
+              }
+            : {}
+        }),
+      [
+        Boolean(parent),
+        horizontalParent && horizontalParent.next,
+        horizontalParent && horizontalParent.previous,
+        dir,
+        options.hide
+      ]
+    );
+
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent) => {
         rovingBindings(event);
         parentBindings(event);
-      }
-    } as MenuProps,
-    htmlProps
-  );
+      },
+      [rovingBindings, parentBindings]
+    );
 
-  htmlProps = unstable_useProps("Menu", _options, htmlProps);
-  htmlProps = useStaticMenu(_options, htmlProps);
-  htmlProps = usePopover(
-    {
-      ..._options,
-      modal: false,
-      unstable_portal: false,
-      unstable_orphan: false,
-      hideOnEsc: false
-    },
-    htmlProps
-  );
-  return htmlProps;
-}
+    return mergeProps(
+      {
+        ref,
+        role: "menu",
+        onKeyDown
+      } as MenuProps,
+      htmlProps
+    );
+  },
 
-const keys: Keys<MenuStateReturn & PopoverOptions & MenuOptions> = [
-  ...usePopover.__keys,
-  ...useStaticMenu.__keys,
-  ...useMenuState.__keys
-];
-
-useMenu.__keys = keys;
+  useCompose(options, htmlProps) {
+    htmlProps = useStaticMenu(options, htmlProps);
+    return usePopover(
+      {
+        ...options,
+        modal: false,
+        unstable_portal: false,
+        unstable_orphan: false,
+        hideOnEsc: false
+      },
+      htmlProps
+    );
+  }
+});
 
 export const Menu = unstable_createComponent({
   as: "div",

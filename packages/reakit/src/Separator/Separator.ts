@@ -1,9 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
-import { unstable_useOptions } from "../system";
+import { unstable_createHook } from "../utils/createHook";
 
 export type SeparatorOptions = BoxOptions & {
   /**
@@ -17,35 +15,35 @@ export type SeparatorOptions = BoxOptions & {
 
 export type SeparatorProps = BoxProps;
 
-export function useSeparator(
-  { orientation = "vertical", ...options }: SeparatorOptions = {},
-  htmlProps: SeparatorProps = {}
-) {
-  let _options: SeparatorOptions = { orientation, ...options };
-  _options = unstable_useOptions("Separator", _options, htmlProps);
+export const useSeparator = unstable_createHook<
+  SeparatorOptions,
+  SeparatorProps
+>({
+  name: "Separator",
+  compose: useBox,
+  keys: ["orientation"],
 
-  const flipMap = {
-    horizontal: "vertical",
-    vertical: "horizontal"
-  };
+  useOptions({ orientation = "vertical", ...options }) {
+    return { orientation, ...options };
+  },
 
-  htmlProps = mergeProps(
-    {
-      role: "separator",
-      "aria-orientation": _options.orientation
-        ? flipMap[_options.orientation]
-        : undefined
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Separator", _options, htmlProps);
-  htmlProps = useBox(_options, htmlProps);
-  return htmlProps;
-}
+  useProps(options, htmlProps) {
+    const flipMap = {
+      horizontal: "vertical",
+      vertical: "horizontal"
+    };
 
-const keys: Keys<SeparatorOptions> = [...useBox.__keys, "orientation"];
-
-useSeparator.__keys = keys;
+    return mergeProps(
+      {
+        role: "separator",
+        "aria-orientation": options.orientation
+          ? flipMap[options.orientation]
+          : undefined
+      } as SeparatorProps,
+      htmlProps
+    );
+  }
+});
 
 export const Separator = unstable_createComponent({
   as: "hr",

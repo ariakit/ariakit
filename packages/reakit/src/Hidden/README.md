@@ -57,38 +57,38 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useHiddenState`
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
 ### `Hidden`
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
 ### `HiddenDisclosure`
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
-- **`toggle`** 
+- **`toggle`**
   <code>() =&#62; void</code>
 
-  Toggles the `visible` state  
+  Toggles the `visible` state

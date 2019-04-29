@@ -1,8 +1,6 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 
 export type BoxOptions = {
   /**
@@ -20,15 +18,10 @@ export type BoxProps = React.HTMLAttributes<any> &
     unstable_wrap?: (children: React.ReactNode) => JSX.Element;
   };
 
-export function useBox(options: BoxOptions = {}, htmlProps: BoxProps = {}) {
-  options = unstable_useOptions("Box", options, htmlProps);
-  htmlProps = unstable_useProps("Box", options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<BoxOptions> = ["unstable_system"];
-
-useBox.__keys = keys;
+export const useBox = unstable_createHook<BoxOptions, BoxProps>({
+  name: "Box",
+  keys: ["unstable_system"]
+});
 
 export const Box = unstable_createComponent({
   as: "div",

@@ -3,10 +3,8 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { MenuContext } from "./__utils/MenuContext";
 import { MenuStateReturn, useMenuState } from "./MenuState";
@@ -17,50 +15,49 @@ export type StaticMenuOptions = BoxOptions &
 
 export type StaticMenuProps = BoxProps;
 
-export function useStaticMenu(
-  options: StaticMenuOptions,
-  htmlProps: StaticMenuProps = {}
-) {
-  const parent = React.useContext(MenuContext);
-  options = unstable_useOptions("StaticMenu", options, htmlProps);
+export const useStaticMenu = unstable_createHook<
+  StaticMenuOptions,
+  StaticMenuProps
+>({
+  name: "StaticMenu",
+  compose: useBox,
+  useState: useMenuState,
 
-  const providerValue = React.useMemo(
-    () => ({
-      orientation: options.orientation,
-      next: options.next,
-      previous: options.previous,
-      parent
-    }),
-    [options.orientation, options.next, options.previous, parent]
-  );
+  useProps(options, htmlProps) {
+    const parent = React.useContext(MenuContext);
 
-  const onKeyDown = useShortcuts(options);
+    const providerValue = React.useMemo(
+      () => ({
+        orientation: options.orientation,
+        next: options.next,
+        previous: options.previous,
+        parent
+      }),
+      [options.orientation, options.next, options.previous, parent]
+    );
 
-  htmlProps = mergeProps(
-    {
-      role: options.orientation === "horizontal" ? "menubar" : "menu",
-      "aria-orientation": options.orientation,
-      onKeyDown,
-      unstable_wrap: (children: React.ReactNode) => (
+    const onKeyDown = useShortcuts(options);
+
+    const wrap = React.useCallback(
+      (children: React.ReactNode) => (
         <MenuContext.Provider value={providerValue}>
           {children}
         </MenuContext.Provider>
-      )
-    } as typeof htmlProps,
-    htmlProps
-  );
+      ),
+      [providerValue]
+    );
 
-  htmlProps = unstable_useProps("StaticMenu", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<MenuStateReturn & StaticMenuOptions> = [
-  ...useBox.__keys,
-  ...useMenuState.__keys
-];
-
-useStaticMenu.__keys = keys;
+    return mergeProps(
+      {
+        role: options.orientation === "horizontal" ? "menubar" : "menu",
+        "aria-orientation": options.orientation,
+        onKeyDown,
+        unstable_wrap: wrap
+      } as StaticMenuProps,
+      htmlProps
+    );
+  }
+});
 
 export const StaticMenu = unstable_createComponent({
   as: "div",

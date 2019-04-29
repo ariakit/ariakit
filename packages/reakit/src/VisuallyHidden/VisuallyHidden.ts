@@ -1,45 +1,38 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
-import { unstable_useOptions } from "../system";
+import { unstable_createHook } from "../utils/createHook";
 
 export type VisuallyHiddenOptions = BoxOptions;
 
 export type VisuallyHiddenProps = BoxProps;
 
-export function useVisuallyHidden(
-  options: VisuallyHiddenOptions = {},
-  htmlProps: VisuallyHiddenProps = {}
-) {
-  options = unstable_useOptions("VisuallyHidden", options, htmlProps);
+export const useVisuallyHidden = unstable_createHook<
+  VisuallyHiddenOptions,
+  VisuallyHiddenProps
+>({
+  name: "VisuallyHidden",
+  compose: useBox,
 
-  htmlProps = mergeProps(
-    {
-      style: {
-        border: 0,
-        clip: "rect(0 0 0 0)",
-        height: "1px",
-        margin: "-1px",
-        overflow: "hidden",
-        padding: 0,
-        position: "absolute",
-        whiteSpace: "nowrap",
-        width: "1px"
-      }
-    } as typeof htmlProps,
-    htmlProps
-  );
-
-  htmlProps = unstable_useProps("VisuallyHidden", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<VisuallyHiddenOptions> = [...useBox.__keys];
-
-useVisuallyHidden.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps(
+      {
+        style: {
+          border: 0,
+          clip: "rect(0 0 0 0)",
+          height: "1px",
+          margin: "-1px",
+          overflow: "hidden",
+          padding: 0,
+          position: "absolute",
+          whiteSpace: "nowrap",
+          width: "1px"
+        }
+      } as VisuallyHiddenProps,
+      htmlProps
+    );
+  }
+});
 
 export const VisuallyHidden = unstable_createComponent({
   as: "div",

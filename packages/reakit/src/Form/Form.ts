@@ -26,7 +26,7 @@ export function unstable_useForm(
         event.preventDefault();
         options.submit();
       }
-    } as typeof htmlProps,
+    } as unstable_FormProps,
     htmlProps
   );
 

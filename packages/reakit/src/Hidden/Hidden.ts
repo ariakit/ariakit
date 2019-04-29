@@ -1,9 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenOptions = BoxOptions &
@@ -11,31 +9,30 @@ export type HiddenOptions = BoxOptions &
 
 export type HiddenProps = BoxProps;
 
-export function useHidden(
-  options: HiddenOptions = {},
-  htmlProps: HiddenProps = {}
-) {
-  options = unstable_useOptions("Hidden", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      role: "region",
-      id: options.unstable_hiddenId,
-      hidden: !options.visible,
-      "aria-hidden": !options.visible
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Hidden", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+export const useHidden = unstable_createHook<HiddenOptions, HiddenProps>({
+  name: "Hidden",
+  compose: useBox,
+  useState: useHiddenState,
 
-const keys: Keys<HiddenStateReturn & HiddenOptions> = [
-  ...useBox.__keys,
-  ...useHiddenState.__keys
-];
+  propsAreEqual(prev, next) {
+    if (prev.visible === false && next.visible === false) {
+      return true;
+    }
+    return null;
+  },
 
-useHidden.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        role: "region",
+        id: options.unstable_hiddenId,
+        hidden: !options.visible,
+        "aria-hidden": !options.visible
+      } as HiddenProps,
+      htmlProps
+    );
+  }
+});
 
 export const Hidden = unstable_createComponent({
   as: "div",

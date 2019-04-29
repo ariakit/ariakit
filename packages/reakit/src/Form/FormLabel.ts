@@ -38,7 +38,7 @@ export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
       children: options.label,
       id: getLabelId(options.name, options.baseId),
       htmlFor: getInputId(options.name, options.baseId)
-    } as typeof htmlProps,
+    } as unstable_FormLabelProps,
     htmlProps
   );
 

@@ -461,13 +461,15 @@ function createPropTypeObject(rootPath, prop) {
  * @param {ReturnType<typeof createPropTypeObject>} prop
  */
 function getPropTypesRow(prop) {
-  const symbol = /unstable_/.test(prop.name) ? "⚠️" : "";
-  const name = `**\`${prop.name}\`** ${symbol}`;
+  const symbol = /unstable_/.test(prop.name)
+    ? ' <span title="Experimental">⚠️</span>'
+    : "";
+  const name = `**\`${prop.name}\`**${symbol}`;
 
   return `- ${name}
   ${prop.type}
 
-  ${prop.description}  
+  ${prop.description}
 `;
 }
 

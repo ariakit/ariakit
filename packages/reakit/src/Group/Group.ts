@@ -1,28 +1,20 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
-import { unstable_useOptions } from "../system";
+import { unstable_createHook } from "../utils/createHook";
 
 export type GroupOptions = BoxOptions;
 
 export type GroupProps = BoxProps;
 
-export function useGroup(
-  options: GroupOptions = {},
-  htmlProps: GroupProps = {}
-) {
-  options = unstable_useOptions("Group", options, htmlProps);
-  htmlProps = mergeProps({ role: "group" } as typeof htmlProps, htmlProps);
-  htmlProps = unstable_useProps("Group", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+export const useGroup = unstable_createHook<GroupOptions, GroupProps>({
+  name: "Group",
+  compose: useBox,
 
-const keys: Keys<GroupOptions> = [...useBox.__keys];
-
-useGroup.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps({ role: "group" } as GroupProps, htmlProps);
+  }
+});
 
 export const Group = unstable_createComponent({
   as: "div",

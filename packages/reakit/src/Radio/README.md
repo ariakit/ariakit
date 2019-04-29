@@ -58,116 +58,116 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useRadioState`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`loop`** 
+- **`loop`**
   <code>boolean</code>
 
   If enabled:
   - Jumps to the first item when moving next from the last item.
-  - Jumps to the last item when moving previous from the first item.  
+  - Jumps to the last item when moving previous from the first item.
 
-- **`currentValue`** 
+- **`currentValue`**
   <code>any</code>
 
-  The `value` attribute of the current checked radio.  
+  The `value` attribute of the current checked radio.
 
 ### `Radio`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`register`** 
+- **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
 
-  Registers the element ID and ref in the roving tab index list.  
+  Registers the element ID and ref in the roving tab index list.
 
-- **`unregister`** 
+- **`unregister`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.  
+  Unregisters the roving item.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.
 
-- **`first`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.  
+  Moves focus to the first element.
 
-- **`last`** 
+- **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.  
+  Moves focus to the last element.
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`stopId`** 
+- **`stopId`**
   <code>string | undefined</code>
 
-  Element ID.  
+  Element ID.
 
-- **`currentValue`** 
+- **`currentValue`**
   <code>any</code>
 
-  The `value` attribute of the current checked radio.  
+  The `value` attribute of the current checked radio.
 
-- **`setValue`** 
+- **`setValue`**
   <code>(value: any) =&#62; void</code>
 
-  Changes the `currentValue` state.  
+  Changes the `currentValue` state.
 
-- **`value`** 
+- **`value`**
   <code>any</code>
 
-  Same as the `value` attribute.  
+  Same as the `value` attribute.
 
-- **`checked`** 
+- **`checked`**
   <code>boolean | undefined</code>
 
-  Same as the `checked` attribute.  
+  Same as the `checked` attribute.
 
 ### `RadioGroup`
 

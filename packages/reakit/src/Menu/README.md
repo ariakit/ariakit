@@ -299,181 +299,181 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useMenuState`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`loop`** 
+- **`loop`**
   <code>boolean</code>
 
   If enabled:
   - Jumps to the first item when moving next from the last item.
-  - Jumps to the last item when moving previous from the first item.  
+  - Jumps to the last item when moving previous from the first item.
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
-- **`placement`** 
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`unstable_flip`** ⚠️
+- **`unstable_flip`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not flip the popover.  
+  Whether or not flip the popover.
 
-- **`unstable_shift`** ⚠️
+- **`unstable_shift`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not shift the popover.  
+  Whether or not shift the popover.
 
-- **`unstable_gutter`** ⚠️
+- **`unstable_gutter`** <span title="Experimental">⚠️</span>
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.  
+  Offset between the reference and the popover.
 
-- **`unstable_values`** ⚠️
+- **`unstable_values`** <span title="Experimental">⚠️</span>
   <code>{ [x: string]: any; }</code>
 
-  Stores the values of radios and checkboxes within the menu.  
+  Stores the values of radios and checkboxes within the menu.
 
 ### `Menu`
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
-- **`hide`** 
+- **`hide`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `false`  
+  Changes the `visible` state to `false`
 
-- **`hideOnClickOutside`** 
+- **`hideOnClickOutside`**
   <code>boolean | undefined</code>
 
-  When enabled, user can hide the dialog by clicking outside it.  
+  When enabled, user can hide the dialog by clicking outside it.
 
-- **`preventBodyScroll`** 
+- **`preventBodyScroll`**
   <code>boolean | undefined</code>
 
   When enabled, user can't scroll on body when the dialog is visible.
-This option doesn't work if the dialog isn't modal.  
+This option doesn't work if the dialog isn't modal.
 
-- **`unstable_initialFocusRef`** ⚠️
+- **`unstable_initialFocusRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog shows.
-When not set, the first tabbable element within the dialog will be used.  
+When not set, the first tabbable element within the dialog will be used.
 
-- **`unstable_finalFocusRef`** ⚠️
+- **`unstable_finalFocusRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog hides.
-When not set, the disclosure component will be used.  
+When not set, the disclosure component will be used.
 
-- **`placement`** 
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`first`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.  
+  Moves focus to the first element.
 
-- **`last`** 
+- **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.  
+  Moves focus to the last element.
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.
 
 ### `MenuDisclosure`
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
-- **`toggle`** 
+- **`toggle`**
   <code>() =&#62; void</code>
 
-  Toggles the `visible` state  
+  Toggles the `visible` state
 
-- **`unstable_referenceRef`** ⚠️
+- **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>
 
-  The reference element.  
+  The reference element.
 
-- **`hide`** 
+- **`hide`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `false`  
+  Changes the `visible` state to `false`
 
-- **`first`** 
-  <code>() =&#62; void</code>
-
-  Moves focus to the first element.  
-
-- **`last`** 
-  <code>() =&#62; void</code>
-
-  Moves focus to the last element.  
-
-- **`placement`** 
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`show`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `true`  
+  Moves focus to the first element.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.
+
+- **`show`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `true`
 
 ### `MenuGroup`
 
@@ -481,336 +481,363 @@ No props to show
 
 ### `MenuItem`
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`first`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.  
+  Moves focus to the first element.
 
-- **`last`** 
+- **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.  
+  Moves focus to the last element.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.
 
-- **`register`** 
+- **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
 
-  Registers the element ID and ref in the roving tab index list.  
+  Registers the element ID and ref in the roving tab index list.
 
-- **`unregister`** 
+- **`unregister`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.  
+  Unregisters the roving item.
 
-- **`stopId`** 
+- **`stopId`**
   <code>string | undefined</code>
 
-  Element ID.  
+  Element ID.
 
-- **`placement`** 
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`hide`** 
+- **`hide`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `false`  
+  Changes the `visible` state to `false`
 
 ### `MenuItemCheckbox`
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`value`** 
+- **`currentValue`**
+  <code>boolean | any[] | &#34;indeterminate&#34;</code>
+
+  Stores the state of the checkbox.
+If checkboxes that share this state have defined a `value` prop, it's
+going to be an array.
+
+- **`setValue`**
+  <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
+
+  Sets `currentValue`.
+
+- **`value`**
   <code>any</code>
 
   Checkbox's value is going to be used when multiple checkboxes share the
 same state. Checking a checkbox with value will add it to the state
-array.  
+array.
 
-- **`checked`** 
+- **`checked`**
   <code>boolean | undefined</code>
 
-  Checkbox's checked state. If present, it's used instead of currentValue.  
+  Checkbox's checked state. If present, it's used instead of currentValue.
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`first`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.  
+  Moves focus to the first element.
 
-- **`last`** 
+- **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.  
+  Moves focus to the last element.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.
 
-- **`register`** 
+- **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
 
-  Registers the element ID and ref in the roving tab index list.  
+  Registers the element ID and ref in the roving tab index list.
 
-- **`unregister`** 
+- **`unregister`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.  
+  Unregisters the roving item.
 
-- **`stopId`** 
+- **`stopId`**
   <code>string | undefined</code>
 
-  Element ID.  
+  Element ID.
 
-- **`placement`** 
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`hide`** 
+- **`hide`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `false`  
+  Changes the `visible` state to `false`
 
-- **`unstable_values`** ⚠️
+- **`unstable_values`** <span title="Experimental">⚠️</span>
   <code>{ [x: string]: any; }</code>
 
-  Stores the values of radios and checkboxes within the menu.  
+  Stores the values of radios and checkboxes within the menu.
 
-- **`unstable_update`** ⚠️
+- **`unstable_update`** <span title="Experimental">⚠️</span>
   <code>(name: string, value?: any) =&#62; void</code>
 
-  Updates checkboxes and radios values within the menu.  
+  Updates checkboxes and radios values within the menu.
 
-- **`name`** 
+- **`name`**
   <code>string</code>
 
-  MenuItemCheckbox's name as in `menu.values`.  
+  MenuItemCheckbox's name as in `menu.values`.
 
 ### `MenuItemRadio`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`first`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.  
+  Moves focus to the first element.
 
-- **`last`** 
+- **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.  
+  Moves focus to the last element.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.
 
-- **`register`** 
+- **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
 
-  Registers the element ID and ref in the roving tab index list.  
+  Registers the element ID and ref in the roving tab index list.
 
-- **`unregister`** 
+- **`unregister`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.  
+  Unregisters the roving item.
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`stopId`** 
+- **`stopId`**
   <code>string | undefined</code>
 
-  Element ID.  
+  Element ID.
 
-- **`currentValue`** 
+- **`currentValue`**
   <code>any</code>
 
-  The `value` attribute of the current checked radio.  
+  The `value` attribute of the current checked radio.
 
-- **`setValue`** 
+- **`setValue`**
   <code>(value: any) =&#62; void</code>
 
-  Changes the `currentValue` state.  
+  Changes the `currentValue` state.
 
-- **`value`** 
+- **`value`**
   <code>any</code>
 
-  Same as the `value` attribute.  
+  Same as the `value` attribute.
 
-- **`checked`** 
+- **`checked`**
   <code>boolean | undefined</code>
 
-  Same as the `checked` attribute.  
+  Same as the `checked` attribute.
 
-- **`placement`** 
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`hide`** 
+- **`hide`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `false`  
+  Changes the `visible` state to `false`
 
-- **`unstable_values`** ⚠️
+- **`unstable_values`** <span title="Experimental">⚠️</span>
   <code>{ [x: string]: any; }</code>
 
-  Stores the values of radios and checkboxes within the menu.  
+  Stores the values of radios and checkboxes within the menu.
 
-- **`unstable_update`** ⚠️
+- **`unstable_update`** <span title="Experimental">⚠️</span>
   <code>(name: string, value?: any) =&#62; void</code>
 
-  Updates checkboxes and radios values within the menu.  
+  Updates checkboxes and radios values within the menu.
 
-- **`name`** 
+- **`name`**
   <code>string</code>
 
-  MenuItemRadio's name as in `menu.values`.  
+  MenuItemRadio's name as in `menu.values`.
 
 ### `MenuSeparator`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Separator's context orientation.
 The actual separator's orientation will be flipped based on this prop.
 So a `"vertical"` orientation means that the separator will have a
-`"horizontal"` orientation.  
+`"horizontal"` orientation.
 
 ### `StaticMenu`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.

@@ -1,32 +1,25 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
-import { useMenuState, MenuStateReturn } from "./MenuState";
+import { unstable_createHook } from "../utils/createHook";
+import { useMenuState } from "./MenuState";
 
 export type MenuGroupOptions = BoxOptions;
 
 export type MenuGroupProps = BoxProps;
 
-export function useMenuGroup(
-  options: MenuGroupOptions,
-  htmlProps: MenuGroupProps = {}
-) {
-  options = unstable_useOptions("MenuGroup", options, htmlProps);
-  htmlProps = mergeProps({ role: "group" } as typeof htmlProps, htmlProps);
-  htmlProps = unstable_useProps("MenuGroup", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+export const useMenuGroup = unstable_createHook<
+  MenuGroupOptions,
+  MenuGroupProps
+>({
+  name: "MenuGroup",
+  compose: useBox,
+  useState: useMenuState,
 
-const keys: Keys<MenuStateReturn & MenuGroupOptions> = [
-  ...useBox.__keys,
-  ...useMenuState.__keys
-];
-
-useMenuGroup.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps({ role: "group" } as MenuGroupProps, htmlProps);
+  }
+});
 
 export const MenuGroup = unstable_createComponent({
   as: "div",

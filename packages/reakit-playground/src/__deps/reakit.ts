@@ -7,6 +7,7 @@ export default {
   "reakit/utils/useCreateElement": require("reakit/utils/useCreateElement"),
   "reakit/utils/mergeProps": require("reakit/utils/mergeProps"),
   "reakit/utils": require("reakit/utils"),
+  "reakit/utils/createHook": require("reakit/utils/createHook"),
   "reakit/utils/createComponent": require("reakit/utils/createComponent"),
   "reakit/utils/Provider": require("reakit/utils/Provider"),
   "reakit/system/useToken": require("reakit/system/useToken"),

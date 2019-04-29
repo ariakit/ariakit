@@ -1,10 +1,7 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useProps } from "../system/useProps";
 import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
-import { HiddenStateReturn } from "../Hidden/HiddenState";
-import { Keys } from "../__utils/types";
-import { unstable_useOptions } from "../system";
+import { unstable_createHook } from "../utils/createHook";
 import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -18,37 +15,31 @@ export type TabPanelOptions = HiddenOptions &
 
 export type TabPanelProps = HiddenProps;
 
-export function useTabPanel(
-  options: TabPanelOptions,
-  htmlProps: TabPanelProps = {}
-) {
-  let _options: TabPanelOptions = {
-    visible: options.selectedId === options.stopId,
-    ...options
-  };
-  _options = unstable_useOptions("TabPanel", _options, htmlProps);
+export const useTabPanel = unstable_createHook<TabPanelOptions, TabPanelProps>({
+  name: "TabPanel",
+  compose: useHidden,
+  useState: useTabState,
+  keys: ["stopId"],
 
-  htmlProps = mergeProps(
-    {
-      role: "tabpanel",
-      tabIndex: 0,
-      id: getTabPanelId(options.stopId, options.unstable_baseId),
-      "aria-labelledby": getTabId(options.stopId, options.unstable_baseId)
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("TabPanel", _options, htmlProps);
-  htmlProps = useHidden(_options, htmlProps);
-  return htmlProps;
-}
+  useOptions(options) {
+    return {
+      visible: options.selectedId === options.stopId,
+      ...options
+    };
+  },
 
-const keys: Keys<HiddenStateReturn & TabStateReturn & TabPanelOptions> = [
-  ...useHidden.__keys,
-  ...useTabState.__keys,
-  "stopId"
-];
-
-useTabPanel.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        role: "tabpanel",
+        tabIndex: 0,
+        id: getTabPanelId(options.stopId, options.unstable_baseId),
+        "aria-labelledby": getTabId(options.stopId, options.unstable_baseId)
+      } as TabPanelProps,
+      htmlProps
+    );
+  }
+});
 
 export const TabPanel = unstable_createComponent({
   as: "div",

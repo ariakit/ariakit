@@ -56,58 +56,58 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useTooltipState`
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
-- **`placement`** 
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
-- **`unstable_flip`** ⚠️
+- **`unstable_flip`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not flip the popover.  
+  Whether or not flip the popover.
 
-- **`unstable_shift`** ⚠️
+- **`unstable_shift`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not shift the popover.  
+  Whether or not shift the popover.
 
-- **`unstable_gutter`** ⚠️
+- **`unstable_gutter`** <span title="Experimental">⚠️</span>
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.  
+  Offset between the reference and the popover.
 
 ### `Tooltip`
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
 ### `TooltipArrow`
 
-- **`placement`** 
+- **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
-  Actual `placement`.  
+  Actual `placement`.
 
 ### `TooltipReference`
 
-- **`unstable_referenceRef`** ⚠️
+- **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>
 
-  The reference element.  
+  The reference element.
 
-- **`show`** 
+- **`show`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `true`  
+  Changes the `visible` state to `true`
 
-- **`hide`** 
+- **`hide`**
   <code>() =&#62; void</code>
 
-  Changes the `visible` state to `false`  
+  Changes the `visible` state to `false`

@@ -1,9 +1,8 @@
+import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useProps } from "../system/useProps";
 import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
-import { Keys } from "../__utils/types";
-import { unstable_useOptions } from "../system";
+import { unstable_createHook } from "../utils/createHook";
 import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -14,45 +13,48 @@ export type TabOptions = RoverOptions &
 
 export type TabProps = RoverProps;
 
-export function useTab(
-  { focusable = true, ...options }: TabOptions,
-  htmlProps: TabProps = {}
-) {
-  let _options: TabOptions = { focusable, ...options };
-  _options = unstable_useOptions("Tab", _options, htmlProps);
+export const useTab = unstable_createHook<TabOptions, TabProps>({
+  name: "Tab",
+  compose: useRover,
+  useState: useTabState,
 
-  const selected = _options.selectedId === _options.stopId;
+  useOptions({ focusable = true, ...options }) {
+    return { focusable, ...options };
+  },
 
-  htmlProps = mergeProps(
-    {
-      role: "tab",
-      id: getTabId(_options.stopId, _options.unstable_baseId),
-      "aria-selected": selected,
-      "aria-controls": getTabPanelId(_options.stopId, _options.unstable_baseId),
-      onClick: () => {
-        if (!_options.disabled && !selected) {
-          _options.select(_options.stopId);
-        }
-      },
-      onFocus: () => {
-        if (!_options.disabled && !_options.manual && !selected) {
-          _options.select(_options.stopId);
-        }
+  useProps(options, htmlProps) {
+    const selected = options.selectedId === options.stopId;
+
+    const onClick = React.useCallback(() => {
+      if (!options.disabled && !selected) {
+        options.select(options.stopId);
       }
-    } as typeof htmlProps,
-    htmlProps
-  );
+    }, [options.disabled, selected, options.select, options.stopId]);
 
-  htmlProps = unstable_useProps("Tab", _options, htmlProps);
-  htmlProps = useRover(_options, htmlProps);
-  return htmlProps;
-}
+    const onFocus = React.useCallback(() => {
+      if (!options.disabled && !options.manual && !selected) {
+        options.select(options.stopId);
+      }
+    }, [
+      options.disabled,
+      options.manual,
+      selected,
+      options.select,
+      options.stopId
+    ]);
 
-const keys: Keys<TabStateReturn & TabOptions> = [
-  ...useRover.__keys,
-  ...useTabState.__keys
-];
-
-useTab.__keys = keys;
+    return mergeProps(
+      {
+        role: "tab",
+        id: getTabId(options.stopId, options.unstable_baseId),
+        "aria-selected": selected,
+        "aria-controls": getTabPanelId(options.stopId, options.unstable_baseId),
+        onClick,
+        onFocus
+      } as TabProps,
+      htmlProps
+    );
+  }
+});
 
 export const Tab = unstable_createComponent({ as: "button", useHook: useTab });

@@ -27,14 +27,19 @@ export function useShortcuts(
     return () => clearTimeout(timeoutId);
   }, [keys, stops, move]);
 
-  return (event: React.KeyboardEvent) => {
-    if (event.metaKey || event.altKey || event.shiftKey || event.ctrlKey) {
-      return;
-    }
-    if (/^[a-z0-9_-]$/i.test(event.key)) {
-      event.stopPropagation();
-      event.preventDefault();
-      setKeys(`${keys}${event.key}`);
-    }
-  };
+  const onKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.metaKey || event.altKey || event.shiftKey || event.ctrlKey) {
+        return;
+      }
+      if (/^[a-z0-9_-]$/i.test(event.key)) {
+        event.stopPropagation();
+        event.preventDefault();
+        setKeys(`${keys}${event.key}`);
+      }
+    },
+    [keys, setKeys]
+  );
+
+  return onKeyDown;
 }

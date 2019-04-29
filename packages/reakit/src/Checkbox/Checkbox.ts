@@ -1,6 +1,4 @@
 import * as React from "react";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import {
   TabbableOptions,
   TabbableProps,
@@ -9,8 +7,9 @@ import {
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
-import { Keys, Omit } from "../__utils/types";
+import { Omit } from "../__utils/types";
 import { warning } from "../__utils/warning";
+import { unstable_createHook } from "../utils/createHook";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
 export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
@@ -31,53 +30,49 @@ export type CheckboxProps = TabbableProps & React.InputHTMLAttributes<any>;
 
 const defaultClickKeys = [" "];
 
-export function useCheckbox(
-  options: CheckboxOptions = {},
-  htmlProps: CheckboxProps = {}
-) {
-  options = unstable_useOptions("Checkbox", options, htmlProps);
+export const useCheckbox = unstable_createHook<CheckboxOptions, CheckboxProps>({
+  name: "Checkbox",
+  compose: useTabbable,
+  useState: useCheckboxState,
+  keys: ["value", "checked"],
 
-  const ref = React.useRef<HTMLInputElement>(null);
-  const isBoolean = typeof options.value === "undefined";
-  const checked =
-    typeof options.checked !== "undefined"
-      ? options.checked
-      : isBoolean
-      ? Boolean(options.currentValue)
-      : ((options.currentValue || []) as any[]).indexOf(options.value) !== -1;
+  useProps(options, { onChange: htmlOnChange, ...htmlProps }) {
+    const ref = React.useRef<HTMLInputElement>(null);
+    const isBoolean = typeof options.value === "undefined";
+    const checked =
+      typeof options.checked !== "undefined"
+        ? options.checked
+        : isBoolean
+        ? Boolean(options.currentValue)
+        : ((options.currentValue || []) as any[]).indexOf(options.value) !== -1;
 
-  React.useEffect(() => {
-    if (!ref.current) {
-      warning(
-        options.currentValue === "indeterminate",
-        "Can't set indeterminate state because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/checkbox",
-        "Checkbox"
-      );
-      return;
-    }
+    React.useEffect(() => {
+      if (!ref.current) {
+        warning(
+          options.currentValue === "indeterminate",
+          "Can't set indeterminate state because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/checkbox",
+          "Checkbox"
+        );
+        return;
+      }
 
-    if (options.currentValue === "indeterminate") {
-      ref.current.indeterminate = true;
-    } else if (ref.current.indeterminate) {
-      ref.current.indeterminate = false;
-    }
-  }, [options.currentValue]);
+      if (options.currentValue === "indeterminate") {
+        ref.current.indeterminate = true;
+      } else if (ref.current.indeterminate) {
+        ref.current.indeterminate = false;
+      }
+    }, [options.currentValue]);
 
-  htmlProps = mergeProps(
-    {
-      ref,
-      checked,
-      "aria-checked":
-        options.currentValue === "indeterminate" ? "mixed" : checked,
-      value: options.value,
-      role: "checkbox",
-      type: "checkbox",
-      onClick: event => {
-        if (event.target instanceof HTMLInputElement) return;
-        htmlProps.onChange!(event);
-      },
-      onChange: () => {
-        if (options.disabled || !options.setValue) return;
+    const onChange = React.useCallback(
+      (event: React.SyntheticEvent) => {
+        if (options.disabled) return;
+
+        if (htmlOnChange) {
+          htmlOnChange(event);
+        }
+
+        if (!options.setValue) return;
+
         if (isBoolean) {
           options.setValue(!checked);
         } else {
@@ -91,26 +86,47 @@ export function useCheckbox(
             options.setValue(removeIndexFromArray(array, index));
           }
         }
-      }
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Checkbox", options, htmlProps);
-  htmlProps = useTabbable(
-    { ...options, unstable_clickKeys: defaultClickKeys },
-    htmlProps
-  );
-  return htmlProps;
-}
+      },
+      [
+        htmlOnChange,
+        options.disabled,
+        options.setValue,
+        options.currentValue,
+        options.value
+      ]
+    );
 
-const keys: Keys<TabbableOptions & CheckboxOptions> = [
-  ...useTabbable.__keys,
-  ...useCheckboxState.__keys,
-  "value",
-  "checked"
-];
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (event.target instanceof HTMLInputElement) return;
+        onChange(event);
+      },
+      [onChange]
+    );
 
-useCheckbox.__keys = keys;
+    return mergeProps(
+      {
+        ref,
+        checked,
+        "aria-checked":
+          options.currentValue === "indeterminate" ? "mixed" : checked,
+        value: options.value,
+        role: "checkbox",
+        type: "checkbox",
+        onChange,
+        onClick
+      } as CheckboxProps,
+      htmlProps
+    );
+  },
+
+  useCompose(options, htmlProps) {
+    return useTabbable(
+      { ...options, unstable_clickKeys: defaultClickKeys },
+      htmlProps
+    );
+  }
+});
 
 export const Checkbox = unstable_createComponent({
   as: "input",

@@ -58,13 +58,13 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
       "aria-invalid": shouldShowError(options, options.name),
       name: formatInputName(options.name),
       onBlur: () => options.blur(options.name)
-    } as typeof htmlProps,
+    } as unstable_FormCheckboxProps,
     isBoolean
       ? ({
           id: getInputId(options.name, options.baseId),
           "aria-describedby": getMessageId(options.name, options.baseId),
           "aria-labelledby": getLabelId(options.name, options.baseId)
-        } as typeof htmlProps)
+        } as unstable_FormCheckboxProps)
       : {},
     htmlProps
   );

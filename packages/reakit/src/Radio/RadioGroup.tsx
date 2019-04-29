@@ -1,40 +1,25 @@
 import * as React from "react";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { warning } from "../__utils/warning";
-import { Keys } from "../__utils/types";
-import { useRadioState, RadioStateReturn } from "./RadioState";
+import { unstable_createHook } from "../utils/createHook";
+import { useRadioState } from "./RadioState";
 
 export type RadioGroupOptions = BoxOptions;
 
 export type RadioGroupProps = BoxProps & React.FieldsetHTMLAttributes<any>;
 
-export function useRadioGroup(
-  options: RadioGroupOptions = {},
-  htmlProps: RadioGroupProps = {}
-) {
-  options = unstable_useOptions("RadioGroup", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      role: "radiogroup"
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("RadioGroup", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+const useRadioGroup = unstable_createHook<RadioGroupOptions, RadioGroupProps>({
+  name: "RadioGroup",
+  compose: useBox,
+  useState: useRadioState,
 
-const keys: Keys<RadioStateReturn & RadioGroupOptions> = [
-  ...useBox.__keys,
-  ...useRadioState.__keys
-];
-
-useRadioGroup.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps({ role: "radiogroup" } as RadioGroupProps, htmlProps);
+  }
+});
 
 export const RadioGroup = unstable_createComponent({
   as: "fieldset",

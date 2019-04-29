@@ -1,41 +1,34 @@
-import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import {
   HiddenDisclosureOptions,
   HiddenDisclosureProps,
   useHiddenDisclosure
 } from "../Hidden/HiddenDisclosure";
-import { Keys } from "../__utils/types";
-import { useDialogState, DialogStateReturn } from "./DialogState";
+import { unstable_createHook } from "../utils/createHook";
+import { mergeProps } from "../utils";
+import { useDialogState } from "./DialogState";
 
 export type DialogDisclosureOptions = HiddenDisclosureOptions;
 
 export type DialogDisclosureProps = HiddenDisclosureProps;
 
-export function useDialogDisclosure(
-  options: DialogDisclosureOptions,
-  htmlProps: DialogDisclosureProps = {}
-) {
-  options = unstable_useOptions("DialogDisclosure", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      "aria-haspopup": "dialog"
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("DialogDisclosure", options, htmlProps);
-  htmlProps = useHiddenDisclosure(options, htmlProps);
-  return htmlProps;
-}
+export const useDialogDisclosure = unstable_createHook<
+  DialogDisclosureOptions,
+  DialogDisclosureProps
+>({
+  name: "DialogDisclosure",
+  compose: useHiddenDisclosure,
+  useState: useDialogState,
 
-const keys: Keys<DialogStateReturn & DialogDisclosureOptions> = [
-  ...useHiddenDisclosure.__keys,
-  ...useDialogState.__keys
-];
-
-useDialogDisclosure.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps(
+      {
+        "aria-haspopup": "dialog"
+      } as DialogDisclosureProps,
+      htmlProps
+    );
+  }
+});
 
 export const DialogDisclosure = unstable_createComponent({
   as: "button",

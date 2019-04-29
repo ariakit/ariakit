@@ -5,10 +5,9 @@ import { isObject } from "../__utils/isObject";
 
 function extractPropFromObjects<T, K extends keyof T>(objects: T[], prop: K) {
   const props: Array<NonNullable<T[K]>> = [];
-  const { length } = objects;
 
-  for (let i = 0; i < length; i += 1) {
-    const p = objects[i][prop];
+  for (const object of objects) {
+    const p = object[prop];
     if (p) props.push(p!);
   }
 

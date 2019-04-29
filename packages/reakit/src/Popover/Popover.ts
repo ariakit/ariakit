@@ -2,10 +2,8 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { DialogOptions, DialogProps, useDialog } from "../Dialog/Dialog";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { PopoverStateReturn, usePopoverState } from "./PopoverState";
 
 export type PopoverOptions = DialogOptions &
@@ -16,35 +14,25 @@ export type PopoverOptions = DialogOptions &
 
 export type PopoverProps = DialogProps;
 
-export function usePopover(
-  { modal = false, ...options }: PopoverOptions,
-  htmlProps: PopoverProps = {}
-) {
-  let _options: PopoverOptions = {
-    modal,
-    ...options
-  };
+export const usePopover = unstable_createHook<PopoverOptions, PopoverProps>({
+  name: "Popover",
+  compose: useDialog,
+  useState: usePopoverState,
 
-  _options = unstable_useOptions("Popover", _options, htmlProps);
+  useOptions({ modal = false, ...options }) {
+    return { modal, ...options };
+  },
 
-  htmlProps = mergeProps(
-    {
-      ref: _options.unstable_popoverRef,
-      style: _options.unstable_popoverStyles
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Popover", _options, htmlProps);
-  htmlProps = useDialog(_options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<PopoverStateReturn & PopoverOptions> = [
-  ...useDialog.__keys,
-  ...usePopoverState.__keys
-];
-
-usePopover.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        ref: options.unstable_popoverRef,
+        style: options.unstable_popoverStyles
+      } as PopoverProps,
+      htmlProps
+    );
+  }
+});
 
 export const Popover = unstable_createComponent({
   as: "div",
@@ -56,7 +44,6 @@ export const Popover = unstable_createComponent({
 See https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_roles_states_props`,
       "Popover"
     );
-
     return unstable_useCreateElement(type, props, children);
   }
 });

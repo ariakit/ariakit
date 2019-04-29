@@ -72,6 +72,54 @@ test("hovering menu item moves focus to it", () => {
   expect(item1).not.toHaveFocus();
 });
 
+test("hovering out expanded menu item disclosure does not moves focus", () => {
+  const Submenu = React.forwardRef(
+    (props: MenuDisclosureProps, ref: React.RefObject<any>) => {
+      const menu = useMenuState();
+      return (
+        <>
+          <MenuDisclosure {...props} {...menu} ref={ref}>
+            subdisclosure
+          </MenuDisclosure>
+          <Menu aria-label="submenu" {...menu}>
+            <MenuItem {...menu}>subitem1</MenuItem>
+            <MenuItem {...menu}>subitem2</MenuItem>
+            <MenuItem {...menu}>subitem3</MenuItem>
+          </Menu>
+        </>
+      );
+    }
+  );
+  const Test = () => {
+    const menu = useMenuState();
+    return (
+      <StaticMenu aria-label="menu" {...menu}>
+        <MenuItem {...menu}>item1</MenuItem>
+        <MenuItem {...menu} as={Submenu} />
+        <MenuItem {...menu}>item3</MenuItem>
+      </StaticMenu>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const menu = getByLabelText("menu");
+  const subdisclosure = getByText("subdisclosure");
+  const submenu = getByLabelText("submenu");
+  expect(menu).toBeVisible();
+  expect(subdisclosure).not.toHaveFocus();
+  fireEvent.mouseOver(subdisclosure);
+  expect(subdisclosure).toHaveFocus();
+  fireEvent.mouseOut(subdisclosure);
+  expect(subdisclosure).not.toHaveFocus();
+  expect(submenu).not.toBeVisible();
+  fireEvent.click(subdisclosure);
+  act(() => subdisclosure.focus());
+  expect(submenu).toBeVisible();
+  expect(subdisclosure).toHaveFocus();
+  fireEvent.mouseOut(subdisclosure);
+  expect(submenu).toBeVisible();
+  expect(subdisclosure).toHaveFocus();
+});
+
 test("clicking on menu item disclosure opens submenu without moving focus", () => {
   const Submenu = React.forwardRef(
     (props: MenuDisclosureProps, ref: React.RefObject<any>) => {
@@ -180,7 +228,9 @@ test("pressing enter on menu item disclosure opens submenu and focus the first i
   act(() => subdisclosure.focus());
   expect(submenu).not.toBeVisible();
   expect(subdisclosure).toHaveFocus();
+  jest.useFakeTimers();
   keyDown("Enter");
+  jest.runAllTimers();
   expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
 });
@@ -220,7 +270,9 @@ test("pressing space on menu item disclosure opens submenu and focus the first i
   act(() => subdisclosure.focus());
   expect(submenu).not.toBeVisible();
   expect(subdisclosure).toHaveFocus();
+  jest.useFakeTimers();
   keyDown(" ");
+  jest.runAllTimers();
   expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
 });
@@ -482,8 +534,10 @@ test("arrow right on menu item disclosure opens right submenu and focus first it
   expect(menu).toBeVisible();
   act(() => subdisclosure.focus());
   expect(submenu).not.toBeVisible();
+  jest.useFakeTimers();
   keyDown("ArrowRight");
   expect(submenu).toBeVisible();
+  jest.runAllTimers();
   expect(subitem1).toHaveFocus();
   keyDown("ArrowLeft");
   expect(submenu).not.toBeVisible();
@@ -524,10 +578,13 @@ test("arrow left on menu item disclosure opens left submenu and focus first item
   const submenu = getByLabelText("submenu");
   act(() => subdisclosure.focus());
   expect(submenu).not.toBeVisible();
+  jest.useFakeTimers();
   keyDown("ArrowLeft");
+  jest.runAllTimers();
   expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
   keyDown("ArrowRight");
+  jest.runAllTimers();
   expect(submenu).not.toBeVisible();
   expect(subdisclosure).toHaveFocus();
 });
@@ -774,7 +831,9 @@ test("pressing enter on menubar item disclosure focus submenu first item", () =>
   act(() => subdisclosure.focus());
   expect(submenu).toBeVisible();
   expect(subdisclosure).toHaveFocus();
+  jest.useFakeTimers();
   keyDown("Enter");
+  jest.runAllTimers();
   expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
 });
@@ -814,7 +873,9 @@ test("pressing space on menubar item disclosure focus submenu first item", () =>
   act(() => subdisclosure.focus());
   expect(submenu).toBeVisible();
   expect(subdisclosure).toHaveFocus();
+  jest.useFakeTimers();
   keyDown(" ");
+  jest.runAllTimers();
   expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
 });
@@ -915,7 +976,9 @@ test("move focus within submenu with arrow keys", () => {
   expect(item3).toHaveFocus();
   keyDown("ArrowUp");
   expect(subdisclosure).toHaveFocus();
+  jest.useFakeTimers();
   keyDown("ArrowRight");
+  jest.runAllTimers();
   expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
   keyDown("ArrowDown");
@@ -1091,7 +1154,9 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   act(() => item1.focus());
   expect(submenu1).toBeVisible();
   expect(item1).toHaveFocus();
+  jest.useFakeTimers();
   keyDown("ArrowDown");
+  jest.runAllTimers();
   expect(submenu1item1).toHaveFocus();
   keyDown("ArrowRight");
   expect(submenu1).not.toBeVisible();
@@ -1106,6 +1171,7 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   keyDown("ArrowLeft");
   expect(item1).toHaveFocus(); // not loop
   keyDown("ArrowDown");
+  jest.runAllTimers();
   expect(submenu1item1).toHaveFocus();
   keyDown("ArrowLeft");
   expect(submenu1).toBeVisible();
@@ -1163,18 +1229,23 @@ test("arrow right/left in a sub-submenu moves focus between disclosures in menub
   fireEvent.click(subdisclosure10);
   expect(submenu1).toBeVisible();
   expect(submenu10).toBeVisible();
+  jest.useFakeTimers();
   keyDown("ArrowRight");
+  jest.runAllTimers();
   expect(submenu10item1).toHaveFocus();
   keyDown("ArrowRight");
+  jest.runAllTimers();
   expect(submenu1).not.toBeVisible();
   expect(submenu2).toBeVisible();
   expect(subdisclosure2).toHaveFocus();
   keyDown("ArrowLeft");
   keyDown("ArrowDown");
+  jest.runAllTimers();
   keyDown("ArrowDown");
   expect(submenu1).toBeVisible();
   expect(subdisclosure10).toHaveFocus();
   keyDown("ArrowRight");
+  jest.runAllTimers();
   expect(submenu10).toBeVisible();
   expect(submenu10item1).toHaveFocus();
   keyDown("ArrowLeft");

@@ -1,10 +1,9 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
-import { Keys, Omit } from "../__utils/types";
+import { Omit } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
 export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
@@ -23,48 +22,54 @@ export type RadioProps = RoverProps & React.InputHTMLAttributes<any>;
 
 const defaultClickKeys = [" "];
 
-export function useRadio(options: RadioOptions, htmlProps: RadioProps = {}) {
-  options = unstable_useOptions("Radio", options, htmlProps);
+export const useRadio = unstable_createHook<RadioOptions, RadioProps>({
+  name: "Radio",
+  compose: useRover,
+  useState: useRadioState,
+  keys: ["value", "checked"],
 
-  const checked =
-    typeof options.checked !== "undefined"
-      ? options.checked
-      : options.currentValue === options.value;
+  useProps(options, htmlProps) {
+    const checked =
+      typeof options.checked !== "undefined"
+        ? options.checked
+        : options.currentValue === options.value;
 
-  htmlProps = mergeProps(
-    {
-      checked,
-      "aria-checked": checked,
-      value: options.value,
-      role: "radio",
-      type: "radio",
-      onClick: event => {
+    const onChange = React.useCallback(() => {
+      if (options.disabled || !options.setValue) return;
+      options.setValue(options.value);
+    }, [options.disabled, options.setValue, options.value]);
+
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
         if (event.target instanceof HTMLInputElement) return;
         htmlProps.onChange!(event);
       },
-      onChange: () => {
-        if (options.disabled || !options.setValue) return;
-        options.setValue(options.value);
-      }
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Radio", options, htmlProps);
-  htmlProps = useRover(
-    { ...options, unstable_clickKeys: defaultClickKeys },
-    htmlProps
-  );
-  return htmlProps;
-}
+      [htmlProps.onChange]
+    );
 
-const keys: Keys<RoverOptions & RadioStateReturn & RadioOptions> = [
-  ...useRover.__keys,
-  ...useRadioState.__keys,
-  "value",
-  "checked"
-];
+    htmlProps = mergeProps(
+      {
+        checked,
+        "aria-checked": checked,
+        value: options.value,
+        role: "radio",
+        type: "radio",
+        onChange,
+        onClick
+      } as RadioProps,
+      htmlProps
+    );
 
-useRadio.__keys = keys;
+    return htmlProps;
+  },
+
+  useCompose(options, htmlProps) {
+    return useRover(
+      { ...options, unstable_clickKeys: defaultClickKeys },
+      htmlProps
+    );
+  }
+});
 
 export const Radio = unstable_createComponent({
   as: "input",

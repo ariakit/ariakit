@@ -4,17 +4,20 @@ import { forwardRef } from "../__utils/forwardRef";
 import { As, PropsWithAs } from "../__utils/types";
 import { splitProps } from "../__utils/splitProps";
 import { BoxProps } from "../Box/Box";
+import memo from "../__utils/memo";
 import { unstable_useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 
 type Hook<O> = {
-  (options?: O, props?: BoxProps): NonNullable<typeof props>;
+  (options?: O, props?: BoxProps): BoxProps;
   __keys?: ReadonlyArray<any>;
+  __propsAreEqual?: (prev: O, next: O) => boolean;
 };
 
 type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
+  propsAreEqual?: (prev: O, next: O) => boolean;
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
@@ -33,6 +36,7 @@ export function unstable_createComponent<T extends As, O>({
   as: type,
   useHook,
   keys = (useHook && useHook.__keys) || [],
+  propsAreEqual = useHook && useHook.__propsAreEqual,
   useCreateElement = defaultUseCreateElement
 }: Options<T, O>) {
   const Comp = (
@@ -63,5 +67,5 @@ export function unstable_createComponent<T extends As, O>({
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
-  return forwardRef(Comp as Component<T, O>);
+  return memo(forwardRef(Comp as Component<T, O>), propsAreEqual);
 }

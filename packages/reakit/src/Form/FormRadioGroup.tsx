@@ -49,7 +49,7 @@ export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
           {children}
         </FormRadioGroupContext.Provider>
       )
-    } as typeof htmlProps,
+    } as unstable_FormRadioGroupProps,
     htmlProps
   );
   htmlProps = unstable_useProps("FormRadioGroup", options, htmlProps);

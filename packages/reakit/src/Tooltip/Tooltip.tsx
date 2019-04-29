@@ -1,11 +1,9 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
 import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
 
 export type TooltipOptions = HiddenOptions &
@@ -16,34 +14,30 @@ export type TooltipOptions = HiddenOptions &
 
 export type TooltipProps = HiddenProps;
 
-export function useTooltip(
-  options: TooltipOptions = {},
-  htmlProps: TooltipProps = {}
-) {
-  options = unstable_useOptions("Tooltip", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      role: "tooltip",
-      ref: options.unstable_popoverRef,
-      style: {
-        ...options.unstable_popoverStyles,
-        pointerEvents: "none"
-      },
-      unstable_wrap: children => <Portal>{children}</Portal>
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Tooltip", options, htmlProps);
-  htmlProps = useHidden(options, htmlProps);
-  return htmlProps;
-}
+export const useTooltip = unstable_createHook<TooltipOptions, TooltipProps>({
+  name: "Tooltip",
+  compose: useHidden,
+  useState: useTooltipState,
 
-const keys: Keys<TooltipStateReturn & TooltipOptions> = [
-  ...useHidden.__keys,
-  ...useTooltipState.__keys
-];
-
-useTooltip.__keys = keys;
+  useProps(options, htmlProps) {
+    const wrap = React.useCallback(
+      (children: React.ReactNode) => <Portal>{children}</Portal>,
+      []
+    );
+    return mergeProps(
+      {
+        role: "tooltip",
+        ref: options.unstable_popoverRef,
+        style: {
+          ...options.unstable_popoverStyles,
+          pointerEvents: "none"
+        },
+        unstable_wrap: wrap
+      } as TooltipProps,
+      htmlProps
+    );
+  }
+});
 
 export const Tooltip = unstable_createComponent({
   as: "div",

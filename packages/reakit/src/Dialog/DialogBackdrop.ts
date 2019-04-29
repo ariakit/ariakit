@@ -1,47 +1,39 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
-import { Keys } from "../__utils/types";
-import { useDialogState, DialogStateReturn } from "./DialogState";
+import { unstable_createHook } from "../utils/createHook";
+import { useDialogState } from "./DialogState";
 
 export type DialogBackdropOptions = HiddenOptions;
 
 export type DialogBackdropProps = HiddenProps;
 
-export function useDialogBackdrop(
-  options: DialogBackdropOptions = {},
-  htmlProps: DialogBackdropProps = {}
-) {
-  options = unstable_useOptions("DialogBackdrop", options, htmlProps);
+export const useDialogBackdrop = unstable_createHook<
+  DialogBackdropOptions,
+  DialogBackdropProps
+>({
+  name: "DialogBackdrop",
+  compose: useHidden,
+  useState: useDialogState,
 
-  htmlProps = mergeProps(
-    {
-      id: undefined,
-      role: "presentation",
-      style: {
-        position: "fixed",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        zIndex: 998
-      }
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("DialogBackdrop", options, htmlProps);
-  htmlProps = useHidden(options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<DialogStateReturn & DialogBackdropOptions> = [
-  ...useHidden.__keys,
-  ...useDialogState.__keys
-];
-
-useDialogBackdrop.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps(
+      {
+        id: undefined,
+        role: "presentation",
+        style: {
+          position: "fixed",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          zIndex: 998
+        }
+      } as DialogBackdropProps,
+      htmlProps
+    );
+  }
+});
 
 export const DialogBackdrop = unstable_createComponent({
   as: "div",

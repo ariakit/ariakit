@@ -1,10 +1,9 @@
+import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { RadioOptions, RadioProps, useRadio } from "../Radio/Radio";
-import { Keys } from "../__utils/types";
-import { MenuStateReturn } from "./MenuState";
+import { unstable_createHook } from "../utils/createHook";
+import { MenuStateReturn, useMenuState } from "./MenuState";
 import { useMenuItem, MenuItemOptions, MenuItemProps } from "./MenuItem";
 
 export type MenuItemRadioOptions = RadioOptions &
@@ -18,32 +17,35 @@ export type MenuItemRadioOptions = RadioOptions &
 
 export type MenuItemRadioProps = RadioProps & MenuItemProps;
 
-export function useMenuItemRadio(
-  options: MenuItemRadioOptions,
-  htmlProps: MenuItemRadioProps = {}
-) {
-  options = unstable_useOptions("MenuItemRadio", options, htmlProps);
+export const useMenuItemRadio = unstable_createHook<
+  MenuItemRadioOptions,
+  MenuItemRadioProps
+>({
+  name: "MenuItemRadio",
+  compose: [useMenuItem, useRadio],
+  useState: useMenuState,
+  keys: ["name"],
 
-  const currentValue = options.unstable_values[options.name];
-  const setValue = (value: any) => options.unstable_update(options.name, value);
+  useOptions(options) {
+    const setValue = React.useCallback(
+      value => options.unstable_update(options.name, value),
+      [options.unstable_update, options.name]
+    );
 
-  htmlProps = mergeProps(
-    { role: "menuitemradio" } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("MenuItemRadio", options, htmlProps);
-  htmlProps = useMenuItem(options, htmlProps);
-  htmlProps = useRadio({ ...options, currentValue, setValue }, htmlProps);
-  return htmlProps;
-}
+    return {
+      ...options,
+      currentValue: options.unstable_values[options.name],
+      setValue
+    };
+  },
 
-const keys: Keys<MenuStateReturn & MenuItemRadioOptions> = [
-  ...useRadio.__keys,
-  ...useMenuItem.__keys,
-  "name"
-];
-
-useMenuItemRadio.__keys = keys;
+  useProps(_, htmlProps) {
+    return mergeProps(
+      { role: "menuitemradio" } as MenuItemRadioProps,
+      htmlProps
+    );
+  }
+});
 
 export const MenuItemRadio = unstable_createComponent({
   as: "button",

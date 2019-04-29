@@ -1,9 +1,7 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
 export type TooltipReferenceOptions = BoxOptions &
@@ -15,34 +13,29 @@ export type TooltipReferenceOptions = BoxOptions &
 
 export type TooltipReferenceProps = BoxProps;
 
-export function useTooltipReference(
-  options: TooltipReferenceOptions,
-  htmlProps: TooltipReferenceProps = {}
-) {
-  options = unstable_useOptions("TooltipReference", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      ref: options.unstable_referenceRef,
-      tabIndex: 0,
-      onFocus: options.show,
-      onBlur: options.hide,
-      onMouseEnter: options.show,
-      onMouseLeave: options.hide,
-      "aria-describedby": options.unstable_hiddenId
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("TooltipReference", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+export const useTooltipReference = unstable_createHook<
+  TooltipReferenceOptions,
+  TooltipReferenceProps
+>({
+  name: "TooltipReference",
+  compose: useBox,
+  useState: useTooltipState,
 
-const keys: Keys<TooltipStateReturn & TooltipReferenceOptions> = [
-  ...useBox.__keys,
-  ...useTooltipState.__keys
-];
-
-useTooltipReference.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        ref: options.unstable_referenceRef,
+        tabIndex: 0,
+        onFocus: options.show,
+        onBlur: options.hide,
+        onMouseEnter: options.show,
+        onMouseLeave: options.hide,
+        "aria-describedby": options.unstable_hiddenId
+      } as TooltipReferenceProps,
+      htmlProps
+    );
+  }
+});
 
 export const TooltipReference = unstable_createComponent({
   as: "div",

@@ -54,7 +54,7 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name)
-    } as typeof htmlProps,
+    } as unstable_FormInputProps,
     htmlProps
   );
 

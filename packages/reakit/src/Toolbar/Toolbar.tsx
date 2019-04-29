@@ -2,10 +2,8 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
 export type ToolbarOptions = BoxOptions &
@@ -13,29 +11,21 @@ export type ToolbarOptions = BoxOptions &
 
 export type ToolbarProps = BoxProps;
 
-export function useToolbar(
-  options: ToolbarOptions,
-  htmlProps: ToolbarProps = {}
-) {
-  options = unstable_useOptions("Toolbar", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      role: "toolbar",
-      "aria-orientation": options.orientation
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("Toolbar", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+export const useToolbar = unstable_createHook<ToolbarOptions, ToolbarProps>({
+  name: "Toolbar",
+  compose: useBox,
+  useState: useToolbarState,
 
-const keys: Keys<ToolbarStateReturn & ToolbarOptions> = [
-  ...useBox.__keys,
-  ...useToolbarState.__keys
-];
-
-useToolbar.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        role: "toolbar",
+        "aria-orientation": options.orientation
+      } as ToolbarProps,
+      htmlProps
+    );
+  }
+});
 
 export const Toolbar = unstable_createComponent({
   as: "div",

@@ -1,13 +1,11 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
-import { Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { Portal } from "../Portal/Portal";
 import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
+import { unstable_createHook } from "../utils/createHook";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -78,55 +76,63 @@ export type DialogOptions = HiddenOptions &
 
 export type DialogProps = HiddenProps;
 
-export function useDialog(
-  {
+export const useDialog = unstable_createHook<DialogOptions, DialogProps>({
+  name: "Dialog",
+  compose: useHidden,
+  useState: useDialogState,
+  keys: [
+    "modal",
+    "hideOnEsc",
+    "hideOnClickOutside",
+    "preventBodyScroll",
+    "unstable_initialFocusRef",
+    "unstable_finalFocusRef",
+    "unstable_autoFocusOnShow",
+    "unstable_autoFocusOnHide",
+    "unstable_portal",
+    "unstable_orphan"
+  ],
+
+  useOptions({
     modal = true,
     hideOnEsc = true,
     hideOnClickOutside = true,
     preventBodyScroll = true,
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
-    unstable_portal: isPortal = modal,
+    unstable_portal = modal,
     unstable_orphan,
     ...options
-  }: DialogOptions,
-  htmlProps: DialogProps = {}
-) {
-  let _options: DialogOptions = {
-    modal,
-    hideOnEsc,
-    hideOnClickOutside,
-    preventBodyScroll,
-    unstable_autoFocusOnShow,
-    unstable_autoFocusOnHide,
-    unstable_portal: isPortal,
-    unstable_orphan: modal && unstable_orphan,
-    ...options
-  };
-  _options = unstable_useOptions("Dialog", _options, htmlProps);
+  }) {
+    return {
+      modal,
+      hideOnEsc,
+      hideOnClickOutside,
+      preventBodyScroll,
+      unstable_autoFocusOnShow,
+      unstable_autoFocusOnHide,
+      unstable_portal,
+      unstable_orphan: modal && unstable_orphan,
+      ...options
+    };
+  },
 
-  const dialog = React.useRef<HTMLElement>(null);
-  const disclosure = useDisclosureRef(_options);
-  const { dialogs, wrap } = useNestedDialogs(dialog, _options);
+  useProps(options, htmlProps) {
+    const dialog = React.useRef<HTMLElement>(null);
+    const disclosure = useDisclosureRef(options);
+    const { dialogs, wrap } = useNestedDialogs(dialog, options);
 
-  usePreventBodyScroll(dialog, _options);
-  useFocusTrap(dialog, dialogs, _options);
-  useFocusOnShow(dialog, dialogs, _options);
-  useFocusOnHide(dialog, disclosure, _options);
-  useHideOnClickOutside(dialog, disclosure, dialogs, _options);
-  useDisableHoverOutside(dialog, dialogs, _options);
+    usePreventBodyScroll(dialog, options);
+    useFocusTrap(dialog, dialogs, options);
+    useFocusOnShow(dialog, dialogs, options);
+    useFocusOnHide(dialog, disclosure, options);
+    useHideOnClickOutside(dialog, disclosure, dialogs, options);
+    useDisableHoverOutside(dialog, dialogs, options);
 
-  htmlProps = mergeProps(
-    {
-      ref: dialog,
-      role: "dialog",
-      tabIndex: -1,
-      "aria-modal": _options.modal,
-      "data-dialog": true,
-      style: { zIndex: 999 },
-      onKeyDown: event => {
-        if (event.key === "Escape" && _options.hideOnEsc) {
-          if (!_options.hide) {
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent) => {
+        if (event.key === "Escape" && options.hideOnEsc) {
+          if (!options.hide) {
             warning(
               true,
               "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided. See https://reakit.io/docs/dialog",
@@ -135,40 +141,37 @@ export function useDialog(
             return;
           }
           event.stopPropagation();
-          _options.hide();
+          options.hide();
         }
       },
-      unstable_wrap: children =>
-        _options.unstable_portal ? (
-          <Portal>{wrap(children)}</Portal>
-        ) : (
-          wrap(children)
-        )
-    } as DialogProps,
-    htmlProps
-  );
+      [options.hideOnEsc, options.hide]
+    );
 
-  htmlProps = unstable_useProps("Dialog", _options, htmlProps);
-  htmlProps = useHidden(_options, htmlProps);
-  return htmlProps;
-}
+    const wrapChildren = React.useCallback(
+      (children: React.ReactNode) => {
+        if (options.unstable_portal) {
+          return <Portal>{wrap(children)}</Portal>;
+        }
+        return wrap(children);
+      },
+      [options.unstable_portal, wrap]
+    );
 
-const keys: Keys<DialogStateReturn & DialogOptions> = [
-  ...useHidden.__keys,
-  ...useDialogState.__keys,
-  "modal",
-  "hideOnEsc",
-  "hideOnClickOutside",
-  "preventBodyScroll",
-  "unstable_initialFocusRef",
-  "unstable_finalFocusRef",
-  "unstable_autoFocusOnShow",
-  "unstable_autoFocusOnHide",
-  "unstable_portal",
-  "unstable_orphan"
-];
-
-useDialog.__keys = keys;
+    return mergeProps(
+      {
+        ref: dialog,
+        role: "dialog",
+        tabIndex: -1,
+        "aria-modal": options.modal,
+        "data-dialog": true,
+        style: { zIndex: 999 },
+        onKeyDown,
+        unstable_wrap: wrapChildren
+      } as DialogProps,
+      htmlProps
+    );
+  }
+});
 
 export const Dialog = unstable_createComponent({
   as: "div",

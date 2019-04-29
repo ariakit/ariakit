@@ -1,11 +1,9 @@
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabListOptions = BoxOptions &
@@ -13,29 +11,21 @@ export type TabListOptions = BoxOptions &
 
 export type TabListProps = BoxProps;
 
-export function useTabList(
-  options: TabListOptions,
-  htmlProps: TabListProps = {}
-) {
-  options = unstable_useOptions("TabList", options, htmlProps);
-  htmlProps = mergeProps(
-    {
-      role: "tablist",
-      "aria-orientation": options.orientation
-    } as typeof htmlProps,
-    htmlProps
-  );
-  htmlProps = unstable_useProps("TabList", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+export const useTabList = unstable_createHook<TabListOptions, TabListProps>({
+  name: "TabList",
+  compose: useBox,
+  useState: useTabState,
 
-const keys: Keys<TabStateReturn & TabListOptions> = [
-  ...useBox.__keys,
-  ...useTabState.__keys
-];
-
-useTabList.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        role: "tablist",
+        "aria-orientation": options.orientation
+      } as TabListProps,
+      htmlProps
+    );
+  }
+});
 
 export const TabList = unstable_createComponent({
   as: "div",

@@ -1,20 +1,16 @@
+import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import {
   CheckboxOptions,
   useCheckbox,
   CheckboxProps
 } from "../Checkbox/Checkbox";
-import { Keys, Omit } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 import { MenuItemOptions, MenuItemProps, useMenuItem } from "./MenuItem";
-import { MenuStateReturn } from "./MenuState";
+import { MenuStateReturn, useMenuState } from "./MenuState";
 
-export type MenuItemCheckboxOptions = Omit<
-  CheckboxOptions,
-  "currentValue" | "setValue"
-> &
+export type MenuItemCheckboxOptions = CheckboxOptions &
   MenuItemOptions &
   Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
     /**
@@ -25,34 +21,38 @@ export type MenuItemCheckboxOptions = Omit<
 
 export type MenuItemCheckboxProps = CheckboxProps & MenuItemProps;
 
-export function useMenuItemCheckbox(
-  options: MenuItemCheckboxOptions,
-  htmlProps: MenuItemCheckboxProps = {}
-) {
-  options = unstable_useOptions("MenuItemCheckbox", options, htmlProps);
+export const useMenuItemCheckbox = unstable_createHook<
+  MenuItemCheckboxOptions,
+  MenuItemCheckboxProps
+>({
+  name: "MenuItemCheckbox",
+  compose: [useMenuItem, useCheckbox],
+  useState: useMenuState,
+  keys: ["name"],
 
-  const currentValue = options.unstable_values[options.name];
-  const setValue = (value: any) => options.unstable_update(options.name, value);
+  useOptions(options) {
+    const setValue = React.useCallback(
+      value => options.unstable_update(options.name, value),
+      [options.unstable_update, options.name]
+    );
 
-  htmlProps = mergeProps(
-    {
-      role: "menuitemcheckbox",
-      name: options.name
-    } as typeof htmlProps,
-    htmlProps
-  );
+    return {
+      ...options,
+      currentValue: options.unstable_values[options.name],
+      setValue
+    };
+  },
 
-  htmlProps = unstable_useProps("MenuItemCheckbox", options, htmlProps);
-  htmlProps = useMenuItem(options, htmlProps);
-  htmlProps = useCheckbox({ ...options, currentValue, setValue }, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<
-  MenuStateReturn & CheckboxOptions & MenuItemCheckboxOptions
-> = [...useCheckbox.__keys, ...useMenuItem.__keys, "name"];
-
-useMenuItemCheckbox.__keys = keys;
+  useProps(options, htmlProps) {
+    return mergeProps(
+      {
+        role: "menuitemcheckbox",
+        name: options.name
+      } as MenuItemCheckboxProps,
+      htmlProps
+    );
+  }
+});
 
 export const MenuItemCheckbox = unstable_createComponent({
   as: "button",

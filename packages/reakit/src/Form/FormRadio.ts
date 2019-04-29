@@ -52,7 +52,7 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
       onChange: () => options.update(options.name, options.value),
       onBlur: () => options.blur(options.name),
       onFocus: () => options.update(options.name, options.value)
-    } as typeof htmlProps,
+    } as unstable_FormRadioProps,
     htmlProps
   );
 

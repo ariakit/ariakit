@@ -1060,7 +1060,7 @@ test("esc on parent dialog closes nested dialogs", () => {
     const dialog2 = useDialogState({ visible: true });
     return (
       <Dialog aria-label="dialog1" {...dialog}>
-        <Dialog aria-label="dialog2" {...dialog2} />
+        <Dialog aria-label="dialog2" modal={false} {...dialog2} />
       </Dialog>
     );
   };

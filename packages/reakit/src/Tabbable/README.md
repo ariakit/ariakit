@@ -61,14 +61,14 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `Tabbable`
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.

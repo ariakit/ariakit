@@ -120,142 +120,142 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
 ### `useTabState`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`loop`** 
+- **`loop`**
   <code>boolean</code>
 
   If enabled:
   - Jumps to the first item when moving next from the last item.
-  - Jumps to the last item when moving previous from the first item.  
+  - Jumps to the last item when moving previous from the first item.
 
-- **`selectedId`** 
+- **`selectedId`**
   <code>string | null</code>
 
-  The current selected tab's `stopId`.  
+  The current selected tab's `stopId`.
 
-- **`manual`** 
+- **`manual`**
   <code>boolean</code>
 
-  Whether the tab selection should be manual.  
+  Whether the tab selection should be manual.
 
 ### `Tab`
 
-- **`disabled`** 
+- **`disabled`**
   <code>boolean | undefined</code>
 
-  Same as the HTML attribute.  
+  Same as the HTML attribute.
 
-- **`focusable`** 
+- **`focusable`**
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.  
+`aria-disabled` will be set.
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
-- **`stops`** 
+- **`stops`**
   <code>Stop[]</code>
 
-  A list of element refs and IDs of the roving items.  
+  A list of element refs and IDs of the roving items.
 
-- **`currentId`** 
+- **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.  
+  The current focused element ID.
 
-- **`register`** 
+- **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
 
-  Registers the element ID and ref in the roving tab index list.  
+  Registers the element ID and ref in the roving tab index list.
 
-- **`unregister`** 
+- **`unregister`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.  
+  Unregisters the roving item.
 
-- **`move`** 
+- **`move`**
   <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.  
+  Moves focus to a given element ID.
 
-- **`next`** 
+- **`next`**
   <code>() =&#62; void</code>
 
-  Moves focus to the next element.  
+  Moves focus to the next element.
 
-- **`previous`** 
+- **`previous`**
   <code>() =&#62; void</code>
 
-  Moves focus to the previous element.  
+  Moves focus to the previous element.
 
-- **`first`** 
+- **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.  
+  Moves focus to the first element.
 
-- **`last`** 
+- **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.  
+  Moves focus to the last element.
 
-- **`stopId`** 
+- **`stopId`**
   <code>string | undefined</code>
 
-  Element ID.  
+  Element ID.
 
-- **`manual`** 
+- **`manual`**
   <code>boolean</code>
 
-  Whether the tab selection should be manual.  
+  Whether the tab selection should be manual.
 
-- **`selectedId`** 
+- **`selectedId`**
   <code>string | null</code>
 
-  The current selected tab's `stopId`.  
+  The current selected tab's `stopId`.
 
-- **`select`** 
+- **`select`**
   <code>(id: string | null) =&#62; void</code>
 
-  Selects a tab by its `stopId`.  
+  Selects a tab by its `stopId`.
 
 ### `TabList`
 
-- **`orientation`** 
+- **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.  
+  Defines the orientation of the rover list.
 
 ### `TabPanel`
 
-- **`visible`** 
+- **`visible`**
   <code>boolean</code>
 
-  Whether it's visible or not.  
+  Whether it's visible or not.
 
-- **`selectedId`** 
+- **`selectedId`**
   <code>string | null</code>
 
-  The current selected tab's `stopId`.  
+  The current selected tab's `stopId`.
 
-- **`stopId`** 
+- **`stopId`**
   <code>string</code>
 
-  Tab's `stopId`.  
+  Tab's `stopId`.

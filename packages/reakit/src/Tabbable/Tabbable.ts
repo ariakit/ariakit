@@ -1,10 +1,9 @@
+import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxProps, useBox } from "../Box/Box";
 import { useLiveRef } from "../__utils/useLiveRef";
-import { Keys } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -41,99 +40,100 @@ function isNativeTabbable(element: EventTarget) {
 
 const defaultClickKeys = ["Enter", " "];
 
-export function useTabbable(
-  { unstable_clickKeys = defaultClickKeys, ...options }: TabbableOptions = {},
-  {
-    tabIndex = 0,
-    onClick,
-    onMouseOver,
-    onMouseDown,
-    disabled,
-    ...htmlProps
-  }: TabbableProps = {}
-) {
-  let _options: TabbableOptions = {
-    unstable_clickKeys,
-    disabled,
-    ...options
-  };
-  _options = unstable_useOptions("Tabbable", _options, htmlProps);
+export const useTabbable = unstable_createHook<TabbableOptions, TabbableProps>({
+  name: "Tabbable",
+  compose: useBox,
+  keys: ["disabled", "focusable", "unstable_clickKeys"],
 
-  const clickKeysRef = useLiveRef(_options.unstable_clickKeys);
-  const reallyDisabled = _options.disabled && !_options.focusable;
+  useOptions({ unstable_clickKeys = defaultClickKeys, ...options }, htmlProps) {
+    return {
+      unstable_clickKeys,
+      disabled: htmlProps.disabled,
+      ...options
+    };
+  },
 
-  htmlProps = mergeProps(
-    {
-      disabled: reallyDisabled,
-      tabIndex: reallyDisabled ? undefined : tabIndex,
-      "aria-disabled": _options.disabled,
-      onMouseDown: event => {
-        event.preventDefault();
-        if (_options.disabled) {
-          event.stopPropagation();
-        } else {
-          (event.target as HTMLElement).focus();
-          if (onMouseDown) {
-            onMouseDown(event);
-          }
-        }
-      },
-      onClick: event => {
-        if (_options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        } else if (onClick) {
-          onClick(event);
-        }
-      },
-      onMouseOver: event => {
-        if (_options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        } else if (onMouseOver) {
-          onMouseOver(event);
-        }
-      },
-      onKeyDown: event => {
-        if (_options.disabled) return;
-        if (
-          clickKeysRef.current === defaultClickKeys &&
-          isNativeTabbable(event.target)
-        ) {
-          return;
-        }
+  useProps(
+    options,
+    { tabIndex = 0, onClick, onMouseOver, onMouseDown, ...htmlProps }
+  ) {
+    const ref = React.useRef<HTMLElement>(null);
+    const clickKeysRef = useLiveRef(options.unstable_clickKeys);
+    const reallyDisabled = options.disabled && !options.focusable;
 
-        if (
-          clickKeysRef.current &&
-          clickKeysRef.current.indexOf(event.key) !== -1
-        ) {
-          event.preventDefault();
-          event.target.dispatchEvent(
-            new MouseEvent("click", {
-              view: window,
-              bubbles: true,
-              cancelable: false
-            })
-          );
-        }
-      }
-    } as TabbableProps,
-    htmlProps
-  );
+    return mergeProps(
+      {
+        ref,
+        disabled: reallyDisabled,
+        tabIndex: reallyDisabled ? undefined : tabIndex,
+        "aria-disabled": options.disabled,
+        onMouseDown: React.useCallback(
+          (event: React.MouseEvent) => {
+            event.preventDefault();
+            if (options.disabled) {
+              event.stopPropagation();
+            } else {
+              (ref.current || (event.target as HTMLElement)).focus();
+              if (onMouseDown) {
+                onMouseDown(event);
+              }
+            }
+          },
+          [options.disabled, onMouseDown]
+        ),
+        onClick: React.useCallback(
+          (event: React.MouseEvent) => {
+            if (options.disabled) {
+              event.stopPropagation();
+              event.preventDefault();
+            } else if (onClick) {
+              onClick(event);
+            }
+          },
+          [options.disabled, onClick]
+        ),
+        onMouseOver: React.useCallback(
+          (event: React.MouseEvent) => {
+            if (options.disabled) {
+              event.stopPropagation();
+              event.preventDefault();
+            } else if (onMouseOver) {
+              onMouseOver(event);
+            }
+          },
+          [options.disabled, onMouseOver]
+        ),
+        onKeyDown: React.useCallback(
+          (event: React.KeyboardEvent) => {
+            if (options.disabled) return;
+            if (
+              clickKeysRef.current === defaultClickKeys &&
+              isNativeTabbable(event.target)
+            ) {
+              return;
+            }
 
-  htmlProps = unstable_useProps("Tabbable", _options, htmlProps);
-  htmlProps = useBox(_options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<TabbableOptions> = [
-  ...useBox.__keys,
-  "disabled",
-  "focusable",
-  "unstable_clickKeys"
-];
-
-useTabbable.__keys = keys;
+            if (
+              clickKeysRef.current &&
+              clickKeysRef.current.indexOf(event.key) !== -1
+            ) {
+              event.preventDefault();
+              event.target.dispatchEvent(
+                new MouseEvent("click", {
+                  view: window,
+                  bubbles: true,
+                  cancelable: false
+                })
+              );
+            }
+          },
+          [options.disabled]
+        )
+      } as TabbableProps,
+      htmlProps
+    );
+  }
+});
 
 export const Tabbable = unstable_createComponent({
   as: "button",

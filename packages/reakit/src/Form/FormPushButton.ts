@@ -54,7 +54,7 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
           }
         });
       }
-    } as typeof htmlProps,
+    } as unstable_FormPushButtonProps,
     htmlProps
   );
 

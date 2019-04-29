@@ -73,7 +73,7 @@ export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
           }
         });
       }
-    } as typeof htmlProps,
+    } as unstable_FormRemoveButtonProps,
     htmlProps
   );
 

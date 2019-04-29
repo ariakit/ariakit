@@ -98,11 +98,11 @@ function useDelayedHiddenState({ delay, ...initialState } = {}) {
 }
 
 function Example() {
-  const hidden = useDelayedHiddenState({ delay: 500 });
+  const { transitioning, ...hidden } = useDelayedHiddenState({ delay: 500 });
   return (
     <>
       <HiddenDisclosure {...hidden}>
-        {hidden.transitioning
+        {transitioning
           ? "Please wait..."
           : hidden.visible
           ? "Hide with delay"

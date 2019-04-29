@@ -32,7 +32,7 @@ export function unstable_useFormSubmitButton(
           }
         });
       }
-    } as typeof htmlProps,
+    } as unstable_FormSubmitButtonProps,
     htmlProps
   );
 
