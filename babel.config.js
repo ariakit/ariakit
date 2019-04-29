@@ -27,10 +27,7 @@ module.exports = {
       "babel-plugin-module-resolver",
       {
         alias: {
-          "^reakit$": "reakit/src",
-          "^reakit/(.+)": "reakit/src/\\1",
-          "^reakit([^/]*)$": "reakit\\1/src",
-          "^reakit([^/]*)/(.+)": "reakit\\1/src/\\2"
+          "^reakit([^/]*)(.*)$": "reakit\\1/src\\2"
         }
       }
     ]

@@ -56,8 +56,7 @@ function getPlugins(isUMD) {
       ignore(["stream"]),
       terser(),
       replace({
-        "process.env.NODE_ENV": JSON.stringify("production"),
-        "process.env.DEBUG": JSON.stringify(false)
+        "process.env.NODE_ENV": JSON.stringify("production")
       })
     ];
   }
