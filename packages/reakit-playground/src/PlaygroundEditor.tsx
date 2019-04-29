@@ -77,6 +77,10 @@ export function PlaygroundEditor({
     .filter(Boolean)
     .join(" ");
 
+  if (typeof window === "undefined") {
+    return <p className={className}>Loading source code...</p>;
+  }
+
   return (
     <CodeMirror
       className={className}

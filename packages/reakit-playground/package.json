@@ -42,9 +42,7 @@
     "reakit-system-palette": "^0.3.0"
   },
   "devDependencies": {
-    "raw.macro": "0.3.0",
-    "react": "16.8.6",
-    "react-dom": "16.8.6"
+    "raw.macro": "0.3.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",
