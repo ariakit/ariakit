@@ -98,6 +98,13 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
       () =>
         createOnKeyDown({
           stopPropagation: true,
+          shouldKeyDown: event => {
+            return Boolean(
+              parent &&
+                ref.current &&
+                ref.current.contains(event.target as Element)
+            );
+          },
           keyMap: parent
             ? {
                 ArrowRight:
