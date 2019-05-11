@@ -81,17 +81,18 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 - **`unstable_fixed`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  TODO: Description
+  Whether or not the popover should have `position` set to `fixed`.
 
 - **`unstable_flip`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not flip the popover.
+  Flip the popover's placement when it starts to overlap its reference
+element.
 
 - **`unstable_shift`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not shift the popover.
+  Shift popover on the start or end of its reference element.
 
 - **`unstable_gutter`** <span title="Experimental">⚠️</span>
   <code>number | undefined</code>
@@ -101,12 +102,12 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 - **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  TODO: Description.
+  Prevents popover from being positioned outside the boundary.
 
 - **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
   <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
 
-  TODO: Description.
+  Boundaries element used by `preventOverflow`.
 
 ### `Popover`
 

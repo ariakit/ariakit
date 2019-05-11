@@ -75,17 +75,30 @@ export type PopoverActions = DialogActions & {
 export type PopoverInitialState = DialogInitialState &
   Partial<Pick<PopoverState, "placement">> & {
     /**
-     * Whether or not flip the popover.
+     * Whether or not the popover should have `position` set to `fixed`.
+     */
+    unstable_fixed?: boolean;
+    /**
+     * Flip the popover's placement when it starts to overlap its reference
+     * element.
      */
     unstable_flip?: boolean;
     /**
-     * Whether or not shift the popover.
+     * Shift popover on the start or end of its reference element.
      */
     unstable_shift?: boolean;
     /**
      * Offset between the reference and the popover.
      */
     unstable_gutter?: number;
+    /**
+     * Prevents popover from being positioned outside the boundary.
+     */
+    unstable_preventOverflow?: boolean;
+    /**
+     * Boundaries element used by `preventOverflow`.
+     */
+    unstable_boundariesElement?: Popper.Boundary;
   };
 
 export type PopoverStateReturn = PopoverState & PopoverActions;
@@ -98,6 +111,9 @@ export function usePopoverState(
     unstable_flip: flip = true,
     unstable_shift: shift = true,
     unstable_gutter: gutter = 12,
+    unstable_preventOverflow: preventOverflow = true,
+    unstable_boundariesElement: boundariesElement = "scrollParent",
+    unstable_fixed: fixed = false,
     ...sealed
   } = unstable_useSealedState(initialState);
 
@@ -122,11 +138,14 @@ export function usePopoverState(
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
         placement: originalPlacement,
         eventsEnabled: false,
+        positionFixed: fixed,
+
         modifiers: {
           applyStyle: { enabled: false },
           flip: { enabled: flip, padding: 16 },
           shift: { enabled: shift },
-          offset: { offset: `0, ${gutter}` },
+          offset: { enabled: shift, offset: `0, ${gutter}` },
+          preventOverflow: { enabled: preventOverflow, boundariesElement },
           arrow: arrowRef.current
             ? { enabled: true, element: arrowRef.current }
             : undefined,
