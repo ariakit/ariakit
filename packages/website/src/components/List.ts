@@ -1,10 +1,10 @@
 import { css, cx } from "emotion";
-import { useBox, BoxProps, BoxOptions } from "reakit";
+import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
 import { unstable_createHook } from "reakit/utils/createHook";
 import { unstable_createComponent } from "reakit/utils/createComponent";
 
 export type ListOptions = BoxOptions;
-export type ListHTMLProps = BoxProps;
+export type ListHTMLProps = BoxHTMLProps;
 export type ListProps = ListOptions & ListHTMLProps;
 
 export const useList = unstable_createHook<ListOptions, ListHTMLProps>({

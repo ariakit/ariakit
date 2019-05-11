@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
+import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
 import { useMenuState, MenuStateReturn } from "./MenuState";
@@ -10,9 +10,14 @@ export type MenuItemOptions = RoverOptions &
   Pick<Partial<MenuStateReturn>, "visible" | "hide" | "placement"> &
   Pick<MenuStateReturn, "next" | "previous" | "move">;
 
-export type MenuItemProps = RoverProps;
+export type MenuItemHTMLProps = RoverHTMLProps;
 
-export const useMenuItem = unstable_createHook<MenuItemOptions, MenuItemProps>({
+export type MenuItemProps = MenuItemOptions & MenuItemHTMLProps;
+
+export const useMenuItem = unstable_createHook<
+  MenuItemOptions,
+  MenuItemHTMLProps
+>({
   name: "MenuItem",
   compose: useRover,
   useState: useMenuState,
@@ -76,7 +81,7 @@ export const useMenuItem = unstable_createHook<MenuItemOptions, MenuItemProps>({
         role: "menuitem",
         onMouseOver,
         onMouseOut
-      } as MenuItemProps,
+      } as MenuItemHTMLProps,
       htmlProps
     );
   }

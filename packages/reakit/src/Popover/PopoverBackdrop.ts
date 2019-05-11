@@ -1,7 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   DialogBackdropOptions,
-  DialogBackdropProps,
+  DialogBackdropHTMLProps,
   useDialogBackdrop
 } from "../Dialog/DialogBackdrop";
 import { unstable_createHook } from "../utils/createHook";
@@ -9,11 +9,14 @@ import { usePopoverState } from "./PopoverState";
 
 export type PopoverBackdropOptions = DialogBackdropOptions;
 
-export type PopoverBackdropProps = DialogBackdropProps;
+export type PopoverBackdropHTMLProps = DialogBackdropHTMLProps;
+
+export type PopoverBackdropProps = PopoverBackdropOptions &
+  PopoverBackdropHTMLProps;
 
 export const usePopoverBackdrop = unstable_createHook<
   PopoverBackdropOptions,
-  PopoverBackdropProps
+  PopoverBackdropHTMLProps
 >({
   name: "PopoverBackdrop",
   compose: useDialogBackdrop,

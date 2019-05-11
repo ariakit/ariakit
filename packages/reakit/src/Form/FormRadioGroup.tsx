@@ -7,7 +7,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import {
   unstable_FormGroupOptions,
-  unstable_FormGroupProps,
+  unstable_FormGroupHTMLProps,
   unstable_useFormGroup
 } from "./FormGroup";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
@@ -23,8 +23,13 @@ export type unstable_FormRadioGroupOptions<
   name: P;
 };
 
-export type unstable_FormRadioGroupProps = unstable_FormGroupProps &
+export type unstable_FormRadioGroupHTMLProps = unstable_FormGroupHTMLProps &
   React.FieldsetHTMLAttributes<any>;
+
+export type unstable_FormRadioGroupProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormRadioGroupOptions<V, P> & unstable_FormRadioGroupHTMLProps;
 
 export const FormRadioGroupContext = React.createContext<RoverStateReturn | null>(
   null
@@ -32,7 +37,7 @@ export const FormRadioGroupContext = React.createContext<RoverStateReturn | null
 
 export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioGroupOptions<V, P>,
-  htmlProps: unstable_FormRadioGroupProps = {}
+  htmlProps: unstable_FormRadioGroupHTMLProps = {}
 ) {
   const rover = useRoverState({ loop: true });
   const providerValue = React.useMemo(() => rover, [
@@ -49,7 +54,7 @@ export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
           {children}
         </FormRadioGroupContext.Provider>
       )
-    } as unstable_FormRadioGroupProps,
+    } as unstable_FormRadioGroupHTMLProps,
     htmlProps
   );
   htmlProps = unstable_useProps("FormRadioGroup", options, htmlProps);

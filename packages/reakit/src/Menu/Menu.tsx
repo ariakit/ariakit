@@ -4,12 +4,16 @@ import { mergeProps } from "../utils/mergeProps";
 import { Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { PopoverOptions, PopoverProps, usePopover } from "../Popover/Popover";
+import {
+  PopoverOptions,
+  PopoverHTMLProps,
+  usePopover
+} from "../Popover/Popover";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import { unstable_createHook } from "../utils/createHook";
 import {
   StaticMenuOptions,
-  StaticMenuProps,
+  StaticMenuHTMLProps,
   useStaticMenu
 } from "./StaticMenu";
 import { useMenuState, MenuStateReturn } from "./MenuState";
@@ -23,9 +27,11 @@ export type MenuOptions = Omit<
   Pick<Partial<MenuStateReturn>, "first" | "last"> &
   StaticMenuOptions;
 
-export type MenuProps = PopoverProps & StaticMenuProps;
+export type MenuHTMLProps = PopoverHTMLProps & StaticMenuHTMLProps;
 
-export const useMenu = unstable_createHook<MenuOptions, MenuProps>({
+export type MenuProps = MenuOptions & MenuHTMLProps;
+
+export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
   compose: [useStaticMenu, usePopover],
   useState: useMenuState,
@@ -127,7 +133,7 @@ export const useMenu = unstable_createHook<MenuOptions, MenuProps>({
         ref,
         role: "menu",
         onKeyDown
-      } as MenuProps,
+      } as MenuHTMLProps,
       htmlProps
     );
   },

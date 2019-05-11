@@ -3,12 +3,12 @@ import * as React from "react";
 import { forwardRef } from "../__utils/forwardRef";
 import { As, PropsWithAs } from "../__utils/types";
 import { splitProps } from "../__utils/splitProps";
-import { BoxProps } from "../Box/Box";
+import { BoxHTMLProps } from "../Box/Box";
 import memo from "../__utils/memo";
 import { unstable_useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 
 type Hook<O> = {
-  (options?: O, props?: BoxProps): BoxProps;
+  (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
   __keys?: ReadonlyArray<any>;
   __propsAreEqual?: (prev: O, next: O) => boolean;
 };

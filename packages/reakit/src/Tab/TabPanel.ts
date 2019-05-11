@@ -1,6 +1,6 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
+import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
 import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
@@ -13,9 +13,14 @@ export type TabPanelOptions = HiddenOptions &
     stopId: string;
   };
 
-export type TabPanelProps = HiddenProps;
+export type TabPanelHTMLProps = HiddenHTMLProps;
 
-export const useTabPanel = unstable_createHook<TabPanelOptions, TabPanelProps>({
+export type TabPanelProps = TabPanelOptions & TabPanelHTMLProps;
+
+export const useTabPanel = unstable_createHook<
+  TabPanelOptions,
+  TabPanelHTMLProps
+>({
   name: "TabPanel",
   compose: useHidden,
   useState: useTabState,
@@ -35,7 +40,7 @@ export const useTabPanel = unstable_createHook<TabPanelOptions, TabPanelProps>({
         tabIndex: 0,
         id: getTabPanelId(options.stopId, options.unstable_baseId),
         "aria-labelledby": getTabId(options.stopId, options.unstable_baseId)
-      } as TabPanelProps,
+      } as TabPanelHTMLProps,
       htmlProps
     );
   }

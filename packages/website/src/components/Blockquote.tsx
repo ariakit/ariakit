@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css, cx } from "emotion";
-import { useBox, BoxProps, BoxOptions } from "reakit";
+import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
 import { unstable_createHook } from "reakit/utils/createHook";
 import { unstable_createComponent } from "reakit/utils/createComponent";
 import {
@@ -14,7 +14,7 @@ export type BlockquoteOptions = BoxOptions & {
   experimental?: "true" | "false";
 };
 
-export type BlockquoteHTMLProps = BoxProps &
+export type BlockquoteHTMLProps = BoxHTMLProps &
   React.BlockquoteHTMLAttributes<any>;
 
 export type BlockquoteProps = BlockquoteOptions & BlockquoteHTMLProps;

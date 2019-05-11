@@ -1,19 +1,19 @@
 import { css, cx } from "emotion";
-import { unstable_FormProps, unstable_FormOptions } from "reakit/Form/Form";
+import { unstable_FormHTMLProps, unstable_FormOptions } from "reakit/Form/Form";
 import {
-  unstable_FormInputProps,
+  unstable_FormInputHTMLProps,
   unstable_FormInputOptions
 } from "reakit/Form/FormInput";
 import {
-  unstable_FormMessageProps,
+  unstable_FormMessageHTMLProps,
   unstable_FormMessageOptions
 } from "reakit/Form/FormMessage";
 import {
-  unstable_FormLabelProps,
+  unstable_FormLabelHTMLProps,
   unstable_FormLabelOptions
 } from "reakit/Form/FormLabel";
 import {
-  unstable_FormGroupProps,
+  unstable_FormGroupHTMLProps,
   unstable_FormGroupOptions
 } from "reakit/Form/FormGroup";
 import { unstable_FormRemoveButtonOptions } from "reakit/Form/FormRemoveButton";
@@ -29,8 +29,8 @@ export type BootstrapFormOptions = BootstrapBoxOptions & unstable_FormOptions;
 
 export function useFormProps(
   _: BootstrapFormOptions,
-  htmlProps: unstable_FormProps = {}
-): unstable_FormProps {
+  htmlProps: unstable_FormHTMLProps = {}
+): unstable_FormHTMLProps {
   const form = css`
     > *:not(:first-child) {
       margin-top: 1rem;
@@ -63,8 +63,8 @@ export function useFormInputOptions({
 
 export function useFormInputProps(
   { unstable_system }: BootstrapFormInputOptions,
-  htmlProps: unstable_FormInputProps = {}
-): unstable_FormInputProps {
+  htmlProps: unstable_FormInputHTMLProps = {}
+): unstable_FormInputHTMLProps {
   const {
     style: { backgroundColor, borderColor: originalBorderColor }
   } = usePaletteBoxProps({ unstable_system });
@@ -112,8 +112,8 @@ export function useFormMessageOptions({
 
 export function useFormMessageProps(
   _: BootstrapFormMessageOptions,
-  htmlProps: unstable_FormMessageProps = {}
-): unstable_FormMessageProps {
+  htmlProps: unstable_FormMessageHTMLProps = {}
+): unstable_FormMessageHTMLProps {
   const formMessage = css`
     font-size: 0.8em;
     margin-top: 0.5rem !important;
@@ -127,8 +127,8 @@ export type BootstrapFormLabelOptions = BootstrapBoxOptions &
 
 export function useFormLabelProps(
   _: BootstrapFormLabelOptions,
-  htmlProps: unstable_FormLabelProps = {}
-): unstable_FormLabelProps {
+  htmlProps: unstable_FormLabelHTMLProps = {}
+): unstable_FormLabelHTMLProps {
   const formLabel = css`
     display: block;
     margin: 0 0 0.5rem 0 !important;
@@ -166,8 +166,8 @@ export function useFormGroupOptions({
 
 export function useFormGroupProps(
   { unstable_system }: BootstrapFormGroupOptions,
-  htmlProps: unstable_FormGroupProps = {}
-): unstable_FormGroupProps {
+  htmlProps: unstable_FormGroupHTMLProps = {}
+): unstable_FormGroupHTMLProps {
   const {
     style: { backgroundColor, borderColor: originalBorderColor }
   } = usePaletteBoxProps({ unstable_system });

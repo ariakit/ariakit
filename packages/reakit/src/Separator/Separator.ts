@@ -1,6 +1,6 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 
 export type SeparatorOptions = BoxOptions & {
@@ -13,11 +13,13 @@ export type SeparatorOptions = BoxOptions & {
   orientation?: "horizontal" | "vertical";
 };
 
-export type SeparatorProps = BoxProps;
+export type SeparatorHTMLProps = BoxHTMLProps;
+
+export type SeparatorProps = SeparatorOptions & SeparatorHTMLProps;
 
 export const useSeparator = unstable_createHook<
   SeparatorOptions,
-  SeparatorProps
+  SeparatorHTMLProps
 >({
   name: "Separator",
   compose: useBox,
@@ -39,7 +41,7 @@ export const useSeparator = unstable_createHook<
         "aria-orientation": options.orientation
           ? flipMap[options.orientation]
           : undefined
-      } as SeparatorProps,
+      } as SeparatorHTMLProps,
       htmlProps
     );
   }

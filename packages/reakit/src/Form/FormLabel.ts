@@ -4,7 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -25,11 +25,17 @@ export type unstable_FormLabelOptions<
     label?: any;
   };
 
-export type unstable_FormLabelProps = BoxProps & React.LabelHTMLAttributes<any>;
+export type unstable_FormLabelHTMLProps = BoxHTMLProps &
+  React.LabelHTMLAttributes<any>;
+
+export type unstable_FormLabelProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormLabelOptions<V, P> & unstable_FormLabelHTMLProps;
 
 export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
   options: unstable_FormLabelOptions<V, P>,
-  htmlProps: unstable_FormLabelProps = {}
+  htmlProps: unstable_FormLabelHTMLProps = {}
 ) {
   options = unstable_useOptions("FormLabel", options, htmlProps);
 
@@ -38,7 +44,7 @@ export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
       children: options.label,
       id: getLabelId(options.name, options.baseId),
       htmlFor: getInputId(options.name, options.baseId)
-    } as unstable_FormLabelProps,
+    } as unstable_FormLabelHTMLProps,
     htmlProps
   );
 

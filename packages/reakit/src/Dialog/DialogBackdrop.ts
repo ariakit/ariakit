@@ -1,16 +1,19 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
+import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
 import { useDialogState } from "./DialogState";
 
 export type DialogBackdropOptions = HiddenOptions;
 
-export type DialogBackdropProps = HiddenProps;
+export type DialogBackdropHTMLProps = HiddenHTMLProps;
+
+export type DialogBackdropProps = DialogBackdropOptions &
+  DialogBackdropHTMLProps;
 
 export const useDialogBackdrop = unstable_createHook<
   DialogBackdropOptions,
-  DialogBackdropProps
+  DialogBackdropHTMLProps
 >({
   name: "DialogBackdrop",
   compose: useHidden,
@@ -29,7 +32,7 @@ export const useDialogBackdrop = unstable_createHook<
           left: 0,
           zIndex: 998
         }
-      } as DialogBackdropProps,
+      } as DialogBackdropHTMLProps,
       htmlProps
     );
   }

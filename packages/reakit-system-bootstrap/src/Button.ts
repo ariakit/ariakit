@@ -1,5 +1,5 @@
 import { css, cx } from "emotion";
-import { ButtonProps, ButtonOptions } from "reakit/Button/Button";
+import { ButtonHTMLProps, ButtonOptions } from "reakit/Button/Button";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { useContrast } from "reakit-system-palette/utils/contrast";
@@ -16,8 +16,8 @@ export function useButtonOptions({
 
 export function useButtonProps(
   { unstable_system }: BootstrapButtonOptions,
-  htmlProps: ButtonProps = {}
-): ButtonProps {
+  htmlProps: ButtonHTMLProps = {}
+): ButtonHTMLProps {
   const {
     style: { color, backgroundColor, borderColor = "transparent" }
   } = usePaletteBoxProps({ unstable_system });

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { GroupOptions, GroupProps, useGroup } from "../Group/Group";
+import { GroupOptions, GroupHTMLProps, useGroup } from "../Group/Group";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { mergeProps } from "../utils/mergeProps";
@@ -23,12 +23,17 @@ export type unstable_FormGroupOptions<
     name: P;
   };
 
-export type unstable_FormGroupProps = GroupProps &
+export type unstable_FormGroupHTMLProps = GroupHTMLProps &
   React.FieldsetHTMLAttributes<any>;
+
+export type unstable_FormGroupProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormGroupOptions<V, P> & unstable_FormGroupHTMLProps;
 
 export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
   options: unstable_FormGroupOptions<V, P>,
-  htmlProps: unstable_FormGroupProps = {}
+  htmlProps: unstable_FormGroupHTMLProps = {}
 ) {
   options = unstable_useOptions("FormGroup", options, htmlProps);
   htmlProps = mergeProps(
@@ -37,7 +42,7 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name)
-    } as unstable_FormGroupProps,
+    } as unstable_FormGroupHTMLProps,
     htmlProps
   );
 

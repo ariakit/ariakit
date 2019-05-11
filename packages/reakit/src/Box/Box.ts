@@ -10,7 +10,7 @@ export type BoxOptions = {
   unstable_system?: unknown;
 };
 
-export type BoxProps = React.HTMLAttributes<any> &
+export type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
     /**
      * Function returned by hook to wrap children.
@@ -18,7 +18,9 @@ export type BoxProps = React.HTMLAttributes<any> &
     unstable_wrap?: (children: React.ReactNode) => JSX.Element;
   };
 
-export const useBox = unstable_createHook<BoxOptions, BoxProps>({
+export type BoxProps = BoxOptions & BoxHTMLProps;
+
+export const useBox = unstable_createHook<BoxOptions, BoxHTMLProps>({
   name: "Box",
   keys: ["unstable_system"]
 });

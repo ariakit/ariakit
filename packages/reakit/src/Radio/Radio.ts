@@ -1,7 +1,7 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
+import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { Omit } from "../__utils/types";
 import { unstable_createHook } from "../utils/createHook";
 import { useRadioState, RadioStateReturn } from "./RadioState";
@@ -18,11 +18,13 @@ export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
     checked?: boolean;
   };
 
-export type RadioProps = RoverProps & React.InputHTMLAttributes<any>;
+export type RadioHTMLProps = RoverHTMLProps & React.InputHTMLAttributes<any>;
+
+export type RadioProps = RadioOptions & RadioHTMLProps;
 
 const defaultClickKeys = [" "];
 
-export const useRadio = unstable_createHook<RadioOptions, RadioProps>({
+export const useRadio = unstable_createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useRover,
   useState: useRadioState,
@@ -56,7 +58,7 @@ export const useRadio = unstable_createHook<RadioOptions, RadioProps>({
         type: "radio",
         onChange,
         onClick
-      } as RadioProps,
+      } as RadioHTMLProps,
       htmlProps
     );
 

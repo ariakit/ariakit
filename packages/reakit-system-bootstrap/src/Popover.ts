@@ -1,7 +1,7 @@
 import { css, cx } from "emotion";
-import { PopoverProps, PopoverOptions } from "reakit/Popover/Popover";
+import { PopoverHTMLProps, PopoverOptions } from "reakit/Popover/Popover";
 import {
-  PopoverArrowProps,
+  PopoverArrowHTMLProps,
   PopoverArrowOptions
 } from "reakit/Popover/PopoverArrow";
 import { useFade } from "reakit-system-palette/utils/fade";
@@ -23,8 +23,8 @@ export function usePopoverOptions({
 
 export function usePopoverProps(
   { unstable_system }: BootstrapPopoverOptions,
-  htmlProps: PopoverProps = {}
-): PopoverProps {
+  htmlProps: PopoverHTMLProps = {}
+): PopoverHTMLProps {
   const {
     style: { backgroundColor }
   } = usePaletteBoxProps({ unstable_system });
@@ -52,7 +52,7 @@ export type BootstrapPopoverArrowOptions = BootstrapBoxOptions &
 
 export function usePopoverArrowProps(
   _: BootstrapPopoverArrowOptions,
-  htmlProps: PopoverArrowProps = {}
-): PopoverArrowProps {
+  htmlProps: PopoverArrowHTMLProps = {}
+): PopoverArrowHTMLProps {
   return { ...htmlProps, className: cx("arrow", htmlProps.className) };
 }

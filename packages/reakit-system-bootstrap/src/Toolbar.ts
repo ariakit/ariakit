@@ -1,13 +1,13 @@
 import { css, cx } from "emotion";
-import { ToolbarProps, ToolbarOptions } from "reakit/Toolbar/Toolbar";
+import { ToolbarHTMLProps, ToolbarOptions } from "reakit/Toolbar/Toolbar";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapToolbarOptions = BootstrapBoxOptions & ToolbarOptions;
 
 export function useToolbarProps(
   _: BootstrapToolbarOptions,
-  htmlProps: ToolbarProps = {}
-): ToolbarProps {
+  htmlProps: ToolbarHTMLProps = {}
+): ToolbarHTMLProps {
   const toolbar = css`
     display: flex;
     flex-direction: row;

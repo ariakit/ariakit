@@ -1,10 +1,10 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { RadioOptions, RadioProps, useRadio } from "../Radio/Radio";
+import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { unstable_createHook } from "../utils/createHook";
 import { MenuStateReturn, useMenuState } from "./MenuState";
-import { useMenuItem, MenuItemOptions, MenuItemProps } from "./MenuItem";
+import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
 
 export type MenuItemRadioOptions = RadioOptions &
   MenuItemOptions &
@@ -15,11 +15,13 @@ export type MenuItemRadioOptions = RadioOptions &
     name: string;
   };
 
-export type MenuItemRadioProps = RadioProps & MenuItemProps;
+export type MenuItemRadioHTMLProps = RadioHTMLProps & MenuItemHTMLProps;
+
+export type MenuItemRadioProps = MenuItemRadioOptions & MenuItemRadioHTMLProps;
 
 export const useMenuItemRadio = unstable_createHook<
   MenuItemRadioOptions,
-  MenuItemRadioProps
+  MenuItemRadioHTMLProps
 >({
   name: "MenuItemRadio",
   compose: [useMenuItem, useRadio],
@@ -41,7 +43,7 @@ export const useMenuItemRadio = unstable_createHook<
 
   useProps(_, htmlProps) {
     return mergeProps(
-      { role: "menuitemradio" } as MenuItemRadioProps,
+      { role: "menuitemradio" } as MenuItemRadioHTMLProps,
       htmlProps
     );
   }

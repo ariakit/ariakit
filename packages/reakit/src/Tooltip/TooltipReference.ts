@@ -1,6 +1,6 @@
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
@@ -11,11 +11,14 @@ export type TooltipReferenceOptions = BoxOptions &
   > &
   Pick<TooltipStateReturn, "show" | "hide">;
 
-export type TooltipReferenceProps = BoxProps;
+export type TooltipReferenceHTMLProps = BoxHTMLProps;
+
+export type TooltipReferenceProps = TooltipReferenceOptions &
+  TooltipReferenceHTMLProps;
 
 export const useTooltipReference = unstable_createHook<
   TooltipReferenceOptions,
-  TooltipReferenceProps
+  TooltipReferenceHTMLProps
 >({
   name: "TooltipReference",
   compose: useBox,
@@ -31,7 +34,7 @@ export const useTooltipReference = unstable_createHook<
         onMouseEnter: options.show,
         onMouseLeave: options.hide,
         "aria-describedby": options.unstable_hiddenId
-      } as TooltipReferenceProps,
+      } as TooltipReferenceHTMLProps,
       htmlProps
     );
   }

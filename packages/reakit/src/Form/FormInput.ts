@@ -6,7 +6,7 @@ import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
   TabbableOptions,
-  TabbableProps,
+  TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { DeepPath } from "./__utils/types";
@@ -32,14 +32,19 @@ export type unstable_FormInputOptions<V, P extends DeepPath<V, P>> = Omit<
     name: P;
   };
 
-export type unstable_FormInputProps = TabbableProps &
+export type unstable_FormInputHTMLProps = TabbableHTMLProps &
   React.InputHTMLAttributes<any>;
+
+export type unstable_FormInputProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormInputOptions<V, P> & unstable_FormInputHTMLProps;
 
 const defaultClickKeys: string[] = [];
 
 export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,
-  htmlProps: unstable_FormInputProps = {}
+  htmlProps: unstable_FormInputHTMLProps = {}
 ) {
   options = unstable_useOptions("FormInput", options, htmlProps);
 
@@ -54,7 +59,7 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name)
-    } as unstable_FormInputProps,
+    } as unstable_FormInputHTMLProps,
     htmlProps
   );
 

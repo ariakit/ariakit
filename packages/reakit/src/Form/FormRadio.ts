@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BoxOptions, useBox } from "../Box";
-import { RadioOptions, RadioProps, useRadio } from "../Radio/Radio";
+import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -27,11 +27,16 @@ export type unstable_FormRadioOptions<
     value: DeepPathValue<V, P>;
   };
 
-export type unstable_FormRadioProps = RadioProps;
+export type unstable_FormRadioHTMLProps = RadioHTMLProps;
+
+export type unstable_FormRadioProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormRadioOptions<V, P> & unstable_FormRadioHTMLProps;
 
 export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioOptions<V, P>,
-  htmlProps: unstable_FormRadioProps = {}
+  htmlProps: unstable_FormRadioHTMLProps = {}
 ) {
   options = unstable_useOptions("FormRadio", options, htmlProps);
 
@@ -52,7 +57,7 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
       onChange: () => options.update(options.name, options.value),
       onBlur: () => options.blur(options.name),
       onFocus: () => options.update(options.name, options.value)
-    } as unstable_FormRadioProps,
+    } as unstable_FormRadioHTMLProps,
     htmlProps
   );
 

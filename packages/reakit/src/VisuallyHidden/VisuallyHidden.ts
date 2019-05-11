@@ -1,15 +1,18 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 
 export type VisuallyHiddenOptions = BoxOptions;
 
-export type VisuallyHiddenProps = BoxProps;
+export type VisuallyHiddenHTMLProps = BoxHTMLProps;
+
+export type VisuallyHiddenProps = VisuallyHiddenOptions &
+  VisuallyHiddenHTMLProps;
 
 export const useVisuallyHidden = unstable_createHook<
   VisuallyHiddenOptions,
-  VisuallyHiddenProps
+  VisuallyHiddenHTMLProps
 >({
   name: "VisuallyHidden",
   compose: useBox,
@@ -28,7 +31,7 @@ export const useVisuallyHidden = unstable_createHook<
           whiteSpace: "nowrap",
           width: "1px"
         }
-      } as VisuallyHiddenProps,
+      } as VisuallyHiddenHTMLProps,
       htmlProps
     );
   }

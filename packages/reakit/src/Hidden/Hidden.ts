@@ -1,7 +1,7 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
@@ -19,9 +19,11 @@ export type HiddenOptions = BoxOptions &
     unstable_animated?: boolean;
   };
 
-export type HiddenProps = BoxProps;
+export type HiddenHTMLProps = BoxHTMLProps;
 
-export const useHidden = unstable_createHook<HiddenOptions, HiddenProps>({
+export type HiddenProps = HiddenOptions & HiddenHTMLProps;
+
+export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
   name: "Hidden",
   compose: useBox,
   useState: useHiddenState,
@@ -70,7 +72,7 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenProps>({
         className: shouldAddHiddenClass ? "hidden" : undefined,
         hidden,
         onTransitionEnd
-      } as HiddenProps,
+      } as HiddenHTMLProps,
       htmlProps
     );
   }

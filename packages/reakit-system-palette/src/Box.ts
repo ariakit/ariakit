@@ -1,4 +1,4 @@
-import { BoxOptions, BoxProps } from "reakit/Box/Box";
+import { BoxHTMLProps, BoxOptions } from "reakit/Box/Box";
 import { mergeProps } from "reakit/utils/mergeProps";
 import { usePalette } from "./utils/palette";
 import { useContrast } from "./utils/contrast";
@@ -12,7 +12,7 @@ export type PaletteBoxOptions = BoxOptions & {
 
 export function useBoxProps(
   { unstable_system: system = {} }: PaletteBoxOptions,
-  htmlProps: BoxProps = {}
+  htmlProps: BoxHTMLProps = {}
 ) {
   const color = usePalette(system.palette);
   const contrast = useContrast(color);

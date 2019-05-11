@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BoxOptions, BoxProps, useBox } from "reakit/Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "reakit/Box/Box";
 import { unstable_useOptions } from "reakit/system/useOptions";
 import { unstable_useProps } from "reakit/system/useProps";
 
@@ -8,13 +8,13 @@ export type ErrorMessageOptions = BoxOptions & {
   error: Error;
 };
 
-export type ErrorMessageProps = BoxProps;
+export type ErrorMessageHTMLProps = BoxHTMLProps;
 
 export function ErrorMessage({
   error,
   unstable_system,
   ...htmlProps
-}: ErrorMessageOptions & ErrorMessageProps) {
+}: ErrorMessageOptions & ErrorMessageHTMLProps) {
   const options = unstable_useOptions(
     "ErrorMessage",
     { error, unstable_system },

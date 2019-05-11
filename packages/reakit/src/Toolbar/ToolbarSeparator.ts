@@ -1,7 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   SeparatorOptions,
-  SeparatorProps,
+  SeparatorHTMLProps,
   useSeparator
 } from "../Separator/Separator";
 import { unstable_createHook } from "../utils/createHook";
@@ -9,11 +9,14 @@ import { useToolbarState } from "./ToolbarState";
 
 export type ToolbarSeparatorOptions = SeparatorOptions;
 
-export type ToolbarSeparatorProps = SeparatorProps;
+export type ToolbarSeparatorHTMLProps = SeparatorHTMLProps;
+
+export type ToolbarSeparatorProps = ToolbarSeparatorOptions &
+  ToolbarSeparatorHTMLProps;
 
 export const useToolbarSeparator = unstable_createHook<
   ToolbarSeparatorOptions,
-  ToolbarSeparatorProps
+  ToolbarSeparatorHTMLProps
 >({
   name: "ToolbarSeparator",
   compose: useSeparator,

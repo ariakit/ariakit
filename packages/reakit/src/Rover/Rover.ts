@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   TabbableOptions,
-  TabbableProps,
+  TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -33,9 +33,11 @@ export type RoverOptions = TabbableOptions &
     stopId?: string;
   };
 
-export type RoverProps = TabbableProps;
+export type RoverHTMLProps = TabbableHTMLProps;
 
-export const useRover = unstable_createHook<RoverOptions, RoverProps>({
+export type RoverProps = RoverOptions & RoverHTMLProps;
+
+export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
   compose: useTabbable,
   useState: useRoverState,
@@ -109,7 +111,7 @@ export const useRover = unstable_createHook<RoverOptions, RoverProps>({
         tabIndex: shouldTabIndex ? tabIndex : -1,
         onFocus,
         onKeyDown
-      } as RoverProps,
+      } as RoverHTMLProps,
       htmlProps
     );
   }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, fireEvent } from "react-testing-library";
-import { Checkbox, CheckboxOptions, CheckboxProps } from "../Checkbox";
+import { Checkbox, CheckboxOptions, CheckboxHTMLProps } from "../Checkbox";
 
 test("render", () => {
   const { baseElement } = render(<Checkbox />);
@@ -256,7 +256,7 @@ test("non-native checkbox space disabled focusable", () => {
 });
 
 test("indeterminate", () => {
-  const Comp = (props: CheckboxOptions & CheckboxProps) => (
+  const Comp = (props: CheckboxOptions & CheckboxHTMLProps) => (
     <label>
       <Checkbox {...props} /> checkbox
     </label>

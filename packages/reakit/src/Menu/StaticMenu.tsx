@@ -3,7 +3,7 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { MenuContext } from "./__utils/MenuContext";
@@ -13,11 +13,13 @@ export type StaticMenuOptions = BoxOptions &
   Pick<Partial<MenuStateReturn>, "orientation"> &
   Pick<MenuStateReturn, "stops" | "move" | "next" | "previous">;
 
-export type StaticMenuProps = BoxProps;
+export type StaticMenuHTMLProps = BoxHTMLProps;
+
+export type StaticMenuProps = StaticMenuOptions & StaticMenuHTMLProps;
 
 export const useStaticMenu = unstable_createHook<
   StaticMenuOptions,
-  StaticMenuProps
+  StaticMenuHTMLProps
 >({
   name: "StaticMenu",
   compose: useBox,
@@ -53,7 +55,7 @@ export const useStaticMenu = unstable_createHook<
         "aria-orientation": options.orientation,
         onKeyDown,
         unstable_wrap: wrap
-      } as StaticMenuProps,
+      } as StaticMenuHTMLProps,
       htmlProps
     );
   }

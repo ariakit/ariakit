@@ -1,7 +1,7 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
 import { mergeProps } from "../utils/mergeProps";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useLiveRef } from "../__utils/useLiveRef";
 import { unstable_createHook } from "../utils/createHook";
 
@@ -23,9 +23,11 @@ export type TabbableOptions = BoxOptions & {
   unstable_clickKeys?: string[];
 };
 
-export type TabbableProps = BoxProps & {
+export type TabbableHTMLProps = BoxHTMLProps & {
   disabled?: boolean;
 };
+
+export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
 function isNativeTabbable(element: EventTarget) {
   if (element instanceof HTMLButtonElement) return true;
@@ -40,7 +42,10 @@ function isNativeTabbable(element: EventTarget) {
 
 const defaultClickKeys = ["Enter", " "];
 
-export const useTabbable = unstable_createHook<TabbableOptions, TabbableProps>({
+export const useTabbable = unstable_createHook<
+  TabbableOptions,
+  TabbableHTMLProps
+>({
   name: "Tabbable",
   compose: useBox,
   keys: ["disabled", "focusable", "unstable_clickKeys"],
@@ -129,7 +134,7 @@ export const useTabbable = unstable_createHook<TabbableOptions, TabbableProps>({
           },
           [options.disabled]
         )
-      } as TabbableProps,
+      } as TabbableHTMLProps,
       htmlProps
     );
   }

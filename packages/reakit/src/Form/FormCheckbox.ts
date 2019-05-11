@@ -6,7 +6,7 @@ import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
   CheckboxOptions,
-  CheckboxProps,
+  CheckboxHTMLProps,
   useCheckbox
 } from "../Checkbox/Checkbox";
 import { TabbableOptions } from "../Tabbable/Tabbable";
@@ -39,12 +39,17 @@ export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
     value?: ArrayValue<DeepPathValue<V, P>>;
   };
 
-export type unstable_FormCheckboxProps = CheckboxProps &
+export type unstable_FormCheckboxHTMLProps = CheckboxHTMLProps &
   React.InputHTMLAttributes<any>;
+
+export type unstable_FormCheckboxProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormCheckboxOptions<V, P> & unstable_FormCheckboxHTMLProps;
 
 export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   options: unstable_FormCheckboxOptions<V, P>,
-  htmlProps: unstable_FormCheckboxProps = {}
+  htmlProps: unstable_FormCheckboxHTMLProps = {}
 ) {
   options = unstable_useOptions("FormCheckbox", options, htmlProps);
 
@@ -58,13 +63,13 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
       "aria-invalid": shouldShowError(options, options.name),
       name: formatInputName(options.name),
       onBlur: () => options.blur(options.name)
-    } as unstable_FormCheckboxProps,
+    } as unstable_FormCheckboxHTMLProps,
     isBoolean
       ? ({
           id: getInputId(options.name, options.baseId),
           "aria-describedby": getMessageId(options.name, options.baseId),
           "aria-labelledby": getLabelId(options.name, options.baseId)
-        } as unstable_FormCheckboxProps)
+        } as unstable_FormCheckboxHTMLProps)
       : {},
     htmlProps
   );

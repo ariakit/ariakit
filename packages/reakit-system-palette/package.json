@@ -31,7 +31,8 @@
     "system"
   ],
   "devDependencies": {
-    "@types/color": "3.0.0"
+    "@types/color": "3.0.0",
+    "reakit": "1.0.0-alpha.3"
   },
   "peerDependencies": {
     "react": "^16.8.0",

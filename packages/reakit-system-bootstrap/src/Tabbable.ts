@@ -1,5 +1,5 @@
 import { css, cx } from "emotion";
-import { TabbableProps, TabbableOptions } from "reakit/Tabbable/Tabbable";
+import { TabbableHTMLProps, TabbableOptions } from "reakit/Tabbable/Tabbable";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { usePalette } from "reakit-system-palette/utils/palette";
@@ -17,8 +17,8 @@ export function useTabbableProps(
     // it to default to `primary` only for the tabbable `box-shadow`
     unstable_system: { palette = "primary", ...system } = {}
   }: BootstrapTabbableOptions,
-  htmlProps: TabbableProps = {}
-): TabbableProps {
+  htmlProps: TabbableHTMLProps = {}
+): TabbableHTMLProps {
   const {
     style: { color, backgroundColor }
   } = usePaletteBoxProps({ unstable_system: { palette, ...system } });

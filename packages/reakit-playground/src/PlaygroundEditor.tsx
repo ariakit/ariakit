@@ -37,7 +37,10 @@ export type PlaygroundEditorOptions = PlaygroundStateReturn &
     maxHeight?: string;
   };
 
-export type PlaygroundEditorProps = { className?: string };
+export type PlaygroundEditorHTMLProps = { className?: string };
+
+export type PlaygroundEditorProps = PlaygroundEditorOptions &
+  PlaygroundEditorHTMLProps;
 
 export function PlaygroundEditor({
   code,
@@ -50,7 +53,7 @@ export function PlaygroundEditor({
   autoRefresh,
   maxHeight,
   ...htmlProps
-}: PlaygroundEditorOptions & PlaygroundEditorProps) {
+}: PlaygroundEditorOptions & PlaygroundEditorHTMLProps) {
   const options = unstable_useOptions(
     "PlaygroundEditor",
     {

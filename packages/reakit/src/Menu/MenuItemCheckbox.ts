@@ -4,10 +4,10 @@ import { unstable_createComponent } from "../utils/createComponent";
 import {
   CheckboxOptions,
   useCheckbox,
-  CheckboxProps
+  CheckboxHTMLProps
 } from "../Checkbox/Checkbox";
 import { unstable_createHook } from "../utils/createHook";
-import { MenuItemOptions, MenuItemProps, useMenuItem } from "./MenuItem";
+import { MenuItemOptions, MenuItemHTMLProps, useMenuItem } from "./MenuItem";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 
 export type MenuItemCheckboxOptions = CheckboxOptions &
@@ -19,11 +19,14 @@ export type MenuItemCheckboxOptions = CheckboxOptions &
     name: string;
   };
 
-export type MenuItemCheckboxProps = CheckboxProps & MenuItemProps;
+export type MenuItemCheckboxHTMLProps = CheckboxHTMLProps & MenuItemHTMLProps;
+
+export type MenuItemCheckboxProps = MenuItemCheckboxOptions &
+  MenuItemCheckboxHTMLProps;
 
 export const useMenuItemCheckbox = unstable_createHook<
   MenuItemCheckboxOptions,
-  MenuItemCheckboxProps
+  MenuItemCheckboxHTMLProps
 >({
   name: "MenuItemCheckbox",
   compose: [useMenuItem, useCheckbox],
@@ -48,7 +51,7 @@ export const useMenuItemCheckbox = unstable_createHook<
       {
         role: "menuitemcheckbox",
         name: options.name
-      } as MenuItemCheckboxProps,
+      } as MenuItemCheckboxHTMLProps,
       htmlProps
     );
   }

@@ -1,4 +1,4 @@
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -25,11 +25,16 @@ export type unstable_FormMessageOptions<
     name: P;
   };
 
-export type unstable_FormMessageProps = BoxProps;
+export type unstable_FormMessageHTMLProps = BoxHTMLProps;
+
+export type unstable_FormMessageProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormMessageOptions<V, P> & unstable_FormMessageHTMLProps;
 
 export function unstable_useFormMessage<V, P extends DeepPath<V, P>>(
   options: unstable_FormMessageOptions<V, P>,
-  htmlProps: unstable_FormMessageProps = {}
+  htmlProps: unstable_FormMessageHTMLProps = {}
 ) {
   options = unstable_useOptions("FormMessage", options, htmlProps);
 

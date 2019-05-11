@@ -2,7 +2,7 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { DialogOptions, DialogProps, useDialog } from "../Dialog/Dialog";
+import { DialogOptions, DialogHTMLProps, useDialog } from "../Dialog/Dialog";
 import { unstable_createHook } from "../utils/createHook";
 import { PopoverStateReturn, usePopoverState } from "./PopoverState";
 
@@ -12,27 +12,31 @@ export type PopoverOptions = DialogOptions &
     "unstable_popoverRef" | "unstable_popoverStyles"
   >;
 
-export type PopoverProps = DialogProps;
+export type PopoverHTMLProps = DialogHTMLProps;
 
-export const usePopover = unstable_createHook<PopoverOptions, PopoverProps>({
-  name: "Popover",
-  compose: useDialog,
-  useState: usePopoverState,
+export type PopoverProps = PopoverOptions & PopoverHTMLProps;
 
-  useOptions({ modal = false, ...options }) {
-    return { modal, ...options };
-  },
+export const usePopover = unstable_createHook<PopoverOptions, PopoverHTMLProps>(
+  {
+    name: "Popover",
+    compose: useDialog,
+    useState: usePopoverState,
 
-  useProps(options, htmlProps) {
-    return mergeProps(
-      {
-        ref: options.unstable_popoverRef,
-        style: options.unstable_popoverStyles
-      } as PopoverProps,
-      htmlProps
-    );
+    useOptions({ modal = false, ...options }) {
+      return { modal, ...options };
+    },
+
+    useProps(options, htmlProps) {
+      return mergeProps(
+        {
+          ref: options.unstable_popoverRef,
+          style: options.unstable_popoverStyles
+        } as PopoverHTMLProps,
+        htmlProps
+      );
+    }
   }
-});
+);
 
 export const Popover = unstable_createComponent({
   as: "div",

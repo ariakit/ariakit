@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
@@ -12,11 +12,13 @@ export type PopoverArrowOptions = BoxOptions &
   > &
   Pick<PopoverStateReturn, "placement">;
 
-export type PopoverArrowProps = BoxProps;
+export type PopoverArrowHTMLProps = BoxHTMLProps;
+
+export type PopoverArrowProps = PopoverArrowOptions & PopoverArrowHTMLProps;
 
 export const usePopoverArrow = unstable_createHook<
   PopoverArrowOptions,
-  PopoverArrowProps
+  PopoverArrowHTMLProps
 >({
   name: "PopoverArrow",
   compose: useBox,
@@ -58,7 +60,7 @@ export const usePopoverArrow = unstable_createHook<
             />
           </svg>
         )
-      } as PopoverArrowProps,
+      } as PopoverArrowHTMLProps,
       htmlProps
     );
   }

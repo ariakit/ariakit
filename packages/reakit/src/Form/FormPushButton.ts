@@ -1,4 +1,4 @@
-import { ButtonOptions, ButtonProps, useButton } from "../Button/Button";
+import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -26,11 +26,16 @@ export type unstable_FormPushButtonOptions<
     value: ArrayValue<DeepPathValue<V, P>>;
   };
 
-export type unstable_FormPushButtonProps = ButtonProps;
+export type unstable_FormPushButtonHTMLProps = ButtonHTMLProps;
+
+export type unstable_FormPushButtonProps<
+  V,
+  P extends DeepPath<V, P>
+> = unstable_FormPushButtonOptions<V, P> & unstable_FormPushButtonHTMLProps;
 
 export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
   options: unstable_FormPushButtonOptions<V, P>,
-  htmlProps: unstable_FormPushButtonProps = {}
+  htmlProps: unstable_FormPushButtonHTMLProps = {}
 ) {
   options = unstable_useOptions("FormPushButton", options, htmlProps);
 
@@ -54,7 +59,7 @@ export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
           }
         });
       }
-    } as unstable_FormPushButtonProps,
+    } as unstable_FormPushButtonHTMLProps,
     htmlProps
   );
 

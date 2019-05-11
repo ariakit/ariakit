@@ -1,7 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   SeparatorOptions,
-  SeparatorProps,
+  SeparatorHTMLProps,
   useSeparator
 } from "../Separator/Separator";
 import { unstable_createHook } from "../utils/createHook";
@@ -9,11 +9,13 @@ import { useMenuState } from "./MenuState";
 
 export type MenuSeparatorOptions = SeparatorOptions;
 
-export type MenuSeparatorProps = SeparatorProps;
+export type MenuSeparatorHTMLProps = SeparatorHTMLProps;
+
+export type MenuSeparatorProps = MenuSeparatorOptions & MenuSeparatorHTMLProps;
 
 export const useMenuSeparator = unstable_createHook<
   MenuSeparatorOptions,
-  MenuSeparatorProps
+  MenuSeparatorHTMLProps
 >({
   name: "MenuSeparator",
   compose: useSeparator,

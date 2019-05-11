@@ -1,21 +1,21 @@
 import * as React from "react";
 import { css, cx } from "emotion";
-import { MenuProps, MenuOptions } from "reakit/Menu/Menu";
+import { MenuHTMLProps, MenuOptions } from "reakit/Menu/Menu";
 import {
-  MenuDisclosureProps,
+  MenuDisclosureHTMLProps,
   MenuDisclosureOptions
 } from "reakit/Menu/MenuDisclosure";
 import {
-  MenuItemCheckboxProps,
+  MenuItemCheckboxHTMLProps,
   MenuItemCheckboxOptions
 } from "reakit/Menu/MenuItemCheckbox";
 import {
-  MenuItemRadioProps,
+  MenuItemRadioHTMLProps,
   MenuItemRadioOptions
 } from "reakit/Menu/MenuItemRadio";
-import { MenuGroupProps, MenuGroupOptions } from "reakit/Menu/MenuGroup";
-import { StaticMenuProps, StaticMenuOptions } from "reakit/Menu/StaticMenu";
-import { MenuItemOptions, MenuItemProps } from "reakit/Menu/MenuItem";
+import { MenuGroupHTMLProps, MenuGroupOptions } from "reakit/Menu/MenuGroup";
+import { StaticMenuHTMLProps, StaticMenuOptions } from "reakit/Menu/StaticMenu";
+import { MenuItemHTMLProps, MenuItemOptions } from "reakit/Menu/MenuItem";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
@@ -27,8 +27,8 @@ export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
 
 export function useStaticMenuProps(
   options: BootstrapStaticMenuOptions,
-  htmlProps: StaticMenuProps = {}
-): StaticMenuProps {
+  htmlProps: StaticMenuHTMLProps = {}
+): StaticMenuHTMLProps {
   const isHorizontal = options.orientation === "horizontal";
 
   const staticMenu = css`
@@ -53,8 +53,8 @@ export type BootstrapMenuItemOptions = BootstrapBoxOptions & MenuItemOptions;
 
 export function useMenuItemProps(
   { unstable_system, ...options }: BootstrapMenuItemOptions,
-  htmlProps: MenuItemProps = {}
-): MenuItemProps {
+  htmlProps: MenuItemHTMLProps = {}
+): MenuItemHTMLProps {
   const foreground = usePalette("foreground") || "black";
   const primary = usePalette("primary") || "blue";
   const primaryContrast = useContrast(primary);
@@ -106,8 +106,8 @@ export function useMenuOptions({
 
 export function useMenuProps(
   _: BootstrapMenuOptions,
-  htmlProps: MenuProps = {}
-): MenuProps {
+  htmlProps: MenuHTMLProps = {}
+): MenuHTMLProps {
   const menu = css`
     display: flex;
     border-radius: 0;
@@ -126,8 +126,8 @@ export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
 
 export function useMenuDisclosureProps(
   options: BootstrapMenuDisclosureOptions,
-  { children, ...htmlProps }: MenuDisclosureProps = {}
-): MenuDisclosureProps {
+  { children, ...htmlProps }: MenuDisclosureHTMLProps = {}
+): MenuDisclosureHTMLProps {
   const placement = options.unstable_originalPlacement || options.placement;
   const dir = placement
     ? (placement.split("-")[0] as "top" | "bottom" | "right" | "left")
@@ -217,8 +217,8 @@ export type BootstrapMenuItemCheckboxOptions = BootstrapBoxOptions &
 
 export function useMenuItemCheckboxProps(
   _: BootstrapMenuItemCheckboxOptions,
-  htmlProps: MenuItemCheckboxProps = {}
-): MenuItemCheckboxProps {
+  htmlProps: MenuItemCheckboxHTMLProps = {}
+): MenuItemCheckboxHTMLProps {
   const menuItemCheckbox = css`
     position: relative;
     outline: 0;
@@ -243,8 +243,8 @@ export type BootstrapMenuItemRadioOptions = BootstrapBoxOptions &
 
 export function useMenuItemRadioProps(
   _: BootstrapMenuItemRadioOptions,
-  htmlProps: MenuItemRadioProps = {}
-): MenuItemRadioProps {
+  htmlProps: MenuItemRadioHTMLProps = {}
+): MenuItemRadioHTMLProps {
   const menuItemRadio = css`
     position: relative;
     outline: 0;
@@ -269,8 +269,8 @@ export type BootstrapMenuGroupOptions = BootstrapBoxOptions & MenuGroupOptions;
 
 export function useMenuGroupProps(
   _: BootstrapMenuGroupOptions,
-  htmlProps: MenuGroupProps = {}
-): MenuGroupProps {
+  htmlProps: MenuGroupHTMLProps = {}
+): MenuGroupHTMLProps {
   const menuGroup = css`
     display: inherit;
     flex-direction: inherit;

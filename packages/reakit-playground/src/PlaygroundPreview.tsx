@@ -18,7 +18,10 @@ export type PlaygroundPreviewOptions = Partial<PlaygroundStateReturn> &
     componentName?: string;
   };
 
-export type PlaygroundPreviewProps = { className?: string };
+export type PlaygroundPreviewHTMLProps = { className?: string };
+
+export type PlaygroundPreviewProps = PlaygroundPreviewOptions &
+  PlaygroundPreviewHTMLProps;
 
 export function PlaygroundPreview({
   code,
@@ -26,7 +29,7 @@ export function PlaygroundPreview({
   update,
   componentName,
   ...htmlProps
-}: PlaygroundPreviewOptions & PlaygroundPreviewProps) {
+}: PlaygroundPreviewOptions & PlaygroundPreviewHTMLProps) {
   const options = unstable_useOptions(
     "PlaygroundPreview",
     { code, modules, componentName },

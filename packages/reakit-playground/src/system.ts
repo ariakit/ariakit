@@ -4,14 +4,14 @@ import { css, cx, injectGlobal } from "emotion";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
-import { ErrorMessageOptions, ErrorMessageProps } from "./ErrorMessage";
+import { ErrorMessageOptions, ErrorMessageHTMLProps } from "./ErrorMessage";
 import {
   PlaygroundEditorOptions,
-  PlaygroundEditorProps
+  PlaygroundEditorHTMLProps
 } from "./PlaygroundEditor";
 import {
   PlaygroundPreviewOptions,
-  PlaygroundPreviewProps
+  PlaygroundPreviewHTMLProps
 } from "./PlaygroundPreview";
 
 const baseStyles = raw("codemirror/lib/codemirror.css");
@@ -160,8 +160,8 @@ injectGlobal`
 
 export function useErrorMessageProps(
   _: ErrorMessageOptions,
-  htmlProps: ErrorMessageProps
-): ErrorMessageProps {
+  htmlProps: ErrorMessageHTMLProps
+): ErrorMessageHTMLProps {
   const danger = usePalette("danger") || "red";
   const errorMessage = css`
     color: ${danger};
@@ -171,8 +171,8 @@ export function useErrorMessageProps(
 
 export function usePlaygroundEditorProps(
   options: PlaygroundEditorOptions,
-  htmlProps: PlaygroundEditorProps
-): PlaygroundEditorProps {
+  htmlProps: PlaygroundEditorHTMLProps
+): PlaygroundEditorHTMLProps {
   const primary = usePalette("primary") || "blue";
   const contrast = useContrast(primary);
   const maxHeight = options.maxHeight ? options.maxHeight : "auto";
@@ -235,8 +235,8 @@ export function usePlaygroundEditorProps(
 
 export function usePlaygroundPreviewProps(
   _: PlaygroundPreviewOptions,
-  htmlProps: PlaygroundPreviewProps
-): PlaygroundPreviewProps {
+  htmlProps: PlaygroundPreviewHTMLProps
+): PlaygroundPreviewHTMLProps {
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.85);
   const playgroundPreview = css`

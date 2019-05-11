@@ -2,30 +2,34 @@ import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
 export type ToolbarOptions = BoxOptions &
   Pick<Partial<ToolbarStateReturn>, "orientation">;
 
-export type ToolbarProps = BoxProps;
+export type ToolbarHTMLProps = BoxHTMLProps;
 
-export const useToolbar = unstable_createHook<ToolbarOptions, ToolbarProps>({
-  name: "Toolbar",
-  compose: useBox,
-  useState: useToolbarState,
+export type ToolbarProps = ToolbarOptions & ToolbarHTMLProps;
 
-  useProps(options, htmlProps) {
-    return mergeProps(
-      {
-        role: "toolbar",
-        "aria-orientation": options.orientation
-      } as ToolbarProps,
-      htmlProps
-    );
+export const useToolbar = unstable_createHook<ToolbarOptions, ToolbarHTMLProps>(
+  {
+    name: "Toolbar",
+    compose: useBox,
+    useState: useToolbarState,
+
+    useProps(options, htmlProps) {
+      return mergeProps(
+        {
+          role: "toolbar",
+          "aria-orientation": options.orientation
+        } as ToolbarHTMLProps,
+        htmlProps
+      );
+    }
   }
-});
+);
 
 export const Toolbar = unstable_createComponent({
   as: "div",

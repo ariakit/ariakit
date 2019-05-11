@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { RoverOptions, RoverProps, useRover } from "../Rover/Rover";
+import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { unstable_createHook } from "../utils/createHook";
 import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
@@ -11,9 +11,11 @@ export type TabOptions = RoverOptions &
   Pick<Partial<TabStateReturn>, "manual"> &
   Pick<TabStateReturn, "unstable_baseId" | "selectedId" | "select">;
 
-export type TabProps = RoverProps;
+export type TabHTMLProps = RoverHTMLProps;
 
-export const useTab = unstable_createHook<TabOptions, TabProps>({
+export type TabProps = TabOptions & TabHTMLProps;
+
+export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
   name: "Tab",
   compose: useRover,
   useState: useTabState,
@@ -51,7 +53,7 @@ export const useTab = unstable_createHook<TabOptions, TabProps>({
         "aria-controls": getTabPanelId(options.stopId, options.unstable_baseId),
         onClick,
         onFocus
-      } as TabProps,
+      } as TabHTMLProps,
       htmlProps
     );
   }

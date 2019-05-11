@@ -1,7 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   HiddenDisclosureOptions,
-  HiddenDisclosureProps,
+  HiddenDisclosureHTMLProps,
   useHiddenDisclosure
 } from "../Hidden/HiddenDisclosure";
 import { unstable_createHook } from "../utils/createHook";
@@ -10,11 +10,14 @@ import { useDialogState } from "./DialogState";
 
 export type DialogDisclosureOptions = HiddenDisclosureOptions;
 
-export type DialogDisclosureProps = HiddenDisclosureProps;
+export type DialogDisclosureHTMLProps = HiddenDisclosureHTMLProps;
+
+export type DialogDisclosureProps = DialogDisclosureOptions &
+  DialogDisclosureHTMLProps;
 
 export const useDialogDisclosure = unstable_createHook<
   DialogDisclosureOptions,
-  DialogDisclosureProps
+  DialogDisclosureHTMLProps
 >({
   name: "DialogDisclosure",
   compose: useHiddenDisclosure,
@@ -24,7 +27,7 @@ export const useDialogDisclosure = unstable_createHook<
     return mergeProps(
       {
         "aria-haspopup": "dialog"
-      } as DialogDisclosureProps,
+      } as DialogDisclosureHTMLProps,
       htmlProps
     );
   }

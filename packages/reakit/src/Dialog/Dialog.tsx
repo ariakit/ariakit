@@ -4,7 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { mergeProps } from "../utils/mergeProps";
 import { Portal } from "../Portal/Portal";
-import { HiddenOptions, HiddenProps, useHidden } from "../Hidden/Hidden";
+import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
@@ -74,9 +74,11 @@ export type DialogOptions = HiddenOptions &
     unstable_autoFocusOnHide?: boolean;
   };
 
-export type DialogProps = HiddenProps;
+export type DialogHTMLProps = HiddenHTMLProps;
 
-export const useDialog = unstable_createHook<DialogOptions, DialogProps>({
+export type DialogProps = DialogOptions & DialogHTMLProps;
+
+export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
   name: "Dialog",
   compose: useHidden,
   useState: useDialogState,
@@ -167,7 +169,7 @@ export const useDialog = unstable_createHook<DialogOptions, DialogProps>({
         style: { zIndex: 999 },
         onKeyDown,
         unstable_wrap: wrapChildren
-      } as DialogProps,
+      } as DialogHTMLProps,
       htmlProps
     );
   }

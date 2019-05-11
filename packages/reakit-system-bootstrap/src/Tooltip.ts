@@ -1,5 +1,5 @@
 import { css, cx } from "emotion";
-import { TooltipProps, TooltipOptions } from "reakit/Tooltip/Tooltip";
+import { TooltipHTMLProps, TooltipOptions } from "reakit/Tooltip/Tooltip";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { BootstrapBoxOptions } from "./Box";
@@ -15,8 +15,8 @@ export function useTooltipOptions({
 
 export function useTooltipProps(
   { unstable_system }: BootstrapTooltipOptions,
-  htmlProps: TooltipProps = {}
-): TooltipProps {
+  htmlProps: TooltipHTMLProps = {}
+): TooltipHTMLProps {
   const {
     style: { backgroundColor }
   } = usePaletteBoxProps({ unstable_system });

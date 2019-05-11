@@ -1,4 +1,4 @@
-import { ButtonOptions, ButtonProps, useButton } from "../Button/Button";
+import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -11,11 +11,14 @@ export type unstable_FormSubmitButtonOptions = ButtonOptions &
   Pick<Partial<unstable_FormStateReturn<any>>, "submitting"> &
   Pick<unstable_FormStateReturn<any>, "baseId" | "submit">;
 
-export type unstable_FormSubmitButtonProps = ButtonProps;
+export type unstable_FormSubmitButtonHTMLProps = ButtonHTMLProps;
+
+export type unstable_FormSubmitButtonProps = unstable_FormSubmitButtonOptions &
+  unstable_FormSubmitButtonHTMLProps;
 
 export function unstable_useFormSubmitButton(
   options: unstable_FormSubmitButtonOptions,
-  htmlProps: unstable_FormSubmitButtonProps = {}
+  htmlProps: unstable_FormSubmitButtonHTMLProps = {}
 ) {
   options = unstable_useOptions("FormSubmitButton", options, htmlProps);
 
@@ -32,7 +35,7 @@ export function unstable_useFormSubmitButton(
           }
         });
       }
-    } as unstable_FormSubmitButtonProps,
+    } as unstable_FormSubmitButtonHTMLProps,
     htmlProps
   );
 

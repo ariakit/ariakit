@@ -3,7 +3,7 @@ import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   PopoverDisclosureOptions,
-  PopoverDisclosureProps,
+  PopoverDisclosureHTMLProps,
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
@@ -16,13 +16,16 @@ export type MenuDisclosureOptions = PopoverDisclosureOptions &
   Pick<Partial<MenuStateReturn>, "hide"> &
   Pick<MenuStateReturn, "show" | "placement" | "first" | "last">;
 
-export type MenuDisclosureProps = PopoverDisclosureProps;
+export type MenuDisclosureHTMLProps = PopoverDisclosureHTMLProps;
+
+export type MenuDisclosureProps = MenuDisclosureOptions &
+  MenuDisclosureHTMLProps;
 
 const noop = () => {};
 
 export const useMenuDisclosure = unstable_createHook<
   MenuDisclosureOptions,
-  MenuDisclosureProps
+  MenuDisclosureHTMLProps
 >({
   name: "MenuDisclosure",
   compose: usePopoverDisclosure,
@@ -114,7 +117,7 @@ export const useMenuDisclosure = unstable_createHook<
         onFocus,
         onMouseOver,
         onKeyDown
-      } as MenuDisclosureProps,
+      } as MenuDisclosureHTMLProps,
       htmlProps
     );
   },

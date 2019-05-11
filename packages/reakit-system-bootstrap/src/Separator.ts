@@ -1,5 +1,8 @@
 import { css, cx } from "emotion";
-import { SeparatorProps, SeparatorOptions } from "reakit/Separator/Separator";
+import {
+  SeparatorHTMLProps,
+  SeparatorOptions
+} from "reakit/Separator/Separator";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { BootstrapBoxOptions } from "./Box";
@@ -8,8 +11,8 @@ export type BootstrapSeparatorOptions = BootstrapBoxOptions & SeparatorOptions;
 
 export function useSeparatorProps(
   _: BootstrapSeparatorOptions,
-  htmlProps: SeparatorProps = {}
-): SeparatorProps {
+  htmlProps: SeparatorHTMLProps = {}
+): SeparatorHTMLProps {
   const foreground = usePalette("foreground") || "black";
   const borderColor = useFade(foreground, 0.75);
 

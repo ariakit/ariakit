@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   TabbableOptions,
-  TabbableProps,
+  TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
@@ -26,11 +26,17 @@ export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
     checked?: boolean;
   };
 
-export type CheckboxProps = TabbableProps & React.InputHTMLAttributes<any>;
+export type CheckboxHTMLProps = TabbableHTMLProps &
+  React.InputHTMLAttributes<any>;
+
+export type CheckboxProps = CheckboxOptions & CheckboxHTMLProps;
 
 const defaultClickKeys = [" "];
 
-export const useCheckbox = unstable_createHook<CheckboxOptions, CheckboxProps>({
+export const useCheckbox = unstable_createHook<
+  CheckboxOptions,
+  CheckboxHTMLProps
+>({
   name: "Checkbox",
   compose: useTabbable,
   useState: useCheckboxState,
@@ -115,7 +121,7 @@ export const useCheckbox = unstable_createHook<CheckboxOptions, CheckboxProps>({
         type: "checkbox",
         onChange,
         onClick
-      } as CheckboxProps,
+      } as CheckboxHTMLProps,
       htmlProps
     );
   },

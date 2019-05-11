@@ -1,7 +1,7 @@
 import { warning } from "../__utils/warning";
 import { mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { BoxOptions, BoxProps, useBox } from "../Box/Box";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { unstable_createHook } from "../utils/createHook";
 import { useTabState, TabStateReturn } from "./TabState";
@@ -9,23 +9,27 @@ import { useTabState, TabStateReturn } from "./TabState";
 export type TabListOptions = BoxOptions &
   Pick<Partial<TabStateReturn>, "orientation">;
 
-export type TabListProps = BoxProps;
+export type TabListHTMLProps = BoxHTMLProps;
 
-export const useTabList = unstable_createHook<TabListOptions, TabListProps>({
-  name: "TabList",
-  compose: useBox,
-  useState: useTabState,
+export type TabListProps = TabListOptions & TabListHTMLProps;
 
-  useProps(options, htmlProps) {
-    return mergeProps(
-      {
-        role: "tablist",
-        "aria-orientation": options.orientation
-      } as TabListProps,
-      htmlProps
-    );
+export const useTabList = unstable_createHook<TabListOptions, TabListHTMLProps>(
+  {
+    name: "TabList",
+    compose: useBox,
+    useState: useTabState,
+
+    useProps(options, htmlProps) {
+      return mergeProps(
+        {
+          role: "tablist",
+          "aria-orientation": options.orientation
+        } as TabListHTMLProps,
+        htmlProps
+      );
+    }
   }
-});
+);
 
 export const TabList = unstable_createComponent({
   as: "div",
