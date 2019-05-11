@@ -96,8 +96,7 @@ export const useMenuDisclosure = unstable_createHook<
       } else {
         const parentMenu = ref.current.closest("[role=menu],[role=menubar]");
         const subjacentOpenMenu =
-          parentMenu &&
-          parentMenu.querySelector("[role=menu][aria-hidden=false]");
+          parentMenu && parentMenu.querySelector("[role=menu]:not([hidden])");
         if (subjacentOpenMenu) {
           ref.current.focus();
         }

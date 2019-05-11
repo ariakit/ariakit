@@ -3,11 +3,9 @@ import { render } from "react-testing-library";
 import { Provider, Box } from "reakit";
 import * as system from "..";
 
-Provider.unstable_use(system);
-
 test("useBox", () => {
   const { baseElement } = render(
-    <Provider>
+    <Provider unstable_system={system}>
       <Box unstable_system={{ palette: "primary", fill: "opaque" }}>Box</Box>
     </Provider>
   );

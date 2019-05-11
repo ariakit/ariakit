@@ -8,7 +8,7 @@ test("render", () => {
     <body>
       <div>
         <div
-          aria-hidden="true"
+          class="hidden"
           hidden=""
           role="presentation"
           style="position: fixed; top: 0px; right: 0px; bottom: 0px; left: 0px; z-index: 998;"
@@ -24,7 +24,6 @@ test("render visible", () => {
     <body>
       <div>
         <div
-          aria-hidden="false"
           role="presentation"
           style="position: fixed; top: 0px; right: 0px; bottom: 0px; left: 0px; z-index: 998;"
         />

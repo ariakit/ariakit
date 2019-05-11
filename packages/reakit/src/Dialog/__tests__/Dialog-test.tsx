@@ -16,9 +16,9 @@ test("render", () => {
         class="__reakit-portal"
       >
         <div
-          aria-hidden="true"
           aria-label="dialog"
           aria-modal="true"
+          class="hidden"
           data-dialog="true"
           hidden=""
           id="dialog"
@@ -52,7 +52,6 @@ test("render visible", () => {
         class="__reakit-portal"
       >
         <div
-          aria-hidden="false"
           aria-label="dialog"
           aria-modal="true"
           data-dialog="true"
@@ -84,9 +83,9 @@ test("render non-modal", () => {
     <body>
       <div>
         <div
-          aria-hidden="true"
           aria-label="dialog"
           aria-modal="false"
+          class="hidden"
           data-dialog="true"
           hidden=""
           id="dialog"

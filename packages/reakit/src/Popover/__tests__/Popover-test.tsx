@@ -13,9 +13,9 @@ test("render", () => {
     <body>
       <div>
         <div
-          aria-hidden="true"
           aria-label="popover"
           aria-modal="false"
+          class="hidden"
           data-dialog="true"
           hidden=""
           id="popover"
@@ -40,7 +40,6 @@ test("render visible", () => {
     <body>
       <div>
         <div
-          aria-hidden="false"
           aria-label="popover"
           aria-modal="false"
           data-dialog="true"
@@ -66,9 +65,9 @@ test("render non-modal", () => {
     <body>
       <div>
         <div
-          aria-hidden="true"
           aria-label="popover"
           aria-modal="false"
+          class="hidden"
           data-dialog="true"
           hidden=""
           id="popover"

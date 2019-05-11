@@ -60,7 +60,7 @@ export const useMenuItem = unstable_createHook<MenuItemOptions, MenuItemProps>({
         ) as HTMLElement;
         if (menu) {
           const nestedMenu = menu.querySelector(
-            "[role=menu][aria-hidden=false],[role=menubar][aria-hidden=false]"
+            "[role=menu]:not([hidden]),[role=menubar]:not([hidden])"
           );
           if (!nestedMenu) {
             options.move(null);

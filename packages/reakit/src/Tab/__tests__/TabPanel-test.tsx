@@ -14,8 +14,8 @@ test("render", () => {
     <body>
       <div>
         <div
-          aria-hidden="true"
           aria-labelledby="base-tab"
+          class="hidden"
           hidden=""
           id="base-tab-panel"
           role="tabpanel"
@@ -38,7 +38,6 @@ test("render visible", () => {
     <body>
       <div>
         <div
-          aria-hidden="false"
           aria-labelledby="base-tab"
           id="base-tab-panel"
           role="tabpanel"
@@ -61,7 +60,6 @@ test("render selected", () => {
     <body>
       <div>
         <div
-          aria-hidden="false"
           aria-labelledby="base-tab"
           id="base-tab-panel"
           role="tabpanel"

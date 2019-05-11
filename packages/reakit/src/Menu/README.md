@@ -376,10 +376,16 @@ element.
 
   Changes the `visible` state to `false`
 
-- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  TODO: Description
+  If `true`, the hidden element attributes will be set in different
+timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
+create transitions.
+  - When it becomes visible, immediatelly remove the `hidden` attribute,
+then add the `hidden` class.
+  - When it becomes hidden, immediatelly remove the `hidden` class, then
+add the `hidden` attribute.
 
 - **`hideOnClickOutside`**
   <code>boolean | undefined</code>

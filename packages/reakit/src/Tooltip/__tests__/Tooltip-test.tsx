@@ -11,7 +11,7 @@ test("render", () => {
         class="__reakit-portal"
       >
         <div
-          aria-hidden="true"
+          class="hidden"
           hidden=""
           role="tooltip"
           style="pointer-events: none; z-index: 999;"
@@ -32,7 +32,6 @@ test("render visible", () => {
         class="__reakit-portal"
       >
         <div
-          aria-hidden="false"
           role="tooltip"
           style="pointer-events: none; z-index: 999;"
         >

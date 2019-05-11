@@ -25,9 +25,9 @@ test("render", () => {
     <body>
       <div>
         <div
-          aria-hidden="true"
           aria-label="menu"
           aria-modal="false"
+          class="hidden"
           data-dialog="true"
           hidden=""
           id="hidden"
