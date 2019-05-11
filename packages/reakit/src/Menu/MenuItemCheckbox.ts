@@ -34,15 +34,15 @@ export const useMenuItemCheckbox = unstable_createHook<
   keys: ["name"],
 
   useOptions(options) {
-    const setValue = React.useCallback(
+    const setState = React.useCallback(
       value => options.unstable_update(options.name, value),
       [options.unstable_update, options.name]
     );
 
     return {
       ...options,
-      currentValue: options.unstable_values[options.name],
-      setValue
+      state: options.unstable_values[options.name],
+      setState
     };
   },
 

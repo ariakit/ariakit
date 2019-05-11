@@ -9,8 +9,8 @@ test("initial state", () => {
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "currentId": null,
-      "currentValue": undefined,
       "loop": true,
+      "state": undefined,
       "stops": Array [],
       "unstable_pastId": null,
     }

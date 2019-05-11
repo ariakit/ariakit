@@ -222,7 +222,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`checked`**
   <code>boolean | undefined</code>
 
-  Checkbox's checked state. If present, it's used instead of currentValue.
+  Checkbox's checked state. If present, it's used instead of `state`.
 
 - **`baseId`**
   <code>string</code>

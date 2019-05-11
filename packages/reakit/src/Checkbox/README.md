@@ -39,7 +39,7 @@ For convenience, Reakit provides a `useCheckboxState` that already implements th
 import { useCheckboxState, Checkbox } from "reakit/Checkbox";
 
 function Example() {
-  const checkbox = useCheckboxState({ currentValue: true });
+  const checkbox = useCheckboxState({ state: true });
   return <Checkbox {...checkbox} />;
 }
 ```
@@ -58,23 +58,23 @@ function useTreeState({ values }) {
 
   // updates items when group is toggled
   React.useEffect(() => {
-    if (group.currentValue === true) {
-      items.setValue(values);
-    } else if (group.currentValue === false) {
-      items.setValue([]);
+    if (group.state === true) {
+      items.setState(values);
+    } else if (group.state === false) {
+      items.setState([]);
     }
-  }, [group.currentValue]);
+  }, [group.state]);
 
   // updates group when items is toggled
   React.useEffect(() => {
-    if (items.currentValue.length === values.length) {
-      group.setValue(true);
-    } else if (items.currentValue.length) {
-      group.setValue("indeterminate");
+    if (items.state.length === values.length) {
+      group.setState(true);
+    } else if (items.state.length) {
+      group.setState("indeterminate");
     } else {
-      group.setValue(false);
+      group.setState(false);
     }
-  }, [items.currentValue]);
+  }, [items.state]);
 
   return { group, items };
 }
@@ -114,7 +114,7 @@ function Example() {
   const checkbox = useCheckboxState();
   return (
     <Checkbox {...checkbox} as="button">
-      {checkbox.currentValue ? "Checked" : "Unchecked"}
+      {checkbox.state ? "Checked" : "Unchecked"}
     </Checkbox>
   );
 }
@@ -141,7 +141,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useCheckboxState`
 
-- **`currentValue`**
+- **`state`**
   <code>boolean | any[] | &#34;indeterminate&#34;</code>
 
   Stores the state of the checkbox.
@@ -162,17 +162,17 @@ going to be an array.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-- **`currentValue`**
+- **`state`**
   <code>boolean | any[] | &#34;indeterminate&#34;</code>
 
   Stores the state of the checkbox.
 If checkboxes that share this state have defined a `value` prop, it's
 going to be an array.
 
-- **`setValue`**
+- **`setState`**
   <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
 
-  Sets `currentValue`.
+  Sets `state`.
 
 - **`value`**
   <code>any</code>
@@ -184,4 +184,4 @@ array.
 - **`checked`**
   <code>boolean | undefined</code>
 
-  Checkbox's checked state. If present, it's used instead of currentValue.
+  Checkbox's checked state. If present, it's used instead of `state`.

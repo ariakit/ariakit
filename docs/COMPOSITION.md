@@ -23,7 +23,7 @@ function Example() {
   const checkbox = useCheckboxState();
   return (
     <Checkbox {...checkbox} as={Button}>
-      {checkbox.currentValue ? "😄 Happy" : "😞 Sad"}
+      {checkbox.state ? "😄 Happy" : "😞 Sad"}
     </Checkbox>
   );
 }
@@ -44,7 +44,7 @@ function Example() {
     <Button {...checkbox}>
       {props => (
         <Checkbox {...props} as="div">
-          {checkbox.currentValue ? "😄 Happy" : "😞 Sad"}
+          {checkbox.state ? "😄 Happy" : "😞 Sad"}
         </Checkbox>
       )}
     </Button>
@@ -68,9 +68,7 @@ function Example() {
   // Composing Checkbox and Button together
   const htmlProps = useCheckbox(options, useButton());
   return (
-    <button {...htmlProps}>
-      {options.currentValue ? "😄 Happy" : "😞 Sad"}
-    </button>
+    <button {...htmlProps}>{options.state ? "😄 Happy" : "😞 Sad"}</button>
   );
 }
 ```

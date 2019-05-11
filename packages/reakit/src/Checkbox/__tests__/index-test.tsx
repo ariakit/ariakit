@@ -21,7 +21,7 @@ test("single checkbox", () => {
 
 test("group checkbox", async () => {
   const Test = () => {
-    const checkbox = useCheckboxState({ currentValue: ["orange"] });
+    const checkbox = useCheckboxState({ state: ["orange"] });
     return (
       <div role="group">
         <label>

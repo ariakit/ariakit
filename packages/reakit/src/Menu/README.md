@@ -606,17 +606,17 @@ similarly to `readOnly` on form elements. In this case, only
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-- **`currentValue`**
+- **`state`**
   <code>boolean | any[] | &#34;indeterminate&#34;</code>
 
   Stores the state of the checkbox.
 If checkboxes that share this state have defined a `value` prop, it's
 going to be an array.
 
-- **`setValue`**
+- **`setState`**
   <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
 
-  Sets `currentValue`.
+  Sets `state`.
 
 - **`value`**
   <code>any</code>
@@ -628,7 +628,7 @@ array.
 - **`checked`**
   <code>boolean | undefined</code>
 
-  Checkbox's checked state. If present, it's used instead of currentValue.
+  Checkbox's checked state. If present, it's used instead of `state`.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -784,15 +784,15 @@ similarly to `readOnly` on form elements. In this case, only
 
   Element ID.
 
-- **`currentValue`**
+- **`state`**
   <code>any</code>
 
   The `value` attribute of the current checked radio.
 
-- **`setValue`**
+- **`setState`**
   <code>(value: any) =&#62; void</code>
 
-  Changes the `currentValue` state.
+  Sets `state`.
 
 - **`value`**
   <code>any</code>

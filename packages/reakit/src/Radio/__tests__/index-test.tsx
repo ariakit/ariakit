@@ -38,7 +38,7 @@ test("click on non-native radio", () => {
 
 test("onChange", () => {
   const Test = () => {
-    const { currentValue, setValue, ...radio } = useRadioState();
+    const { state, setState, ...radio } = useRadioState();
     const [checked, setChecked] = React.useState(false);
     const toggle = () => setChecked(!checked);
     return (
@@ -57,7 +57,7 @@ test("onChange", () => {
 
 test("onChange non-native radio", () => {
   const Test = () => {
-    const { currentValue, setValue, ...radio } = useRadioState();
+    const { state, setState, ...radio } = useRadioState();
     const [checked, setChecked] = React.useState(false);
     const toggle = () => setChecked(!checked);
     return (

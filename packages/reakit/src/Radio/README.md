@@ -77,7 +77,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   - Jumps to the first item when moving next from the last item.
   - Jumps to the last item when moving previous from the first item.
 
-- **`currentValue`**
+- **`state`**
   <code>any</code>
 
   The `value` attribute of the current checked radio.
@@ -151,15 +151,15 @@ similarly to `readOnly` on form elements. In this case, only
 
   Element ID.
 
-- **`currentValue`**
+- **`state`**
   <code>any</code>
 
   The `value` attribute of the current checked radio.
 
-- **`setValue`**
+- **`setState`**
   <code>(value: any) =&#62; void</code>
 
-  Changes the `currentValue` state.
+  Sets `state`.
 
 - **`value`**
   <code>any</code>

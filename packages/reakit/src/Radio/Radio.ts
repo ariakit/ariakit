@@ -7,7 +7,7 @@ import { unstable_createHook } from "../utils/createHook";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
 export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
-  Pick<Partial<RadioStateReturn>, "currentValue" | "setValue"> & {
+  Pick<Partial<RadioStateReturn>, "state" | "setState"> & {
     /**
      * Same as the `value` attribute.
      */
@@ -34,12 +34,12 @@ export const useRadio = unstable_createHook<RadioOptions, RadioHTMLProps>({
     const checked =
       typeof options.checked !== "undefined"
         ? options.checked
-        : options.currentValue === options.value;
+        : options.state === options.value;
 
     const onChange = React.useCallback(() => {
-      if (options.disabled || !options.setValue) return;
-      options.setValue(options.value);
-    }, [options.disabled, options.setValue, options.value]);
+      if (options.disabled || !options.setState) return;
+      options.setState(options.value);
+    }, [options.disabled, options.setState, options.value]);
 
     const onClick = React.useCallback(
       (event: React.MouseEvent) => {

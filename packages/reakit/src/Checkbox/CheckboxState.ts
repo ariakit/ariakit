@@ -11,17 +11,17 @@ export type CheckboxState = {
    * If checkboxes that share this state have defined a `value` prop, it's
    * going to be an array.
    */
-  currentValue: boolean | "indeterminate" | any[];
+  state: boolean | "indeterminate" | any[];
 };
 
 export type CheckboxActions = {
   /**
-   * Sets `currentValue`.
+   * Sets `state`.
    */
-  setValue: React.Dispatch<React.SetStateAction<CheckboxState["currentValue"]>>;
+  setState: React.Dispatch<React.SetStateAction<CheckboxState["state"]>>;
 };
 
-export type CheckboxInitialState = Partial<Pick<CheckboxState, "currentValue">>;
+export type CheckboxInitialState = Partial<Pick<CheckboxState, "state">>;
 
 export type CheckboxStateReturn = CheckboxState & CheckboxActions;
 
@@ -31,17 +31,15 @@ export type CheckboxStateReturn = CheckboxState & CheckboxActions;
 export function useCheckboxState(
   initialState: unstable_SealedInitialState<CheckboxInitialState> = {}
 ): CheckboxStateReturn {
-  const { currentValue: initialCurrentValue = false } = unstable_useSealedState(
-    initialState
-  );
-  const [currentValue, setValue] = React.useState(initialCurrentValue);
+  const { state: initialValue = false } = unstable_useSealedState(initialState);
+  const [state, setState] = React.useState(initialValue);
 
   return {
-    currentValue,
-    setValue
+    state,
+    setState
   };
 }
 
-const keys: Keys<CheckboxStateReturn> = ["currentValue", "setValue"];
+const keys: Keys<CheckboxStateReturn> = ["state", "setState"];
 
 useCheckboxState.__keys = keys;

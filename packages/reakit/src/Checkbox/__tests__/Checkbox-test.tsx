@@ -264,8 +264,8 @@ test("indeterminate", () => {
   const { getByLabelText, rerender } = render(<Comp />);
   const checkbox = getByLabelText("checkbox");
   expect(checkbox).toHaveAttribute("aria-checked", "false");
-  rerender(<Comp currentValue="indeterminate" />);
+  rerender(<Comp state="indeterminate" />);
   expect(checkbox).toHaveAttribute("aria-checked", "mixed");
-  rerender(<Comp currentValue />);
+  rerender(<Comp state />);
   expect(checkbox).toHaveAttribute("aria-checked", "true");
 });

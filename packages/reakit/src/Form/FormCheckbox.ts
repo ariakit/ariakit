@@ -21,7 +21,7 @@ import { shouldShowError } from "./__utils/shouldShowError";
 
 export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
   CheckboxOptions,
-  "value" | "currentValue" | "setValue"
+  "value" | "state" | "setState"
 > &
   Pick<
     unstable_FormStateReturn<V>,
@@ -54,8 +54,8 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   options = unstable_useOptions("FormCheckbox", options, htmlProps);
 
   const isBoolean = typeof options.value === "undefined";
-  const currentValue = unstable_getIn(options.values, options.name);
-  const setValue = (value: DeepPathValue<V, P>) =>
+  const state = unstable_getIn(options.values, options.name);
+  const setState = (value: DeepPathValue<V, P>) =>
     options.update(options.name, value);
 
   htmlProps = mergeProps(
@@ -78,8 +78,8 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   htmlProps = useCheckbox(
     {
       ...options,
-      currentValue: currentValue as any,
-      setValue: setValue as any
+      state: state as any,
+      setState: setState as any
     },
     htmlProps
   );

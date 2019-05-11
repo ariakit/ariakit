@@ -12,25 +12,25 @@ test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "currentValue": false,
+      "state": false,
     }
   `);
 });
 
-test("initial state currentValue", () => {
-  const result = render({ currentValue: true });
+test("initial state", () => {
+  const result = render({ state: true });
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "currentValue": true,
+      "state": true,
     }
   `);
 });
 
-test("initial state array currentValue", () => {
-  const result = render({ currentValue: ["a", "b"] });
+test("initial state array", () => {
+  const result = render({ state: ["a", "b"] });
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "currentValue": Array [
+      "state": Array [
         "a",
         "b",
       ],
@@ -38,12 +38,12 @@ test("initial state array currentValue", () => {
   `);
 });
 
-test("setValue", () => {
+test("setState", () => {
   const result = render();
-  act(() => result.current.setValue(true));
+  act(() => result.current.setState(true));
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "currentValue": true,
+      "state": true,
     }
   `);
 });

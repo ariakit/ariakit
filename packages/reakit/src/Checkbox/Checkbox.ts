@@ -13,7 +13,7 @@ import { unstable_createHook } from "../utils/createHook";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
 export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
-  Pick<Partial<CheckboxStateReturn>, "currentValue" | "setValue"> & {
+  Pick<Partial<CheckboxStateReturn>, "state" | "setState"> & {
     /**
      * Checkbox's value is going to be used when multiple checkboxes share the
      * same state. Checking a checkbox with value will add it to the state
@@ -21,7 +21,7 @@ export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
      */
     value?: any;
     /**
-     * Checkbox's checked state. If present, it's used instead of currentValue.
+     * Checkbox's checked state. If present, it's used instead of `state`.
      */
     checked?: boolean;
   };
@@ -49,25 +49,25 @@ export const useCheckbox = unstable_createHook<
       typeof options.checked !== "undefined"
         ? options.checked
         : isBoolean
-        ? Boolean(options.currentValue)
-        : ((options.currentValue || []) as any[]).indexOf(options.value) !== -1;
+        ? Boolean(options.state)
+        : ((options.state || []) as any[]).indexOf(options.value) !== -1;
 
     React.useEffect(() => {
       if (!ref.current) {
         warning(
-          options.currentValue === "indeterminate",
+          options.state === "indeterminate",
           "Can't set indeterminate state because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/checkbox",
           "Checkbox"
         );
         return;
       }
 
-      if (options.currentValue === "indeterminate") {
+      if (options.state === "indeterminate") {
         ref.current.indeterminate = true;
       } else if (ref.current.indeterminate) {
         ref.current.indeterminate = false;
       }
-    }, [options.currentValue]);
+    }, [options.state]);
 
     const onChange = React.useCallback(
       (event: React.SyntheticEvent) => {
@@ -77,27 +77,27 @@ export const useCheckbox = unstable_createHook<
           htmlOnChange(event);
         }
 
-        if (!options.setValue) return;
+        if (!options.setState) return;
 
         if (isBoolean) {
-          options.setValue(!checked);
+          options.setState(!checked);
         } else {
-          const array: any[] = Array.isArray(options.currentValue)
-            ? options.currentValue
+          const array: any[] = Array.isArray(options.state)
+            ? options.state
             : [];
           const index = array.indexOf(options.value);
           if (index === -1) {
-            options.setValue([...array, options.value]);
+            options.setState([...array, options.value]);
           } else {
-            options.setValue(removeIndexFromArray(array, index));
+            options.setState(removeIndexFromArray(array, index));
           }
         }
       },
       [
         htmlOnChange,
         options.disabled,
-        options.setValue,
-        options.currentValue,
+        options.setState,
+        options.state,
         options.value
       ]
     );
@@ -114,8 +114,7 @@ export const useCheckbox = unstable_createHook<
       {
         ref,
         checked,
-        "aria-checked":
-          options.currentValue === "indeterminate" ? "mixed" : checked,
+        "aria-checked": options.state === "indeterminate" ? "mixed" : checked,
         value: options.value,
         role: "checkbox",
         type: "checkbox",

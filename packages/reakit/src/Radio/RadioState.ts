@@ -15,18 +15,18 @@ export type RadioState = RoverState & {
   /**
    * The `value` attribute of the current checked radio.
    */
-  currentValue: any;
+  state: any;
 };
 
 export type RadioActions = RoverActions & {
   /**
-   * Changes the `currentValue` state.
+   * Sets `state`.
    */
-  setValue: React.Dispatch<React.SetStateAction<any>>;
+  setState: React.Dispatch<React.SetStateAction<any>>;
 };
 
 export type RadioInitialState = RoverInitialState &
-  Partial<Pick<RadioState, "currentValue">>;
+  Partial<Pick<RadioState, "state">>;
 
 export type RadioStateReturn = RadioState & RadioActions;
 
@@ -34,26 +34,26 @@ export function useRadioState(
   initialState: unstable_SealedInitialState<RadioInitialState> = {}
 ): RadioStateReturn {
   const {
-    currentValue: initialCurrentValue,
+    state: initialCurrentValue,
     loop: loop = true,
     ...sealed
   } = unstable_useSealedState(initialState);
 
-  const [currentValue, setValue] = React.useState(initialCurrentValue);
+  const [state, setState] = React.useState(initialCurrentValue);
 
   const rover = useRoverState({ ...sealed, loop });
 
   return {
     ...rover,
-    currentValue,
-    setValue
+    state,
+    setState
   };
 }
 
 const keys: Keys<RadioStateReturn> = [
   ...useRoverState.__keys,
-  "currentValue",
-  "setValue"
+  "state",
+  "setState"
 ];
 
 useRadioState.__keys = keys;
