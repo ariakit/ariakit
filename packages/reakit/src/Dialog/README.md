@@ -1,17 +1,19 @@
 ---
-path: /docs/dialog
+path: /docs/dialog/
 redirect_from:
-  - /components/overlay
-  - /components/overlay/overlaycontainer
-  - /components/overlay/overlayhide
-  - /components/overlay/overlayshow
-  - /components/overlay/overlaytoggle
-  - /components/backdrop
+  - /components/overlay/
+  - /components/overlay/overlaycontainer/
+  - /components/overlay/overlayhide/
+  - /components/overlay/overlayshow/
+  - /components/overlay/overlaytoggle/
+  - /components/backdrop/
 ---
 
 # Dialog (Modal)
 
-`Dialog` follows the [WAI-ARIA Dialog (Modal) Pattern](https://www.w3.org/TR/wai-aria-practices/#dialog_modal). It's rendered within a [Portal](/docs/portal) by default, but it also has a [non-modal state](#non-modal-dialogs), which doesn't use portals.
+`Dialog` follows the [WAI-ARIA Dialog (Modal) Pattern](https://www.w3.org/TR/wai-aria-practices/#dialog_modal). It's rendered within a [Portal](/docs/portal/) by default, but it also has a [non-modal state](#non-modal-dialogs), which doesn't use portals.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -19,7 +21,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -73,7 +75,7 @@ Reakit doesn't strictly follow that. When `Dialog` has `modal` set to `false`:
 - Focus is not trapped within the dialog.
 - Body scroll isn't disabled.
 
-There's a few use cases for these conditions, like [Popover](/docs/popover) and [Menu](/docs/menu).
+There's a few use cases for these conditions, like [Popover](/docs/popover/) and [Menu](/docs/menu/).
 
 ```jsx
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
@@ -96,7 +98,7 @@ function Example() {
 }
 ```
 
-If desirable, a non-modal dialog can also be rendered within a [Portal](/docs/portal). The `hideOnClickOutside` prop can be set to `false` so clicking and focusing outside doesn't close it.
+If desirable, a non-modal dialog can also be rendered within a [Portal](/docs/portal/). The `hideOnClickOutside` prop can be set to `false` so clicking and focusing outside doesn't close it.
 
 ```jsx
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
@@ -140,25 +142,23 @@ Reakit supports multiple nested modal dialogs and non-modal dialogs. <kbd>ESC</k
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
 import { Button } from "reakit/Button";
 
-function Example(props) {
-  const dialog = useDialogState();
+function Example() {
+  const dialog1 = useDialogState();
+  const dialog2 = useDialogState();
   return (
     <>
-      <DialogDisclosure {...dialog}>
-        {props.modal === false ? "Open non-modal dialog" : "Open dialog"}
-      </DialogDisclosure>
-      <Dialog aria-label="Test" {...dialog} {...props}>
-        {props.modal === false ? (
-          <>
-            Tab me.
-            <Button onClick={dialog.hide}>Close non-modal dialog</Button>
-          </>
-        ) : (
-          <>
-            Press <kbd>ESC</kbd> to close me.
-            <Example modal={false} />
-          </>
-        )}
+      <DialogDisclosure {...dialog1}>Open dialog</DialogDisclosure>
+      <Dialog aria-label="Test" {...dialog1}>
+        <p>
+          Press <kbd>ESC</kbd> to close me.
+        </p>
+        <div style={{ display: "grid", gridGap: 16, gridAutoFlow: "column" }}>
+          <Button onClick={dialog1.hide}>Close dialog</Button>
+          <DialogDisclosure {...dialog2}>Open nested dialog</DialogDisclosure>
+        </div>
+        <Dialog aria-label="Nested" {...dialog2}>
+          <Button onClick={dialog2.hide}>Close nested dialog</Button>
+        </Dialog>
       </Dialog>
     </>
   );
@@ -209,17 +209,17 @@ function Example() {
 - Clicking outside the `Dialog` closes it unless `hideOnClickOutside` is set to `false`.
 - Focusing outside the non-modal `Dialog` closes it unless `hideOnClickOutside` is set to `false`.
 - When `Dialog` closes, focus returns to its disclosure unless the closing action has been triggered by a click/focus on a tabbable element outside the `Dialog`. In this case, `Dialog` closes and this element remains with focus.
-- `DialogDisclosure` extends the accessibility features of [HiddenDisclosure](/docs/hidden#accessibility).
+- `DialogDisclosure` extends the accessibility features of [HiddenDisclosure](/docs/hidden/#accessibility).
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Dialog` uses [Hidden](/docs/hidden), and is used by [Popover](/docs/popover) and its derivatives.
-- `DialogDisclosure` uses [HiddenDisclosure](/docs/hidden), and is used by [PopoverDisclosure](/docs/popover) and its derivatives.
-- `DialogBackdrop` uses [Hidden](/docs/hidden), and is used by [PopoverBackdrop](/docs/popover) and its derivatives.
+- `Dialog` uses [Hidden](/docs/hidden/), and is used by [Popover](/docs/popover/) and its derivatives.
+- `DialogDisclosure` uses [HiddenDisclosure](/docs/hidden/), and is used by [PopoverDisclosure](/docs/popover/) and its derivatives.
+- `DialogBackdrop` uses [Hidden](/docs/hidden/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -238,6 +238,11 @@ Learn more in [Composition](/docs/composition#props-hooks).
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -301,6 +306,11 @@ It will be set to `false` if `modal` is `false`.
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 ### `DialogDisclosure`
 

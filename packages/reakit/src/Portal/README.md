@@ -1,12 +1,14 @@
 ---
-path: /docs/portal
+path: /docs/portal/
 redirect_from:
-  - /components/portal
+  - /components/portal/
 ---
 
 # Portal
 
 `Portal` is an abstract wrapper component that uses [React Portals](https://reactjs.org/docs/portals.html) underneath. It can be used to put anything in a portal and supports nested portals.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -14,7 +16,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 

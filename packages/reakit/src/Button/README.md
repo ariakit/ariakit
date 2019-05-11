@@ -1,12 +1,14 @@
 ---
-path: /docs/button
+path: /docs/button/
 redirect_from:
-  - /components/button
+  - /components/button/
 ---
 
 # Button
 
-`Button` is a component that enables users to trigger an action or event, such as submitting a [Form](/docs/form), opening a [Dialog](/docs/dialog), canceling an action, or performing a delete operation. It follows the [WAI-ARIA Button Pattern](https://www.w3.org/TR/wai-aria-practices/#button).
+`Button` is a component that enables users to trigger an action or event, such as submitting a [Form](/docs/form/), opening a [Dialog](/docs/dialog/), canceling an action, or performing a delete operation. It follows the [WAI-ARIA Button Pattern](https://www.w3.org/TR/wai-aria-practices/#button).
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -14,7 +16,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -70,13 +72,13 @@ function Example() {
     ```
     This is useful when the presence of a `Button` is important enough so users can perceive it by tabbing.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Button` uses [Tabbable](/docs/tabbable), and is used by [FormPushButton](/docs/form), [FormRemoveButton](/docs/form), [HiddenDisclosure](/docs/hidden) and all their derivatives.
+- `Button` uses [Tabbable](/docs/tabbable/), and is used by [FormPushButton](/docs/form/), [FormRemoveButton](/docs/form/), [HiddenDisclosure](/docs/hidden/) and all their derivatives.
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

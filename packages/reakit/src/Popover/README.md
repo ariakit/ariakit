@@ -1,16 +1,18 @@
 ---
-path: /docs/popover
+path: /docs/popover/
 redirect_from:
-  - /components/popover
-  - /components/popover/popovercontainer
-  - /components/popover/popoverhide
-  - /components/popover/popovershow
-  - /components/popover/popovertoggle
+  - /components/popover/
+  - /components/popover/popovercontainer/
+  - /components/popover/popoverhide/
+  - /components/popover/popovershow/
+  - /components/popover/popovertoggle/
 ---
 
 # Popover
 
-`Popover` is a [non-modal dialog](/docs/dialog#non-modal-dialogs) that floats around its disclosure. It's commonly used for displaying additional rich content on top of something.
+`Popover` is a [non-modal dialog](/docs/dialog/#non-modal-dialogs) that floats around its disclosure. It's commonly used for displaying additional rich content on top of something.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -18,7 +20,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -46,19 +48,19 @@ function Example() {
 
 ## Accessibility
 
-- `Popover` extends the accessibility features of [Dialog](/docs/dialog#accessibility).
-- `PopoverDisclosure` extends the accessibility features of [DialogDisclosure](/docs/dialog#accessibility).
+- `Popover` extends the accessibility features of [Dialog](/docs/dialog/#accessibility).
+- `PopoverDisclosure` extends the accessibility features of [DialogDisclosure](/docs/dialog/#accessibility).
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Popover` uses [Dialog](/docs/dialog), and is used by [Menu](/docs/menu).
-- `PopoverArrow` uses [Box](/docs/box), and is used by [TooltipArrow](/docs/tooltip).
-- `PopoverBackdrop` uses [DialogBackdrop](/docs/dialog).
-- `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog), and is used by [MenuDisclosure](/docs/menu).
+- `Popover` uses [Dialog](/docs/dialog/), and is used by [Menu](/docs/menu/).
+- `PopoverArrow` uses [Box](/docs/box/), and is used by [TooltipArrow](/docs/tooltip/).
+- `PopoverBackdrop` uses [DialogBackdrop](/docs/dialog/).
+- `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog/), and is used by [MenuDisclosure](/docs/menu/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -76,6 +78,11 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
   Actual `placement`.
 
+- **`unstable_fixed`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
+
 - **`unstable_flip`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -91,12 +98,27 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
   Offset between the reference and the popover.
 
+- **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description.
+
+- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
+  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
+
+  TODO: Description.
+
 ### `Popover`
 
 - **`visible`**
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -167,6 +189,11 @@ It will be set to `false` if `modal` is `false`.
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 ### `PopoverDisclosure`
 

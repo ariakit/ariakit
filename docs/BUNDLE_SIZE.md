@@ -1,12 +1,14 @@
 ---
-path: /docs/reducing-bundle-size
+path: /docs/bundle-size/
 redirect_from:
-  - /guide/bundle-size
+  - /guide/bundle-size/
 ---
 
-# Reducing bundle size
+# Bundle size
 
-You can use Reakit completely or only some of its modules according to your needs. Either way, your final bundle will include only the parts you're using.
+You can use Reakit completely or only some of its modules according to your needs. Either way, your final bundle will include only the parts you're using. The whole library, including all dependencies, has around `20 kB` gzipped (check on [Bundlephobia](https://bundlephobia.com/result?p=reakit)). Each component has an average size of `1 kB`.
+
+<carbon-ad></carbon-ad>
 
 ## Tree shaking
 
@@ -16,7 +18,7 @@ If you're using modern tooling, such as [webpack](https://webpack.js.org/), [cre
 >
 > [Learn more](https://medium.com/@netxm/what-is-tree-shaking-de7c6be5cadd)
 
-In the below example, only [Button](../packages/reakit/src/Button/Button.md), [Popover](../packages/reakit/src/Popover/Popover.md) and their dependencies will be included in your final bundle:
+In the below example, only [Button](/docs/button/), [Popover](/docs/popover/) and their dependencies will be included in your final bundle:
 
 ```js static
 import { Button, Popover } from "reakit";

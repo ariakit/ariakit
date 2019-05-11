@@ -15,7 +15,7 @@
 </p>
 
 <a href="https://reakit.io">
-  <img src="https://user-images.githubusercontent.com/3068563/55928159-1722a000-5bee-11e9-865c-184fd2160fae.png" alt="Reakit thumbnail" width="100%" />
+  <img src="https://user-images.githubusercontent.com/3068563/57511686-36d9e080-72e0-11e9-912b-8b67ddd135e2.png" alt="Reakit thumbnail" width="100%" />
 </a>
 
 <br>
@@ -102,7 +102,7 @@ function App() {
 ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
-Read the [documentation](https://reakit.io/docs) to learn more.
+Play with this on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) and read the [documentation](https://reakit.io/docs) to learn more.
 
 
 ## Contributors

@@ -1,10 +1,12 @@
 ---
-path: /docs/menu
+path: /docs/menu/
 ---
 
 # Menu
 
 `Menu` follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuDisclosure` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -12,7 +14,7 @@ path: /docs/menu
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -268,9 +270,9 @@ function Example() {
 ## Accessibility
 
 - `StaticMenu` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
-- `MenuDisclosure` extends the accessibility features of [PopoverDisclosure](/docs/popover#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
+- `MenuDisclosure` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
-- `MenuItem` extends the accessibility features of [Rover](/docs/rover), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
+- `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 - `MenuItemCheckbox` has role `menuitemcheckbox`.
 - `MenuItemRadio` has role `menuitemradio`.
 - Pressing <kbd>Enter</kbd> on `MenuDisclosure` opens its menu (or submenu) and places focus on its first item.
@@ -278,20 +280,20 @@ function Example() {
 - Pressing <kbd>Space</kbd> on a `MenuItemRadio` that is not checked, without closing `Menu`, checks the focused `MenuItemRadio` and unchecks any other checked `MenuItemRadio` in the same group.
 - Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `StaticMenu` whose label begins with that printable character.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Menu` uses `StaticMenu` and [Popover](/docs/popover).
-- `MenuDisclosure` uses [PopoverDisclosure](/docs/popover).
-- `MenuGroup` uses [Box](/docs/box).
-- `MenuItem` uses [Rover](/docs/rover).
-- `MenuItemCheckbox` uses [Checkbox](/docs/checkbox).
-- `MenuItemRadio` uses [Radio](/docs/radio).
-- `MenuSeparator` uses [Separator](/docs/separator).
-- `StaticMenu` uses [Box](/docs/box).
+- `Menu` uses `StaticMenu` and [Popover](/docs/popover/).
+- `MenuDisclosure` uses [PopoverDisclosure](/docs/popover/).
+- `MenuGroup` uses [Box](/docs/box/).
+- `MenuItem` uses [Rover](/docs/rover/).
+- `MenuItemCheckbox` uses [Checkbox](/docs/checkbox/).
+- `MenuItemRadio` uses [Radio](/docs/radio/).
+- `MenuSeparator` uses [Separator](/docs/separator/).
+- `StaticMenu` uses [Box](/docs/box/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -326,6 +328,11 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
   Actual `placement`.
 
+- **`unstable_fixed`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
+
 - **`unstable_flip`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -340,6 +347,16 @@ Learn more in [Composition](/docs/composition#props-hooks).
   <code>number | undefined</code>
 
   Offset between the reference and the popover.
+
+- **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description.
+
+- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
+  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
+
+  TODO: Description.
 
 - **`unstable_values`** <span title="Experimental">⚠️</span>
   <code>{ [x: string]: any; }</code>
@@ -357,6 +374,11 @@ Learn more in [Composition](/docs/composition#props-hooks).
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 - **`hideOnClickOutside`**
   <code>boolean | undefined</code>

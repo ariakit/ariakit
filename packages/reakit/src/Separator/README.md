@@ -1,12 +1,14 @@
 ---
-path: /docs/separator
+path: /docs/separator/
 redirect_from:
-  - /components/divider
+  - /components/divider/
 ---
 
 # Separator
 
 `Separator` is a static structure that provides a visible boundary for elements. It implements the [WAI-ARIA Separator Role](https://www.w3.org/TR/wai-aria-1.1/#separator).
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -14,7 +16,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -30,13 +32,13 @@ function Example() {
 
 - `Separator` has role `separator`.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Separator` uses [Box](/docs/box), and is used by [MenuSeparator](/docs/menu) and [ToolbarSeparator](/docs/toolbar).
+- `Separator` uses [Box](/docs/box/), and is used by [MenuSeparator](/docs/menu/) and [ToolbarSeparator](/docs/toolbar/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

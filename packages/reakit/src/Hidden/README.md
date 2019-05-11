@@ -1,16 +1,18 @@
 ---
-path: /docs/hidden
+path: /docs/hidden/
 redirect_from:
-  - /components/hidden
-  - /components/hidden/hiddencontainer
-  - /components/hidden/hiddenhide
-  - /components/hidden/hiddenshow
-  - /components/hidden/hiddentoggle
+  - /components/hidden/
+  - /components/hidden/hiddencontainer/
+  - /components/hidden/hiddenhide/
+  - /components/hidden/hiddenshow/
+  - /components/hidden/hiddentoggle/
 ---
 
 # Hidden
 
 `Hidden` is an abstract component based on the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -18,7 +20,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -38,18 +40,18 @@ function Example() {
 
 ## Accessibility
 
-- `HiddenDisclosure` extends the accessibility features of [Button](/docs/button#accessibility).
+- `HiddenDisclosure` extends the accessibility features of [Button](/docs/button/#accessibility).
 - `HiddenDisclosure` has a value specified for `aria-controls` that refers to `Hidden`.
 - When `Hidden` is visible, `HiddenDisclosure` has `aria-expanded` set to `true`. When `Hidden` is hidden, it is set to `false`.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Hidden` uses [Box](/docs/box), and is used by [Dialog](/docs/dialog), [DialogBackdrop](/docs/dialog), [TabPanel](/docs/tab), [Tooltip](/docs/tooltip) and all their derivatives.
-- `HiddenDisclosure` uses [Button](/docs/button), and is used by [DialogDisclosure](/docs/dialog).
+- `Hidden` uses [Box](/docs/box/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
+- `HiddenDisclosure` uses [Button](/docs/button/), and is used by [DialogDisclosure](/docs/dialog/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -68,6 +70,11 @@ Learn more in [Composition](/docs/composition#props-hooks).
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 ### `HiddenDisclosure`
 

@@ -1,12 +1,14 @@
 ---
-path: /docs/toolbar
+path: /docs/toolbar/
 redirect_from:
-  - /components/toolbar
+  - /components/toolbar/
 ---
 
 # Toolbar
 
 `Toolbar` follows the [WAI-ARIA Toolbar Pattern](https://www.w3.org/TR/wai-aria-practices/#toolbar). It's a containers for grouping a set of controls.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -14,7 +16,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -49,17 +51,17 @@ function Example() {
 ## Accessibility
 
 - `Toolbar` has role `toolbar`.
-- `ToolbarItem` extends the accessibility features of [Rover](/docs/rover).
+- `ToolbarItem` extends the accessibility features of [Rover](/docs/rover/).
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Toolbar` uses [Box](/docs/box).
-- `ToolbarItem` uses [Rover](/docs/rover).
-- `ToolbarSeparator` uses [Separator](/docs/separator).
+- `Toolbar` uses [Box](/docs/box/).
+- `ToolbarItem` uses [Rover](/docs/rover/).
+- `ToolbarSeparator` uses [Separator](/docs/separator/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

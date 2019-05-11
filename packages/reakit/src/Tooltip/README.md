@@ -1,12 +1,14 @@
 ---
-path: /docs/tooltip
+path: /docs/tooltip/
 redirect_from:
-  - /components/tooltip
+  - /components/tooltip/
 ---
 
 # Tooltip
 
 `Tooltip` follows the [WAI-ARIA Tooltip Pattern](https://www.w3.org/TR/wai-aria-practices/#tooltip). It's a popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -14,7 +16,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -40,15 +42,15 @@ function Example() {
 - `Tooltip` has role `tooltip`.
 - `TooltipReference` has `aria-describedby` referring to `Tooltip`.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tooltip` uses [Hidden](/docs/hidden).
-- `TooltipArrow` uses [PopoverArrow](/docs/popover).
-- `TooltipReference` uses [Box](/docs/box).
+- `Tooltip` uses [Hidden](/docs/hidden/).
+- `TooltipArrow` uses [PopoverArrow](/docs/popover/).
+- `TooltipReference` uses [Box](/docs/box/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -66,6 +68,11 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
   Actual `placement`.
 
+- **`unstable_fixed`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
+
 - **`unstable_flip`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -81,12 +88,27 @@ Learn more in [Composition](/docs/composition#props-hooks).
 
   Offset between the reference and the popover.
 
+- **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description.
+
+- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
+  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
+
+  TODO: Description.
+
 ### `Tooltip`
 
 - **`visible`**
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 ### `TooltipArrow`
 

@@ -3,8 +3,6 @@ name: 💬 Questions / Help
 about: If you have questions, please check our Spectrum or StackOverflow
 ---
 
-<!-- Using Reakit at work? Consider asking your company to sponsor us: https://opencollective.com/reakit -->
-
 ## 💬 Questions and Help
 
 Please note that this issue tracker is not a help forum and this issue will be closed.

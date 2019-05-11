@@ -1,15 +1,25 @@
-<!-- Thanks for submitting a pull request! Please provide enough information so that others can review your pull request. -->
-<!-- Explain the **motivation** for making this change. What existing problem does the pull request solve? -->
-<!-- Try to link to an open issue for more information. -->
 
+Explain the motivation for making this change and try to link to an open issue for more information.
 
-<!-- In addition to that please answer these questions: -->
-
-**What kind of change does this PR introduce?**
-
-<!-- E.g. a bugfix, feature, refactoring, build related change, etc… -->
+Example: Closes #1
 
 **Does this PR introduce a breaking change?**
 
-<!-- If this PR introduces a breaking change, please describe the impact and a migration path for existing applications. -->
-<!-- Also, note that breaking changes should be targeted to branch "next" -->
+If so, describe it and provide a mini migration guide with code examples.
+
+Example:
+- `Foo` has been replaced by `Bar`.
+
+  **Before:**
+  ```js
+  const foo = Foo();
+  ```
+  **After:**
+  ```js
+  const bar = Bar();
+  ```
+
+<br>
+
+> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️<br>
+> https://opencollective.com/reakit

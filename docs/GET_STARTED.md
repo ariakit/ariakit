@@ -1,8 +1,8 @@
 ---
-path: /docs/get-started
+path: /docs/get-started/
 redirect_from:
-  - /docs
-  - /guide/get-started
+  - /docs/
+  - /guide/get-started/
 ---
 
 # Get started
@@ -23,7 +23,7 @@ npm install reakit
 
 Play with an example on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj).
 
-The code below will render an **unstyled** [Button](/docs/button).
+The code below will render an **unstyled** [Button](/docs/button/).
 
 ```jsx static
 import React from "react";
@@ -61,11 +61,9 @@ If you want to include default styles, you can use the **experimental** system f
 import { Provider, Button } from "reakit";
 import * as system from "reakit-system-bootstrap";
 
-Provider.unstable_use(system);
-
 function App() {
   return (
-    <Provider>
+    <Provider unstable_system={system}>
       <Button>Button</Button>
     </Provider>
   );

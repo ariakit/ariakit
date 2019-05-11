@@ -1,10 +1,12 @@
 ---
-path: /docs/tabbable
+path: /docs/tabbable/
 ---
 
 # Tabbable
 
 `Tabbable` is an abstract component that implements all the interactions an interactive element needs to be fully accessible when it's not rendered as its respective native element.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -12,7 +14,7 @@ path: /docs/tabbable
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -47,13 +49,13 @@ function Example() {
 - `click`, `mouseDown` and `mouseOver` events aren't triggered when the `disabled` prop is passed in.
 - Focus is automatically set on `Tabbable` when it's clicked, which prevents inconsistencies between browsers.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tabbable` uses [Box](/docs/box), and is used by [Button](/docs/button), [Checkbox](/docs/checkbox), [FormInput](/docs/form) and [Rover](/docs/rover).
+- `Tabbable` uses [Box](/docs/box/), and is used by [Button](/docs/button/), [Checkbox](/docs/checkbox/), [FormInput](/docs/form/) and [Rover](/docs/rover/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

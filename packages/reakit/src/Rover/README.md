@@ -1,10 +1,12 @@
 ---
-path: /docs/rover
+path: /docs/rover/
 ---
 
 # Rover
 
 `Rover` is an abstract component that implements the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus between items (rovers).
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -12,7 +14,7 @@ path: /docs/rover
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -52,16 +54,16 @@ function Example() {
 - Pressing <kbd>↓</kbd> moves focus to the next `Rover` if `orientation` is `vertical` or not defined.
 - Pressing <kbd>→</kbd> moves focus to the next `Rover` if `orientation` is `horizontal` or not defined.
 - Pressing <kbd>←</kbd> moves focus to the previous `Rover` if `orientation` is `horizontal` or not defined.
-- Pressing <kbd>Home<kbd> or <kbd>PageUp</kbd> moves focus to the first `Rover`.
-- Pressing <kbd>End<kbd> or <kbd>PageDown</kbd> moves focus to the last `Rover`.
+- Pressing <kbd>Home</kbd> or <kbd>PageUp</kbd> moves focus to the first `Rover`.
+- Pressing <kbd>End</kbd> or <kbd>PageDown</kbd> moves focus to the last `Rover`.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Rover` uses [Tabbable](/docs/tabbable), and is used by [MenuItem](/docs/menu), [Radio](/docs/radio), [Tab](/docs/tab) and [ToolbarItem](/docs/toolbar).
+- `Rover` uses [Tabbable](/docs/tabbable/), and is used by [MenuItem](/docs/menu/), [Radio](/docs/radio/), [Tab](/docs/tab/) and [ToolbarItem](/docs/toolbar/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

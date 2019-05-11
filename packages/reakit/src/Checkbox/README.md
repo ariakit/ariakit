@@ -1,10 +1,12 @@
 ---
-path: /docs/checkbox
+path: /docs/checkbox/
 ---
 
 # Checkbox
 
 `Checkbox` follows the [WAI-ARIA Checkbox Pattern](https://www.w3.org/TR/wai-aria-practices/#checkbox), which means you'll have a working dual or tri-state toggle button regardless of the type of the underlying element. By default, it renders the native `<input type="checkbox">`.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -12,7 +14,7 @@ path: /docs/checkbox
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -125,13 +127,13 @@ function Example() {
 - When not checked, `Checkbox` has `aria-checked` set to `false`.
 - When partially checked, `Checkbox` has `aria-checked` set to `mixed`.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Checkbox` uses [Tabbable](/docs/tabbable), and is used by [FormCheckbox](/docs/form) and [MenuItemCheckbox](/docs/menu).
+- `Checkbox` uses [Tabbable](/docs/tabbable/), and is used by [FormCheckbox](/docs/form/) and [MenuItemCheckbox](/docs/menu/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

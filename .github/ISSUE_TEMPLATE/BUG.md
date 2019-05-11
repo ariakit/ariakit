@@ -3,8 +3,6 @@ name: 🐛 Bug report
 about: Create a report to help us improve
 ---
 
-<!-- Using Reakit at work? Consider asking your company to sponsor us: https://opencollective.com/reakit -->
-
 ## 🐛 Bug report
 
 ### Current behavior
@@ -34,3 +32,8 @@ $ npx envinfo --system --binaries --npmPackages
 
 Paste here
 ```
+
+<br>
+
+> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️<br>
+> https://opencollective.com/reakit

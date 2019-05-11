@@ -1,17 +1,19 @@
 ---
-path: /docs/tab
+path: /docs/tab/
 redirect_from:
-  - /components/tabs
-  - /components/tabs/tabscontainer
-  - /components/tabs/tabsnext
-  - /components/tabs/tabspanel
-  - /components/tabs/tabsprevious
-  - /components/tabs/tabstab
+  - /components/tabs/
+  - /components/tabs/tabscontainer/
+  - /components/tabs/tabsnext/
+  - /components/tabs/tabspanel/
+  - /components/tabs/tabsprevious/
+  - /components/tabs/tabstab/
 ---
 
 # Tab
 
 `Tab` follows the [WAI-ARIA Tabs Pattern](https://www.w3.org/TR/wai-aria-practices/#tabpanel). It's a component that, when activated, display a `TabPanel`.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -19,7 +21,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -98,21 +100,21 @@ function Example() {
 - `Tab` has role `tab`.
 - `Tab` has `aria-controls` referring to its associated `TabPanel`.
 - The selected `Tab` has `aria-selected` set to `true` and all other `Tab`s have it set to `false`.
-- `Tab` extends the accessibility features of [Rover](/docs/rover#accessibility).
+- `Tab` extends the accessibility features of [Rover](/docs/rover/#accessibility).
 - `TabList` has role `tablist`.
 - `TabList` has `aria-orientation` set to `vertical` or `horizontal` based on the value of the `orientation` option.
 - `TabPanel` has role `tabpanel`.
 - `TabPanel` has `aria-labelledby` referring to its associated `Tab`.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tab` uses [Rover](/docs/rover).
-- `TabList` uses [Box](/docs/box).
-- `TabPanel` uses [Hidden](/docs/hidden).
+- `Tab` uses [Rover](/docs/rover/).
+- `TabList` uses [Box](/docs/box/).
+- `TabPanel` uses [Hidden](/docs/hidden/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -249,6 +251,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`unstable_hasTransition`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  TODO: Description
 
 - **`selectedId`**
   <code>string | null</code>

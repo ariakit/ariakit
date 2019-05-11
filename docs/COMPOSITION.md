@@ -1,14 +1,16 @@
 ---
-path: /docs/composition
+path: /docs/composition/
 redirect_from:
-  - /guide/composition
+  - /guide/composition/
 ---
 
 # Composition
 
-Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box), [Tabbable](/docs/tabbable) and [Rover](/docs/rover).
+Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box/), [Tabbable](/docs/tabbable/) and [Rover](/docs/rover/).
 
 The API isn't different. It's designed so you can create new things based on any existing module.
+
+<carbon-ad></carbon-ad>
 
 ## `as` prop
 
@@ -27,7 +29,7 @@ function Example() {
 }
 ```
 
-The topmost component (in the case above, [Checkbox](/docs/checkbox)) will take precedence if there's any conflict between props.
+The topmost component (in the case above, [Checkbox](/docs/checkbox/)) will take precedence if there's any conflict between props.
 
 ## Render props
 
@@ -75,9 +77,9 @@ function Example() {
 
 ## State hooks
 
-State hooks are composable as well. For example, [`useTabState`](/docs/tab) uses [`useRoverState`](/docs/rover) underneath. You can take advantage of the same approach to create new fancy state hooks.
+State hooks are composable as well. For example, [`useTabState`](/docs/tab/) uses [`useRoverState`](/docs/rover/) underneath. You can take advantage of the same approach to create new fancy state hooks.
 
-```jsx { "maxHeight": "500px" }
+```jsx
 import React from "react";
 import { useHiddenState, Hidden, HiddenDisclosure } from "reakit";
 
@@ -114,4 +116,4 @@ function Example() {
 }
 ```
 
-Learn more in [Managing state](/docs/managing-state).
+Learn more in [Managing state](/docs/managing-state/).

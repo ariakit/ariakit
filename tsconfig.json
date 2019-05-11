@@ -6,6 +6,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
+    "lib": ["dom"],
     "strict": true,
     "strictFunctionTypes": false,
     "declaration": true,

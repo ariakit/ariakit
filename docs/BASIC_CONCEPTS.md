@@ -1,14 +1,16 @@
 ---
-path: /docs/basic-concepts
+path: /docs/basic-concepts/
 ---
 
 # Basic concepts
 
 Because it has so many components, Reakit has a very wide API surface. However, the API is established on principles that make it more consistent throughout the components. Understanding these concepts will give you enough base to work with any Reakit component right away.
 
+<carbon-ad></carbon-ad>
+
 ## Components
 
-Like any other component library, components are the **higher level API** in Reakit. The [Hidden](/docs/hidden) component, for example, renders an element that can be hidden or visible.
+Like any other component library, components are the **higher level API** in Reakit. The [Hidden](/docs/hidden/) component, for example, renders an element that can be hidden or visible.
 
 <!-- eslint-disable -->
 ```jsx static
@@ -35,7 +37,7 @@ function Example() {
 }
 ```
 
-Learn more in [Composition](/docs/composition#as-prop).
+Learn more in [Composition](/docs/composition/#as-prop).
 
 ### Render props
 
@@ -53,13 +55,13 @@ function Example() {
 }
 ```
 
-Learn more in [Composition](/docs/composition#render-props).
+Learn more in [Composition](/docs/composition/#render-props).
 
 ## State hooks
 
 Many Reakit components accept state props, and you can plug your own. As a convenience — and because some states need more complex logic —, Reakit provides state hooks out of the box. They receive some options as the initial state and return options needed by their respective components. 
 
-The returned options can be passed as props directly to the components, or used separately to access, update and/or [extend the state](/docs/composition#state-hooks).
+The returned options can be passed as props directly to the components, or used separately to access, update and/or [extend the state](/docs/composition/#state-hooks).
 
 ```jsx
 import { useHiddenState, Hidden } from "reakit";
@@ -75,11 +77,11 @@ function Example() {
 }
 ```
 
-Learn more in [Managing state](/docs/managing-state).
+Learn more in [Managing state](/docs/managing-state/).
 
 ## Props hooks
 
-Finally, as a **low level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog) uses [Hidden](/docs/hidden), which in turn uses [Box](/docs/box).
+Finally, as a **low level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [Hidden](/docs/hidden/), which in turn uses [Box](/docs/box/).
 
 ```jsx
 import { useHiddenState, useHidden, useHiddenDisclosure } from "reakit";
@@ -102,4 +104,4 @@ It's recommended to use the component API whenever possible. But there are two c
 - You're building a component library and want to leverage composition the same way Reakit does internally.
 - You want to compose multiple Reakit components.
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).

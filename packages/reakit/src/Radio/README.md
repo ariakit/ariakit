@@ -1,10 +1,12 @@
 ---
-path: /docs/radio
+path: /docs/radio/
 ---
 
 # Radio
 
 `Radio` follows the [WAI-ARIA Radio Button/Group Pattern](https://www.w3.org/TR/wai-aria-practices/#radiobutton).
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -12,7 +14,7 @@ path: /docs/radio
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -41,16 +43,16 @@ function Example() {
 
 - `Radio` has role `radio`.
 - `Radio` has `aria-checked` set to `true` when it's checked. Otherwise, `aria-checked` is set to `false`.
-- `Radio` extends the accessibility features of [Rover](/docs/rover), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
+- `Radio` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Radio` uses [Rover](/docs/rover), and ise used by [FormRadio](/docs/form) and [MenuItemRadio](/docs/radio).
-- `RadioGroup` uses [Box](/docs/box).
+- `Radio` uses [Rover](/docs/rover/), and ise used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
+- `RadioGroup` uses [Box](/docs/box/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 

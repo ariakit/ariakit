@@ -1,10 +1,12 @@
 ---
-path: /docs/visually-hidden
+path: /docs/visually-hidden/
 ---
 
 # VisuallyHidden
 
 `VisuallyHidden` is a common techinique used in web accessibility to hide content from the visual client, but keep it readable for screen readers.
+
+<carbon-ad></carbon-ad>
 
 ## Installation
 
@@ -12,7 +14,7 @@ path: /docs/visually-hidden
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started).
+Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
@@ -36,13 +38,13 @@ function Example() {
 
 - `VisuallyHidden` has all the styles necessary to hide it from visual clients, but keep it for screen readers.
 
-Learn more in [Accessibility](/docs/accessibility).
+Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Separator` uses [Box](/docs/box).
+- `Separator` uses [Box](/docs/box/).
 
-Learn more in [Composition](/docs/composition#props-hooks).
+Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
