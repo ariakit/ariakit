@@ -5,7 +5,7 @@ import {
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
 import { Omit } from "../__utils/types";
 import { warning } from "../__utils/warning";
@@ -110,7 +110,7 @@ export const useCheckbox = unstable_createHook<
       [onChange]
     );
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref,
         checked,

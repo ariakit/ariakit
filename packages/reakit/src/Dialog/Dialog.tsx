@@ -2,7 +2,7 @@ import * as React from "react";
 import { warning } from "../__utils/warning";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { Portal } from "../Portal/Portal";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
@@ -159,7 +159,7 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
       [options.unstable_portal, wrap]
     );
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref: dialog,
         role: "dialog",

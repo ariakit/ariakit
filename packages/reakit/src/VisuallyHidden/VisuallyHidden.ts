@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 
@@ -18,7 +18,7 @@ export const useVisuallyHidden = unstable_createHook<
   compose: useBox,
 
   useProps(_, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         style: {
           border: 0,

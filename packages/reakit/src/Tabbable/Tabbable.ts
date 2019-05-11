@@ -1,6 +1,6 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useLiveRef } from "../__utils/useLiveRef";
 import { unstable_createHook } from "../utils/createHook";
@@ -66,7 +66,7 @@ export const useTabbable = unstable_createHook<
     const clickKeysRef = useLiveRef(options.unstable_clickKeys);
     const trulyDisabled = options.disabled && !options.focusable;
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref,
         disabled: trulyDisabled,

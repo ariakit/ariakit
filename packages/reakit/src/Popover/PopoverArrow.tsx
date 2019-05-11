@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
@@ -33,7 +33,7 @@ export const usePopoverArrow = unstable_createHook<
       left: "rotateZ(90deg)"
     };
     const { unstable_arrowStyles: arrowStyles } = options;
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref: options.unstable_arrowRef,
         style: {

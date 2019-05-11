@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { Portal } from "../Portal/Portal";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
@@ -27,7 +27,7 @@ export const useTooltip = unstable_createHook<TooltipOptions, TooltipHTMLProps>(
         (children: React.ReactNode) => <Portal>{children}</Portal>,
         []
       );
-      return mergeProps(
+      return unstable_mergeProps(
         {
           role: "tooltip",
           ref: options.unstable_popoverRef,

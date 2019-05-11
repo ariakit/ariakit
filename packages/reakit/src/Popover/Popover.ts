@@ -1,5 +1,5 @@
 import { warning } from "../__utils/warning";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { DialogOptions, DialogHTMLProps, useDialog } from "../Dialog/Dialog";
@@ -27,7 +27,7 @@ export const usePopover = unstable_createHook<PopoverOptions, PopoverHTMLProps>(
     },
 
     useProps(options, htmlProps) {
-      return mergeProps(
+      return unstable_mergeProps(
         {
           ref: options.unstable_popoverRef,
           style: options.unstable_popoverStyles

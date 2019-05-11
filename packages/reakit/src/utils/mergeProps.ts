@@ -85,7 +85,7 @@ function mergeStylesInObjects(objects: Array<{ style?: any }>) {
   };
 }
 
-export function mergeProps<T extends any[]>(...objects: T) {
+export function unstable_mergeProps<T extends any[]>(...objects: T) {
   objects = objects.filter(isObject) as T;
   return Object.assign(
     {},

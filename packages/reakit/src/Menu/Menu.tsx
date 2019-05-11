@@ -1,6 +1,6 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -128,7 +128,7 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
       [rovingBindings, parentBindings]
     );
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref,
         role: "menu",

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -20,7 +20,7 @@ export const useButton = unstable_createHook<ButtonOptions, ButtonHTMLProps>({
   compose: useTabbable,
 
   useProps(_, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         role: "button",
         type: "button"

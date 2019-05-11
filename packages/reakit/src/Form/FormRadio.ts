@@ -4,7 +4,7 @@ import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import { FormRadioGroupContext } from "./FormRadioGroup";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
@@ -51,7 +51,7 @@ export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
   const checked = currentChecked === options.value;
   const allOptions: RadioOptions = { ...rover, ...options, checked };
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       name: formatInputName(options.name),
       onChange: () => options.update(options.name, options.value),

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
@@ -21,7 +21,7 @@ export function unstable_useForm(
 ) {
   options = unstable_useOptions("Form", options, htmlProps);
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       role: "form",
       noValidate: true,

@@ -1,5 +1,5 @@
 import { BoxHTMLProps, BoxOptions } from "reakit/Box/Box";
-import { mergeProps } from "reakit/utils/mergeProps";
+import { unstable_mergeProps } from "reakit/utils/mergeProps";
 import { usePalette } from "./utils/palette";
 import { useContrast } from "./utils/contrast";
 
@@ -25,5 +25,5 @@ export function useBoxProps(
     ...(borderColor ? { border: `1px solid ${borderColor}`, borderColor } : {})
   };
 
-  return mergeProps({ style }, htmlProps);
+  return unstable_mergeProps({ style }, htmlProps);
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { GroupOptions, GroupHTMLProps, useGroup } from "../Group/Group";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { DeepPath } from "./__utils/types";
@@ -36,7 +36,7 @@ export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
   htmlProps: unstable_FormGroupHTMLProps = {}
 ) {
   options = unstable_useOptions("FormGroup", options, htmlProps);
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       id: getInputId(options.name, options.baseId),
       "aria-describedby": getMessageId(options.name, options.baseId),

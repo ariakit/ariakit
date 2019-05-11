@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 
@@ -35,7 +35,7 @@ export const useSeparator = unstable_createHook<
       vertical: "horizontal"
     };
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         role: "separator",
         "aria-orientation": options.orientation

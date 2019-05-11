@@ -1,4 +1,4 @@
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   DialogDisclosureOptions,
@@ -25,7 +25,7 @@ export const usePopoverDisclosure = unstable_createHook<
   useState: usePopoverState,
 
   useProps(options, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref: options.unstable_referenceRef
       } as PopoverDisclosureHTMLProps,

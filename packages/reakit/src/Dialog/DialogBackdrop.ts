@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
 import { useDialogState } from "./DialogState";
@@ -20,7 +20,7 @@ export const useDialogBackdrop = unstable_createHook<
   useState: useDialogState,
 
   useProps(_, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         id: undefined,
         role: "presentation",

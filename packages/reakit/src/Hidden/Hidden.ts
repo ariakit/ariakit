@@ -1,6 +1,6 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
@@ -65,7 +65,7 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
         : true
       : !options.visible;
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         role: "region",
         id: options.unstable_hiddenId,

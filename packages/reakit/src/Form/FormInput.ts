@@ -1,7 +1,7 @@
 import * as React from "react";
 import { As, PropsWithAs, Keys, Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
@@ -48,7 +48,7 @@ export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
 ) {
   options = unstable_useOptions("FormInput", options, htmlProps);
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       id: getInputId(options.name, options.baseId),
       name: formatInputName(options.name),

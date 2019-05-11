@@ -1,6 +1,6 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
@@ -49,7 +49,7 @@ export const useStaticMenu = unstable_createHook<
       [providerValue]
     );
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         role: options.orientation === "horizontal" ? "menubar" : "menu",
         "aria-orientation": options.orientation,

@@ -1,4 +1,4 @@
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
@@ -19,7 +19,10 @@ export const useMenuGroup = unstable_createHook<
   useState: useMenuState,
 
   useProps(_, htmlProps) {
-    return mergeProps({ role: "group" } as MenuGroupHTMLProps, htmlProps);
+    return unstable_mergeProps(
+      { role: "group" } as MenuGroupHTMLProps,
+      htmlProps
+    );
   }
 });
 

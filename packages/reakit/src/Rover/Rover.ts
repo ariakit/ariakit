@@ -5,7 +5,7 @@ import {
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
@@ -104,7 +104,7 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
       ]
     );
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref,
         id: stopId,

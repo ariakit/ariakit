@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { warning } from "../__utils/warning";
@@ -75,7 +75,7 @@ export const useMenuItem = unstable_createHook<
       }
     }, [options.move]);
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref,
         role: "menuitem",

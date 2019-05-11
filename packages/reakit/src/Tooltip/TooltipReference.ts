@@ -1,4 +1,4 @@
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
@@ -25,7 +25,7 @@ export const useTooltipReference = unstable_createHook<
   useState: useTooltipState,
 
   useProps(options, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref: options.unstable_referenceRef,
         tabIndex: 0,

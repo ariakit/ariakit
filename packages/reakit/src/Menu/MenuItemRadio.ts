@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { unstable_createHook } from "../utils/createHook";
@@ -42,7 +42,7 @@ export const useMenuItemRadio = unstable_createHook<
   },
 
   useProps(_, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       { role: "menuitemradio" } as MenuItemRadioHTMLProps,
       htmlProps
     );

@@ -3,7 +3,7 @@ import { RoverStateReturn, useRoverState } from "../Rover/RoverState";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import {
   unstable_FormGroupOptions,
@@ -46,7 +46,7 @@ export function unstable_useFormRadioGroup<V, P extends DeepPath<V, P>>(
     rover.unstable_pastId
   ]);
   options = unstable_useOptions("FormRadioGroup", options, htmlProps);
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       role: "radiogroup",
       unstable_wrap: (children: React.ReactNode) => (

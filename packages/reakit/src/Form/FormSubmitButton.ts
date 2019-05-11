@@ -2,7 +2,7 @@ import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
@@ -22,7 +22,7 @@ export function unstable_useFormSubmitButton(
 ) {
   options = unstable_useOptions("FormSubmitButton", options, htmlProps);
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       type: "submit",
       disabled: options.submitting,

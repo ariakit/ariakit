@@ -2,7 +2,7 @@ import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getInputId } from "./__utils/getInputId";
@@ -37,7 +37,7 @@ export function unstable_useFormRemoveButton<V, P extends DeepPath<V, P>>(
 ) {
   options = unstable_useOptions("FormRemoveButton", options, htmlProps);
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       onClick: () => {
         options.remove(options.name, options.index);

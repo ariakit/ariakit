@@ -2,7 +2,7 @@ import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { As, PropsWithAs, Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
@@ -47,7 +47,7 @@ export function unstable_useFormMessage<V, P extends DeepPath<V, P>>(
       ? unstable_getIn(options.messages, options.name as any)
       : undefined);
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       role: "alert",
       id: getMessageId(options.name, options.baseId),

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { As, PropsWithAs, ArrayValue, Omit, Keys } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_useOptions } from "../system/useOptions";
 import { unstable_useProps } from "../system/useProps";
 import {
@@ -58,7 +58,7 @@ export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
   const setState = (value: DeepPathValue<V, P>) =>
     options.update(options.name, value);
 
-  htmlProps = mergeProps(
+  htmlProps = unstable_mergeProps(
     {
       "aria-invalid": shouldShowError(options, options.name),
       name: formatInputName(options.name),

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { Omit } from "../__utils/types";
 import { unstable_createHook } from "../utils/createHook";
@@ -49,7 +49,7 @@ export const useRadio = unstable_createHook<RadioOptions, RadioHTMLProps>({
       [htmlProps.onChange]
     );
 
-    htmlProps = mergeProps(
+    htmlProps = unstable_mergeProps(
       {
         checked,
         "aria-checked": checked,

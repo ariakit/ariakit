@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 
@@ -14,7 +14,7 @@ export const useGroup = unstable_createHook<GroupOptions, GroupHTMLProps>({
   compose: useBox,
 
   useProps(_, htmlProps) {
-    return mergeProps({ role: "group" } as GroupHTMLProps, htmlProps);
+    return unstable_mergeProps({ role: "group" } as GroupHTMLProps, htmlProps);
   }
 });
 

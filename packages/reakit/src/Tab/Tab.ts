@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { unstable_createHook } from "../utils/createHook";
@@ -45,7 +45,7 @@ export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
       options.stopId
     ]);
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         role: "tab",
         id: getTabId(options.stopId, options.unstable_baseId),

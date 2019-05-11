@@ -5,7 +5,7 @@ import {
   useHiddenDisclosure
 } from "../Hidden/HiddenDisclosure";
 import { unstable_createHook } from "../utils/createHook";
-import { mergeProps } from "../utils";
+import { unstable_mergeProps } from "../utils";
 import { useDialogState } from "./DialogState";
 
 export type DialogDisclosureOptions = HiddenDisclosureOptions;
@@ -24,7 +24,7 @@ export const useDialogDisclosure = unstable_createHook<
   useState: useDialogState,
 
   useProps(_, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         "aria-haspopup": "dialog"
       } as DialogDisclosureHTMLProps,

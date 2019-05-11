@@ -1,5 +1,5 @@
 import { warning } from "../__utils/warning";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -20,7 +20,7 @@ export const useTabList = unstable_createHook<TabListOptions, TabListHTMLProps>(
     useState: useTabState,
 
     useProps(options, htmlProps) {
-      return mergeProps(
+      return unstable_mergeProps(
         {
           role: "tablist",
           "aria-orientation": options.orientation

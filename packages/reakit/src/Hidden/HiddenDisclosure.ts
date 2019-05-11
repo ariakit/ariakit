@@ -1,5 +1,5 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { useButton, ButtonOptions, ButtonHTMLProps } from "../Button/Button";
 import { unstable_createHook } from "../utils/createHook";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
@@ -22,7 +22,7 @@ export const useHiddenDisclosure = unstable_createHook<
   useState: useHiddenState,
 
   useProps(options, htmlProps) {
-    return mergeProps(
+    return unstable_mergeProps(
       {
         onClick: options.toggle,
         "aria-expanded": Boolean(options.visible),

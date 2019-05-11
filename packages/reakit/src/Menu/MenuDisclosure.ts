@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mergeProps } from "../utils/mergeProps";
+import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   PopoverDisclosureOptions,
@@ -106,7 +106,7 @@ export const useMenuDisclosure = unstable_createHook<
       }
     }, [parent && parent.orientation, options.show]);
 
-    return mergeProps(
+    return unstable_mergeProps(
       {
         ref,
         "aria-haspopup": "menu",
