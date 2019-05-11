@@ -16,7 +16,7 @@ export function fade(color?: Palette[string], ratio?: number): Palette[string] {
 
 export function useFade(color?: string, ratio?: number) {
   React.useDebugValue(`${color}*${ratio}`);
-  return React.useMemo(() => fade(color, ratio) as string | number, [
+  return React.useMemo(() => fade(color, ratio) as string | undefined, [
     color,
     ratio
   ]);

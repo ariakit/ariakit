@@ -21,7 +21,7 @@ export function useTooltipProps(
     style: { backgroundColor }
   } = usePaletteBoxProps({ unstable_system });
 
-  const fadeBackgroundColor = useFade(backgroundColor || "black", 0.15);
+  const fadeBackgroundColor = useFade(backgroundColor || "black", 0.1);
 
   const tooltip = css`
     background-color: ${fadeBackgroundColor};
@@ -31,6 +31,7 @@ export function useTooltipProps(
 
     & > .arrow {
       background-color: transparent;
+      font-size: 1.25em !important;
       & .stroke {
         fill: transparent;
       }

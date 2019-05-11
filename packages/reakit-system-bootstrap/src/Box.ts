@@ -16,7 +16,9 @@ export function useBoxProps(
   const box = css`
     box-sizing: border-box;
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
-      Roboto, "Helvetica Neue", Arial, sans-serif;
+      "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol";
+
     ${style as any}
   `;
 

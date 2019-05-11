@@ -11,12 +11,12 @@ export function lighten(
   if (typeof color === "function") {
     return (palette: Palette) => lighten(color(palette), ratio);
   }
-  let _color = Color(color);
-  _color =
-    _color.lightness() === 0
-      ? _color.lightness(ratio * 100) // fix .ligten on black
-      : _color.lighten(ratio);
-  return _color.hex().toString();
+  const _color = Color(color);
+  const lightness = _color.lightness();
+  return _color
+    .lightness(lightness + (100 - lightness) * ratio)
+    .hex()
+    .toString();
 }
 
 export function useLighten(color?: string, ratio?: number) {

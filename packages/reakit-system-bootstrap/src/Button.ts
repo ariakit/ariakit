@@ -22,7 +22,10 @@ export function useButtonProps(
     style: { color, backgroundColor, borderColor = "transparent" }
   } = usePaletteBoxProps({ unstable_system });
 
-  const hoverBackgroundColor = useDarken(backgroundColor || color, 0.1);
+  const hoverBackgroundColor = useDarken(
+    backgroundColor || color,
+    unstable_system.fill !== "opaque" ? 0 : 0.1
+  );
   const activeBackgroundColor = useDarken(hoverBackgroundColor, 0.1);
   const hoverBorderColor = useDarken(backgroundColor || color, 0.2);
   const activeBorderColor = useDarken(hoverBorderColor, 0.1);
@@ -38,6 +41,7 @@ export function useButtonProps(
     padding: 0.375em 0.75em;
     line-height: 1.5;
     border-radius: 0.25rem;
+    text-decoration: none;
     border: 1px solid ${borderColor};
     cursor: pointer;
     white-space: nowrap;

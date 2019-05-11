@@ -11,8 +11,10 @@ export function darken(
   if (typeof color === "function") {
     return (palette: Palette) => darken(color(palette), ratio);
   }
-  return Color(color)
-    .darken(ratio)
+  const _color = Color(color);
+  const lightness = _color.lightness();
+  return _color
+    .lightness(lightness - lightness * ratio)
     .hex()
     .toString();
 }
