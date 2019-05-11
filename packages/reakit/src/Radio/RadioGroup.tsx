@@ -37,7 +37,7 @@ export const RadioGroup = unstable_createComponent({
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
       `You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-properties-15`,
+See https://reakit.io/docs/radio`,
       "RadioGroup"
     );
     return unstable_useCreateElement(type, props, children);
