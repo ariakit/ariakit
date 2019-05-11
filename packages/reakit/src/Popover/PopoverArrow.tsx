@@ -30,11 +30,13 @@ export const usePopoverArrow = unstable_createHook<
       bottom: "rotateZ(360deg)",
       left: "rotateZ(90deg)"
     };
+    const { unstable_arrowStyles: arrowStyles } = options;
     return mergeProps(
       {
         ref: options.unstable_arrowRef,
         style: {
-          ...options.unstable_arrowStyles,
+          ...arrowStyles,
+          top: arrowStyles ? arrowStyles.top || undefined : undefined,
           position: "absolute",
           fontSize: "30px",
           width: "1em",
