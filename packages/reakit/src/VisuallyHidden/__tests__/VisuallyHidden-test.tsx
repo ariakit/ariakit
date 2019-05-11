@@ -7,7 +7,7 @@ test("render", () => {
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
-        <div
+        <span
           style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; white-space: nowrap; width: 1px;"
         />
       </div>

@@ -38,6 +38,6 @@ export const useVisuallyHidden = unstable_createHook<
 });
 
 export const VisuallyHidden = unstable_createComponent({
-  as: "div",
+  as: "span",
   useHook: useVisuallyHidden
 });
