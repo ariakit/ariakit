@@ -20,6 +20,7 @@
   "dependencies": {
     "@emotion/core": "10.0.10",
     "@types/lodash": "4.14.123",
+    "@types/react-helmet": "5.0.8",
     "constate": "1.1.1",
     "emotion": "10.0.9",
     "emotion-server": "10.0.9",
@@ -27,36 +28,37 @@
     "gatsby-image": "2.0.40",
     "gatsby-plugin-emotion": "4.0.6",
     "gatsby-plugin-manifest": "2.0.29",
+    "gatsby-plugin-meta-redirect": "1.1.1",
+    "gatsby-plugin-netlify": "2.0.15",
     "gatsby-plugin-react-helmet": "3.0.12",
     "gatsby-plugin-sharp": "2.0.35",
     "gatsby-plugin-typescript": "2.0.13",
     "gatsby-remark-autolink-headers": "2.0.16",
     "gatsby-remark-external-links": "0.0.4",
-    "gatsby-remark-smartypants": "2.0.9",
     "gatsby-source-filesystem": "2.0.32",
     "gatsby-transformer-remark": "2.3.12",
     "gatsby-transformer-sharp": "2.1.18",
+    "gatsby-transformer-yaml": "2.1.12",
     "lodash": "4.17.11",
     "mdast-util-to-string": "1.0.5",
     "prop-types": "15.7.2",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
+    "react": "16.9.0-alpha.0",
+    "react-dom": "16.9.0-alpha.0",
     "react-helmet": "5.2.0",
     "react-icons": "3.6.1",
     "reakit": "^1.0.0-alpha.3",
     "reakit-system-bootstrap": "^0.3.0",
     "reakit-system-palette": "^0.3.0",
+    "rehype": "7.0.0",
     "rehype-react": "3.1.0",
     "remark-parse": "6.0.3",
     "unified": "7.1.0",
     "unist-util-remove": "1.0.1",
     "unist-util-select": "2.0.0",
-    "unist-util-visit": "1.4.0"
+    "unist-util-visit": "1.4.0",
+    "whatwg-fetch": "3.0.0"
   },
   "devDependencies": {
-    "babel-jest": "24.7.1",
-    "babel-preset-gatsby": "0.1.11",
-    "jest": "24.7.1",
-    "react-test-renderer": "16.8.6"
+    "babel-preset-gatsby": "0.1.11"
   }
 }

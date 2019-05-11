@@ -1,8 +1,10 @@
-/**
- * Implement Gatsby's Browser APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/browser-apis/
- */
-// import { setConfig } from "react-hot-loader";
+import "whatwg-fetch";
+import React from "react";
+import Provider from "./src/components/Provider";
+import CoreLayout from "./src/components/CoreLayout";
 
-// setConfig({ pureSFC: true });
+export const wrapRootElement = ({ element }) => <Provider>{element}</Provider>;
+
+export const wrapPageElement = ({ element, props }) => {
+  return <CoreLayout {...props}>{element}</CoreLayout>;
+};

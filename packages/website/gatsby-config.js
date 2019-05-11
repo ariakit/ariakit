@@ -1,9 +1,10 @@
 module.exports = {
   siteMetadata: {
-    title: "Gatsby Default Starter",
+    title: "Reakit",
+    author: "@reakitjs",
+    siteUrl: process.env.DEPLOY_PRIME_URL || "https://reakit.io",
     description:
-      "Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.",
-    author: "@gatsbyjs"
+      "Powerful UI toolkit for building accessible rich web applications with React"
   },
   plugins: [
     "gatsby-plugin-react-helmet",
@@ -19,13 +20,13 @@ module.exports = {
     {
       resolve: "gatsby-plugin-manifest",
       options: {
-        name: "gatsby-starter-default",
-        short_name: "starter",
+        name: "Reakit",
+        short_name: "Reakit",
         start_url: "/",
-        background_color: "#663399",
-        theme_color: "#663399",
+        background_color: "#5640dd",
+        theme_color: "#5640dd",
         display: "minimal-ui",
-        icon: "src/images/gatsby-icon.png" // This path is relative to the root of the site.
+        icon: "src/images/icon.png" // This path is relative to the root of the site.
       }
     },
     {
@@ -55,12 +56,27 @@ module.exports = {
           },
           "gatsby-remark-code-modifiers",
           "gatsby-remark-title",
-          "gatsby-remark-autolink-headers",
-          "gatsby-remark-smartypants"
+          {
+            resolve: "gatsby-remark-autolink-headers",
+            options: {
+              offsetY: 80,
+              icon: "<span>#</span>"
+            }
+          }
         ]
       }
     },
     "gatsby-plugin-typescript",
-    "gatsby-plugin-emotion"
+    "gatsby-plugin-emotion",
+    "gatsby-transformer-yaml",
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "data",
+        path: `${__dirname}/src/data/`
+      }
+    },
+    "gatsby-plugin-meta-redirect",
+    "gatsby-plugin-netlify"
   ]
 };

@@ -1,5 +1,5 @@
+// TODO: Refactor this mess
 import * as React from "react";
-import { injectGlobal } from "emotion";
 import { graphql } from "gatsby";
 import RehypeReact from "rehype-react";
 import {
@@ -9,55 +9,25 @@ import {
 } from "reakit-playground";
 import createUseContext from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
-import CoreLayout from "../components/CoreLayout";
-import FiraCodeBold from "../fonts/FiraCode-Bold.woff";
-import FiraCodeLight from "../fonts/FiraCode-Light.woff";
-import FiraCodeMedium from "../fonts/FiraCode-Medium.woff";
-import FiraCodeRegular from "../fonts/FiraCode-Regular.woff";
-
-injectGlobal`
-  @font-face {
-    font-family: "Fira Code";
-    src: url(${FiraCodeLight});
-    font-weight: 300;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: "Fira Code";
-    src: url(${FiraCodeRegular});
-    font-weight: 400;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: "Fira Code";
-    src: url(${FiraCodeMedium});
-    font-weight: 500;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: "Fira Code";
-    src: url(${FiraCodeBold});
-    font-weight: 700;
-    font-style: normal;
-  }
-  .CodeMirror {
-    font-family: "Fira Code", monospace !important;
-    font-size: 1em !important;
-  }
-`;
+import CarbonAd from "../components/CarbonAd";
+import Anchor from "../components/Anchor";
+import Paragraph from "../components/Paragraph";
+import List from "../components/List";
+import KeyboardInput from "../components/KeyboardInput";
+import Blockquote from "../components/Blockquote";
+import TestTube from "../icons/TestTube";
+import Heading from "../components/Heading";
+import SEO from "../components/SEO";
 
 type DocsProps = {
   data: {
     markdownRemark: {
       title: string;
       htmlAst: object;
-      headings: Array<{
-        value: string;
-        depth: number;
-      }>;
+      excerpt: string;
       frontmatter: {
-        title: string;
         path: string;
+        experimental: boolean;
       };
     };
   };
@@ -72,22 +42,31 @@ function getChildrenCode(props: { children?: React.ReactNode }) {
   return null;
 }
 
-// function getText(props: { children?: React.ReactNode }): string {
-//   const children = React.Children.toArray(props.children);
-//   return children.reduce<string>((acc, curr) => {
-//     if (typeof curr === "string") {
-//       return `${acc}${curr}`;
-//     }
-//     if (typeof curr === "object" && curr !== null && "props" in curr) {
-//       return `${acc}${getText(curr.props)}`;
-//     }
-//     return acc;
-//   }, "");
-// }
-
 const { Compiler: renderAst } = new RehypeReact({
   createElement: React.createElement,
   components: {
+    "carbon-ad": CarbonAd,
+    a: Anchor,
+    p: Paragraph,
+    ul: List,
+    kbd: KeyboardInput,
+    blockquote: Blockquote,
+    h1: Heading,
+    h2: props => <Heading as="h2" {...props} />,
+    h3: props => <Heading as="h3" {...props} />,
+    h4: props => <Heading as="h4" {...props} />,
+    h5: props => <Heading as="h5" {...props} />,
+    h6: props => <Heading as="h6" {...props} />,
+    span: (props: React.HTMLAttributes<any>) => {
+      if (props.title === "Experimental") {
+        return (
+          <span {...props}>
+            <TestTube />
+          </span>
+        );
+      }
+      return <span {...props} />;
+    },
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
@@ -129,7 +108,7 @@ const { Compiler: renderAst } = new RehypeReact({
 
         return (
           <PlaygroundEditor
-            readOnly="nocursor"
+            readOnly
             mode={mode}
             maxHeight={maxHeight}
             {...state}
@@ -142,23 +121,17 @@ const { Compiler: renderAst } = new RehypeReact({
   }
 });
 
-function Comp({ data }: DocsProps) {
+export default function Docs({ data }: DocsProps) {
   const {
-    markdownRemark: { title, htmlAst }
+    markdownRemark: { title, htmlAst, excerpt }
   } = data;
+
   return (
     <>
-      <h1>{title}</h1>
+      <SEO title={title} description={excerpt} />
+      <Heading>{title}</Heading>
       {renderAst(htmlAst)}
     </>
-  );
-}
-
-export default function Docs(props: DocsProps) {
-  return (
-    <CoreLayout>
-      <Comp {...props} />
-    </CoreLayout>
   );
 }
 
@@ -167,12 +140,8 @@ export const pageQuery = graphql`
     markdownRemark(frontmatter: { path: { eq: $path } }) {
       title
       htmlAst
-      headings {
-        value
-        depth
-      }
+      excerpt
       frontmatter {
-        title
         path
       }
     }
