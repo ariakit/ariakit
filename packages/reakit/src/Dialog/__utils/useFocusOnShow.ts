@@ -27,13 +27,13 @@ export function useFocusOnShow(
     }
 
     if (initialFocusRef && initialFocusRef.current) {
-      initialFocusRef.current.focus();
+      initialFocusRef.current.focus({ preventScroll: true });
     } else {
       const tabbable = getFirstTabbableIn(dialog, true);
       if (tabbable) {
-        tabbable.focus();
+        tabbable.focus({ preventScroll: true });
       } else {
-        dialog.focus();
+        dialog.focus({ preventScroll: true });
         warning(
           dialog.tabIndex === undefined || dialog.tabIndex < 0,
           "It's recommended to have at least one tabbable element inside dialog. The dialog element has been automatically focused. If this is the intended behavior, pass `tabIndex={0}` to disable this warning. See https://reakit.io/docs/dialog",
