@@ -46,17 +46,17 @@ export const useRover = unstable_createHook<RoverOptions, RoverProps>({
     const id = unstable_useId("rover-");
     const stopId = options.stopId || htmlProps.id || id;
 
-    const reallyDisabled = options.disabled && !options.focusable;
+    const trulyDisabled = options.disabled && !options.focusable;
     const noFocused = options.currentId == null;
     const focused = options.currentId === stopId;
     const isFirst = options.stops[0] && options.stops[0].id === stopId;
     const shouldTabIndex = focused || (isFirst && noFocused);
 
     React.useEffect(() => {
-      if (reallyDisabled) return undefined;
+      if (trulyDisabled) return undefined;
       options.register(stopId, ref);
       return () => options.unregister(stopId);
-    }, [stopId, reallyDisabled, options.register, options.unregister]);
+    }, [stopId, trulyDisabled, options.register, options.unregister]);
 
     useUpdateEffect(() => {
       if (!ref.current) {

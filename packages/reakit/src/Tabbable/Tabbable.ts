@@ -59,13 +59,13 @@ export const useTabbable = unstable_createHook<TabbableOptions, TabbableProps>({
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const clickKeysRef = useLiveRef(options.unstable_clickKeys);
-    const reallyDisabled = options.disabled && !options.focusable;
+    const trulyDisabled = options.disabled && !options.focusable;
 
     return mergeProps(
       {
         ref,
-        disabled: reallyDisabled,
-        tabIndex: reallyDisabled ? undefined : tabIndex,
+        disabled: trulyDisabled,
+        tabIndex: trulyDisabled ? undefined : tabIndex,
         "aria-disabled": options.disabled,
         onMouseDown: React.useCallback(
           (event: React.MouseEvent) => {

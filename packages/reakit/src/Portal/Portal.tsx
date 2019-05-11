@@ -26,7 +26,7 @@ export function Portal({ children }: PortalProps) {
     return null;
   });
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!container || !context) return undefined;
     context.appendChild(container);
     return () => {
