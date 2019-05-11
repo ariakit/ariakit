@@ -14,7 +14,7 @@ test("render", () => {
           aria-hidden="true"
           hidden=""
           role="tooltip"
-          style="pointer-events: none;"
+          style="pointer-events: none; z-index: 999;"
         >
           tooltip
         </div>
@@ -34,7 +34,7 @@ test("render visible", () => {
         <div
           aria-hidden="false"
           role="tooltip"
-          style="pointer-events: none;"
+          style="pointer-events: none; z-index: 999;"
         >
           tooltip
         </div>

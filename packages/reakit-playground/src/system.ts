@@ -60,7 +60,6 @@ injectGlobal`
   /* THEME */
   .cm-s-reakit.CodeMirror,
   .cm-s-reakit .CodeMirror-gutters {
-    font-size: 1em;
     background-color: #282a36 !important;
     color: #f8f8f2 !important;
     border: none;
@@ -176,10 +175,25 @@ export function usePlaygroundEditorProps(
 ): PlaygroundEditorProps {
   const primary = usePalette("primary") || "blue";
   const contrast = useContrast(primary);
+  const maxHeight = options.maxHeight ? options.maxHeight : "auto";
   const playgroundEditor = css`
     margin: 2em 0;
+    font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
+    font-size: 0.9375em;
+    pre& {
+      background-color: #282a36 !important;
+      color: #f8f8f2 !important;
+      border-radius: 0.25em;
+      padding: 1em 1.5em;
+      max-height: ${maxHeight};
+      overflow: auto;
+      box-sizing: border-box;
+    }
+    .CodeMirror {
+      font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
+    }
     .CodeMirror-scroll {
-      max-height: ${options.maxHeight ? options.maxHeight : "300px"};
+      max-height: ${maxHeight};
     }
     &.disabled:focus-within {
       position: relative;

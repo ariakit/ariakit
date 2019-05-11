@@ -10,30 +10,31 @@ import { PlaygroundStateReturn } from "./usePlaygroundState";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { ErrorMessage } from "./ErrorMessage";
 
-export type PlaygroundPreviewOptions = PlaygroundStateReturn & {
-  /** TODO: Description */
-  modules?: Record<string, any>;
-};
+export type PlaygroundPreviewOptions = Partial<PlaygroundStateReturn> &
+  Pick<PlaygroundStateReturn, "code"> & {
+    /** TODO: Description */
+    modules?: Record<string, any>;
+    /** TODO: Description */
+    componentName?: string;
+  };
 
 export type PlaygroundPreviewProps = { className?: string };
-
-Provider.unstable_use(system);
 
 export function PlaygroundPreview({
   code,
   modules,
   update,
+  componentName,
   ...htmlProps
 }: PlaygroundPreviewOptions & PlaygroundPreviewProps) {
   const options = unstable_useOptions(
     "PlaygroundPreview",
-    { code, modules },
+    { code, modules, componentName },
     htmlProps
   );
 
   const ref = React.useRef<HTMLDivElement>(null);
   const prefix = unstable_useId("preview-");
-  const [initialCode] = React.useState(options.code);
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((e: Error) => {
@@ -43,7 +44,12 @@ export function PlaygroundPreview({
 
   const [rendered, setRendered] = React.useState(() => {
     try {
-      return compileComponent(options.code, options.modules);
+      const Example = compileComponent(
+        options.code,
+        options.modules,
+        options.componentName
+      );
+      return <Example />;
     } catch (e) {
       handleError(e);
     }
@@ -59,32 +65,38 @@ export function PlaygroundPreview({
 
   const renderChildren = React.useCallback(
     (children: React.ReactNode) => (
-      <Provider unstable_prefix={`${prefix}-`}>{children}</Provider>
+      <Provider unstable_prefix={`${prefix}-`} unstable_system={system}>
+        {children}
+      </Provider>
     ),
     []
   );
 
   React.useEffect(() => {
-    // Code hasn't change, do nothing
-    if (!options.code || options.code === initialCode) {
-      return undefined;
-    }
     const timer = setTimeout(() => {
       setError(null);
       try {
-        const exampleComponent = compileComponent(
+        const Example = compileComponent(
           options.code,
-          options.modules
+          options.modules,
+          options.componentName
         );
         unmount();
-        ReactDOM.render(renderChildren(exampleComponent), ref.current);
+        ReactDOM.render(renderChildren(<Example />), ref.current);
       } catch (e) {
         unmount();
         handleError(e);
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [options.code, handleError, unmount]);
+  }, [
+    options.code,
+    options.modules,
+    options.componentName,
+    renderChildren,
+    handleError,
+    unmount
+  ]);
 
   htmlProps = unstable_useProps("PlaygroundPreview", options, htmlProps);
 

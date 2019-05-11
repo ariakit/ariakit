@@ -30,7 +30,8 @@ export const useTooltip = unstable_createHook<TooltipOptions, TooltipProps>({
         ref: options.unstable_popoverRef,
         style: {
           ...options.unstable_popoverStyles,
-          pointerEvents: "none"
+          pointerEvents: "none",
+          zIndex: 999
         },
         unstable_wrap: wrap
       } as TooltipProps,

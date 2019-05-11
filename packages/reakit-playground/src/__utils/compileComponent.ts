@@ -6,16 +6,17 @@ import { importToRequire } from "./importToRequire";
 
 export function compileComponent(
   code: string,
-  depsMap?: Record<string, any>
-): JSX.Element {
+  depsMap?: Record<string, any>,
+  componentName = "Example"
+): React.ComponentType {
   const defaultDeps = {
     react: React,
     "react-dom": ReactDOM
   };
   const fullCode = `{
 ${importToRequire(code)}
-if (typeof Example !== "undefined") {
-  return <Example />;
+if (typeof ${componentName} !== "undefined") {
+  return ${componentName};
 }
 }`;
   const req = (path: keyof typeof deps) => {

@@ -16,6 +16,7 @@ if (typeof navigator !== "undefined") {
   require("codemirror/addon/fold/xml-fold");
   require("codemirror/addon/scroll/simplescrollbars");
   require("codemirror/addon/selection/active-line");
+  require("codemirror/addon/display/autorefresh");
 }
 
 export type PlaygroundEditorOptions = PlaygroundStateReturn &
@@ -25,11 +26,13 @@ export type PlaygroundEditorOptions = PlaygroundStateReturn &
     /** TODO: Description */
     theme?: string;
     /** TODO: Description */
-    readOnly?: boolean | "nocursor";
+    readOnly?: boolean;
     /** TODO: Description */
     tabSize?: number;
     /** TODO: Description */
     lineWrapping?: boolean;
+    /** TODO: Description */
+    autoRefresh?: boolean;
     /** TODO: Description */
     maxHeight?: string;
   };
@@ -44,7 +47,8 @@ export function PlaygroundEditor({
   theme = "reakit",
   tabSize = 2,
   mode = "jsx",
-  maxHeight = "300px",
+  autoRefresh,
+  maxHeight,
   ...htmlProps
 }: PlaygroundEditorOptions & PlaygroundEditorProps) {
   const options = unstable_useOptions(
@@ -57,6 +61,7 @@ export function PlaygroundEditor({
       theme,
       tabSize,
       mode,
+      autoRefresh,
       maxHeight
     },
     htmlProps
@@ -66,6 +71,7 @@ export function PlaygroundEditor({
   const enabledRef = useLiveRef(enabled);
   const _readOnly =
     typeof options.readOnly !== "undefined" ? options.readOnly : !enabled;
+  const [ready, setReady] = React.useState(false);
 
   htmlProps = unstable_useProps(
     "PlaygroundEditor",
@@ -73,19 +79,31 @@ export function PlaygroundEditor({
     htmlProps
   );
 
-  const className = [htmlProps.className, !enabled && "disabled"]
+  const className = [
+    htmlProps.className,
+    !enabled && !options.readOnly && "disabled"
+  ]
     .filter(Boolean)
     .join(" ");
 
-  if (typeof window === "undefined") {
-    return <p className={className}>Loading source code...</p>;
+  React.useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const value = options.readOnly ? options.code.trim() : options.code;
+
+  if (typeof window === "undefined" || !ready) {
+    return (
+      <pre className={className}>{options.readOnly ? value : `${value}\n`}</pre>
+    );
   }
 
   return (
     <CodeMirror
       className={className}
-      value={options.readOnly ? options.code.trim() : options.code}
-      onBeforeChange={(_, __, value) => options.update(value)}
+      value={value}
+      onBeforeChange={(_, __, val) => options.update(val)}
       onMouseDown={() => setEnabled(true)}
       onTouchStart={() => setEnabled(true)}
       onKeyDown={(_, event: KeyboardEvent) => {
@@ -105,10 +123,12 @@ export function PlaygroundEditor({
       options={{
         scrollbarStyle: "overlay",
         theme: options.theme,
-        readOnly: _readOnly || options.readOnly,
+        readOnly: _readOnly,
         lineWrapping: options.lineWrapping,
         tabSize: options.tabSize,
         mode: options.mode,
+        autoRefresh: options.autoRefresh,
+        cursorBlinkRate: _readOnly ? -1 : 530,
         styleActiveLine: !_readOnly,
         smartIndent: !_readOnly,
         matchBrackets: !_readOnly,

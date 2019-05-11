@@ -3,10 +3,6 @@ import { renderHook } from "react-hooks-testing-library";
 import { unstable_useCreateElement } from "../useCreateElement";
 import { Provider } from "../Provider";
 
-Provider.unstable_use({
-  useCreateElement: (_, props, c) => <p {...props}>{c}</p>
-});
-
 test("useCreateElement", () => {
   const { result } = renderHook(() =>
     unstable_useCreateElement("div", { a: "a" }, "div")
@@ -39,7 +35,15 @@ test("context", () => {
   const { result } = renderHook(
     () => unstable_useCreateElement("div", { a: "a" }, "div"),
     {
-      wrapper: ({ children }) => <Provider>{children}</Provider>
+      wrapper: ({ children }) => (
+        <Provider
+          unstable_system={{
+            useCreateElement: (_, props, c) => <p {...props}>{c}</p>
+          }}
+        >
+          {children}
+        </Provider>
+      )
     }
   );
   expect(result.current).toMatchInlineSnapshot(`

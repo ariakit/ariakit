@@ -3,16 +3,15 @@ import {
   unstable_SystemContextType,
   unstable_SystemContext
 } from "./SystemContext";
-import { unstable_mergeSystem } from "./mergeSystem";
 
 export type unstable_SystemProviderProps = {
   children: React.ReactNode;
+  unstable_system: unstable_SystemContextType;
 };
 
-let system: unstable_SystemContextType = {};
-
 export function unstable_SystemProvider({
-  children
+  children,
+  unstable_system: system
 }: unstable_SystemProviderProps) {
   return (
     <unstable_SystemContext.Provider value={system}>
@@ -20,13 +19,3 @@ export function unstable_SystemProvider({
     </unstable_SystemContext.Provider>
   );
 }
-
-unstable_SystemProvider.unstable_use = (
-  ...systems: unstable_SystemContextType[]
-) => {
-  if (systems.length === 1) {
-    [system] = systems;
-  } else if (systems.length) {
-    system = unstable_mergeSystem(...systems);
-  }
-};

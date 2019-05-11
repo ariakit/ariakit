@@ -11,12 +11,14 @@ import {
 export type ProviderProps = unstable_IdProviderProps &
   unstable_SystemProviderProps;
 
-export function Provider({ unstable_prefix: prefix, children }: ProviderProps) {
+export function Provider({
+  unstable_prefix: prefix,
+  unstable_system: system,
+  children
+}: ProviderProps) {
   return (
     <IdProvider unstable_prefix={prefix}>
-      <SystemProvider>{children}</SystemProvider>
+      <SystemProvider unstable_system={system}>{children}</SystemProvider>
     </IdProvider>
   );
 }
-
-Provider.unstable_use = SystemProvider.unstable_use;
