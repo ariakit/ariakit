@@ -17,18 +17,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * Render `VisuallyHidden` as `span` instead of `div` since it could be placed in an inline element ([ac24c08](https://github.com/reakit/reakit/commit/ac24c08))
 
 
-### chore
-
-* Update ComponentProps type name ([87b0811](https://github.com/reakit/reakit/commit/87b0811))
-
-
 ### Features
 
 * Add `state` and `setState` props to `Checkbox` and `Radio` ([5902ab1](https://github.com/reakit/reakit/commit/5902ab1))
 * Add `unstable_animated` prop to `Hidden` ([e0ff29f](https://github.com/reakit/reakit/commit/e0ff29f))
 * Add `unstable_preventOverflow`, `unstable_boundariesElement` and `unstable_fixed` props to `usePopoverState` ([f0930e2](https://github.com/reakit/reakit/commit/f0930e2))
 * Add experimental `unstable_orphan` prop to `Dialog` ([d0f6b52](https://github.com/reakit/reakit/commit/d0f6b52))
-* Add experimental `unstable_use` static method to `Provider` ([4af7a4a](https://github.com/reakit/reakit/commit/4af7a4a))
 * Remove experimental `KeyBinder` in favor of internal `createOnKeyDown` util ([b0adfa8](https://github.com/reakit/reakit/commit/b0adfa8))
 * Rename `mergeProps` util to `unstable_mergeProps` ([9be2e14](https://github.com/reakit/reakit/commit/9be2e14))
 * Warn when some refs aren't passed to components ([92f035c](https://github.com/reakit/reakit/commit/92f035c))
@@ -44,25 +38,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * `mergeProps` util has been renamed to `unstable_mergeProps` and is not exported by the root package anymore. Instead, it should be imported from `reakit/utils/mergeProps`.
 * `currentValue` and `setValue` have been replaced by `state` and `setState` on `Checkbox`, `Radio` and all their derivative components and related hooks.
 * All the `ComponentProps` typings have been renamed to `ComponentHTMLProps`. `ComponentProps` is now the combination of `ComponentOptions` and `ComponentHTMLProps`.
-* `unstable_system` prop has been removed from `Provider`. Use `Provider.unstable_use(system)` instead:
-
-  ```diff
-    import { Provider, Button } from "reakit";
-    import * as system from "reakit-system-boostrap";
-
-  + Provider.unstable_use(system);
-
-    function App() {
-      return (
-  -     <Provider unstable_system={system}>
-  +     <Provider>
-          <Button>Button</Button>
-        </Provider>
-      );
-    }
-  ```
-
-  The motivation behind this change is to make it clearer that systems are static and are not supposed to change between renders. With prop, this could be misinterpreted.
 * `placement` prop is now required on `MenuDisclosure`.
 * `placement` prop is now required on `Menu`.
 

@@ -6,45 +6,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 # [0.4.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.3.0...reakit-playground@0.4.0) (2019-05-12)
 
 
-### chore
-
-* Update ComponentProps type name ([87b0811](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/87b0811))
-
-
 ### Features
 
-* Add experimental `unstable_use` static method to `Provider` ([4af7a4a](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/4af7a4a))
 * Remove experimental `KeyBinder` in favor of internal `createOnKeyDown` util ([b0adfa8](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/b0adfa8))
 * **reakit-playground:** Provide fallback for SSR ([4b0fd5e](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/4b0fd5e))
-
-
-### Performance Improvements
-
-* Improve general performance by using `React.memo` on components ([91f0d54](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/91f0d54))
 
 
 ### BREAKING CHANGES
 
 * All the `ComponentProps` typings have been renamed to `ComponentHTMLProps`. `ComponentProps` is now the combination of `ComponentOptions` and `ComponentHTMLProps`.
-* `unstable_system` prop has been removed from `Provider`. Use `Provider.unstable_use(system)` instead:
-
-  ```diff
-    import { Provider, Button } from "reakit";
-    import * as system from "reakit-system-boostrap";
-
-  + Provider.unstable_use(system);
-
-    function App() {
-      return (
-  -     <Provider unstable_system={system}>
-  +     <Provider>
-          <Button>Button</Button>
-        </Provider>
-      );
-    }
-  ```
-
-  The motivation behind this change is to make it clearer that systems are static and are not supposed to change between renders. With prop, this could be misinterpreted.
 
 
 
