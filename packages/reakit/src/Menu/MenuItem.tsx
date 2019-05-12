@@ -23,18 +23,6 @@ export const useMenuItem = unstable_createHook<
   compose: useRover,
   useState: useMenuState,
 
-  propsAreEqual(prev, next) {
-    if (
-      prev.stops === next.stops &&
-      prev.currentId === next.currentId &&
-      prev.visible === false &&
-      next.visible === false
-    ) {
-      return true;
-    }
-    return null;
-  },
-
   useProps(options, htmlProps) {
     const ref = React.useRef<HTMLElement>(null);
 

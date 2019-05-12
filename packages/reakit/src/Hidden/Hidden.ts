@@ -29,13 +29,6 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
   useState: useHiddenState,
   keys: ["unstable_animated"],
 
-  propsAreEqual(prev, next) {
-    if (prev.visible === false && next.visible === false) {
-      return true;
-    }
-    return null;
-  },
-
   useProps(options, htmlProps) {
     const [delayedVisible, setDelayedVisible] = React.useState(options.visible);
 

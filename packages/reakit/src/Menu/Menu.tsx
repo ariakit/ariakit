@@ -36,6 +36,13 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
   compose: [useStaticMenu, usePopover],
   useState: useMenuState,
 
+  propsAreEqual(prev, next) {
+    if (prev.visible === false && next.visible === false) {
+      return true;
+    }
+    return null;
+  },
+
   useOptions(options) {
     const parent = React.useContext(MenuContext);
     const parentIsHorizontal = parent && parent.orientation === "horizontal";
