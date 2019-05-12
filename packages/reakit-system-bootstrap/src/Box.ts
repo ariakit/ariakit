@@ -15,6 +15,7 @@ export function useBoxProps(
 
   const box = css`
     box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
       "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol";
