@@ -194,6 +194,7 @@ export function usePlaygroundEditorProps(
     }
     .CodeMirror-scroll {
       max-height: ${maxHeight};
+      -webkit-overflow-scrolling: touch;
     }
     &.disabled:focus-within {
       position: relative;

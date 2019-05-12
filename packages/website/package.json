@@ -20,10 +20,13 @@
   "dependencies": {
     "@emotion/core": "10.0.10",
     "@types/lodash": "4.14.126",
+    "@types/qs": "6.5.3",
     "@types/react-helmet": "5.0.8",
+    "@types/yup": "0.26.13",
     "constate": "1.1.1",
     "emotion": "10.0.9",
     "emotion-server": "10.0.9",
+    "fetch-jsonp": "1.1.3",
     "gatsby": "2.4.3",
     "gatsby-image": "2.0.41",
     "gatsby-plugin-emotion": "4.0.6",
@@ -43,6 +46,7 @@
     "lodash": "4.17.11",
     "mdast-util-to-string": "1.0.5",
     "prop-types": "15.7.2",
+    "qs": "6.7.0",
     "react": "16.9.0-alpha.0",
     "react-dom": "16.9.0-alpha.0",
     "react-helmet": "5.2.1",
@@ -57,7 +61,8 @@
     "unist-util-remove": "1.0.1",
     "unist-util-select": "2.0.0",
     "unist-util-visit": "1.4.0",
-    "whatwg-fetch": "3.0.0"
+    "whatwg-fetch": "3.0.0",
+    "yup": "0.27.0"
   },
   "devDependencies": {
     "babel-preset-gatsby": "0.1.11"

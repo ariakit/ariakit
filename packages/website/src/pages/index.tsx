@@ -18,6 +18,7 @@ import Customizable from "../icons/Customizable";
 import TinyFast from "../icons/TinyFast";
 import HomePlayground from "../components/HomePlayground";
 import track from "../utils/track";
+import NewsletterForm from "../components/NewsletterForm";
 
 function useGitHubStars() {
   const [stars, setStars] = React.useState<number | null>(null);
@@ -38,7 +39,9 @@ export default function IndexPage() {
       <div
         className={css`
           width: 100%;
-          height: 500px;
+          min-height: 500px;
+          max-height: 700px;
+          height: calc(100vh - 80px);
           background: linear-gradient(
             144deg,
             #7b60ff,
@@ -67,6 +70,9 @@ export default function IndexPage() {
         >
           <div
             className={css`
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
               position: relative;
               margin: 0 auto;
               padding: 16px 56px;
@@ -84,14 +90,14 @@ export default function IndexPage() {
               }
             `}
           >
-            <p
+            <h1
               className={css`
                 font-size: 3.2em;
                 font-weight: 700;
                 line-height: 1.1;
                 color: white;
                 width: 10em;
-                margin: 160px 0 40px 0;
+                margin: 0 0 40px 0;
                 @media (max-width: 768px) {
                   font-size: 1.8em;
                   width: auto;
@@ -101,7 +107,7 @@ export default function IndexPage() {
               `}
             >
               Build accessible rich web apps with React
-            </p>
+            </h1>
             <div
               className={css`
                 display: grid;
@@ -111,6 +117,8 @@ export default function IndexPage() {
                 a {
                   font-weight: 500;
                   text-transform: uppercase;
+                  padding-left: 1em;
+                  padding-right: 1em;
                 }
                 @media (max-width: 768px) {
                   justify-content: center;
@@ -130,7 +138,7 @@ export default function IndexPage() {
               <Button
                 as={Link}
                 to="/docs/button/"
-                unstable_system={{ palette: "white", fill: "outline" }}
+                unstable_system={{ palette: "secondary" }}
                 onClick={track("reakit.heroComponentsClick")}
               >
                 Components
@@ -186,7 +194,7 @@ export default function IndexPage() {
       </div>
       <div
         className={css`
-          padding: 120px 0 140px;
+          padding: 140px 0 160px;
           background: linear-gradient(
             144deg,
             #f9f9f9 calc(100% - 480px),
@@ -288,6 +296,40 @@ export default function IndexPage() {
         </div>
       </div>
       <HomePlayground />
+      <div
+        className={css`
+          max-width: 800px;
+          margin: 120px auto 0;
+          padding: 40px 16px;
+          box-sizing: border-box;
+          /* text-align: center; */
+          @media (max-width: 768px) {
+            margin-top: 32px;
+          }
+          form {
+            text-align: left;
+            display: grid;
+            grid-auto-flow: column;
+            align-items: start;
+            grid-gap: 16px;
+            > *:not(button) {
+              margin: 0 !important;
+            }
+            button {
+              margin-top: 1.5em !important;
+            }
+            @media (max-width: 768px) {
+              grid-auto-flow: row;
+              grid-gap: 16px;
+              button {
+                margin-top: 0 !important;
+              }
+            }
+          }
+        `}
+      >
+        <NewsletterForm />
+      </div>
     </>
   );
 }

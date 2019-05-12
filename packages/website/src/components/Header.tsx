@@ -172,9 +172,25 @@ export default function Header({ transparent }: HeaderProps) {
       <div style={{ flex: 1 }} />
       <HiddenMediaQuery query="max-width: 768px">
         {props => (
-          <Anchor as={Link} to="/docs/" getProps={getLinkProps} {...props}>
-            Documentation
-          </Anchor>
+          <>
+            <Anchor
+              as={Link}
+              to="/docs/"
+              getProps={getLinkProps}
+              {...props}
+              onClick={track("reakit.headerGuideClick")}
+            >
+              Documentation
+            </Anchor>
+            <Anchor
+              as={Link}
+              to="/news/"
+              {...props}
+              onClick={track("reakit.headerNewsletterClick")}
+            >
+              Newsletter
+            </Anchor>
+          </>
         )}
       </HiddenMediaQuery>
       <Anchor
