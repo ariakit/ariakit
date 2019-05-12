@@ -74,6 +74,12 @@ export const useTabbable = unstable_createHook<
         "aria-disabled": options.disabled,
         onMouseDown: React.useCallback(
           (event: React.MouseEvent) => {
+            if (event.target instanceof HTMLInputElement) {
+              if (onMouseDown) {
+                onMouseDown(event);
+              }
+              return;
+            }
             event.preventDefault();
             if (options.disabled) {
               event.stopPropagation();
