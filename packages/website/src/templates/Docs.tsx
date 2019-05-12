@@ -7,6 +7,7 @@ import {
   PlaygroundEditor,
   usePlaygroundState
 } from "reakit-playground";
+import * as emotion from "emotion";
 import createUseContext from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
 import CarbonAd from "../components/CarbonAd";
@@ -96,6 +97,7 @@ const { Compiler: renderAst } = new RehypeReact({
             <div>
               <PlaygroundPreview
                 modules={{
+                  emotion,
                   constate: createUseContext,
                   "./UniversalAccess": FaUniversalAccess
                 }}
