@@ -4,6 +4,7 @@ import { unstable_createComponent } from "../utils/createComponent";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
+import { isTouchDevice } from "../__utils/isTouchDevice";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
 export type MenuItemOptions = RoverOptions &
@@ -38,7 +39,7 @@ export const useMenuItem = unstable_createHook<
     const ref = React.useRef<HTMLElement>(null);
 
     const onMouseOver = React.useCallback(() => {
-      if (options.orientation !== "horizontal") {
+      if (options.orientation !== "horizontal" && !isTouchDevice()) {
         if (!ref.current) {
           warning(
             true,
@@ -67,7 +68,7 @@ export const useMenuItem = unstable_createHook<
           const nestedMenu = menu.querySelector(
             "[role=menu]:not([hidden]),[role=menubar]:not([hidden])"
           );
-          if (!nestedMenu) {
+          if (!nestedMenu && !isTouchDevice()) {
             options.move(null);
             menu.focus();
           }

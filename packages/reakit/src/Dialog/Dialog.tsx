@@ -181,8 +181,7 @@ export const Dialog = unstable_createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      `You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://reakit.io/docs/dialog`,
+      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/dialog",
       "Dialog"
     );
     return unstable_useCreateElement(type, props, children);

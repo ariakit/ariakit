@@ -69,8 +69,7 @@ export const StaticMenu = unstable_createComponent({
       !props["aria-label"] &&
         !props["aria-labelledby"] &&
         props.role !== "menubar",
-      `You should provide either \`aria-label\` or \`aria-labelledby\` props.
-See https://reakit.io/docs/menu`,
+      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/menu",
       "Menu"
     );
 
