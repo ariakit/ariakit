@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.3.0...reakit-system-palette@0.4.0) (2019-05-12)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix `MenuDisclosure` arrow alignment on Safari. ([13f6e3e](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/13f6e3e))
+* **reakit-system-palette:** Fix several issues with `darken`/`lighten` ([6b58654](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/6b58654))
+
+
+### chore
+
+* Update ComponentProps type name ([87b0811](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/87b0811))
+
+
+### Features
+
+* Add `unstable_animated` prop to `Hidden` ([e0ff29f](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/e0ff29f))
+* Add experimental `unstable_use` static method to `Provider` ([4af7a4a](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/4af7a4a))
+* Rename `mergeProps` util to `unstable_mergeProps` ([9be2e14](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/9be2e14))
+
+
+### BREAKING CHANGES
+
+* `mergeProps` util has been renamed to `unstable_mergeProps` and is not exported by the root package anymore. Instead, it should be imported from `reakit/utils/mergeProps`.
+* All the `ComponentProps` typings have been renamed to `ComponentHTMLProps`. `ComponentProps` is now the combination of `ComponentOptions` and `ComponentHTMLProps`.
+* `unstable_system` prop has been removed from `Provider`. Use `Provider.unstable_use(system)` instead:
+
+  ```diff
+    import { Provider, Button } from "reakit";
+    import * as system from "reakit-system-boostrap";
+
+  + Provider.unstable_use(system);
+
+    function App() {
+      return (
+  -     <Provider unstable_system={system}>
+  +     <Provider>
+          <Button>Button</Button>
+        </Provider>
+      );
+    }
+  ```
+
+  The motivation behind this change is to make it clearer that systems are static and are not supposed to change between renders. With prop, this could be misinterpreted.
+
+
+
+
+
 # [0.3.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.2.0...reakit-system-palette@0.3.0) (2019-04-25)
 
 **Note:** Version bump only for package reakit-system-palette

@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-alpha.4](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.3...reakit@1.0.0-alpha.4) (2019-05-12)
+
+
+### Bug Fixes
+
+* Fix `Menu` not correctly moving with arrow keys ([3b55b85](https://github.com/reakit/reakit/commit/3b55b85))
+* Fix `PopoverArrow` styles ([a90d71f](https://github.com/reakit/reakit/commit/a90d71f))
+* Fix `Tabbable` not responding to `Enter` key ([24b54c3](https://github.com/reakit/reakit/commit/24b54c3))
+* Fix arrow keys closing `Dialog` opened by `Menu` ([c3fdbcd](https://github.com/reakit/reakit/commit/c3fdbcd))
+* Prevent buggy scroll on focus when showing Dialog ([e0a328b](https://github.com/reakit/reakit/commit/e0a328b))
+* Remove the need of double click on `MenuItem` on mobile ([73b920e](https://github.com/reakit/reakit/commit/73b920e))
+* Render `VisuallyHidden` as `span` instead of `div` since it could be placed in an inline element ([ac24c08](https://github.com/reakit/reakit/commit/ac24c08))
+
+
+### chore
+
+* Update ComponentProps type name ([87b0811](https://github.com/reakit/reakit/commit/87b0811))
+
+
+### Features
+
+* Add `state` and `setState` props to `Checkbox` and `Radio` ([5902ab1](https://github.com/reakit/reakit/commit/5902ab1))
+* Add `unstable_animated` prop to `Hidden` ([e0ff29f](https://github.com/reakit/reakit/commit/e0ff29f))
+* Add `unstable_preventOverflow`, `unstable_boundariesElement` and `unstable_fixed` props to `usePopoverState` ([f0930e2](https://github.com/reakit/reakit/commit/f0930e2))
+* Add experimental `unstable_orphan` prop to `Dialog` ([d0f6b52](https://github.com/reakit/reakit/commit/d0f6b52))
+* Add experimental `unstable_use` static method to `Provider` ([4af7a4a](https://github.com/reakit/reakit/commit/4af7a4a))
+* Remove experimental `KeyBinder` in favor of internal `createOnKeyDown` util ([b0adfa8](https://github.com/reakit/reakit/commit/b0adfa8))
+* Rename `mergeProps` util to `unstable_mergeProps` ([9be2e14](https://github.com/reakit/reakit/commit/9be2e14))
+* Warn when some refs aren't passed to components ([92f035c](https://github.com/reakit/reakit/commit/92f035c))
+
+
+### Performance Improvements
+
+* Improve general performance by using `React.memo` on components ([91f0d54](https://github.com/reakit/reakit/commit/91f0d54))
+
+
+### BREAKING CHANGES
+
+* `mergeProps` util has been renamed to `unstable_mergeProps` and is not exported by the root package anymore. Instead, it should be imported from `reakit/utils/mergeProps`.
+* `currentValue` and `setValue` have been replaced by `state` and `setState` on `Checkbox`, `Radio` and all their derivative components and related hooks.
+* All the `ComponentProps` typings have been renamed to `ComponentHTMLProps`. `ComponentProps` is now the combination of `ComponentOptions` and `ComponentHTMLProps`.
+* `unstable_system` prop has been removed from `Provider`. Use `Provider.unstable_use(system)` instead:
+
+  ```diff
+    import { Provider, Button } from "reakit";
+    import * as system from "reakit-system-boostrap";
+
+  + Provider.unstable_use(system);
+
+    function App() {
+      return (
+  -     <Provider unstable_system={system}>
+  +     <Provider>
+          <Button>Button</Button>
+        </Provider>
+      );
+    }
+  ```
+
+  The motivation behind this change is to make it clearer that systems are static and are not supposed to change between renders. With prop, this could be misinterpreted.
+* `placement` prop is now required on `MenuDisclosure`.
+* `placement` prop is now required on `Menu`.
+
+
+
+
+
 # [1.0.0-alpha.3](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.2...reakit@1.0.0-alpha.3) (2019-04-25)
 
 

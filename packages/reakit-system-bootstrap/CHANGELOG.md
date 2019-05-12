@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.3.0...reakit-system-bootstrap@0.4.0) (2019-05-12)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix `Button` enabled state ([fc2d6a0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/fc2d6a0))
+* **reakit-system-bootstrap:** Fix `MenuDisclosure` arrow alignment on Safari. ([13f6e3e](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/13f6e3e))
+* **reakit-system-palette:** Fix several issues with `darken`/`lighten` ([6b58654](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/6b58654))
+
+
+### chore
+
+* Update ComponentProps type name ([87b0811](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/87b0811))
+
+
+### Features
+
+* Add `unstable_animated` prop to `Hidden` ([e0ff29f](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/e0ff29f))
+* Add experimental `unstable_use` static method to `Provider` ([4af7a4a](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/4af7a4a))
+* **reakit-theme-bootstrap:** Remove highlight color on mobile tap ([d3aefd5](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/d3aefd5))
+
+
+### BREAKING CHANGES
+
+* All the `ComponentProps` typings have been renamed to `ComponentHTMLProps`. `ComponentProps` is now the combination of `ComponentOptions` and `ComponentHTMLProps`.
+* `unstable_system` prop has been removed from `Provider`. Use `Provider.unstable_use(system)` instead:
+
+  ```diff
+    import { Provider, Button } from "reakit";
+    import * as system from "reakit-system-boostrap";
+
+  + Provider.unstable_use(system);
+
+    function App() {
+      return (
+  -     <Provider unstable_system={system}>
+  +     <Provider>
+          <Button>Button</Button>
+        </Provider>
+      );
+    }
+  ```
+
+  The motivation behind this change is to make it clearer that systems are static and are not supposed to change between renders. With prop, this could be misinterpreted.
+
+
+
+
+
 # [0.3.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.2.0...reakit-system-bootstrap@0.3.0) (2019-04-25)
 
 
