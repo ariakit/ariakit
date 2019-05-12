@@ -19,6 +19,7 @@ import Blockquote from "../components/Blockquote";
 import TestTube from "../icons/TestTube";
 import Heading from "../components/Heading";
 import SEO from "../components/SEO";
+import track from "../utils/track";
 
 type DocsProps = {
   data: {
@@ -103,7 +104,12 @@ const { Compiler: renderAst } = new RehypeReact({
                 }}
                 {...state}
               />
-              <PlaygroundEditor mode={mode} maxHeight={maxHeight} {...state} />
+              <PlaygroundEditor
+                mode={mode}
+                maxHeight={maxHeight}
+                onBlur={track("reakit.codeMirrorBlur")}
+                {...state}
+              />
             </div>
           );
         }

@@ -18,6 +18,7 @@ import { LinkGetProps } from "@reach/router";
 import Logo from "../icons/Logo";
 import useViewportWidthGreaterThan from "../hooks/useViewportWidthGreaterThan";
 import useLocation from "../hooks/useLocation";
+import track from "../utils/track";
 import Anchor from "./Anchor";
 import SkipToContent from "./SkipToContent";
 import Spacer from "./Spacer";
@@ -176,7 +177,10 @@ export default function Header({ transparent }: HeaderProps) {
           </Anchor>
         )}
       </HiddenMediaQuery>
-      <Anchor href="https://github.com/reakit/reakit">
+      <Anchor
+        href="https://github.com/reakit/reakit"
+        onClick={track("reakit.headerGithubClick")}
+      >
         <FaGithub style={{ fontSize: "1.2em" }} />
         <HiddenMediaQuery query="max-width: 768px">
           <Spacer width={8} />

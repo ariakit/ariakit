@@ -17,6 +17,7 @@ import Composable from "../icons/Composable";
 import Customizable from "../icons/Customizable";
 import TinyFast from "../icons/TinyFast";
 import HomePlayground from "../components/HomePlayground";
+import track from "../utils/track";
 
 function useGitHubStars() {
   const [stars, setStars] = React.useState<number | null>(null);
@@ -122,6 +123,7 @@ export default function IndexPage() {
                 as={Link}
                 to="/docs/get-started/"
                 unstable_system={{ palette: "white" }}
+                onClick={track("reakit.heroGuideClick")}
               >
                 Get started
               </Button>
@@ -129,6 +131,7 @@ export default function IndexPage() {
                 as={Link}
                 to="/docs/button/"
                 unstable_system={{ palette: "white", fill: "outline" }}
+                onClick={track("reakit.heroComponentsClick")}
               >
                 Components
               </Button>
@@ -159,13 +162,19 @@ export default function IndexPage() {
                 }
               `}
             >
-              <a href="https://github.com/reakit/reakit">
+              <a
+                href="https://github.com/reakit/reakit"
+                onClick={track("reakit.heroGithubClick")}
+              >
                 <FiGithub />
                 <Spacer width={8} />
                 View Reakit on GitHub
               </a>
               {stars && (
-                <a href="https://github.com/reakit/reakit/stargazers">
+                <a
+                  href="https://github.com/reakit/reakit/stargazers"
+                  onClick={track("reakit.heroStarsClick")}
+                >
                   <MdStar />
                   <Spacer width={8} />
                   {stars}

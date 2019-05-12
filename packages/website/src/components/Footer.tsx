@@ -4,6 +4,7 @@ import { FaFacebook, FaTwitter, FaGithub } from "react-icons/fa";
 import { VisuallyHidden } from "reakit";
 import { css } from "@emotion/core";
 import { usePalette, useLighten } from "reakit-system-palette/utils";
+import track from "../utils/track";
 import Anchor from "./Anchor";
 import Paragraph from "./Paragraph";
 
@@ -41,15 +42,27 @@ export default function Footer() {
           margin-bottom: 20px;
         `}
       >
-        <Anchor href="https://facebook.com/reakitjs" target="_blank">
+        <Anchor
+          href="https://facebook.com/reakitjs"
+          target="_blank"
+          onClick={track("reakit.footerFacebookClick")}
+        >
           <FaFacebook />
           <VisuallyHidden>Facebook</VisuallyHidden>
         </Anchor>
-        <Anchor href="https://twitter.com/reakitjs" target="_blank">
+        <Anchor
+          href="https://twitter.com/reakitjs"
+          target="_blank"
+          onClick={track("reakit.footerTwitterClick")}
+        >
           <FaTwitter />
           <VisuallyHidden>Twitter</VisuallyHidden>
         </Anchor>
-        <Anchor href="https://github.com/reakit/reakit" target="_blank">
+        <Anchor
+          href="https://github.com/reakit/reakit"
+          target="_blank"
+          onClick={track("reakit.footerGithubClick")}
+        >
           <FaGithub />
           <VisuallyHidden>GitHub</VisuallyHidden>
         </Anchor>
