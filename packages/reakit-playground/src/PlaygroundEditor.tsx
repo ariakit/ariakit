@@ -37,7 +37,7 @@ export type PlaygroundEditorOptions = PlaygroundStateReturn &
     maxHeight?: string;
   };
 
-export type PlaygroundEditorHTMLProps = { className?: string };
+export type PlaygroundEditorHTMLProps = React.HTMLAttributes<any>;
 
 export type PlaygroundEditorProps = PlaygroundEditorOptions &
   PlaygroundEditorHTMLProps;
@@ -104,6 +104,7 @@ export function PlaygroundEditor({
 
   return (
     <CodeMirror
+      {...htmlProps as any}
       className={className}
       value={value}
       onBeforeChange={(_, __, val) => options.update(val)}
