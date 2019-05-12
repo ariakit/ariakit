@@ -193,24 +193,28 @@ export default function HomePlayground() {
   }, []);
 
   React.useEffect(() => {
-    const obj = {} as Record<string, any>;
-    obj["./Tabs"] = compileComponent(tabPlayground.code, obj, "Tabs");
-    obj["./TabsModal"] = compileComponent(
-      dialogPlayground.code,
-      obj,
-      "TabsModal"
-    );
-    obj["./TabsModalMenu"] = compileComponent(
-      menuPlayground.code,
-      obj,
-      "TabsModalMenu"
-    );
-    obj["./TabsModalSubmenu"] = compileComponent(
-      submenuPlayground.code,
-      obj,
-      "TabsModalSubmenu"
-    );
-    setModules(obj);
+    try {
+      const obj = {} as Record<string, any>;
+      obj["./Tabs"] = compileComponent(tabPlayground.code, obj, "Tabs");
+      obj["./TabsModal"] = compileComponent(
+        dialogPlayground.code,
+        obj,
+        "TabsModal"
+      );
+      obj["./TabsModalMenu"] = compileComponent(
+        menuPlayground.code,
+        obj,
+        "TabsModalMenu"
+      );
+      obj["./TabsModalSubmenu"] = compileComponent(
+        submenuPlayground.code,
+        obj,
+        "TabsModalSubmenu"
+      );
+      setModules(obj);
+    } catch (e) {
+      // do nothing for now
+    }
   }, [
     tabPlayground.code,
     dialogPlayground.code,
