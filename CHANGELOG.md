@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.4...reakit@1.0.0-beta.0) (2019-05-13)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` erroneously preventing `onMouseDown` on inputs ([10af438](https://github.com/reakit/reakit/commit/10af438))
+* Fix nested `Dialogs` not closing when parent dialogs close ([84d1e16](https://github.com/reakit/reakit/commit/84d1e16))
+
+
+
+
+
 # [1.0.0-alpha.4](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.3...reakit@1.0.0-alpha.4) (2019-05-12)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.4.0...reakit-playground@0.4.1) (2019-05-13)
+
+
+### Features
+
+* **reakit-playground:** Accept all HTML attributes in `PlaygroundEditor` ([8097875](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8097875))
+
+
+
+
+
 # [0.4.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.3.0...reakit-playground@0.4.0) (2019-05-12)
 
 

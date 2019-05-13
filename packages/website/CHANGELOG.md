@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@0.20.0...website@1.0.0-beta.0) (2019-05-13)
+
+
+### Features
+
+* **website:** Add Google Tag Manager ([a6866a8](https://github.com/reakit/reakit/tree/master/packages/website/commit/a6866a8))
+
+
+
+
+
 # [0.20.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@0.19.0...website@0.20.0) (2019-05-12)
 
 
