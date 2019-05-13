@@ -20,5 +20,5 @@ If possible, describe how this feature could be implemented. See [CONTRIBUTING.m
 
 <br>
 
-> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️<br>
+> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️
 > https://opencollective.com/reakit
