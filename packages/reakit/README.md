@@ -79,6 +79,8 @@ yarn add reakit
 
 > Thanks to [@nosebit](https://github.com/nosebit) for the package name on npm.
 
+> Looking for `v0`? See [v0 branch](https://github.com/reakit/reakit/tree/v0), [v0 docs](https://v0.reakit.io) and the [migration guide](https://github.com/reakit/reakit/issues/350).
+
 
 ## Usage
 
