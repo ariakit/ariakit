@@ -116,11 +116,6 @@ This project exists thanks to all the people who contribute.
 - <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
 
 
-## Related
-
-- [Reach UI](https://ui.reach.tech)
-
-
 ## License
 
 MIT © [Diego Haz](https://github.com/diegohaz)
