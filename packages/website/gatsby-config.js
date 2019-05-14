@@ -2,7 +2,7 @@ module.exports = {
   siteMetadata: {
     title: "Reakit",
     author: "@reakitjs",
-    siteUrl: process.env.DEPLOY_PRIME_URL || "https://reakit.io",
+    siteUrl: process.env.URL || "https://reakit.io",
     description:
       "Powerful UI toolkit for building accessible rich web applications with React"
   },
