@@ -103,8 +103,8 @@ export function PlaygroundPreview({
 
   React.useEffect(() => {
     // Ensure that we unmount the React component when the effect is destroyed.
-    return () => unmount()
-  })
+    return () => unmount();
+  });
 
   htmlProps = unstable_useProps("PlaygroundPreview", options, htmlProps);
 
