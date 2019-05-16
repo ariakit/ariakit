@@ -84,18 +84,14 @@ export function PlaygroundPreview({
           options.modules,
           options.componentName
         );
-        
+        unmount();
         ReactDOM.render(renderChildren(<Example />), ref.current);
       } catch (e) {
         unmount();
         handleError(e);
       }
     }, 500);
-    return () => {
-      // Ensure that we unmount the React compontn when the effect is destroyed.
-      unmount();
-      clearTimeout(timer);
-    }
+    return () => clearTimeout(timer);
   }, [
     options.code,
     options.modules,
@@ -104,6 +100,11 @@ export function PlaygroundPreview({
     handleError,
     unmount
   ]);
+
+  React.useEffect(() => {
+    // Ensure that we unmount the React component when the effect is destroyed.
+    return () => unmount()
+  })
 
   htmlProps = unstable_useProps("PlaygroundPreview", options, htmlProps);
 
