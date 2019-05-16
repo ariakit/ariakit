@@ -7,7 +7,7 @@ export const palette: Palette = {
   black: "#212121",
   light: "#f8f9fa",
   dark: "#343a40",
-  primary: "#007BFF",
+  primary: "#006DFF",
   secondary: "#6C757D",
   success: "#28A745",
   info: "#17A2B8",

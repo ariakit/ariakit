@@ -13,7 +13,7 @@ test("useBox", () => {
     <body>
       <div>
         <div
-          style="color: rgb(255, 255, 255); background-color: rgb(0, 123, 255);"
+          style="color: rgb(255, 255, 255); background-color: rgb(0, 109, 255);"
         >
           Box
         </div>
