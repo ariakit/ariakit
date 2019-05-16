@@ -7,7 +7,7 @@ const system = unstable_mergeSystem(bootstrapSystem, playgroundSystem, {
   palette: {
     ...bootstrapSystem.palette,
     primary: "#006DFF",
-    link: "#007bff",
+    link: "#006DFF",
     secondary: "#504984"
   }
 });
