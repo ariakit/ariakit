@@ -244,6 +244,15 @@ export default function HomePlayground() {
             width: 0;
             height: 0;
           }
+
+          &::after {
+            content: "";
+            position: absolute;
+            height: 3.2em;
+            width: 1.5em;
+            right: 0;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
+          }
           && > [role="tab"] {
             &[aria-selected="true"] {
               background: #282a36;
