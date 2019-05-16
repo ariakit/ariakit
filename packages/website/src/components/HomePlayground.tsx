@@ -253,6 +253,7 @@ export default function HomePlayground() {
             right: 0;
             background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
           }
+
           && > [role="tab"] {
             &[aria-selected="true"] {
               background: #282a36;
