@@ -84,14 +84,18 @@ export function PlaygroundPreview({
           options.modules,
           options.componentName
         );
-        unmount();
+        
         ReactDOM.render(renderChildren(<Example />), ref.current);
       } catch (e) {
         unmount();
         handleError(e);
       }
     }, 500);
-    return () => clearTimeout(timer);
+    return () => {
+      // Ensure that we unmount the React compontn when the effect is destroyed.
+      unmount();
+      clearTimeout(timer);
+    }
   }, [
     options.code,
     options.modules,
