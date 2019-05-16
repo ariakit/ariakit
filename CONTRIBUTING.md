@@ -80,12 +80,7 @@ If you haven't already done so, [install yarn](https://yarnpkg.com/en/docs/insta
 
 ### Scripts
 
-- `yarn lint --fix` will lint the code and fix formatting errors while you develop.
-- `yarn test` will run tests for all packages.
-- `yarn test --watch` will run tests only on the files you affected with your updates and will keep running watching your changes.
-- `yarn test --coverage` will give you an overview of the parts of the code which are being covered by tests.
-- `yarn dev` will run a development server for components. Use it while working in the `reakit` package.
-- `yarn website` will run a development server for our [website](https://reakit.io). Use it while working in the `website` package.
+TODO
 
 ### Components
 
@@ -100,12 +95,6 @@ TODO
 TODO
 
 ## Credits
-
-### Contributors
-
-This project exists thanks to all the people who contribute.
-<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1050&button=false" /></a>
-
 
 ### Supporters
 
@@ -137,3 +126,10 @@ By donating $5 or more you help in the development of this project. Thank you to
   <a href="https://opencollective.com/reakit/backer/9/website"><img src="https://opencollective.com/reakit/backer/9/avatar.svg"></a>
 </p>
 
+### Contributors
+
+This project exists thanks to all the people who contribute.
+
+<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1260&button=false" /></a>
+
+- <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
