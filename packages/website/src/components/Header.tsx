@@ -232,8 +232,7 @@ export default function Header({ transparent }: HeaderProps) {
             `}
         `}
       >
-        Reakit is featured on ProductHunt. If you like the project, click here
-        to leave your feedback there.
+        Reakit is featured on Product Hunt!
       </a>
     </>
   );
