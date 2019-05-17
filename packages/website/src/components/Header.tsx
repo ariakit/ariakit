@@ -49,161 +49,192 @@ export default function Header({ transparent }: HeaderProps) {
   React.useEffect(dialog.hide, [location.pathname]);
 
   return (
-    <header
-      className={css`
-        position: fixed;
-        top: -32px;
-        left: 0;
-        width: 100%;
-        z-index: 901;
-        height: calc(var(--header-height) + 32px);
-        box-sizing: border-box;
-        background: ${background};
-        display: flex;
-        align-items: center;
-        padding: 32px 56px 0;
-        will-change: background, transform;
-        transition: transform 250ms ease-in-out;
-        ${!transparent && `box-shadow: 0 1px 2px ${boxShadowColor}`};
-        ${transparent &&
-          css`
-            background: transparent;
-            color: white;
-            transform: translateY(32px);
-          `};
-
-        & > *:not(:last-child) {
-          margin-right: 16px;
-        }
-        a:not([href^="#"]) {
-          display: inline-flex;
-          align-items: center;
-          height: calc(100% - 5px);
-          color: inherit;
-          font-weight: 400;
-          margin-top: 5px;
-          border-bottom: 5px solid transparent;
+    <>
+      <header
+        className={css`
+          position: fixed;
+          top: -32px;
+          left: 0;
+          width: 100%;
+          z-index: 910;
+          height: calc(var(--header-height) + 32px);
           box-sizing: border-box;
-          text-transform: uppercase;
-          font-size: 0.875em;
-          &:not([href="/"]) {
-            padding: 0 1em;
-            &:hover {
-              color: ${transparent ? "white" : primary};
-              text-decoration: ${transparent ? "underline" : "none"};
-            }
-            &[aria-current="page"] {
-              color: ${primary};
-              border-color: ${primary};
-            }
-          }
-        }
+          background: ${background};
+          display: flex;
+          align-items: center;
+          padding: 32px 56px 0;
+          will-change: background, transform;
+          transition: transform 250ms ease-in-out;
+          ${!transparent && `box-shadow: 0 1px 2px ${boxShadowColor}`};
+          ${transparent &&
+            css`
+              background: transparent;
+              color: white;
+              transform: translateY(32px);
+            `};
 
-        @media (max-width: 768px) {
-          padding: 0 8px;
-          transform: initial;
-          top: 0;
-          height: var(--header-height);
           & > *:not(:last-child) {
-            margin-right: 8px;
+            margin-right: 16px;
           }
-          a {
-            font-size: 1em !important;
-          }
-        }
-      `}
-    >
-      <Global
-        styles={{
-          ":root": {
-            "--header-height": "60px"
-          }
-        }}
-      />
-      <SkipToContent />
-      <HiddenMediaQuery query="min-width: 769px">
-        <DialogDisclosure
-          {...dialog}
-          unstable_system={{ palette: "background" }}
-          className={css`
-            background: transparent;
+          a:not([href^="#"]) {
+            display: inline-flex;
+            align-items: center;
+            height: calc(100% - 5px);
             color: inherit;
-            font-size: 20px;
-            padding: 8px;
-            border-radius: 50%;
-            border: none;
-          `}
-        >
-          <MdMenu />
-          <VisuallyHidden>Open sidebar</VisuallyHidden>
-        </DialogDisclosure>
-        <Portal>
-          <DialogBackdrop {...dialog} />
-        </Portal>
-        <Dialog
-          {...dialog}
-          ref={ref}
-          aria-label="Sidebar"
-          unstable_animated
-          unstable_initialFocusRef={ref}
-          className={css`
-            top: 0;
-            left: 0;
-            height: 100vh;
-            margin: 0;
-            max-height: initial;
-            transform: translateX(0);
-            transition: transform 250ms ease-in-out;
-            border-radius: 0;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-            &.hidden {
-              transform: translateX(-100%);
+            font-weight: 400;
+            margin-top: 5px;
+            border-bottom: 5px solid transparent;
+            box-sizing: border-box;
+            text-transform: uppercase;
+            font-size: 0.875em;
+            &:not([href="/"]) {
+              padding: 0 1em;
+              &:hover {
+                color: ${transparent ? "white" : primary};
+                text-decoration: ${transparent ? "underline" : "none"};
+              }
+              &[aria-current="page"] {
+                color: ${primary};
+                border-color: ${primary};
+              }
             }
-          `}
-        >
-          <DocsNavigation />
-        </Dialog>
-      </HiddenMediaQuery>
-      <Anchor as={Link} to="/">
-        <Logo colored={!transparent} />
-        <VisuallyHidden>Reakit</VisuallyHidden>
-      </Anchor>
-      <div style={{ flex: 1 }} />
-      <HiddenMediaQuery query="max-width: 768px">
-        {props => (
-          <>
-            <Anchor
-              as={Link}
-              to="/docs/"
-              getProps={getLinkProps}
-              {...props}
-              onClick={track("reakit.headerGuideClick")}
-            >
-              Documentation
-            </Anchor>
-            <Anchor
-              as={Link}
-              to="/news/"
-              {...props}
-              onClick={track("reakit.headerNewsletterClick")}
-            >
-              Newsletter
-            </Anchor>
-          </>
-        )}
-      </HiddenMediaQuery>
-      <Anchor
-        href="https://github.com/reakit/reakit"
-        onClick={track("reakit.headerGithubClick")}
+          }
+
+          @media (max-width: 768px) {
+            padding: 0 8px;
+            transform: initial;
+            top: 0;
+            height: var(--header-height);
+            & > *:not(:last-child) {
+              margin-right: 8px;
+            }
+            a {
+              font-size: 1em !important;
+            }
+          }
+        `}
       >
-        <FaGithub style={{ fontSize: "1.2em" }} />
-        <HiddenMediaQuery query="max-width: 768px">
-          <Spacer width={8} />
-          GitHub
+        <Global
+          styles={{
+            ":root": {
+              "--header-height": "60px"
+            }
+          }}
+        />
+        <SkipToContent />
+        <HiddenMediaQuery query="min-width: 769px">
+          <DialogDisclosure
+            {...dialog}
+            unstable_system={{ palette: "background" }}
+            className={css`
+              background: transparent;
+              color: inherit;
+              font-size: 20px;
+              padding: 8px;
+              border-radius: 50%;
+              border: none;
+            `}
+          >
+            <MdMenu />
+            <VisuallyHidden>Open sidebar</VisuallyHidden>
+          </DialogDisclosure>
+          <Portal>
+            <DialogBackdrop {...dialog} />
+          </Portal>
+          <Dialog
+            {...dialog}
+            ref={ref}
+            aria-label="Sidebar"
+            unstable_animated
+            unstable_initialFocusRef={ref}
+            className={css`
+              top: 0;
+              left: 0;
+              height: 100vh;
+              margin: 0;
+              max-height: initial;
+              transform: translateX(0);
+              transition: transform 250ms ease-in-out;
+              border-radius: 0;
+              overflow: auto;
+              -webkit-overflow-scrolling: touch;
+              &.hidden {
+                transform: translateX(-100%);
+              }
+            `}
+          >
+            <DocsNavigation />
+          </Dialog>
         </HiddenMediaQuery>
-        {!isLarge && <VisuallyHidden>GitHub</VisuallyHidden>}
-      </Anchor>
-    </header>
+        <Anchor as={Link} to="/">
+          <Logo colored={!transparent} />
+          <VisuallyHidden>Reakit</VisuallyHidden>
+        </Anchor>
+        <div style={{ flex: 1 }} />
+        <HiddenMediaQuery query="max-width: 768px">
+          {props => (
+            <>
+              <Anchor
+                as={Link}
+                to="/docs/"
+                getProps={getLinkProps}
+                {...props}
+                onClick={track("reakit.headerGuideClick")}
+              >
+                Documentation
+              </Anchor>
+              <Anchor
+                as={Link}
+                to="/news/"
+                {...props}
+                onClick={track("reakit.headerNewsletterClick")}
+              >
+                Newsletter
+              </Anchor>
+            </>
+          )}
+        </HiddenMediaQuery>
+        <Anchor
+          href="https://github.com/reakit/reakit"
+          onClick={track("reakit.headerGithubClick")}
+        >
+          <FaGithub style={{ fontSize: "1.2em" }} />
+          <HiddenMediaQuery query="max-width: 768px">
+            <Spacer width={8} />
+            GitHub
+          </HiddenMediaQuery>
+          {!isLarge && <VisuallyHidden>GitHub</VisuallyHidden>}
+        </Anchor>
+      </header>
+      <a
+        href="https://producthunt.com/posts/reakit"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={track("reakit.headerProductHuntClick")}
+        className={css`
+          position: fixed;
+          top: var(--header-height);
+          background-color: #da552e;
+          color: white;
+          font-size: 0.875em;
+          padding: 0.5em 1em;
+          z-index: 905;
+          text-decoration: none;
+          width: 100%;
+          box-sizing: border-box;
+          text-align: center;
+          &:hover {
+            text-decoration: underline;
+          }
+          ${transparent &&
+            css`
+              display: none;
+            `}
+        `}
+      >
+        Reakit is featured on ProductHunt. If you like the project, click here
+        to leave your feedback there.
+      </a>
+    </>
   );
 }
