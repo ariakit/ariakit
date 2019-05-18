@@ -2,6 +2,7 @@ import * as React from "react";
 import { css } from "emotion";
 import Heading from "../components/Heading";
 import NewsletterForm from "../components/NewsletterForm";
+import SEO from "../components/SEO";
 
 export default function NewsletterPage() {
   return (
@@ -12,6 +13,7 @@ export default function NewsletterPage() {
         padding: 16px;
       `}
     >
+      <SEO title="Newsletter" />
       <Heading>Newsletter</Heading>
       <NewsletterForm />
     </div>
