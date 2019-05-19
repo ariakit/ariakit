@@ -256,7 +256,6 @@ export default function HomePlayground() {
 
           @media (min-width: 768px) {
             &::after {
-              background: transparent;
               display: none;
             }
           }
