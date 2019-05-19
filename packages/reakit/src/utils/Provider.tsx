@@ -13,7 +13,7 @@ export type ProviderProps = unstable_IdProviderProps &
 
 export function Provider({
   unstable_prefix: prefix,
-  unstable_system: system,
+  unstable_system: system = {},
   children
 }: ProviderProps) {
   return (
