@@ -839,10 +839,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Separator's context orientation.
-The actual separator's orientation will be flipped based on this prop.
-So a `"vertical"` orientation means that the separator will have a
-`"horizontal"` orientation.
+  Separator's orientation.
 
 ### `StaticMenu`
 

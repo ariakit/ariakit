@@ -19,7 +19,14 @@ export const useMenuSeparator = unstable_createHook<
 >({
   name: "MenuSeparator",
   compose: useSeparator,
-  useState: useMenuState
+  useState: useMenuState,
+
+  useOptions({ orientation = "vertical", ...options }) {
+    return {
+      orientation: orientation === "vertical" ? "horizontal" : "vertical",
+      ...options
+    };
+  }
 });
 
 export const MenuSeparator = unstable_createComponent({

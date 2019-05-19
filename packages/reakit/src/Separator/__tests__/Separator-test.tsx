@@ -5,15 +5,15 @@ import { Separator } from "../Separator";
 test("render", () => {
   const { baseElement } = render(<Separator />);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <hr
-          aria-orientation="horizontal"
-          role="separator"
-        />
-      </div>
-    </body>
-  `);
+        <body>
+          <div>
+            <hr
+              aria-orientation="horizontal"
+              role="separator"
+            />
+          </div>
+        </body>
+    `);
 });
 
 test("render horizontal", () => {
@@ -22,7 +22,7 @@ test("render horizontal", () => {
     <body>
       <div>
         <hr
-          aria-orientation="vertical"
+          aria-orientation="horizontal"
           role="separator"
         />
       </div>

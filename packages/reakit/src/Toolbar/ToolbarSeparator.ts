@@ -20,7 +20,14 @@ export const useToolbarSeparator = unstable_createHook<
 >({
   name: "ToolbarSeparator",
   compose: useSeparator,
-  useState: useToolbarState
+  useState: useToolbarState,
+
+  useOptions({ orientation = "vertical", ...options }) {
+    return {
+      orientation: orientation === "vertical" ? "horizontal" : "vertical",
+      ...options
+    };
+  }
 });
 
 export const ToolbarSeparator = unstable_createComponent({
