@@ -49,7 +49,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Radio` uses [Rover](/docs/rover/), and ise used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
+- `Radio` uses [Rover](/docs/rover/), and is used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
 - `RadioGroup` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
