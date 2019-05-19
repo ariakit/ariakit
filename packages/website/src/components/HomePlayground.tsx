@@ -254,6 +254,13 @@ export default function HomePlayground() {
             background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
           }
 
+          @media (min-width: 768px) {
+            &::after {
+              background: transparent;
+              display: none;
+            }
+          }
+
           && > [role="tab"] {
             &[aria-selected="true"] {
               background: #282a36;
