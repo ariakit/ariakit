@@ -20,7 +20,7 @@ test("render", () => {
           hidden=""
           id="popover"
           role="dialog"
-          style="z-index: 999;"
+          style="display: none; z-index: 999;"
           tabindex="-1"
         >
           popover
@@ -72,7 +72,7 @@ test("render non-modal", () => {
           hidden=""
           id="popover"
           role="dialog"
-          style="z-index: 999;"
+          style="display: none; z-index: 999;"
           tabindex="-1"
         >
           test

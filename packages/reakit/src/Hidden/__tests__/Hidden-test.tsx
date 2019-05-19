@@ -9,6 +9,7 @@ test("render", () => {
       class="hidden"
       hidden=""
       role="region"
+      style="display: none;"
     >
       hidden
     </div>

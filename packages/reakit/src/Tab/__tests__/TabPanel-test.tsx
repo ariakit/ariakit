@@ -19,6 +19,7 @@ test("render", () => {
           hidden=""
           id="base-tab-panel"
           role="tabpanel"
+          style="display: none;"
           tabindex="0"
         >
           tabpanel

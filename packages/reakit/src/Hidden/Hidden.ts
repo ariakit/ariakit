@@ -63,9 +63,10 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
         role: "region",
         id: options.unstable_hiddenId,
         className: shouldAddHiddenClass ? "hidden" : undefined,
-        hidden,
-        onTransitionEnd
+        onTransitionEnd,
+        hidden
       } as HiddenHTMLProps,
+      hidden && { style: { display: "none" } },
       htmlProps
     );
   }

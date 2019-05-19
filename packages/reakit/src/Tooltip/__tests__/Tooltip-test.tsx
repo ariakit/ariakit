@@ -14,7 +14,7 @@ test("render", () => {
           class="hidden"
           hidden=""
           role="tooltip"
-          style="pointer-events: none; z-index: 999;"
+          style="display: none; pointer-events: none; z-index: 999;"
         >
           tooltip
         </div>
