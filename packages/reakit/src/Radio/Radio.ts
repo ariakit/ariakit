@@ -1,9 +1,9 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { Omit } from "../__utils/types";
 import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
 export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
@@ -30,39 +30,44 @@ export const useRadio = unstable_createHook<RadioOptions, RadioHTMLProps>({
   useState: useRadioState,
   keys: ["value", "checked"],
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    { onChange: htmlOnChange, onClick: htmlOnClick, ...htmlProps }
+  ) {
     const checked =
       typeof options.checked !== "undefined"
         ? options.checked
         : options.state === options.value;
 
-    const onChange = React.useCallback(() => {
-      if (options.disabled || !options.setState) return;
-      options.setState(options.value);
-    }, [options.disabled, options.setState, options.value]);
+    const onChange = React.useCallback(
+      (event: React.ChangeEvent) => {
+        if (htmlOnChange) {
+          htmlOnChange(event);
+        }
+        if (options.disabled || !options.setState) return;
+        options.setState(options.value);
+      },
+      [htmlOnChange, options.disabled, options.setState, options.value]
+    );
 
     const onClick = React.useCallback(
       (event: React.MouseEvent) => {
         if (event.target instanceof HTMLInputElement) return;
-        htmlProps.onChange!(event);
+        onChange(event as any);
       },
-      [htmlProps.onChange]
+      [onChange]
     );
 
-    htmlProps = unstable_mergeProps(
-      {
-        checked,
-        "aria-checked": checked,
-        value: options.value,
-        role: "radio",
-        type: "radio",
-        onChange,
-        onClick
-      } as RadioHTMLProps,
-      htmlProps
-    );
-
-    return htmlProps;
+    return {
+      checked,
+      "aria-checked": checked,
+      value: options.value,
+      role: "radio",
+      type: "radio",
+      onChange,
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      ...htmlProps
+    };
   },
 
   useCompose(options, htmlProps) {

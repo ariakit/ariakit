@@ -5,12 +5,13 @@ import {
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_useId } from "../utils/useId";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
+import { mergeRefs } from "../__utils/mergeRefs";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
@@ -43,7 +44,16 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
   useState: useRoverState,
   keys: ["stopId"],
 
-  useProps(options, { tabIndex, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      tabIndex: htmlTabIndex,
+      onFocus: htmlOnFocus,
+      onKeyDown: htmlOnKeyDown,
+      ...htmlProps
+    }
+  ) {
     const ref = React.useRef<HTMLElement>(null);
     const id = unstable_useId("rover-");
     const stopId = options.stopId || htmlProps.id || id;
@@ -104,16 +114,14 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
       ]
     );
 
-    return unstable_mergeProps(
-      {
-        ref,
-        id: stopId,
-        tabIndex: shouldTabIndex ? tabIndex : -1,
-        onFocus,
-        onKeyDown
-      } as RoverHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      id: stopId,
+      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
+      onKeyDown,
+      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      ...htmlProps
+    };
   }
 });
 

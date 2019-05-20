@@ -1,9 +1,10 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useLiveRef } from "../__utils/useLiveRef";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -60,89 +61,103 @@ export const useTabbable = unstable_createHook<
 
   useProps(
     options,
-    { tabIndex = 0, onClick, onMouseOver, onMouseDown, ...htmlProps }
+    {
+      ref: htmlRef,
+      tabIndex: htmlTabIndex = 0,
+      onClick: htmlOnClick,
+      onMouseOver: htmlOnMouseOver,
+      onMouseDown: htmlOnMouseDown,
+      onKeyDown: htmlOnKeyDown,
+      ...htmlProps
+    }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const clickKeysRef = useLiveRef(options.unstable_clickKeys);
     const trulyDisabled = options.disabled && !options.focusable;
 
-    return unstable_mergeProps(
-      {
-        ref,
-        disabled: trulyDisabled,
-        tabIndex: trulyDisabled ? undefined : tabIndex,
-        "aria-disabled": options.disabled,
-        onMouseDown: React.useCallback(
-          (event: React.MouseEvent) => {
-            if (event.target instanceof HTMLInputElement) {
-              if (onMouseDown) {
-                onMouseDown(event);
-              }
-              return;
-            }
-            event.preventDefault();
-            if (options.disabled) {
-              event.stopPropagation();
-            } else {
-              (ref.current || (event.target as HTMLElement)).focus();
-              if (onMouseDown) {
-                onMouseDown(event);
-              }
-            }
-          },
-          [options.disabled, onMouseDown]
-        ),
-        onClick: React.useCallback(
-          (event: React.MouseEvent) => {
-            if (options.disabled) {
-              event.stopPropagation();
-              event.preventDefault();
-            } else if (onClick) {
-              onClick(event);
-            }
-          },
-          [options.disabled, onClick]
-        ),
-        onMouseOver: React.useCallback(
-          (event: React.MouseEvent) => {
-            if (options.disabled) {
-              event.stopPropagation();
-              event.preventDefault();
-            } else if (onMouseOver) {
-              onMouseOver(event);
-            }
-          },
-          [options.disabled, onMouseOver]
-        ),
-        onKeyDown: React.useCallback(
-          (event: React.KeyboardEvent) => {
-            if (options.disabled) return;
-            if (
-              clickKeysRef.current === defaultClickKeys &&
-              isNativeTabbable(event.target)
-            ) {
-              return;
-            }
-
-            if (
-              clickKeysRef.current &&
-              clickKeysRef.current.indexOf(event.key) !== -1
-            ) {
-              event.preventDefault();
-              event.target.dispatchEvent(
-                new MouseEvent("click", {
-                  view: window,
-                  bubbles: true,
-                  cancelable: false
-                })
-              );
-            }
-          },
-          [options.disabled]
-        )
-      } as TabbableHTMLProps,
-      htmlProps
+    const onMouseDown = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (event.target instanceof HTMLInputElement) {
+          if (htmlOnMouseDown) {
+            htmlOnMouseDown(event);
+          }
+          return;
+        }
+        event.preventDefault();
+        if (options.disabled) {
+          event.stopPropagation();
+        } else {
+          (ref.current || (event.target as HTMLElement)).focus();
+          if (htmlOnMouseDown) {
+            htmlOnMouseDown(event);
+          }
+        }
+      },
+      [options.disabled, htmlOnMouseDown]
     );
+
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+        } else if (htmlOnClick) {
+          htmlOnClick(event);
+        }
+      },
+      [options.disabled, htmlOnClick]
+    );
+
+    const onMouseOver = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+        } else if (htmlOnMouseOver) {
+          htmlOnMouseOver(event);
+        }
+      },
+      [options.disabled, htmlOnMouseOver]
+    );
+
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent) => {
+        if (options.disabled) return;
+        if (
+          clickKeysRef.current === defaultClickKeys &&
+          isNativeTabbable(event.target)
+        ) {
+          return;
+        }
+
+        if (
+          clickKeysRef.current &&
+          clickKeysRef.current.indexOf(event.key) !== -1
+        ) {
+          event.preventDefault();
+          event.target.dispatchEvent(
+            new MouseEvent("click", {
+              view: window,
+              bubbles: true,
+              cancelable: false
+            })
+          );
+        }
+      },
+      [options.disabled]
+    );
+
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      disabled: trulyDisabled,
+      tabIndex: trulyDisabled ? undefined : htmlTabIndex,
+      "aria-disabled": options.disabled,
+      onMouseDown,
+      onClick,
+      onMouseOver,
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      ...htmlProps
+    };
   }
 });
 

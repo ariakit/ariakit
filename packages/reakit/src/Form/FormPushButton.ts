@@ -1,9 +1,9 @@
+import * as React from "react";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { ArrayValue, As, PropsWithAs, Keys } from "../__utils/types";
+import { ArrayValue, As, PropsWithAs } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { formatInputName } from "./__utils/formatInputName";
@@ -33,46 +33,50 @@ export type unstable_FormPushButtonProps<
   P extends DeepPath<V, P>
 > = unstable_FormPushButtonOptions<V, P> & unstable_FormPushButtonHTMLProps;
 
-export function unstable_useFormPushButton<V, P extends DeepPath<V, P>>(
-  options: unstable_FormPushButtonOptions<V, P>,
-  htmlProps: unstable_FormPushButtonHTMLProps = {}
-) {
-  options = unstable_useOptions("FormPushButton", options, htmlProps);
+export const unstable_useFormPushButton = unstable_createHook<
+  unstable_FormPushButtonOptions<any, any>,
+  unstable_FormPushButtonHTMLProps
+>({
+  name: "FormPushButton",
+  compose: useButton,
+  useState: unstable_useFormState,
+  keys: ["name", "value"],
 
-  htmlProps = unstable_mergeProps(
-    {
+  useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
+    const onClick = React.useCallback(() => {
+      options.push(options.name, options.value);
+      const { length } = unstable_getIn(options.values, options.name, []);
+      const inputId = getInputId(
+        `${formatInputName(options.name, "-")}-${length}`,
+        options.baseId
+      );
+      if (!inputId) return;
+
+      window.requestAnimationFrame(() => {
+        const selector = `[id^="${inputId}"]`;
+        const input = document.querySelector<HTMLElement>(selector);
+        if (input) {
+          input.focus();
+        }
+      });
+    }, [
+      options.push,
+      options.name,
+      options.value,
+      options.values,
+      options.baseId
+    ]);
+
+    return {
       id: getPushButtonId(options.name, options.baseId),
-      onClick: () => {
-        options.push(options.name, options.value);
-        const { length } = unstable_getIn(options.values, options.name, []);
-        const inputId = getInputId(
-          `${formatInputName(options.name, "-")}-${length}`,
-          options.baseId
-        );
-        if (!inputId) return;
-
-        window.requestAnimationFrame(() => {
-          const selector = `[id^="${inputId}"]`;
-          const input = document.querySelector<HTMLElement>(selector);
-          if (input) {
-            input.focus();
-          }
-        });
-      }
-    } as unstable_FormPushButtonHTMLProps,
-    htmlProps
-  );
-
-  htmlProps = unstable_useProps("FormPushButton", options, htmlProps);
-  htmlProps = useButton(options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormPushButtonOptions<any, any>
-> = [...useButton.__keys, ...unstable_useFormState.__keys, "name", "value"];
-
-unstable_useFormPushButton.__keys = keys;
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      ...htmlProps
+    };
+  }
+}) as <V, P extends DeepPath<V, P>>(
+  options: unstable_FormPushButtonOptions<V, P>,
+  htmlProps?: unstable_FormPushButtonHTMLProps
+) => unstable_FormPushButtonHTMLProps;
 
 export const unstable_FormPushButton = (unstable_createComponent({
   as: "button",

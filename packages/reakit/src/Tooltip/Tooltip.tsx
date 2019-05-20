@@ -1,9 +1,10 @@
 import * as React from "react";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { Portal } from "../Portal/Portal";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { usePipe } from "../__utils/usePipe";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
 
 export type TooltipOptions = HiddenOptions &
@@ -22,24 +23,26 @@ export const useTooltip = unstable_createHook<TooltipOptions, TooltipHTMLProps>(
     compose: useHidden,
     useState: useTooltipState,
 
-    useProps(options, htmlProps) {
+    useProps(
+      options,
+      { ref: htmlRef, style: htmlStyle, unstable_wrap: htmlWrap, ...htmlProps }
+    ) {
       const wrap = React.useCallback(
         (children: React.ReactNode) => <Portal>{children}</Portal>,
         []
       );
-      return unstable_mergeProps(
-        {
-          role: "tooltip",
-          ref: options.unstable_popoverRef,
-          style: {
-            ...options.unstable_popoverStyles,
-            pointerEvents: "none",
-            zIndex: 999
-          },
-          unstable_wrap: wrap
-        } as TooltipHTMLProps,
-        htmlProps
-      );
+      return {
+        ref: mergeRefs(options.unstable_popoverRef, htmlRef),
+        role: "tooltip",
+        style: {
+          ...options.unstable_popoverStyles,
+          pointerEvents: "none",
+          zIndex: 999,
+          ...htmlStyle
+        },
+        unstable_wrap: usePipe(wrap, htmlWrap),
+        ...htmlProps
+      };
     }
   }
 );

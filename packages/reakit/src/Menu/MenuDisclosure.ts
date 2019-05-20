@@ -1,5 +1,4 @@
 import * as React from "react";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   PopoverDisclosureOptions,
@@ -9,6 +8,8 @@ import {
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -31,7 +32,17 @@ export const useMenuDisclosure = unstable_createHook<
   compose: usePopoverDisclosure,
   useState: useMenuState,
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onClick: htmlOnClick,
+      onKeyDown: htmlOnKeyDown,
+      onFocus: htmlOnFocus,
+      onMouseOver: htmlOnMouseOver,
+      ...htmlProps
+    }
+  ) {
     const parent = React.useContext(MenuContext);
     const ref = React.useRef<HTMLElement>(null);
     // This avoids race condition between focus and click.
@@ -106,20 +117,28 @@ export const useMenuDisclosure = unstable_createHook<
       }
     }, [parent && parent.orientation, options.show]);
 
-    return unstable_mergeProps(
-      {
-        ref,
-        "aria-haspopup": "menu",
-        onClick:
-          parent && (parent.orientation !== "horizontal" || hasShownOnFocus)
-            ? options.show
-            : options.toggle,
-        onFocus,
-        onMouseOver,
-        onKeyDown
-      } as MenuDisclosureHTMLProps,
-      htmlProps
-    );
+    const onClick = React.useCallback(() => {
+      if (parent && (parent.orientation !== "horizontal" || hasShownOnFocus)) {
+        options.show();
+      } else {
+        options.toggle();
+      }
+    }, [
+      parent && parent.orientation,
+      hasShownOnFocus,
+      options.show,
+      options.toggle
+    ]);
+
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      "aria-haspopup": "menu",
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      onMouseOver: useAllCallbacks(onMouseOver, htmlOnMouseOver),
+      ...htmlProps
+    };
   },
 
   useCompose(options, htmlProps) {

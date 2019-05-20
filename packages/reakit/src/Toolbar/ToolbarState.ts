@@ -8,7 +8,6 @@ import {
   RoverActions,
   RoverInitialState
 } from "../Rover/RoverState";
-import { Keys } from "../__utils/types";
 
 export type ToolbarState = RoverState;
 
@@ -27,6 +26,6 @@ export function useToolbarState(
   return useRoverState({ orientation, ...sealed });
 }
 
-const keys: Keys<ToolbarStateReturn> = [...useRoverState.__keys];
+const keys: Array<keyof ToolbarStateReturn> = [...useRoverState.__keys];
 
 useToolbarState.__keys = keys;

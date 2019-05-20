@@ -1,7 +1,6 @@
 import * as React from "react";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
@@ -23,10 +22,7 @@ const useRadioGroup = unstable_createHook<
   useState: useRadioState,
 
   useProps(_, htmlProps) {
-    return unstable_mergeProps(
-      { role: "radiogroup" } as RadioGroupHTMLProps,
-      htmlProps
-    );
+    return { role: "radiogroup", ...htmlProps };
   }
 });
 

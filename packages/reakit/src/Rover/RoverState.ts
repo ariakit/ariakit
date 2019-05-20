@@ -5,7 +5,6 @@ import {
   unstable_SealedInitialState,
   unstable_useSealedState
 } from "../utils/useSealedState";
-import { Keys } from "../__utils/types";
 
 type Stop = {
   id: string;
@@ -270,7 +269,7 @@ export function useRoverState(
   };
 }
 
-const keys: Keys<RoverStateReturn> = [
+const keys: Array<keyof RoverStateReturn> = [
   "orientation",
   "stops",
   "currentId",

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
+import { cx } from "../__utils/cx";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenOptions = BoxOptions &
@@ -29,7 +30,15 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
   useState: useHiddenState,
   keys: ["unstable_animated"],
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    {
+      onTransitionEnd: htmlOnTransitionEnd,
+      className: htmlClassName,
+      style: htmlStyle,
+      ...htmlProps
+    }
+  ) {
     const [delayedVisible, setDelayedVisible] = React.useState(options.visible);
 
     React.useEffect(() => {
@@ -58,17 +67,19 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
         : true
       : !options.visible;
 
-    return unstable_mergeProps(
-      {
-        role: "region",
-        id: options.unstable_hiddenId,
-        className: shouldAddHiddenClass ? "hidden" : undefined,
-        onTransitionEnd,
-        hidden
-      } as HiddenHTMLProps,
-      hidden && { style: { display: "none" } },
-      htmlProps
-    );
+    return {
+      role: "region",
+      id: options.unstable_hiddenId,
+      className: cx(shouldAddHiddenClass && "hidden", htmlClassName),
+      onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),
+      hidden,
+      ...(hidden
+        ? { style: { display: "none", ...htmlStyle } }
+        : htmlStyle
+        ? { style: htmlStyle }
+        : {}),
+      ...htmlProps
+    };
   }
 });
 

@@ -2,10 +2,12 @@ import * as React from "react";
 import { warning } from "../__utils/warning";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { Portal } from "../Portal/Portal";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
+import { usePipe } from "../__utils/usePipe";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -119,7 +121,16 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
     };
   },
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onKeyDown: htmlOnKeyDown,
+      unstable_wrap: htmlWrap,
+      style: htmlStyle,
+      ...htmlProps
+    }
+  ) {
     const dialog = React.useRef<HTMLElement>(null);
     const disclosure = useDisclosureRef(options);
     const { dialogs, wrap } = useNestedDialogs(dialog, options);
@@ -159,19 +170,17 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
       [options.unstable_portal, wrap]
     );
 
-    return unstable_mergeProps(
-      {
-        ref: dialog,
-        role: "dialog",
-        tabIndex: -1,
-        "aria-modal": options.modal,
-        "data-dialog": true,
-        style: { zIndex: 999 },
-        onKeyDown,
-        unstable_wrap: wrapChildren
-      } as DialogHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(dialog, htmlRef),
+      role: "dialog",
+      tabIndex: -1,
+      "aria-modal": options.modal,
+      "data-dialog": true,
+      style: { zIndex: 999, ...htmlStyle },
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      unstable_wrap: usePipe(wrapChildren, htmlWrap),
+      ...htmlProps
+    };
   }
 });
 

@@ -1,5 +1,4 @@
 import { warning } from "../__utils/warning";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
@@ -20,13 +19,11 @@ export const useToolbar = unstable_createHook<ToolbarOptions, ToolbarHTMLProps>(
     useState: useToolbarState,
 
     useProps(options, htmlProps) {
-      return unstable_mergeProps(
-        {
-          role: "toolbar",
-          "aria-orientation": options.orientation
-        } as ToolbarHTMLProps,
-        htmlProps
-      );
+      return {
+        role: "toolbar",
+        "aria-orientation": options.orientation,
+        ...htmlProps
+      };
     }
   }
 );

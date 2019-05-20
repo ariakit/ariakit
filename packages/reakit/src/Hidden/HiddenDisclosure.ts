@@ -1,7 +1,7 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { useButton, ButtonOptions, ButtonHTMLProps } from "../Button/Button";
 import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenDisclosureOptions = ButtonOptions &
@@ -21,15 +21,13 @@ export const useHiddenDisclosure = unstable_createHook<
   compose: useButton,
   useState: useHiddenState,
 
-  useProps(options, htmlProps) {
-    return unstable_mergeProps(
-      {
-        onClick: options.toggle,
-        "aria-expanded": Boolean(options.visible),
-        "aria-controls": options.unstable_hiddenId
-      } as HiddenDisclosureHTMLProps,
-      htmlProps
-    );
+  useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
+    return {
+      onClick: useAllCallbacks(options.toggle, htmlOnClick),
+      "aria-expanded": Boolean(options.visible),
+      "aria-controls": options.unstable_hiddenId,
+      ...htmlProps
+    };
   }
 });
 

@@ -3,7 +3,6 @@ import {
   unstable_useSealedState,
   unstable_SealedInitialState
 } from "../utils/useSealedState";
-import { Keys } from "../__utils/types";
 
 export type CheckboxState = {
   /**
@@ -40,6 +39,6 @@ export function useCheckboxState(
   };
 }
 
-const keys: Keys<CheckboxStateReturn> = ["state", "setState"];
+const keys: Array<keyof CheckboxStateReturn> = ["state", "setState"];
 
 useCheckboxState.__keys = keys;

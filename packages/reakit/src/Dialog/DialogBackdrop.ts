@@ -1,5 +1,4 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { unstable_createHook } from "../utils/createHook";
 import { useDialogState } from "./DialogState";
@@ -19,22 +18,21 @@ export const useDialogBackdrop = unstable_createHook<
   compose: useHidden,
   useState: useDialogState,
 
-  useProps(_, htmlProps) {
-    return unstable_mergeProps(
-      {
-        id: undefined,
-        role: "presentation",
-        style: {
-          position: "fixed",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          zIndex: 998
-        }
-      } as DialogBackdropHTMLProps,
-      htmlProps
-    );
+  useProps(_, { style: htmlStyle, ...htmlProps }) {
+    return {
+      id: undefined,
+      role: "presentation",
+      style: {
+        position: "fixed",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: 998,
+        ...htmlStyle
+      },
+      ...htmlProps
+    };
   }
 });
 

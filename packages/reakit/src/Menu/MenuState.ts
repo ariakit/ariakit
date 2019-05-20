@@ -9,7 +9,6 @@ import {
   PopoverInitialState,
   usePopoverState
 } from "../Popover/PopoverState";
-import { Keys } from "../__utils/types";
 import {
   RoverState,
   RoverActions,
@@ -85,7 +84,7 @@ export function useMenuState(
   };
 }
 
-const keys: Keys<MenuStateReturn> = [
+const keys: Array<keyof MenuStateReturn> = [
   ...useRoverState.__keys,
   ...usePopoverState.__keys,
   "unstable_values",

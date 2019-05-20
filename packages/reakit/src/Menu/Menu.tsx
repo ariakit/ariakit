@@ -1,6 +1,5 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
@@ -11,6 +10,8 @@ import {
 } from "../Popover/Popover";
 import { createOnKeyDown } from "../__utils/createOnKeyDown";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import {
   StaticMenuOptions,
   StaticMenuHTMLProps,
@@ -54,7 +55,7 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
     };
   },
 
-  useProps(options, htmlProps) {
+  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const parent = React.useContext(MenuContext);
     const ref = React.useRef<HTMLElement>(null);
 
@@ -134,22 +135,12 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
       ]
     );
 
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent) => {
-        rovingBindings(event);
-        parentBindings(event);
-      },
-      [rovingBindings, parentBindings]
-    );
-
-    return unstable_mergeProps(
-      {
-        ref,
-        role: "menu",
-        onKeyDown
-      } as MenuHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      role: "menu",
+      onKeyDown: useAllCallbacks(rovingBindings, parentBindings, htmlOnKeyDown),
+      ...htmlProps
+    };
   },
 
   useCompose(options, htmlProps) {

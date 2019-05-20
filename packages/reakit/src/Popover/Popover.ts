@@ -1,9 +1,9 @@
 import { warning } from "../__utils/warning";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { DialogOptions, DialogHTMLProps, useDialog } from "../Dialog/Dialog";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
 import { PopoverStateReturn, usePopoverState } from "./PopoverState";
 
 export type PopoverOptions = DialogOptions &
@@ -26,14 +26,12 @@ export const usePopover = unstable_createHook<PopoverOptions, PopoverHTMLProps>(
       return { modal, ...options };
     },
 
-    useProps(options, htmlProps) {
-      return unstable_mergeProps(
-        {
-          ref: options.unstable_popoverRef,
-          style: options.unstable_popoverStyles
-        } as PopoverHTMLProps,
-        htmlProps
-      );
+    useProps(options, { ref: htmlRef, style: htmlStyle, ...htmlProps }) {
+      return {
+        ref: mergeRefs(options.unstable_popoverRef, htmlRef),
+        style: { ...options.unstable_popoverStyles, ...htmlStyle },
+        ...htmlProps
+      };
     }
   }
 );

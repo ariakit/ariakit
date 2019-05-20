@@ -9,7 +9,6 @@ import {
   RoverInitialState,
   useRoverState
 } from "../Rover";
-import { Keys } from "../__utils/types";
 
 export type RadioState = RoverState & {
   /**
@@ -50,7 +49,7 @@ export function useRadioState(
   };
 }
 
-const keys: Keys<RadioStateReturn> = [
+const keys: Array<keyof RadioStateReturn> = [
   ...useRoverState.__keys,
   "state",
   "setState"

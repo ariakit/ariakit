@@ -1,10 +1,11 @@
 import * as React from "react";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
 import { isTouchDevice } from "../__utils/isTouchDevice";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
 export type MenuItemOptions = RoverOptions &
@@ -23,7 +24,15 @@ export const useMenuItem = unstable_createHook<
   compose: useRover,
   useState: useMenuState,
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onMouseOver: htmlOnMouseOver,
+      onMouseOut: htmlOnMouseOut,
+      ...htmlProps
+    }
+  ) {
     const ref = React.useRef<HTMLElement>(null);
 
     const onMouseOver = React.useCallback(() => {
@@ -64,15 +73,13 @@ export const useMenuItem = unstable_createHook<
       }
     }, [options.move]);
 
-    return unstable_mergeProps(
-      {
-        ref,
-        role: "menuitem",
-        onMouseOver,
-        onMouseOut
-      } as MenuItemHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      role: "menuitem",
+      onMouseOver: useAllCallbacks(onMouseOver, htmlOnMouseOver),
+      onMouseOut: useAllCallbacks(onMouseOut, htmlOnMouseOut),
+      ...htmlProps
+    };
   }
 });
 

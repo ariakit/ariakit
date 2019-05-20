@@ -96,6 +96,6 @@ export type PropsWithAs<P, T extends As> = P &
 export type ArrayValue<T> = T extends Array<infer U> ? U : never;
 
 /**
- * @template T Type
+ * Any function
  */
-export type Keys<T> = Array<keyof T>;
+export type AnyFunction = (...args: any[]) => any;
