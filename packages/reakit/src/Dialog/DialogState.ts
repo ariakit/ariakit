@@ -5,7 +5,6 @@ import {
   HiddenActions,
   HiddenInitialState
 } from "../Hidden/HiddenState";
-import { Keys } from "../__utils/types";
 
 export type DialogState = HiddenState;
 
@@ -21,6 +20,6 @@ export function useDialogState(
   return useHiddenState(initialState);
 }
 
-const keys: Keys<DialogStateReturn> = [...useHiddenState.__keys];
+const keys: Array<keyof DialogStateReturn> = [...useHiddenState.__keys];
 
 useDialogState.__keys = keys;

@@ -10,7 +10,6 @@ import {
   DialogInitialState,
   useDialogState
 } from "../Dialog/DialogState";
-import { Keys } from "../__utils/types";
 
 type Placement =
   | "auto-start"
@@ -48,12 +47,12 @@ export type PopoverState = DialogState & {
    * Popover styles.
    * @private
    */
-  unstable_popoverStyles: Partial<CSSStyleDeclaration>;
+  unstable_popoverStyles: React.CSSProperties;
   /**
    * Arrow styles.
    * @private
    */
-  unstable_arrowStyles: Partial<CSSStyleDeclaration>;
+  unstable_arrowStyles: React.CSSProperties;
   /**
    * `placement` passed to the hook.
    * @private
@@ -124,12 +123,10 @@ export function usePopoverState(
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);
-  const [popoverStyles, setPopoverStyles] = React.useState<
-    Partial<CSSStyleDeclaration>
-  >({});
-  const [arrowStyles, setArrowStyles] = React.useState<
-    Partial<CSSStyleDeclaration>
-  >({});
+  const [popoverStyles, setPopoverStyles] = React.useState<React.CSSProperties>(
+    {}
+  );
+  const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
 
   const dialog = useDialogState(sealed);
 
@@ -155,8 +152,8 @@ export function usePopoverState(
             enabled: process.env.NODE_ENV !== "test",
             fn: data => {
               setPlacement(data.placement);
-              setPopoverStyles(data.styles);
-              setArrowStyles(data.arrowStyles);
+              setPopoverStyles(data.styles as React.CSSProperties);
+              setArrowStyles(data.arrowStyles as React.CSSProperties);
               return data;
             }
           }
@@ -193,7 +190,7 @@ export function usePopoverState(
   };
 }
 
-const keys: Keys<PopoverStateReturn> = [
+const keys: Array<keyof PopoverStateReturn> = [
   ...useDialogState.__keys,
   "unstable_referenceRef",
   "unstable_popoverRef",

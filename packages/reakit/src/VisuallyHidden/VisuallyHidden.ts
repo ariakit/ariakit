@@ -1,5 +1,4 @@
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
 
@@ -17,23 +16,22 @@ export const useVisuallyHidden = unstable_createHook<
   name: "VisuallyHidden",
   compose: useBox,
 
-  useProps(_, htmlProps) {
-    return unstable_mergeProps(
-      {
-        style: {
-          border: 0,
-          clip: "rect(0 0 0 0)",
-          height: "1px",
-          margin: "-1px",
-          overflow: "hidden",
-          padding: 0,
-          position: "absolute",
-          whiteSpace: "nowrap",
-          width: "1px"
-        }
-      } as VisuallyHiddenHTMLProps,
-      htmlProps
-    );
+  useProps(_, { style: htmlStyle, ...htmlProps }) {
+    return {
+      style: {
+        border: 0,
+        clip: "rect(0 0 0 0)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: 0,
+        position: "absolute",
+        whiteSpace: "nowrap",
+        width: "1px",
+        ...htmlStyle
+      },
+      ...htmlProps
+    };
   }
 });
 

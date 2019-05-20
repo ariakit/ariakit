@@ -5,7 +5,6 @@ import {
 } from "../utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
 import { useRoverState, RoverState, RoverActions } from "../Rover/RoverState";
-import { Keys } from "../__utils/types";
 
 export type TabState = RoverState & {
   /**
@@ -61,7 +60,7 @@ export function useTabState(
   };
 }
 
-const keys: Keys<TabStateReturn> = [
+const keys: Array<keyof TabStateReturn> = [
   ...useRoverState.__keys,
   "unstable_baseId",
   "selectedId",

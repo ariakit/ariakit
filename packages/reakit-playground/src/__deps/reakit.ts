@@ -5,7 +5,6 @@ export default {
   "reakit/utils/useSealedState": require("reakit/utils/useSealedState"),
   "reakit/utils/useId": require("reakit/utils/useId"),
   "reakit/utils/useCreateElement": require("reakit/utils/useCreateElement"),
-  "reakit/utils/mergeProps": require("reakit/utils/mergeProps"),
   "reakit/utils": require("reakit/utils"),
   "reakit/utils/createHook": require("reakit/utils/createHook"),
   "reakit/utils/createComponent": require("reakit/utils/createComponent"),

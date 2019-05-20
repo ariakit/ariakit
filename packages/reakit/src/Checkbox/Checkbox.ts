@@ -5,11 +5,12 @@ import {
   useTabbable
 } from "../Tabbable/Tabbable";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
 import { Omit } from "../__utils/types";
 import { warning } from "../__utils/warning";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
 export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
@@ -42,7 +43,10 @@ export const useCheckbox = unstable_createHook<
   useState: useCheckboxState,
   keys: ["value", "checked"],
 
-  useProps(options, { onChange: htmlOnChange, ...htmlProps }) {
+  useProps(
+    options,
+    { ref: htmlRef, onChange: htmlOnChange, onClick: htmlOnClick, ...htmlProps }
+  ) {
     const ref = React.useRef<HTMLInputElement>(null);
     const isBoolean = typeof options.value === "undefined";
     const checked =
@@ -110,19 +114,17 @@ export const useCheckbox = unstable_createHook<
       [onChange]
     );
 
-    return unstable_mergeProps(
-      {
-        ref,
-        checked,
-        "aria-checked": options.state === "indeterminate" ? "mixed" : checked,
-        value: options.value,
-        role: "checkbox",
-        type: "checkbox",
-        onChange,
-        onClick
-      } as CheckboxHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      checked,
+      "aria-checked": options.state === "indeterminate" ? "mixed" : checked,
+      value: options.value,
+      role: "checkbox",
+      type: "checkbox",
+      onChange,
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      ...htmlProps
+    };
   },
 
   useCompose(options, htmlProps) {

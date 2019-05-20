@@ -1,11 +1,10 @@
 import * as React from "react";
-import { BoxOptions, useBox } from "../Box";
-import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
+import { BoxOptions } from "../Box";
+import { RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { As, PropsWithAs, Keys } from "../__utils/types";
+import { As, PropsWithAs } from "../__utils/types";
+import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { FormRadioGroupContext } from "./FormRadioGroup";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
@@ -34,43 +33,61 @@ export type unstable_FormRadioProps<
   P extends DeepPath<V, P>
 > = unstable_FormRadioOptions<V, P> & unstable_FormRadioHTMLProps;
 
-export function unstable_useFormRadio<V, P extends DeepPath<V, P>>(
-  options: unstable_FormRadioOptions<V, P>,
-  htmlProps: unstable_FormRadioHTMLProps = {}
-) {
-  options = unstable_useOptions("FormRadio", options, htmlProps);
+export const unstable_useFormRadio = unstable_createHook<
+  unstable_FormRadioOptions<any, any>,
+  unstable_FormRadioHTMLProps
+>({
+  name: "FormRadio",
+  compose: useRadio,
+  useState: unstable_useFormState,
+  keys: ["name", "value"],
 
-  const rover = React.useContext(FormRadioGroupContext);
+  useOptions(options) {
+    const rover = React.useContext(FormRadioGroupContext);
+    const currentChecked = unstable_getIn(options.values, options.name);
+    const checked = currentChecked === options.value;
 
-  if (!rover) {
-    // TODO: Better error
-    throw new Error("Missing FormRadioGroup");
-  }
+    if (!rover) {
+      // TODO: Better error
+      throw new Error("Missing FormRadioGroup");
+    }
 
-  const currentChecked = unstable_getIn(options.values, options.name);
-  const checked = currentChecked === options.value;
-  const allOptions: RadioOptions = { ...rover, ...options, checked };
+    return { ...rover, ...options, checked };
+  },
 
-  htmlProps = unstable_mergeProps(
+  useProps(
+    options,
     {
+      onChange: htmlOnChange,
+      onBlur: htmlOnBlur,
+      onFocus: htmlOnFocus,
+      ...htmlProps
+    }
+  ) {
+    const onChange = React.useCallback(() => {
+      options.update(options.name, options.value);
+    }, [options.update, options.name, options.value]);
+
+    const onBlur = React.useCallback(() => {
+      options.blur(options.name);
+    }, [options.blur, options.name]);
+
+    const onFocus = React.useCallback(() => {
+      options.update(options.name, options.value);
+    }, [options.update, options.name, options.value]);
+
+    return {
       name: formatInputName(options.name),
-      onChange: () => options.update(options.name, options.value),
-      onBlur: () => options.blur(options.name),
-      onFocus: () => options.update(options.name, options.value)
-    } as unstable_FormRadioHTMLProps,
-    htmlProps
-  );
-
-  htmlProps = unstable_useProps("FormRadio", allOptions, htmlProps);
-  htmlProps = useRadio(allOptions, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormRadioOptions<any, any>
-> = [...useBox.__keys, ...unstable_useFormState.__keys, "name", "value"];
-
-unstable_useFormRadio.__keys = keys;
+      onChange: useAllCallbacks(onChange, htmlOnChange),
+      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
+      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      ...htmlProps
+    };
+  }
+}) as <V, P extends DeepPath<V, P>>(
+  options: unstable_FormRadioOptions<V, P>,
+  htmlProps?: unstable_FormRadioHTMLProps
+) => unstable_FormRadioHTMLProps;
 
 export const unstable_FormRadio = (unstable_createComponent({
   as: "input",

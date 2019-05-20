@@ -1,4 +1,3 @@
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import {
   DialogDisclosureOptions,
@@ -6,6 +5,7 @@ import {
   useDialogDisclosure
 } from "../Dialog/DialogDisclosure";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
 export type PopoverDisclosureOptions = DialogDisclosureOptions &
@@ -24,13 +24,11 @@ export const usePopoverDisclosure = unstable_createHook<
   compose: useDialogDisclosure,
   useState: usePopoverState,
 
-  useProps(options, htmlProps) {
-    return unstable_mergeProps(
-      {
-        ref: options.unstable_referenceRef
-      } as PopoverDisclosureHTMLProps,
-      htmlProps
-    );
+  useProps(options, { ref: htmlRef, ...htmlProps }) {
+    return {
+      ref: mergeRefs(options.unstable_referenceRef, htmlRef),
+      ...htmlProps
+    };
   }
 });
 

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { warning } from "../__utils/warning";
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { unstable_useCreateElement } from "../utils/useCreateElement";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
+import { usePipe } from "../__utils/usePipe";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { MenuContext } from "./__utils/MenuContext";
 import { MenuStateReturn, useMenuState } from "./MenuState";
@@ -25,7 +26,10 @@ export const useStaticMenu = unstable_createHook<
   compose: useBox,
   useState: useMenuState,
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    { onKeyDown: htmlOnKeyDown, unstable_wrap: htmlWrap, ...htmlProps }
+  ) {
     const parent = React.useContext(MenuContext);
 
     const providerValue = React.useMemo(
@@ -49,15 +53,13 @@ export const useStaticMenu = unstable_createHook<
       [providerValue]
     );
 
-    return unstable_mergeProps(
-      {
-        role: options.orientation === "horizontal" ? "menubar" : "menu",
-        "aria-orientation": options.orientation,
-        onKeyDown,
-        unstable_wrap: wrap
-      } as StaticMenuHTMLProps,
-      htmlProps
-    );
+    return {
+      role: options.orientation === "horizontal" ? "menubar" : "menu",
+      "aria-orientation": options.orientation,
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      unstable_wrap: usePipe(wrap, htmlWrap),
+      ...htmlProps
+    };
   }
 });
 

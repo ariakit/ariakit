@@ -4,7 +4,6 @@ import {
   unstable_SealedInitialState
 } from "../utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
-import { Keys } from "../__utils/types";
 
 export type HiddenState = {
   /**
@@ -64,7 +63,7 @@ export function useHiddenState(
   };
 }
 
-const keys: Keys<HiddenStateReturn> = [
+const keys: Array<keyof HiddenStateReturn> = [
   "unstable_hiddenId",
   "visible",
   "show",

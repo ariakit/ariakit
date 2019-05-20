@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrayValue, Keys } from "../__utils/types";
+import { ArrayValue } from "../__utils/types";
 import { useUpdateEffect } from "../__utils/useUpdateEffect";
 import {
   unstable_SealedInitialState,
@@ -388,7 +388,7 @@ export function unstable_useFormState<V = Record<any, any>>(
   };
 }
 
-const keys: Keys<unstable_FormStateReturn<any>> = [
+const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "baseId",
   "values",
   "touched",

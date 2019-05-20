@@ -1,7 +1,8 @@
-import { unstable_mergeProps } from "../utils/mergeProps";
 import { unstable_createComponent } from "../utils/createComponent";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_createHook } from "../utils/createHook";
+import { mergeRefs } from "../__utils/mergeRefs";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
 export type TooltipReferenceOptions = BoxOptions &
@@ -24,19 +25,27 @@ export const useTooltipReference = unstable_createHook<
   compose: useBox,
   useState: useTooltipState,
 
-  useProps(options, htmlProps) {
-    return unstable_mergeProps(
-      {
-        ref: options.unstable_referenceRef,
-        tabIndex: 0,
-        onFocus: options.show,
-        onBlur: options.hide,
-        onMouseEnter: options.show,
-        onMouseLeave: options.hide,
-        "aria-describedby": options.unstable_hiddenId
-      } as TooltipReferenceHTMLProps,
-      htmlProps
-    );
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onFocus: htmlOnFocus,
+      onBlur: htmlOnBlur,
+      onMouseEnter: htmlOnMouseEnter,
+      onMouseLeave: htmlOnMouseLeave,
+      ...htmlProps
+    }
+  ) {
+    return {
+      ref: mergeRefs(options.unstable_referenceRef, htmlRef),
+      tabIndex: 0,
+      onFocus: useAllCallbacks(options.show, htmlOnFocus),
+      onBlur: useAllCallbacks(options.hide, htmlOnBlur),
+      onMouseEnter: useAllCallbacks(options.show, htmlOnMouseEnter),
+      onMouseLeave: useAllCallbacks(options.hide, htmlOnMouseLeave),
+      "aria-describedby": options.unstable_hiddenId,
+      ...htmlProps
+    };
   }
 });
 

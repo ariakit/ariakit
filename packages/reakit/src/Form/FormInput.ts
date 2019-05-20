@@ -1,14 +1,13 @@
 import * as React from "react";
-import { As, PropsWithAs, Keys, Omit } from "../__utils/types";
+import { As, PropsWithAs, Omit } from "../__utils/types";
 import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
 import {
   TabbableOptions,
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
+import { unstable_createHook } from "../utils/createHook";
+import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
@@ -42,42 +41,53 @@ export type unstable_FormInputProps<
 
 const defaultClickKeys: string[] = [];
 
-export function unstable_useFormInput<V, P extends DeepPath<V, P>>(
-  options: unstable_FormInputOptions<V, P>,
-  htmlProps: unstable_FormInputHTMLProps = {}
-) {
-  options = unstable_useOptions("FormInput", options, htmlProps);
+export const unstable_useFormInput = unstable_createHook<
+  unstable_FormInputOptions<any, any>,
+  unstable_FormInputHTMLProps
+>({
+  name: "FormInput",
+  compose: useTabbable,
+  useState: unstable_useFormState,
+  keys: ["name"],
 
-  htmlProps = unstable_mergeProps(
-    {
+  useProps(
+    options,
+    { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
+  ) {
+    const onChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        options.update(options.name, event.target.value);
+      },
+      [options.update, options.name]
+    );
+
+    const onBlur = React.useCallback(() => {
+      options.blur(options.name);
+    }, [options.blur, options.name]);
+
+    return {
       id: getInputId(options.name, options.baseId),
       name: formatInputName(options.name),
       value: unstable_getIn(options.values, options.name, ""),
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        options.update(options.name, event.target.value as any),
-      onBlur: () => options.blur(options.name),
+      onChange: useAllCallbacks(onChange, htmlOnChange),
+      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
-      "aria-invalid": shouldShowError(options, options.name)
-    } as unstable_FormInputHTMLProps,
-    htmlProps
-  );
+      "aria-invalid": shouldShowError(options, options.name),
+      ...htmlProps
+    };
+  },
 
-  htmlProps = unstable_useProps("FormInput", options, htmlProps);
-  htmlProps = useTabbable(
-    { ...options, unstable_clickKeys: defaultClickKeys },
-    htmlProps
-  );
-  return htmlProps;
-}
-
-const keys: Keys<
-  TabbableOptions &
-    unstable_FormStateReturn<any> &
-    unstable_FormInputOptions<any, any>
-> = [...useTabbable.__keys, ...unstable_useFormState.__keys, "name"];
-
-unstable_useFormInput.__keys = keys;
+  useCompose(options, htmlProps) {
+    return useTabbable(
+      { ...options, unstable_clickKeys: defaultClickKeys },
+      htmlProps
+    );
+  }
+}) as <V, P extends DeepPath<V, P>>(
+  options: unstable_FormInputOptions<V, P>,
+  htmlProps?: unstable_FormInputHTMLProps
+) => unstable_FormInputHTMLProps;
 
 export const unstable_FormInput = (unstable_createComponent({
   as: "input",

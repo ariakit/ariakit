@@ -8,7 +8,6 @@ import {
   PopoverInitialState,
   usePopoverState
 } from "../Popover/PopoverState";
-import { Keys } from "../__utils/types";
 
 export type TooltipState = PopoverState;
 
@@ -29,6 +28,6 @@ export function useTooltipState(
   return usePopoverState({ ...sealed, placement, unstable_boundariesElement });
 }
 
-const keys: Keys<TooltipStateReturn> = [...usePopoverState.__keys];
+const keys: Array<keyof TooltipStateReturn> = [...usePopoverState.__keys];
 
 useTooltipState.__keys = keys;
