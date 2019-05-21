@@ -19,6 +19,7 @@ Example:
   const bar = Bar();
   ```
 
+<!-- Please do not remove the lines below -->
 <br>
 
 > Using Reakit at work? Please, consider asking your company to sponsor us. ❤️
