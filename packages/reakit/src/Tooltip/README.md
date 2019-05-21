@@ -37,6 +37,44 @@ function Example() {
 }
 ```
 
+### Abstracting
+
+If the Reakit's API is too low level for you, you can create your own abstraction to ease your work.
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import {
+  Tooltip as ReakitTooltip,
+  TooltipReference,
+  useTooltipState
+} from "reakit/Tooltip";
+
+function Tooltip({ children, title, ...props }) {
+  const tooltip = useTooltipState();
+  return (
+    <>
+      <TooltipReference {...tooltip}>
+        {referenceProps =>
+          React.cloneElement(React.Children.only(children), referenceProps)
+        }
+      </TooltipReference>
+      <ReakitTooltip {...tooltip} {...props}>
+        {title}
+      </ReakitTooltip>
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Tooltip title="Tooltip">
+      <Button>Reference</Button>
+    </Tooltip>
+  );
+}
+```
+
 ## Accessibility
 
 - `Tooltip` has role `tooltip`.

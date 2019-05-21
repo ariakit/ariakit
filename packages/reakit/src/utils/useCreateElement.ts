@@ -15,7 +15,8 @@ export const unstable_useCreateElement = <T extends As>(
   }
 
   if (isRenderProp(children)) {
-    return children(props);
+    const { children: _, ...rest } = props;
+    return children(rest);
   }
 
   return React.createElement(type, props, children);
