@@ -17,9 +17,3 @@ Provide an example for how this feature would be used.
 ### Possible implementations
 
 If possible, describe how this feature could be implemented. See [CONTRIBUTING.md](https://github.com/reakit/reakit/blob/master/CONTRIBUTING.md).
-
-<!-- Please do not remove the lines below -->
-<br>
-
-> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️
-> https://opencollective.com/reakit

@@ -32,9 +32,3 @@ $ npx envinfo --system --binaries --npmPackages
 
 Paste here
 ```
-
-<!-- Please do not remove the lines below -->
-<br>
-
-> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️
-> https://opencollective.com/reakit
