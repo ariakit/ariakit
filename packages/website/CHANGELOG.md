@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.0...website@1.0.0-beta.1) (2019-05-21)
+
+
+### Bug Fixes
+
+* **reakit-system-palette:** Fix primary color contrast ratio ([#355](https://github.com/reakit/reakit/tree/master/packages/website/issues/355)) ([3856e1e](https://github.com/reakit/reakit/tree/master/packages/website/commit/3856e1e)), closes [#354](https://github.com/reakit/reakit/tree/master/packages/website/issues/354)
+* **website:** Add SEO to newsletter page ([9b1be52](https://github.com/reakit/reakit/tree/master/packages/website/commit/9b1be52))
+
+
+### BREAKING CHANGES
+
+* **reakit-system-palette:** The `primary` color on `reakit-system-palette` (used by `reakit-system-bootstrap`) has been changed from `#007BFF` to `#006DFF` to conform with WCAG 2.1 AA contrast ratio.
+
+
+
+
+
 # [1.0.0-beta.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@0.20.0...website@1.0.0-beta.0) (2019-05-13)
 
 

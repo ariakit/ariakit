@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.4.1...reakit-system-bootstrap@0.5.0) (2019-05-21)
+
+
+### Features
+
+* Set `display: none` on `Hidden` when its `visible` prop is set to `false` ([73d6cd2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/73d6cd2))
+
+
+
+
+
 ## [0.4.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.4.0...reakit-system-bootstrap@0.4.1) (2019-05-13)
 
 **Note:** Version bump only for package reakit-system-bootstrap

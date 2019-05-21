@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.1](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.0...reakit@1.0.0-beta.1) (2019-05-21)
+
+
+### Bug Fixes
+
+* Avoid infinite loop when using render props composition ([8256330](https://github.com/reakit/reakit/commit/8256330))
+* Fix `Provider` not working without `unstable_system` prop ([37862fb](https://github.com/reakit/reakit/commit/37862fb))
+* Stop flipping `orientation` on `Separator` ([52a0e63](https://github.com/reakit/reakit/commit/52a0e63))
+
+
+### Features
+
+* Set `display: none` on `Hidden` when its `visible` prop is set to `false` ([73d6cd2](https://github.com/reakit/reakit/commit/73d6cd2))
+
+
+### BREAKING CHANGES
+
+* `Separator` doesn't flip its `orientation` anymore. If you pass `orientation="vertical"` it'll render `aria-orientation="vertical"` now.
+
+
+
+
+
 # [1.0.0-beta.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-alpha.4...reakit@1.0.0-beta.0) (2019-05-13)
 
 

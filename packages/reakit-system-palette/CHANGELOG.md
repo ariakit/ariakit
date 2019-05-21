@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.4.1...reakit-system-palette@0.5.0) (2019-05-21)
+
+
+### Bug Fixes
+
+* **reakit-system-palette:** Fix primary color contrast ratio ([#355](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/issues/355)) ([3856e1e](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/3856e1e)), closes [#354](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/issues/354)
+
+
+### BREAKING CHANGES
+
+* **reakit-system-palette:** The `primary` color on `reakit-system-palette` (used by `reakit-system-bootstrap`) has been changed from `#007BFF` to `#006DFF` to conform with WCAG 2.1 AA contrast ratio.
+
+
+
+
+
 ## [0.4.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.4.0...reakit-system-palette@0.4.1) (2019-05-13)
 
 **Note:** Version bump only for package reakit-system-palette
