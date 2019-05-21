@@ -452,7 +452,6 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           <button
             data-testid="push"
             id="form-people-push"
-            role="button"
             tabindex="0"
             type="button"
           />
@@ -492,14 +491,12 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           />
           <button
             data-testid="remove0"
-            role="button"
             tabindex="0"
             type="button"
           />
           <button
             data-testid="push"
             id="form-people-push"
-            role="button"
             tabindex="0"
             type="button"
           />

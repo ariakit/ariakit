@@ -17,7 +17,6 @@ test("render", () => {
       <div>
         <button
           id="base-a-push"
-          role="button"
           tabindex="0"
           type="button"
         />

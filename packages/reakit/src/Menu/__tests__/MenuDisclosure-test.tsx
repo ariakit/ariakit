@@ -22,7 +22,6 @@ test("render", () => {
           aria-controls="disclosure"
           aria-expanded="false"
           aria-haspopup="menu"
-          role="button"
           tabindex="0"
           type="button"
         >

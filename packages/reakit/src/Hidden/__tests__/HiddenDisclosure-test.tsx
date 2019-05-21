@@ -12,16 +12,15 @@ test("render", () => {
     <HiddenDisclosure {...props}>disclosure</HiddenDisclosure>
   );
   expect(getByText("disclosure")).toMatchInlineSnapshot(`
-    <button
-      aria-controls="test"
-      aria-expanded="false"
-      role="button"
-      tabindex="0"
-      type="button"
-    >
-      disclosure
-    </button>
-  `);
+        <button
+          aria-controls="test"
+          aria-expanded="false"
+          tabindex="0"
+          type="button"
+        >
+          disclosure
+        </button>
+    `);
 });
 
 test("render visible", () => {
@@ -34,7 +33,6 @@ test("render visible", () => {
     <button
       aria-controls="test"
       aria-expanded="true"
-      role="button"
       tabindex="0"
       type="button"
     >
