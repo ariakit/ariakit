@@ -304,24 +304,26 @@ export function unstable_useFormState<V = Record<any, any>>(
 
   const validate = React.useCallback(
     (vals = state.values) =>
-      Promise.resolve()
-        .then(() => {
-          if (onValidate) {
-            const response = onValidate(filterAllEmpty(vals));
-            if (isPromise(response)) {
-              dispatch({ type: "startValidate" });
-            }
-            return Promise.resolve(response).then(messages => {
+      new Promise(resolve => {
+        if (onValidate) {
+          const response = onValidate(filterAllEmpty(vals));
+          if (isPromise(response)) {
+            dispatch({ type: "startValidate" });
+          }
+
+          resolve(
+            Promise.resolve(response).then(messages => {
               dispatch({ type: "endValidate", messages });
               return messages;
-            });
-          }
-          return undefined;
-        })
-        .catch(errors => {
-          dispatch({ type: "endValidate", errors });
-          throw errors;
-        }),
+            })
+          );
+        } else {
+          resolve(undefined);
+        }
+      }).catch(errors => {
+        dispatch({ type: "endValidate", errors });
+        throw errors;
+      }),
     [state.values, onValidate]
   );
 

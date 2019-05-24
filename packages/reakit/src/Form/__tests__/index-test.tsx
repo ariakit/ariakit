@@ -37,7 +37,6 @@ test(
     const input = getByLabelText("input");
     expect(onValidate).not.toHaveBeenCalled();
     fireEvent.change(input, { target: { value: "a" } });
-    await Promise.resolve();
     expect(onValidate).toHaveBeenCalledWith({ input: "a" });
   })
 );
@@ -59,7 +58,6 @@ test(
     const input = getByLabelText("input");
     expect(onValidate).not.toHaveBeenCalled();
     fireEvent.blur(input);
-    await Promise.resolve();
     expect(onValidate).toHaveBeenCalledWith({});
   })
 );
