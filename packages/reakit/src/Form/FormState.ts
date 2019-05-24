@@ -17,11 +17,8 @@ import { unstable_setIn } from "./utils/setIn";
 
 type Messages<V> = DeepPartial<DeepMap<V, string | null | void>>;
 
-type ValidateReturn<V> =
-  | Promise<Messages<V> | null | void>
-  | Messages<V>
-  | null
-  | void;
+type ValidateOutput<V> = Messages<V> | null | void;
+type ValidateReturn<V> = Promise<ValidateOutput<V>> | ValidateOutput<V>;
 
 interface Update<V> {
   <P extends DeepPath<V, P>>(name: P, value: DeepPathValue<V, P>): void;
@@ -306,23 +303,27 @@ export function unstable_useFormState<V = Record<any, any>>(
   });
 
   const validate = React.useCallback(
-    async (vals = state.values) => {
-      try {
+    (vals = state.values) =>
+      new Promise(resolve => {
         if (onValidate) {
           const response = onValidate(filterAllEmpty(vals));
           if (isPromise(response)) {
             dispatch({ type: "startValidate" });
           }
-          const messages = await response;
-          dispatch({ type: "endValidate", messages });
-          return messages;
+
+          resolve(
+            Promise.resolve(response).then(messages => {
+              dispatch({ type: "endValidate", messages });
+              return messages;
+            })
+          );
+        } else {
+          resolve(undefined);
         }
-        return undefined;
-      } catch (errors) {
+      }).catch(errors => {
         dispatch({ type: "endValidate", errors });
         throw errors;
-      }
-    },
+      }),
     [state.values, onValidate]
   );
 
@@ -346,23 +347,28 @@ export function unstable_useFormState<V = Record<any, any>>(
     values: state.values as V,
     validate,
     reset: React.useCallback(() => dispatch({ type: "reset" }), []),
-    submit: React.useCallback(async () => {
-      try {
-        dispatch({ type: "startSubmit" });
-        const validateMessages = await validate();
-        if (onSubmit) {
-          const submitMessages = await onSubmit(state.values as V);
-          const messages = { ...validateMessages, ...submitMessages };
-          dispatch({ type: "endSubmit", messages });
-          if (resetOnSubmitSucceed) {
-            dispatch({ type: "reset" });
+    submit: React.useCallback(() => {
+      dispatch({ type: "startSubmit" });
+      return validate()
+        .then(validateMessages => {
+          if (onSubmit) {
+            return Promise.resolve(onSubmit(state.values as V)).then(
+              submitMessages => {
+                const messages = { ...validateMessages, ...submitMessages };
+                dispatch({ type: "endSubmit", messages });
+                if (resetOnSubmitSucceed) {
+                  dispatch({ type: "reset" });
+                }
+              }
+            );
           }
-        } else {
+
           dispatch({ type: "endSubmit", messages: validateMessages });
-        }
-      } catch (errors) {
-        dispatch({ type: "endSubmit", errors });
-      }
+          return undefined;
+        })
+        .catch(errors => {
+          dispatch({ type: "endSubmit", errors });
+        });
     }, [validate]),
     update: React.useCallback(
       (name: any, value: any) => dispatch({ type: "update", name, value }),
