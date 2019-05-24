@@ -22,7 +22,7 @@ function keyDown(key: string) {
 
 test(
   "validate on change",
-  supressAct(async () => {
+  supressAct(() => {
     const onValidate = jest.fn();
     const Test = () => {
       const form = useFormState({ onValidate });
@@ -43,7 +43,7 @@ test(
 
 test(
   "validate on blur",
-  supressAct(async () => {
+  supressAct(() => {
     const onValidate = jest.fn();
     const Test = () => {
       const form = useFormState({ onValidate });
