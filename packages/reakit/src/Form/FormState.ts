@@ -349,34 +349,29 @@ export function unstable_useFormState<V = Record<any, any>>(
     values: state.values as V,
     validate,
     reset: React.useCallback(() => dispatch({ type: "reset" }), []),
-    submit: React.useCallback(
-      () =>
-        Promise.resolve()
-          .then(() => {
-            dispatch({ type: "startSubmit" });
-            return validate();
-          })
-          .then(validateMessages => {
-            if (onSubmit) {
-              return Promise.resolve(onSubmit(state.values as V)).then(
-                submitMessages => {
-                  const messages = { ...validateMessages, ...submitMessages };
-                  dispatch({ type: "endSubmit", messages });
-                  if (resetOnSubmitSucceed) {
-                    dispatch({ type: "reset" });
-                  }
+    submit: React.useCallback(() => {
+      dispatch({ type: "startSubmit" });
+      return validate()
+        .then(validateMessages => {
+          if (onSubmit) {
+            return Promise.resolve(onSubmit(state.values as V)).then(
+              submitMessages => {
+                const messages = { ...validateMessages, ...submitMessages };
+                dispatch({ type: "endSubmit", messages });
+                if (resetOnSubmitSucceed) {
+                  dispatch({ type: "reset" });
                 }
-              );
-            }
+              }
+            );
+          }
 
-            dispatch({ type: "endSubmit", messages: validateMessages });
-            return undefined;
-          })
-          .catch(errors => {
-            dispatch({ type: "endSubmit", errors });
-          }),
-      [validate]
-    ),
+          dispatch({ type: "endSubmit", messages: validateMessages });
+          return undefined;
+        })
+        .catch(errors => {
+          dispatch({ type: "endSubmit", errors });
+        });
+    }, [validate]),
     update: React.useCallback(
       (name: any, value: any) => dispatch({ type: "update", name, value }),
       []
