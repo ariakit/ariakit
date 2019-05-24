@@ -311,16 +311,12 @@ export function unstable_useFormState<V = Record<any, any>>(
             if (isPromise(response)) {
               dispatch({ type: "startValidate" });
             }
-            return response;
+            return Promise.resolve(response).then(messages => {
+              dispatch({ type: "endValidate", messages });
+              return messages;
+            });
           }
           return undefined;
-        })
-        .then(messages => {
-          if (messages) {
-            dispatch({ type: "endValidate", messages });
-          }
-
-          return messages;
         })
         .catch(errors => {
           dispatch({ type: "endValidate", errors });
