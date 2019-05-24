@@ -82,6 +82,22 @@
         "no-useless-constructor": "off",
         "import-name": [true, { "react": "React" }]
       }
+    },
+    {
+      "plugins": ["es"],
+      "files": [
+        "**/packages/reakit/**/*",
+        "**/packages/reakit-system-bootstrap/**/*",
+        "**/packages/reakit-system-palette/**/*"
+      ],
+      "parserOptions": {
+        "ecmaVersion": 2018
+      },
+      "excludedFiles": ["**/__tests__/**/*"],
+      "rules": {
+        "es/no-async-functions": "error",
+        "es/no-async-iteration": "error"
+      }
     }
   ]
 }
