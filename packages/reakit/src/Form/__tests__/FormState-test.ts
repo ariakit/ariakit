@@ -103,7 +103,8 @@ test(
       })
     );
     act(result.current.submit);
-    await waitForNextUpdate();
+    await waitForNextUpdate(); // startSubmit
+    await waitForNextUpdate(); // endSubmit
     expect(result.current.errors).toEqual({ a: "error" });
   })
 );

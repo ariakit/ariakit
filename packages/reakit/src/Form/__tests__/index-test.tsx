@@ -22,7 +22,7 @@ function keyDown(key: string) {
 
 test(
   "validate on change",
-  supressAct(() => {
+  supressAct(async () => {
     const onValidate = jest.fn();
     const Test = () => {
       const form = useFormState({ onValidate });
@@ -37,13 +37,14 @@ test(
     const input = getByLabelText("input");
     expect(onValidate).not.toHaveBeenCalled();
     fireEvent.change(input, { target: { value: "a" } });
+    await Promise.resolve();
     expect(onValidate).toHaveBeenCalledWith({ input: "a" });
   })
 );
 
 test(
   "validate on blur",
-  supressAct(() => {
+  supressAct(async () => {
     const onValidate = jest.fn();
     const Test = () => {
       const form = useFormState({ onValidate });
@@ -58,6 +59,7 @@ test(
     const input = getByLabelText("input");
     expect(onValidate).not.toHaveBeenCalled();
     fireEvent.blur(input);
+    await Promise.resolve();
     expect(onValidate).toHaveBeenCalledWith({});
   })
 );
