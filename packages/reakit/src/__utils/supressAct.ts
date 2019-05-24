@@ -1,6 +1,6 @@
 import { isPromise } from "./isPromise";
 
-/* eslint-disable no-console,es/no-async-functions */
+/* eslint-disable no-console */
 // TODO: https://github.com/facebook/react/pull/14853
 export function supressAct(callback: () => any) {
   return async () => {
