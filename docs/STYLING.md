@@ -2,6 +2,7 @@
 path: /docs/styling/
 redirect_from:
   - /guide/styling/
+  - /guide/theming/
 ---
 
 # Styling

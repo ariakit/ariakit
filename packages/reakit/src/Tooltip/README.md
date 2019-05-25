@@ -2,6 +2,7 @@
 path: /docs/tooltip/
 redirect_from:
   - /components/tooltip/
+  - /components/tooltip/tooltiparrow/
 ---
 
 # Tooltip

@@ -1,5 +1,13 @@
 ---
 path: /docs/rover/
+redirect_from:
+ - /components/step/
+ - /components/step/stepcontainer/
+ - /components/step/stephide/
+ - /components/step/stepnext/
+ - /components/step/stepprevious/
+ - /components/step/stepshow/
+ - /components/step/steptoggle/
 ---
 
 # Rover

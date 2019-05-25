@@ -2,6 +2,8 @@
 path: /docs/toolbar/
 redirect_from:
   - /components/toolbar/
+  - /components/toolbar/toolbarcontent/
+  - /components/toolbar/toolbarfocusable/
 ---
 
 # Toolbar

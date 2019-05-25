@@ -7,6 +7,11 @@ redirect_from:
   - /components/overlay/overlayshow/
   - /components/overlay/overlaytoggle/
   - /components/backdrop/
+  - /components/sidebar/
+  - /components/sidebar/sidebarcontainer/
+  - /components/sidebar/sidebarhide/
+  - /components/sidebar/sidebarshow/
+  - /components/sidebar/sidebartoggle/
 ---
 
 # Dialog (Modal)
