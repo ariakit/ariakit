@@ -32,22 +32,22 @@ import { Group } from "reakit/Group";
 import { Button } from "reakit/Button";
 
 function Example() {
-  const roving = useRoverState();
+  const rover = useRoverState();
   return (
     <Group>
-      <Rover as={Button} {...roving}>
+      <Rover as={Button} {...rover}>
         Button 1
       </Rover>
-      <Rover as={Button} {...roving} disabled>
+      <Rover as={Button} {...rover} disabled>
         Button 2
       </Rover>
-      <Rover as={Button} {...roving} disabled focusable>
+      <Rover as={Button} {...rover} disabled focusable>
         Button 3
       </Rover>
-      <Rover as={Button} {...roving}>
+      <Rover as={Button} {...rover}>
         Button 4
       </Rover>
-      <Rover as={Button} {...roving}>
+      <Rover as={Button} {...rover}>
         Button 5
       </Rover>
     </Group>

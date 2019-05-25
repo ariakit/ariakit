@@ -10,10 +10,6 @@ We would love for you to contribute to Reakit and help make it even better. By c
 - [How to start contributing?](#how-to-start-contributing)
 - [Contributing with code](#contributing-with-code)
   - [Scripts](#scripts)
-  - [Components](#components)
-  - [Website](#website)
-  - [Docs](#docs)
-- [Credits](#credits)
 
 ## Ownership
 
@@ -64,7 +60,7 @@ Helping people on issues and writing docs are definitely the best ways to get st
 
 Not all of us are native English speakers, so it's natural to find some grammar and writing errors. **If you find any, don't hesitate to submit a PR with a correction**. It'll be very much appreciated.
 
-Navigating through our [website](https://reakit.io), if you find anything that could be explained in a better way, just click on the `IMPROVE THIS PAGE` buttons to go straight to the markdown file and edit it directly on the GitHub interface.
+Navigating through our [website](https://reakit.io), if you find anything that could be explained in a better way, just click on the `Edit this page` buttons to go straight to the markdown file and edit it directly on the GitHub interface.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/3068563/42471092-e93d149c-8392-11e8-8fa9-ef93715de6f1.png" width="350">
@@ -76,60 +72,26 @@ If you're a beginner, it'll be a pleasure to help you contribute. You can start 
 
 This repository is a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md) managed by [Lerna](https://github.com/lerna/lerna) and makes use of [yarn workspaces](https://yarnpkg.com/lang/en/docs/cli/workspaces/).
 
-If you haven't already done so, [install yarn](https://yarnpkg.com/en/docs/install) and run `yarn` to install the project's dependencies.
+If you haven't already done so, [install yarn](https://yarnpkg.com/en/docs/install) and run these commands:
+
+```sh
+git clone https://github.com/reakit/reakit
+cd reakit
+yarn
+yarn website
+```
 
 ### Scripts
 
-TODO
-
-### Components
-
-TODO
-
-### Website
-
-TODO
-
-### Docs
-
-TODO
-
-## Credits
-
-### Supporters
-
-By donating $5 or more you help in the development of this project. Thank you to all our supporters! 🙏
-
-<p>
-  <a href="https://opencollective.com/reakit/sponsor/0/website"><img src="https://opencollective.com/reakit/sponsor/0/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/1/website"><img src="https://opencollective.com/reakit/sponsor/1/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/2/website"><img src="https://opencollective.com/reakit/sponsor/2/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/3/website"><img src="https://opencollective.com/reakit/sponsor/3/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/4/website"><img src="https://opencollective.com/reakit/sponsor/4/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/5/website"><img src="https://opencollective.com/reakit/sponsor/5/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/6/website"><img src="https://opencollective.com/reakit/sponsor/6/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/7/website"><img src="https://opencollective.com/reakit/sponsor/7/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/8/website"><img src="https://opencollective.com/reakit/sponsor/8/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/sponsor/9/website"><img src="https://opencollective.com/reakit/sponsor/9/avatar.svg"></a>
-</p>
-
-<p>
-  <a href="https://opencollective.com/reakit/backer/0/website"><img src="https://opencollective.com/reakit/backer/0/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/1/website"><img src="https://opencollective.com/reakit/backer/1/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/2/website"><img src="https://opencollective.com/reakit/backer/2/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/3/website"><img src="https://opencollective.com/reakit/backer/3/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/4/website"><img src="https://opencollective.com/reakit/backer/4/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/5/website"><img src="https://opencollective.com/reakit/backer/5/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/6/website"><img src="https://opencollective.com/reakit/backer/6/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/7/website"><img src="https://opencollective.com/reakit/backer/7/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/8/website"><img src="https://opencollective.com/reakit/backer/8/avatar.svg"></a>
-  <a href="https://opencollective.com/reakit/backer/9/website"><img src="https://opencollective.com/reakit/backer/9/avatar.svg"></a>
-</p>
-
-### Contributors
-
-This project exists thanks to all the people who contribute.
-
-<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1260&button=false" /></a>
-
-- <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
+- `yarn test` runs tests for all packages.
+- `yarn coverage` runs tests and open the coverage report on the browser.
+- `yarn type-check` checks typescript types.
+- `yarn lint` runs `eslint`.
+- `yarn lint --fix` runs `eslint` and automatically fix issues.
+- `yarn build` builds all `reakit*` packages.
+- `yarn build:fast` builds all `reakit*` packages ignoring UMD builds.
+- `yarn docs` builds docs into README files.
+- `yarn website` starts a development server of the website.
+- `yarn website:build` builds production files of the website (requires `yarn build` to be executed first).
+- `yarn website:serve` starts a production server for the website (requires `yarn website:build` to be executed first).
+- `yarn test:all` runs `lint`, `type-check`, `build`, `test`, `website:build` and `website:serve` in sequence.
