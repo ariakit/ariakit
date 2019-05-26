@@ -8,6 +8,7 @@ import {
   usePlaygroundState
 } from "reakit-playground";
 import * as emotion from "emotion";
+import * as spring from "react-spring";
 import createUseContext from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
 import CarbonAd from "../components/CarbonAd";
@@ -100,6 +101,7 @@ const { Compiler: renderAst } = new RehypeReact({
                 modules={{
                   emotion,
                   constate: createUseContext,
+                  "react-spring": spring,
                   "./UniversalAccess": FaUniversalAccess
                 }}
                 {...state}

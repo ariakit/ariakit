@@ -43,7 +43,7 @@ export default function Header({ transparent }: HeaderProps) {
   const foreground = usePalette("foreground");
   const primary = usePalette("primary");
   const boxShadowColor = useFade(foreground, 0.85);
-  const dialog = useDialogState();
+  const dialog = useDialogState({ unstable_animated: true });
   const location = useLocation();
 
   React.useEffect(dialog.hide, [location.pathname]);
@@ -139,13 +139,12 @@ export default function Header({ transparent }: HeaderProps) {
             <VisuallyHidden>Open sidebar</VisuallyHidden>
           </DialogDisclosure>
           <Portal>
-            <DialogBackdrop {...dialog} />
+            <DialogBackdrop {...dialog} unstable_animated={false} />
           </Portal>
           <Dialog
             {...dialog}
             ref={ref}
             aria-label="Sidebar"
-            unstable_animated
             unstable_initialFocusRef={ref}
             className={css`
               top: 0;
