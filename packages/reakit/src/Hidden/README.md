@@ -38,31 +38,6 @@ function Example() {
 }
 ```
 
-```jsx
-import { animated, useSpring } from "react-spring";
-import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
-
-function Example() {
-  const state = useHiddenState({ unstable_animated: true });
-
-  const style = useSpring({
-    to: state.visible
-      ? { opacity: 1, transform: "translate3d(0, 0, 0)" }
-      : { opacity: 0, transform: "translate3d(0, -10px, 0)" },
-    onRest: state.unstable_flushAnimation
-  });
-
-  return (
-    <>
-      <HiddenDisclosure {...state}>Toggle</HiddenDisclosure>
-      <Hidden {...state} as={animated.div} style={style}>
-        Hidden
-      </Hidden>
-    </>
-  );
-}
-```
-
 ## Accessibility
 
 - `HiddenDisclosure` extends the accessibility features of [Button](/docs/button/#accessibility).

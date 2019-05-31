@@ -12,6 +12,8 @@ test("initial state", () => {
   const result = render({ unstable_hiddenId: "test" });
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "unstable_animated": false,
+      "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": false,
     }
@@ -26,6 +28,8 @@ test("initial state visible", () => {
     },
     `
     Object {
+      "unstable_animated": false,
+      "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": true,
     }
@@ -41,6 +45,8 @@ test("initial state lazy", () => {
     },
     `
     Object {
+      "unstable_animated": false,
+      "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": true,
     }
@@ -55,6 +61,8 @@ test("show", () => {
     { visible: true },
     `
     Object {
+      "unstable_animated": false,
+      "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": true,
     }
@@ -69,6 +77,8 @@ test("hide", () => {
     { visible: false },
     `
     Object {
+      "unstable_animated": false,
+      "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": false,
     }
@@ -83,6 +93,8 @@ test("toggle", () => {
     { visible: true },
     `
     Object {
+      "unstable_animated": false,
+      "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": true,
     }

@@ -16,11 +16,15 @@ export type HiddenState = {
    */
   visible: boolean;
   /**
-   * TODO: Description.
+   * If `true`, `animating` will be set to `true` when `visible` changes.
+   * It'll wait for `stopAnimation` to be called or a CSS transition ends.
+   * If it's a number, `stopAnimation` will be called automatically after
+   * given milliseconds.
    */
   unstable_animated: boolean | number;
   /**
-   * TODO: Description
+   * Whether it's animating or not.
+   * @private
    */
   unstable_animating: boolean;
 };
@@ -39,9 +43,10 @@ export type HiddenActions = {
    */
   toggle: () => void;
   /**
-   * Flushes `animatedVisible`.
+   * Stops animation. It's called automatically if there's a CSS transition.
+   * It's called after given milliseconds if `animated` is a number.
    */
-  unstable_flushAnimation: () => void;
+  unstable_stopAnimation: () => void;
 };
 
 export type HiddenInitialState = Partial<
@@ -71,19 +76,21 @@ export function useHiddenState(
   const [animating, setAnimating] = React.useState(false);
   const lastVisible = useLastValue(visible);
 
-  if (!lastVisible.current && visible && !animating && animated) {
+  if (
+    animated &&
+    !animating &&
+    lastVisible.current != null &&
+    lastVisible.current !== visible
+  ) {
+    // Sets animating to true when when visible changes
     setAnimating(true);
   }
 
   React.useLayoutEffect(() => {
-    if (!animated || visible) return undefined;
-
-    if (typeof animated === "number") {
-      const id = setTimeout(() => setAnimating(false), animated);
-      return () => clearTimeout(id);
-    }
-
-    return undefined;
+    if (visible || typeof animated !== "number") return undefined;
+    // Stops animation after an interval defined by animated
+    const id = setTimeout(() => setAnimating(false), animated);
+    return () => clearTimeout(id);
   }, [animated, visible]);
 
   const show = React.useCallback(() => setVisible(true), []);
@@ -92,9 +99,7 @@ export function useHiddenState(
 
   const toggle = React.useCallback(() => setVisible(v => !v), []);
 
-  const flushAnimation = React.useCallback(() => setAnimating(visible), [
-    visible
-  ]);
+  const stopAnimation = React.useCallback(() => setAnimating(false), []);
 
   return {
     unstable_hiddenId: hiddenId,
@@ -104,7 +109,7 @@ export function useHiddenState(
     show,
     hide,
     toggle,
-    unstable_flushAnimation: flushAnimation
+    unstable_stopAnimation: stopAnimation
   };
 }
 
@@ -116,7 +121,7 @@ const keys: Array<keyof HiddenStateReturn> = [
   "show",
   "hide",
   "toggle",
-  "unstable_flushAnimation"
+  "unstable_stopAnimation"
 ];
 
 useHiddenState.__keys = keys;

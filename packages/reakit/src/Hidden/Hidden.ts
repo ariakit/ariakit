@@ -13,7 +13,7 @@ export type HiddenOptions = BoxOptions &
     | "visible"
     | "unstable_animating"
     | "unstable_animated"
-    | "unstable_flushAnimation"
+    | "unstable_stopAnimation"
   >;
 
 export type HiddenHTMLProps = BoxHTMLProps;
@@ -35,34 +35,33 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
       ...htmlProps
     }
   ) {
-    const [shouldAddClass, setShouldAddClass] = React.useState(false);
+    const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-      setShouldAddClass(!options.visible);
+      setHiddenClass(!options.visible ? "hidden" : null);
     }, [options.visible]);
 
     const onTransitionEnd = React.useCallback(() => {
       if (
         options.unstable_animated &&
-        options.unstable_flushAnimation &&
+        options.unstable_stopAnimation &&
         !options.visible
       ) {
-        options.unstable_flushAnimation();
+        options.unstable_stopAnimation();
       }
     }, [
       options.unstable_animated,
-      options.unstable_flushAnimation,
+      options.unstable_stopAnimation,
       options.visible
     ]);
 
-    const hidden =
-      !options.visible &&
-      (!options.unstable_animating || !options.unstable_animated);
+    const animating = options.unstable_animated && options.unstable_animating;
+    const hidden = !options.visible && !animating;
 
     return {
       role: "region",
       id: options.unstable_hiddenId,
-      className: cx(shouldAddClass && "hidden", htmlClassName),
+      className: cx(hiddenClass, htmlClassName),
       onAnimationEnd: useAllCallbacks(onTransitionEnd, htmlOnAnimationEnd),
       onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),
       hidden,
