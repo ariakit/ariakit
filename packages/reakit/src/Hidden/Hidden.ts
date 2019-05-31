@@ -7,18 +7,14 @@ import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenOptions = BoxOptions &
-  Pick<Partial<HiddenStateReturn>, "unstable_hiddenId" | "visible"> & {
-    /**
-     * If `true`, the hidden element attributes will be set in different
-     * timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-     * create transitions.
-     *  - When it becomes visible, immediatelly remove the `hidden` attribute,
-     * then add the `hidden` class.
-     *  - When it becomes hidden, immediatelly remove the `hidden` class, then
-     * add the `hidden` attribute.
-     */
-    unstable_animated?: boolean;
-  };
+  Pick<
+    Partial<HiddenStateReturn>,
+    | "unstable_hiddenId"
+    | "visible"
+    | "unstable_animating"
+    | "unstable_animated"
+    | "unstable_stopAnimation"
+  >;
 
 export type HiddenHTMLProps = BoxHTMLProps;
 
@@ -28,49 +24,45 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
   name: "Hidden",
   compose: useBox,
   useState: useHiddenState,
-  keys: ["unstable_animated"],
 
   useProps(
     options,
     {
+      onAnimationEnd: htmlOnAnimationEnd,
       onTransitionEnd: htmlOnTransitionEnd,
       className: htmlClassName,
       style: htmlStyle,
       ...htmlProps
     }
   ) {
-    const [delayedVisible, setDelayedVisible] = React.useState(options.visible);
+    const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-      if (options.unstable_animated && options.visible) {
-        setDelayedVisible(options.visible);
-      }
-    }, [options.visible, options.unstable_animated]);
+      setHiddenClass(!options.visible ? "hidden" : null);
+    }, [options.visible]);
 
     const onTransitionEnd = React.useCallback(() => {
-      if (options.unstable_animated && !options.visible) {
-        setDelayedVisible(options.visible);
+      if (
+        options.unstable_animated &&
+        options.unstable_stopAnimation &&
+        !options.visible
+      ) {
+        options.unstable_stopAnimation();
       }
-    }, [options.visible, options.unstable_animated]);
+    }, [
+      options.unstable_animated,
+      options.unstable_stopAnimation,
+      options.visible
+    ]);
 
-    // delays hiding
-    const hidden = options.unstable_animated
-      ? options.visible
-        ? false
-        : !delayedVisible
-      : !options.visible;
-
-    // delays showing
-    const shouldAddHiddenClass = options.unstable_animated
-      ? options.visible
-        ? !delayedVisible
-        : true
-      : !options.visible;
+    const animating = options.unstable_animated && options.unstable_animating;
+    const hidden = !options.visible && !animating;
 
     return {
       role: "region",
       id: options.unstable_hiddenId,
-      className: cx(shouldAddHiddenClass && "hidden", htmlClassName),
+      className: cx(hiddenClass, htmlClassName),
+      onAnimationEnd: useAllCallbacks(onTransitionEnd, htmlOnAnimationEnd),
       onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),
       hidden,
       ...(hidden
