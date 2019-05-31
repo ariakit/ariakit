@@ -64,6 +64,14 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
 ### `Hidden`
 
 - **`visible`**
@@ -72,15 +80,18 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   Whether it's visible or not.
 
 - **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+  <code>number | boolean</code>
 
-  If `true`, the hidden element attributes will be set in different
-timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-create transitions.
-  - When it becomes visible, immediatelly remove the `hidden` attribute,
-then add the `hidden` class.
-  - When it becomes hidden, immediatelly remove the `hidden` class, then
-add the `hidden` attribute.
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
 
 ### `HiddenDisclosure`
 
