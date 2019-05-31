@@ -123,26 +123,27 @@ export const useTabbable = unstable_createHook<
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
         if (options.disabled) return;
-        if (
-          clickKeysRef.current === defaultClickKeys &&
-          isNativeTabbable(event.target)
-        ) {
+
+        const isClickKey =
+          clickKeysRef.current &&
+          clickKeysRef.current.indexOf(event.key) !== -1;
+
+        if (!isClickKey) return;
+
+        const isDefaultClickKey = defaultClickKeys.indexOf(event.key) !== -1;
+
+        if (isDefaultClickKey && isNativeTabbable(event.target)) {
           return;
         }
 
-        if (
-          clickKeysRef.current &&
-          clickKeysRef.current.indexOf(event.key) !== -1
-        ) {
-          event.preventDefault();
-          event.target.dispatchEvent(
-            new MouseEvent("click", {
-              view: window,
-              bubbles: true,
-              cancelable: false
-            })
-          );
-        }
+        event.preventDefault();
+        event.target.dispatchEvent(
+          new MouseEvent("click", {
+            view: window,
+            bubbles: true,
+            cancelable: false
+          })
+        );
       },
       [options.disabled]
     );
