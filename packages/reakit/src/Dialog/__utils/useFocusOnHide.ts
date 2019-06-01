@@ -19,7 +19,7 @@ export function useFocusOnHide(
     warning(
       !dialog,
       "Dialog",
-      "Can't detect focus outside dialog because either `ref` wasn't passed to component or the component wasn't rendered.",
+      "Can't detect focus outside dialog because `ref` wasn't passed to component.",
       "See https://reakit.io/docs/dialog"
     );
 
