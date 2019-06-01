@@ -14,7 +14,7 @@ test("render", () => {
           class="hidden"
           hidden=""
           role="tooltip"
-          style="display: none; pointer-events: none; z-index: 999;"
+          style="display: none; pointer-events: none;"
         >
           tooltip
         </div>
@@ -33,7 +33,7 @@ test("render visible", () => {
       >
         <div
           role="tooltip"
-          style="pointer-events: none; z-index: 999;"
+          style="pointer-events: none;"
         >
           tooltip
         </div>
