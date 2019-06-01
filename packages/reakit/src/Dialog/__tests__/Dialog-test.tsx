@@ -23,7 +23,7 @@ test("render", () => {
           hidden=""
           id="dialog"
           role="dialog"
-          style="display: none; z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         >
           dialog
@@ -57,7 +57,6 @@ test("render visible", () => {
           data-dialog="true"
           id="dialog"
           role="dialog"
-          style="z-index: 999;"
           tabindex="-1"
         >
           dialog
@@ -90,7 +89,7 @@ test("render non-modal", () => {
           hidden=""
           id="dialog"
           role="dialog"
-          style="display: none; z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         >
           test

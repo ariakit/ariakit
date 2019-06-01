@@ -37,7 +37,6 @@ export const useTooltip = unstable_createHook<TooltipOptions, TooltipHTMLProps>(
         style: {
           ...options.unstable_popoverStyles,
           pointerEvents: "none",
-          zIndex: 999,
           ...htmlStyle
         },
         unstable_wrap: usePipe(wrap, htmlWrap),

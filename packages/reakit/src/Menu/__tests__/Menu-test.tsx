@@ -32,7 +32,7 @@ test("render", () => {
           hidden=""
           id="hidden"
           role="menu"
-          style="display: none; z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         />
       </div>
