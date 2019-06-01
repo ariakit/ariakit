@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, act } from "react-testing-library";
+import { render, fireEvent, act, wait } from "react-testing-library";
 import {
   useMenuState,
   Menu,
@@ -193,7 +193,7 @@ test("focusing menu item disclosure does not open submenu", () => {
   expect(subdisclosure).toHaveFocus();
 });
 
-test("pressing enter on menu item disclosure opens submenu and focus the first item", () => {
+test("pressing enter on menu item disclosure opens submenu and focus the first item", async () => {
   const Submenu = React.forwardRef(
     (props: MenuDisclosureHTMLProps, ref: React.RefObject<any>) => {
       const menu = useMenuState();
@@ -228,14 +228,12 @@ test("pressing enter on menu item disclosure opens submenu and focus the first i
   act(() => subdisclosure.focus());
   expect(submenu).not.toBeVisible();
   expect(subdisclosure).toHaveFocus();
-  jest.useFakeTimers();
   keyDown("Enter");
-  jest.runAllTimers();
   expect(submenu).toBeVisible();
-  expect(subitem1).toHaveFocus();
+  await wait(expect(subitem1).toHaveFocus);
 });
 
-test("pressing space on menu item disclosure opens submenu and focus the first item", () => {
+test("pressing space on menu item disclosure opens submenu and focus the first item", async () => {
   const Submenu = React.forwardRef(
     (props: MenuDisclosureHTMLProps, ref: React.RefObject<any>) => {
       const menu = useMenuState();
@@ -270,11 +268,9 @@ test("pressing space on menu item disclosure opens submenu and focus the first i
   act(() => subdisclosure.focus());
   expect(submenu).not.toBeVisible();
   expect(subdisclosure).toHaveFocus();
-  jest.useFakeTimers();
   keyDown(" ");
-  jest.runAllTimers();
   expect(submenu).toBeVisible();
-  expect(subitem1).toHaveFocus();
+  await wait(expect(subitem1).toHaveFocus);
 });
 
 test("hovering menu item disclosure moves focus into it and opens submenu after a short delay without moving focus", () => {
@@ -319,7 +315,7 @@ test("hovering menu item disclosure moves focus into it and opens submenu after 
   fireEvent.mouseOver(subdisclosure);
   expect(subdisclosure).toHaveFocus();
   expect(submenu).not.toBeVisible();
-  act(() => jest.advanceTimersByTime(500));
+  jest.advanceTimersByTime(500);
   expect(subdisclosure).toHaveFocus();
   expect(submenu).toBeVisible();
 });
@@ -536,8 +532,8 @@ test("arrow right on menu item disclosure opens right submenu and focus first it
   expect(submenu).not.toBeVisible();
   jest.useFakeTimers();
   keyDown("ArrowRight");
-  expect(submenu).toBeVisible();
   jest.runAllTimers();
+  expect(submenu).toBeVisible();
   expect(subitem1).toHaveFocus();
   keyDown("ArrowLeft");
   expect(submenu).not.toBeVisible();

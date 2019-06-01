@@ -64,6 +64,7 @@ export const useMenuDisclosure = unstable_createHook<
           stopPropagation: event => event.key !== "Escape",
           onKey: options.show,
           keyMap: () => {
+            // prevents scroll jump
             const first = () => setTimeout(options.first);
             return {
               Escape: options.hide,

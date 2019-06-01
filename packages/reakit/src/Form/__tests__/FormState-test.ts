@@ -2,7 +2,6 @@
 import { renderHook, act } from "react-hooks-testing-library";
 import { unstable_useFormState } from "../FormState";
 import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
-import { supressAct } from "../../__utils/supressAct";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
@@ -71,7 +70,7 @@ test("update", () => {
   expect(result.current.values.b.c).toEqual(["d", "f"]);
 });
 
-test("validate", () => {
+test("validate", async () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
       values: { a: "a" },
@@ -83,30 +82,26 @@ test("validate", () => {
       }
     })
   );
-  act(() => {
-    expect(result.current.validate()).rejects.toEqual({ a: "error" });
-  });
+  await act(() =>
+    expect(result.current.validate()).rejects.toEqual({ a: "error" })
+  );
 });
 
-test(
-  "submit",
-  supressAct(async () => {
-    const { result, waitForNextUpdate } = renderHook(() =>
-      unstable_useFormState({
-        values: { a: "a" },
-        onSubmit: values => {
-          if (values.a === "a") {
-            const error = { a: "error" };
-            throw error;
-          }
+test("submit", async () => {
+  const { result } = renderHook(() =>
+    unstable_useFormState({
+      values: { a: "a" },
+      onSubmit: values => {
+        if (values.a === "a") {
+          const error = { a: "error" };
+          throw error;
         }
-      })
-    );
-    act(result.current.submit);
-    await waitForNextUpdate();
-    expect(result.current.errors).toEqual({ a: "error" });
-  })
-);
+      }
+    })
+  );
+  await act(result.current.submit);
+  expect(result.current.errors).toEqual({ a: "error" });
+});
 
 test("blur", () => {
   const { result } = renderHook(() =>
