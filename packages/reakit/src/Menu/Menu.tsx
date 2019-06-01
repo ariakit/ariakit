@@ -82,8 +82,9 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
           keyMap: event => {
             warning(
               !ref.current,
-              "Can't detect arrow keys because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
-              "Menu"
+              "Menu",
+              "Can't detect arrow keys because `ref` wasn't passed to component.",
+              "See https://reakit.io/docs/menu"
             );
             const targetIsMenu = event.target === ref.current;
             return {
@@ -164,8 +165,9 @@ export const Menu = unstable_createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/menu",
-      "Menu"
+      "Menu",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/menu"
     );
     return unstable_useCreateElement(type, props, children);
   }

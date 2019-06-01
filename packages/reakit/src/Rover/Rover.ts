@@ -74,8 +74,9 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
       if (!ref.current) {
         warning(
           true,
-          "Can't focus rover component because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/rover",
-          "Rover"
+          "Rover",
+          "Can't focus rover component because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/rover"
         );
         return;
       }

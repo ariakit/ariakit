@@ -25,8 +25,9 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
 
       warning(
         !element,
-        "Can't detect events outside dialog because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/dialog",
-        "Dialog"
+        "Dialog",
+        "Can't detect events outside dialog because either `ref` wasn't passed to component or the component wasn't rendered.",
+        "See https://reakit.io/docs/dialog"
       );
 
       // Click inside

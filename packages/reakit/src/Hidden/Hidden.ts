@@ -14,6 +14,7 @@ export type HiddenOptions = BoxOptions &
     | "unstable_animating"
     | "unstable_animated"
     | "unstable_stopAnimation"
+    | "unstable_setIsMounted"
   >;
 
 export type HiddenHTMLProps = BoxHTMLProps;
@@ -36,6 +37,17 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
     }
   ) {
     const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+      if (options.unstable_setIsMounted) {
+        options.unstable_setIsMounted(true);
+      }
+      return () => {
+        if (options.unstable_setIsMounted) {
+          options.unstable_setIsMounted(false);
+        }
+      };
+    }, [options.unstable_setIsMounted]);
 
     React.useEffect(() => {
       setHiddenClass(!options.visible ? "hidden" : null);

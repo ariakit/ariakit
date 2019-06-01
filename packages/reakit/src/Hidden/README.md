@@ -28,11 +28,32 @@ Learn more in [Get started](/docs/get-started/).
 import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
 
 function Example() {
-  const state = useHiddenState({ visible: true });
+  const hidden = useHiddenState({ visible: true });
   return (
     <>
-      <HiddenDisclosure {...state}>Toggle</HiddenDisclosure>
-      <Hidden {...state}>Hidden</Hidden>
+      <HiddenDisclosure {...hidden}>Toggle</HiddenDisclosure>
+      <Hidden {...hidden}>Hidden</Hidden>
+    </>
+  );
+}
+```
+
+### Conditionally rendering
+
+You shouldn't conditionally render the `Hidden` component as this will make some Reakit features not work. Instead, you can use [render props](/docs/composition/#render-props) and conditionally render the underneath element:
+
+```jsx
+import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
+
+function Example() {
+  const hidden = useHiddenState();
+  return (
+    <>
+      <HiddenDisclosure {...hidden}>Toggle</HiddenDisclosure>
+      {/* instead of {hidden.visible && <Hidden {...hidden}>Hidden</Hidden>} */}
+      <Hidden {...hidden}>
+        {props => hidden.visible && <div {...props}>Hidden</div>}
+      </Hidden>
     </>
   );
 }

@@ -34,8 +34,9 @@ export const Toolbar = unstable_createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/toolbar",
-      "Toolbar"
+      "Toolbar",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/toolbar"
     );
     return unstable_useCreateElement(type, props, children);
   }

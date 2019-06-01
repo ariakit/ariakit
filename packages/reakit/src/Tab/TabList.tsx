@@ -34,8 +34,9 @@ export const TabList = unstable_createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/tab",
-      "TabList"
+      "TabList",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/tab"
     );
     return unstable_useCreateElement(type, props, children);
   }

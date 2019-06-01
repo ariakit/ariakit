@@ -92,8 +92,9 @@ export const useMenuDisclosure = unstable_createHook<
       if (!ref.current) {
         warning(
           true,
-          "Can't respond to mouse over on `MenuDisclosure` because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
-          "MenuDisclosure"
+          "MenuDisclosure",
+          "Can't respond to mouse over on `MenuDisclosure` because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/menu"
         );
         return;
       }
