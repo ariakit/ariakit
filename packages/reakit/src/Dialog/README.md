@@ -28,24 +28,6 @@ npm install reakit
 
 Learn more in [Get started](/docs/get-started/).
 
-```jsx
-import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
-
-function Example() {
-  const dialog = useDialogState();
-  return (
-    <>
-      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      {dialog.visible && (
-        <Dialog aria-label="Welcome" {...dialog}>
-          Welcome to Reakit!
-        </Dialog>
-      )}
-    </>
-  );
-}
-```
-
 ## Usage
 
 ```jsx
