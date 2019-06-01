@@ -127,7 +127,6 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
       ref: htmlRef,
       onKeyDown: htmlOnKeyDown,
       unstable_wrap: htmlWrap,
-      style: htmlStyle,
       ...htmlProps
     }
   ) {
@@ -177,7 +176,6 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
       tabIndex: -1,
       "aria-modal": options.modal,
       "data-dialog": true,
-      style: { zIndex: 999, ...htmlStyle },
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       unstable_wrap: usePipe(wrapChildren, htmlWrap),
       ...htmlProps

@@ -46,6 +46,7 @@ export function useDialogProps(
     outline: 0;
     border: 1px solid ${borderColor};
     color: ${color};
+    z-index: 999;
 
     &:focus {
       box-shadow: 0 0 0 0.2em ${boxShadowColor};
@@ -64,6 +65,12 @@ export function useDialogBackdropProps(
 ): DialogBackdropHTMLProps {
   const dialogBackdrop = css`
     background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
   `;
 
   return { ...htmlProps, className: cx(dialogBackdrop, htmlProps.className) };
