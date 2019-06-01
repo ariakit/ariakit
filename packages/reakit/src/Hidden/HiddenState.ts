@@ -4,6 +4,7 @@ import {
   unstable_SealedInitialState
 } from "../utils/useSealedState";
 import { unstable_useId } from "../utils/useId";
+import { warning } from "../__utils/warning";
 
 export type HiddenState = {
   /**
@@ -47,11 +48,20 @@ export type HiddenActions = {
    * It's called after given milliseconds if `animated` is a number.
    */
   unstable_stopAnimation: () => void;
+  /**
+   * @private
+   */
+  unstable_setIsMounted?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type HiddenInitialState = Partial<
   Pick<HiddenState, "unstable_hiddenId" | "visible" | "unstable_animated">
->;
+> & {
+  /**
+   * @private
+   */
+  unstable_isMounted?: boolean;
+};
 
 export type HiddenStateReturn = HiddenState & HiddenActions;
 
@@ -69,11 +79,13 @@ export function useHiddenState(
   const {
     unstable_hiddenId: hiddenId = unstable_useId("hidden-"),
     unstable_animated: animated = false,
-    visible: sealedVisible = false
+    visible: sealedVisible = false,
+    unstable_isMounted: initialIsMounted = false
   } = unstable_useSealedState(initialState);
 
   const [visible, setVisible] = React.useState(sealedVisible);
   const [animating, setAnimating] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(initialIsMounted);
   const lastVisible = useLastValue(visible);
 
   if (
@@ -93,11 +105,31 @@ export function useHiddenState(
     return () => clearTimeout(id);
   }, [animated, visible]);
 
-  const show = React.useCallback(() => setVisible(true), []);
+  const show = React.useCallback(() => {
+    warning(
+      !isMounted,
+      "Hidden",
+      "You're trying to show a hidden element that hasn't been mounted yet.",
+      "You shouldn't conditionally render a `Hidden` component (or any of its derivatives) as this will make some features not work.",
+      "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useHiddenState` or just ignore it.",
+      "See https://reakit.io/docs/hidden/#conditionally-rendering"
+    );
+    setVisible(true);
+  }, [isMounted]);
 
   const hide = React.useCallback(() => setVisible(false), []);
 
-  const toggle = React.useCallback(() => setVisible(v => !v), []);
+  const toggle = React.useCallback(() => {
+    warning(
+      !isMounted,
+      "Hidden",
+      "You're trying to toggle a hidden element that hasn't been mounted yet.",
+      "You shouldn't conditionally render a `Hidden` component (or any of its derivatives) as this will make some features not work.",
+      "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useHiddenState` or just ignore it.",
+      "See https://reakit.io/docs/hidden/#conditionally-rendering"
+    );
+    setVisible(v => !v);
+  }, [isMounted]);
 
   const stopAnimation = React.useCallback(() => setAnimating(false), []);
 
@@ -109,7 +141,9 @@ export function useHiddenState(
     show,
     hide,
     toggle,
-    unstable_stopAnimation: stopAnimation
+    unstable_stopAnimation: stopAnimation,
+    unstable_setIsMounted:
+      process.env.NODE_ENV !== "production" ? setIsMounted : undefined
   };
 }
 
@@ -121,7 +155,8 @@ const keys: Array<keyof HiddenStateReturn> = [
   "show",
   "hide",
   "toggle",
-  "unstable_stopAnimation"
+  "unstable_stopAnimation",
+  "unstable_setIsMounted"
 ];
 
 useHiddenState.__keys = keys;

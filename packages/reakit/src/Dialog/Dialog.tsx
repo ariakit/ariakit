@@ -148,8 +148,9 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
           if (!options.hide) {
             warning(
               true,
-              "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided. See https://reakit.io/docs/dialog",
-              "Dialog"
+              "Dialog",
+              "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided.",
+              "See https://reakit.io/docs/dialog"
             );
             return;
           }
@@ -190,8 +191,9 @@ export const Dialog = unstable_createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/dialog",
-      "Dialog"
+      "Dialog",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/dialog"
     );
     return unstable_useCreateElement(type, props, children);
   }

@@ -18,8 +18,9 @@ export function useFocusOnHide(
 
     warning(
       !dialog,
-      "Can't detect focus outside dialog because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/dialog",
-      "Dialog"
+      "Dialog",
+      "Can't detect focus outside dialog because `ref` wasn't passed to component.",
+      "See https://reakit.io/docs/dialog"
     );
 
     // Hide was triggered by a click/focus on a tabbable element outside
@@ -39,8 +40,9 @@ export function useFocusOnHide(
     } else {
       warning(
         true,
-        "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop. See https://reakit.io/docs/dialog",
-        "Dialog"
+        "Dialog",
+        "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
+        "See https://reakit.io/docs/dialog"
       );
     }
   }, [dialogRef, finalFocusRef, shouldFocus]);

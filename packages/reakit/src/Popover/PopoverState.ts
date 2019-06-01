@@ -134,9 +134,8 @@ export function usePopoverState(
     if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
         placement: originalPlacement,
-        eventsEnabled: false,
+        eventsEnabled: dialog.visible,
         positionFixed: fixed,
-
         modifiers: {
           applyStyle: { enabled: false },
           flip: { enabled: flip, padding: 16 },
@@ -165,17 +164,7 @@ export function usePopoverState(
         popper.current.destroy();
       }
     };
-  }, [originalPlacement, flip, shift, gutter]);
-
-  React.useLayoutEffect(() => {
-    if (!popper.current) return;
-    if (dialog.visible) {
-      popper.current.enableEventListeners();
-    } else {
-      popper.current.disableEventListeners();
-    }
-    popper.current.update();
-  }, [dialog.visible]);
+  }, [originalPlacement, flip, shift, gutter, dialog.visible]);
 
   return {
     ...dialog,

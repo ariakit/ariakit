@@ -60,8 +60,9 @@ export const useCheckbox = unstable_createHook<
       if (!ref.current) {
         warning(
           options.state === "indeterminate",
-          "Can't set indeterminate state because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/checkbox",
-          "Checkbox"
+          "Checkbox",
+          "Can't set indeterminate state because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/checkbox"
         );
         return;
       }

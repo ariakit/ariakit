@@ -36,8 +36,10 @@ export function useFocusOnShow(
         dialog.focus({ preventScroll: true });
         warning(
           dialog.tabIndex === undefined || dialog.tabIndex < 0,
-          "It's recommended to have at least one tabbable element inside dialog. The dialog element has been automatically focused. If this is the intended behavior, pass `tabIndex={0}` to disable this warning. See https://reakit.io/docs/dialog",
-          "Dialog"
+          "Dialog",
+          "It's recommended to have at least one tabbable element inside dialog. The dialog element has been automatically focused.",
+          "If this is the intended behavior, pass `tabIndex={0}` to the dialog element to disable this warning.",
+          "See https://reakit.io/docs/dialog"
         );
       }
     }
