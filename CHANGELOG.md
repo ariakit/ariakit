@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.2](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.1...reakit@1.0.0-beta.2) (2019-06-01)
+
+
+### Bug Fixes
+
+* Fix `Checkbox` toggling twice on space bar key on Firefox ([#369](https://github.com/reakit/reakit/issues/369)) ([27e9b63](https://github.com/reakit/reakit/commit/27e9b63)), closes [#368](https://github.com/reakit/reakit/issues/368)
+* Remove `async`/`await` so users don't need regenerator-runtime ([#365](https://github.com/reakit/reakit/issues/365)) ([9c6d41a](https://github.com/reakit/reakit/commit/9c6d41a))
+* Stop adding `role="button"` on `Button` by default ([574e2a9](https://github.com/reakit/reakit/commit/574e2a9))
+
+
+### Features
+
+* Add `unstable_animated` option to `useHiddenState` and its derivatives ([#370](https://github.com/reakit/reakit/issues/370)) ([4ba7f61](https://github.com/reakit/reakit/commit/4ba7f61))
+* Enable conditional render on `Hidden` components with render props ([#371](https://github.com/reakit/reakit/issues/371)) ([70322c2](https://github.com/reakit/reakit/commit/70322c2))
+* Remove z-index and extra styles from `Dialog` and `DialogBackdrop` ([#372](https://github.com/reakit/reakit/issues/372)) ([5edd0d8](https://github.com/reakit/reakit/commit/5edd0d8)), closes [#366](https://github.com/reakit/reakit/issues/366)
+
+
+### BREAKING CHANGES
+
+* Removed extra styles from `Dialog` and `DialogBackdrop` and all their derivative components. Also removed default `z-index` from `Tooltip`. These styles have been moved to the `reakit-system-bootstrap` package. If you're not using this system package, you should apply the styles manually.
+
+  **Before:**
+  ```jsx
+  <DialogBackdrop />
+  <Dialog />
+  <Popover />
+  <Menu />
+  <Tooltip />
+  ```
+
+  **After:**
+  ```jsx
+  <DialogBackdrop
+    style={{
+      position: "fixed",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      zIndex: 998
+    }}
+  />
+  <Dialog style={{ zIndex: 999 }} />
+  <Popover style={{ zIndex: 999 }} />
+  <Menu style={{ zIndex: 999 }} />
+  <Tooltip style={{ zIndex: 999 }} />
+  ```
+
+
+
+
+
 # [1.0.0-beta.1](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.0...reakit@1.0.0-beta.1) (2019-05-21)
 
 

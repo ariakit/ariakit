@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.5.0...reakit-system-bootstrap@0.6.0) (2019-06-01)
+
+
+### Features
+
+* Remove z-index and extra styles from `Dialog` and `DialogBackdrop` ([#372](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/372)) ([5edd0d8](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/5edd0d8)), closes [#366](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/366)
+
+
+### BREAKING CHANGES
+
+* Removed extra styles from `Dialog` and `DialogBackdrop` and all their derivative components. Also removed default `z-index` from `Tooltip`. These styles have been moved to the `reakit-system-bootstrap` package. If you're not using this system package, you should apply the styles manually.
+
+  **Before:**
+  ```jsx
+  <DialogBackdrop />
+  <Dialog />
+  <Popover />
+  <Menu />
+  <Tooltip />
+  ```
+
+  **After:**
+  ```jsx
+  <DialogBackdrop
+    style={{
+      position: "fixed",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      zIndex: 998
+    }}
+  />
+  <Dialog style={{ zIndex: 999 }} />
+  <Popover style={{ zIndex: 999 }} />
+  <Menu style={{ zIndex: 999 }} />
+  <Tooltip style={{ zIndex: 999 }} />
+  ```
+
+
+
+
+
 # [0.5.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.4.1...reakit-system-bootstrap@0.5.0) (2019-05-21)
 
 
