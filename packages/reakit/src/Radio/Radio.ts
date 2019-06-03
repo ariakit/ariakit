@@ -1,9 +1,9 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { Omit } from "reakit-utils/types";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
-import { Omit } from "../__utils/types";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
 export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
@@ -24,7 +24,7 @@ export type RadioProps = RadioOptions & RadioHTMLProps;
 
 const defaultClickKeys = [" "];
 
-export const useRadio = unstable_createHook<RadioOptions, RadioHTMLProps>({
+export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useRover,
   useState: useRadioState,
@@ -78,7 +78,7 @@ export const useRadio = unstable_createHook<RadioOptions, RadioHTMLProps>({
   }
 });
 
-export const Radio = unstable_createComponent({
+export const Radio = createComponent({
   as: "input",
   useHook: useRadio
 });

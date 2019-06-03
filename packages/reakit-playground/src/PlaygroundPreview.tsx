@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as system from "reakit-system-bootstrap";
-import { unstable_useId } from "reakit/utils/useId";
-import { Provider } from "reakit/utils/Provider";
+import { useId } from "reakit-utils/useId";
+import { Provider } from "reakit/Provider";
 import { unstable_useOptions } from "reakit/system/useOptions";
 import { unstable_useProps } from "reakit/system/useProps";
 import { compileComponent } from "./__utils/compileComponent";
@@ -37,7 +37,7 @@ export function PlaygroundPreview({
   );
 
   const ref = React.useRef<HTMLDivElement>(null);
-  const prefix = unstable_useId("preview-");
+  const prefix = useId("preview-");
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((e: Error) => {

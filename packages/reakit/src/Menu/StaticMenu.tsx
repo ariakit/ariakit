@@ -1,11 +1,11 @@
 import * as React from "react";
-import { warning } from "../__utils/warning";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
+import { warning } from "reakit-utils/warning";
+import { createComponent } from "reakit-utils/createComponent";
+import { useCreateElement } from "reakit-utils/useCreateElement";
+import { createHook } from "reakit-utils/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { usePipe } from "reakit-utils/usePipe";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
-import { usePipe } from "../__utils/usePipe";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { MenuContext } from "./__utils/MenuContext";
 import { MenuStateReturn, useMenuState } from "./MenuState";
@@ -18,52 +18,51 @@ export type StaticMenuHTMLProps = BoxHTMLProps;
 
 export type StaticMenuProps = StaticMenuOptions & StaticMenuHTMLProps;
 
-export const useStaticMenu = unstable_createHook<
-  StaticMenuOptions,
-  StaticMenuHTMLProps
->({
-  name: "StaticMenu",
-  compose: useBox,
-  useState: useMenuState,
+export const useStaticMenu = createHook<StaticMenuOptions, StaticMenuHTMLProps>(
+  {
+    name: "StaticMenu",
+    compose: useBox,
+    useState: useMenuState,
 
-  useProps(
-    options,
-    { onKeyDown: htmlOnKeyDown, unstable_wrap: htmlWrap, ...htmlProps }
-  ) {
-    const parent = React.useContext(MenuContext);
+    useProps(
+      options,
+      { onKeyDown: htmlOnKeyDown, unstable_wrap: htmlWrap, ...htmlProps }
+    ) {
+      const parent = React.useContext(MenuContext);
 
-    const providerValue = React.useMemo(
-      () => ({
-        orientation: options.orientation,
-        next: options.next,
-        previous: options.previous,
-        parent
-      }),
-      [options.orientation, options.next, options.previous, parent]
-    );
+      const providerValue = React.useMemo(
+        () => ({
+          orientation: options.orientation,
+          next: options.next,
+          previous: options.previous,
+          parent
+        }),
+        [options.orientation, options.next, options.previous, parent]
+      );
 
-    const onKeyDown = useShortcuts(options);
+      const onKeyDown = useShortcuts(options);
 
-    const wrap = React.useCallback(
-      (children: React.ReactNode) => (
-        <MenuContext.Provider value={providerValue}>
-          {children}
-        </MenuContext.Provider>
-      ),
-      [providerValue]
-    );
+      const wrap = React.useCallback(
+        (children: React.ReactNode) => (
+          <MenuContext.Provider value={providerValue}>
+            {children}
+          </MenuContext.Provider>
+        ),
+        [providerValue]
+      );
 
-    return {
-      role: options.orientation === "horizontal" ? "menubar" : "menu",
-      "aria-orientation": options.orientation,
-      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-      unstable_wrap: usePipe(wrap, htmlWrap),
-      ...htmlProps
-    };
+      return {
+        role: options.orientation === "horizontal" ? "menubar" : "menu",
+        "aria-orientation": options.orientation,
+        onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+        unstable_wrap: usePipe(wrap, htmlWrap),
+        ...htmlProps
+      };
+    }
   }
-});
+);
 
-export const StaticMenu = unstable_createComponent({
+export const StaticMenu = createComponent({
   as: "div",
   useHook: useStaticMenu,
   useCreateElement: (type, props, children) => {
@@ -76,6 +75,6 @@ export const StaticMenu = unstable_createComponent({
       "See https://reakit.io/docs/menu"
     );
 
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });

@@ -1,7 +1,7 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
-import { unstable_createHook } from "../utils/createHook";
 import { useToolbarState } from "./ToolbarState";
 
 export type ToolbarItemOptions = RoverOptions;
@@ -10,7 +10,7 @@ export type ToolbarItemHTMLProps = RoverHTMLProps & React.LiHTMLAttributes<any>;
 
 export type ToolbarItemProps = ToolbarItemOptions & ToolbarItemHTMLProps;
 
-export const useToolbarItem = unstable_createHook<
+export const useToolbarItem = createHook<
   ToolbarItemOptions,
   ToolbarItemHTMLProps
 >({
@@ -19,7 +19,7 @@ export const useToolbarItem = unstable_createHook<
   useState: useToolbarState
 });
 
-export const ToolbarItem = unstable_createComponent({
+export const ToolbarItem = createComponent({
   as: "button",
   useHook: useToolbarItem
 });

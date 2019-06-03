@@ -1,10 +1,10 @@
 import * as React from "react";
-import { BoxOptions } from "../Box";
+import { createComponent } from "reakit-utils/createComponent";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createHook } from "reakit-utils/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RadioHTMLProps, useRadio } from "../Radio/Radio";
-import { unstable_createComponent } from "../utils/createComponent";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
+import { BoxOptions } from "../Box";
 import { FormRadioGroupContext } from "./FormRadioGroup";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
@@ -33,7 +33,7 @@ export type unstable_FormRadioProps<
   P extends DeepPath<V, P>
 > = unstable_FormRadioOptions<V, P> & unstable_FormRadioHTMLProps;
 
-export const unstable_useFormRadio = unstable_createHook<
+export const unstable_useFormRadio = createHook<
   unstable_FormRadioOptions<any, any>,
   unstable_FormRadioHTMLProps
 >({
@@ -89,7 +89,7 @@ export const unstable_useFormRadio = unstable_createHook<
   htmlProps?: unstable_FormRadioHTMLProps
 ) => unstable_FormRadioHTMLProps;
 
-export const unstable_FormRadio = (unstable_createComponent({
+export const unstable_FormRadio = (createComponent({
   as: "input",
   useHook: unstable_useFormRadio
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(

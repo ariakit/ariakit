@@ -1,11 +1,11 @@
 // TODO: Refactor
 import * as React from "react";
-import { forwardRef } from "../__utils/forwardRef";
-import { As, PropsWithAs } from "../__utils/types";
-import { splitProps } from "../__utils/splitProps";
-import { BoxHTMLProps } from "../Box/Box";
-import memo from "../__utils/memo";
-import { unstable_useCreateElement as defaultUseCreateElement } from "./useCreateElement";
+import { BoxHTMLProps } from "reakit/Box/Box";
+import { forwardRef } from "./forwardRef";
+import { As, PropsWithAs } from "./types";
+import { splitProps } from "./splitProps";
+import memo from "./memo";
+import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 
 type Hook<O> = {
   (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
@@ -32,7 +32,7 @@ export interface Component<T extends As, O> {
   (props: PropsWithAs<O, T>): JSX.Element;
 }
 
-export function unstable_createComponent<T extends As, O>({
+export function createComponent<T extends As, O>({
   as: type,
   useHook,
   keys = (useHook && useHook.__keys) || [],

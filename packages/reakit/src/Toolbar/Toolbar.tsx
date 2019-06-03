@@ -1,8 +1,8 @@
-import { warning } from "../__utils/warning";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
+import { warning } from "reakit-utils/warning";
+import { createComponent } from "reakit-utils/createComponent";
+import { useCreateElement } from "reakit-utils/useCreateElement";
+import { createHook } from "reakit-utils/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
 export type ToolbarOptions = BoxOptions &
@@ -12,23 +12,21 @@ export type ToolbarHTMLProps = BoxHTMLProps;
 
 export type ToolbarProps = ToolbarOptions & ToolbarHTMLProps;
 
-export const useToolbar = unstable_createHook<ToolbarOptions, ToolbarHTMLProps>(
-  {
-    name: "Toolbar",
-    compose: useBox,
-    useState: useToolbarState,
+export const useToolbar = createHook<ToolbarOptions, ToolbarHTMLProps>({
+  name: "Toolbar",
+  compose: useBox,
+  useState: useToolbarState,
 
-    useProps(options, htmlProps) {
-      return {
-        role: "toolbar",
-        "aria-orientation": options.orientation,
-        ...htmlProps
-      };
-    }
+  useProps(options, htmlProps) {
+    return {
+      role: "toolbar",
+      "aria-orientation": options.orientation,
+      ...htmlProps
+    };
   }
-);
+});
 
-export const Toolbar = unstable_createComponent({
+export const Toolbar = createComponent({
   as: "div",
   useHook: useToolbar,
   useCreateElement: (type, props, children) => {
@@ -38,6 +36,6 @@ export const Toolbar = unstable_createComponent({
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/toolbar"
     );
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });

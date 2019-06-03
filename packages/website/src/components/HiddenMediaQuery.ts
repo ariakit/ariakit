@@ -1,7 +1,6 @@
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
-import { unstable_createHook } from "reakit/utils/createHook";
-import { unstable_createComponent } from "reakit/utils/createComponent";
+import { createHook, createComponent } from "reakit-utils";
 
 export type HiddenMediaQueryOptions = BoxOptions & {
   query: string;
@@ -12,7 +11,7 @@ export type HiddenMediaQueryHTMLProps = BoxHTMLProps;
 export type HiddenMediaQueryProps = HiddenMediaQueryOptions &
   HiddenMediaQueryHTMLProps;
 
-export const useHiddenMediaQuery = unstable_createHook<
+export const useHiddenMediaQuery = createHook<
   HiddenMediaQueryOptions,
   HiddenMediaQueryHTMLProps
 >({
@@ -34,7 +33,7 @@ export const useHiddenMediaQuery = unstable_createHook<
   }
 });
 
-const HiddenMediaQuery = unstable_createComponent({
+const HiddenMediaQuery = createComponent({
   as: "div",
   useHook: useHiddenMediaQuery
 });

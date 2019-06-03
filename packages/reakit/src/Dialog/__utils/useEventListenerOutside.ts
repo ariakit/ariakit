@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useLiveRef } from "../../__utils/useLiveRef";
-import { warning } from "../../__utils/warning";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { warning } from "reakit-utils/warning";
 import { isFocusTrap } from "./useFocusTrap";
 
 export function useEventListenerOutside<T extends keyof DocumentEventMap>(

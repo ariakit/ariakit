@@ -1,16 +1,12 @@
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
-import { unstable_createHook } from "reakit/utils/createHook";
-import { unstable_createComponent } from "reakit/utils/createComponent";
+import { createHook, createComponent } from "reakit-utils";
 
 export type ParagraphOptions = BoxOptions;
 export type ParagraphHTMLProps = BoxHTMLProps;
 export type ParagraphProps = ParagraphOptions & ParagraphHTMLProps;
 
-export const useParagraph = unstable_createHook<
-  ParagraphOptions,
-  ParagraphHTMLProps
->({
+export const useParagraph = createHook<ParagraphOptions, ParagraphHTMLProps>({
   name: "Paragraph",
   compose: useBox,
 
@@ -22,7 +18,7 @@ export const useParagraph = unstable_createHook<
   }
 });
 
-const Paragraph = unstable_createComponent({
+const Paragraph = createComponent({
   as: "p",
   useHook: useParagraph
 });

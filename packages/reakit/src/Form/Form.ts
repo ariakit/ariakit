@@ -1,8 +1,8 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormOptions = BoxOptions &
@@ -13,7 +13,7 @@ export type unstable_FormHTMLProps = BoxHTMLProps &
 
 export type unstable_FormProps = unstable_FormOptions & unstable_FormHTMLProps;
 
-export const unstable_useForm = unstable_createHook<
+export const unstable_useForm = createHook<
   unstable_FormOptions,
   unstable_FormHTMLProps
 >({
@@ -39,7 +39,7 @@ export const unstable_useForm = unstable_createHook<
   }
 });
 
-export const unstable_Form = unstable_createComponent({
+export const unstable_Form = createComponent({
   as: "form",
   useHook: unstable_useForm
 });

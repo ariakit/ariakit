@@ -1,7 +1,7 @@
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "../utils/useSealedState";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
 import {
   useRoverState,
   RoverState,
@@ -18,9 +18,9 @@ export type ToolbarInitialState = RoverInitialState;
 export type ToolbarStateReturn = ToolbarState & ToolbarActions;
 
 export function useToolbarState(
-  initialState: unstable_SealedInitialState<ToolbarInitialState> = {}
+  initialState: SealedInitialState<ToolbarInitialState> = {}
 ): ToolbarStateReturn {
-  const { orientation = "horizontal", ...sealed } = unstable_useSealedState(
+  const { orientation = "horizontal", ...sealed } = useSealedState(
     initialState
   );
   return useRoverState({ orientation, ...sealed });

@@ -1,11 +1,11 @@
 import * as React from "react";
 import { render } from "react-testing-library";
-import { unstable_createComponent } from "../createComponent";
+import { createComponent } from "../createComponent";
 
 test("keys", () => {
   const useHook = ({ children }: { children: string }) => ({ children });
   useHook.__keys = ["children"] as const;
-  const Component = unstable_createComponent({ as: "div", useHook });
+  const Component = createComponent({ as: "div", useHook });
   const { getByText } = render(<Component>component</Component>);
   expect(getByText("component")).toBeDefined();
 });
@@ -13,7 +13,7 @@ test("keys", () => {
 test("as string", () => {
   const useA = ({ a }: { a: string }) => ({ children: a });
   useA.__keys = ["a"] as const;
-  const A = unstable_createComponent({ as: "div", useHook: useA });
+  const A = createComponent({ as: "div", useHook: useA });
   const { getByText } = render(<A as="span" a="a" />);
   expect(getByText("a")).toMatchInlineSnapshot(`
     <span>
@@ -28,7 +28,7 @@ test("as component", () => {
     ...htmlProps
   });
   useA.__keys = ["a"] as const;
-  const A = unstable_createComponent({ as: "div", useHook: useA });
+  const A = createComponent({ as: "div", useHook: useA });
   const B = ({ b, ...props }: { b: string }) => <div id={b} {...props} />;
   const { getByText } = render(<A as={B} a="a" b="b" />);
   expect(getByText("a")).toMatchInlineSnapshot(`
@@ -46,7 +46,7 @@ test("as generic component", () => {
     ...htmlProps
   });
   useA.__keys = ["a"] as const;
-  const A = unstable_createComponent({ as: "div", useHook: useA });
+  const A = createComponent({ as: "div", useHook: useA });
   function B<T extends string>({ b, ...props }: { b: T }) {
     return <div id={b} {...props} />;
   }
@@ -63,11 +63,11 @@ test("as generic component", () => {
 test("as other component created with createComponent", () => {
   const useA = ({ a }: { a: string }, h: any) => ({ children: a, ...h });
   useA.__keys = ["a"] as const;
-  const A = unstable_createComponent({ as: "div", useHook: useA });
+  const A = createComponent({ as: "div", useHook: useA });
 
   const useB = ({ b }: { b: string }, h: any) => ({ id: b, ...h });
   useB.__keys = ["b"] as const;
-  const B = unstable_createComponent({ as: "div", useHook: useB });
+  const B = createComponent({ as: "div", useHook: useB });
 
   const { getByText } = render(<A as={B} a="a" b="b" />);
   expect(getByText("a")).toMatchInlineSnapshot(`
@@ -86,7 +86,7 @@ test("wrap", () => {
     ),
     ...h
   });
-  const A = unstable_createComponent({ as: "span", useHook: useA });
+  const A = createComponent({ as: "span", useHook: useA });
   const { baseElement } = render(<A id="a">a</A>);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>

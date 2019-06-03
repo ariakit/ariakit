@@ -1,10 +1,10 @@
 import * as React from "react";
 import {
-  unstable_useSealedState,
-  unstable_SealedInitialState
-} from "../utils/useSealedState";
-import { unstable_useId } from "../utils/useId";
-import { warning } from "../__utils/warning";
+  useSealedState,
+  SealedInitialState
+} from "reakit-utils/useSealedState";
+import { useId } from "reakit-utils/useId";
+import { warning } from "reakit-utils/warning";
 
 export type HiddenState = {
   /**
@@ -74,14 +74,14 @@ function useLastValue<T>(value: T) {
 }
 
 export function useHiddenState(
-  initialState: unstable_SealedInitialState<HiddenInitialState> = {}
+  initialState: SealedInitialState<HiddenInitialState> = {}
 ): HiddenStateReturn {
   const {
-    unstable_hiddenId: hiddenId = unstable_useId("hidden-"),
+    unstable_hiddenId: hiddenId = useId("hidden-"),
     unstable_animated: animated = false,
     visible: sealedVisible = false,
     unstable_isMounted: initialIsMounted = false
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
 
   const [visible, setVisible] = React.useState(sealedVisible);
   const [animating, setAnimating] = React.useState(false);

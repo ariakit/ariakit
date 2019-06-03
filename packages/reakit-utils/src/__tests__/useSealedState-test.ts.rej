@@ -1,0 +1,6 @@
+diff a/packages/reakit-utils/src/__tests__/useSealedState-test.ts b/packages/reakit-utils/src/__tests__/useSealedState-test.ts	(rejected hunks)
+@@ -5,3 +5 @@ test("useSealedState", () => {
+-  const { result } = renderHook(() =>
+-    useSealedState({ a: "a", b: "b" })
+-  );
++  const { result } = renderHook(() => useSealedState({ a: "a", b: "b" }));

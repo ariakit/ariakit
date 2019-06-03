@@ -1,6 +1,6 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 
 export type VisuallyHiddenOptions = BoxOptions;
 
@@ -9,7 +9,7 @@ export type VisuallyHiddenHTMLProps = BoxHTMLProps;
 export type VisuallyHiddenProps = VisuallyHiddenOptions &
   VisuallyHiddenHTMLProps;
 
-export const useVisuallyHidden = unstable_createHook<
+export const useVisuallyHidden = createHook<
   VisuallyHiddenOptions,
   VisuallyHiddenHTMLProps
 >({
@@ -35,7 +35,7 @@ export const useVisuallyHidden = unstable_createHook<
   }
 });
 
-export const VisuallyHidden = unstable_createComponent({
+export const VisuallyHidden = createComponent({
   as: "span",
   useHook: useVisuallyHidden
 });

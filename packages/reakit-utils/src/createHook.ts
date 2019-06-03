@@ -1,7 +1,7 @@
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
-import { toArray } from "../__utils/toArray";
-import { deepEqual } from "../__utils/deepEqual";
+import { unstable_useOptions } from "reakit/system/useOptions";
+import { unstable_useProps } from "reakit/system/useProps";
+import { toArray } from "./toArray";
+import { deepEqual } from "./deepEqual";
 
 type Hook<O = any, P = any> = {
   (options?: O, htmlProps?: P): P;
@@ -20,7 +20,7 @@ type CreateHookOptions<O, P> = {
   keys?: ReadonlyArray<keyof O>;
 };
 
-export function unstable_createHook<O, P>(options: CreateHookOptions<O, P>) {
+export function createHook<O, P>(options: CreateHookOptions<O, P>) {
   const composedHooks = toArray(options.compose) as Hook[];
 
   const useHook: Hook<O, P> = (hookOptions = {} as O, htmlProps = {} as P) => {

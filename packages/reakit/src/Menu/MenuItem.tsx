@@ -1,11 +1,11 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { warning } from "reakit-utils/warning";
+import { createHook } from "reakit-utils/createHook";
+import { isTouchDevice } from "reakit-utils/isTouchDevice";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
-import { isTouchDevice } from "../__utils/isTouchDevice";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
 export type MenuItemOptions = RoverOptions &
@@ -16,10 +16,7 @@ export type MenuItemHTMLProps = RoverHTMLProps;
 
 export type MenuItemProps = MenuItemOptions & MenuItemHTMLProps;
 
-export const useMenuItem = unstable_createHook<
-  MenuItemOptions,
-  MenuItemHTMLProps
->({
+export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   name: "MenuItem",
   compose: useRover,
   useState: useMenuState,
@@ -84,7 +81,7 @@ export const useMenuItem = unstable_createHook<
   }
 });
 
-export const MenuItem = unstable_createComponent({
+export const MenuItem = createComponent({
   as: "button",
   useHook: useMenuItem
 });

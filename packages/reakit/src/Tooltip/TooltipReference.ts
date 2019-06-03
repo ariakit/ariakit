@@ -1,8 +1,8 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
 export type TooltipReferenceOptions = BoxOptions &
@@ -17,7 +17,7 @@ export type TooltipReferenceHTMLProps = BoxHTMLProps;
 export type TooltipReferenceProps = TooltipReferenceOptions &
   TooltipReferenceHTMLProps;
 
-export const useTooltipReference = unstable_createHook<
+export const useTooltipReference = createHook<
   TooltipReferenceOptions,
   TooltipReferenceHTMLProps
 >({
@@ -49,7 +49,7 @@ export const useTooltipReference = unstable_createHook<
   }
 });
 
-export const TooltipReference = unstable_createComponent({
+export const TooltipReference = createComponent({
   as: "div",
   useHook: useTooltipReference
 });

@@ -1,11 +1,11 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
 import {
   CheckboxOptions,
   useCheckbox,
   CheckboxHTMLProps
 } from "../Checkbox/Checkbox";
-import { unstable_createHook } from "../utils/createHook";
 import { MenuItemOptions, MenuItemHTMLProps, useMenuItem } from "./MenuItem";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 
@@ -23,7 +23,7 @@ export type MenuItemCheckboxHTMLProps = CheckboxHTMLProps & MenuItemHTMLProps;
 export type MenuItemCheckboxProps = MenuItemCheckboxOptions &
   MenuItemCheckboxHTMLProps;
 
-export const useMenuItemCheckbox = unstable_createHook<
+export const useMenuItemCheckbox = createHook<
   MenuItemCheckboxOptions,
   MenuItemCheckboxHTMLProps
 >({
@@ -54,7 +54,7 @@ export const useMenuItemCheckbox = unstable_createHook<
   }
 });
 
-export const MenuItemCheckbox = unstable_createComponent({
+export const MenuItemCheckbox = createComponent({
   as: "button",
   useHook: useMenuItemCheckbox
 });

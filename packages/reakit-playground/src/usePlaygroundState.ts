@@ -1,8 +1,8 @@
 import * as React from "react";
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "reakit/utils/useSealedState";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
 
 export type PlaygroundState = {
   /** TODO: Description */
@@ -19,9 +19,9 @@ export type PlaygroundInitialState = Partial<PlaygroundState>;
 export type PlaygroundStateReturn = PlaygroundState & PlaygroundActions;
 
 export function usePlaygroundState(
-  initialState: unstable_SealedInitialState<PlaygroundInitialState> = {}
+  initialState: SealedInitialState<PlaygroundInitialState> = {}
 ): PlaygroundStateReturn {
-  const { code: initialCode = "" } = unstable_useSealedState(initialState);
+  const { code: initialCode = "" } = useSealedState(initialState);
   const [code, update] = React.useState(initialCode);
   return { code, update };
 }

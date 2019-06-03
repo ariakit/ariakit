@@ -1,9 +1,9 @@
 import * as React from "react";
+import { createComponent } from "reakit-utils/createComponent";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createHook } from "reakit-utils/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
-import { unstable_createComponent } from "../utils/createComponent";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getInputId } from "./__utils/getInputId";
 import { getPushButtonId } from "./__utils/getPushButtonId";
@@ -31,7 +31,7 @@ export type unstable_FormRemoveButtonProps<
   P extends DeepPath<V, P>
 > = unstable_FormRemoveButtonOptions<V, P> & unstable_FormRemoveButtonHTMLProps;
 
-export const unstable_useFormRemoveButton = unstable_createHook<
+export const unstable_useFormRemoveButton = createHook<
   unstable_FormRemoveButtonOptions<any, any>,
   unstable_FormRemoveButtonHTMLProps
 >({
@@ -89,7 +89,7 @@ export const unstable_useFormRemoveButton = unstable_createHook<
   htmlProps?: unstable_FormRemoveButtonHTMLProps
 ) => unstable_FormRemoveButtonHTMLProps;
 
-export const unstable_FormRemoveButton = (unstable_createComponent({
+export const unstable_FormRemoveButton = (createComponent({
   as: "button",
   useHook: unstable_useFormRemoveButton
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "button">(

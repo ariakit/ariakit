@@ -1,6 +1,6 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
-import { unstable_createHook } from "../utils/createHook";
 import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -16,10 +16,7 @@ export type TabPanelHTMLProps = HiddenHTMLProps;
 
 export type TabPanelProps = TabPanelOptions & TabPanelHTMLProps;
 
-export const useTabPanel = unstable_createHook<
-  TabPanelOptions,
-  TabPanelHTMLProps
->({
+export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   name: "TabPanel",
   compose: useHidden,
   useState: useTabState,
@@ -43,7 +40,7 @@ export const useTabPanel = unstable_createHook<
   }
 });
 
-export const TabPanel = unstable_createComponent({
+export const TabPanel = createComponent({
   as: "div",
   useHook: useTabPanel
 });

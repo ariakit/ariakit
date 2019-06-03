@@ -1,6 +1,6 @@
 import { renderHook, act } from "react-hooks-testing-library";
+import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { useCheckboxState } from "../CheckboxState";
-import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 

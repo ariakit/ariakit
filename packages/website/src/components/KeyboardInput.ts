@@ -1,14 +1,13 @@
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
-import { unstable_createHook } from "reakit/utils/createHook";
-import { unstable_createComponent } from "reakit/utils/createComponent";
+import { createHook, createComponent } from "reakit-utils";
 import { usePalette, useDarken } from "reakit-system-palette/utils";
 
 export type KeyboardInputOptions = BoxOptions;
 export type KeyboardInputHTMLProps = BoxHTMLProps;
 export type KeyboardInputProps = KeyboardInputOptions & KeyboardInputHTMLProps;
 
-export const useKeyboardInput = unstable_createHook<
+export const useKeyboardInput = createHook<
   KeyboardInputOptions,
   KeyboardInputHTMLProps
 >({
@@ -35,7 +34,7 @@ export const useKeyboardInput = unstable_createHook<
   }
 });
 
-const KeyboardInput = unstable_createComponent({
+const KeyboardInput = createComponent({
   as: "kbd",
   useHook: useKeyboardInput
 });

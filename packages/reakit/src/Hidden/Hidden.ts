@@ -1,9 +1,9 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { cx } from "reakit-utils/cx";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
-import { cx } from "../__utils/cx";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenOptions = BoxOptions &
@@ -21,7 +21,7 @@ export type HiddenHTMLProps = BoxHTMLProps;
 
 export type HiddenProps = HiddenOptions & HiddenHTMLProps;
 
-export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
+export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
   name: "Hidden",
   compose: useBox,
   useState: useHiddenState,
@@ -87,7 +87,7 @@ export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
   }
 });
 
-export const Hidden = unstable_createComponent({
+export const Hidden = createComponent({
   as: "div",
   useHook: useHidden
 });

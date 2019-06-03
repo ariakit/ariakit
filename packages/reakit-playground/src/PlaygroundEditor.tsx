@@ -2,8 +2,8 @@ import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
 import { unstable_useOptions } from "reakit/system/useOptions";
 import { unstable_useProps } from "reakit/system/useProps";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { PlaygroundActions, PlaygroundStateReturn } from "./usePlaygroundState";
-import { useLiveRef } from "./__utils/useLiveRef";
 
 if (typeof navigator !== "undefined") {
   require("codemirror/mode/javascript/javascript");

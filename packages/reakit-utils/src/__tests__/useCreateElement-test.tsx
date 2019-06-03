@@ -1,11 +1,11 @@
 import * as React from "react";
 import { renderHook } from "react-hooks-testing-library";
-import { unstable_useCreateElement } from "../useCreateElement";
-import { Provider } from "../Provider";
+import { Provider } from "reakit/Provider";
+import { useCreateElement } from "../useCreateElement";
 
 test("useCreateElement", () => {
   const { result } = renderHook(() =>
-    unstable_useCreateElement("div", { a: "a" }, "div")
+    useCreateElement("div", { a: "a" }, "div")
   );
   expect(result.current).toMatchInlineSnapshot(`
     <div
@@ -18,7 +18,7 @@ test("useCreateElement", () => {
 
 test("render props", () => {
   const { result } = renderHook(() =>
-    unstable_useCreateElement("div", { a: "a" }, ({ a }: { a: string }) => (
+    useCreateElement("div", { a: "a" }, ({ a }: { a: string }) => (
       <div id={a}>div</div>
     ))
   );
@@ -33,7 +33,7 @@ test("render props", () => {
 
 test("context", () => {
   const { result } = renderHook(
-    () => unstable_useCreateElement("div", { a: "a" }, "div"),
+    () => useCreateElement("div", { a: "a" }, "div"),
     {
       wrapper: ({ children }) => (
         <Provider

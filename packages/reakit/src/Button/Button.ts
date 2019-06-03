@@ -1,12 +1,12 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
 import {
   TabbableOptions,
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
 
 export type ButtonOptions = TabbableOptions;
 
@@ -15,7 +15,7 @@ export type ButtonHTMLProps = TabbableHTMLProps &
 
 export type ButtonProps = ButtonOptions & ButtonHTMLProps;
 
-export const useButton = unstable_createHook<ButtonOptions, ButtonHTMLProps>({
+export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   name: "Button",
   compose: useTabbable,
 
@@ -44,7 +44,7 @@ export const useButton = unstable_createHook<ButtonOptions, ButtonHTMLProps>({
   }
 });
 
-export const Button = unstable_createComponent({
+export const Button = createComponent({
   as: "button",
   useHook: useButton
 });

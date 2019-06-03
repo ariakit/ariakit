@@ -1,8 +1,8 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -15,7 +15,7 @@ export type TabHTMLProps = RoverHTMLProps;
 
 export type TabProps = TabOptions & TabHTMLProps;
 
-export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
+export const useTab = createHook<TabOptions, TabHTMLProps>({
   name: "Tab",
   compose: useRover,
   useState: useTabState,
@@ -60,4 +60,4 @@ export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
   }
 });
 
-export const Tab = unstable_createComponent({ as: "button", useHook: useTab });
+export const Tab = createComponent({ as: "button", useHook: useTab });

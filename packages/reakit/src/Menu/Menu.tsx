@@ -1,17 +1,17 @@
 import * as React from "react";
-import { warning } from "../__utils/warning";
-import { Omit } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
+import { warning } from "reakit-utils/warning";
+import { Omit } from "reakit-utils/types";
+import { createComponent } from "reakit-utils/createComponent";
+import { useCreateElement } from "reakit-utils/useCreateElement";
+import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverOptions,
   PopoverHTMLProps,
   usePopover
 } from "../Popover/Popover";
-import { createOnKeyDown } from "../__utils/createOnKeyDown";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import {
   StaticMenuOptions,
   StaticMenuHTMLProps,
@@ -32,7 +32,7 @@ export type MenuHTMLProps = PopoverHTMLProps & StaticMenuHTMLProps;
 
 export type MenuProps = MenuOptions & MenuHTMLProps;
 
-export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
+export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
   compose: [useStaticMenu, usePopover],
   useState: useMenuState,
@@ -159,7 +159,7 @@ export const useMenu = unstable_createHook<MenuOptions, MenuHTMLProps>({
   }
 });
 
-export const Menu = unstable_createComponent({
+export const Menu = createComponent({
   as: "div",
   useHook: useMenu,
   useCreateElement: (type, props, children) => {
@@ -169,6 +169,6 @@ export const Menu = unstable_createComponent({
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/menu"
     );
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });

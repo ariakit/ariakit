@@ -13105,6 +13105,13 @@ react-hooks-testing-library@0.5.0:
   dependencies:
     "@babel/runtime" "^7.4.2"
 
+react-hooks-testing-library@0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/react-hooks-testing-library/-/react-hooks-testing-library-0.5.1.tgz#bb5e725fe8d35f3d682212039824dd2f6c7ff4c3"
+  integrity sha512-wSwnVPceof2AOpdvZpiC3EX4gZiVVvY78foz0/44yYGXjC2AeaWvNAjyRH1UjlPqCfHTaEANvXCq+m9YCbWBfQ==
+  dependencies:
+    "@babel/runtime" "^7.4.2"
+
 react-hot-loader@^4.8.4:
   version "4.8.6"
   resolved "https://registry.yarnpkg.com/react-hot-loader/-/react-hot-loader-4.8.6.tgz#8352805be277de70d6da8657552d0fc55faa0014"

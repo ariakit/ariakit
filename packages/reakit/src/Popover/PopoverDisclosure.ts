@@ -1,11 +1,11 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
 import {
   DialogDisclosureOptions,
   DialogDisclosureHTMLProps,
   useDialogDisclosure
 } from "../Dialog/DialogDisclosure";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
 export type PopoverDisclosureOptions = DialogDisclosureOptions &
@@ -16,7 +16,7 @@ export type PopoverDisclosureHTMLProps = DialogDisclosureHTMLProps;
 export type PopoverDisclosureProps = PopoverDisclosureOptions &
   PopoverDisclosureHTMLProps;
 
-export const usePopoverDisclosure = unstable_createHook<
+export const usePopoverDisclosure = createHook<
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps
 >({
@@ -32,7 +32,7 @@ export const usePopoverDisclosure = unstable_createHook<
   }
 });
 
-export const PopoverDisclosure = unstable_createComponent({
+export const PopoverDisclosure = createComponent({
   as: "button",
   useHook: usePopoverDisclosure
 });

@@ -1,8 +1,8 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
 export type PopoverArrowOptions = BoxOptions &
@@ -16,7 +16,7 @@ export type PopoverArrowHTMLProps = BoxHTMLProps;
 
 export type PopoverArrowProps = PopoverArrowOptions & PopoverArrowHTMLProps;
 
-export const usePopoverArrow = unstable_createHook<
+export const usePopoverArrow = createHook<
   PopoverArrowOptions,
   PopoverArrowHTMLProps
 >({
@@ -65,7 +65,7 @@ export const usePopoverArrow = unstable_createHook<
   }
 });
 
-export const PopoverArrow = unstable_createComponent({
+export const PopoverArrow = createComponent({
   as: "div",
   useHook: usePopoverArrow
 });

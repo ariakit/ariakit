@@ -1,9 +1,9 @@
 import * as React from "react";
-import { As } from "../__utils/types";
-import { isRenderProp } from "../__utils/isRenderProp";
-import { unstable_SystemContext } from "../system/SystemContext";
+import { unstable_SystemContext } from "reakit/system/SystemContext";
+import { As } from "./types";
+import { isRenderProp } from "./isRenderProp";
 
-export const unstable_useCreateElement = <T extends As>(
+export const useCreateElement = <T extends As>(
   type: T,
   props: Record<string, any>,
   children: React.ReactNode = props.children

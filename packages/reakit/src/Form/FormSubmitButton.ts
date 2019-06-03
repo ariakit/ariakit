@@ -1,8 +1,8 @@
 import * as React from "react";
+import { createComponent } from "reakit-utils/createComponent";
+import { createHook } from "reakit-utils/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
 
@@ -15,7 +15,7 @@ export type unstable_FormSubmitButtonHTMLProps = ButtonHTMLProps;
 export type unstable_FormSubmitButtonProps = unstable_FormSubmitButtonOptions &
   unstable_FormSubmitButtonHTMLProps;
 
-export const unstable_useFormSubmitButton = unstable_createHook<
+export const unstable_useFormSubmitButton = createHook<
   unstable_FormSubmitButtonOptions,
   unstable_FormSubmitButtonHTMLProps
 >({
@@ -43,7 +43,7 @@ export const unstable_useFormSubmitButton = unstable_createHook<
   }
 });
 
-export const unstable_FormSubmitButton = unstable_createComponent({
+export const unstable_FormSubmitButton = createComponent({
   as: "button",
   useHook: unstable_useFormSubmitButton
 });

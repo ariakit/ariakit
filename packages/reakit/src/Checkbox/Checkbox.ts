@@ -1,16 +1,16 @@
 import * as React from "react";
+import { createComponent } from "reakit-utils/createComponent";
+import { removeIndexFromArray } from "reakit-utils/removeIndexFromArray";
+import { Omit } from "reakit-utils/types";
+import { warning } from "reakit-utils/warning";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   TabbableOptions,
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
-import { unstable_createComponent } from "../utils/createComponent";
-import { removeIndexFromArray } from "../__utils/removeIndexFromArray";
-import { Omit } from "../__utils/types";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 
 export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
@@ -34,10 +34,7 @@ export type CheckboxProps = CheckboxOptions & CheckboxHTMLProps;
 
 const defaultClickKeys = [" "];
 
-export const useCheckbox = unstable_createHook<
-  CheckboxOptions,
-  CheckboxHTMLProps
->({
+export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   name: "Checkbox",
   compose: useTabbable,
   useState: useCheckboxState,
@@ -136,7 +133,7 @@ export const useCheckbox = unstable_createHook<
   }
 });
 
-export const Checkbox = unstable_createComponent({
+export const Checkbox = createComponent({
   as: "input",
   useHook: useCheckbox
 });

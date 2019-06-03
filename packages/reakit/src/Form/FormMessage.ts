@@ -1,7 +1,7 @@
+import { createComponent } from "reakit-utils/createComponent";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createHook } from "reakit-utils/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createComponent } from "../utils/createComponent";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_createHook } from "../utils/createHook";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { getMessageId } from "./__utils/getMessageId";
@@ -30,7 +30,7 @@ export type unstable_FormMessageProps<
   P extends DeepPath<V, P>
 > = unstable_FormMessageOptions<V, P> & unstable_FormMessageHTMLProps;
 
-export const unstable_useFormMessage = unstable_createHook<
+export const unstable_useFormMessage = createHook<
   unstable_FormMessageOptions<any, any>,
   unstable_FormMessageHTMLProps
 >({
@@ -62,7 +62,7 @@ export const unstable_useFormMessage = unstable_createHook<
   htmlProps?: unstable_FormMessageHTMLProps
 ) => unstable_FormMessageHTMLProps;
 
-export const unstable_FormMessage = (unstable_createComponent({
+export const unstable_FormMessage = (createComponent({
   as: "div",
   useHook: unstable_useFormMessage
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "div">(

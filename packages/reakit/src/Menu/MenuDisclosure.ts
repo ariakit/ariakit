@@ -1,15 +1,15 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-utils/createComponent";
+import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
+import { warning } from "reakit-utils/warning";
+import { createHook } from "reakit-utils/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
-import { createOnKeyDown } from "../__utils/createOnKeyDown";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -24,7 +24,7 @@ export type MenuDisclosureProps = MenuDisclosureOptions &
 
 const noop = () => {};
 
-export const useMenuDisclosure = unstable_createHook<
+export const useMenuDisclosure = createHook<
   MenuDisclosureOptions,
   MenuDisclosureHTMLProps
 >({
@@ -149,7 +149,7 @@ export const useMenuDisclosure = unstable_createHook<
   }
 });
 
-export const MenuDisclosure = unstable_createComponent({
+export const MenuDisclosure = createComponent({
   as: "button",
   useHook: useMenuDisclosure
 });
