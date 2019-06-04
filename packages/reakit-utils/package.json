@@ -31,8 +31,7 @@
     "utils"
   ],
   "devDependencies": {
-    "react-hooks-testing-library": "0.5.1",
-    "reakit": "1.0.0-beta.2"
+    "react-hooks-testing-library": "0.5.1"
   },
   "peerDependencies": {
     "react": "^16.8.0",

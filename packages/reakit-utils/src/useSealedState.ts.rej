@@ -1,6 +1,0 @@
-diff a/packages/reakit-utils/src/useSealedState.ts b/packages/reakit-utils/src/useSealedState.ts	(rejected hunks)
-@@ -5,3 +5 @@ export type SealedInitialState<T> = T | (() => T);
--export function useSealedState<T>(
--  initialState: SealedInitialState<T>
--) {
-+export function useSealedState<T>(initialState: SealedInitialState<T>) {
