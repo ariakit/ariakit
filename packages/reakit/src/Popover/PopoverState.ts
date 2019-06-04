@@ -163,7 +163,15 @@ export function usePopoverState(
         popper.current.destroy();
       }
     };
-  }, [originalPlacement, flip, shift, gutter, dialog.visible]);
+  }, [
+    originalPlacement,
+    flip,
+    shift,
+    gutter,
+    preventOverflow,
+    boundariesElement,
+    dialog.visible
+  ]);
 
   return {
     ...dialog,
