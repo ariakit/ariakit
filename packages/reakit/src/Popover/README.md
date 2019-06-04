@@ -47,6 +47,48 @@ function Example() {
 }
 ```
 
+### Abstracting
+
+You can build your own `Popover` component with a different API on top of Reakit.
+
+```jsx
+import React from "react";
+import {
+  usePopoverState,
+  Popover as BasePopover,
+  PopoverDisclosure,
+  PopoverArrow
+} from "reakit/Popover";
+
+function Popover({ disclosure, ...props }) {
+  const popover = usePopoverState();
+  return (
+    <>
+      <PopoverDisclosure {...popover}>
+        {disclosureProps =>
+          React.cloneElement(React.Children.only(disclosure), disclosureProps)
+        }
+      </PopoverDisclosure>
+      <BasePopover {...popover} {...props}>
+        <PopoverArrow {...popover} />
+        {props.children}
+      </BasePopover>
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Popover
+      aria-label="Custom popover"
+      disclosure={<button>Open custom popover</button>}
+    >
+      Custom popover
+    </Popover>
+  );
+}
+```
+
 ## Accessibility
 
 - `Popover` extends the accessibility features of [Dialog](/docs/dialog/#accessibility).

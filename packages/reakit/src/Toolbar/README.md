@@ -8,7 +8,7 @@ redirect_from:
 
 # Toolbar
 
-`Toolbar` follows the [WAI-ARIA Toolbar Pattern](https://www.w3.org/TR/wai-aria-practices/#toolbar). It's a containers for grouping a set of controls.
+Accessible `Toolbar` component that follows the [WAI-ARIA Toolbar Pattern](https://www.w3.org/TR/wai-aria-practices/#toolbar). It's a container for grouping a set of controls.
 
 <carbon-ad></carbon-ad>
 
@@ -34,7 +34,7 @@ import { Button } from "reakit/Button";
 function Example() {
   const toolbar = useToolbarState();
   return (
-    <Toolbar {...toolbar}>
+    <Toolbar {...toolbar} aria-label="My toolbar">
       <ToolbarItem {...toolbar} as={Button}>
         Item 1
       </ToolbarItem>

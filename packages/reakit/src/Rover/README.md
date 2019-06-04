@@ -35,19 +35,19 @@ function Example() {
   const rover = useRoverState();
   return (
     <Group>
-      <Rover as={Button} {...rover}>
+      <Rover {...rover} as={Button}>
         Button 1
       </Rover>
-      <Rover as={Button} {...rover} disabled>
+      <Rover {...rover} as={Button} disabled>
         Button 2
       </Rover>
-      <Rover as={Button} {...rover} disabled focusable>
+      <Rover {...rover} as={Button} disabled focusable>
         Button 3
       </Rover>
-      <Rover as={Button} {...rover}>
+      <Rover {...rover} as={Button}>
         Button 4
       </Rover>
-      <Rover as={Button} {...rover}>
+      <Rover {...rover} as={Button}>
         Button 5
       </Rover>
     </Group>

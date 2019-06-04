@@ -4,7 +4,7 @@ path: /docs/menu/
 
 # Menu
 
-`Menu` follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuDisclosure` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
+Accessible `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuDisclosure` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
 
 <carbon-ad></carbon-ad>
 
@@ -263,6 +263,56 @@ function Example() {
       <MenuItem {...menu} as={EditMenu} />
       <MenuItem {...menu} as={ViewMenu} />
     </StaticMenu>
+  );
+}
+```
+
+### Abstracting
+
+You can build your own `Menu` component with a different API on top of Reakit.
+
+```jsx
+import React from "react";
+import {
+  useMenuState,
+  Menu as BaseMenu,
+  MenuItem,
+  MenuDisclosure
+} from "reakit/Menu";
+
+function Menu({ disclosure, items, ...props }) {
+  const menu = useMenuState();
+  return (
+    <>
+      <MenuDisclosure {...menu}>
+        {disclosureProps =>
+          React.cloneElement(React.Children.only(disclosure), disclosureProps)
+        }
+      </MenuDisclosure>
+      <BaseMenu {...menu} {...props}>
+        {items.map((item, i) => (
+          <MenuItem {...menu} key={i}>
+            {itemProps =>
+              React.cloneElement(React.Children.only(item), itemProps)
+            }
+          </MenuItem>
+        ))}
+      </BaseMenu>
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Menu
+      aria-label="Custom menu"
+      disclosure={<button>Custom menu</button>}
+      items={[
+        <button>Custom item 1</button>,
+        <button>Custom item 2</button>,
+        <button>Custom item 3</button>
+      ]}
+    />
   );
 }
 ```

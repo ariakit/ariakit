@@ -16,7 +16,7 @@ redirect_from:
 
 # Dialog (Modal)
 
-`Dialog` follows the [WAI-ARIA Dialog (Modal) Pattern](https://www.w3.org/TR/wai-aria-practices/#dialog_modal). It's rendered within a [Portal](/docs/portal/) by default, but it also has a [non-modal state](#non-modal-dialogs), which doesn't use portals.
+Accessible `Dialog` component that follows the [WAI-ARIA Dialog (Modal) Pattern](https://www.w3.org/TR/wai-aria-practices/#dialog_modal). It's rendered within a [Portal](/docs/portal/) by default, but it also has a [non-modal state](#non-modal-dialogs), which doesn't use portals.
 
 <carbon-ad></carbon-ad>
 
@@ -38,7 +38,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Dialog aria-label="Welcome" {...dialog}>
+      <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
       </Dialog>
     </>
@@ -62,7 +62,7 @@ function Example() {
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <DialogBackdrop {...dialog} />
-      <Dialog aria-label="Welcome" {...dialog}>
+      <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
       </Dialog>
     </>
@@ -91,10 +91,10 @@ function Example() {
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <Dialog
+        {...dialog}
         aria-label="Welcome"
         modal={false}
         style={{ position: "static", transform: "none" }}
-        {...dialog}
       >
         Focus is not trapped within me.
       </Dialog>
@@ -117,6 +117,7 @@ function Example() {
       <DialogDisclosure {...dialog}>Open chat</DialogDisclosure>
       <Portal>
         <Dialog
+          {...dialog}
           aria-label="Welcome"
           modal={false}
           hideOnClickOutside={false}
@@ -129,7 +130,6 @@ function Example() {
             width: 200,
             height: 300
           }}
-          {...dialog}
         >
           <Button onClick={dialog.hide}>Close chat</Button>
         </Dialog>
@@ -153,7 +153,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog1}>Open dialog</DialogDisclosure>
-      <Dialog aria-label="Test" {...dialog1}>
+      <Dialog {...dialog1} aria-label="Test">
         <p>
           Press <kbd>ESC</kbd> to close me.
         </p>
@@ -161,7 +161,7 @@ function Example() {
           <Button onClick={dialog1.hide}>Close dialog</Button>
           <DialogDisclosure {...dialog2}>Open nested dialog</DialogDisclosure>
         </div>
-        <Dialog aria-label="Nested" {...dialog2}>
+        <Dialog {...dialog2} aria-label="Nested">
           <Button onClick={dialog2.hide}>Close nested dialog</Button>
         </Dialog>
       </Dialog>
@@ -185,7 +185,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Discard</DialogDisclosure>
-      <Dialog role="alertdialog" aria-label="Confirm discard" {...dialog}>
+      <Dialog {...dialog} role="alertdialog" aria-label="Confirm discard">
         <p>Are you sure you want to discard it?</p>
         <div style={{ display: "grid", gridGap: 16, gridAutoFlow: "column" }}>
           <Button onClick={dialog.hide}>Cancel</Button>
@@ -200,6 +200,41 @@ function Example() {
         </div>
       </Dialog>
     </>
+  );
+}
+```
+
+### Abstracting
+
+You can build your own `Dialog` component with a different API on top of Reakit.
+
+```jsx
+import React from "react";
+import {
+  useDialogState,
+  Dialog as BaseDialog,
+  DialogDisclosure
+} from "reakit/Dialog";
+
+function Dialog({ disclosure, ...props }) {
+  const dialog = useDialogState();
+  return (
+    <>
+      <DialogDisclosure {...dialog}>
+        {disclosureProps =>
+          React.cloneElement(React.Children.only(disclosure), disclosureProps)
+        }
+      </DialogDisclosure>
+      <BaseDialog {...dialog} {...props} />
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Dialog disclosure={<button>Open custom dialog</button>}>
+      My custom dialog
+    </Dialog>
   );
 }
 ```

@@ -25,7 +25,7 @@ test("group checkbox", async () => {
     return (
       <div role="group">
         <label>
-          <Checkbox as="div" {...checkbox} value="apple" />
+          <Checkbox {...checkbox} as="div" value="apple" />
           apple
         </label>
         <label>

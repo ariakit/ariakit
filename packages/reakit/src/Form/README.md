@@ -13,7 +13,7 @@ redirect_from:
   <strong>This is experimental</strong> and may have breaking changes in minor or patch version updates. Issues for this module will have lower priority. Even so, if you use it, feel free to <a href="https://github.com/reakit/reakit/issues/new/choose" target="_blank">give us feedback</a>.
 </blockquote>
 
-`Form` is a component with a collection of other components, such as `FormLabel` and `FormInput`.
+`Form` is an accessible component with a collection of other components, such as `FormLabel` and `FormInput`.
 
 <carbon-ad></carbon-ad>
 
@@ -62,53 +62,53 @@ function Example() {
   });
   return (
     <Form {...form}>
-      <FormLabel name="name" {...form}>
+      <FormLabel {...form} name="name">
         Name
       </FormLabel>
-      <FormInput name="name" placeholder="Name" {...form} />
-      <FormMessage name="name" {...form} />
-      <FormCheckbox name="accepted" {...form} />
-      <FormLabel name="accepted" {...form}>
+      <FormInput {...form} name="name" placeholder="Name" />
+      <FormMessage {...form} name="name" />
+      <FormCheckbox {...form} name="accepted" />
+      <FormLabel {...form} name="accepted">
         Accept
       </FormLabel>
-      <FormGroup name="preferences" {...form}>
-        <FormLabel as="legend" name="preferences" {...form}>
+      <FormGroup {...form} name="preferences">
+        <FormLabel {...form} as="legend" name="preferences">
           Preferences
         </FormLabel>
         <label>
-          <FormCheckbox name="preferences" value="html" {...form} /> HTML
+          <FormCheckbox {...form} name="preferences" value="html" /> HTML
         </label>
         <label>
-          <FormCheckbox name="preferences" value="css" {...form} /> CSS
+          <FormCheckbox {...form} name="preferences" value="css" /> CSS
         </label>
         <label>
-          <FormCheckbox name="preferences" value="JS" {...form} /> JS
+          <FormCheckbox {...form} name="preferences" value="JS" /> JS
         </label>
       </FormGroup>
-      <FormRadioGroup name="choice" {...form}>
-        <FormLabel as="legend" name="choice" {...form}>
+      <FormRadioGroup {...form} name="choice">
+        <FormLabel {...form} as="legend" name="choice">
           Choice
         </FormLabel>
         <label>
-          <FormRadio name="choice" value="html" {...form} /> HTML
+          <FormRadio {...form} name="choice" value="html" /> HTML
         </label>
         <label>
-          <FormRadio name="choice" value="css" {...form} /> CSS
+          <FormRadio {...form} name="choice" value="css" /> CSS
         </label>
         <label>
-          <FormRadio name="choice" value="js" {...form} /> JS
+          <FormRadio {...form} name="choice" value="js" /> JS
         </label>
       </FormRadioGroup>
       {form.values.emails.map((_, i) => (
         <Group key={i}>
-          <FormInput name={["emails", i, "name"]} {...form} />
-          <FormInput type="email" name={["emails", i, "email"]} {...form} />
-          <FormRemoveButton name="emails" index={i} {...form}>
+          <FormInput {...form} name={["emails", i, "name"]} />
+          <FormInput {...form} type="email" name={["emails", i, "email"]} />
+          <FormRemoveButton {...form} name="emails" index={i}>
             x
           </FormRemoveButton>
         </Group>
       ))}
-      <FormPushButton name="emails" value={{ name: "", email: "" }} {...form}>
+      <FormPushButton {...form} name="emails" value={{ name: "", email: "" }}>
         Add email
       </FormPushButton>
       <FormSubmitButton {...form}>Subscribe</FormSubmitButton>
