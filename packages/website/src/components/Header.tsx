@@ -205,34 +205,6 @@ export default function Header({ transparent }: HeaderProps) {
           {!isLarge && <VisuallyHidden>GitHub</VisuallyHidden>}
         </Anchor>
       </header>
-      <a
-        href="https://producthunt.com/posts/reakit"
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={track("reakit.headerProductHuntClick")}
-        className={css`
-          position: fixed;
-          top: var(--header-height);
-          background-color: #da552e;
-          color: white;
-          font-size: 0.875em;
-          padding: 0.5em 1em;
-          z-index: 905;
-          text-decoration: none;
-          width: 100%;
-          box-sizing: border-box;
-          text-align: center;
-          &:hover {
-            text-decoration: underline;
-          }
-          ${transparent &&
-            css`
-              display: none;
-            `}
-        `}
-      >
-        Reakit is featured on Product Hunt!
-      </a>
     </>
   );
 }

@@ -62,11 +62,11 @@ export default function CoreLayout(props: CoreLayoutProps) {
             background: ${background};
             width: 240px;
             z-index: 900;
-            top: calc(var(--header-height, 60px) + 30px);
+            top: var(--header-height, 60px);
             left: 0;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
-            height: calc(100vh - var(--header-height, 60px) - 30px);
+            height: calc(100vh - var(--header-height, 60px));
             padding: 16px;
             padding-bottom: 100px;
             box-sizing: border-box;
@@ -120,7 +120,7 @@ export default function CoreLayout(props: CoreLayoutProps) {
         <aside
           css={css`
             position: fixed;
-            top: calc(var(--header-height, 60px) + 30px);
+            top: var(--header-height, 60px);
             right: 0;
             width: 210px;
             background: ${background};
@@ -128,7 +128,7 @@ export default function CoreLayout(props: CoreLayoutProps) {
             box-sizing: border-box;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
-            height: calc(100vh - var(--header-height, 60px) - 30px);
+            height: calc(100vh - var(--header-height, 60px));
             @media (max-width: 1024px) {
               display: none;
             }
