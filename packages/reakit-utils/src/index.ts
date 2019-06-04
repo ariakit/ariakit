@@ -10,7 +10,6 @@ export * from "./isObject";
 export * from "./isPromise";
 export * from "./isRenderProp";
 export * from "./isTouchDevice";
-export * from "./jestSerializerStripFunctions";
 export * from "./memo";
 export * from "./mergeRefs";
 export * from "./omit";
