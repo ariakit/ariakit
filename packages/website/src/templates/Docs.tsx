@@ -21,8 +21,16 @@ import TestTube from "../icons/TestTube";
 import Heading from "../components/Heading";
 import SEO from "../components/SEO";
 import track from "../utils/track";
+import DocsBackNext from "../components/DocsBackNext";
 
 type DocsProps = {
+  pageContext: {
+    sourceUrl: string;
+    readmeUrl: string;
+    tableOfContentsAst: string;
+    nextPagePath: string;
+    prevPagePath: string;
+  };
   data: {
     markdownRemark: {
       title: string;
@@ -131,16 +139,18 @@ const { Compiler: renderAst } = new RehypeReact({
   }
 });
 
-export default function Docs({ data }: DocsProps) {
+export default function Docs({ data, pageContext }: DocsProps) {
   const {
     markdownRemark: { title, htmlAst, excerpt }
   } = data;
+  const { nextPagePath, prevPagePath } = pageContext;
 
   return (
     <>
       <SEO title={title} description={excerpt} />
       <Heading>{title}</Heading>
       {renderAst(htmlAst)}
+      <DocsBackNext nextPath={nextPagePath} prevPath={prevPagePath} />
     </>
   );
 }
