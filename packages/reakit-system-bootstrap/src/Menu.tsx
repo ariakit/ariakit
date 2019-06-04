@@ -196,12 +196,17 @@ export function useMenuDisclosureProps(
     ...htmlProps,
     children:
       typeof children === "function" ? (
-        (props: any) => (
-          <>
-            {children(props)}
-            {svg}
-          </>
-        )
+        (props: any) => {
+          const child = children(props);
+          return React.cloneElement(child, {
+            children: (
+              <>
+                {child.props.children}
+                {svg}
+              </>
+            )
+          });
+        }
       ) : (
         <>
           {children}
