@@ -11,6 +11,8 @@ export type SEOProps = {
   title: string;
 };
 
+const defaultKeywords = ["react", "accessibility", "components", "ui", "a11y"];
+
 export default function SEO({
   description,
   lang = "en",
@@ -20,10 +22,7 @@ export default function SEO({
 }: SEOProps) {
   const data = useStaticQuery(detailsQuery);
   const metaDescription = description || data.site.siteMetadata.description;
-  const metaTitle =
-    data.site.siteMetadata.title !== title
-      ? `${title} | ${data.site.siteMetadata.title}`
-      : title;
+  const metaTitle = title || data.site.siteMetadata.title;
   const url = data.site.siteMetadata.siteUrl;
   const image = url + thumbnail;
   return (
@@ -74,17 +73,12 @@ export default function SEO({
         {
           name: "twitter:description",
           content: metaDescription
+        },
+        {
+          name: "keywords",
+          content: defaultKeywords.concat(keywords).join(", ")
         }
-      ]
-        .concat(
-          keywords.length > 0
-            ? {
-                name: "keywords",
-                content: keywords.join(", ")
-              }
-            : []
-        )
-        .concat(meta)}
+      ].concat(meta)}
     />
   );
 }

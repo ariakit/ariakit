@@ -147,7 +147,7 @@ export default function Docs({ data, pageContext }: DocsProps) {
 
   return (
     <>
-      <SEO title={title} description={excerpt} />
+      <SEO title={`${title} – Reakit`} description={excerpt} />
       <Heading>{title}</Heading>
       {renderAst(htmlAst)}
       <DocsBackNext nextPath={nextPagePath} prevPath={prevPagePath} />
