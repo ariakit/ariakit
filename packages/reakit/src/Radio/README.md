@@ -4,7 +4,7 @@ path: /docs/radio/
 
 # Radio
 
-`Radio` follows the [WAI-ARIA Radio Button/Group Pattern](https://www.w3.org/TR/wai-aria-practices/#radiobutton).
+Accessible `Radio` component that follows the [WAI-ARIA Radio Button/Group Pattern](https://www.w3.org/TR/wai-aria-practices/#radiobutton).
 
 <carbon-ad></carbon-ad>
 
@@ -24,7 +24,7 @@ import { useRadioState, Radio, RadioGroup } from "reakit/Radio";
 function Example() {
   const radio = useRadioState();
   return (
-    <RadioGroup aria-label="fruits" {...radio}>
+    <RadioGroup {...radio} aria-label="fruits">
       <label>
         <Radio {...radio} value="apple" /> apple
       </label>

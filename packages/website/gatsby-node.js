@@ -6,6 +6,7 @@
 const { resolve, relative, dirname } = require("path");
 const rehype = require("rehype");
 const { repository } = require("./package.json");
+const getAdjacentPaths = require("./src/utils/getAdjacentPaths.ts");
 
 exports.createPages = ({ actions, graphql }) => {
   const { createPage, createRedirect } = actions;
@@ -25,15 +26,33 @@ exports.createPages = ({ actions, graphql }) => {
           }
         }
       }
+      allDocsYaml {
+        edges {
+          node {
+            section
+            paths
+          }
+        }
+      }
     }
   `).then(result => {
     if (result.errors) {
       return Promise.reject(result.errors);
     }
+    const flatArray = [];
+    result.data.allDocsYaml.edges.forEach(async ({ node }) => {
+      node.paths.forEach(path => flatArray.push(path));
+    });
 
     return result.data.allMarkdownRemark.edges.forEach(async ({ node }) => {
       const { frontmatter, fileAbsolutePath, tableOfContents } = node;
       const { path, redirect_from } = frontmatter;
+
+      const currentIndexInFlatArray = flatArray.findIndex(el => el === path);
+      const { nextPagePath, prevPagePath } = getAdjacentPaths(
+        flatArray,
+        currentIndexInFlatArray
+      );
 
       const root = `${__dirname}/../..`;
       const repo = `${repository.replace(/(\/tree.+|\/)$/, "")}/tree/master/`;
@@ -49,7 +68,9 @@ exports.createPages = ({ actions, graphql }) => {
         context: {
           sourceUrl,
           readmeUrl,
-          tableOfContentsAst
+          tableOfContentsAst,
+          nextPagePath,
+          prevPagePath
         }
       });
 

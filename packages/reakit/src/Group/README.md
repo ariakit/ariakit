@@ -7,7 +7,7 @@ redirect_from:
 
 # Group
 
-`Group` is used to identify a set of user interface objects. It implements the [WAI-ARIA Group Role](https://www.w3.org/TR/wai-aria-1.1/#group).
+Accessible `Group` component that is used to identify a set of user interface objects. It implements the [WAI-ARIA Group Role](https://www.w3.org/TR/wai-aria-1.1/#group).
 
 <carbon-ad></carbon-ad>
 

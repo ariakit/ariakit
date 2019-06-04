@@ -29,7 +29,7 @@ function Example() {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipReference as={Button} {...tooltip}>
+      <TooltipReference {...tooltip} as={Button}>
         Reference
       </TooltipReference>
       <Tooltip {...tooltip}>Tooltip</Tooltip>
@@ -40,15 +40,14 @@ function Example() {
 
 ### Abstracting
 
-If the Reakit's API is too low level for you, you can create your own abstraction to ease your work.
+You can build your own `Tooltip` component with a different API on top of Reakit.
 
 ```jsx
 import React from "react";
-import { Button } from "reakit/Button";
 import {
+  useTooltipState,
   Tooltip as ReakitTooltip,
-  TooltipReference,
-  useTooltipState
+  TooltipReference
 } from "reakit/Tooltip";
 
 function Tooltip({ children, title, ...props }) {
@@ -70,7 +69,7 @@ function Tooltip({ children, title, ...props }) {
 function Example() {
   return (
     <Tooltip title="Tooltip">
-      <Button>Reference</Button>
+      <button>Reference</button>
     </Tooltip>
   );
 }

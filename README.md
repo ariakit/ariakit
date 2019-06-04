@@ -67,7 +67,7 @@ By donating $5 or more you help in the development of this project. Thank you to
 
 ## Installation
 
-> Reakit `v1` is still in `beta`. It's more stable than `v0`, thus the `master` branch, the website and the `latest` tag in npm are pointing to it. **If you're looking for `v0`, see [v0 branch](https://github.com/reakit/reakit/tree/v0), [v0 docs](https://v0.reakit.io) and the [migration guide](https://github.com/reakit/reakit/issues/350).**
+> Reakit `v1` is still in `beta`. **If you're looking for `v0`, see [v0 branch](https://github.com/reakit/reakit/tree/v0), [v0 docs](https://v0.reakit.io) and the [migration guide](https://github.com/reakit/reakit/issues/350).**
 
 npm:
 ```sh
@@ -94,7 +94,7 @@ function App() {
   return (
     <div>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Dialog aria-label="Welcome" {...dialog}>
+      <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
       </Dialog>
     </div>

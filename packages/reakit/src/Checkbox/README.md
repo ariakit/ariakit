@@ -4,7 +4,7 @@ path: /docs/checkbox/
 
 # Checkbox
 
-`Checkbox` follows the [WAI-ARIA Checkbox Pattern](https://www.w3.org/TR/wai-aria-practices/#checkbox), which means you'll have a working dual or tri-state toggle button regardless of the type of the underlying element. By default, it renders the native `<input type="checkbox">`.
+Accessible `Checkbox` component that follows the [WAI-ARIA Checkbox Pattern](https://www.w3.org/TR/wai-aria-practices/#checkbox), which means you'll have a working dual or tri-state toggle button regardless of the type of the underlying element. By default, it renders the native `<input type="checkbox">`.
 
 <carbon-ad></carbon-ad>
 

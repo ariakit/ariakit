@@ -4,7 +4,7 @@ module.exports = {
     author: "@reakitjs",
     siteUrl: process.env.URL || "https://reakit.io",
     description:
-      "Powerful UI toolkit for building accessible rich web applications with React"
+      "Low level component library for building accessible high level UI libraries, design systems and applications with React."
   },
   plugins: [
     "gatsby-plugin-react-helmet",
@@ -59,7 +59,7 @@ module.exports = {
           {
             resolve: "gatsby-remark-autolink-headers",
             options: {
-              offsetY: 110,
+              offsetY: 80,
               icon: "<span>#</span>"
             }
           }

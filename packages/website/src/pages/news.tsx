@@ -13,7 +13,7 @@ export default function NewsletterPage() {
         padding: 16px;
       `}
     >
-      <SEO title="Newsletter" />
+      <SEO title="Newsletter – Reakit" />
       <Heading>Newsletter</Heading>
       <NewsletterForm />
     </div>

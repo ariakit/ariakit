@@ -11,7 +11,7 @@ redirect_from:
 
 # Tab
 
-`Tab` follows the [WAI-ARIA Tabs Pattern](https://www.w3.org/TR/wai-aria-practices/#tabpanel). It's a component that, when activated, display a `TabPanel`.
+Accessible `Tab` component that follows the [WAI-ARIA Tabs Pattern](https://www.w3.org/TR/wai-aria-practices/#tabpanel). It's a component that, when activated, display a `TabPanel`.
 
 <carbon-ad></carbon-ad>
 
@@ -32,24 +32,24 @@ function Example() {
   const tab = useTabState();
   return (
     <>
-      <TabList {...tab}>
-        <Tab stopId="tab1" {...tab}>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab} stopId="tab1">
           Tab 1
         </Tab>
-        <Tab stopId="tab2" disabled {...tab}>
+        <Tab {...tab} stopId="tab2" disabled>
           Tab 2
         </Tab>
-        <Tab stopId="tab3" {...tab}>
+        <Tab {...tab} stopId="tab3">
           Tab 3
         </Tab>
       </TabList>
-      <TabPanel stopId="tab1" {...tab}>
+      <TabPanel {...tab} stopId="tab1">
         Tab 1
       </TabPanel>
-      <TabPanel stopId="tab2" {...tab}>
+      <TabPanel {...tab} stopId="tab2">
         Tab 2
       </TabPanel>
-      <TabPanel stopId="tab3" {...tab}>
+      <TabPanel {...tab} stopId="tab3">
         Tab 3
       </TabPanel>
     </>
@@ -70,24 +70,24 @@ function Example() {
   });
   return (
     <div style={{ display: "flex" }}>
-      <TabList {...tab}>
-        <Tab stopId="tab1" {...tab}>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab} stopId="tab1">
           Tab 1
         </Tab>
-        <Tab stopId="tab2" disabled {...tab}>
+        <Tab {...tab} stopId="tab2" disabled>
           Tab 2
         </Tab>
-        <Tab stopId="tab3" {...tab}>
+        <Tab {...tab} stopId="tab3">
           Tab 3
         </Tab>
       </TabList>
-      <TabPanel stopId="tab1" {...tab}>
+      <TabPanel {...tab} stopId="tab1">
         Tab 1
       </TabPanel>
-      <TabPanel stopId="tab2" {...tab}>
+      <TabPanel {...tab} stopId="tab2">
         Tab 2
       </TabPanel>
-      <TabPanel stopId="tab3" {...tab}>
+      <TabPanel {...tab} stopId="tab3">
         Tab 3
       </TabPanel>
     </div>

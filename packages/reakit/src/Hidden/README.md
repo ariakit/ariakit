@@ -10,7 +10,7 @@ redirect_from:
 
 # Hidden
 
-`Hidden` is an abstract component based on the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
+Accessible `Hidden` component that is an abstraction based on the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
 
 <carbon-ad></carbon-ad>
 
