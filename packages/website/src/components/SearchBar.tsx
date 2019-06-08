@@ -55,18 +55,8 @@ class SearchBar extends React.Component {
               color: #4d4d4d;
               background: transparent;
               border: none;
-              width: 200px;
+              width: 250px;
               transition: 0.1s all linear;
-
-              &:focus {
-                width: 500px;
-                background: #fff;
-                transition: 0.1s all linear;
-
-                & ~ span {
-                  display: none;
-                }
-              }
             `}
             type="text"
             id="docsearch-field"

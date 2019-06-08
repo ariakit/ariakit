@@ -174,7 +174,7 @@ export default function Header({ transparent }: HeaderProps) {
       <HiddenMediaQuery query="max-width: 768px">
         {props => (
           <>
-            <SearchBar />
+            {isLarge && <SearchBar {...props} />}
             <Anchor
               as={Link}
               to="/docs/"
