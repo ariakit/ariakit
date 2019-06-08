@@ -24,6 +24,7 @@ import SkipToContent from "./SkipToContent";
 import Spacer from "./Spacer";
 import HiddenMediaQuery from "./HiddenMediaQuery";
 import DocsNavigation from "./DocsNavigation";
+import SearchBar from "./SearchBar";
 
 export type HeaderProps = {
   transparent?: boolean;
@@ -173,6 +174,7 @@ export default function Header({ transparent }: HeaderProps) {
       <HiddenMediaQuery query="max-width: 768px">
         {props => (
           <>
+            <SearchBar />
             <Anchor
               as={Link}
               to="/docs/"
