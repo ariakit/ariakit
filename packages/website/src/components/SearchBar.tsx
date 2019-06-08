@@ -9,7 +9,7 @@ class SearchBar extends React.Component {
         apiKey: "2f44778ac6ae42bb4edea44efbb0b647",
         indexName: "reakit",
         inputSelector: "#docsearch-field",
-        debug: true
+        debug: false
       });
 
       const path = `https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css`;
@@ -30,7 +30,6 @@ class SearchBar extends React.Component {
             align-items: center;
             border-radius: 0.2rem;
             background: #fff;
-            overflow: hidden;
           `}
         >
           <span
@@ -50,17 +49,19 @@ class SearchBar extends React.Component {
               color: #dc3545;
               display: inline-block;
               padding: 0.5em 0.65em 0.5em 0.2em;
+              border-radius: 0.2rem;
               font-size: 100%;
               border: 1px solid rgba(0, 0, 0, 0.25);
               color: #4d4d4d;
               background: transparent;
               border: none;
-              transition: 0.22s all linear;
+              width: 200px;
+              transition: 0.1s all linear;
 
               &:focus {
                 width: 500px;
                 background: #fff;
-                transition: 0.22s all linear;
+                transition: 0.1s all linear;
 
                 & ~ span {
                   display: none;
@@ -69,7 +70,7 @@ class SearchBar extends React.Component {
             `}
             type="text"
             id="docsearch-field"
-            placeholder="Type to search"
+            placeholder="Start typing to search"
           />
         </label>
       </>
