@@ -1,6 +1,6 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 
 export type SeparatorOptions = BoxOptions & {
   /**
@@ -13,10 +13,7 @@ export type SeparatorHTMLProps = BoxHTMLProps;
 
 export type SeparatorProps = SeparatorOptions & SeparatorHTMLProps;
 
-export const useSeparator = unstable_createHook<
-  SeparatorOptions,
-  SeparatorHTMLProps
->({
+export const useSeparator = createHook<SeparatorOptions, SeparatorHTMLProps>({
   name: "Separator",
   compose: useBox,
   keys: ["orientation"],
@@ -34,7 +31,7 @@ export const useSeparator = unstable_createHook<
   }
 });
 
-export const Separator = unstable_createComponent({
+export const Separator = createComponent({
   as: "hr",
   useHook: useSeparator
 });

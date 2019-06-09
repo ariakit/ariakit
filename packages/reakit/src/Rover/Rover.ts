@@ -1,17 +1,17 @@
 import * as React from "react";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useId } from "reakit-utils/useId";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
+import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
+import { warning } from "reakit-utils/warning";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { mergeRefs } from "reakit-utils/mergeRefs";
 import {
   TabbableOptions,
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useId } from "../utils/useId";
-import { useUpdateEffect } from "../__utils/useUpdateEffect";
-import { createOnKeyDown } from "../__utils/createOnKeyDown";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
-import { mergeRefs } from "../__utils/mergeRefs";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
@@ -38,7 +38,7 @@ export type RoverHTMLProps = TabbableHTMLProps;
 
 export type RoverProps = RoverOptions & RoverHTMLProps;
 
-export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
+export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
   compose: useTabbable,
   useState: useRoverState,
@@ -55,7 +55,7 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = unstable_useId("rover-");
+    const id = useId("rover-");
     const stopId = options.stopId || htmlProps.id || id;
 
     const trulyDisabled = options.disabled && !options.focusable;
@@ -126,7 +126,7 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
   }
 });
 
-export const Rover = unstable_createComponent({
+export const Rover = createComponent({
   as: "button",
   useHook: useRover
 });

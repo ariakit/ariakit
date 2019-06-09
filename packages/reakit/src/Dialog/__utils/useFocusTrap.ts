@@ -1,6 +1,6 @@
 import * as React from "react";
+import { warning } from "reakit-utils/warning";
 import { DialogOptions } from "../Dialog";
-import { warning } from "../../__utils/warning";
 import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 import { usePortalRef } from "./usePortalRef";
 

@@ -1,7 +1,7 @@
 import {
-  unstable_useSealedState,
-  unstable_SealedInitialState
-} from "../utils/useSealedState";
+  useSealedState,
+  SealedInitialState
+} from "reakit-utils/useSealedState";
 import {
   PopoverState,
   PopoverActions,
@@ -18,13 +18,13 @@ export type TooltipInitialState = PopoverInitialState;
 export type TooltipStateReturn = TooltipState & TooltipActions;
 
 export function useTooltipState(
-  initialState: unstable_SealedInitialState<TooltipInitialState> = {}
+  initialState: SealedInitialState<TooltipInitialState> = {}
 ): TooltipStateReturn {
   const {
     placement = "top",
     unstable_boundariesElement = "window",
     ...sealed
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
   return usePopoverState({ ...sealed, placement, unstable_boundariesElement });
 }
 

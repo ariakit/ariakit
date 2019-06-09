@@ -2,16 +2,14 @@ import * as React from "react";
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
 import { usePalette } from "reakit-system-palette/utils";
-import { unstable_createHook } from "reakit/utils/createHook";
-import { unstable_createComponent } from "reakit/utils/createComponent";
-import { unstable_useCreateElement } from "reakit/utils/useCreateElement";
+import { createHook, createComponent, useCreateElement } from "reakit-system";
 import { Link } from "gatsby";
 
 export type AnchorOptions = BoxOptions;
 export type AnchorHTMLProps = BoxHTMLProps & React.AnchorHTMLAttributes<any>;
 export type AnchorProps = AnchorOptions & AnchorHTMLProps;
 
-export const useAnchor = unstable_createHook<AnchorOptions, AnchorHTMLProps>({
+export const useAnchor = createHook<AnchorOptions, AnchorHTMLProps>({
   name: "Anchor",
   compose: useBox,
 
@@ -30,15 +28,15 @@ export const useAnchor = unstable_createHook<AnchorOptions, AnchorHTMLProps>({
   }
 });
 
-const Anchor = unstable_createComponent({
+const Anchor = createComponent({
   as: "a",
   useHook: useAnchor,
 
   useCreateElement(type, { href, ...props }, children) {
     if (href && /^\/(?!\/)/.test(href)) {
-      return unstable_useCreateElement(Link, { to: href, ...props }, children);
+      return useCreateElement(Link, { to: href, ...props }, children);
     }
-    return unstable_useCreateElement(type, { href, ...props }, children);
+    return useCreateElement(type, { href, ...props }, children);
   }
 });
 

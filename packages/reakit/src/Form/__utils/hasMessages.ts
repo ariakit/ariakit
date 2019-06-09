@@ -1,5 +1,5 @@
-import { isObject } from "../../__utils/isObject";
-import { isEmpty } from "../../__utils/isEmpty";
+import { isObject } from "reakit-utils/isObject";
+import { isEmpty } from "reakit-utils/isEmpty";
 
 export function hasMessages(errors: any) {
   return isObject(errors) && !isEmpty(errors);

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { renderHook, act } from "react-hooks-testing-library";
+import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { useRoverState } from "../RoverState";
-import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 

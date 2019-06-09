@@ -1,13 +1,13 @@
 import * as React from "react";
-import { As, PropsWithAs, ArrayValue, Omit } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
+import { As, PropsWithAs, ArrayValue, Omit } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { createHook } from "reakit-system/createHook";
 import {
   CheckboxOptions,
   CheckboxHTMLProps,
   useCheckbox
 } from "../Checkbox/Checkbox";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
-import { unstable_createHook } from "../utils/createHook";
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -45,7 +45,7 @@ export type unstable_FormCheckboxProps<
   P extends DeepPath<V, P>
 > = unstable_FormCheckboxOptions<V, P> & unstable_FormCheckboxHTMLProps;
 
-export const unstable_useFormCheckbox = unstable_createHook<
+export const unstable_useFormCheckbox = createHook<
   unstable_FormCheckboxOptions<any, any>,
   unstable_FormCheckboxHTMLProps
 >({
@@ -86,7 +86,7 @@ export const unstable_useFormCheckbox = unstable_createHook<
   htmlProps?: unstable_FormCheckboxHTMLProps
 ) => unstable_FormCheckboxHTMLProps;
 
-export const unstable_FormCheckbox = (unstable_createComponent({
+export const unstable_FormCheckbox = (createComponent({
   as: "input",
   useHook: unstable_useFormCheckbox
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(

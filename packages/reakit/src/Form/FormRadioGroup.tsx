@@ -1,9 +1,9 @@
 import * as React from "react";
+import { createComponent } from "reakit-system/createComponent";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createHook } from "reakit-system/createHook";
+import { usePipe } from "reakit-utils/usePipe";
 import { RoverStateReturn, useRoverState } from "../Rover/RoverState";
-import { unstable_createComponent } from "../utils/createComponent";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_createHook } from "../utils/createHook";
-import { usePipe } from "../__utils/usePipe";
 import {
   unstable_FormGroupOptions,
   unstable_FormGroupHTMLProps,
@@ -34,7 +34,7 @@ export const FormRadioGroupContext = React.createContext<RoverStateReturn | null
   null
 );
 
-export const unstable_useFormRadioGroup = unstable_createHook<
+export const unstable_useFormRadioGroup = createHook<
   unstable_FormRadioGroupOptions<any, any>,
   unstable_FormRadioGroupHTMLProps
 >({
@@ -71,7 +71,7 @@ export const unstable_useFormRadioGroup = unstable_createHook<
   htmlProps?: unstable_FormRadioGroupHTMLProps
 ) => unstable_FormRadioGroupHTMLProps;
 
-export const unstable_FormRadioGroup = (unstable_createComponent({
+export const unstable_FormRadioGroup = (createComponent({
   as: "fieldset",
   useHook: unstable_useFormRadioGroup
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(

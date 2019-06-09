@@ -1,10 +1,10 @@
 // Credits: https://github.com/stevejay/react-roving-tabindex
 import * as React from "react";
-import { warning } from "../__utils/warning";
+import { warning } from "reakit-utils/warning";
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "../utils/useSealedState";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
 
 type Stop = {
   id: string;
@@ -233,9 +233,9 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
 }
 
 export function useRoverState(
-  initialState: unstable_SealedInitialState<RoverInitialState> = {}
+  initialState: SealedInitialState<RoverInitialState> = {}
 ): RoverStateReturn {
-  const { currentId = null, loop = false, ...sealed } = unstable_useSealedState(
+  const { currentId = null, loop = false, ...sealed } = useSealedState(
     initialState
   );
   const [state, dispatch] = React.useReducer(reducer, {

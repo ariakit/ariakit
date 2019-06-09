@@ -34,12 +34,9 @@
     "emotion": "10.0.9",
     "reakit-system-palette": "^0.6.0"
   },
-  "devDependencies": {
-    "reakit": "^1.0.0-beta.2"
-  },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit": "^1.0.0-alpha.0"
+    "reakit": "^1.0.0-beta.2"
   }
 }

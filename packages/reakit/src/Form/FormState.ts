@@ -1,13 +1,13 @@
 import * as React from "react";
-import { ArrayValue } from "../__utils/types";
-import { useUpdateEffect } from "../__utils/useUpdateEffect";
+import { ArrayValue } from "reakit-utils/types";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
+import { isPromise } from "reakit-utils/isPromise";
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "../utils/useSealedState";
-import { unstable_useId } from "../utils/useId";
-import { isPromise } from "../__utils/isPromise";
-import { isEmpty } from "../__utils/isEmpty";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
+import { useId } from "reakit-utils/useId";
+import { isEmpty } from "reakit-utils/isEmpty";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
 import { hasMessages } from "./__utils/hasMessages";
@@ -275,10 +275,10 @@ function reducer<V>(
 }
 
 export function unstable_useFormState<V = Record<any, any>>(
-  initialState: unstable_SealedInitialState<unstable_FormInitialState<V>> = {}
+  initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
   const {
-    baseId = unstable_useId("form-"),
+    baseId = useId("form-"),
     values: initialValues = {} as V,
     validateOnBlur = true,
     validateOnChange = true,
@@ -286,7 +286,7 @@ export function unstable_useFormState<V = Record<any, any>>(
     resetOnUnmount = true,
     onValidate,
     onSubmit
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
 
   const [{ initialValues: _, ...state }, dispatch] = React.useReducer(reducer, {
     baseId,

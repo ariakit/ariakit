@@ -1,6 +1,6 @@
 import * as React from "react";
 import Color from "color";
-import { unstable_useToken } from "reakit/system/useToken";
+import { useToken } from "reakit-system/useToken";
 import { Palette } from "../__utils/types";
 import { getPalette } from "./palette";
 import { isLight } from "./isLight";
@@ -30,6 +30,6 @@ export function contrast(
 
 export function useContrast(color?: string) {
   React.useDebugValue(color);
-  const palette = unstable_useToken<Palette>("palette");
+  const palette = useToken<Palette>("palette");
   return React.useMemo(() => contrast(color)(palette), [color, palette]);
 }

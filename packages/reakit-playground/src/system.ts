@@ -1,9 +1,7 @@
 // @ts-ignore
 import raw from "raw.macro";
 import { css, cx, injectGlobal } from "emotion";
-import { usePalette } from "reakit-system-palette/utils/palette";
-import { useFade } from "reakit-system-palette/utils/fade";
-import { useContrast } from "reakit-system-palette/utils/contrast";
+import { usePalette, useFade, useContrast } from "reakit-system-palette/utils";
 import { ErrorMessageOptions, ErrorMessageHTMLProps } from "./ErrorMessage";
 import {
   PlaygroundEditorOptions,

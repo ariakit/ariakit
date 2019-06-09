@@ -3,8 +3,6 @@
 /dist
 /es
 /ts
-/utils
-/system
 /VisuallyHidden
 /Tooltip
 /Toolbar
@@ -13,6 +11,7 @@
 /Separator
 /Rover
 /Radio
+/Provider
 /Portal
 /Popover
 /Menu

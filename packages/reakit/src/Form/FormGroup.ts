@@ -1,8 +1,8 @@
 import * as React from "react";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { GroupOptions, GroupHTMLProps, useGroup } from "../Group/Group";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_createHook } from "../utils/createHook";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
@@ -29,7 +29,7 @@ export type unstable_FormGroupProps<
   P extends DeepPath<V, P>
 > = unstable_FormGroupOptions<V, P> & unstable_FormGroupHTMLProps;
 
-export const unstable_useFormGroup = unstable_createHook<
+export const unstable_useFormGroup = createHook<
   unstable_FormGroupOptions<any, any>,
   unstable_FormGroupHTMLProps
 >({
@@ -52,7 +52,7 @@ export const unstable_useFormGroup = unstable_createHook<
   htmlProps?: unstable_FormGroupHTMLProps
 ) => unstable_FormGroupHTMLProps;
 
-export const unstable_FormGroup = (unstable_createComponent({
+export const unstable_FormGroup = (createComponent({
   as: "fieldset",
   useHook: unstable_useFormGroup
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(

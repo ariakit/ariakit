@@ -1,13 +1,13 @@
 import * as React from "react";
-import { As, PropsWithAs, Omit } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
+import { As, PropsWithAs, Omit } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   TabbableOptions,
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
-import { unstable_createHook } from "../utils/createHook";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
@@ -41,7 +41,7 @@ export type unstable_FormInputProps<
 
 const defaultClickKeys: string[] = [];
 
-export const unstable_useFormInput = unstable_createHook<
+export const unstable_useFormInput = createHook<
   unstable_FormInputOptions<any, any>,
   unstable_FormInputHTMLProps
 >({
@@ -89,7 +89,7 @@ export const unstable_useFormInput = unstable_createHook<
   htmlProps?: unstable_FormInputHTMLProps
 ) => unstable_FormInputHTMLProps;
 
-export const unstable_FormInput = (unstable_createComponent({
+export const unstable_FormInput = (createComponent({
   as: "input",
   useHook: unstable_useFormInput
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(

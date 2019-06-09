@@ -1,6 +1,5 @@
 import { css, cx } from "emotion";
-import { unstable_createHook } from "reakit/utils/createHook";
-import { unstable_createComponent } from "reakit/utils/createComponent";
+import { createHook, createComponent } from "reakit-system";
 import { usePalette } from "reakit-system-palette/utils";
 import { useAnchor, AnchorOptions, AnchorProps } from "./Anchor";
 
@@ -8,7 +7,7 @@ export type SkipToContentOptions = AnchorOptions;
 export type SkipToContentHTMLProps = AnchorProps;
 export type SkipToContentProps = SkipToContentOptions & SkipToContentHTMLProps;
 
-export const useSkipToContent = unstable_createHook<
+export const useSkipToContent = createHook<
   SkipToContentOptions,
   SkipToContentHTMLProps
 >({
@@ -50,7 +49,7 @@ export const useSkipToContent = unstable_createHook<
   }
 });
 
-const SkipToContent = unstable_createComponent({
+const SkipToContent = createComponent({
   as: "a",
   useHook: useSkipToContent
 });

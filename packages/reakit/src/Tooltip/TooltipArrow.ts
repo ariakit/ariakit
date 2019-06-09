@@ -1,10 +1,10 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import {
   PopoverArrowOptions,
   PopoverArrowHTMLProps,
   usePopoverArrow
 } from "../Popover/PopoverArrow";
-import { unstable_createHook } from "../utils/createHook";
 import { useTooltipState } from "./TooltipState";
 
 export type TooltipArrowOptions = PopoverArrowOptions;
@@ -13,7 +13,7 @@ export type TooltipArrowHTMLProps = PopoverArrowHTMLProps;
 
 export type TooltipArrowProps = TooltipArrowOptions & TooltipArrowHTMLProps;
 
-export const useTooltipArrow = unstable_createHook<
+export const useTooltipArrow = createHook<
   TooltipArrowOptions,
   TooltipArrowHTMLProps
 >({
@@ -22,7 +22,7 @@ export const useTooltipArrow = unstable_createHook<
   useState: useTooltipState
 });
 
-export const TooltipArrow = unstable_createComponent({
+export const TooltipArrow = createComponent({
   as: "div",
   useHook: useTooltipArrow
 });

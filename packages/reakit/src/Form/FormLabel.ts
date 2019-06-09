@@ -1,8 +1,8 @@
 import * as React from "react";
-import { As, PropsWithAs } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -31,7 +31,7 @@ export type unstable_FormLabelProps<
   P extends DeepPath<V, P>
 > = unstable_FormLabelOptions<V, P> & unstable_FormLabelHTMLProps;
 
-export const unstable_useFormLabel = unstable_createHook<
+export const unstable_useFormLabel = createHook<
   unstable_FormLabelOptions<any, any>,
   unstable_FormLabelHTMLProps
 >({
@@ -53,7 +53,7 @@ export const unstable_useFormLabel = unstable_createHook<
   htmlProps?: unstable_FormLabelHTMLProps
 ) => unstable_FormLabelHTMLProps;
 
-export const unstable_FormLabel = (unstable_createComponent({
+export const unstable_FormLabel = (createComponent({
   as: "label",
   useHook: unstable_useFormLabel
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "label">(

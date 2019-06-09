@@ -1,7 +1,7 @@
 // TODO: Refactor this mess
 import * as React from "react";
 import RehypeReact from "rehype-react";
-import { unstable_useId } from "reakit/utils/useId";
+import { useId } from "reakit-utils";
 import { Button } from "reakit";
 import { css } from "emotion";
 import createUseContext from "constate";
@@ -158,7 +158,7 @@ export default function DocsInnerNavigation({
   title,
   tableOfContentsAst
 }: Props) {
-  const id = unstable_useId();
+  const id = useId();
   const className = useDocsInnerNavigationCSS();
 
   return (

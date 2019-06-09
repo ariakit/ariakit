@@ -1,8 +1,8 @@
 import * as React from "react";
 import {
-  unstable_useSealedState,
-  unstable_SealedInitialState
-} from "../utils/useSealedState";
+  useSealedState,
+  SealedInitialState
+} from "reakit-utils/useSealedState";
 import {
   RoverState,
   RoverActions,
@@ -30,13 +30,13 @@ export type RadioInitialState = RoverInitialState &
 export type RadioStateReturn = RadioState & RadioActions;
 
 export function useRadioState(
-  initialState: unstable_SealedInitialState<RadioInitialState> = {}
+  initialState: SealedInitialState<RadioInitialState> = {}
 ): RadioStateReturn {
   const {
     state: initialCurrentValue,
     loop: loop = true,
     ...sealed
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
 
   const [state, setState] = React.useState(initialCurrentValue);
 

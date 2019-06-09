@@ -1,10 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as system from "reakit-system-bootstrap";
-import { unstable_useId } from "reakit/utils/useId";
-import { Provider } from "reakit/utils/Provider";
-import { unstable_useOptions } from "reakit/system/useOptions";
-import { unstable_useProps } from "reakit/system/useProps";
+import { useId } from "reakit-utils";
+import { Provider } from "reakit";
+import { useOptions, useProps } from "reakit-system";
 import { compileComponent } from "./__utils/compileComponent";
 import { PlaygroundStateReturn } from "./usePlaygroundState";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -30,14 +29,14 @@ export function PlaygroundPreview({
   componentName,
   ...htmlProps
 }: PlaygroundPreviewOptions & PlaygroundPreviewHTMLProps) {
-  const options = unstable_useOptions(
+  const options = useOptions(
     "PlaygroundPreview",
     { code, modules, componentName },
     htmlProps
   );
 
   const ref = React.useRef<HTMLDivElement>(null);
-  const prefix = unstable_useId("preview-");
+  const prefix = useId("preview-");
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((e: Error) => {
@@ -106,7 +105,7 @@ export function PlaygroundPreview({
     return () => unmount();
   }, [unmount]);
 
-  htmlProps = unstable_useProps("PlaygroundPreview", options, htmlProps);
+  htmlProps = useProps("PlaygroundPreview", options, htmlProps);
 
   return (
     <ErrorBoundary>

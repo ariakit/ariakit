@@ -1,6 +1,6 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
-import { unstable_createHook } from "../utils/createHook";
 import { useDialogState } from "./DialogState";
 
 export type DialogBackdropOptions = HiddenOptions;
@@ -10,7 +10,7 @@ export type DialogBackdropHTMLProps = HiddenHTMLProps;
 export type DialogBackdropProps = DialogBackdropOptions &
   DialogBackdropHTMLProps;
 
-export const useDialogBackdrop = unstable_createHook<
+export const useDialogBackdrop = createHook<
   DialogBackdropOptions,
   DialogBackdropHTMLProps
 >({
@@ -27,7 +27,7 @@ export const useDialogBackdrop = unstable_createHook<
   }
 });
 
-export const DialogBackdrop = unstable_createComponent({
+export const DialogBackdrop = createComponent({
   as: "div",
   useHook: useDialogBackdrop
 });

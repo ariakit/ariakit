@@ -1,10 +1,10 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { useLiveRef } from "../__utils/useLiveRef";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -43,10 +43,7 @@ function isNativeTabbable(element: EventTarget) {
 
 const defaultClickKeys = ["Enter", " "];
 
-export const useTabbable = unstable_createHook<
-  TabbableOptions,
-  TabbableHTMLProps
->({
+export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
   compose: useBox,
   keys: ["disabled", "focusable", "unstable_clickKeys"],
@@ -162,7 +159,7 @@ export const useTabbable = unstable_createHook<
   }
 });
 
-export const Tabbable = unstable_createComponent({
+export const Tabbable = createComponent({
   as: "button",
   useHook: useTabbable
 });

@@ -1,4 +1,4 @@
-import { unstable_SealedInitialState } from "../utils/useSealedState";
+import { SealedInitialState } from "reakit-utils/useSealedState";
 import {
   useHiddenState,
   HiddenState,
@@ -15,7 +15,7 @@ export type DialogInitialState = HiddenInitialState;
 export type DialogStateReturn = DialogState & DialogActions;
 
 export function useDialogState(
-  initialState: unstable_SealedInitialState<DialogInitialState> = {}
+  initialState: SealedInitialState<DialogInitialState> = {}
 ): DialogStateReturn {
   return useHiddenState(initialState);
 }

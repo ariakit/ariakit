@@ -1,13 +1,13 @@
 import * as React from "react";
-import { warning } from "../__utils/warning";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { Portal } from "../Portal/Portal";
+import { warning } from "reakit-utils/warning";
+import { createComponent } from "reakit-system/createComponent";
+import { useCreateElement } from "reakit-system/useCreateElement";
+import { createHook } from "reakit-system/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { usePipe } from "reakit-utils/usePipe";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
-import { unstable_createHook } from "../utils/createHook";
-import { mergeRefs } from "../__utils/mergeRefs";
-import { useAllCallbacks } from "../__utils/useAllCallbacks";
-import { usePipe } from "../__utils/usePipe";
+import { Portal } from "../Portal/Portal";
 import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -80,7 +80,7 @@ export type DialogHTMLProps = HiddenHTMLProps;
 
 export type DialogProps = DialogOptions & DialogHTMLProps;
 
-export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
+export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   name: "Dialog",
   compose: useHidden,
   useState: useDialogState,
@@ -183,7 +183,7 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
   }
 });
 
-export const Dialog = unstable_createComponent({
+export const Dialog = createComponent({
   as: "div",
   useHook: useDialog,
   useCreateElement: (type, props, children) => {
@@ -193,6 +193,6 @@ export const Dialog = unstable_createComponent({
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/dialog"
     );
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });
