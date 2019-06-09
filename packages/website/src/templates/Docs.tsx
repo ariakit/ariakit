@@ -8,6 +8,7 @@ import {
   usePlaygroundState
 } from "reakit-playground";
 import * as emotion from "emotion";
+import * as styled from "styled-components";
 import * as spring from "react-spring";
 import createUseContext from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
@@ -108,6 +109,7 @@ const { Compiler: renderAst } = new RehypeReact({
               <PlaygroundPreview
                 modules={{
                   emotion,
+                  "styled-components": styled,
                   constate: createUseContext,
                   "react-spring": spring,
                   "./UniversalAccess": FaUniversalAccess
