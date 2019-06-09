@@ -1,6 +1,6 @@
 import * as React from "react";
-import { createComponent } from "reakit-utils/createComponent";
-import { createHook } from "reakit-utils/createHook";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";

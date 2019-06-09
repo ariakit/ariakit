@@ -2,7 +2,7 @@ import * as React from "react";
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
 import { usePalette } from "reakit-system-palette/utils";
-import { createHook, createComponent, useCreateElement } from "reakit-utils";
+import { createHook, createComponent, useCreateElement } from "reakit-system";
 import { Link } from "gatsby";
 
 export type AnchorOptions = BoxOptions;

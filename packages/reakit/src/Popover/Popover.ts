@@ -1,7 +1,7 @@
 import { warning } from "reakit-utils/warning";
-import { createComponent } from "reakit-utils/createComponent";
-import { useCreateElement } from "reakit-utils/useCreateElement";
-import { createHook } from "reakit-utils/createHook";
+import { createComponent } from "reakit-system/createComponent";
+import { useCreateElement } from "reakit-system/useCreateElement";
+import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { DialogOptions, DialogHTMLProps, useDialog } from "../Dialog/Dialog";
 import { PopoverStateReturn, usePopoverState } from "./PopoverState";

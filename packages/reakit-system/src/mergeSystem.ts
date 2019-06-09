@@ -1,7 +1,7 @@
 import { isObject } from "reakit-utils/isObject";
 import { reduceObjects } from "reakit-utils/reduceObjects";
 import { UnionToIntersection } from "reakit-utils/types";
-import { unstable_SystemContextType } from "./SystemContext";
+import { SystemContextType } from "./SystemContext";
 
 function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {
   const object = reduceObjects(objects, value => typeof value === "function");
@@ -34,9 +34,7 @@ function mergeObjectsInObjects(systems: Array<Record<string, any>>) {
   return result;
 }
 
-export function unstable_mergeSystem<T extends unstable_SystemContextType[]>(
-  ...systems: T
-) {
+export function mergeSystem<T extends SystemContextType[]>(...systems: T) {
   return Object.assign(
     {},
     ...systems,

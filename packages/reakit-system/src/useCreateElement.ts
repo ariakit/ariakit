@@ -1,14 +1,14 @@
 import * as React from "react";
-import { unstable_SystemContext } from "reakit/system/SystemContext";
-import { As } from "./types";
-import { isRenderProp } from "./isRenderProp";
+import { As } from "reakit-utils/types";
+import { isRenderProp } from "reakit-utils/isRenderProp";
+import { SystemContext } from "./SystemContext";
 
 export const useCreateElement = <T extends As>(
   type: T,
   props: Record<string, any>,
   children: React.ReactNode = props.children
 ): JSX.Element => {
-  const context = React.useContext(unstable_SystemContext);
+  const context = React.useContext(SystemContext);
 
   if (context.useCreateElement) {
     return context.useCreateElement(type, props, children);

@@ -1,18 +1,15 @@
 import * as React from "react";
 import { renderHook } from "react-hooks-testing-library";
-import { unstable_useProps } from "../useProps";
-import {
-  unstable_SystemProvider as SystemProvider,
-  unstable_SystemProviderProps
-} from "../SystemProvider";
-import { unstable_SystemContextType } from "../SystemContext";
+import { useProps } from "../useProps";
+import { SystemProvider, SystemProviderProps } from "../SystemProvider";
+import { SystemContextType } from "../SystemContext";
 
 function render(
-  system: unstable_SystemContextType,
-  ...args: Parameters<typeof unstable_useProps>
+  system: SystemContextType,
+  ...args: Parameters<typeof useProps>
 ) {
-  return renderHook(() => unstable_useProps(...args), {
-    wrapper: (props: unstable_SystemProviderProps) => (
+  return renderHook(() => useProps(...args), {
+    wrapper: (props: SystemProviderProps) => (
       <SystemProvider unstable_system={system} {...props} />
     )
   }).result;

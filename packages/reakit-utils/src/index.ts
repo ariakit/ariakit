@@ -1,5 +1,3 @@
-export * from "./createComponent";
-export * from "./createHook";
 export * from "./createOnKeyDown";
 export * from "./cx";
 export * from "./deepEqual";
@@ -21,11 +19,9 @@ export * from "./splitProps";
 export * from "./toArray";
 export * from "./types";
 export * from "./useAllCallbacks";
-export * from "./useCreateElement";
 export * from "./useId";
 export * from "./useLiveRef";
 export * from "./usePipe";
 export * from "./useSealedState";
 export * from "./useUpdateEffect";
-export * from "./useWhyDidYouUpdate";
 export * from "./warning";

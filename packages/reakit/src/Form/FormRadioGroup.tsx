@@ -1,7 +1,7 @@
 import * as React from "react";
-import { createComponent } from "reakit-utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
-import { createHook } from "reakit-utils/createHook";
+import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
 import { RoverStateReturn, useRoverState } from "../Rover/RoverState";
 import {

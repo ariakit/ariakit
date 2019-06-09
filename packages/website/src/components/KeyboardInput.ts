@@ -1,6 +1,6 @@
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
-import { createHook, createComponent } from "reakit-utils";
+import { createHook, createComponent } from "reakit-system";
 import { usePalette, useDarken } from "reakit-system-palette/utils";
 
 export type KeyboardInputOptions = BoxOptions;

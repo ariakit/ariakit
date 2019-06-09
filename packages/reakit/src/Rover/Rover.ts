@@ -1,6 +1,6 @@
 import * as React from "react";
-import { createComponent } from "reakit-utils/createComponent";
-import { createHook } from "reakit-utils/createHook";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { useId } from "reakit-utils/useId";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";

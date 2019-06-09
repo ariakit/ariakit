@@ -16,15 +16,6 @@ Yarn:
 yarn add reakit-utils
 ```
 
-## Usage
-
-```jsx
-import { useBox } from "reakit/Box";
-import { createHook } from "reakit-utils";
-
-const useA = createHook({ name: "A", compose: useBox });
-```
-
 ## License
 
 MIT © [Diego Haz](https://github.com/diegohaz)

@@ -1,7 +1,6 @@
 import * as React from "react";
-import { BoxOptions, BoxHTMLProps, useBox } from "reakit/Box/Box";
-import { unstable_useOptions } from "reakit/system/useOptions";
-import { unstable_useProps } from "reakit/system/useProps";
+import { BoxOptions, BoxHTMLProps, useBox } from "reakit";
+import { useOptions, useProps } from "reakit-system";
 
 export type ErrorMessageOptions = BoxOptions & {
   /** TODO: Description */
@@ -15,13 +14,13 @@ export function ErrorMessage({
   unstable_system,
   ...htmlProps
 }: ErrorMessageOptions & ErrorMessageHTMLProps) {
-  const options = unstable_useOptions(
+  const options = useOptions(
     "ErrorMessage",
     { error, unstable_system },
     htmlProps
   );
 
-  htmlProps = unstable_useProps("ErrorMessage", options, htmlProps);
+  htmlProps = useProps("ErrorMessage", options, htmlProps);
   htmlProps = useBox(options, htmlProps);
 
   return <pre {...htmlProps}>{options.error.toString()}</pre>;

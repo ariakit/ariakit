@@ -3,13 +3,11 @@
 export default {
   "reakit-utils": require("reakit-utils"),
   "reakit-utils/warning": require("reakit-utils/warning"),
-  "reakit-utils/useWhyDidYouUpdate": require("reakit-utils/useWhyDidYouUpdate"),
   "reakit-utils/useUpdateEffect": require("reakit-utils/useUpdateEffect"),
   "reakit-utils/useSealedState": require("reakit-utils/useSealedState"),
   "reakit-utils/usePipe": require("reakit-utils/usePipe"),
   "reakit-utils/useLiveRef": require("reakit-utils/useLiveRef"),
   "reakit-utils/useId": require("reakit-utils/useId"),
-  "reakit-utils/useCreateElement": require("reakit-utils/useCreateElement"),
   "reakit-utils/useAllCallbacks": require("reakit-utils/useAllCallbacks"),
   "reakit-utils/types": require("reakit-utils/types"),
   "reakit-utils/toArray": require("reakit-utils/toArray"),
@@ -31,7 +29,5 @@ export default {
   "reakit-utils/forwardRef": require("reakit-utils/forwardRef"),
   "reakit-utils/deepEqual": require("reakit-utils/deepEqual"),
   "reakit-utils/cx": require("reakit-utils/cx"),
-  "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
-  "reakit-utils/createHook": require("reakit-utils/createHook"),
-  "reakit-utils/createComponent": require("reakit-utils/createComponent")
+  "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown")
 };

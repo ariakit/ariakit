@@ -1,8 +1,5 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState
-} from "reakit-utils/useSealedState";
+import { SealedInitialState, useSealedState } from "reakit-utils";
 
 export type PlaygroundState = {
   /** TODO: Description */

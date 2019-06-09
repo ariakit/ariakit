@@ -1,10 +1,10 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
 import { Omit } from "reakit-utils/types";
-import { createComponent } from "reakit-utils/createComponent";
-import { useCreateElement } from "reakit-utils/useCreateElement";
+import { createComponent } from "reakit-system/createComponent";
+import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { createHook } from "reakit-utils/createHook";
+import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {

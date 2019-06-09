@@ -1,10 +1,10 @@
 // TODO: Refactor
 import * as React from "react";
 import { BoxHTMLProps } from "reakit/Box/Box";
-import { forwardRef } from "./forwardRef";
-import { As, PropsWithAs } from "./types";
-import { splitProps } from "./splitProps";
-import memo from "./memo";
+import { forwardRef } from "reakit-utils/forwardRef";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { splitProps } from "reakit-utils/splitProps";
+import memo from "reakit-utils/memo";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 
 type Hook<O> = {

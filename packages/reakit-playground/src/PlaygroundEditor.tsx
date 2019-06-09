@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
-import { unstable_useOptions } from "reakit/system/useOptions";
-import { unstable_useProps } from "reakit/system/useProps";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useOptions, useProps } from "reakit-system";
+import { useLiveRef } from "reakit-utils";
 import { PlaygroundActions, PlaygroundStateReturn } from "./usePlaygroundState";
 
 if (typeof navigator !== "undefined") {
@@ -54,7 +53,7 @@ export function PlaygroundEditor({
   maxHeight,
   ...htmlProps
 }: PlaygroundEditorOptions & PlaygroundEditorHTMLProps) {
-  const options = unstable_useOptions(
+  const options = useOptions(
     "PlaygroundEditor",
     {
       code,
@@ -76,7 +75,7 @@ export function PlaygroundEditor({
     typeof options.readOnly !== "undefined" ? options.readOnly : !enabled;
   const [ready, setReady] = React.useState(false);
 
-  htmlProps = unstable_useProps(
+  htmlProps = useProps(
     "PlaygroundEditor",
     { ...options, readOnly: _readOnly },
     htmlProps

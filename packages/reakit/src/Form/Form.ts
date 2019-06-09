@@ -1,6 +1,6 @@
 import * as React from "react";
-import { createComponent } from "reakit-utils/createComponent";
-import { createHook } from "reakit-utils/createHook";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";

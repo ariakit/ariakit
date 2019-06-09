@@ -1,8 +1,8 @@
 import * as React from "react";
-import { createComponent } from "reakit-utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-utils/warning";
-import { createHook } from "reakit-utils/createHook";
+import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {

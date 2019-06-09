@@ -1,5 +1,5 @@
-import { createComponent } from "reakit-utils/createComponent";
-import { createHook } from "reakit-utils/createHook";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type GroupOptions = BoxOptions;

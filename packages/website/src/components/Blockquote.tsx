@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
-import { createHook, createComponent } from "reakit-utils";
+import { createHook, createComponent } from "reakit-system";
 import {
   usePalette,
   useLighten,

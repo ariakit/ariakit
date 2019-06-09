@@ -1,11 +1,11 @@
 import * as React from "react";
 import { IdProvider, IdProviderProps } from "reakit-utils/useId";
 import {
-  unstable_SystemProviderProps,
-  unstable_SystemProvider as SystemProvider
-} from "./system/SystemProvider";
+  SystemProviderProps,
+  SystemProvider
+} from "reakit-system/SystemProvider";
 
-export type ProviderProps = IdProviderProps & unstable_SystemProviderProps;
+export type ProviderProps = IdProviderProps & SystemProviderProps;
 
 export function Provider({
   unstable_prefix: prefix,

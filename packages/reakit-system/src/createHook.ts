@@ -1,7 +1,7 @@
-import { unstable_useOptions } from "reakit/system/useOptions";
-import { unstable_useProps } from "reakit/system/useProps";
-import { toArray } from "./toArray";
-import { deepEqual } from "./deepEqual";
+import { toArray } from "reakit-utils/toArray";
+import { deepEqual } from "reakit-utils/deepEqual";
+import { useOptions } from "./useOptions";
+import { useProps } from "./useProps";
 
 type Hook<O = any, P = any> = {
   (options?: O, htmlProps?: P): P;
@@ -27,11 +27,11 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     if (options.useOptions) {
       hookOptions = options.useOptions(hookOptions, htmlProps);
     }
-    hookOptions = unstable_useOptions(options.name, hookOptions, htmlProps);
+    hookOptions = useOptions(options.name, hookOptions, htmlProps);
     if (options.useProps) {
       htmlProps = options.useProps(hookOptions, htmlProps);
     }
-    htmlProps = unstable_useProps(options.name, hookOptions, htmlProps) as P;
+    htmlProps = useProps(options.name, hookOptions, htmlProps) as P;
     if (options.useCompose) {
       htmlProps = options.useCompose(hookOptions, htmlProps);
     } else if (options.compose) {

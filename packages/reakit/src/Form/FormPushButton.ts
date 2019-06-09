@@ -1,7 +1,7 @@
 import * as React from "react";
-import { createComponent } from "reakit-utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
 import { ArrayValue, As, PropsWithAs } from "reakit-utils/types";
-import { createHook } from "reakit-utils/createHook";
+import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";

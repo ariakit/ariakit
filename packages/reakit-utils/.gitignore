@@ -4,13 +4,11 @@
 /es
 /ts
 /warning
-/useWhyDidYouUpdate
 /useUpdateEffect
 /useSealedState
 /usePipe
 /useLiveRef
 /useId
-/useCreateElement
 /useAllCallbacks
 /types
 /toArray
@@ -33,5 +31,3 @@
 /deepEqual
 /cx
 /createOnKeyDown
-/createHook
-/createComponent

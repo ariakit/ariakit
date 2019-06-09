@@ -11,7 +11,6 @@ export * from "./Portal";
 export * from "./Radio";
 export * from "./Rover";
 export * from "./Separator";
-export * from "./system";
 export * from "./Tab";
 export * from "./Tabbable";
 export * from "./Toolbar";

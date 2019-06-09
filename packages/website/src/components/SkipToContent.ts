@@ -1,5 +1,5 @@
 import { css, cx } from "emotion";
-import { createHook, createComponent } from "reakit-utils";
+import { createHook, createComponent } from "reakit-system";
 import { usePalette } from "reakit-system-palette/utils";
 import { useAnchor, AnchorOptions, AnchorProps } from "./Anchor";
 
