@@ -46,3 +46,26 @@ function Example() {
   );
 }
 ```
+
+Example with styled-components
+
+```jsx
+import { Button } from "reakit";
+import styled from "styled-components";
+
+const StyledButton = styled(Button)`
+  color: white;
+  background: red;
+  &:not([disabled]):hover {
+    background: green;
+  }
+
+  &:not([disabled]):active {
+    background: blue;
+  }
+`;
+
+function Example() {
+  return <StyledButton>Button</StyledButton>;
+}
+```
