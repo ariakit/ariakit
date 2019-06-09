@@ -89,9 +89,12 @@ function removeExt(path) {
 
 /**
  * @param {string} path
+ * @param {number} index
+ * @param {string[]} array
  */
-function isRootModule(path) {
-  return !/\//.test(path);
+function isRootModule(path, index, array) {
+  const rootPath = path.replace(/^([^/]+).*$/, "$1");
+  return path === rootPath || !array.includes(rootPath);
 }
 
 /**
