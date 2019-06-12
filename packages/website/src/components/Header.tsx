@@ -205,6 +205,17 @@ export default function Header({ transparent }: HeaderProps) {
           </HiddenMediaQuery>
           {!isLarge && <VisuallyHidden>GitHub</VisuallyHidden>}
         </Anchor>
+        <Anchor
+          href="https://spectrum.chat/"
+          onClick={track("reakit.headerGithubClick")}
+        >
+          {/* <FaGithub style={{ fontSize: "1.2em" }} /> */}
+          <HiddenMediaQuery query="max-width: 768px">
+            <Spacer width={8} />
+            Spectrum
+          </HiddenMediaQuery>
+          {!isLarge && <VisuallyHidden>GitHub</VisuallyHidden>}
+        </Anchor>
       </header>
       <a
         href="https://producthunt.com/posts/reakit"
