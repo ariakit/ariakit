@@ -1,6 +1,11 @@
 // TODO: Refactor this mess
 import * as React from "react";
-import { FaFacebook, FaTwitter, FaGithub } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaGithub,
+  FaStackOverflow
+} from "react-icons/fa";
 import { VisuallyHidden } from "reakit";
 import { css } from "@emotion/core";
 import { usePalette, useLighten } from "reakit-system-palette/utils";
@@ -65,6 +70,14 @@ export default function Footer() {
         >
           <FaGithub />
           <VisuallyHidden>GitHub</VisuallyHidden>
+        </Anchor>
+        <Anchor
+          href="https://stackoverflow.com/questions/tagged/reakit"
+          target="_blank"
+          onClick={track("reakit.footerStackoverflowClick")}
+        >
+          <FaStackOverflow />
+          <VisuallyHidden>Stackoverflow</VisuallyHidden>
         </Anchor>
       </div>
       <Paragraph>
