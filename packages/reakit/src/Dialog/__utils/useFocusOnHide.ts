@@ -16,13 +16,6 @@ export function useFocusOnHide(
     if (!shouldFocus) return;
     const dialog = dialogRef.current;
 
-    warning(
-      !dialog,
-      "Dialog",
-      "Can't detect focus outside dialog because `ref` wasn't passed to component.",
-      "See https://reakit.io/docs/dialog"
-    );
-
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
     if (

@@ -15,6 +15,13 @@ export function useFocusOnShow(
   useUpdateEffect(() => {
     const dialog = dialogRef.current;
 
+    warning(
+      Boolean(shouldFocus && !dialog),
+      "Dialog",
+      "Can't set initial focus on dialog because `ref` wasn't passed to component.",
+      "See https://reakit.io/docs/dialog"
+    );
+
     // If there're nested open dialogs, let them handle focus
     if (
       !shouldFocus ||
