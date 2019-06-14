@@ -6,11 +6,11 @@ import {
   FaGithub,
   FaStackOverflow
 } from "react-icons/fa";
-import { MdChat } from "react-icons/md";
 import { VisuallyHidden } from "reakit";
 import { css } from "@emotion/core";
 import { usePalette, useLighten } from "reakit-system-palette/utils";
 import track from "../utils/track";
+import SpectrumLogo from "../icons/Spectrum";
 import Anchor from "./Anchor";
 import Paragraph from "./Paragraph";
 
@@ -85,7 +85,7 @@ export default function Footer() {
           target="_blank"
           onClick={track("reakit.footerSpectrumClick")}
         >
-          <MdChat />
+          <SpectrumLogo />
           <VisuallyHidden>Spectrum</VisuallyHidden>
         </Anchor>
       </div>
