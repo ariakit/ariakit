@@ -62,6 +62,22 @@ By donating $5 or more you help in the development of this project. Thank you to
   <a href="https://opencollective.com/reakit/backer/7/website"><img src="https://opencollective.com/reakit/backer/7/avatar.svg"></a>
   <a href="https://opencollective.com/reakit/backer/8/website"><img src="https://opencollective.com/reakit/backer/8/avatar.svg"></a>
   <a href="https://opencollective.com/reakit/backer/9/website"><img src="https://opencollective.com/reakit/backer/9/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/10/website"><img src="https://opencollective.com/reakit/backer/10/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/11/website"><img src="https://opencollective.com/reakit/backer/11/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/12/website"><img src="https://opencollective.com/reakit/backer/12/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/13/website"><img src="https://opencollective.com/reakit/backer/13/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/14/website"><img src="https://opencollective.com/reakit/backer/14/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/15/website"><img src="https://opencollective.com/reakit/backer/15/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/16/website"><img src="https://opencollective.com/reakit/backer/16/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/17/website"><img src="https://opencollective.com/reakit/backer/17/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/18/website"><img src="https://opencollective.com/reakit/backer/18/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/19/website"><img src="https://opencollective.com/reakit/backer/19/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/20/website"><img src="https://opencollective.com/reakit/backer/20/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/21/website"><img src="https://opencollective.com/reakit/backer/21/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/22/website"><img src="https://opencollective.com/reakit/backer/22/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/23/website"><img src="https://opencollective.com/reakit/backer/23/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/24/website"><img src="https://opencollective.com/reakit/backer/24/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/25/website"><img src="https://opencollective.com/reakit/backer/25/avatar.svg"></a>
 </p>
 
 
