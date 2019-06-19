@@ -1,6 +1,6 @@
 import { isObject } from "reakit-utils/isObject";
-import { reduceObjects } from "reakit-utils/reduceObjects";
 import { UnionToIntersection } from "reakit-utils/types";
+import { reduceObjects } from "./__utils/reduceObjects";
 import { SystemContextType } from "./SystemContext";
 
 function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {

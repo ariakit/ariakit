@@ -1,4 +1,4 @@
-import { isObject } from "./isObject";
+import { isObject } from "reakit-utils/isObject";
 
 export function deepEqual(
   objA?: Record<any, any>,

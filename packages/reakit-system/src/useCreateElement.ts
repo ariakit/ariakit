@@ -1,6 +1,6 @@
 import * as React from "react";
 import { As } from "reakit-utils/types";
-import { isRenderProp } from "reakit-utils/isRenderProp";
+import { isRenderProp } from "./__utils/isRenderProp";
 import { SystemContext } from "./SystemContext";
 
 export const useCreateElement = <T extends As>(

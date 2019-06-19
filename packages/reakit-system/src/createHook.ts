@@ -1,5 +1,5 @@
 import { toArray } from "reakit-utils/toArray";
-import { deepEqual } from "reakit-utils/deepEqual";
+import { deepEqual } from "./__utils/deepEqual";
 import { useOptions } from "./useOptions";
 import { useProps } from "./useProps";
 

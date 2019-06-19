@@ -2,10 +2,10 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { warning } from "reakit-utils/warning";
 import { createHook } from "reakit-system/createHook";
-import { isTouchDevice } from "reakit-utils/isTouchDevice";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
+import { isTouchDevice } from "./__utils/isTouchDevice";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 
 export type MenuItemOptions = RoverOptions &

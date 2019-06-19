@@ -1,6 +1,6 @@
 import * as React from "react";
 
-function memo<T extends React.ComponentType<any>>(
+export function memo<T extends React.ComponentType<any>>(
   component: T,
   propsAreEqual?: (
     prevProps: Readonly<React.ComponentProps<T>>,
@@ -9,5 +9,3 @@ function memo<T extends React.ComponentType<any>>(
 ) {
   return (React.memo(component, propsAreEqual) as unknown) as T;
 }
-
-export default memo;
