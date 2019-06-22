@@ -3,12 +3,12 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-utils/warning";
 import { isFocusTrap } from "./useFocusTrap";
 
-export function useEventListenerOutside<T extends keyof DocumentEventMap>(
+export function useEventListenerOutside(
   targetRef: React.RefObject<HTMLElement>,
   disclosureRef: React.RefObject<HTMLElement>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
-  event: T,
-  listener?: (e: DocumentEventMap[T]) => void,
+  event: string,
+  listener?: (e: Event) => void,
   shouldListen?: boolean
 ) {
   const listenerRef = useLiveRef(listener);

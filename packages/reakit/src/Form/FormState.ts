@@ -304,7 +304,7 @@ export function unstable_useFormState<V = Record<any, any>>(
 
   const validate = React.useCallback(
     (vals = state.values) =>
-      new Promise(resolve => {
+      new Promise<any>(resolve => {
         if (onValidate) {
           const response = onValidate(filterAllEmpty(vals));
           if (isPromise(response)) {

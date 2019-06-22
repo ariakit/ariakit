@@ -8,11 +8,12 @@ export function reduceObjects<T extends Record<string, any>>(
   const result = {} as { [K in keyof T]?: Array<T[K]> };
 
   for (const object of objects) {
-    const keys = Object.keys(object);
+    const keys = Object.keys(object) as Array<keyof T>;
     for (const key of keys) {
       // eslint-disable-next-line no-continue
       if (filter && !filter(object[key], key)) continue;
-      result[key] = [...(result[key] || []), object[key]];
+      const value = (result[key] || []) as Array<T[keyof T]>;
+      result[key] = [...value, object[key]];
     }
   }
 
