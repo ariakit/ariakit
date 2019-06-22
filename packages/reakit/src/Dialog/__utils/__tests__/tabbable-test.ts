@@ -11,7 +11,7 @@ function h<T extends keyof JSX.IntrinsicElements>(
     const value = props[prop as keyof typeof props];
     // @ts-ignore
     element[prop] = value;
-    element.setAttribute(prop.toLowerCase(), value.toString());
+    element.setAttribute(prop.toLowerCase(), `${value}`);
   }
   return element;
 }

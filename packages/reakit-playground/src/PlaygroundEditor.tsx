@@ -103,7 +103,7 @@ export function PlaygroundEditor({
 
   return (
     <CodeMirror
-      {...htmlProps as any}
+      {...(htmlProps as any)}
       className={className}
       value={value}
       onBeforeChange={(_, __, val) => options.update(val)}
