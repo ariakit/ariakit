@@ -82,9 +82,9 @@ test("validate", async () => {
       }
     })
   );
-  await act(() =>
-    expect(result.current.validate()).rejects.toEqual({ a: "error" })
-  );
+  await act(() => {
+    expect(result.current.validate()).rejects.toEqual({ a: "error" });
+  });
 });
 
 test("submit", async () => {
