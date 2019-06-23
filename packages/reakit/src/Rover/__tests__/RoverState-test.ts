@@ -19,13 +19,14 @@ function createRef(id: string) {
 test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `);
 });
 
 test("initial state activeRef", () => {
@@ -33,13 +34,14 @@ test("initial state activeRef", () => {
   expect(result.current).toMatchInlineSnapshot(
     { currentId: "a" },
     `
-    Object {
-      "currentId": "a",
-      "loop": false,
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": "a",
+              "loop": false,
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -48,13 +50,14 @@ test("initial state loop", () => {
   expect(result.current).toMatchInlineSnapshot(
     { loop: true },
     `
-    Object {
-      "currentId": null,
-      "loop": true,
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": true,
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -63,14 +66,15 @@ test("initial state orientation", () => {
   expect(result.current).toMatchInlineSnapshot(
     { orientation: "vertical" },
     `
-    Object {
-      "currentId": null,
-      "loop": false,
-      "orientation": "vertical",
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "orientation": "vertical",
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -78,22 +82,23 @@ test("register", () => {
   const result = render();
   act(() => result.current.register("a", createRef("a")));
   expect(result.current).toMatchInlineSnapshot(`
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `);
 });
 
 test("register already registered", () => {
@@ -102,44 +107,46 @@ test("register already registered", () => {
   act(() => result.current.register("a", ref));
   act(() => result.current.register("a", ref));
   expect(result.current).toMatchInlineSnapshot(`
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `);
 });
 
 test("register currentId", () => {
   const result = render({ currentId: "a" });
   act(() => result.current.register("a", createRef("a")));
   expect(result.current).toMatchInlineSnapshot(`
-    Object {
-      "currentId": "a",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `);
+            Object {
+              "currentId": "a",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `);
 });
 
 test("unregister", () => {
@@ -147,26 +154,28 @@ test("unregister", () => {
   act(() => result.current.register("a", createRef("a")));
   act(() => result.current.unregister("a"));
   expect(result.current).toMatchInlineSnapshot(`
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `);
 });
 
 test("unregister inexistent", () => {
   const result = render();
   act(() => result.current.unregister("a"));
   expect(result.current).toMatchInlineSnapshot(`
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `);
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `);
 });
 
 test("unregister currentId", () => {
@@ -179,13 +188,14 @@ test("unregister currentId", () => {
       stops: []
     },
     `
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -201,22 +211,23 @@ test("unregister pastId", () => {
       unstable_pastId: null
     },
     `
-    Object {
-      "currentId": "b",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": "b",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 1,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -229,22 +240,23 @@ test("move", () => {
       currentId: "a"
     },
     `
-    Object {
-      "currentId": "a",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": "a",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 1,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -260,30 +272,31 @@ test("move twice", () => {
       unstable_pastId: "a"
     },
     `
-    Object {
-      "currentId": "b",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": "a",
-    }
-  `
+            Object {
+              "currentId": "b",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 2,
+              "unstable_pastId": "a",
+            }
+      `
   );
 });
 
@@ -299,30 +312,31 @@ test("move to the same ref", () => {
       unstable_pastId: null
     },
     `
-    Object {
-      "currentId": "b",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": "b",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 2,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -338,30 +352,31 @@ test("move to null", () => {
       unstable_pastId: "b"
     },
     `
-    Object {
-      "currentId": null,
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": "b",
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 2,
+              "unstable_pastId": "b",
+            }
+      `
   );
 });
 
@@ -378,38 +393,39 @@ test("next", () => {
       unstable_pastId: "a"
     },
     `
-    Object {
-      "currentId": "b",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-        Object {
-          "id": "c",
-          "ref": Object {
-            "current": <div
-              id="c"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": "a",
-    }
-  `
+            Object {
+              "currentId": "b",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 2,
+              "unstable_pastId": "a",
+            }
+      `
   );
 });
 
@@ -457,6 +473,7 @@ test("next thrice", () => {
           },
         },
       ],
+      "unstable_moves": 3,
       "unstable_pastId": "b",
     }
   `
@@ -478,38 +495,39 @@ test("next thrice loop", () => {
       unstable_pastId: "c"
     },
     `
-    Object {
-      "currentId": "a",
-      "loop": true,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-        Object {
-          "id": "c",
-          "ref": Object {
-            "current": <div
-              id="c"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": "c",
-    }
-  `
+            Object {
+              "currentId": "a",
+              "loop": true,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "c",
+                  "ref": Object {
+                    "current": <div
+                      id="c"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 4,
+              "unstable_pastId": "c",
+            }
+      `
   );
 });
 
@@ -526,38 +544,39 @@ test("previous", () => {
       unstable_pastId: "b"
     },
     `
-    Object {
-      "currentId": "a",
-      "loop": false,
-      "stops": Array [
         Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-        Object {
-          "id": "c",
-          "ref": Object {
-            "current": <div
-              id="c"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": "b",
-    }
-  `
+          "currentId": "a",
+          "loop": false,
+          "stops": Array [
+            Object {
+              "id": "a",
+              "ref": Object {
+                "current": <div
+                  id="a"
+                />,
+              },
+            },
+            Object {
+              "id": "b",
+              "ref": Object {
+                "current": <div
+                  id="b"
+                />,
+              },
+            },
+            Object {
+              "id": "c",
+              "ref": Object {
+                "current": <div
+                  id="c"
+                />,
+              },
+            },
+          ],
+          "unstable_moves": 2,
+          "unstable_pastId": "b",
+        }
+    `
   );
 });
 
@@ -574,38 +593,39 @@ test("previous loop", () => {
       unstable_pastId: "a"
     },
     `
-    Object {
-      "currentId": "c",
-      "loop": true,
-      "stops": Array [
         Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-        Object {
-          "id": "c",
-          "ref": Object {
-            "current": <div
-              id="c"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": "a",
-    }
-  `
+          "currentId": "c",
+          "loop": true,
+          "stops": Array [
+            Object {
+              "id": "a",
+              "ref": Object {
+                "current": <div
+                  id="a"
+                />,
+              },
+            },
+            Object {
+              "id": "b",
+              "ref": Object {
+                "current": <div
+                  id="b"
+                />,
+              },
+            },
+            Object {
+              "id": "c",
+              "ref": Object {
+                "current": <div
+                  id="c"
+                />,
+              },
+            },
+          ],
+          "unstable_moves": 2,
+          "unstable_pastId": "a",
+        }
+    `
   );
 });
 
@@ -620,30 +640,31 @@ test("first", () => {
       unstable_pastId: null
     },
     `
-    Object {
-      "currentId": "a",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": "a",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 1,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -658,30 +679,31 @@ test("last", () => {
       unstable_pastId: null
     },
     `
-    Object {
-      "currentId": "b",
-      "loop": false,
-      "stops": Array [
-        Object {
-          "id": "a",
-          "ref": Object {
-            "current": <div
-              id="a"
-            />,
-          },
-        },
-        Object {
-          "id": "b",
-          "ref": Object {
-            "current": <div
-              id="b"
-            />,
-          },
-        },
-      ],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": "b",
+              "loop": false,
+              "stops": Array [
+                Object {
+                  "id": "a",
+                  "ref": Object {
+                    "current": <div
+                      id="a"
+                    />,
+                  },
+                },
+                Object {
+                  "id": "b",
+                  "ref": Object {
+                    "current": <div
+                      id="b"
+                    />,
+                  },
+                },
+              ],
+              "unstable_moves": 1,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -693,13 +715,14 @@ test("orientate", () => {
       orientation: "horizontal"
     },
     `
-    Object {
-      "currentId": null,
-      "loop": false,
-      "orientation": "horizontal",
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "orientation": "horizontal",
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });

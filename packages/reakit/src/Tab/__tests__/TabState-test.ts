@@ -18,6 +18,7 @@ test("initial state", () => {
       "selectedId": null,
       "stops": Array [],
       "unstable_baseId": "base",
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -38,6 +39,7 @@ test("initial state selectedId", () => {
       "selectedId": "a",
       "stops": Array [],
       "unstable_baseId": "base",
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `

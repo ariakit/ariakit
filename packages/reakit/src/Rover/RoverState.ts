@@ -30,6 +30,11 @@ export type RoverState = {
    */
   unstable_pastId: Stop["id"] | null;
   /**
+   * Stores the number of moves that have been made by calling `move`, `next`,
+   * `previous`, `first` or `last`.
+   */
+  unstable_moves: number;
+  /**
    * If enabled:
    *  - Jumps to the first item when moving next from the last item.
    *  - Jumps to the last item when moving previous from the first item.
@@ -99,7 +104,13 @@ type RoverAction =
     };
 
 function reducer(state: RoverState, action: RoverAction): RoverState {
-  const { stops, currentId, unstable_pastId: pastId, loop } = state;
+  const {
+    stops,
+    currentId,
+    unstable_pastId: pastId,
+    unstable_moves: moves,
+    loop
+  } = state;
 
   switch (action.type) {
     case "register": {
@@ -162,20 +173,27 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
         return {
           ...state,
           currentId: null,
-          unstable_pastId: currentId
+          unstable_pastId: currentId,
+          unstable_moves: moves + 1
         };
       }
 
       const index = stops.findIndex(stop => stop.id === id);
 
-      if (index === -1 || stops[index].id === currentId) {
+      // Item doesn't exist, so we don't count a move
+      if (index === -1) {
         return state;
+      }
+
+      if (stops[index].id === currentId) {
+        return { ...state, unstable_moves: moves + 1 };
       }
 
       return {
         ...state,
         currentId: stops[index].id,
-        unstable_pastId: currentId
+        unstable_pastId: currentId,
+        unstable_moves: moves + 1
       };
     }
     case "next": {
@@ -200,14 +218,13 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       });
     }
     case "previous": {
-      const nextState = reducer(
+      const { stops: _, ...nextState } = reducer(
         { ...state, stops: stops.slice().reverse() },
         { type: "next" }
       );
       return {
         ...state,
-        currentId: nextState.currentId,
-        unstable_pastId: nextState.unstable_pastId
+        ...nextState
       };
     }
     case "first": {
@@ -243,6 +260,7 @@ export function useRoverState(
     stops: [],
     currentId,
     unstable_pastId: null,
+    unstable_moves: 0,
     loop
   });
 
@@ -274,6 +292,7 @@ const keys: Array<keyof RoverStateReturn> = [
   "stops",
   "currentId",
   "unstable_pastId",
+  "unstable_moves",
   "loop",
   "register",
   "unregister",
