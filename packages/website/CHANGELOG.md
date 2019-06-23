@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.3](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.2...website@1.0.0-beta.3) (2019-06-23)
+
+
+### Features
+
+* **website:** Add previous/next links on documentation for better navigation ([#375](https://github.com/reakit/reakit/tree/master/packages/website/issues/375)) ([db97ee6](https://github.com/reakit/reakit/tree/master/packages/website/commit/db97ee6))
+* Move helpers to separate package (reakit-utils, reakit-system) ([#380](https://github.com/reakit/reakit/tree/master/packages/website/issues/380)) ([354b874](https://github.com/reakit/reakit/tree/master/packages/website/commit/354b874))
+* **website:** Add Spectrum/StackOverflow links ([#382](https://github.com/reakit/reakit/tree/master/packages/website/issues/382)) ([dff8158](https://github.com/reakit/reakit/tree/master/packages/website/commit/dff8158))
+
+
+### BREAKING CHANGES
+
+* Utils aren't exported by `reakit` or `reakit/utils` anymore. Import them from the `reakit-utils` package instead.
+* System utils aren't exported by `reakit` or `reakit/system` anymore. Import them from the `reakit-system` package instead.
+* `Provider` isn't exported by `reakit/utils` or `reakit/utils/Provider` anymore. Import it from `reakit` or `reakit/Provider` instead.
+
+
+
+
+
 # [1.0.0-beta.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.1...website@1.0.0-beta.2) (2019-06-01)
 
 

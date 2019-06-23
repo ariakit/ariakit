@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.3](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.2...reakit@1.0.0-beta.3) (2019-06-23)
+
+
+### Bug Fixes
+
+* Add missing deps to `usePopoverState` effect ([d44df81](https://github.com/reakit/reakit/commit/d44df81))
+* Make `Menu` work properly with `unstable_animated` ([#386](https://github.com/reakit/reakit/issues/386)) ([b96c466](https://github.com/reakit/reakit/commit/b96c466))
+* Remove false positive warning from `Dialog` ([#385](https://github.com/reakit/reakit/issues/385)) ([5334bd4](https://github.com/reakit/reakit/commit/5334bd4))
+
+
+### Features
+
+* Move helpers to separate package (reakit-utils, reakit-system) ([#380](https://github.com/reakit/reakit/issues/380)) ([354b874](https://github.com/reakit/reakit/commit/354b874))
+
+
+### BREAKING CHANGES
+
+* Utils aren't exported by `reakit` or `reakit/utils` anymore. Import them from the `reakit-utils` package instead.
+* System utils aren't exported by `reakit` or `reakit/system` anymore. Import them from the `reakit-system` package instead.
+* `Provider` isn't exported by `reakit/utils` or `reakit/utils/Provider` anymore. Import it from `reakit` or `reakit/Provider` instead.
+
+
+
+
+
 # [1.0.0-beta.2](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.1...reakit@1.0.0-beta.2) (2019-06-01)
 
 
