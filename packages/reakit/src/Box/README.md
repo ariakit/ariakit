@@ -35,7 +35,7 @@ redirect_from:
 npm install reakit
 ```
 
-Learn more in [Get started](/docs/get-started/).
+Learn more in [Get started](https://github.com/reakit/reakit/blob/master/docs/GET_STARTED.md).
 
 ## Usage
 
@@ -49,7 +49,7 @@ function Example() {
 
 ### `as` prop
 
-Learn more about the `as` prop in [Composition](/docs/composition/#as-prop).
+Learn more about the `as` prop in [Composition](https://github.com/reakit/reakit/blob/master/docs/COMPOSITION.md/#as-prop).
 
 ```jsx
 import { Box } from "reakit/Box";
@@ -61,7 +61,7 @@ function Example() {
 
 ### Render props
 
-Learn more about render props in [Composition](/docs/composition/#render-props).
+Learn more about render props in [Composition](https://github.com/reakit/reakit/blob/master/docs/COMPOSITION.md/#render-props).
 
 ```jsx
 import { Box } from "reakit/Box";
@@ -75,7 +75,7 @@ function Example() {
 
 - `Box` is used by all Reakit components.
 
-Learn more in [Composition](/docs/composition/#props-hooks).
+Learn more in [Composition](https://github.com/reakit/reakit/blob/master/docs/COMPOSITION.md/#props-hooks).
 
 ## Props
 
