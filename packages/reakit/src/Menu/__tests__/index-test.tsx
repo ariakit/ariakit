@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, act, wait } from "react-testing-library";
+import { render, fireEvent, act, wait } from "@testing-library/react";
 import {
   useMenuState,
   Menu,

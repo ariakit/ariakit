@@ -1,5 +1,5 @@
 import * as React from "react";
-import { renderHook } from "react-hooks-testing-library";
+import { renderHook } from "@testing-library/react-hooks";
 import { useToken } from "../useToken";
 import { SystemProvider, SystemProviderProps } from "../SystemProvider";
 import { SystemContextType } from "../SystemContext";

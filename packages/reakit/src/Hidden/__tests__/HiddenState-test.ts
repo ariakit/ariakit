@@ -1,4 +1,4 @@
-import { renderHook, act } from "react-hooks-testing-library";
+import { renderHook, act } from "@testing-library/react-hooks";
 import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { useHiddenState } from "../HiddenState";
 

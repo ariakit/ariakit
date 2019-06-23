@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, act } from "react-testing-library";
+import { render, fireEvent, act } from "@testing-library/react";
 import { Tab, TabList, TabPanel, useTabState } from "..";
 import { TabInitialState } from "../TabState";
 

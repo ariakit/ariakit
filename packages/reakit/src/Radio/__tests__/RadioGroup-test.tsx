@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { RadioGroup } from "../RadioGroup";
 
 test("render", () => {

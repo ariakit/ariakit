@@ -1,5 +1,5 @@
 import * as React from "react";
-import { act, fireEvent, render, wait } from "react-testing-library";
+import { act, fireEvent, render, wait } from "@testing-library/react";
 import {
   unstable_Form as Form,
   unstable_FormCheckbox as FormCheckbox,
