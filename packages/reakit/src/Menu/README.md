@@ -588,6 +588,12 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the rover list.
 
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
+
 - **`currentId`**
   <code>string | null</code>
 
@@ -695,6 +701,12 @@ array.
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Defines the orientation of the rover list.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
 
 - **`currentId`**
   <code>string | null</code>
@@ -817,6 +829,12 @@ array.
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
 
 - **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>

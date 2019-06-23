@@ -178,3 +178,31 @@ test("move focus with keys and vertical orientation", () => {
   keyDown("ArrowUp");
   expect(rover1).toHaveFocus();
 });
+
+test("move focus by calling state callbacks", () => {
+  const Test = () => {
+    const rover = useRoverState();
+    return (
+      <>
+        <button onClick={rover.first}>first</button>
+        <Rover {...rover}>rover1</Rover>
+        <Rover {...rover}>rover2</Rover>
+        <Rover {...rover}>rover3</Rover>
+      </>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const first = getByText("first");
+  const rover1 = getByText("rover1");
+  act(() => first.focus());
+  expect(first).toHaveFocus();
+
+  fireEvent.click(first);
+  expect(rover1).toHaveFocus();
+
+  act(() => first.focus());
+  expect(first).toHaveFocus();
+
+  fireEvent.click(first);
+  expect(rover1).toHaveFocus();
+});

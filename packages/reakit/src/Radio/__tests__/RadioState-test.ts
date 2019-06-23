@@ -12,6 +12,7 @@ test("initial state", () => {
       "loop": true,
       "state": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);

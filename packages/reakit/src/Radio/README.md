@@ -94,6 +94,12 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   The current focused element ID.
 
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
+
 - **`stops`**
   <code>Stop[]</code>
 

@@ -16,6 +16,7 @@ test("initial state", () => {
       "loop": false,
       "orientation": "horizontal",
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);

@@ -115,6 +115,12 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the rover list.
 
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
+
 - **`currentId`**
   <code>string | null</code>
 

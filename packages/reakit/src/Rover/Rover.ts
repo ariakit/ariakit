@@ -15,7 +15,7 @@ import {
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
-  Pick<Partial<RoverStateReturn>, "orientation"> &
+  Pick<Partial<RoverStateReturn>, "orientation" | "unstable_moves"> &
   Pick<
     RoverStateReturn,
     | "stops"
@@ -80,10 +80,10 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         );
         return;
       }
-      if (focused) {
+      if (document.activeElement !== ref.current && focused) {
         ref.current.focus();
       }
-    }, [focused]);
+    }, [focused, options.unstable_moves]);
 
     const onFocus = React.useCallback(() => options.move(stopId), [
       options.move,
