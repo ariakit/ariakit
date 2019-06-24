@@ -16,7 +16,8 @@ export const useList = createHook<ListOptions, ListHTMLProps>({
       li {
         margin-bottom: 0.5em;
       }
-      #props ~ & {
+      #props ~ &,
+      #props ~ details > & {
         & > li {
           li {
             margin: 0;

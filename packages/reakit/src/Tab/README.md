@@ -174,6 +174,14 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>14 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -230,11 +238,6 @@ similarly to `readOnly` on form elements. In this case, only
 
   Moves focus to the last element.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
 - **`manual`**
   <code>boolean</code>
 
@@ -250,15 +253,30 @@ similarly to `readOnly` on form elements. In this case, only
 
   Selects a tab by its `stopId`.
 
+</details>
+
 ### `TabList`
 
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Defines the orientation of the rover list.
 
+</details>
+
 ### `TabPanel`
 
+- **`stopId`**
+  <code>string</code>
+
+  Tab's `stopId`.
+
+<details><summary>4 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 - **`visible`**
   <code>boolean</code>
 
@@ -283,7 +301,4 @@ It's called after given milliseconds if `animated` is a number.
 
   The current selected tab's `stopId`.
 
-- **`stopId`**
-  <code>string</code>
-
-  Tab's `stopId`.
+</details>

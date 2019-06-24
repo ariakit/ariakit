@@ -110,6 +110,14 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>11 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -166,7 +174,4 @@ similarly to `readOnly` on form elements. In this case, only
 
   Moves focus to the last element.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
+</details>
