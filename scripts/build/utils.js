@@ -335,13 +335,39 @@ function getEscapedName(node) {
 /**
  * @param {import("ts-morph").Node<Node>} node
  */
-function isPropsDeclaration(node) {
+function isStateReturnDeclaration(node) {
   const kindName = node.getKindName();
   const escapedName = getEscapedName(node);
   return (
-    kindName === "TypeAliasDeclaration" &&
-    /.+(Options|InitialState)$/.test(escapedName)
+    kindName === "TypeAliasDeclaration" && /.+StateReturn$/.test(escapedName)
   );
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function isInitialStateDeclaration(node) {
+  const kindName = node.getKindName();
+  const escapedName = getEscapedName(node);
+  return (
+    kindName === "TypeAliasDeclaration" && /.+InitialState$/.test(escapedName)
+  );
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function isOptionsDeclaration(node) {
+  const kindName = node.getKindName();
+  const escapedName = getEscapedName(node);
+  return kindName === "TypeAliasDeclaration" && /.+Options$/.test(escapedName);
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function isPropsDeclaration(node) {
+  return isOptionsDeclaration(node) || isInitialStateDeclaration(node);
 }
 
 /**
@@ -461,6 +487,22 @@ function createPropTypeObject(rootPath, prop) {
 }
 
 /**
+ * @param {string} rootPath
+ * @param {import("ts-morph").Node<Node>} node
+ */
+function createPropTypeObjects(rootPath, node) {
+  return getProps(node).map(prop => createPropTypeObject(rootPath, prop));
+}
+/**
+ * @param {import("ts-morph").SourceFile[]} sourceFiles
+ */
+function sortStateFirst(sourceFiles) {
+  return sourceFiles.sort(a =>
+    /State$/.test(a.getBaseNameWithoutExtension()) ? -1 : 0
+  );
+}
+
+/**
  * @param {ReturnType<typeof createPropTypeObject>} prop
  */
 function getPropTypesRow(prop) {
@@ -482,11 +524,24 @@ function getPropTypesRow(prop) {
 function getPropTypesMarkdown(types) {
   const content = Object.keys(types)
     .map(title => {
-      const rows = types[title].map(getPropTypesRow).join("\n");
+      const props = types[title];
+      const rows = props.map(getPropTypesRow).join("\n");
+      const stateProps = props.stateProps || [];
+      const hiddenRows = stateProps.length
+        ? `
+<details><summary>${stateProps.length} state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (\`{...state}\`) or pass them separately. You can also provide these props from your own state logic.
+
+${stateProps.map(getPropTypesRow).join("\n")}
+</details>`
+        : "";
+
       return `
 ### \`${title}\`
 
-${rows || "No props to show"}`;
+${rows || (hiddenRows ? "" : "No props to show")}
+${hiddenRows}`;
     })
     .join("\n\n");
 
@@ -503,6 +558,7 @@ ${content}`;
 function injectPropTypes(rootPath) {
   const pkg = getPackage(rootPath);
   const readmePaths = getReadmePaths(rootPath);
+  const stateTypes = [];
   const created = [];
 
   const project = new Project({
@@ -522,12 +578,28 @@ function injectPropTypes(rootPath) {
       project.resolveSourceFileDependencies();
       const types = {};
 
-      sourceFiles.forEach(sourceFile => {
+      sortStateFirst(sourceFiles).forEach(sourceFile => {
         sourceFile.forEachChild(node => {
+          if (isStateReturnDeclaration(node)) {
+            const propTypes = createPropTypeObjects(rootPath, node);
+            stateTypes.push(...propTypes.map(prop => prop.name));
+          }
           if (isPropsDeclaration(node)) {
-            types[getModuleName(node)] = getProps(node).map(prop =>
-              createPropTypeObject(rootPath, prop)
-            );
+            const moduleName = getModuleName(node);
+            const propTypes = createPropTypeObjects(rootPath, node);
+
+            if (isInitialStateDeclaration(node)) {
+              types[moduleName] = propTypes;
+            } else {
+              const propTypesWithoutState = propTypes.filter(
+                prop => !stateTypes.includes(prop.name)
+              );
+              const propTypesReturnedByState = propTypes.filter(prop =>
+                stateTypes.includes(prop.name)
+              );
+              types[moduleName] = propTypesWithoutState;
+              types[moduleName].stateProps = propTypesReturnedByState;
+            }
           }
         });
       });

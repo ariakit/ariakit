@@ -23,6 +23,7 @@ import Heading from "../components/Heading";
 import SEO from "../components/SEO";
 import track from "../utils/track";
 import DocsBackNext from "../components/DocsBackNext";
+import Summary from "../components/Summary";
 
 type DocsProps = {
   pageContext: {
@@ -63,6 +64,7 @@ const { Compiler: renderAst } = new RehypeReact({
     ul: List,
     kbd: KeyboardInput,
     blockquote: Blockquote,
+    summary: Summary,
     h1: Heading,
     h2: props => <Heading as="h2" {...props} />,
     h3: props => <Heading as="h3" {...props} />,

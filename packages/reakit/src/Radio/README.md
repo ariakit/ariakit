@@ -84,6 +84,37 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `Radio`
 
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+- **`value`**
+  <code>any</code>
+
+  Same as the `value` attribute.
+
+- **`checked`**
+  <code>boolean | undefined</code>
+
+  Same as the `checked` attribute.
+
+<details><summary>13 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -140,23 +171,6 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Moves focus to the last element.
 
-- **`disabled`**
-  <code>boolean | undefined</code>
-
-  Same as the HTML attribute.
-
-- **`focusable`**
-  <code>boolean | undefined</code>
-
-  When an element is `disabled`, it may still be `focusable`. It works
-similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.
-
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
 - **`state`**
   <code>any</code>
 
@@ -167,15 +181,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Sets `state`.
 
-- **`value`**
-  <code>any</code>
-
-  Same as the `value` attribute.
-
-- **`checked`**
-  <code>boolean | undefined</code>
-
-  Same as the `checked` attribute.
+</details>
 
 ### `RadioGroup`
 

@@ -198,13 +198,6 @@ If `onValidate` throws, `onSubmit` will not be called.
 just like `onValidate`. The only difference is that this validation will
 only occur on submit.
 
-### `Form`
-
-- **`submit`**
-  <code>() =&#62; void</code>
-
-  Triggers form submission (calling `onValidate` and `onSubmit` underneath).
-
 ### `FormCheckbox`
 
 - **`disabled`**
@@ -224,6 +217,22 @@ similarly to `readOnly` on form elements. In this case, only
 
   Checkbox's checked state. If present, it's used instead of `state`.
 
+- **`name`**
+  <code>P</code>
+
+  Checkbox's name as in form values.
+
+- **`value`**
+  <code>ArrayValue&#60;DeepPathValue&#60;V, P&#62;&#62; | undefined</code>
+
+  Checkbox's value is going to be used when multiple checkboxes share the
+same state. Checking a checkbox with value will add it to the state
+array.
+
+<details><summary>6 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`baseId`**
   <code>string</code>
 
@@ -257,19 +266,18 @@ been blurred.
   An object with the same shape as `form.values` with string error messages.
 This stores the error messages throwed by `onValidate` and `onSubmit`.
 
+</details>
+
+### `FormGroup`
+
 - **`name`**
   <code>P</code>
 
-  Checkbox's name as in form values.
+  FormGroup's name as in form values.
 
-- **`value`**
-  <code>ArrayValue&#60;DeepPathValue&#60;V, P&#62;&#62; | undefined</code>
+<details><summary>3 state props</summary>
 
-  Checkbox's value is going to be used when multiple checkboxes share the
-same state. Checking a checkbox with value will add it to the state
-array.
-
-### `FormGroup`
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`baseId`**
   <code>string</code>
@@ -289,10 +297,7 @@ been blurred.
   An object with the same shape as `form.values` with string error messages.
 This stores the error messages throwed by `onValidate` and `onSubmit`.
 
-- **`name`**
-  <code>P</code>
-
-  FormGroup's name as in form values.
+</details>
 
 ### `FormInput`
 
@@ -308,6 +313,15 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`name`**
+  <code>P</code>
+
+  FormInput's name as in form values.
+
+<details><summary>6 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`baseId`**
   <code>string</code>
 
@@ -341,22 +355,9 @@ been blurred.
   An object with the same shape as `form.values` with string error messages.
 This stores the error messages throwed by `onValidate` and `onSubmit`.
 
-- **`name`**
-  <code>P</code>
-
-  FormInput's name as in form values.
+</details>
 
 ### `FormLabel`
-
-- **`baseId`**
-  <code>string</code>
-
-  An ID that will serve as a base for the form elements.
-
-- **`values`**
-  <code>V</code>
-
-  Form values.
 
 - **`name`**
   <code>P</code>
@@ -368,7 +369,32 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
 
   Label can be passed as the `label` prop or `children`.
 
+<details><summary>2 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  An ID that will serve as a base for the form elements.
+
+- **`values`**
+  <code>V</code>
+
+  Form values.
+
+</details>
+
 ### `FormMessage`
+
+- **`name`**
+  <code>P</code>
+
+  FormInput's name as in form values.
+
+<details><summary>4 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`baseId`**
   <code>string</code>
@@ -394,10 +420,7 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
   An object with the same shape as `form.values` with string messages.
 This stores the messages returned by `onValidate` and `onSubmit`.
 
-- **`name`**
-  <code>P</code>
-
-  FormInput's name as in form values.
+</details>
 
 ### `FormPushButton`
 
@@ -412,6 +435,20 @@ This stores the messages returned by `onValidate` and `onSubmit`.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`name`**
+  <code>P</code>
+
+  FormInput's name as in form values. This should point to array value.
+
+- **`value`**
+  <code title="DeepPathValue&#60;V, P&#62; extends (infer U)[] ? U : never">DeepPathValue&#60;V, P&#62; extends (infer U)[] ? U : n...</code>
+
+  The value that is going to be pushed to `form.values[name]`.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`baseId`**
   <code>string</code>
@@ -428,44 +465,31 @@ similarly to `readOnly` on form elements. In this case, only
 
   Pushes a new item into `form.values[name]`, which should be an array.
 
-- **`name`**
-  <code>P</code>
+</details>
 
-  FormInput's name as in form values. This should point to array value.
+### `Form`
 
-- **`value`**
-  <code title="DeepPathValue&#60;V, P&#62; extends (infer U)[] ? U : never">DeepPathValue&#60;V, P&#62; extends (infer U)[] ? U : n...</code>
+<details><summary>1 state props</summary>
 
-  The value that is going to be pushed to `form.values[name]`.
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
-### `FormRadio`
+- **`submit`**
+  <code>() =&#62; void</code>
 
-- **`values`**
-  <code>V</code>
+  Triggers form submission (calling `onValidate` and `onSubmit` underneath).
 
-  Form values.
-
-- **`update`**
-  <code>Update&#60;V&#62;</code>
-
-  Updates a form value.
-
-- **`blur`**
-  <code>&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P) =&#62; void</code>
-
-  Sets field's touched state to `true`.
-
-- **`name`**
-  <code>P</code>
-
-  FormRadio's name as in form values.
-
-- **`value`**
-  <code title="P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayValue&#60;V, P&#62; : P extends keyof V ? V[P] : any">P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayVa...</code>
-
-  FormRadio's value.
+</details>
 
 ### `FormRadioGroup`
+
+- **`name`**
+  <code>P</code>
+
+  FormGroup's name as in form values.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`baseId`**
   <code>string</code>
@@ -485,10 +509,7 @@ been blurred.
   An object with the same shape as `form.values` with string error messages.
 This stores the error messages throwed by `onValidate` and `onSubmit`.
 
-- **`name`**
-  <code>P</code>
-
-  FormGroup's name as in form values.
+</details>
 
 ### `FormRemoveButton`
 
@@ -503,6 +524,20 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`name`**
+  <code>P</code>
+
+  FormInput's name as in form values. This should point to array value.
+
+- **`index`**
+  <code>number</code>
+
+  The index in `form.values[name]` that will be removed.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`baseId`**
   <code>string</code>
@@ -519,15 +554,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Removes `form.values[name][index]`.
 
-- **`name`**
-  <code>P</code>
-
-  FormInput's name as in form values. This should point to array value.
-
-- **`index`**
-  <code>number</code>
-
-  The index in `form.values[name]` that will be removed.
+</details>
 
 ### `FormSubmitButton`
 
@@ -543,6 +570,10 @@ similarly to `readOnly` on form elements. In this case, only
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`submitting`**
   <code>boolean</code>
 
@@ -557,3 +588,38 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Triggers form submission (calling `onValidate` and `onSubmit` underneath).
+
+</details>
+
+### `FormRadio`
+
+- **`name`**
+  <code>P</code>
+
+  FormRadio's name as in form values.
+
+- **`value`**
+  <code title="P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayValue&#60;V, P&#62; : P extends keyof V ? V[P] : any">P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayVa...</code>
+
+  FormRadio's value.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`values`**
+  <code>V</code>
+
+  Form values.
+
+- **`update`**
+  <code>Update&#60;V&#62;</code>
+
+  Updates a form value.
+
+- **`blur`**
+  <code>&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P) =&#62; void</code>
+
+  Sets field's touched state to `true`.
+
+</details>

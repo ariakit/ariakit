@@ -95,6 +95,10 @@ given milliseconds.
 
 ### `Hidden`
 
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -114,6 +118,8 @@ given milliseconds.
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
 
+</details>
+
 ### `HiddenDisclosure`
 
 - **`disabled`**
@@ -128,6 +134,10 @@ It's called after given milliseconds if `animated` is a number.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+<details><summary>2 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -137,3 +147,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Toggles the `visible` state
+
+</details>

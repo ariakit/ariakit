@@ -162,30 +162,6 @@ element.
 
 ### `Popover`
 
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>number | boolean</code>
-
-  If `true`, `animating` will be set to `true` when `visible` changes.
-It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
-
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
-  <code>() =&#62; void</code>
-
-  Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
-
-- **`hide`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `false`
-
 - **`modal`**
   <code>boolean | undefined</code>
 
@@ -237,14 +213,9 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-### `PopoverArrow`
+<details><summary>4 state props</summary>
 
-- **`placement`**
-  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
-
-  Actual `placement`.
-
-### `PopoverBackdrop`
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`visible`**
   <code>boolean</code>
@@ -265,6 +236,53 @@ given milliseconds.
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
 
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+</details>
+
+### `PopoverArrow`
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+</details>
+
+### `PopoverBackdrop`
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+</details>
+
 ### `PopoverDisclosure`
 
 - **`disabled`**
@@ -278,6 +296,10 @@ It's called after given milliseconds if `animated` is a number.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`visible`**
   <code>boolean</code>
@@ -293,3 +315,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>RefObject&#60;HTMLElement | null&#62;</code>
 
   The reference element.
+
+</details>

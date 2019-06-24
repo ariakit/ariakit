@@ -424,6 +424,33 @@ element.
 
 ### `Menu`
 
+- **`hideOnClickOutside`**
+  <code>boolean | undefined</code>
+
+  When enabled, user can hide the dialog by clicking outside it.
+
+- **`preventBodyScroll`**
+  <code>boolean | undefined</code>
+
+  When enabled, user can't scroll on body when the dialog is visible.
+This option doesn't work if the dialog isn't modal.
+
+- **`unstable_initialFocusRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
+
+  The element that will be focused when the dialog shows.
+When not set, the first tabbable element within the dialog will be used.
+
+- **`unstable_finalFocusRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
+
+  The element that will be focused when the dialog hides.
+When not set, the disclosure component will be used.
+
+<details><summary>12 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -447,29 +474,6 @@ It's called after given milliseconds if `animated` is a number.
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
-
-- **`hideOnClickOutside`**
-  <code>boolean | undefined</code>
-
-  When enabled, user can hide the dialog by clicking outside it.
-
-- **`preventBodyScroll`**
-  <code>boolean | undefined</code>
-
-  When enabled, user can't scroll on body when the dialog is visible.
-This option doesn't work if the dialog isn't modal.
-
-- **`unstable_initialFocusRef`** <span title="Experimental">⚠️</span>
-  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
-
-  The element that will be focused when the dialog shows.
-When not set, the first tabbable element within the dialog will be used.
-
-- **`unstable_finalFocusRef`** <span title="Experimental">⚠️</span>
-  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
-
-  The element that will be focused when the dialog hides.
-When not set, the disclosure component will be used.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -511,6 +515,8 @@ When not set, the disclosure component will be used.
 
   Moves focus to the previous element.
 
+</details>
+
 ### `MenuDisclosure`
 
 - **`disabled`**
@@ -524,6 +530,10 @@ When not set, the disclosure component will be used.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+<details><summary>8 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`visible`**
   <code>boolean</code>
@@ -565,6 +575,8 @@ similarly to `readOnly` on form elements. In this case, only
 
   Changes the `visible` state to `true`
 
+</details>
+
 ### `MenuGroup`
 
 No props to show
@@ -583,6 +595,15 @@ No props to show
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>14 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -639,11 +660,6 @@ similarly to `readOnly` on form elements. In this case, only
 
   Unregisters the roving item.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
 - **`visible`**
   <code>boolean</code>
 
@@ -658,6 +674,8 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+</details>
 
 ### `MenuItemCheckbox`
 
@@ -673,18 +691,6 @@ similarly to `readOnly` on form elements. In this case, only
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-- **`state`**
-  <code>boolean | any[] | &#34;indeterminate&#34;</code>
-
-  Stores the state of the checkbox.
-If checkboxes that share this state have defined a `value` prop, it's
-going to be an array.
-
-- **`setState`**
-  <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
-
-  Sets `state`.
-
 - **`value`**
   <code>any</code>
 
@@ -696,6 +702,32 @@ array.
   <code>boolean | undefined</code>
 
   Checkbox's checked state. If present, it's used instead of `state`.
+
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+- **`name`**
+  <code>string</code>
+
+  MenuItemCheckbox's name as in `menu.values`.
+
+<details><summary>18 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`state`**
+  <code>boolean | any[] | &#34;indeterminate&#34;</code>
+
+  Stores the state of the checkbox.
+If checkboxes that share this state have defined a `value` prop, it's
+going to be an array.
+
+- **`setState`**
+  <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
+
+  Sets `state`.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -752,11 +784,6 @@ array.
   <code>(id: string) =&#62; void</code>
 
   Unregisters the roving item.
-
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
 
 - **`visible`**
   <code>boolean</code>
@@ -783,68 +810,9 @@ array.
 
   Updates checkboxes and radios values within the menu.
 
-- **`name`**
-  <code>string</code>
-
-  MenuItemCheckbox's name as in `menu.values`.
+</details>
 
 ### `MenuItemRadio`
-
-- **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
-
-  Defines the orientation of the rover list.
-
-- **`currentId`**
-  <code>string | null</code>
-
-  The current focused element ID.
-
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first element.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last element.
-
-- **`stops`**
-  <code>Stop[]</code>
-
-  A list of element refs and IDs of the roving items.
-
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given element ID.
-
-- **`next`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the next element.
-
-- **`previous`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the previous element.
-
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
-
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
-
-- **`register`**
-  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
-
-  Registers the element ID and ref in the roving tab index list.
-
-- **`unregister`**
-  <code>(id: string) =&#62; void</code>
-
-  Unregisters the roving item.
 
 - **`disabled`**
   <code>boolean | undefined</code>
@@ -863,16 +831,6 @@ similarly to `readOnly` on form elements. In this case, only
 
   Element ID.
 
-- **`state`**
-  <code>any</code>
-
-  The `value` attribute of the current checked radio.
-
-- **`setState`**
-  <code>(value: any) =&#62; void</code>
-
-  Sets `state`.
-
 - **`value`**
   <code>any</code>
 
@@ -882,6 +840,81 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean | undefined</code>
 
   Same as the `checked` attribute.
+
+- **`name`**
+  <code>string</code>
+
+  MenuItemRadio's name as in `menu.values`.
+
+<details><summary>18 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.
+
+- **`currentId`**
+  <code>string | null</code>
+
+  The current focused element ID.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first element.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.
+
+- **`stops`**
+  <code>Stop[]</code>
+
+  A list of element refs and IDs of the roving items.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given element ID.
+
+- **`next`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the next element.
+
+- **`previous`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the previous element.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
+
+- **`register`**
+  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
+
+  Registers the element ID and ref in the roving tab index list.
+
+- **`unregister`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters the roving item.
+
+- **`state`**
+  <code>any</code>
+
+  The `value` attribute of the current checked radio.
+
+- **`setState`**
+  <code>(value: any) =&#62; void</code>
+
+  Sets `state`.
 
 - **`visible`**
   <code>boolean</code>
@@ -908,19 +941,26 @@ similarly to `readOnly` on form elements. In this case, only
 
   Updates checkboxes and radios values within the menu.
 
-- **`name`**
-  <code>string</code>
-
-  MenuItemRadio's name as in `menu.values`.
+</details>
 
 ### `MenuSeparator`
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Separator's orientation.
 
+</details>
+
 ### `StaticMenu`
+
+<details><summary>5 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -946,3 +986,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
+
+</details>
