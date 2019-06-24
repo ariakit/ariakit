@@ -336,6 +336,7 @@ It will be set to `false` if `modal` is `false`.
 <details><summary>4 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -367,6 +368,7 @@ It's called after given milliseconds if `animated` is a number.
 <details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -405,6 +407,7 @@ similarly to `readOnly` on form elements. In this case, only
 <details><summary>2 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
