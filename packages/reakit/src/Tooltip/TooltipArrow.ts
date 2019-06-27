@@ -19,7 +19,11 @@ export const useTooltipArrow = createHook<
 >({
   name: "TooltipArrow",
   compose: usePopoverArrow,
-  useState: useTooltipState
+  useState: useTooltipState,
+
+  useOptions({ size = 16, ...options }) {
+    return { size, ...options };
+  }
 });
 
 export const TooltipArrow = createComponent({

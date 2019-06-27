@@ -32,7 +32,6 @@ export function useTooltipProps(
 
     & > .arrow {
       background-color: transparent;
-      font-size: 1.25em !important;
       & .stroke {
         fill: transparent;
       }

@@ -10,7 +10,10 @@ export type PopoverArrowOptions = BoxOptions &
     Partial<PopoverStateReturn>,
     "unstable_arrowRef" | "unstable_arrowStyles"
   > &
-  Pick<PopoverStateReturn, "placement">;
+  Pick<PopoverStateReturn, "placement"> & {
+    /** Arrow's size */
+    size?: number | string;
+  };
 
 export type PopoverArrowHTMLProps = BoxHTMLProps;
 
@@ -23,6 +26,10 @@ export const usePopoverArrow = createHook<
   name: "PopoverArrow",
   compose: useBox,
   useState: usePopoverState,
+
+  useOptions({ size = 30, ...options }) {
+    return { size, ...options };
+  },
 
   useProps(options, { ref: htmlRef, style: htmlStyle, ...htmlProps }) {
     const [placement] = options.placement.split("-");
@@ -39,7 +46,7 @@ export const usePopoverArrow = createHook<
         ...arrowStyles,
         top: arrowStyles ? arrowStyles.top || undefined : undefined,
         position: "absolute",
-        fontSize: "30px",
+        fontSize: options.size,
         width: "1em",
         height: "1em",
         pointerEvents: "none",

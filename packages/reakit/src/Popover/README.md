@@ -245,6 +245,11 @@ It's called after given milliseconds if `animated` is a number.
 
 ### `PopoverArrow`
 
+- **`size`**
+  <code>string | number | undefined</code>
+
+  Arrow's size
+
 <details><summary>1 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
