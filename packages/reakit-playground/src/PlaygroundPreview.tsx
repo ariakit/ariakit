@@ -71,7 +71,7 @@ export function PlaygroundPreview({
         {children}
       </Provider>
     ),
-    []
+    [prefix]
   );
 
   React.useEffect(() => {

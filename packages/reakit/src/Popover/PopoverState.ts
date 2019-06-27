@@ -164,13 +164,14 @@ export function usePopoverState(
       }
     };
   }, [
+    dialog.visible,
     originalPlacement,
     flip,
     shift,
     gutter,
     preventOverflow,
     boundariesElement,
-    dialog.visible
+    fixed
   ]);
 
   return {

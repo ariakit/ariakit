@@ -77,7 +77,14 @@ export const useMenuDisclosure = createHook<
             };
           }
         }),
-      [options.show, options.hide, options.first, options.last]
+      [
+        dir,
+        Boolean(parent),
+        options.show,
+        options.hide,
+        options.first,
+        options.last
+      ]
     );
 
     const onFocus = React.useCallback(() => {

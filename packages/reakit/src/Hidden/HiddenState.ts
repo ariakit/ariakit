@@ -76,8 +76,9 @@ function useLastValue<T>(value: T) {
 export function useHiddenState(
   initialState: SealedInitialState<HiddenInitialState> = {}
 ): HiddenStateReturn {
+  const defaultId = useId("hidden-");
   const {
-    unstable_hiddenId: hiddenId = useId("hidden-"),
+    unstable_hiddenId: hiddenId = defaultId,
     unstable_animated: animated = false,
     visible: sealedVisible = false,
     unstable_isMounted: initialIsMounted = false

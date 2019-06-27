@@ -25,7 +25,7 @@ export function useShortcuts(
     }
 
     return () => clearTimeout(timeoutId);
-  }, [keys, stops, move]);
+  }, [keys, stops, move, timeout]);
 
   const onKeyDown = React.useCallback(
     (event: React.KeyboardEvent) => {

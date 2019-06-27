@@ -23,7 +23,7 @@ export function IdProvider({
   const genId = React.useMemo(
     () => (localPrefix: string = defaultPrefix) =>
       `${prefix}${localPrefix}${++count.current}`,
-    []
+    [prefix]
   );
   return <Context.Provider value={genId}>{children}</Context.Provider>;
 }

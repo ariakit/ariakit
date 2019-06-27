@@ -134,7 +134,7 @@ const { Compiler: renderAst } = new RehypeReact({
         if (!id) return undefined;
         add(id);
         return () => remove(id);
-      }, [add, remove]);
+      }, [id, add, remove]);
 
       if (href) {
         return (

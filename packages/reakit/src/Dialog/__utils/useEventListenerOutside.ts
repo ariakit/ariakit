@@ -54,5 +54,12 @@ export function useEventListenerOutside(
     return () => {
       document.removeEventListener(event, handleEvent, true);
     };
-  }, [targetRef, event, shouldListen, nestedDialogs]);
+  }, [
+    targetRef,
+    event,
+    shouldListen,
+    nestedDialogs,
+    listenerRef,
+    disclosureRef
+  ]);
 }

@@ -93,7 +93,14 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
             };
           }
         }),
-      [parent, options.hide, options.last, options.first]
+      [
+        Boolean(parent),
+        isHorizontal,
+        isVertical,
+        options.hide,
+        options.last,
+        options.first
+      ]
     );
 
     const parentBindings = React.useMemo(

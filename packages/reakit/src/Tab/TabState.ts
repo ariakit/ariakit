@@ -36,8 +36,9 @@ export type TabStateReturn = TabState & TabActions;
 export function useTabState(
   initialState: SealedInitialState<TabInitialState> = {}
 ): TabStateReturn {
+  const defaultId = useId("tab-");
   const {
-    unstable_baseId: baseId = useId("tab-"),
+    unstable_baseId: baseId = defaultId,
     selectedId: sealedSelectedId = null,
     loop = true,
     manual = false,

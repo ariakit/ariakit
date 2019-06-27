@@ -103,7 +103,7 @@ const { Compiler: renderAst } = new RehypeReact({
 
         React.useEffect(() => {
           state.update(code);
-        }, [code]);
+        }, [state.update, code]);
 
         if (isDynamic) {
           return (

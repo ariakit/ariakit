@@ -142,7 +142,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           })
         );
       },
-      [options.disabled]
+      [clickKeysRef, options.disabled]
     );
 
     return {

@@ -68,7 +68,7 @@ export function useFocusTrap(
       if (beforeElement.current) beforeElement.current.remove();
       if (afterElement.current) afterElement.current.remove();
     };
-  }, [shouldTrap]);
+  }, [portalRef, shouldTrap]);
 
   // Focus trap
   React.useEffect(() => {
@@ -102,7 +102,7 @@ export function useFocusTrap(
       before.removeEventListener("focus", handleFocus);
       after.removeEventListener("focus", handleFocus);
     };
-  }, [dialogRef, shouldTrap]);
+  }, [dialogRef, nestedDialogs, shouldTrap]);
 
   // Click trap
   React.useEffect(() => {
@@ -123,5 +123,5 @@ export function useFocusTrap(
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [dialogRef, shouldTrap]);
+  }, [dialogRef, nestedDialogs, portalRef, shouldTrap]);
 }

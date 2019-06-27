@@ -97,6 +97,8 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
       },
       [
         htmlOnChange,
+        isBoolean,
+        checked,
         options.disabled,
         options.setState,
         options.state,
