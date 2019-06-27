@@ -8,9 +8,9 @@ import {
   MenuGroup,
   StaticMenu,
   MenuItemRadio,
-  MenuItemCheckbox
+  MenuItemCheckbox,
+  MenuDisclosureHTMLProps
 } from "..";
-import { MenuDisclosureHTMLProps } from "../MenuDisclosure";
 
 function keyDown(key: string) {
   fireEvent.keyDown(document.activeElement!, { key });

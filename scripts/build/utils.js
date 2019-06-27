@@ -1,5 +1,5 @@
 const { join, dirname, relative, basename } = require("path");
-const ast = require("markdown-to-ast");
+const ast = require("@textlint/markdown-to-ast");
 const inject = require("md-node-inject");
 const toMarkdown = require("ast-to-markdown");
 const {

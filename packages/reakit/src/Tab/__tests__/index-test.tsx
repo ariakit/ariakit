@@ -1,7 +1,6 @@
 import * as React from "react";
 import { render, fireEvent, act } from "@testing-library/react";
-import { Tab, TabList, TabPanel, useTabState } from "..";
-import { TabInitialState } from "../TabState";
+import { Tab, TabList, TabPanel, useTabState, TabInitialState } from "..";
 
 function SimpleTest(props: TabInitialState = {}) {
   const tab = useTabState(props);
