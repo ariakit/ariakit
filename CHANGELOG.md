@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.4](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.3...reakit@1.0.0-beta.4) (2019-06-27)
+
+
+### Bug Fixes
+
+* Always focus `Rover` when calling `rover.{move|first|last}()` ([#389](https://github.com/reakit/reakit/issues/389)) ([f346df4](https://github.com/reakit/reakit/commit/f346df4))
+* Fix missing React Hooks deps ([b08b62c](https://github.com/reakit/reakit/commit/b08b62c))
+
+
+### Features
+
+* **website:** Hide state hook props from docs ([#390](https://github.com/reakit/reakit/issues/390)) ([fdac912](https://github.com/reakit/reakit/commit/fdac912))
+* Add new `size` prop to `PopoverArrow` and `TooltipArrow` ([11a6df1](https://github.com/reakit/reakit/commit/11a6df1)), closes [#383](https://github.com/reakit/reakit/issues/383)
+
+
+
+
+
 # [1.0.0-beta.3](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.2...reakit@1.0.0-beta.3) (2019-06-23)
 
 

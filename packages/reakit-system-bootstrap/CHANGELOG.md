@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.1...reakit-system-bootstrap@0.6.2) (2019-06-27)
+
+
+### Features
+
+* Add new `size` prop to `PopoverArrow` and `TooltipArrow` ([11a6df1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/11a6df1)), closes [#383](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/383)
+
+
+
+
+
 ## [0.6.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.0...reakit-system-bootstrap@0.6.1) (2019-06-23)
 
 
