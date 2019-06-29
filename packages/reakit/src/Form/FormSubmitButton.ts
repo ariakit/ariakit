@@ -28,8 +28,10 @@ export const unstable_useFormSubmitButton = createHook<
       window.requestAnimationFrame(() => {
         const input = getFirstInvalidInput(options.baseId);
         if (input) {
-          input.select();
           input.focus();
+          if ("select" in input) {
+            input.select();
+          }
         }
       });
     }, [options.baseId]);
