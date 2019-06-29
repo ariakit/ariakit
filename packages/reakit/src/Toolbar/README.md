@@ -50,6 +50,47 @@ function Example() {
 }
 ```
 
+### `Toolbar` with `Menu`
+
+You can render [Menu](/docs/menu) within a `Toolbar` using the same techinique to make a [Submenu](/docs/menu/#submenu).
+
+```jsx
+import React from "react";
+import { useToolbarState, Toolbar, ToolbarItem } from "reakit/Toolbar";
+import { useMenuState, MenuDisclosure, Menu, MenuItem } from "reakit/Menu";
+import { VisuallyHidden } from "reakit/VisuallyHidden";
+import { Button } from "reakit/Button";
+
+const MoreItems = React.forwardRef((props, ref) => {
+  const menu = useMenuState({ placement: "bottom-end" });
+  return (
+    <>
+      <MenuDisclosure {...menu} {...props} ref={ref} aria-label="More items" />
+      <Menu {...menu} aria-label="More items">
+        <MenuItem {...menu}>Item 3</MenuItem>
+        <MenuItem {...menu}>Item 4</MenuItem>
+        <MenuItem {...menu}>Item 5</MenuItem>
+      </Menu>
+    </>
+  );
+});
+
+function Example() {
+  const toolbar = useToolbarState();
+  return (
+    <Toolbar {...toolbar} aria-label="My toolbar">
+      <ToolbarItem {...toolbar} as={Button}>
+        Item 1
+      </ToolbarItem>
+      <ToolbarItem {...toolbar} as={Button}>
+        Item 2
+      </ToolbarItem>
+      <ToolbarItem {...toolbar} as={MoreItems} />
+    </Toolbar>
+  );
+}
+```
+
 ## Accessibility
 
 - `Toolbar` has role `toolbar`.
