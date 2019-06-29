@@ -48,6 +48,8 @@ function Example() {
 
 ### Backdrop
 
+You can use the `DialogBackdrop` component to render a backdrop for the dialog.
+
 ```jsx
 import {
   useDialogState,
@@ -102,6 +104,8 @@ function Example() {
   );
 }
 ```
+
+### Chat dialog
 
 If desirable, a non-modal dialog can also be rendered within a [Portal](/docs/portal/). The `hideOnClickOutside` prop can be set to `false` so clicking and focusing outside doesn't close it.
 
