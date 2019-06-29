@@ -27,37 +27,32 @@ Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
+<!-- eslint-disable no-alert -->
 ```jsx
-import { Group } from "reakit/Group";
 import {
+  unstable_useFormState as useFormState,
   unstable_Form as Form,
   unstable_FormLabel as FormLabel,
-  unstable_FormCheckbox as FormCheckbox,
-  unstable_FormGroup as FormGroup,
-  unstable_FormRadioGroup as FormRadioGroup,
-  unstable_FormRadio as FormRadio,
-  unstable_FormRemoveButton as FormRemoveButton,
-  unstable_FormPushButton as FormPushButton,
-  unstable_FormSubmitButton as FormSubmitButton,
   unstable_FormInput as FormInput,
   unstable_FormMessage as FormMessage,
-  unstable_useFormState as useFormState
+  unstable_FormSubmitButton as FormSubmitButton
 } from "reakit/Form";
 
 function Example() {
   const form = useFormState({
     values: {
-      name: "",
-      emails: [],
-      accepted: false,
-      preferences: [],
-      choice: ""
+      name: ""
     },
     onValidate: values => {
-      if (values.name !== "a") {
-        const result = { name: "no" };
-        throw result;
+      if (!values.name) {
+        const errors = {
+          name: "How can we be friends without knowing your name?"
+        };
+        throw errors;
       }
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
     }
   });
   return (
@@ -65,12 +60,136 @@ function Example() {
       <FormLabel {...form} name="name">
         Name
       </FormLabel>
-      <FormInput {...form} name="name" placeholder="Name" />
+      <FormInput {...form} name="name" placeholder="John Doe" />
       <FormMessage {...form} name="name" />
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
+    </Form>
+  );
+}
+```
+
+### Arrays
+
+`Form` supports array values seamlessly. For convenience, you can reliably use the array indexes as keys on the array fragments.
+
+Focus is managed so adding a new item will move focus to the new input or to the first input if multiple inputs have been added.
+
+<!-- eslint-disable no-alert -->
+```jsx
+import React from "react";
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormRemoveButton as FormRemoveButton,
+  unstable_FormPushButton as FormPushButton,
+  unstable_FormSubmitButton as FormSubmitButton,
+  unstable_FormInput as FormInput,
+  unstable_FormMessage as FormMessage
+} from "reakit/Form";
+
+function Example() {
+  const form = useFormState({
+    values: {
+      people: [{ name: "", email: "" }]
+    },
+    onValidate: values => {
+      const errors = {};
+      values.people.forEach((value, i) => {
+        if (!value.email) {
+          if (!errors.people) {
+            errors.people = [];
+          }
+          if (!errors.people[i]) {
+            errors.people[i] = {};
+          }
+          errors.people[i].email =
+            "We can't sell data without an email, can we?";
+        }
+      });
+      if (Object.keys(errors).length) {
+        throw errors;
+      }
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    }
+  });
+  return (
+    <Form {...form}>
+      {form.values.people.map((_, i) => (
+        <React.Fragment key={i}>
+          <FormLabel {...form} name={["people", i, "name"]}>
+            Name
+          </FormLabel>
+          <FormInput {...form} name={["people", i, "name"]} />
+          <FormMessage {...form} name={["people", i, "name"]} />
+          <FormLabel {...form} name={["people", i, "email"]}>
+            Email
+          </FormLabel>
+          <FormInput {...form} type="email" name={["people", i, "email"]} />
+          <FormMessage {...form} name={["people", i, "email"]} />
+          <FormRemoveButton {...form} name="people" index={i}>
+            Remove person
+          </FormRemoveButton>
+        </React.Fragment>
+      ))}
+      <br />
+      <br />
+      <FormPushButton {...form} name="people" value={{ name: "", email: "" }}>
+        Add person
+      </FormPushButton>
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
+    </Form>
+  );
+}
+```
+
+### Checkbox
+
+With `FormCheckbox`, you can either manage `boolean` values (single checkbox) or `array` values (checkbox group). Error messages can also be displayed.
+
+<!-- eslint-disable no-alert -->
+```jsx
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormCheckbox as FormCheckbox,
+  unstable_FormGroup as FormGroup,
+  unstable_FormSubmitButton as FormSubmitButton,
+  unstable_FormMessage as FormMessage
+} from "reakit/Form";
+
+function Example() {
+  const form = useFormState({
+    values: {
+      accepted: false,
+      preferences: []
+    },
+    onValidate: values => {
+      const errors = {};
+      if (!values.accepted) {
+        errors.accepted = "You must accept our not-so-evil conditions!";
+      }
+      if (!values.preferences.includes("JS")) {
+        errors.preferences = "Why not JS? It's so cool! 🙁";
+      }
+      if (Object.keys(errors).length) {
+        throw errors;
+      }
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    }
+  });
+  return (
+    <Form {...form}>
       <FormCheckbox {...form} name="accepted" />
       <FormLabel {...form} name="accepted">
-        Accept
+        Accept conditions
       </FormLabel>
+      <FormMessage {...form} name="accepted" />
       <FormGroup {...form} name="preferences">
         <FormLabel {...form} as="legend" name="preferences">
           Preferences
@@ -85,6 +204,46 @@ function Example() {
           <FormCheckbox {...form} name="preferences" value="JS" /> JS
         </label>
       </FormGroup>
+      <FormMessage {...form} name="preferences" />
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
+    </Form>
+  );
+}
+```
+
+### Radio
+
+You can use `FormRadio` and `FormRadioGroup` to manage radio buttons. Error messages can also be displayed.
+
+<!-- eslint-disable no-alert -->
+```jsx
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormRadioGroup as FormRadioGroup,
+  unstable_FormRadio as FormRadio,
+  unstable_FormSubmitButton as FormSubmitButton,
+  unstable_FormMessage as FormMessage
+} from "reakit/Form";
+
+function Example() {
+  const form = useFormState({
+    values: {
+      choice: ""
+    },
+    onValidate: values => {
+      if (values.choice !== "js") {
+        const errors = { choice: "YOU WILL BE FIRED!" };
+        throw errors;
+      }
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    }
+  });
+  return (
+    <Form {...form}>
       <FormRadioGroup {...form} name="choice">
         <FormLabel {...form} as="legend" name="choice">
           Choice
@@ -99,20 +258,8 @@ function Example() {
           <FormRadio {...form} name="choice" value="js" /> JS
         </label>
       </FormRadioGroup>
-      {form.values.emails.map((_, i) => (
-        <Group key={i}>
-          <FormInput {...form} name={["emails", i, "name"]} />
-          <FormInput {...form} type="email" name={["emails", i, "email"]} />
-          <FormRemoveButton {...form} name="emails" index={i}>
-            x
-          </FormRemoveButton>
-        </Group>
-      ))}
-      <FormPushButton {...form} name="emails" value={{ name: "", email: "" }}>
-        Add email
-      </FormPushButton>
-      <FormSubmitButton {...form}>Subscribe</FormSubmitButton>
-      <pre>{JSON.stringify(form, null, 2)}</pre>
+      <FormMessage {...form} name="choice" />
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
     </Form>
   );
 }
