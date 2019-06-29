@@ -306,7 +306,7 @@ export function unstable_useFormState<V = Record<any, any>>(
     (vals = state.values) =>
       new Promise<any>(resolve => {
         if (onValidate) {
-          const response = onValidate(filterAllEmpty(vals));
+          const response = onValidate(vals);
           if (isPromise(response)) {
             dispatch({ type: "startValidate" });
           }
@@ -352,15 +352,15 @@ export function unstable_useFormState<V = Record<any, any>>(
       return validate()
         .then(validateMessages => {
           if (onSubmit) {
-            return Promise.resolve(onSubmit(state.values as V)).then(
-              submitMessages => {
-                const messages = { ...validateMessages, ...submitMessages };
-                dispatch({ type: "endSubmit", messages });
-                if (resetOnSubmitSucceed) {
-                  dispatch({ type: "reset" });
-                }
+            return Promise.resolve(
+              onSubmit(filterAllEmpty(state.values as V))
+            ).then(submitMessages => {
+              const messages = { ...validateMessages, ...submitMessages };
+              dispatch({ type: "endSubmit", messages });
+              if (resetOnSubmitSucceed) {
+                dispatch({ type: "reset" });
               }
-            );
+            });
           }
 
           dispatch({ type: "endSubmit", messages: validateMessages });
