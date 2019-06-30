@@ -3,8 +3,8 @@ import { warning } from "reakit-utils/warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { usePipe } from "reakit-utils/usePipe";
+import { mergeRefs } from "reakit-utils/mergeRefs";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { MenuContext } from "./__utils/MenuContext";
@@ -24,10 +24,8 @@ export const useStaticMenu = createHook<StaticMenuOptions, StaticMenuHTMLProps>(
     compose: useBox,
     useState: useMenuState,
 
-    useProps(
-      options,
-      { onKeyDown: htmlOnKeyDown, unstable_wrap: htmlWrap, ...htmlProps }
-    ) {
+    useProps(options, { ref: htmlRef, unstable_wrap: htmlWrap, ...htmlProps }) {
+      const ref = React.useRef<HTMLElement>(null);
       const parent = React.useContext(MenuContext);
 
       const providerValue = React.useMemo(
@@ -40,7 +38,7 @@ export const useStaticMenu = createHook<StaticMenuOptions, StaticMenuHTMLProps>(
         [options.orientation, options.next, options.previous, parent]
       );
 
-      const onKeyDown = useShortcuts(options);
+      useShortcuts(ref, options);
 
       const wrap = React.useCallback(
         (children: React.ReactNode) => (
@@ -52,9 +50,9 @@ export const useStaticMenu = createHook<StaticMenuOptions, StaticMenuHTMLProps>(
       );
 
       return {
+        ref: mergeRefs(ref, htmlRef),
         role: options.orientation === "horizontal" ? "menubar" : "menu",
         "aria-orientation": options.orientation,
-        onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
         unstable_wrap: usePipe(wrap, htmlWrap),
         ...htmlProps
       };

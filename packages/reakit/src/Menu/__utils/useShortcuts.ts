@@ -2,6 +2,7 @@ import * as React from "react";
 import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(
+  menuRef: React.RefObject<HTMLElement>,
   { stops, move }: Pick<MenuStateReturn, "stops" | "move">,
   timeout = 500
 ) {
@@ -27,19 +28,32 @@ export function useShortcuts(
     return () => clearTimeout(timeoutId);
   }, [keys, stops, move, timeout]);
 
-  const onKeyDown = React.useCallback(
-    (event: React.KeyboardEvent) => {
+  React.useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return undefined;
+
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.altKey || event.shiftKey || event.ctrlKey) {
         return;
       }
+      const target = event.target as HTMLElement;
+      const role = target.getAttribute("role");
+      const targetIsMenu = target === menu;
+      const targetIsMenuItem =
+        role &&
+        role.indexOf("menuitem") >= 0 &&
+        target.closest("[role=menu],[role=menubar]") === menu;
+
+      if (!targetIsMenu && !targetIsMenuItem) return;
+
       if (/^[a-z0-9_-]$/i.test(event.key)) {
         event.stopPropagation();
         event.preventDefault();
-        setKeys(`${keys}${event.key}`);
+        setKeys(k => `${k}${event.key}`);
       }
-    },
-    [keys, setKeys]
-  );
+    };
 
-  return onKeyDown;
+    menu.addEventListener("keydown", onKeyDown);
+    return () => menu.removeEventListener("keydown", onKeyDown);
+  }, [menuRef, setKeys]);
 }
