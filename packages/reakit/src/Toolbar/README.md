@@ -52,7 +52,7 @@ function Example() {
 
 ### `Toolbar` with `Menu`
 
-You can render [Menu](/docs/menu) within a `Toolbar` using the same techinique to make a [Submenu](/docs/menu/#submenu).
+You can render [Menu](/docs/menu/) within a `Toolbar` using the same techinique to make a [Submenu](/docs/menu/#submenu).
 
 ```jsx
 import React from "react";

@@ -316,6 +316,76 @@ function Example() {
 }
 ```
 
+### Abstracting
+
+You may find cumbersome having to pass `{...form}` to every component. Also, repeating `FormLabel`, `FormInput` and `FormMessage` for every form field may sound overly verbose to you.
+
+[Reakit is a low level library](/docs/basic-concepts/) designed to give you explicit building blocks so you can create anything you want, and design any API you wish. It's easy to go from explicit to implicit.
+
+<!-- eslint-disable no-alert -->
+```jsx
+import React from "react";
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as BaseForm,
+  unstable_FormLabel as FormLabel,
+  unstable_FormInput as FormInput,
+  unstable_FormMessage as FormMessage,
+  unstable_FormSubmitButton as FormSubmitButton
+} from "reakit/Form";
+
+const FormContext = React.createContext();
+
+function Form({ initialValues, onValidate, onSubmit, ...props }) {
+  const form = useFormState({ values: initialValues, onValidate, onSubmit });
+  const value = React.useMemo(() => form, Object.values(form));
+  return (
+    <FormContext.Provider value={value}>
+      <BaseForm {...form} {...props} />
+    </FormContext.Provider>
+  );
+}
+
+function Field({ name, label, ...props }) {
+  const form = React.useContext(FormContext);
+  return (
+    <>
+      <FormLabel {...form} name={name} label={label} />
+      <FormInput {...form} {...props} name={name} />
+      <FormMessage {...form} name={name} />
+    </>
+  );
+}
+
+function SubmitButton(props) {
+  const form = React.useContext(FormContext);
+  return <FormSubmitButton {...form} {...props} />;
+}
+
+function Example() {
+  const onValidate = values => {
+    if (!values.name) {
+      const errors = {
+        name: "How can we be friends without knowing your name?"
+      };
+      throw errors;
+    }
+  };
+  const onSubmit = values => {
+    alert(JSON.stringify(values, null, 2));
+  };
+  return (
+    <Form
+      initialValues={{ name: "" }}
+      onValidate={onValidate}
+      onSubmit={onSubmit}
+    >
+      <Field label="Name" name="name" placeholder="John Doe" />
+      <SubmitButton>Submit</SubmitButton>
+    </Form>
+  );
+}
+```
 
 ## Accessibility
 
