@@ -40,9 +40,7 @@ import {
 
 function Example() {
   const form = useFormState({
-    values: {
-      name: ""
-    },
+    values: { name: "" },
     onValidate: values => {
       if (!values.name) {
         const errors = {
@@ -229,9 +227,7 @@ import {
 
 function Example() {
   const form = useFormState({
-    values: {
-      choice: ""
-    },
+    values: { choice: "" },
     onValidate: values => {
       if (values.choice !== "js") {
         const errors = { choice: "YOU WILL BE FIRED!" };
@@ -264,6 +260,62 @@ function Example() {
   );
 }
 ```
+
+### Validating with Yup
+
+[Yup](https://github.com/jquense/yup) is a popular library for object schema validation. You can easily integrate it with Reakit `Form`.
+
+```jsx
+import { object, string } from "yup";
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormInput as FormInput,
+  unstable_FormMessage as FormMessage,
+  unstable_FormSubmitButton as FormSubmitButton
+} from "reakit/Form";
+import set from "lodash/set";
+
+const schema = object({
+  name: string()
+    .min(2, "Your name is too short!")
+    .required("How can we be friends without knowing your name?")
+});
+
+function validateWithYup(yupSchema) {
+  return values =>
+    yupSchema.validate(values, { abortEarly: false }).then(
+      () => {},
+      error => {
+        if (error.inner.length) {
+          throw error.inner.reduce(
+            (acc, curr) => set(acc, curr.path, curr.message),
+            {}
+          );
+        }
+      }
+    );
+}
+
+function Example() {
+  const form = useFormState({
+    values: { name: "" },
+    onValidate: validateWithYup(schema)
+  });
+  return (
+    <Form {...form}>
+      <FormLabel {...form} name="name">
+        Name
+      </FormLabel>
+      <FormInput {...form} name="name" placeholder="John Doe" />
+      <FormMessage {...form} name="name" />
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
+    </Form>
+  );
+}
+```
+
 
 ## Accessibility
 

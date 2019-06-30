@@ -10,6 +10,8 @@ import {
 import * as emotion from "emotion";
 import * as styled from "styled-components";
 import * as spring from "react-spring";
+import * as yup from "yup";
+import set from "lodash/set";
 import createUseContext from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
 import CarbonAd from "../components/CarbonAd";
@@ -111,6 +113,8 @@ const { Compiler: renderAst } = new RehypeReact({
               <PlaygroundPreview
                 modules={{
                   emotion,
+                  yup,
+                  "lodash/set": set,
                   "styled-components": styled,
                   constate: createUseContext,
                   "react-spring": spring,
