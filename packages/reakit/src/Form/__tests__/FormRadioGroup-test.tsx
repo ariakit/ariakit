@@ -15,6 +15,7 @@ test("render", () => {
           aria-labelledby="base-a-label"
           id="base-a"
           role="radiogroup"
+          tabindex="-1"
         />
       </div>
     </body>
