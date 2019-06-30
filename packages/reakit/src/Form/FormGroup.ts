@@ -41,6 +41,7 @@ export const unstable_useFormGroup = createHook<
   useProps(options, htmlProps) {
     return {
       id: getInputId(options.name, options.baseId),
+      tabIndex: -1,
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name),

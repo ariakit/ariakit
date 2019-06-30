@@ -315,6 +315,46 @@ test("focus the first invalid input on failed submit", async () => {
   await wait(expect(input2).toHaveFocus);
 });
 
+test("focus the first invalid fieldset on failed submit", async () => {
+  const Test = () => {
+    const form = useFormState({
+      values: {
+        input1: "",
+        choice1: "",
+        choice2: ""
+      },
+      onValidate: () => {
+        const error = { choice1: "error", choice2: "error" };
+        throw error;
+      }
+    });
+    return (
+      <Form {...form}>
+        <FormLabel {...form} name="input1" label="input1" />
+        <FormInput {...form} name="input1" />
+        <FormRadioGroup {...form} name="choice1">
+          <FormLabel {...form} as="legend" name="choice1" label="choice1" />
+          <label>
+            <FormRadio {...form} name="choice1" value="a" />a
+          </label>
+          <label>
+            <FormRadio {...form} name="choice1" value="b" />b
+          </label>
+        </FormRadioGroup>
+        <FormLabel {...form} name="choice2" label="choice2" />
+        <FormInput {...form} name="choice2" />
+        <FormSubmitButton {...form} data-testid="submit" />
+      </Form>
+    );
+  };
+  const { getByLabelText, getByTestId } = render(<Test />);
+  const choice1 = getByLabelText("choice1");
+  const submit = getByTestId("submit");
+  expect(choice1).not.toHaveFocus();
+  fireEvent.click(submit);
+  await wait(expect(choice1).toHaveFocus);
+});
+
 test("arrow keys control radio buttons", async () => {
   const Test = () => {
     const form = useFormState({
