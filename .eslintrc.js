@@ -1,21 +1,21 @@
-{
-  "parser": "babel-eslint",
-  "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
-  "env": {
-    "jest": true,
-    "browser": true
+module.exports = {
+  parser: "babel-eslint",
+  extends: ["airbnb", "plugin:prettier/recommended", "prettier/react"],
+  env: {
+    jest: true,
+    browser: true
   },
-  "settings": {
+  settings: {
     "import/resolver": {
       "babel-module": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        extensions: [".js", ".jsx", ".ts", ".tsx"]
       },
-      "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   },
-  "rules": {
+  rules: {
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
     "no-param-reassign": "off",
@@ -26,7 +26,7 @@
     "no-bitwise": "off",
     "no-nested-ternary": "off",
     "global-require": "off",
-    "camelcase": "off",
+    camelcase: "off",
     "jsx-a11y/anchor-is-valid": "off",
     "jsx-a11y/label-has-for": "off",
     "jsx-a11y/label-has-associated-control": "off",
@@ -50,7 +50,7 @@
       "error",
       {
         "newlines-between": "never",
-        "groups": [
+        groups: [
           ["builtin", "external", "internal"],
           "parent",
           "sibling",
@@ -59,23 +59,23 @@
       }
     ]
   },
-  "overrides": [
+  overrides: [
     {
-      "files": ["**/*.md"],
-      "plugins": ["markdown"],
-      "rules": {
+      files: ["**/*.md"],
+      plugins: ["markdown"],
+      rules: {
         "no-unused-vars": "off",
         "react/react-in-jsx-scope": "off"
       }
     },
     {
-      "files": ["**/*.ts", "**/*.tsx"],
-      "parser": "@typescript-eslint/parser",
-      "parserOptions": {
-        "project": "./tsconfig.json"
+      files: ["**/*.ts", "**/*.tsx"],
+      parser: "@typescript-eslint/parser",
+      parserOptions: {
+        project: "./tsconfig.json"
       },
-      "plugins": ["@typescript-eslint"],
-      "rules": {
+      plugins: ["@typescript-eslint"],
+      rules: {
         "no-undef": "off",
         "no-unused-vars": "off",
         "no-restricted-globals": "off",
@@ -83,4 +83,4 @@
       }
     }
   ]
-}
+};
