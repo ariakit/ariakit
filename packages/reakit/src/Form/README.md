@@ -98,7 +98,7 @@ function Example() {
   });
   return (
     <Form {...form}>
-      <FormLabel {...form} name="name">
+      <FormLabel {...form} name="message">
         Name
       </FormLabel>
       <FormInput
