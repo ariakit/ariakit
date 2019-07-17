@@ -99,7 +99,7 @@ function Example() {
   return (
     <Form {...form}>
       <FormLabel {...form} name="message">
-        Name
+        Message
       </FormLabel>
       <FormInput
         {...form}
