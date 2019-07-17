@@ -87,7 +87,7 @@ function Example() {
     onValidate: values => {
       if (!values.message) {
         const errors = {
-          name: "Please enter a message."
+          message: "Please enter a message."
         };
         throw errors;
       }
