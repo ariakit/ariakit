@@ -66,6 +66,54 @@ function Example() {
 }
 ```
 
+### Textareas
+
+If your form requires a `textarea` instead of an `input` field, you can use the `as` prop on the `FormInput` component.
+
+<!-- eslint-disable no-alert -->
+```jsx
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormInput as FormInput,
+  unstable_FormMessage as FormMessage,
+  unstable_FormSubmitButton as FormSubmitButton
+} from "reakit/Form";
+
+function Example() {
+  const form = useFormState({
+    values: { message: "" },
+    onValidate: values => {
+      if (!values.message) {
+        const errors = {
+          message: "Please enter a message."
+        };
+        throw errors;
+      }
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    }
+  });
+  return (
+    <Form {...form}>
+      <FormLabel {...form} name="message">
+        Message
+      </FormLabel>
+      <FormInput
+        {...form}
+        name="message"
+        placeholder="What's on your mind?"
+        as="textarea"
+      />
+      <FormMessage {...form} name="message" />
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
+    </Form>
+  );
+}
+```
+
 ### Arrays
 
 `Form` supports array values seamlessly. For convenience, you can reliably use the array indexes as keys on the array fragments.
