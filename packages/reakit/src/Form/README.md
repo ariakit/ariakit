@@ -107,7 +107,7 @@ function Example() {
         placeholder="What's on your mind?"
         as="textarea"
       />
-      <FormMessage {...form} name="name" />
+      <FormMessage {...form} name="message" />
       <FormSubmitButton {...form}>Submit</FormSubmitButton>
     </Form>
   );
