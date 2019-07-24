@@ -67,10 +67,15 @@ export default function SearchBar({ variant = "default" }: ISearchBarProps) {
           margin: 0;
           font-size: 100%;
           border: none;
+          outline: none;
           width: ${isOpen ? "200px" : "0"};
           color: ${isNegativeVariant ? "white" : "unset"};
           background: transparent;
           transition: width 0.3s ease-in-out;
+
+          &::placeholder {
+            color: ${isNegativeVariant ? "rgba(255,255,255, .4)" : "#ccc"};
+          }
         `}
       />
     </>
