@@ -14,20 +14,23 @@ interface ISearchBarProps {
 export default function SearchBar({ variant = "default" }: ISearchBarProps) {
   const inputEl = useRef(null);
   const [isOpen, setOpen] = useState(false);
+  const [withError, setError] = useState(false);
   const toggleSearch = () => setOpen(!isOpen);
   const isNegativeVariant = variant === "negative";
 
   useEffect(() => {
-    import("docsearch.js").then(module => {
-      module.default({
-        apiKey: "2f44778ac6ae42bb4edea44efbb0b647",
-        indexName: "reakit",
-        inputSelector: `#${searchInputId}`,
-        debug: false
-      });
+    import("docsearch.js")
+      .then(module => {
+        module.default({
+          apiKey: "2f44778ac6ae42bb4edea44efbb0b647",
+          indexName: "reakit",
+          inputSelector: `#${searchInputId}`,
+          debug: false
+        });
 
-      addStyleSheet(docSearchCSSPath);
-    });
+        addStyleSheet(docSearchCSSPath);
+      })
+      .catch(() => setError(true));
   }, []);
 
   useLayoutEffect(() => {
@@ -35,6 +38,8 @@ export default function SearchBar({ variant = "default" }: ISearchBarProps) {
       ? inputEl.current.focus()
       : inputEl.current.blur();
   }, [isOpen]);
+
+  if (withError) return null;
 
   return (
     <>
