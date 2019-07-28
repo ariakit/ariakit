@@ -16,6 +16,7 @@ import { MdMenu } from "react-icons/md";
 import { usePalette, useFade } from "reakit-system-palette/utils";
 import { LinkGetProps } from "@reach/router";
 import Logo from "../icons/Logo";
+import SpectrumLogo from "../icons/Spectrum";
 import useViewportWidthGreaterThan from "../hooks/useViewportWidthGreaterThan";
 import useLocation from "../hooks/useLocation";
 import track from "../utils/track";
@@ -197,6 +198,16 @@ export default function Header({ transparent }: HeaderProps) {
               >
                 Newsletter
               </Anchor>
+              <Anchor
+                href="https://spectrum.chat/reakit"
+                onClick={track("reakit.headerSpectrumClick")}
+              >
+                <SpectrumLogo />
+                <HiddenMediaQuery query="max-width: 768px">
+                  <Spacer width={8} />
+                  Spectrum
+                </HiddenMediaQuery>
+              </Anchor>
             </>
           )}
         </HiddenMediaQuery>
@@ -207,6 +218,7 @@ export default function Header({ transparent }: HeaderProps) {
           <FaGithub style={{ fontSize: "1.2em" }} />
           <HiddenMediaQuery query="max-width: 768px">
             <Spacer width={8} />
+            GitHub
           </HiddenMediaQuery>
           {!isLarge && <VisuallyHidden>GitHub</VisuallyHidden>}
         </Anchor>

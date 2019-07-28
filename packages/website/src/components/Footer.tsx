@@ -10,6 +10,7 @@ import { VisuallyHidden } from "reakit";
 import { css } from "@emotion/core";
 import { usePalette, useLighten } from "reakit-system-palette/utils";
 import track from "../utils/track";
+import SpectrumLogo from "../icons/Spectrum";
 import Anchor from "./Anchor";
 import Paragraph from "./Paragraph";
 
@@ -78,6 +79,14 @@ export default function Footer() {
         >
           <FaStackOverflow />
           <VisuallyHidden>Stackoverflow</VisuallyHidden>
+        </Anchor>
+        <Anchor
+          href="https://spectrum.chat/reakit"
+          target="_blank"
+          onClick={track("reakit.footerSpectrumClick")}
+        >
+          <SpectrumLogo />
+          <VisuallyHidden>Spectrum</VisuallyHidden>
         </Anchor>
       </div>
       <Paragraph>
