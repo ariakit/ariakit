@@ -54,18 +54,10 @@ export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
     }, [options.visible]);
 
     const onTransitionEnd = React.useCallback(() => {
-      if (
-        options.unstable_animated &&
-        options.unstable_stopAnimation &&
-        !options.visible
-      ) {
+      if (options.unstable_animated && options.unstable_stopAnimation) {
         options.unstable_stopAnimation();
       }
-    }, [
-      options.unstable_animated,
-      options.unstable_stopAnimation,
-      options.visible
-    ]);
+    }, [options.unstable_animated, options.unstable_stopAnimation]);
 
     const animating = options.unstable_animated && options.unstable_animating;
     const hidden = !options.visible && !animating;

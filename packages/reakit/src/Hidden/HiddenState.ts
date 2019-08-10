@@ -100,11 +100,11 @@ export function useHiddenState(
   }
 
   React.useLayoutEffect(() => {
-    if (visible || typeof animated !== "number") return undefined;
+    if (typeof animated !== "number") return undefined;
     // Stops animation after an interval defined by animated
     const id = setTimeout(() => setAnimating(false), animated);
     return () => clearTimeout(id);
-  }, [animated, visible]);
+  }, [animated]);
 
   const show = React.useCallback(() => {
     warning(
