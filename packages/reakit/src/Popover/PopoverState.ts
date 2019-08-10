@@ -151,7 +151,17 @@ export function usePopoverState(
             fn: data => {
               setPlacement(data.placement);
               setPopoverStyles(data.styles as React.CSSProperties);
-              setArrowStyles(data.arrowStyles as React.CSSProperties);
+
+              // https://github.com/reakit/reakit/issues/408
+              if (
+                data.arrowStyles.left != null &&
+                !isNaN(+data.arrowStyles.left) &&
+                data.arrowStyles.top != null &&
+                !isNaN(+data.arrowStyles.top)
+              ) {
+                setArrowStyles(data.arrowStyles as React.CSSProperties);
+              }
+
               return data;
             }
           }
@@ -173,6 +183,14 @@ export function usePopoverState(
     boundariesElement,
     fixed
   ]);
+
+  // Schedule an update if popover has initial visible state set to true
+  // So it'll be correctly positioned
+  React.useEffect(() => {
+    if (sealed.visible && popper.current) {
+      popper.current.scheduleUpdate();
+    }
+  }, [sealed.visible]);
 
   return {
     ...dialog,
