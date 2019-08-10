@@ -70,6 +70,35 @@ test("show", () => {
   );
 });
 
+test("show animated", () => {
+  jest.useFakeTimers();
+  const result = render({ unstable_hiddenId: "test", unstable_animated: 1000 });
+  act(result.current.show);
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: true, unstable_animating: true },
+    `
+    Object {
+      "unstable_animated": 1000,
+      "unstable_animating": true,
+      "unstable_hiddenId": "test",
+      "visible": true,
+    }
+  `
+  );
+  jest.advanceTimersByTime(1000);
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: true, unstable_animating: false },
+    `
+    Object {
+      "unstable_animated": 1000,
+      "unstable_animating": false,
+      "unstable_hiddenId": "test",
+      "visible": true,
+    }
+  `
+  );
+});
+
 test("hide", () => {
   const result = render({ unstable_hiddenId: "test", visible: true });
   act(result.current.hide);
@@ -78,6 +107,39 @@ test("hide", () => {
     `
     Object {
       "unstable_animated": false,
+      "unstable_animating": false,
+      "unstable_hiddenId": "test",
+      "visible": false,
+    }
+  `
+  );
+});
+
+test("hide animated", () => {
+  jest.useFakeTimers();
+  const result = render({
+    unstable_hiddenId: "test",
+    visible: true,
+    unstable_animated: 1000
+  });
+  act(result.current.hide);
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: false, unstable_animating: true },
+    `
+    Object {
+      "unstable_animated": 1000,
+      "unstable_animating": true,
+      "unstable_hiddenId": "test",
+      "visible": false,
+    }
+  `
+  );
+  jest.advanceTimersByTime(1000);
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: false, unstable_animating: false },
+    `
+    Object {
+      "unstable_animated": 1000,
       "unstable_animating": false,
       "unstable_hiddenId": "test",
       "visible": false,
