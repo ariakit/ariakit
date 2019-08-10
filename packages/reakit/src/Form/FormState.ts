@@ -8,6 +8,7 @@ import {
 } from "reakit-utils/useSealedState";
 import { useId } from "reakit-utils/useId";
 import { isEmpty } from "reakit-utils/isEmpty";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
 import { hasMessages } from "./__utils/hasMessages";
@@ -277,8 +278,9 @@ function reducer<V>(
 export function unstable_useFormState<V = Record<any, any>>(
   initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
+  const defaultId = useId("form-");
   const {
-    baseId = useId("form-"),
+    baseId = defaultId,
     values: initialValues = {} as V,
     validateOnBlur = true,
     validateOnChange = true,
@@ -287,6 +289,12 @@ export function unstable_useFormState<V = Record<any, any>>(
     onValidate,
     onSubmit
   } = useSealedState(initialState);
+  const onValidateRef = useLiveRef(
+    typeof initialState !== "function" ? initialState.onValidate : onValidate
+  );
+  const onSubmitRef = useLiveRef(
+    typeof initialState !== "function" ? initialState.onSubmit : onSubmit
+  );
 
   const [{ initialValues: _, ...state }, dispatch] = React.useReducer(reducer, {
     baseId,
@@ -305,8 +313,8 @@ export function unstable_useFormState<V = Record<any, any>>(
   const validate = React.useCallback(
     (vals = state.values) =>
       new Promise<any>(resolve => {
-        if (onValidate) {
-          const response = onValidate(vals);
+        if (onValidateRef.current) {
+          const response = onValidateRef.current(vals);
           if (isPromise(response)) {
             dispatch({ type: "startValidate" });
           }
@@ -324,7 +332,7 @@ export function unstable_useFormState<V = Record<any, any>>(
         dispatch({ type: "endValidate", errors });
         throw errors;
       }),
-    [state.values, onValidate]
+    [state.values]
   );
 
   useUpdateEffect(() => {
@@ -351,9 +359,9 @@ export function unstable_useFormState<V = Record<any, any>>(
       dispatch({ type: "startSubmit" });
       return validate()
         .then(validateMessages => {
-          if (onSubmit) {
+          if (onSubmitRef.current) {
             return Promise.resolve(
-              onSubmit(filterAllEmpty(state.values as V))
+              onSubmitRef.current(filterAllEmpty(state.values as V))
             ).then(submitMessages => {
               const messages = { ...validateMessages, ...submitMessages };
               dispatch({ type: "endSubmit", messages });
