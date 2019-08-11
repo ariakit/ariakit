@@ -8,7 +8,6 @@ module.exports = {
   setupFilesAfterEnv: [
     "raf/polyfill",
     "jest-dom/extend-expect",
-    "@testing-library/react/cleanup-after-each",
     "<rootDir>/jest.setup.js"
   ]
 };

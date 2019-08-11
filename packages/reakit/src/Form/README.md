@@ -28,6 +28,7 @@ Learn more in [Get started](/docs/get-started/).
 ## Usage
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -71,6 +72,7 @@ function Example() {
 If your form requires a `textarea` instead of an `input` field, you can use the `as` prop on the `FormInput` component.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -121,6 +123,7 @@ function Example() {
 Focus is managed so adding a new item will move focus to the new input or to the first input if multiple inputs have been added.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import React from "react";
 import {
@@ -196,6 +199,7 @@ function Example() {
 With `FormCheckbox`, you can either manage `boolean` values (single checkbox) or `array` values (checkbox group). Error messages can also be displayed.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -262,6 +266,7 @@ function Example() {
 You can use `FormRadio` and `FormRadioGroup` to manage radio buttons. Error messages can also be displayed.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -371,6 +376,7 @@ You may find cumbersome having to pass `{...form}` to every component. Also, rep
 [Reakit is a low level library](/docs/basic-concepts/) designed to give you explicit building blocks so you can create anything you want, and design any API you wish. It's easy to go from explicit to implicit.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import React from "react";
 import {

@@ -19,7 +19,7 @@ function keyDown(key: string) {
   fireEvent.keyDown(document.activeElement!, { key });
 }
 
-test("validate on change", () => {
+test("validate on change", async () => {
   const onValidate = jest.fn();
   const Test = () => {
     const form = useFormState({ onValidate });
@@ -34,10 +34,10 @@ test("validate on change", () => {
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
   fireEvent.change(input, { target: { value: "a" } });
-  expect(onValidate).toHaveBeenCalledWith({ input: "a" });
+  await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: "a" }));
 });
 
-test("validate on blur", () => {
+test("validate on blur", async () => {
   const onValidate = jest.fn();
   const Test = () => {
     const form = useFormState({ onValidate });
@@ -52,7 +52,7 @@ test("validate on blur", () => {
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
   fireEvent.blur(input);
-  expect(onValidate).toHaveBeenCalledWith({});
+  await wait(() => expect(onValidate).toHaveBeenCalledWith({}));
 });
 
 test("display validation error", async () => {

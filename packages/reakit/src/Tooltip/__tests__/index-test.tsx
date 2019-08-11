@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, wait } from "@testing-library/react";
 import {
   Tooltip,
   TooltipArrow,
@@ -21,20 +21,20 @@ function Test(props: TooltipInitialState) {
   );
 }
 
-test("show", () => {
+test("show", async () => {
   const { getByText } = render(<Test />);
   const disclosure = getByText("disclosure");
   const tooltip = getByText("tooltip");
   expect(tooltip).not.toBeVisible();
   fireEvent.mouseEnter(disclosure);
-  expect(tooltip).toBeVisible();
+  await wait(expect(tooltip).toBeVisible);
 });
 
-test("hide", () => {
+test("hide", async () => {
   const { getByText } = render(<Test visible />);
   const disclosure = getByText("disclosure");
   const tooltip = getByText("tooltip");
   expect(tooltip).toBeVisible();
   fireEvent.mouseLeave(disclosure);
-  expect(tooltip).not.toBeVisible();
+  await wait(expect(tooltip).not.toBeVisible);
 });

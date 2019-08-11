@@ -55,7 +55,10 @@ test("initial state lazy", () => {
 });
 
 test("show", () => {
-  const result = render({ unstable_hiddenId: "test" });
+  const result = render({
+    unstable_hiddenId: "test",
+    unstable_isMounted: true
+  });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
@@ -72,7 +75,11 @@ test("show", () => {
 
 test("show animated", () => {
   jest.useFakeTimers();
-  const result = render({ unstable_hiddenId: "test", unstable_animated: 1000 });
+  const result = render({
+    unstable_hiddenId: "test",
+    unstable_isMounted: true,
+    unstable_animated: 1000
+  });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true, unstable_animating: true },
@@ -85,7 +92,9 @@ test("show animated", () => {
     }
   `
   );
-  jest.advanceTimersByTime(1000);
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
   expect(result.current).toMatchInlineSnapshot(
     { visible: true, unstable_animating: false },
     `
@@ -134,7 +143,9 @@ test("hide animated", () => {
     }
   `
   );
-  jest.advanceTimersByTime(1000);
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
   expect(result.current).toMatchInlineSnapshot(
     { visible: false, unstable_animating: false },
     `
@@ -149,7 +160,10 @@ test("hide animated", () => {
 });
 
 test("toggle", () => {
-  const result = render({ unstable_hiddenId: "test" });
+  const result = render({
+    unstable_hiddenId: "test",
+    unstable_isMounted: true
+  });
   act(result.current.toggle);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
