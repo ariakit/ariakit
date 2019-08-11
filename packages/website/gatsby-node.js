@@ -6,7 +6,13 @@
 const { resolve, relative, dirname } = require("path");
 const rehype = require("rehype");
 const { repository } = require("./package.json");
-const getAdjacentPaths = require("./src/utils/getAdjacentPaths.ts");
+
+function getAdjacentPaths(arr, index) {
+  return {
+    nextPagePath: arr[index + 1] ? arr[index + 1] : null,
+    prevPagePath: arr[index - 1] ? arr[index - 1] : null
+  };
+}
 
 exports.createPages = ({ actions, graphql }) => {
   const { createPage, createRedirect } = actions;
