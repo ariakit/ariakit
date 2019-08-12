@@ -285,6 +285,7 @@ function getProxyPackageContents(rootPath, moduleName) {
   const json = {
     name: `${name}/${moduleName}`,
     private: true,
+    sideEffects: false,
     main: join(prefix, mainDir, moduleName),
     ...(moduleDir ? { module: join(prefix, moduleDir, moduleName) } : {}),
     ...(typesDir ? { types: join(prefix, typesDir, moduleName) } : {})
