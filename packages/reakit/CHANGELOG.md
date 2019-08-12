@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.5](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.4...reakit@1.0.0-beta.5) (2019-08-12)
+
+
+### Bug Fixes
+
+* Fix  typings ([29c4456](https://github.com/reakit/reakit/commit/29c4456))
+* Fix `FormGroup` and `FormRadioGroup` not receiving focus when `Form` has been submited with errors ([59adc8b](https://github.com/reakit/reakit/commit/59adc8b))
+* Fix `FormSubmitButton` not considering elements other than inputs as invalid fields ([c4f688a](https://github.com/reakit/reakit/commit/c4f688a))
+* Fix `Hidden` not setting `unstable_animating` to `false` while visible ([#410](https://github.com/reakit/reakit/issues/410)) ([6d5827c](https://github.com/reakit/reakit/commit/6d5827c)), closes [#407](https://github.com/reakit/reakit/issues/407)
+* Fix `Menu` preventing default behavior when pressing ASCII keys on elements other than `MenuItem` ([cacb978](https://github.com/reakit/reakit/commit/cacb978))
+* Fix `Tooltip` error when `visible` is initially set to `true` ([#409](https://github.com/reakit/reakit/issues/409)) ([c132e56](https://github.com/reakit/reakit/commit/c132e56)), closes [#408](https://github.com/reakit/reakit/issues/408)
+* Fix empty array values being filtered prematurely before `useFormState`'s `onValidate` ([6052829](https://github.com/reakit/reakit/commit/6052829))
+
+
+### Features
+
+* Support `onSubmit` and `onValidate` functions to be updated between renders in `useFormState` ([#411](https://github.com/reakit/reakit/issues/411)) ([f576db1](https://github.com/reakit/reakit/commit/f576db1)), closes [#400](https://github.com/reakit/reakit/issues/400)
+
+
+
+
+
 # [1.0.0-beta.4](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.3...reakit@1.0.0-beta.4) (2019-06-27)
 
 
