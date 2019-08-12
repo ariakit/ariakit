@@ -32,9 +32,9 @@
   ],
   "dependencies": {
     "@types/buble": "0.19.2",
-    "@types/codemirror": "0.0.75",
-    "buble": "0.19.7",
-    "codemirror": "5.48.0",
+    "@types/codemirror": "0.0.76",
+    "buble": "0.19.8",
+    "codemirror": "5.48.2",
     "emotion": "^10.0.14",
     "react-codemirror2": "6.0.0",
     "reakit": "^1.0.0-beta.4",
