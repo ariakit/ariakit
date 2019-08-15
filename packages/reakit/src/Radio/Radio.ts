@@ -1,16 +1,17 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { PropsWithAs, As } from "reakit-utils/src/types";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
-export type RadioOptions = RoverOptions &
-  Pick<Partial<RadioStateReturn>, "state" | "setState"> & {
+export type RadioOptions<T> = RoverOptions &
+  Pick<Partial<RadioStateReturn<T>>, "state" | "setState"> & {
     /**
      * Same as the `value` attribute.
      */
-    value: any;
+    value: T;
     /**
      * Same as the `checked` attribute.
      */
@@ -19,9 +20,10 @@ export type RadioOptions = RoverOptions &
 
 export type RadioHTMLProps = RoverHTMLProps & React.InputHTMLAttributes<any>;
 
-export type RadioProps = RadioOptions & RadioHTMLProps;
+export type RadioProps<T> = RadioOptions<T> & RadioHTMLProps;
 
-export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
+
+export const useRadio = createHook<RadioOptions<string>, RadioHTMLProps>({
   name: "Radio",
   compose: useRover,
   useState: useRadioState,
@@ -75,7 +77,9 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   }
 });
 
-export const Radio = createComponent({
+export const Radio: <T, S extends As = "input">(
+  props: PropsWithAs<RadioOptions<T>, S>
+) => JSX.Element = createComponent({
   as: "input",
   useHook: useRadio
 });

@@ -10,28 +10,28 @@ import {
   useRoverState
 } from "../Rover";
 
-export type RadioState = RoverState & {
+export type RadioState<T> = RoverState & {
   /**
    * The `value` attribute of the current checked radio.
    */
-  state: any;
+  state: T;
 };
 
-export type RadioActions = RoverActions & {
+export type RadioActions<T> = RoverActions & {
   /**
    * Sets `state`.
    */
-  setState: React.Dispatch<React.SetStateAction<any>>;
+  setState: React.Dispatch<React.SetStateAction<T>>;
 };
 
-export type RadioInitialState = RoverInitialState &
-  Partial<Pick<RadioState, "state">>;
+export type RadioInitialState<T = string> = RoverInitialState &
+  Partial<Pick<RadioState<T>, "state">>;
 
-export type RadioStateReturn = RadioState & RadioActions;
+export type RadioStateReturn<T> = RadioState<T> & RadioActions<T>;
 
-export function useRadioState(
-  initialState: SealedInitialState<RadioInitialState> = {}
-): RadioStateReturn {
+export function useRadioState<T = string>(
+  initialState: SealedInitialState<RadioInitialState<T>> = {}
+): RadioStateReturn<T | undefined> {
   const { state: initialCurrentValue, loop = true, ...sealed } = useSealedState(
     initialState
   );
@@ -47,7 +47,7 @@ export function useRadioState(
   };
 }
 
-const keys: Array<keyof RadioStateReturn> = [
+const keys: Array<keyof RadioStateReturn<any>> = [
   ...useRoverState.__keys,
   "state",
   "setState"

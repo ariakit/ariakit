@@ -21,7 +21,7 @@ test("click on radio", () => {
 
 test("click on non-native radio", () => {
   const Test = () => {
-    const radio = useRadioState();
+    const radio = useRadioState<"radio">();
     return (
       <label>
         <Radio {...radio} as="div" value="radio" />
@@ -82,17 +82,18 @@ test("onChange non-native radio", () => {
 
 test("group", () => {
   const Test = () => {
-    const radio = useRadioState();
+    type Superhero = "superman" | "batman";
+    const radio = useRadioState<Superhero>({ state: "superman" });
+
     return (
-      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+      <RadioGroup {...radio} aria-label="superhero">
         <label>
-          <Radio {...radio} value="a" />a
+          <Radio<Superhero> {...radio} id="base-1" value="superman" />
+          Clark Kent
         </label>
         <label>
-          <Radio {...radio} value="b" />b
-        </label>
-        <label>
-          <Radio {...radio} value="c" />c
+          <Radio {...radio} id="base-2" value="batman" />
+          Bruce Wayne
         </label>
       </RadioGroup>
     );
@@ -101,20 +102,20 @@ test("group", () => {
   expect(container).toMatchInlineSnapshot(`
     <div>
       <fieldset
-        aria-label="radiogroup"
-        id="base"
+        aria-label="superhero"
         role="radiogroup"
       >
         <label>
           <input
-            aria-checked="false"
+            aria-checked="true"
+            checked=""
             id="base-1"
             role="radio"
             tabindex="0"
             type="radio"
-            value="a"
+            value="superman"
           />
-          a
+          Clark Kent
         </label>
         <label>
           <input
@@ -123,20 +124,9 @@ test("group", () => {
             role="radio"
             tabindex="-1"
             type="radio"
-            value="b"
+            value="batman"
           />
-          b
-        </label>
-        <label>
-          <input
-            aria-checked="false"
-            id="base-3"
-            role="radio"
-            tabindex="-1"
-            type="radio"
-            value="c"
-          />
-          c
+          Bruce Wayne
         </label>
       </fieldset>
     </div>
