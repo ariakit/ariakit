@@ -47,6 +47,7 @@ module.exports = {
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
     "react/button-has-type": "off",
+    "react/state-in-constructor": "off",
     "import/order": [
       "error",
       {
