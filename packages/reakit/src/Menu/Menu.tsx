@@ -48,13 +48,10 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     };
   },
 
-  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const parent = React.useContext(MenuContext);
-    const ref = React.useRef<HTMLElement>(null);
-
     const isHorizontal = options.orientation === "horizontal";
     const isVertical = options.orientation === "vertical";
-
     let horizontalParent: MenuContextType | undefined | null = parent;
 
     while (horizontalParent && horizontalParent.orientation !== "horizontal") {
@@ -73,13 +70,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
             return true;
           },
           keyMap: event => {
-            warning(
-              !ref.current,
-              "Menu",
-              "Can't detect arrow keys because `ref` wasn't passed to component.",
-              "See https://reakit.io/docs/menu"
-            );
-            const targetIsMenu = event.target === ref.current;
+            const targetIsMenu = event.target === event.currentTarget;
             return {
               Escape: options.hide,
               ArrowUp: targetIsMenu && !isHorizontal && options.last,
@@ -103,15 +94,14 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       ]
     );
 
+    // TODO: Refactor
     const parentBindings = React.useMemo(
       () =>
         createOnKeyDown({
           stopPropagation: true,
           shouldKeyDown: event => {
             return Boolean(
-              parent &&
-                ref.current &&
-                ref.current.contains(event.target as Element)
+              parent && event.currentTarget.contains(event.target as Element)
             );
           },
           keyMap: parent
@@ -137,7 +127,6 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(ref, htmlRef),
       role: "menu",
       onKeyDown: useAllCallbacks(rovingBindings, parentBindings, htmlOnKeyDown),
       ...htmlProps
