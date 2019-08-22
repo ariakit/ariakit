@@ -10,6 +10,7 @@ export * from "./pick";
 export * from "./removeIndexFromArray";
 export * from "./removeItemFromArray";
 export * from "./splitProps";
+export * from "./tabbable";
 export * from "./toArray";
 export * from "./types";
 export * from "./useAllCallbacks";
