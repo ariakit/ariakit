@@ -18368,10 +18368,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@3.6.0-dev.20190627:
-  version "3.6.0-dev.20190627"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.0-dev.20190627.tgz#1b289f846a25cba3875dee3c88b6d22a4f16b4fd"
-  integrity sha512-T5Fxw95S6wXqCmhmT4K12vXjgkn+6j4FNm3mXyKXU7CX5k+zbAi05gVHJG9xQFJFmuGR8z3cWqbFyf+6GNn7uQ==
+typescript@3.6.1-rc:
+  version "3.6.1-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.1-rc.tgz#9db650b25d8ef033d9e25b3057bdd1e102bb434b"
+  integrity sha512-u6AQN9AoocZKYSz8zcc1Qh/V/mbAO+BHc73fTiKlIdjzU60A8TesrK9/7kg3GM8o2RxNyCeOFpcevEtnfUyaLg==
 
 typescript@^3.0.1:
   version "3.5.3"
