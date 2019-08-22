@@ -1,4 +1,3 @@
-import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
