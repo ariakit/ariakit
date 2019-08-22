@@ -93,7 +93,6 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       ]
     );
 
-    // TODO: Refactor
     const parentBindings = React.useMemo(
       () =>
         createOnKeyDown({

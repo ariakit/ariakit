@@ -97,7 +97,6 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       };
     }, [options.move, stopId]);
 
-    // TODO: Refactor
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({

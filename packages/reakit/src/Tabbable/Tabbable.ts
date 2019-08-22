@@ -74,7 +74,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const clickKeysRef = useLiveRef(options.unstable_clickKeys);
     const trulyDisabled = options.disabled && !options.focusable;
 
-    // TODO: Refactor
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
         if (
