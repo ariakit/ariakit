@@ -5,7 +5,6 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverOptions,
