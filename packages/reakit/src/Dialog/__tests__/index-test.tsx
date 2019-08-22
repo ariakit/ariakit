@@ -3,7 +3,7 @@ import { render, fireEvent, act } from "@testing-library/react";
 import {
   focusNextTabbableIn,
   focusPreviousTabbableIn
-} from "../__utils/tabbable";
+} from "reakit-utils/tabbable";
 import { Dialog, DialogDisclosure, useDialogState } from "..";
 
 test("clicking on disclosure opens the dialog", () => {

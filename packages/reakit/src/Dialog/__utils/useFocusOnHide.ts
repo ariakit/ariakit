@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-utils/warning";
+import { isTabbable } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
-import { isTabbable } from "./tabbable";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,

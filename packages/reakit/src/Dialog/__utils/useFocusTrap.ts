@@ -1,7 +1,7 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
+import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
-import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 import { usePortalRef } from "./usePortalRef";
 
 function hasNestedOpenModals(

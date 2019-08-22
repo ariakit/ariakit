@@ -11,6 +11,7 @@ export default {
   "reakit-utils/useAllCallbacks": require("reakit-utils/useAllCallbacks"),
   "reakit-utils/types": require("reakit-utils/types"),
   "reakit-utils/toArray": require("reakit-utils/toArray"),
+  "reakit-utils/tabbable": require("reakit-utils/tabbable"),
   "reakit-utils/splitProps": require("reakit-utils/splitProps"),
   "reakit-utils/removeItemFromArray": require("reakit-utils/removeItemFromArray"),
   "reakit-utils/removeIndexFromArray": require("reakit-utils/removeIndexFromArray"),

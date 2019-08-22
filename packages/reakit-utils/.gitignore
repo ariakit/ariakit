@@ -12,6 +12,7 @@
 /useAllCallbacks
 /types
 /toArray
+/tabbable
 /splitProps
 /removeItemFromArray
 /removeIndexFromArray
