@@ -100,6 +100,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           stopPropagation: true,
           shouldKeyDown: event => {
             return Boolean(
+              // https://github.com/facebook/react/issues/11387
               parent && event.currentTarget.contains(event.target as Element)
             );
           },
