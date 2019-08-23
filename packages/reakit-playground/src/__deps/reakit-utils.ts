@@ -23,6 +23,7 @@ export default {
   "reakit-utils/isObject": require("reakit-utils/isObject"),
   "reakit-utils/isInteger": require("reakit-utils/isInteger"),
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),
+  "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/cx": require("reakit-utils/cx"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown")
 };

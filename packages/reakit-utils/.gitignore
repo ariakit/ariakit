@@ -24,5 +24,6 @@
 /isObject
 /isInteger
 /isEmpty
+/hasFocusWithin
 /cx
 /createOnKeyDown
