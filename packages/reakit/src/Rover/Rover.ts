@@ -2,11 +2,10 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useId } from "reakit-utils/useId";
-import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-utils/warning";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { mergeRefs } from "reakit-utils/mergeRefs";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -49,7 +48,6 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex,
-      onFocus: htmlOnFocus,
       onKeyDown: htmlOnKeyDown,
       ...htmlProps
     }
@@ -70,7 +68,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       return () => options.unregister(stopId);
     }, [stopId, trulyDisabled, options.register, options.unregister]);
 
-    useUpdateEffect(() => {
+    React.useEffect(() => {
       if (!ref.current) {
         warning(
           true,
@@ -80,20 +78,34 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         );
         return;
       }
-      if (document.activeElement !== ref.current && focused) {
+      if (options.unstable_moves && focused && !hasFocusWithin(ref.current)) {
         ref.current.focus();
       }
     }, [focused, options.unstable_moves]);
 
-    const onFocus = React.useCallback(() => options.move(stopId), [
-      options.move,
-      stopId
-    ]);
+    React.useEffect(() => {
+      if (!ref.current) return undefined;
+
+      const onFocus = () => options.move(stopId);
+
+      // https://github.com/facebook/react/issues/11387#issuecomment-524113945
+      ref.current.addEventListener("focus", onFocus, true);
+      return () => {
+        if (ref.current) {
+          ref.current.removeEventListener("focus", onFocus, true);
+        }
+      };
+    }, [options.move, stopId]);
 
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
+          stopPropagation: true,
+          // Ignore portals
+          shouldKeyDown: event =>
+            // https://github.com/facebook/react/issues/11387
+            event.currentTarget.contains(event.target as Node),
           keyMap: {
             ArrowUp: options.orientation !== "horizontal" && options.previous,
             ArrowRight: options.orientation !== "vertical" && options.next,
@@ -120,7 +132,6 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       id: stopId,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onKeyDown,
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       ...htmlProps
     };
   }

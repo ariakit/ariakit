@@ -1,5 +1,6 @@
 export * from "./createOnKeyDown";
 export * from "./cx";
+export * from "./hasFocusWithin";
 export * from "./isEmpty";
 export * from "./isInteger";
 export * from "./isObject";

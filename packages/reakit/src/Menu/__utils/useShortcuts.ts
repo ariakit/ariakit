@@ -53,6 +53,7 @@ export function useShortcuts(
       }
     };
 
+    // https://github.com/facebook/react/issues/11387#issuecomment-524113945
     menu.addEventListener("keydown", onKeyDown);
     return () => menu.removeEventListener("keydown", onKeyDown);
   }, [menuRef, setKeys]);
