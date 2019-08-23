@@ -252,11 +252,11 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
 export function useRoverState(
   initialState: SealedInitialState<RoverInitialState> = {}
 ): RoverStateReturn {
-  const { currentId = null, loop = false, ...sealed } = useSealedState(
+  const { orientation, currentId = null, loop = false } = useSealedState(
     initialState
   );
   const [state, dispatch] = React.useReducer(reducer, {
-    ...sealed,
+    orientation,
     stops: [],
     currentId,
     unstable_pastId: null,

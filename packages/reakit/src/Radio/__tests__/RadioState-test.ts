@@ -10,6 +10,7 @@ test("initial state", () => {
     Object {
       "currentId": null,
       "loop": true,
+      "orientation": undefined,
       "state": undefined,
       "stops": Array [],
       "unstable_moves": 0,
