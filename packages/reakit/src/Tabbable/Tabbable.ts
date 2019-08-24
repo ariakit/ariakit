@@ -33,14 +33,23 @@ export type TabbableHTMLProps = BoxHTMLProps & {
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
 function isNativeTabbable(element: EventTarget) {
-  if (element instanceof HTMLButtonElement) return true;
-  if (element instanceof HTMLInputElement) return true;
-  if (element instanceof HTMLSelectElement) return true;
-  if (element instanceof HTMLTextAreaElement) return true;
-  if (element instanceof HTMLAnchorElement) return true;
-  if (element instanceof HTMLAudioElement) return true;
-  if (element instanceof HTMLVideoElement) return true;
-  return false;
+  return (
+    element instanceof HTMLButtonElement ||
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLSelectElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLAnchorElement ||
+    element instanceof HTMLAudioElement ||
+    element instanceof HTMLVideoElement
+  );
+}
+
+function isFormTabbable(element: EventTarget) {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement
+  );
 }
 
 const defaultClickKeys = ["Enter", " "];
@@ -77,7 +86,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
         if (
-          event.target instanceof HTMLInputElement ||
+          isFormTabbable(event.target) ||
           // https://github.com/facebook/react/issues/11387
           !event.currentTarget.contains(event.target as HTMLElement)
         ) {
@@ -92,12 +101,15 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         } else {
           const currentTarget = event.currentTarget as HTMLElement;
           const target = event.target as HTMLElement;
-          const controlsFocus =
+          const isFocusControl =
             isFocusable(target) || target instanceof HTMLLabelElement;
           if (
             !hasFocusWithin(currentTarget) ||
+            // has focus within, but clicked on the tabbable element itself
             currentTarget === target ||
-            !controlsFocus
+            // clicked on an element other than the tabbable, but it's not
+            // focusable nor a label element (controls focus)
+            !isFocusControl
           ) {
             currentTarget.focus();
           }
