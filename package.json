@@ -98,7 +98,7 @@
     "react-dom": "16.9.0",
     "react-test-renderer": "16.9.0",
     "rimraf": "3.0.0",
-    "rollup": "1.20.0",
+    "rollup": "1.20.1",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-commonjs": "10.0.2",
     "rollup-plugin-ignore": "1.0.5",
