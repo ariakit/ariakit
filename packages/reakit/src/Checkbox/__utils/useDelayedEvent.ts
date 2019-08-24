@@ -15,5 +15,8 @@ export function useDelayedEvent<E extends React.SyntheticEvent>(
     }
   }, [delayedEvent]);
 
-  return setDelayedEvent;
+  return (syntheticEvent: E) => {
+    syntheticEvent.persist();
+    setDelayedEvent(syntheticEvent);
+  };
 }

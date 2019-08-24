@@ -70,12 +70,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
         if (disabled) return;
 
         if (htmlOnChange) {
-          event.persist();
-          if (event.target instanceof HTMLInputElement) {
-            htmlOnChange(event);
-          } else {
-            setDelayedEvent(event);
-          }
+          setDelayedEvent(event);
         }
 
         if (!setState) return;
