@@ -51,3 +51,61 @@ test("group checkbox", async () => {
   expect(orange.checked).toBe(true);
   expect(watermelon.checked).toBe(false);
 });
+
+test("checkbox onChange checked value", async () => {
+  const onChange = jest.fn();
+  const Test = () => {
+    const checkbox = useCheckboxState();
+    return (
+      <label>
+        <Checkbox {...checkbox} onChange={onChange} />
+        checkbox
+      </label>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
+  expect(checkbox.checked).toBe(false);
+  expect(onChange).not.toBeCalled();
+  fireEvent.click(checkbox);
+  expect(onChange).toBeCalledWith(
+    expect.objectContaining({
+      target: expect.objectContaining({ checked: true })
+    })
+  );
+  fireEvent.click(checkbox);
+  expect(onChange).toBeCalledWith(
+    expect.objectContaining({
+      target: expect.objectContaining({ checked: false })
+    })
+  );
+});
+
+test("non-native checkbox onChange checked value", async () => {
+  const onChange = jest.fn();
+  const Test = () => {
+    const checkbox = useCheckboxState();
+    return (
+      <label>
+        <Checkbox as="div" {...checkbox} onChange={onChange} />
+        checkbox
+      </label>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
+  expect(checkbox.checked).toBe(false);
+  expect(onChange).not.toBeCalled();
+  fireEvent.click(checkbox);
+  expect(onChange).toBeCalledWith(
+    expect.objectContaining({
+      target: expect.objectContaining({ checked: true })
+    })
+  );
+  fireEvent.click(checkbox);
+  expect(onChange).toBeCalledWith(
+    expect.objectContaining({
+      target: expect.objectContaining({ checked: false })
+    })
+  );
+});
