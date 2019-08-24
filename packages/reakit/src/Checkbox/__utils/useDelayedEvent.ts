@@ -8,7 +8,7 @@ export function useDelayedEvent<E extends React.SyntheticEvent>(
   const eventRef = useLiveRef(event);
   const [delayedEvent, setDelayedEvent] = React.useState<E | null>(null);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (delayedEvent && eventRef.current) {
       eventRef.current(delayedEvent);
       setDelayedEvent(null);
