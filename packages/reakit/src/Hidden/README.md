@@ -59,6 +59,34 @@ function Example() {
 }
 ```
 
+### Multiple components
+
+Each `Hidden` component should have its own `useHiddenState`. This is also true for derivative modules like [Dialog](/docs/dialog/), [Popover](/docs/popover/), [Menu](/docs/menu/), [Tooltip](/docs/tooltip/) etc.
+
+If you want to have only one `HiddenDisclosure` element controling multiple `Hidden` components, you can use [render props](/docs/composition/#render-props) to apply the same state to different `HiddenDisclosure`s that will result in a single element.
+
+```jsx
+import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
+
+function Example() {
+  const hidden1 = useHiddenState();
+  const hidden2 = useHiddenState();
+  return (
+    <>
+      <HiddenDisclosure {...hidden1}>
+        {props => (
+          <HiddenDisclosure {...props} {...hidden2}>
+            Toggle All
+          </HiddenDisclosure>
+        )}
+      </HiddenDisclosure>
+      <Hidden {...hidden1}>Hidden 1</Hidden>
+      <Hidden {...hidden2}>Hidden 2</Hidden>
+    </>
+  );
+}
+```
+
 ## Accessibility
 
 - `HiddenDisclosure` extends the accessibility features of [Button](/docs/button/#accessibility).

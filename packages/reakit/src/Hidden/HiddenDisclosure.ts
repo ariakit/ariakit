@@ -21,11 +21,18 @@ export const useHiddenDisclosure = createHook<
   compose: useButton,
   useState: useHiddenState,
 
-  useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
+  useProps(
+    options,
+    { onClick: htmlOnClick, "aria-controls": ariaControls, ...htmlProps }
+  ) {
+    const controls = ariaControls
+      ? `${ariaControls} ${options.unstable_hiddenId}`
+      : options.unstable_hiddenId;
+
     return {
       onClick: useAllCallbacks(options.toggle, htmlOnClick),
       "aria-expanded": Boolean(options.visible),
-      "aria-controls": options.unstable_hiddenId,
+      "aria-controls": controls,
       ...htmlProps
     };
   }

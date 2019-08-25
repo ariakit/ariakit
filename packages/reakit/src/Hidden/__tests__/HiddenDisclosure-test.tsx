@@ -12,15 +12,15 @@ test("render", () => {
     <HiddenDisclosure {...props}>disclosure</HiddenDisclosure>
   );
   expect(getByText("disclosure")).toMatchInlineSnapshot(`
-        <button
-          aria-controls="test"
-          aria-expanded="false"
-          tabindex="0"
-          type="button"
-        >
-          disclosure
-        </button>
-    `);
+    <button
+      aria-controls="test"
+      aria-expanded="false"
+      tabindex="0"
+      type="button"
+    >
+      disclosure
+    </button>
+  `);
 });
 
 test("render visible", () => {
@@ -33,6 +33,24 @@ test("render visible", () => {
     <button
       aria-controls="test"
       aria-expanded="true"
+      tabindex="0"
+      type="button"
+    >
+      disclosure
+    </button>
+  `);
+});
+
+test("render with aria-controls", () => {
+  const { getByText } = render(
+    <HiddenDisclosure {...props} aria-controls="a">
+      disclosure
+    </HiddenDisclosure>
+  );
+  expect(getByText("disclosure")).toMatchInlineSnapshot(`
+    <button
+      aria-controls="a test"
+      aria-expanded="false"
       tabindex="0"
       type="button"
     >

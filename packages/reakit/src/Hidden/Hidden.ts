@@ -5,6 +5,8 @@ import { cx } from "reakit-utils/cx";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
+import { useWarningIfMultiple } from "./__utils/useWarningIfMultiple";
+import { useSetIsMounted } from "./__utils/useSetIsMounted";
 
 export type HiddenOptions = BoxOptions &
   Pick<
@@ -38,16 +40,8 @@ export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
   ) {
     const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
 
-    React.useEffect(() => {
-      if (options.unstable_setIsMounted) {
-        options.unstable_setIsMounted(true);
-      }
-      return () => {
-        if (options.unstable_setIsMounted) {
-          options.unstable_setIsMounted(false);
-        }
-      };
-    }, [options.unstable_setIsMounted]);
+    useWarningIfMultiple(options);
+    useSetIsMounted(options);
 
     React.useEffect(() => {
       setHiddenClass(!options.visible ? "hidden" : null);
