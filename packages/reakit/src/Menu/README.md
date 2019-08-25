@@ -45,6 +45,45 @@ function Example() {
 }
 ```
 
+### Menu actions
+
+You can use either `onClick` or `href` props on `MenuItem` to define menu actions.
+
+<!-- eslint-disable no-console -->
+```jsx
+import {
+  useMenuState,
+  Menu,
+  MenuItem,
+  MenuDisclosure,
+  MenuSeparator
+} from "reakit/Menu";
+
+function Example() {
+  const menu = useMenuState();
+
+  return (
+    <>
+      <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+      <Menu {...menu} aria-label="Example">
+        <MenuItem
+          {...menu}
+          onClick={() => {
+            menu.hide();
+            console.log("clicked on button");
+          }}
+        >
+          Button
+        </MenuItem>
+        <MenuItem {...menu} as="a" href="#" onClick={menu.hide}>
+          Link
+        </MenuItem>
+      </Menu>
+    </>
+  );
+}
+```
+
 ### Submenu
 
 ```jsx
