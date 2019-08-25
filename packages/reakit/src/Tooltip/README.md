@@ -38,6 +38,27 @@ function Example() {
 }
 ```
 
+### Placement
+
+Since `Tooltip` is composed by [Popover](/docs/popover/), you can control how it is positioned by setting the `placement` option on `useTooltipState`.
+
+```jsx
+import { Button } from "reakit/Button";
+import { Tooltip, TooltipReference, useTooltipState } from "reakit/Tooltip";
+
+function Example() {
+  const tooltip = useTooltipState({ placement: "bottom-end" });
+  return (
+    <>
+      <TooltipReference {...tooltip} as={Button}>
+        Reference
+      </TooltipReference>
+      <Tooltip {...tooltip}>Tooltip</Tooltip>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Tooltip` component with a different API on top of Reakit.

@@ -47,6 +47,32 @@ function Example() {
 }
 ```
 
+### Placement
+
+You can control how `Popover` is positioned by setting the `placement` option on `usePopoverState`.
+
+```jsx
+import {
+  usePopoverState,
+  Popover,
+  PopoverDisclosure,
+  PopoverArrow
+} from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({ placement: "right-start" });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <PopoverArrow {...popover} />
+        Welcome to Reakit!
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.
