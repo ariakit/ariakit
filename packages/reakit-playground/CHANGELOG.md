@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.3...reakit-playground@0.6.4) (2019-08-25)
+
+
+### Features
+
+* **reakit-utils:** Move `tabbable` internal module to `reakit-utils` package ([b84acce](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/b84acce))
+* Add new `MenuArrow` component ([#422](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/422)) ([731a376](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/731a376))
+
+
+
+
+
 ## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.2...reakit-playground@0.6.3) (2019-08-12)
 
 **Note:** Version bump only for package reakit-playground

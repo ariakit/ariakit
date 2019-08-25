@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.2...reakit-system-bootstrap@0.6.3) (2019-08-25)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix `MenuItem` styling as an anchor element ([580f5dd](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/580f5dd))
+
+
+### Features
+
+* Upgrade `reakit` peer dependency version ([73baeff](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/73baeff))
+
+
+
+
+
 ## [0.6.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.1...reakit-system-bootstrap@0.6.2) (2019-06-27)
 
 

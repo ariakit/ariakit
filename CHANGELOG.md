@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.6](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.5...reakit@1.0.0-beta.6) (2019-08-25)
+
+
+### Bug Fixes
+
+* Fix `Checkbox` `event.target.checked` value inside `onChange` event ([#419](https://github.com/reakit/reakit/issues/419)) ([75063fc](https://github.com/reakit/reakit/commit/75063fc)), closes [#393](https://github.com/reakit/reakit/issues/393)
+* Fix `FormInput` as `textarea` caret position when focusing ([#420](https://github.com/reakit/reakit/issues/420)) ([d8e7af3](https://github.com/reakit/reakit/commit/d8e7af3)), closes [#418](https://github.com/reakit/reakit/issues/418)
+* Fix `useRoverState` and its derivatives including all props in the return object ([987d16e](https://github.com/reakit/reakit/commit/987d16e))
+* Remove erroneous `React.LiHTMLAttributes` type from `ToolbarItemHTMLProps` ([0cb6e66](https://github.com/reakit/reakit/commit/0cb6e66))
+
+
+### Features
+
+* **reakit-utils:** Move `tabbable` internal module to `reakit-utils` package ([b84acce](https://github.com/reakit/reakit/commit/b84acce))
+* Add new `MenuArrow` component ([#422](https://github.com/reakit/reakit/issues/422)) ([731a376](https://github.com/reakit/reakit/commit/731a376))
+* Add support for `HiddenDisclosure` to control multiple `Hidden` components ([#423](https://github.com/reakit/reakit/issues/423)) ([bdfbd74](https://github.com/reakit/reakit/commit/bdfbd74))
+* Support nested `Tabbable` and `Rover` components ([#417](https://github.com/reakit/reakit/issues/417)) ([ee9623e](https://github.com/reakit/reakit/commit/ee9623e)), closes [#376](https://github.com/reakit/reakit/issues/376)
+
+
+
+
+
 # [1.0.0-beta.5](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.4...reakit@1.0.0-beta.5) (2019-08-12)
 
 

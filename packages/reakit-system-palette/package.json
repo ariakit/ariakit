@@ -1,6 +1,6 @@
 {
   "name": "reakit-system-palette",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Reakit palette system",
   "sideEffects": false,
   "license": "MIT",
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/color": "3.0.0",
-    "reakit-system": "^0.6.2"
+    "reakit-system": "^0.6.3"
   },
   "peerDependencies": {
     "react": "^16.8.0",
