@@ -59,6 +59,32 @@ function Example() {
 }
 ```
 
+### Multiple tooltips
+
+Each group of `Tooltip` and `TooltipReference` should have its own corresponding `useTooltipState`.
+
+```jsx
+import { Button } from "reakit/Button";
+import { Tooltip, TooltipReference, useTooltipState } from "reakit/Tooltip";
+
+function Example() {
+  const tooltip1 = useTooltipState();
+  const tooltip2 = useTooltipState();
+  return (
+    <>
+      <TooltipReference {...tooltip1} as={Button}>
+        Reference 1
+      </TooltipReference>
+      <Tooltip {...tooltip1}>Tooltip 1</Tooltip>
+      <TooltipReference {...tooltip2} as={Button}>
+        Reference 2
+      </TooltipReference>
+      <Tooltip {...tooltip2}>Tooltip 2</Tooltip>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Tooltip` component with a different API on top of Reakit.
