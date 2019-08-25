@@ -464,18 +464,6 @@ function getReadmePaths(rootPath) {
 }
 
 /**
- * @param {string} dir
- */
-function getPublicPathsInReadmeDir(dir) {
-  return Object.values(getPublicFiles(dir)).sort((a, b) => {
-    if (/State/.test(a)) return -1;
-    if (/State/.test(b) || a > b) return 1;
-    if (a < b) return -1;
-    return 0;
-  });
-}
-
-/**
  * @param {string} rootPath
  * @param {import("ts-morph").Symbol} prop
  */
@@ -494,13 +482,19 @@ function createPropTypeObject(rootPath, prop) {
 function createPropTypeObjects(rootPath, node) {
   return getProps(node).map(prop => createPropTypeObject(rootPath, prop));
 }
+
 /**
  * @param {import("ts-morph").SourceFile[]} sourceFiles
  */
-function sortStateFirst(sourceFiles) {
-  return sourceFiles.sort(a =>
-    /State$/.test(a.getBaseNameWithoutExtension()) ? -1 : 0
-  );
+function sortSourceFiles(sourceFiles) {
+  return sourceFiles.sort((a, b) => {
+    const aName = a.getBaseNameWithoutExtension();
+    const bName = b.getBaseNameWithoutExtension();
+    if (/State/.test(aName)) return -1;
+    if (/State/.test(bName) || aName > bName) return 1;
+    if (aName < bName) return -1;
+    return 0;
+  });
 }
 
 /**
@@ -573,13 +567,12 @@ function injectPropTypes(rootPath) {
     if (/#\s?Props/.test(mdContents)) {
       const dir = dirname(readmePath);
       const tree = ast.parse(mdContents);
-      const sourceFiles = project.addExistingSourceFiles(
-        getPublicPathsInReadmeDir(dir)
-      );
+      const publicPaths = Object.values(getPublicFiles(dir));
+      const sourceFiles = project.addExistingSourceFiles(publicPaths);
       project.resolveSourceFileDependencies();
       const types = {};
 
-      sortStateFirst(sourceFiles).forEach(sourceFile => {
+      sortSourceFiles(sourceFiles).forEach(sourceFile => {
         sourceFile.forEachChild(node => {
           if (isStateReturnDeclaration(node)) {
             const propTypes = createPropTypeObjects(rootPath, node);

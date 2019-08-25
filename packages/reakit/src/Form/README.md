@@ -521,6 +521,19 @@ If `onValidate` throws, `onSubmit` will not be called.
 just like `onValidate`. The only difference is that this validation will
 only occur on submit.
 
+### `Form`
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`submit`**
+  <code>() =&#62; void</code>
+
+  Triggers form submission (calling `onValidate` and `onSubmit` underneath).
+
+</details>
+
 ### `FormCheckbox`
 
 - **`disabled`**
@@ -790,16 +803,36 @@ similarly to `readOnly` on form elements. In this case, only
 
 </details>
 
-### `Form`
+### `FormRadio`
 
-<details><summary>1 state props</summary>
+- **`name`**
+  <code>P</code>
+
+  FormRadio's name as in form values.
+
+- **`value`**
+  <code title="P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayValue&#60;V, P&#62; : P extends keyof V ? V[P] : any">P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayVa...</code>
+
+  FormRadio's value.
+
+<details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
-- **`submit`**
-  <code>() =&#62; void</code>
+- **`values`**
+  <code>V</code>
 
-  Triggers form submission (calling `onValidate` and `onSubmit` underneath).
+  Form values.
+
+- **`update`**
+  <code>Update&#60;V&#62;</code>
+
+  Updates a form value.
+
+- **`blur`**
+  <code>&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P) =&#62; void</code>
+
+  Sets field's touched state to `true`.
 
 </details>
 
@@ -911,38 +944,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Triggers form submission (calling `onValidate` and `onSubmit` underneath).
-
-</details>
-
-### `FormRadio`
-
-- **`name`**
-  <code>P</code>
-
-  FormRadio's name as in form values.
-
-- **`value`**
-  <code title="P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayValue&#60;V, P&#62; : P extends keyof V ? V[P] : any">P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayVa...</code>
-
-  FormRadio's value.
-
-<details><summary>3 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`values`**
-  <code>V</code>
-
-  Form values.
-
-- **`update`**
-  <code>Update&#60;V&#62;</code>
-
-  Updates a form value.
-
-- **`blur`**
-  <code>&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P) =&#62; void</code>
-
-  Sets field's touched state to `true`.
 
 </details>

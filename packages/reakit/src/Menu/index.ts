@@ -1,4 +1,5 @@
 export * from "./Menu";
+export * from "./MenuArrow";
 export * from "./MenuDisclosure";
 export * from "./MenuGroup";
 export * from "./MenuItem";

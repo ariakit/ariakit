@@ -50,6 +50,7 @@ function Example() {
 You can use either `onClick` or `href` props on `MenuItem` to define menu actions.
 
 <!-- eslint-disable no-console -->
+
 ```jsx
 import {
   useMenuState,
@@ -553,6 +554,24 @@ It's called after given milliseconds if `animated` is a number.
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
+
+</details>
+
+### `MenuArrow`
+
+- **`size`**
+  <code>string | number | undefined</code>
+
+  Arrow's size
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
 
 </details>
 

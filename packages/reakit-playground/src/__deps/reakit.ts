@@ -50,6 +50,7 @@ export default {
   "reakit/Menu/MenuItem": require("reakit/Menu/MenuItem"),
   "reakit/Menu/MenuGroup": require("reakit/Menu/MenuGroup"),
   "reakit/Menu/MenuDisclosure": require("reakit/Menu/MenuDisclosure"),
+  "reakit/Menu/MenuArrow": require("reakit/Menu/MenuArrow"),
   "reakit/Menu/Menu": require("reakit/Menu/Menu"),
   "reakit/Hidden": require("reakit/Hidden"),
   "reakit/Hidden/HiddenState": require("reakit/Hidden/HiddenState"),
