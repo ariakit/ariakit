@@ -57,17 +57,87 @@ function Example() {
 }
 ```
 
-### Vertical tabs with manual activation
+### Default selected tab
+
+You can set the default selected tab by passing a `stopId` to `selectedId` on `useTabState`.
 
 ```jsx
 import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
 
 function Example() {
-  const tab = useTabState({
-    orientation: "vertical",
-    manual: true,
-    selectedId: "tab3"
-  });
+  const tab = useTabState({ selectedId: "tab3" });
+  return (
+    <>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab} stopId="tab1">
+          Tab 1
+        </Tab>
+        <Tab {...tab} stopId="tab2" disabled>
+          Tab 2
+        </Tab>
+        <Tab {...tab} stopId="tab3">
+          Tab 3
+        </Tab>
+      </TabList>
+      <TabPanel {...tab} stopId="tab1">
+        Tab 1
+      </TabPanel>
+      <TabPanel {...tab} stopId="tab2">
+        Tab 2
+      </TabPanel>
+      <TabPanel {...tab} stopId="tab3">
+        Tab 3
+      </TabPanel>
+    </>
+  );
+}
+```
+
+### Manual activation
+
+By default, a `Tab` is selected when it gets focused, which reveals its corresponding `TabPanel`. This behavior can be changed by setting `manual` to `true` on `useTabState`.
+
+```jsx
+import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
+
+function Example() {
+  const tab = useTabState({ manual: true });
+  return (
+    <>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab} stopId="tab1">
+          Tab 1
+        </Tab>
+        <Tab {...tab} stopId="tab2" disabled>
+          Tab 2
+        </Tab>
+        <Tab {...tab} stopId="tab3">
+          Tab 3
+        </Tab>
+      </TabList>
+      <TabPanel {...tab} stopId="tab1">
+        Tab 1
+      </TabPanel>
+      <TabPanel {...tab} stopId="tab2">
+        Tab 2
+      </TabPanel>
+      <TabPanel {...tab} stopId="tab3">
+        Tab 3
+      </TabPanel>
+    </>
+  );
+}
+```
+
+### Vertical tabs
+
+You can control the orientation of the tabs by setting `orientation` on `useTabState`. Since it composes from [Rover](/docs/rover/), explicitly defining an orientation will change how arrow key navigation works. If it's set to `vertical`, only <kbd>↑</kbd> and <kbd>↓</kbd> will work.
+
+```jsx
+import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
+
+function Example() {
+  const tab = useTabState({ orientation: "vertical" });
   return (
     <div style={{ display: "flex" }}>
       <TabList {...tab} aria-label="My tabs">
@@ -91,6 +161,58 @@ function Example() {
         Tab 3
       </TabPanel>
     </div>
+  );
+}
+```
+
+### Abstracting
+
+Like all other Reakit components, you can leverage the low level API to create your own customized API and make it less verbose, for example, by using React Context underneath.
+
+```jsx
+import React from "react";
+import {
+  useTabState,
+  Tab as BaseTab,
+  TabList as BaseTabList,
+  TabPanel as BaseTabPanel
+} from "reakit/Tab";
+
+const TabsContext = React.createContext();
+
+function Tabs({ children, ...initialState }) {
+  const tab = useTabState(initialState);
+  const value = React.useMemo(() => tab, Object.values(tab));
+  return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;
+}
+
+function Tab(props) {
+  const tab = React.useContext(TabsContext);
+  return <BaseTab {...tab} {...props} />;
+}
+
+function TabList(props) {
+  const tab = React.useContext(TabsContext);
+  return <BaseTabList {...tab} {...props} />;
+}
+
+function TabPanel(props) {
+  const tab = React.useContext(TabsContext);
+  return <BaseTabPanel {...tab} {...props} />;
+}
+
+function Example() {
+  return (
+    <Tabs selectedId="tab3">
+      <TabList aria-label="My tabs">
+        <Tab stopId="tab1">Tab 1</Tab>
+        <Tab stopId="tab2">Tab 2</Tab>
+        <Tab stopId="tab3">Tab 3</Tab>
+      </TabList>
+      <TabPanel stopId="tab1">Tab 1</TabPanel>
+      <TabPanel stopId="tab2">Tab 2</TabPanel>
+      <TabPanel stopId="tab3">Tab 3</TabPanel>
+    </Tabs>
   );
 }
 ```
