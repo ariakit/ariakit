@@ -143,8 +143,7 @@ export function useHiddenState(
     hide,
     toggle,
     unstable_stopAnimation: stopAnimation,
-    unstable_setIsMounted:
-      process.env.NODE_ENV !== "production" ? setIsMounted : undefined
+    unstable_setIsMounted: setIsMounted
   };
 }
 
