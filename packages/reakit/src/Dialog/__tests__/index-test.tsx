@@ -45,6 +45,27 @@ test("focus the first tabbable element when dialog opens", () => {
   expect(button1).toHaveFocus();
 });
 
+test("focus the dialog element when dialog opens with tabIndex={0}", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog {...dialog} tabIndex={0} aria-label="dialog">
+          <button>button1</button>
+          <button>button2</button>
+        </Dialog>
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
+  expect(document.body).toHaveFocus();
+  fireEvent.click(disclosure);
+  expect(dialog).toHaveFocus();
+});
+
 test("does not auto focus when autoFocusOnShow is falsy", () => {
   const Test = () => {
     const dialog = useDialogState();
@@ -198,6 +219,42 @@ test("focus is trapped within the dialog", () => {
 
   act(() => focusPreviousTabbableIn(baseElement));
   expect(button3).toHaveFocus();
+});
+
+test("focus is trapped within the dialog with tabIndex={0}", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    return (
+      <>
+        <button>button1</button>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog {...dialog} tabIndex={0} aria-label="dialog">
+          <button>button2</button>
+          <button>button3</button>
+        </Dialog>
+        <button>button4</button>
+      </>
+    );
+  };
+  const { getByText, getByLabelText, baseElement } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const dialog = getByLabelText("dialog");
+  const button2 = getByText("button2");
+  const button3 = getByText("button3");
+  fireEvent.click(disclosure);
+  expect(dialog).toHaveFocus();
+
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button2).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button3).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(dialog).toHaveFocus();
+  act(() => focusNextTabbableIn(baseElement));
+  expect(button2).toHaveFocus();
+
+  act(() => focusPreviousTabbableIn(baseElement));
+  expect(dialog).toHaveFocus();
 });
 
 test("focus is trapped within the dialog when hideOnClickOutside is falsy", () => {
