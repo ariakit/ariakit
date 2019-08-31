@@ -6,10 +6,9 @@ import { DialogOptions } from "../Dialog";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosureRef: React.RefObject<HTMLElement>,
+  disclosureRefs: React.RefObject<HTMLElement[]>,
   options: DialogOptions
 ) {
-  const finalFocusRef = options.unstable_finalFocusRef || disclosureRef;
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
 
   useUpdateEffect(() => {
@@ -28,8 +27,13 @@ export function useFocusOnHide(
       return;
     }
 
-    if (finalFocusRef && finalFocusRef.current) {
-      finalFocusRef.current.focus();
+    const finalFocusRef =
+      (options.unstable_finalFocusRef &&
+        options.unstable_finalFocusRef.current) ||
+      (disclosureRefs.current && disclosureRefs.current[0]);
+
+    if (finalFocusRef) {
+      finalFocusRef.focus();
     } else {
       warning(
         true,
@@ -38,5 +42,5 @@ export function useFocusOnHide(
         "See https://reakit.io/docs/dialog"
       );
     }
-  }, [dialogRef, finalFocusRef, shouldFocus]);
+  }, [dialogRef, shouldFocus]);
 }
