@@ -5,7 +5,7 @@ import { isFocusTrap } from "./useFocusTrap";
 
 export function useEventListenerOutside(
   targetRef: React.RefObject<HTMLElement>,
-  disclosureRef: React.RefObject<HTMLElement>,
+  disclosureRefs: React.RefObject<HTMLElement[]>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   event: string,
   listener?: (e: Event) => void,
@@ -20,7 +20,7 @@ export function useEventListenerOutside(
       if (!listenerRef.current) return;
 
       const element = targetRef.current;
-      const disclosure = disclosureRef.current;
+      const disclosures = disclosureRefs.current || [];
       const target = e.target as Element;
 
       warning(
@@ -34,7 +34,12 @@ export function useEventListenerOutside(
       if (!element || element.contains(target)) return;
 
       // Click on disclosure
-      if (disclosure && disclosure.contains(target)) return;
+      if (
+        disclosures.length &&
+        disclosures.some(disclosure => disclosure.contains(target))
+      ) {
+        return;
+      }
 
       // Click inside a nested dialog or focus trap
       if (
@@ -60,6 +65,6 @@ export function useEventListenerOutside(
     shouldListen,
     nestedDialogs,
     listenerRef,
-    disclosureRef
+    disclosureRefs
   ]);
 }

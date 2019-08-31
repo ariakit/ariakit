@@ -4,13 +4,13 @@ import { useEventListenerOutside } from "./useEventListenerOutside";
 
 export function useHideOnClickOutside(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosureRef: React.RefObject<HTMLElement>,
+  disclosureRefs: React.RefObject<HTMLElement[]>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   options: DialogOptions
 ) {
   useEventListenerOutside(
     dialogRef,
-    disclosureRef,
+    disclosureRefs,
     nestedDialogs,
     "click",
     options.hide,
@@ -18,7 +18,7 @@ export function useHideOnClickOutside(
   );
   useEventListenerOutside(
     dialogRef,
-    disclosureRef,
+    disclosureRefs,
     nestedDialogs,
     "focus",
     options.hide,

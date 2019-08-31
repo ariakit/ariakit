@@ -412,6 +412,30 @@ test("clicking on disclosure closes the dialog", () => {
   expect(dialog).not.toBeVisible();
 });
 
+test("clicking on any of multiple disclosures closes the dialog", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
+        <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
+        <Dialog {...dialog} aria-label="dialog" />
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const disclosure1 = getByText("disclosure1");
+  const disclosure2 = getByText("disclosure2");
+  const dialog = getByLabelText("dialog");
+  expect(dialog).toBeVisible();
+  fireEvent.click(disclosure1);
+  expect(dialog).not.toBeVisible();
+  fireEvent.click(disclosure2);
+  expect(dialog).toBeVisible();
+  fireEvent.click(disclosure2);
+  expect(dialog).not.toBeVisible();
+});
+
 test("clicking on an element inside disclosure closes the dialog", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
@@ -531,6 +555,30 @@ test("focusing disclosure does not close the non-modal dialog", () => {
   expect(dialog).toBeVisible();
 });
 
+test("focusing any of multiple disclosures does not close the non-modal dialog", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
+        <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
+        <Dialog {...dialog} aria-label="dialog" modal={false} />
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const disclosure1 = getByText("disclosure1");
+  const disclosure2 = getByText("disclosure2");
+  const dialog = getByLabelText("dialog");
+  expect(dialog).toBeVisible();
+  act(() => disclosure1.focus());
+  expect(disclosure1).toHaveFocus();
+  expect(dialog).toBeVisible();
+  act(() => disclosure2.focus());
+  expect(disclosure2).toHaveFocus();
+  expect(dialog).toBeVisible();
+});
+
 test("focus disclosure when dialog closes", () => {
   const Test = () => {
     const dialog = useDialogState();
@@ -549,6 +597,46 @@ test("focus disclosure when dialog closes", () => {
   fireEvent.click(baseElement);
   expect(dialog).not.toBeVisible();
   expect(disclosure).toHaveFocus();
+});
+
+test("focus the disclosure that has been used to open the dialog when dialog closes", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
+        <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
+        <button onClick={dialog.toggle}>disclosure3</button>
+        <Dialog {...dialog} aria-label="dialog" />
+      </>
+    );
+  };
+  const { getByText, getByLabelText, baseElement } = render(<Test />);
+  const disclosure1 = getByText("disclosure1");
+  const disclosure2 = getByText("disclosure2");
+  const disclosure3 = getByText("disclosure3");
+  const dialog = getByLabelText("dialog");
+
+  act(() => disclosure1.focus());
+  fireEvent.click(disclosure1);
+  expect(dialog).toBeVisible();
+  fireEvent.click(baseElement);
+  expect(dialog).not.toBeVisible();
+  expect(disclosure1).toHaveFocus();
+
+  act(() => disclosure2.focus());
+  fireEvent.click(disclosure2);
+  expect(dialog).toBeVisible();
+  fireEvent.click(baseElement);
+  expect(dialog).not.toBeVisible();
+  expect(disclosure2).toHaveFocus();
+
+  act(() => disclosure3.focus());
+  fireEvent.click(disclosure3);
+  expect(dialog).toBeVisible();
+  fireEvent.click(baseElement);
+  expect(dialog).not.toBeVisible();
+  expect(disclosure3).toHaveFocus();
 });
 
 test("focus disclosure when non-modal dialog closes", () => {
@@ -688,6 +776,7 @@ test("focus disclosure in dialog when nested dialog closes", () => {
   const dialog2 = getByLabelText("dialog2");
   const button2 = getByText("button2");
   fireEvent.click(disclosure1);
+  act(() => disclosure2.focus());
   fireEvent.click(disclosure2);
   expect(button2).toHaveFocus();
   fireEvent.click(dialog1);
