@@ -72,6 +72,27 @@ function Example() {
 }
 ```
 
+### Initial focus
+
+When opening `Dialog`, focus is usually set on the first tabbable element within the dialog, including itself. So, if you want to set the initial focus on the dialog element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
+
+```jsx
+import { Button } from "reakit/Button";
+import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
+
+function Example() {
+  const dialog = useDialogState();
+  return (
+    <>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <Dialog {...dialog} tabIndex={0} aria-label="Welcome">
+        <Button onClick={dialog.hide}>Close</Button>
+      </Dialog>
+    </>
+  );
+}
+```
+
 ### Non-modal dialogs
 
 There's still no consensus on how non-modal dialogs should behave. Some discussions like [w3c/aria-practices#599](https://github.com/w3c/aria-practices/issues/599) and [this deleted section about non-modal dialogs](https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#dialog_nonmodal) indicate that it's pretty much a dialog that provides a keyboard mechanism to move focus outside it while leaving it open.

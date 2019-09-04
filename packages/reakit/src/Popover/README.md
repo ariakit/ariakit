@@ -73,6 +73,27 @@ function Example() {
 }
 ```
 
+### Initial focus
+
+When opening `Popover`, focus is usually set on the first tabbable element within the popover, including itself. So, if you want to set the initial focus on the popover element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
+
+```jsx
+import { Button } from "reakit/Button";
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState();
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} tabIndex={0} aria-label="Welcome">
+        <Button onClick={popover.hide}>Close</Button>
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.

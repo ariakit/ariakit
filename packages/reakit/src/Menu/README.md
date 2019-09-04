@@ -85,6 +85,28 @@ function Example() {
 }
 ```
 
+### Initial focus
+
+When opening `Menu`, focus is usually set on the first `MenuItem`. You can set the initial focus to be the menu container itself by just passing `tabIndex={0}` to it. This will be ignored if the menu is opened by using arrow keys.
+
+```jsx
+import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+
+function Example() {
+  const menu = useMenuState();
+  return (
+    <>
+      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <Menu {...menu} tabIndex={0} aria-label="Preferences">
+        <MenuItem {...menu}>Settings</MenuItem>
+        <MenuItem {...menu}>Extensions</MenuItem>
+        <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
+      </Menu>
+    </>
+  );
+}
+```
+
 ### Submenu
 
 ```jsx
