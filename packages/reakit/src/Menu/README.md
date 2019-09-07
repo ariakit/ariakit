@@ -20,26 +20,26 @@ Learn more in [Get started](/docs/get-started/).
 
 ```jsx
 import {
-  useMenuState,
-  Menu,
+  useMenuPopoverState,
+  MenuPopover,
   MenuItem,
   MenuDisclosure,
   MenuSeparator
 } from "reakit/Menu";
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
-      <Menu {...menu} aria-label="Preferences">
+      <MenuPopover {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} disabled>
           Extensions
         </MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 }
@@ -53,20 +53,20 @@ You can use either `onClick` or `href` props on `MenuItem` to define menu action
 
 ```jsx
 import {
-  useMenuState,
-  Menu,
+  useMenuPopoverState,
+  MenuPopover,
   MenuItem,
   MenuDisclosure,
   MenuSeparator
 } from "reakit/Menu";
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
 
   return (
     <>
       <MenuDisclosure {...menu}>Menu</MenuDisclosure>
-      <Menu {...menu} aria-label="Example">
+      <MenuPopover {...menu} aria-label="Example">
         <MenuItem
           {...menu}
           onClick={() => {
@@ -79,7 +79,7 @@ function Example() {
         <MenuItem {...menu} as="a" href="#" onClick={menu.hide}>
           Link
         </MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 }
@@ -90,18 +90,23 @@ function Example() {
 When opening `Menu`, focus is usually set on the first `MenuItem`. You can set the initial focus to be the menu container itself by just passing `tabIndex={0}` to it. This will be ignored if the menu is opened by using arrow keys.
 
 ```jsx
-import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+import {
+  useMenuPopoverState,
+  MenuPopover,
+  MenuItem,
+  MenuDisclosure
+} from "reakit/Menu";
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
-      <Menu {...menu} tabIndex={0} aria-label="Preferences">
+      <MenuPopover {...menu} tabIndex={0} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu}>Extensions</MenuItem>
         <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 }
@@ -112,43 +117,43 @@ function Example() {
 ```jsx
 import React from "react";
 import {
-  useMenuState,
-  Menu,
+  useMenuPopoverState,
+  MenuPopover,
   MenuItem,
   MenuDisclosure,
   MenuSeparator
 } from "reakit/Menu";
 
 const PreferencesMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure ref={ref} {...menu} {...props}>
         Preferences
       </MenuDisclosure>
-      <Menu {...menu} aria-label="Preferences">
+      <MenuPopover {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} disabled>
           Extensions
         </MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu}>Code</MenuDisclosure>
-      <Menu {...menu} aria-label="Code">
+      <MenuPopover {...menu} aria-label="Code">
         <MenuItem {...menu}>About Visual Studio Code</MenuItem>
         <MenuItem {...menu}>Check for Updates...</MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu} as={PreferencesMenu} />
-      </Menu>
+      </MenuPopover>
     </>
   );
 }
@@ -166,8 +171,8 @@ import {
   DialogBackdrop
 } from "reakit/Dialog";
 import {
-  useMenuState,
-  Menu,
+  useMenuPopoverState,
+  MenuPopover,
   MenuItem,
   MenuDisclosure,
   MenuSeparator
@@ -189,16 +194,16 @@ const UpdatesDialog = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu}>Code</MenuDisclosure>
-      <Menu {...menu} aria-label="Code">
+      <MenuPopover {...menu} aria-label="Code">
         <MenuItem {...menu}>About Visual Studio Code</MenuItem>
         <MenuItem {...menu} as={UpdatesDialog} />
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Preferences</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 }
@@ -210,11 +215,12 @@ function Example() {
 import React from "react";
 import {
   useMenuState,
-  Menu,
+  useMenuPopoverState,
+  MenuPopover,
   MenuDisclosure,
   MenuItem,
   MenuSeparator,
-  StaticMenu,
+  MenuBar,
   MenuGroup,
   MenuItemCheckbox,
   MenuItemRadio
@@ -222,72 +228,72 @@ import {
 
 // OPEN RECENT
 const OpenRecentMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure ref={ref} {...menu} {...props}>
         Open Recent
       </MenuDisclosure>
-      <Menu {...menu} aria-label="Open Recent">
+      <MenuPopover {...menu} aria-label="Open Recent">
         <MenuItem {...menu}>Reopen Closed Editor</MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>More...</MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Clear Recently Opened</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
 
 // FILE
 const FileMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure ref={ref} {...menu} {...props}>
         File
       </MenuDisclosure>
-      <Menu {...menu} aria-label="File">
+      <MenuPopover {...menu} aria-label="File">
         <MenuItem {...menu}>New File</MenuItem>
         <MenuItem {...menu}>New Window</MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Open...</MenuItem>
         <MenuItem {...menu}>Open Workspace...</MenuItem>
         <MenuItem {...menu} as={OpenRecentMenu} />
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
 
 // EDIT
 const EditMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure ref={ref} {...menu} {...props}>
         Edit
       </MenuDisclosure>
-      <Menu {...menu} aria-label="Edit">
+      <MenuPopover {...menu} aria-label="Edit">
         <MenuItem {...menu}>Undo</MenuItem>
         <MenuItem {...menu}>Redo</MenuItem>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Cut</MenuItem>
         <MenuItem {...menu}>Copy</MenuItem>
         <MenuItem {...menu}>Paste</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
 
 // VIEW
 const ViewMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure ref={ref} {...menu} {...props}>
         View
       </MenuDisclosure>
-      <Menu {...menu} aria-label="View">
+      <MenuPopover {...menu} aria-label="View">
         <MenuGroup {...menu}>
           <MenuItemRadio {...menu} name="windows" value="explorer">
             Explorer
@@ -312,7 +318,7 @@ const ViewMenu = React.forwardRef((props, ref) => {
         <MenuItemCheckbox {...menu} name="toggles" value="breadcrumbs">
           Toggle Breadcrumbs
         </MenuItemCheckbox>
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
@@ -320,11 +326,11 @@ const ViewMenu = React.forwardRef((props, ref) => {
 function Example() {
   const menu = useMenuState({ orientation: "horizontal" });
   return (
-    <StaticMenu {...menu}>
+    <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />
       <MenuItem {...menu} as={EditMenu} />
       <MenuItem {...menu} as={ViewMenu} />
-    </StaticMenu>
+    </MenuBar>
   );
 }
 ```
@@ -336,14 +342,14 @@ You can build your own `Menu` component with a different API on top of Reakit.
 ```jsx
 import React from "react";
 import {
-  useMenuState,
-  Menu as BaseMenu,
+  useMenuPopoverState,
+  MenuPopover,
   MenuItem,
   MenuDisclosure
 } from "reakit/Menu";
 
 function Menu({ disclosure, items, ...props }) {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu}>
@@ -351,7 +357,7 @@ function Menu({ disclosure, items, ...props }) {
           React.cloneElement(React.Children.only(disclosure), disclosureProps)
         }
       </MenuDisclosure>
-      <BaseMenu {...menu} {...props}>
+      <MenuPopover {...menu} {...props}>
         {items.map((item, i) => (
           <MenuItem {...menu} key={i}>
             {itemProps =>
@@ -359,7 +365,7 @@ function Menu({ disclosure, items, ...props }) {
             }
           </MenuItem>
         ))}
-      </BaseMenu>
+      </MenuPopover>
     </>
   );
 }
@@ -484,6 +490,79 @@ element.
 
   Stores the values of radios and checkboxes within the menu.
 
+### `useMenuPopoverState`
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.
+
+- **`currentId`**
+  <code>string | null</code>
+
+  The current focused element ID.
+
+- **`loop`**
+  <code>boolean</code>
+
+  If enabled:
+  - Jumps to the first item when moving next from the last item.
+  - Jumps to the last item when moving previous from the first item.
+
+- **`unstable_values`** <span title="Experimental">⚠️</span>
+  <code>{ [x: string]: any; }</code>
+
+  Stores the values of radios and checkboxes within the menu.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+- **`unstable_fixed`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Whether or not the popover should have `position` set to `fixed`.
+
+- **`unstable_flip`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Flip the popover's placement when it starts to overlap its reference
+element.
+
+- **`unstable_shift`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Shift popover on the start or end of its reference element.
+
+- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+  <code>number | undefined</code>
+
+  Offset between the reference and the popover.
+
+- **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Prevents popover from being positioned outside the boundary.
+
+- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
+  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
+
+  Boundaries element used by `preventOverflow`.
+
 ### `Menu`
 
 - **`hideOnClickOutside`**
@@ -594,6 +673,39 @@ It's called after given milliseconds if `animated` is a number.
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
   Actual `placement`.
+
+</details>
+
+### `MenuBar`
+
+<details><summary>5 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.
+
+- **`stops`**
+  <code>Stop[]</code>
+
+  A list of element refs and IDs of the roving items.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given element ID.
+
+- **`next`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the next element.
+
+- **`previous`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the previous element.
 
 </details>
 
@@ -1020,6 +1132,101 @@ similarly to `readOnly` on form elements. In this case, only
   <code>(name: string, value?: any) =&#62; void</code>
 
   Updates checkboxes and radios values within the menu.
+
+</details>
+
+### `MenuPopover`
+
+- **`hideOnClickOutside`**
+  <code>boolean | undefined</code>
+
+  When enabled, user can hide the dialog by clicking outside it.
+
+- **`preventBodyScroll`**
+  <code>boolean | undefined</code>
+
+  When enabled, user can't scroll on body when the dialog is visible.
+This option doesn't work if the dialog isn't modal.
+
+- **`unstable_initialFocusRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
+
+  The element that will be focused when the dialog shows.
+When not set, the first tabbable element within the dialog will be used.
+
+- **`unstable_finalFocusRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement&#62; | undefined</code>
+
+  The element that will be focused when the dialog hides.
+When not set, the disclosure component will be used.
+
+<details><summary>12 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first element.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.
+
+- **`stops`**
+  <code>Stop[]</code>
+
+  A list of element refs and IDs of the roving items.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given element ID.
+
+- **`next`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the next element.
+
+- **`previous`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the previous element.
 
 </details>
 

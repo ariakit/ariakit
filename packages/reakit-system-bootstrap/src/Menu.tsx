@@ -121,6 +121,10 @@ export function useMenuProps(
   return { ...htmlProps, className: cx(menu, htmlProps.className) };
 }
 
+export type BootstrapMenuPopoverOptions = BootstrapMenuOptions;
+export const useMenuPopoverOptions = useMenuOptions;
+export const useMenuPopoverProps = useMenuProps;
+
 export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
   MenuDisclosureOptions &
   Pick<Partial<MenuStateReturn>, "unstable_originalPlacement">;

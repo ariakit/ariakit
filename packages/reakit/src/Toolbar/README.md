@@ -57,20 +57,25 @@ You can render [Menu](/docs/menu/) within a `Toolbar` using the same techinique 
 ```jsx
 import React from "react";
 import { useToolbarState, Toolbar, ToolbarItem } from "reakit/Toolbar";
-import { useMenuState, MenuDisclosure, Menu, MenuItem } from "reakit/Menu";
+import {
+  useMenuPopoverState,
+  MenuDisclosure,
+  MenuPopover,
+  MenuItem
+} from "reakit/Menu";
 import { VisuallyHidden } from "reakit/VisuallyHidden";
 import { Button } from "reakit/Button";
 
 const MoreItems = React.forwardRef((props, ref) => {
-  const menu = useMenuState({ placement: "bottom-end" });
+  const menu = useMenuPopoverState({ placement: "bottom-end" });
   return (
     <>
       <MenuDisclosure {...menu} {...props} ref={ref} aria-label="More items" />
-      <Menu {...menu} aria-label="More items">
+      <MenuPopover {...menu} aria-label="More items">
         <MenuItem {...menu}>Item 3</MenuItem>
         <MenuItem {...menu}>Item 4</MenuItem>
         <MenuItem {...menu}>Item 5</MenuItem>
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
@@ -126,6 +131,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean</code>
 
   If enabled:
+
   - Jumps to the first item when moving next from the last item.
   - Jumps to the last item when moving previous from the first item.
 
@@ -153,8 +159,8 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
-similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.
+  similarly to `readOnly` on form elements. In this case, only
+  `aria-disabled` will be set.
 
 - **`stopId`**
   <code>string | undefined</code>
@@ -174,7 +180,7 @@ similarly to `readOnly` on form elements. In this case, only
   <code>number</code>
 
   Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
+  `previous`, `first` or `last`.
 
 - **`currentId`**
   <code>string | null</code>

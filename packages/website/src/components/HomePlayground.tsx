@@ -61,28 +61,28 @@ const TabsModal = React.forwardRef((props, ref) => {
 `.trim();
 
 const menuCode = `
-import { useMenuState, Menu, MenuDisclosure, MenuItem } from "reakit";
+import { useMenuPopoverState, MenuPopover, MenuDisclosure, MenuItem } from "reakit";
 import TabsModal from "./TabsModal";
 
 const TabsModalMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu} {...props} ref={ref}>
         Menu
       </MenuDisclosure>
-      <Menu {...menu}>
+      <MenuPopover {...menu}>
         <MenuItem {...menu}>Item 1</MenuItem>
         <MenuItem {...menu}>Item 2</MenuItem>
         <MenuItem {...menu} as={TabsModal} />
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
 `.trim();
 
 const submenuCode = `
-import { useMenuState, Menu, MenuDisclosure, MenuItem } from "reakit";
+import { useMenuPopoverState, MenuPopover, MenuDisclosure, MenuItem } from "reakit";
 import TabsModalMenu from "./TabsModalMenu";
 
 const TabsModalSubmenu = React.forwardRef((props, ref) => {
@@ -92,28 +92,28 @@ const TabsModalSubmenu = React.forwardRef((props, ref) => {
       <MenuDisclosure {...menu} {...props} ref={ref}>
         Menu
       </MenuDisclosure>
-      <Menu {...menu}>
+      <MenuPopover {...menu}>
         <MenuItem {...menu}>Item 1</MenuItem>
         <MenuItem {...menu}>Item 2</MenuItem>
         <MenuItem {...menu} as={TabsModalMenu} />
-      </Menu>
+      </MenuPopover>
     </>
   );
 });
 `.trim();
 
 const menubarCode = `
-import { useMenuState, StaticMenu, MenuItem } from "reakit";
+import { useMenuState, MenuBar, MenuItem } from "reakit";
 import TabsModalSubmenu from "./TabsModalSubmenu";
 
 const MenuBar = () => {
   const menu = useMenuState({ orientation: "horizontal" });
   return (
-    <StaticMenu {...menu}>
+    <MenuBar {...menu}>
       <MenuItem {...menu}>Item 1</MenuItem>
       <MenuItem {...menu}>Item 2</MenuItem>
       <MenuItem {...menu} as={TabsModalSubmenu} />
-    </StaticMenu>
+    </MenuBar>
   );
 };
 `.trim();
