@@ -86,7 +86,7 @@ import { useMenuPopoverState, MenuPopover, MenuDisclosure, MenuItem } from "reak
 import TabsModalMenu from "./TabsModalMenu";
 
 const TabsModalSubmenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuPopoverState();
   return (
     <>
       <MenuDisclosure {...menu} {...props} ref={ref}>
