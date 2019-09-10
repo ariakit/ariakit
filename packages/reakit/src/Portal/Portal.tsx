@@ -8,7 +8,7 @@ export type PortalProps = {
   children: React.ReactNode;
 };
 
-const PortalContext = React.createContext<HTMLElement | null>(
+export const PortalContext = React.createContext<HTMLElement | null>(
   typeof document !== "undefined" ? document.body : null
 );
 
