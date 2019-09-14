@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-utils/warning";
-import { isTabbable } from "reakit-utils/tabbable";
+import { isTabbable, forceFocus } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
 
 export function useFocusOnHide(
@@ -33,7 +33,7 @@ export function useFocusOnHide(
       (disclosureRefs.current && disclosureRefs.current[0]);
 
     if (finalFocusRef) {
-      finalFocusRef.focus();
+      forceFocus(finalFocusRef);
     } else {
       warning(
         true,
