@@ -172,6 +172,64 @@ test("focus a given element when dialog opens and initialFocusRef is passed in",
   expect(button2).toHaveFocus();
 });
 
+test("focus a given element when dialog opens and initial focus has been manually set using React.useEffect", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    const ref = React.useRef<HTMLButtonElement>(null);
+
+    React.useEffect(() => {
+      if (dialog.visible && ref.current) {
+        ref.current.focus();
+      }
+    }, [dialog.visible]);
+
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog {...dialog} aria-label="dialog">
+          <button>button1</button>
+          <button ref={ref}>button2</button>
+        </Dialog>
+      </>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  const button2 = getByText("button2");
+  expect(document.body).toHaveFocus();
+  fireEvent.click(disclosure);
+  expect(button2).toHaveFocus();
+});
+
+test("focus a given element when dialog opens and initial focus has been manually set using autoFocus", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog {...dialog} aria-label="dialog">
+          {props =>
+            dialog.visible && (
+              <div {...props}>
+                <button>button1</button>
+                {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                <button autoFocus>button2</button>
+              </div>
+            )
+          }
+        </Dialog>
+      </>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const disclosure = getByText("disclosure");
+  expect(document.body).toHaveFocus();
+  expect(() => getByText("button2")).toThrow();
+  fireEvent.click(disclosure);
+  const button2 = getByText("button2");
+  expect(button2).toHaveFocus();
+});
+
 test("focus dialog itself if there is no tabbable descendant element", () => {
   const Test = () => {
     const dialog = useDialogState();

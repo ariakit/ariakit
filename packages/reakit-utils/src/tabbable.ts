@@ -154,3 +154,26 @@ export function focusPreviousTabbableIn<T extends Element>(
     previousTabbable.focus();
   }
 }
+
+function defaultIsActive(element: Element) {
+  return document.activeElement === element;
+}
+
+type ForceFocusOptions = FocusOptions & {
+  isActive?: typeof defaultIsActive;
+};
+
+export function forceFocus(
+  element: HTMLElement,
+  { isActive = defaultIsActive, preventScroll }: ForceFocusOptions = {}
+) {
+  if (isActive(element)) return -1;
+
+  element.focus({ preventScroll });
+
+  if (isActive(element)) return -1;
+
+  return requestAnimationFrame(() => {
+    element.focus({ preventScroll });
+  });
+}
