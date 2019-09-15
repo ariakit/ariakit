@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { warning } from "reakit-utils/warning";
 import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
@@ -51,13 +50,6 @@ export const useMenuDisclosure = createHook<
     const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
     const [dir] = options.placement.split("-");
 
-    // Restores hasShownOnFocus
-    React.useEffect(() => {
-      if (hasShownOnFocus) {
-        setTimeout(() => setHasShownOnFocus(false), 200);
-      }
-    }, [hasShownOnFocus]);
-
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
@@ -88,56 +80,54 @@ export const useMenuDisclosure = createHook<
     );
 
     const onFocus = React.useCallback(() => {
-      if (parent && parent.orientation === "horizontal") {
+      if (parent && parent.role === "menubar") {
         setHasShownOnFocus(true);
         options.show();
       }
-    }, [parent && parent.orientation, setHasShownOnFocus, options.show]);
+    }, [parent && parent.role, setHasShownOnFocus, options.show]);
 
-    const onMouseOver = React.useCallback(() => {
-      if (!parent) return;
-
-      if (!ref.current) {
-        warning(
-          true,
-          "MenuDisclosure",
-          "Can't respond to mouse over on `MenuDisclosure` because `ref` wasn't passed to component.",
-          "See https://reakit.io/docs/menu"
-        );
-        return;
+    // Restores hasShownOnFocus
+    React.useEffect(() => {
+      if (hasShownOnFocus) {
+        setTimeout(() => setHasShownOnFocus(false), 200);
       }
+    }, [hasShownOnFocus]);
 
-      const parentIsHorizontal = parent.orientation === "horizontal";
+    const onMouseOver = React.useCallback(
+      (event: MouseEvent) => {
+        if (!parent) return;
 
-      if (!parentIsHorizontal) {
-        setTimeout(() => {
-          if (ref.current && ref.current.contains(document.activeElement)) {
-            options.show();
-            ref.current.focus();
+        const disclosure = event.currentTarget as HTMLElement;
+        const parentIsMenuBar = parent.role === "menubar";
+
+        if (!parentIsMenuBar) {
+          setTimeout(() => {
+            if (disclosure.contains(document.activeElement)) {
+              options.show();
+              if (document.activeElement !== disclosure) {
+                disclosure.focus();
+              }
+            }
+          }, 200);
+        } else {
+          const subjacentOpenMenu = parent.children.some(
+            child => child.current && !child.current.hidden
+          );
+          if (subjacentOpenMenu) {
+            disclosure.focus();
           }
-        }, 200);
-      } else {
-        const parentMenu = ref.current.closest("[role=menu],[role=menubar]");
-        const subjacentOpenMenu =
-          parentMenu && parentMenu.querySelector("[role=menu]:not([hidden])");
-        if (subjacentOpenMenu) {
-          ref.current.focus();
         }
-      }
-    }, [parent && parent.orientation, options.show]);
+      },
+      [parent && parent.role, options.show]
+    );
 
     const onClick = React.useCallback(() => {
-      if (parent && (parent.orientation !== "horizontal" || hasShownOnFocus)) {
+      if (parent && (parent.role !== "menubar" || hasShownOnFocus)) {
         options.show();
       } else {
         options.toggle();
       }
-    }, [
-      parent && parent.orientation,
-      hasShownOnFocus,
-      options.show,
-      options.toggle
-    ]);
+    }, [parent && parent.role, hasShownOnFocus, options.show, options.toggle]);
 
     return {
       ref: mergeRefs(ref, htmlRef),

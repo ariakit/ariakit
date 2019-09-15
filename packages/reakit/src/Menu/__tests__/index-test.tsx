@@ -6,7 +6,7 @@ import {
   MenuDisclosure,
   MenuItem,
   MenuGroup,
-  StaticMenu,
+  MenuBar,
   MenuItemRadio,
   MenuItemCheckbox,
   MenuDisclosureHTMLProps
@@ -16,10 +16,10 @@ function keyDown(key: string) {
   fireEvent.keyDown(document.activeElement!, { key });
 }
 
-test("static menu is always visible", async () => {
+test("menu bar is always visible", async () => {
   const Test = () => {
     const menu = useMenuState();
-    return <StaticMenu {...menu} aria-label="menu" />;
+    return <MenuBar {...menu} aria-label="menu" />;
   };
   const { getByLabelText } = render(<Test />);
   const menu = getByLabelText("menu");
@@ -93,11 +93,11 @@ test("hovering out expanded menu item disclosure does not moves focus", async ()
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu} as={Submenu} />
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -140,11 +140,11 @@ test("clicking on menu item disclosure opens submenu without moving focus", asyn
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu} as={Submenu} />
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -177,11 +177,11 @@ test("focusing menu item disclosure does not open submenu", async () => {
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -213,11 +213,11 @@ test("pressing enter on menu item disclosure opens submenu and focus the first i
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -253,11 +253,11 @@ test("pressing space on menu item disclosure opens submenu and focus the first i
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -563,11 +563,11 @@ test("arrow left on menu item disclosure opens left submenu and focus first item
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -660,11 +660,11 @@ test("focusing menubar item disclosure opens the submenu without moving focus", 
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -697,11 +697,11 @@ test("clicking on menubar item disclosure opens the submenu without moving focus
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -735,11 +735,11 @@ test("hovering menubar item disclosure does not move focus into it", async () =>
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -774,14 +774,14 @@ test("hovering menubar item disclosure moves focus into it if there is another s
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>
           {props => <Submenu {...props} index={1} />}
         </MenuItem>
         <MenuItem {...menu}>
           {props => <Submenu {...props} index={2} />}
         </MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -819,11 +819,11 @@ test("pressing enter on menubar item disclosure focus submenu first item", async
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -863,11 +863,11 @@ test("pressing space on menubar item disclosure focus submenu first item", async
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -890,7 +890,7 @@ test("move focus within menu with arrow keys", async () => {
   const Test = () => {
     const menu = useMenuState();
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>item2</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
@@ -905,7 +905,7 @@ test("move focus within menu with arrow keys", async () => {
             orange
           </MenuItemRadio>
         </MenuGroup>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText } = render(<Test />);
@@ -1083,11 +1083,11 @@ test("move focus within menubar with arrow keys", async () => {
       loop: true
     });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>item1</MenuItem>
         <MenuItem {...menu}>item2</MenuItem>
         <MenuItem {...menu}>item3</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText } = render(<Test />);
@@ -1107,11 +1107,11 @@ test("move focus within menubar with ascii keys", async () => {
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>abc</MenuItem>
         <MenuItem {...menu}>def</MenuItem>
         <MenuItem {...menu}>ghi</MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText } = render(<Test />);
@@ -1146,14 +1146,14 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   const Test = () => {
     const menu = useMenuState({ orientation: "horizontal" });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu}>
           {props => <Submenu {...props} index={1} />}
         </MenuItem>
         <MenuItem {...menu}>
           {props => <Submenu {...props} index={2} />}
         </MenuItem>
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);
@@ -1225,10 +1225,10 @@ test("arrow right/left in a sub-submenu moves focus between disclosures in menub
       loop: true
     });
     return (
-      <StaticMenu {...menu} aria-label="menu">
+      <MenuBar {...menu} aria-label="menu">
         <MenuItem {...menu} as={Submenu} index={1} />
         <MenuItem {...menu} as={Submenu} index={2} />
-      </StaticMenu>
+      </MenuBar>
     );
   };
   const { getByText, getByLabelText } = render(<Test />);

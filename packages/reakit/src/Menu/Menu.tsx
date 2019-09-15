@@ -11,38 +11,32 @@ import {
   PopoverHTMLProps,
   usePopover
 } from "../Popover/Popover";
-import {
-  StaticMenuOptions,
-  StaticMenuHTMLProps,
-  useStaticMenu
-} from "./StaticMenu";
+import { MenuBarOptions, MenuBarHTMLProps, useMenuBar } from "./MenuBar";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
-export type MenuOptions = Omit<
-  PopoverOptions,
-  "modal" | "unstable_portal" | "unstable_orphan" | "hideOnEsc"
-> &
+export type MenuOptions = Omit<PopoverOptions, "hideOnEsc"> &
   Pick<MenuStateReturn, "placement"> &
   Pick<Partial<MenuStateReturn>, "first" | "last"> &
-  StaticMenuOptions;
+  MenuBarOptions;
 
-export type MenuHTMLProps = PopoverHTMLProps & StaticMenuHTMLProps;
+export type MenuHTMLProps = PopoverHTMLProps & MenuBarHTMLProps;
 
 export type MenuProps = MenuOptions & MenuHTMLProps;
 
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
-  compose: [useStaticMenu, usePopover],
+  compose: [useMenuBar, usePopover],
   useState: useMenuState,
 
   useOptions(options) {
     const parent = React.useContext(MenuContext);
-    const parentIsHorizontal = parent && parent.orientation === "horizontal";
+    const parentIsMenuBar = parent && parent.role === "menubar";
 
     return {
       unstable_autoFocusOnShow: !parent,
-      unstable_autoFocusOnHide: !parentIsHorizontal,
+      unstable_autoFocusOnHide: !parentIsMenuBar,
+      modal: false,
       ...options
     };
   },
@@ -51,10 +45,10 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const parent = React.useContext(MenuContext);
     const isHorizontal = options.orientation === "horizontal";
     const isVertical = options.orientation === "vertical";
-    let horizontalParent: MenuContextType | undefined | null = parent;
+    let ancestorMenuBar: MenuContextType | undefined | null = parent;
 
-    while (horizontalParent && horizontalParent.orientation !== "horizontal") {
-      horizontalParent = horizontalParent.parent;
+    while (ancestorMenuBar && ancestorMenuBar.role !== "menubar") {
+      ancestorMenuBar = ancestorMenuBar.parent;
     }
 
     const [dir] = options.placement.split("-");
@@ -106,20 +100,24 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           keyMap: parent
             ? {
                 ArrowRight:
-                  horizontalParent && dir !== "left"
-                    ? horizontalParent.next
+                  ancestorMenuBar &&
+                  parent.orientation === "horizontal" &&
+                  dir !== "left"
+                    ? ancestorMenuBar.next
                     : dir === "left" && options.hide,
                 ArrowLeft:
-                  horizontalParent && dir !== "right"
-                    ? horizontalParent.previous
+                  ancestorMenuBar &&
+                  parent.orientation === "horizontal" &&
+                  dir !== "right"
+                    ? ancestorMenuBar.previous
                     : dir === "right" && options.hide
               }
             : {}
         }),
       [
-        Boolean(parent),
-        horizontalParent && horizontalParent.next,
-        horizontalParent && horizontalParent.previous,
+        parent && parent.orientation,
+        ancestorMenuBar && ancestorMenuBar.next,
+        ancestorMenuBar && ancestorMenuBar.previous,
         dir,
         options.hide
       ]
@@ -133,17 +131,8 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   },
 
   useCompose(options, htmlProps) {
-    htmlProps = useStaticMenu(options, htmlProps);
-    return usePopover(
-      {
-        ...options,
-        modal: false,
-        unstable_portal: false,
-        unstable_orphan: false,
-        hideOnEsc: false
-      },
-      htmlProps
-    );
+    htmlProps = useMenuBar(options, htmlProps);
+    return usePopover({ ...options, hideOnEsc: false }, htmlProps);
   }
 });
 

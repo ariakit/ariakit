@@ -42,7 +42,7 @@ export default {
   "reakit/Popover/PopoverArrow": require("reakit/Popover/PopoverArrow"),
   "reakit/Popover/Popover": require("reakit/Popover/Popover"),
   "reakit/Menu": require("reakit/Menu"),
-  "reakit/Menu/StaticMenu": require("reakit/Menu/StaticMenu"),
+  "reakit/Menu/MenuBar": require("reakit/Menu/MenuBar"),
   "reakit/Menu/MenuState": require("reakit/Menu/MenuState"),
   "reakit/Menu/MenuSeparator": require("reakit/Menu/MenuSeparator"),
   "reakit/Menu/MenuItemRadio": require("reakit/Menu/MenuItemRadio"),

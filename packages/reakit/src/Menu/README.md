@@ -214,7 +214,7 @@ import {
   MenuDisclosure,
   MenuItem,
   MenuSeparator,
-  StaticMenu,
+  MenuBar,
   MenuGroup,
   MenuItemCheckbox,
   MenuItemRadio
@@ -320,11 +320,11 @@ const ViewMenu = React.forwardRef((props, ref) => {
 function Example() {
   const menu = useMenuState({ orientation: "horizontal" });
   return (
-    <StaticMenu {...menu}>
+    <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />
       <MenuItem {...menu} as={EditMenu} />
       <MenuItem {...menu} as={ViewMenu} />
-    </StaticMenu>
+    </MenuBar>
   );
 }
 ```
@@ -381,7 +381,7 @@ function Example() {
 
 ## Accessibility
 
-- `StaticMenu` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
+- `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
 - `MenuDisclosure` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
 - `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
@@ -390,20 +390,20 @@ function Example() {
 - Pressing <kbd>Enter</kbd> on `MenuDisclosure` opens its menu (or submenu) and places focus on its first item.
 - Pressing <kbd>Space</kbd> on `MenuItemCheckbox` changes the state without closing `Menu`.
 - Pressing <kbd>Space</kbd> on a `MenuItemRadio` that is not checked, without closing `Menu`, checks the focused `MenuItemRadio` and unchecks any other checked `MenuItemRadio` in the same group.
-- Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `StaticMenu` whose label begins with that printable character.
+- Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `MenuBar` whose label begins with that printable character.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Menu` uses `StaticMenu` and [Popover](/docs/popover/).
+- `Menu` uses `MenuBar` and [Popover](/docs/popover/).
 - `MenuDisclosure` uses [PopoverDisclosure](/docs/popover/).
 - `MenuGroup` uses [Box](/docs/box/).
 - `MenuItem` uses [Rover](/docs/rover/).
 - `MenuItemCheckbox` uses [Checkbox](/docs/checkbox/).
 - `MenuItemRadio` uses [Radio](/docs/radio/).
 - `MenuSeparator` uses [Separator](/docs/separator/).
-- `StaticMenu` uses [Box](/docs/box/).
+- `MenuBar` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -1036,7 +1036,7 @@ similarly to `readOnly` on form elements. In this case, only
 
 </details>
 
-### `StaticMenu`
+### `MenuBar`
 
 <details><summary>5 state props</summary>
 
