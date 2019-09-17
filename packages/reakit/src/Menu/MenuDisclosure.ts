@@ -95,12 +95,24 @@ export const useMenuDisclosure = createHook<
 
     const onMouseOver = React.useCallback(
       (event: MouseEvent) => {
+        // MenuDisclosure's don't do anything on mouse over when they aren't
+        // cointained within a Menu/MenuBar
         if (!parent) return;
 
         const disclosure = event.currentTarget as HTMLElement;
         const parentIsMenuBar = parent.role === "menubar";
 
-        if (!parentIsMenuBar) {
+        if (parentIsMenuBar) {
+          // If MenuDisclosure is an item inside a MenuBar, it'll only open
+          // only if they are an item within a MenuBar
+          const subjacentOpenMenu =
+            parent.ref.current &&
+            parent.ref.current.querySelector("[aria-expanded='true']");
+          if (subjacentOpenMenu) {
+            disclosure.focus();
+          }
+        } else {
+          // If it's in a Menu, open after a short delay
           setTimeout(() => {
             if (disclosure.contains(document.activeElement)) {
               options.show();
@@ -109,13 +121,6 @@ export const useMenuDisclosure = createHook<
               }
             }
           }, 200);
-        } else {
-          const subjacentOpenMenu = parent.children.some(
-            child => child.current && !child.current.hidden
-          );
-          if (subjacentOpenMenu) {
-            disclosure.focus();
-          }
         }
       },
       [parent && parent.role, options.show]
