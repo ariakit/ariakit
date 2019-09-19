@@ -20,6 +20,27 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * Export `PortalContext` ([#431](https://github.com/reakit/reakit/issues/431)) ([c5a780a](https://github.com/reakit/reakit/commit/c5a780a)), closes [#428](https://github.com/reakit/reakit/issues/428)
 
 
+### BREAKING CHANGES
+
+* `StaticMenu` has been replaced by `MenuBar`.
+
+  **Before:**
+  ```jsx
+  import { useMenuState, StaticMenu } from "reakit/Menu";
+
+  const menu = useMenuState();
+  <StaticMenu {...menu} />;
+  ```
+
+  **After:**
+  ```jsx
+  import { useMenuBarState, MenuBar } from "reakit/Menu";
+
+  const menuBar = useMenuBarState(); // useMenuState can be used here as well
+  <MenuBar {...menuBar} />;
+  ```
+
+
 
 
 
