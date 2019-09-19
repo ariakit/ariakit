@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.7](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.6...website@1.0.0-beta.7) (2019-09-19)
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/website/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/website/commit/3d13c33))
+
+
+
+
+
 # [1.0.0-beta.6](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.5...website@1.0.0-beta.6) (2019-08-25)
 
 **Note:** Version bump only for package website

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.7](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.6...reakit@1.0.0-beta.7) (2019-09-19)
+
+
+### Bug Fixes
+
+* Fix `Dialog` initial focus ([#433](https://github.com/reakit/reakit/issues/433)) ([a0916c7](https://github.com/reakit/reakit/commit/a0916c7))
+* Fix `Dialog` with `tabIndex={0}` not being included in the tab order ([#426](https://github.com/reakit/reakit/issues/426)) ([bfb1d05](https://github.com/reakit/reakit/commit/bfb1d05))
+* Fix `FormSubmitButton` ignoring `disabled` prop ([#439](https://github.com/reakit/reakit/issues/439)) ([bbfdfdd](https://github.com/reakit/reakit/commit/bbfdfdd)), closes [#437](https://github.com/reakit/reakit/issues/437)
+
+
+### Features
+
+* Accept multiple `DialogDisclosure`s for a single `Dialog` ([#427](https://github.com/reakit/reakit/issues/427)) ([0cb7432](https://github.com/reakit/reakit/commit/0cb7432))
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/issues/436)) ([3d13c33](https://github.com/reakit/reakit/commit/3d13c33))
+* Export `PortalContext` ([#431](https://github.com/reakit/reakit/issues/431)) ([c5a780a](https://github.com/reakit/reakit/commit/c5a780a)), closes [#428](https://github.com/reakit/reakit/issues/428)
+
+
+
+
+
 # [1.0.0-beta.6](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.5...reakit@1.0.0-beta.6) (2019-08-25)
 
 

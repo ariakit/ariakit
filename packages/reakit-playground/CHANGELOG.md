@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.4...reakit-playground@0.6.5) (2019-09-19)
+
+
+### Bug Fixes
+
+* **reakit-playground:** Add missing deps ([8d6316a](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8d6316a))
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/3d13c33))
+
+
+
+
+
 ## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.3...reakit-playground@0.6.4) (2019-08-25)
 
 

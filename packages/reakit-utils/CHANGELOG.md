@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.3...reakit-utils@0.6.4) (2019-09-19)
+
+
+### Bug Fixes
+
+* Fix `Dialog` initial focus ([#433](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/433)) ([a0916c7](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/a0916c7))
+* Fix `Dialog` with `tabIndex={0}` not being included in the tab order ([#426](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/426)) ([bfb1d05](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/bfb1d05))
+
+
+
+
+
 ## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.2...reakit-utils@0.6.3) (2019-08-25)
 
 

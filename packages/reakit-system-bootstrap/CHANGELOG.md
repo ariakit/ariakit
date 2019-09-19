@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.3...reakit-system-bootstrap@0.6.4) (2019-09-19)
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/3d13c33))
+
+
+
+
+
 ## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.2...reakit-system-bootstrap@0.6.3) (2019-08-25)
 
 

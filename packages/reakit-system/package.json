@@ -1,6 +1,6 @@
 {
   "name": "reakit-system",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Reakit System utils",
   "sideEffects": false,
   "license": "MIT",
@@ -31,7 +31,7 @@
     "system"
   ],
   "devDependencies": {
-    "reakit-utils": "^0.6.3"
+    "reakit-utils": "^0.6.4"
   },
   "peerDependencies": {
     "react": "^16.8.0",
