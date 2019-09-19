@@ -17,3 +17,20 @@ test("render", () => {
     </body>
   `);
 });
+
+test("disabled", () => {
+  const { baseElement } = render(
+    <FormSubmitButton baseId="base" submit={jest.fn()} disabled />
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <button
+          aria-disabled="true"
+          disabled=""
+          type="submit"
+        />
+      </div>
+    </body>
+  `);
+});
