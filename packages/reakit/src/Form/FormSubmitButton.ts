@@ -23,6 +23,13 @@ export const unstable_useFormSubmitButton = createHook<
   compose: useButton,
   useState: unstable_useFormState,
 
+  useOptions(options) {
+    return {
+      disabled: options.submitting,
+      ...options
+    };
+  },
+
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
     const onClick = React.useCallback(() => {
       window.requestAnimationFrame(() => {
@@ -38,7 +45,6 @@ export const unstable_useFormSubmitButton = createHook<
 
     return {
       type: "submit",
-      disabled: options.submitting,
       onClick: useAllCallbacks(onClick, htmlOnClick),
       ...htmlProps
     };
