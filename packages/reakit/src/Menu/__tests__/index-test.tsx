@@ -322,7 +322,7 @@ test("hovering menu item disclosure moves focus into it and opens submenu after 
 });
 
 test("arrow down on disclosure opens bottom menu and focus first item", async () => {
-  const Cacete = () => {
+  const Test = () => {
     const menu = useMenuState({ placement: "bottom-end" });
     return (
       <>
@@ -335,7 +335,7 @@ test("arrow down on disclosure opens bottom menu and focus first item", async ()
       </>
     );
   };
-  const { getByText, getByLabelText } = render(<Cacete />);
+  const { getByText, getByLabelText } = render(<Test />);
   const disclosure = getByText("disclosure");
   const menu = getByLabelText("menu");
   const item1 = getByText("item1");

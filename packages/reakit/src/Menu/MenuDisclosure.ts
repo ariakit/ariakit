@@ -122,7 +122,7 @@ export const useMenuDisclosure = createHook<
     );
 
     const onClick = React.useCallback(() => {
-      if (parentIsMenuBar || (hasParent && hasShownOnFocus)) {
+      if (hasParent && (!parentIsMenuBar || hasShownOnFocus)) {
         options.show();
       } else {
         options.toggle();

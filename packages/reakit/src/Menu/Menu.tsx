@@ -45,19 +45,15 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const parent = React.useContext(MenuContext);
     const isHorizontal = options.orientation === "horizontal";
     const isVertical = options.orientation === "vertical";
+    const hasParent = Boolean(parent);
     let ancestorMenuBar: MenuContextType | undefined | null = parent;
 
     while (ancestorMenuBar && ancestorMenuBar.role !== "menubar") {
       ancestorMenuBar = ancestorMenuBar.parent;
     }
 
-    const {
-      next: ancestorNext,
-      previous: ancestorPrevious,
-      orientation: ancestorOrientation
-    } = ancestorMenuBar || {};
-    const ancestorIsHorizontal = ancestorOrientation === "horizontal";
-
+    const { next, previous, orientation } = ancestorMenuBar || {};
+    const ancestorIsHorizontal = orientation === "horizontal";
     const [dir] = options.placement.split("-");
 
     const rovingBindings = React.useMemo(
@@ -66,7 +62,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           stopPropagation: event => {
             // On Esc, only stop propagation if there's no parent menu
             // Otherwise, pressing Esc should close all menus
-            if (event.key === "Escape" && parent) return false;
+            if (event.key === "Escape" && hasParent) return false;
             return true;
           },
           keyMap: event => {
@@ -85,7 +81,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           }
         }),
       [
-        Boolean(parent),
+        hasParent,
         isHorizontal,
         isVertical,
         options.hide,
@@ -101,30 +97,23 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           shouldKeyDown: event => {
             return Boolean(
               // https://github.com/facebook/react/issues/11387
-              parent && event.currentTarget.contains(event.target as Element)
+              hasParent && event.currentTarget.contains(event.target as Element)
             );
           },
-          keyMap: parent
+          keyMap: hasParent
             ? {
                 ArrowRight:
                   ancestorIsHorizontal && dir !== "left"
-                    ? ancestorNext
+                    ? next
                     : dir === "left" && options.hide,
                 ArrowLeft:
                   ancestorIsHorizontal && dir !== "right"
-                    ? ancestorPrevious
+                    ? previous
                     : dir === "right" && options.hide
               }
             : {}
         }),
-      [
-        parent,
-        ancestorNext,
-        ancestorPrevious,
-        ancestorIsHorizontal,
-        dir,
-        options.hide
-      ]
+      [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
     );
 
     return {
