@@ -49,6 +49,8 @@ export const useMenuDisclosure = createHook<
     // So we use it to disable toggling.
     const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
     const [dir] = options.placement.split("-");
+    const hasParent = Boolean(parent);
+    const parentIsMenuBar = parent && parent.role === "menubar";
 
     const onKeyDown = React.useMemo(
       () =>
@@ -60,8 +62,8 @@ export const useMenuDisclosure = createHook<
             const first = () => setTimeout(options.first);
             return {
               Escape: options.hide,
-              Enter: parent && first,
-              " ": parent && first,
+              Enter: hasParent && first,
+              " ": hasParent && first,
               ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
               ArrowRight: dir === "right" && first,
               ArrowDown: dir === "bottom" || dir === "top" ? first : false,
@@ -69,22 +71,15 @@ export const useMenuDisclosure = createHook<
             };
           }
         }),
-      [
-        dir,
-        Boolean(parent),
-        options.show,
-        options.hide,
-        options.first,
-        options.last
-      ]
+      [dir, hasParent, options.show, options.hide, options.first, options.last]
     );
 
     const onFocus = React.useCallback(() => {
-      if (parent && parent.role === "menubar") {
+      if (parentIsMenuBar) {
         setHasShownOnFocus(true);
         options.show();
       }
-    }, [parent && parent.role, setHasShownOnFocus, options.show]);
+    }, [parentIsMenuBar, setHasShownOnFocus, options.show]);
 
     // Restores hasShownOnFocus
     React.useEffect(() => {
@@ -100,7 +95,6 @@ export const useMenuDisclosure = createHook<
         if (!parent) return;
 
         const disclosure = event.currentTarget as HTMLElement;
-        const parentIsMenuBar = parent.role === "menubar";
 
         if (parentIsMenuBar) {
           // If MenuDisclosure is an item inside a MenuBar, it'll only open
@@ -123,16 +117,22 @@ export const useMenuDisclosure = createHook<
           }, 200);
         }
       },
-      [parent && parent.role, options.show]
+      [parent, parentIsMenuBar, options.show]
     );
 
     const onClick = React.useCallback(() => {
-      if (parent && (parent.role !== "menubar" || hasShownOnFocus)) {
+      if (parentIsMenuBar || (hasParent && hasShownOnFocus)) {
         options.show();
       } else {
         options.toggle();
       }
-    }, [parent && parent.role, hasShownOnFocus, options.show, options.toggle]);
+    }, [
+      hasParent,
+      parentIsMenuBar,
+      hasShownOnFocus,
+      options.show,
+      options.toggle
+    ]);
 
     return {
       ref: mergeRefs(ref, htmlRef),

@@ -30,7 +30,7 @@ export function useMenuBarProps(
 ): MenuBarHTMLProps {
   const isHorizontal = options.orientation === "horizontal";
 
-  const MenuBar = css`
+  const menuBar = css`
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
     white-space: nowrap;
@@ -45,7 +45,7 @@ export function useMenuBarProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(MenuBar, htmlProps.className) };
+  return { ...htmlProps, className: cx(menuBar, htmlProps.className) };
 }
 
 export type BootstrapMenuItemOptions = BootstrapBoxOptions & MenuItemOptions;

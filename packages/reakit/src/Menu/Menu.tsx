@@ -51,6 +51,13 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       ancestorMenuBar = ancestorMenuBar.parent;
     }
 
+    const {
+      next: ancestorNext,
+      previous: ancestorPrevious,
+      orientation: ancestorOrientation
+    } = ancestorMenuBar || {};
+    const ancestorIsHorizontal = ancestorOrientation === "horizontal";
+
     const [dir] = options.placement.split("-");
 
     const rovingBindings = React.useMemo(
@@ -100,24 +107,21 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           keyMap: parent
             ? {
                 ArrowRight:
-                  ancestorMenuBar &&
-                  parent.orientation === "horizontal" &&
-                  dir !== "left"
-                    ? ancestorMenuBar.next
+                  ancestorIsHorizontal && dir !== "left"
+                    ? ancestorNext
                     : dir === "left" && options.hide,
                 ArrowLeft:
-                  ancestorMenuBar &&
-                  parent.orientation === "horizontal" &&
-                  dir !== "right"
-                    ? ancestorMenuBar.previous
+                  ancestorIsHorizontal && dir !== "right"
+                    ? ancestorPrevious
                     : dir === "right" && options.hide
               }
             : {}
         }),
       [
-        parent && parent.orientation,
-        ancestorMenuBar && ancestorMenuBar.next,
-        ancestorMenuBar && ancestorMenuBar.previous,
+        parent,
+        ancestorNext,
+        ancestorPrevious,
+        ancestorIsHorizontal,
         dir,
         options.hide
       ]
@@ -130,6 +134,8 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     };
   },
 
+  // Need to useCompose instead of useProps to overwrite `hideOnEsc`
+  // because Menu prop types don't include `hideOnEsc`
   useCompose(options, htmlProps) {
     htmlProps = useMenuBar(options, htmlProps);
     return usePopover({ ...options, hideOnEsc: false }, htmlProps);
