@@ -10,32 +10,18 @@ import {
   usePopoverState
 } from "../Popover/PopoverState";
 import {
-  RoverState,
-  RoverActions,
-  RoverInitialState,
-  useRoverState
-} from "../Rover";
+  MenuBarState,
+  MenuBarActions,
+  MenuBarInitialState,
+  useMenuBarState
+} from "./MenuBarState";
 import { MenuContext } from "./__utils/MenuContext";
 
-export type MenuState = RoverState &
-  PopoverState & {
-    /**
-     * Stores the values of radios and checkboxes within the menu.
-     */
-    unstable_values: Record<string, any>;
-  };
+export type MenuState = MenuBarState & PopoverState;
 
-export type MenuActions = RoverActions &
-  PopoverActions & {
-    /**
-     * Updates checkboxes and radios values within the menu.
-     */
-    unstable_update: (name: string, value?: any) => void;
-  };
+export type MenuActions = MenuBarActions & PopoverActions;
 
-export type MenuInitialState = RoverInitialState &
-  PopoverInitialState &
-  Partial<Pick<MenuState, "unstable_values">>;
+export type MenuInitialState = MenuBarInitialState & PopoverInitialState;
 
 export type MenuStateReturn = MenuState & MenuActions;
 
@@ -45,11 +31,9 @@ export function useMenuState(
   const {
     orientation = "vertical",
     unstable_gutter: initialGutter = 0,
-    unstable_values: initialValues = {},
     ...sealed
   } = useSealedState(initialState);
 
-  const [values, setValues] = React.useState(initialValues);
   const parent = React.useContext(MenuContext);
 
   const placement =
@@ -58,7 +42,7 @@ export function useMenuState(
       ? "right-start"
       : "bottom-start");
 
-  const rover = useRoverState({ ...sealed, orientation });
+  const menuBar = useMenuBarState({ ...sealed, orientation });
   const popover = usePopoverState({
     ...sealed,
     placement,
@@ -67,28 +51,19 @@ export function useMenuState(
 
   React.useEffect(() => {
     if (!popover.visible) {
-      rover.unstable_reset();
+      menuBar.unstable_reset();
     }
   }, [popover.visible]);
 
   return {
-    ...rover,
-    ...popover,
-    unstable_values: values,
-    unstable_update: React.useCallback((name, value) => {
-      setValues(vals => ({
-        ...vals,
-        [name]: typeof value === "function" ? value(vals) : value
-      }));
-    }, [])
+    ...menuBar,
+    ...popover
   };
 }
 
 const keys: Array<keyof MenuStateReturn> = [
-  ...useRoverState.__keys,
-  ...usePopoverState.__keys,
-  "unstable_values",
-  "unstable_update"
+  ...useMenuBarState.__keys,
+  ...usePopoverState.__keys
 ];
 
 useMenuState.__keys = keys;

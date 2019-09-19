@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { warning } from "reakit-utils/warning";
 import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
@@ -50,13 +49,8 @@ export const useMenuDisclosure = createHook<
     // So we use it to disable toggling.
     const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
     const [dir] = options.placement.split("-");
-
-    // Restores hasShownOnFocus
-    React.useEffect(() => {
-      if (hasShownOnFocus) {
-        setTimeout(() => setHasShownOnFocus(false), 200);
-      }
-    }, [hasShownOnFocus]);
+    const hasParent = Boolean(parent);
+    const parentIsMenuBar = parent && parent.role === "menubar";
 
     const onKeyDown = React.useMemo(
       () =>
@@ -68,8 +62,8 @@ export const useMenuDisclosure = createHook<
             const first = () => setTimeout(options.first);
             return {
               Escape: options.hide,
-              Enter: parent && first,
-              " ": parent && first,
+              Enter: hasParent && first,
+              " ": hasParent && first,
               ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
               ArrowRight: dir === "right" && first,
               ArrowDown: dir === "bottom" || dir === "top" ? first : false,
@@ -77,63 +71,65 @@ export const useMenuDisclosure = createHook<
             };
           }
         }),
-      [
-        dir,
-        Boolean(parent),
-        options.show,
-        options.hide,
-        options.first,
-        options.last
-      ]
+      [dir, hasParent, options.show, options.hide, options.first, options.last]
     );
 
     const onFocus = React.useCallback(() => {
-      if (parent && parent.orientation === "horizontal") {
+      if (parentIsMenuBar) {
         setHasShownOnFocus(true);
         options.show();
       }
-    }, [parent && parent.orientation, setHasShownOnFocus, options.show]);
+    }, [parentIsMenuBar, setHasShownOnFocus, options.show]);
 
-    const onMouseOver = React.useCallback(() => {
-      if (!parent) return;
-
-      if (!ref.current) {
-        warning(
-          true,
-          "MenuDisclosure",
-          "Can't respond to mouse over on `MenuDisclosure` because `ref` wasn't passed to component.",
-          "See https://reakit.io/docs/menu"
-        );
-        return;
+    // Restores hasShownOnFocus
+    React.useEffect(() => {
+      if (hasShownOnFocus) {
+        setTimeout(() => setHasShownOnFocus(false), 200);
       }
+    }, [hasShownOnFocus]);
 
-      const parentIsHorizontal = parent.orientation === "horizontal";
+    const onMouseOver = React.useCallback(
+      (event: MouseEvent) => {
+        // MenuDisclosure's don't do anything on mouse over when they aren't
+        // cointained within a Menu/MenuBar
+        if (!parent) return;
 
-      if (!parentIsHorizontal) {
-        setTimeout(() => {
-          if (ref.current && ref.current.contains(document.activeElement)) {
-            options.show();
-            ref.current.focus();
+        const disclosure = event.currentTarget as HTMLElement;
+
+        if (parentIsMenuBar) {
+          // if MenuDisclosure is an item inside a MenuBar, it'll only open
+          // if there's already another sibling expanded MenuDisclosure
+          const subjacentOpenMenu =
+            parent.ref.current &&
+            parent.ref.current.querySelector("[aria-expanded='true']");
+          if (subjacentOpenMenu) {
+            disclosure.focus();
           }
-        }, 200);
-      } else {
-        const parentMenu = ref.current.closest("[role=menu],[role=menubar]");
-        const subjacentOpenMenu =
-          parentMenu && parentMenu.querySelector("[role=menu]:not([hidden])");
-        if (subjacentOpenMenu) {
-          ref.current.focus();
+        } else {
+          // If it's in a Menu, open after a short delay
+          // TODO: Make the delay a prop?
+          setTimeout(() => {
+            if (disclosure.contains(document.activeElement)) {
+              options.show();
+              if (document.activeElement !== disclosure) {
+                disclosure.focus();
+              }
+            }
+          }, 200);
         }
-      }
-    }, [parent && parent.orientation, options.show]);
+      },
+      [parent, parentIsMenuBar, options.show]
+    );
 
     const onClick = React.useCallback(() => {
-      if (parent && (parent.orientation !== "horizontal" || hasShownOnFocus)) {
+      if (hasParent && (!parentIsMenuBar || hasShownOnFocus)) {
         options.show();
       } else {
         options.toggle();
       }
     }, [
-      parent && parent.orientation,
+      hasParent,
+      parentIsMenuBar,
       hasShownOnFocus,
       options.show,
       options.toggle

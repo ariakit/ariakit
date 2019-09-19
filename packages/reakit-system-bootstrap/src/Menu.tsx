@@ -14,7 +14,7 @@ import {
   MenuItemRadioOptions
 } from "reakit/Menu/MenuItemRadio";
 import { MenuGroupHTMLProps, MenuGroupOptions } from "reakit/Menu/MenuGroup";
-import { StaticMenuHTMLProps, StaticMenuOptions } from "reakit/Menu/StaticMenu";
+import { MenuBarHTMLProps, MenuBarOptions } from "reakit/Menu/MenuBar";
 import { MenuItemHTMLProps, MenuItemOptions } from "reakit/Menu/MenuItem";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
@@ -22,16 +22,15 @@ import { usePalette } from "reakit-system-palette/utils/palette";
 import { MenuStateReturn } from "reakit/Menu/MenuState";
 import { BootstrapBoxOptions } from "./Box";
 
-export type BootstrapStaticMenuOptions = BootstrapBoxOptions &
-  StaticMenuOptions;
+export type BootstrapMenuBarOptions = BootstrapBoxOptions & MenuBarOptions;
 
-export function useStaticMenuProps(
-  options: BootstrapStaticMenuOptions,
-  htmlProps: StaticMenuHTMLProps = {}
-): StaticMenuHTMLProps {
+export function useMenuBarProps(
+  options: BootstrapMenuBarOptions,
+  htmlProps: MenuBarHTMLProps = {}
+): MenuBarHTMLProps {
   const isHorizontal = options.orientation === "horizontal";
 
-  const staticMenu = css`
+  const menuBar = css`
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
     white-space: nowrap;
@@ -46,7 +45,7 @@ export function useStaticMenuProps(
     }
   `;
 
-  return { ...htmlProps, className: cx(staticMenu, htmlProps.className) };
+  return { ...htmlProps, className: cx(menuBar, htmlProps.className) };
 }
 
 export type BootstrapMenuItemOptions = BootstrapBoxOptions & MenuItemOptions;
