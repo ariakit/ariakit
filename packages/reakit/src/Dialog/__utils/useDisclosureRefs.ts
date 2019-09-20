@@ -5,7 +5,7 @@ export function useDisclosureRefs(options: DialogOptions) {
   const disclosureRefs = React.useRef<HTMLElement[]>([]);
   const lastActiveElement = React.useRef<Element | null>(null);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (options.visible) return undefined;
     const onFocus = () => {
       lastActiveElement.current = document.activeElement;

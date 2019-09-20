@@ -347,6 +347,9 @@ test("arrow down on disclosure opens bottom menu and focus first item", async ()
   keyDown("ArrowUp");
   await wait(expect(menu).toBeVisible);
   expect(item1).toHaveFocus();
+  keyDown("Escape");
+  await wait(expect(menu).not.toBeVisible);
+  expect(disclosure).toHaveFocus();
 });
 
 test("arrow down on disclosure opens top menu and focus first item", async () => {
@@ -375,6 +378,9 @@ test("arrow down on disclosure opens top menu and focus first item", async () =>
   keyDown("ArrowUp");
   await wait(expect(menu).toBeVisible);
   expect(item1).toHaveFocus();
+  keyDown("Escape");
+  await wait(expect(menu).not.toBeVisible);
+  expect(disclosure).toHaveFocus();
 });
 
 test("arrow up on disclosure opens bottom menu and focus last item", async () => {
@@ -403,6 +409,9 @@ test("arrow up on disclosure opens bottom menu and focus last item", async () =>
   keyDown("ArrowDown");
   await wait(expect(menu).toBeVisible);
   expect(item3).toHaveFocus();
+  keyDown("Escape");
+  await wait(expect(menu).not.toBeVisible);
+  expect(disclosure).toHaveFocus();
 });
 
 test("arrow up on disclosure opens top menu and focus last item", async () => {
@@ -431,6 +440,9 @@ test("arrow up on disclosure opens top menu and focus last item", async () => {
   keyDown("ArrowDown");
   await wait(expect(menu).toBeVisible);
   expect(item3).toHaveFocus();
+  keyDown("Escape");
+  await wait(expect(menu).not.toBeVisible);
+  expect(disclosure).toHaveFocus();
 });
 
 test("arrow right on disclosure opens right menu and focus first item", async () => {
@@ -459,6 +471,9 @@ test("arrow right on disclosure opens right menu and focus first item", async ()
   keyDown("ArrowLeft");
   await wait(expect(menu).toBeVisible);
   expect(item1).toHaveFocus();
+  keyDown("Escape");
+  await wait(expect(menu).not.toBeVisible);
+  expect(disclosure).toHaveFocus();
 });
 
 test("arrow left on disclosure opens left menu and focus first item", async () => {
@@ -487,6 +502,9 @@ test("arrow left on disclosure opens left menu and focus first item", async () =
   keyDown("ArrowRight");
   await wait(expect(menu).toBeVisible);
   expect(item1).toHaveFocus();
+  keyDown("Escape");
+  await wait(expect(menu).not.toBeVisible);
+  expect(disclosure).toHaveFocus();
 });
 
 test("arrow right on menu item disclosure opens right submenu and focus first item", async () => {
@@ -762,7 +780,7 @@ test("hovering menubar item disclosure moves focus into it if there is another s
           <MenuDisclosure {...menu} {...props} ref={ref}>
             subdisclosure{index}
           </MenuDisclosure>
-          <Menu aria-label={`submenu${index}`} {...menu}>
+          <Menu {...menu} aria-label={`submenu${index}`}>
             <MenuItem {...menu}>submenu{index}item1</MenuItem>
             <MenuItem {...menu}>submenu{index}item2</MenuItem>
             <MenuItem {...menu}>submenu{index}item3</MenuItem>

@@ -27,13 +27,13 @@ export function useFocusOnHide(
       return;
     }
 
-    const finalFocusRef =
+    const finalFocusEl =
       (options.unstable_finalFocusRef &&
         options.unstable_finalFocusRef.current) ||
       (disclosureRefs.current && disclosureRefs.current[0]);
 
-    if (finalFocusRef) {
-      forceFocus(finalFocusRef);
+    if (finalFocusEl) {
+      forceFocus(finalFocusEl);
     } else {
       warning(
         true,
