@@ -54,18 +54,21 @@ test("render visible", () => {
   `);
 });
 
-test("render non-modal", () => {
+test("render modal", () => {
   const { baseElement } = render(
-    <Popover {...props} modal={false}>
+    <Popover {...props} modal>
       test
     </Popover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
-      <div>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
         <div
           aria-label="popover"
-          aria-modal="false"
+          aria-modal="true"
           class="hidden"
           data-dialog="true"
           hidden=""
