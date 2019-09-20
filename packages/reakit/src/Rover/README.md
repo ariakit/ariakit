@@ -55,6 +55,27 @@ function Example() {
 }
 ```
 
+### Loop
+
+If you set `loop` to `true` on `useRoverState`, the roving tabindex will loop from the last item to the first item.
+
+```jsx
+import { useRoverState, Rover } from "reakit/Rover";
+
+function Example() {
+  const rover = useRoverState({ loop: true });
+  return (
+    <>
+      <Rover {...rover}>Button 1</Rover>
+      <Rover {...rover}>Button 2</Rover>
+      <Rover {...rover}>Button 3</Rover>
+      <Rover {...rover}>Button 4</Rover>
+      <Rover {...rover}>Button 5</Rover>
+    </>
+  );
+}
+```
+
 ## Accessibility
 
 - `Rover` has `tabindex` set to `0` if it's the current element. Otherwise `tabindex` is set to `-1`.

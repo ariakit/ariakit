@@ -109,6 +109,8 @@ function Example() {
 
 ### Submenu
 
+`Menu` can be used independently or nested within another one.
+
 ```jsx
 import React from "react";
 import {
@@ -155,6 +157,8 @@ function Example() {
 ```
 
 ### Menu with dialog
+
+Reakit is built with composition in mind! You can compose any other component with `Menu`. You can nest [Dialog](/docs/dialog/)s inside it by using the same approach described on [Submenu](#submenu).
 
 ```jsx
 import React from "react";
@@ -205,6 +209,8 @@ function Example() {
 ```
 
 ### Menu bar
+
+You can combine multiple `Menu`s to compose a `MenuBar` by using the same approach described on [Submenu](#submenu). Each `Menu` can be used separately or in combination with others.
 
 ```jsx
 import React from "react";
