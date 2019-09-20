@@ -59,6 +59,10 @@ export type PopoverState = DialogState & {
    */
   unstable_originalPlacement: Placement;
   /**
+   * @private
+   */
+  unstable_scheduleUpdate: () => boolean;
+  /**
    * Actual `placement`.
    */
   placement: Placement;
@@ -130,6 +134,14 @@ export function usePopoverState(
 
   const dialog = useDialogState(sealed);
 
+  const scheduleUpdate = React.useCallback(() => {
+    if (popper.current) {
+      popper.current.scheduleUpdate();
+      return true;
+    }
+    return false;
+  }, []);
+
   React.useLayoutEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
@@ -187,10 +199,10 @@ export function usePopoverState(
   // Schedule an update if popover has initial visible state set to true
   // So it'll be correctly positioned
   React.useEffect(() => {
-    if (sealed.visible && popper.current) {
-      popper.current.scheduleUpdate();
+    if (sealed.visible) {
+      scheduleUpdate();
     }
-  }, [sealed.visible]);
+  }, [sealed.visible, scheduleUpdate]);
 
   return {
     ...dialog,
@@ -199,6 +211,7 @@ export function usePopoverState(
     unstable_arrowRef: arrowRef,
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
+    unstable_scheduleUpdate: scheduleUpdate,
     unstable_originalPlacement: originalPlacement,
     placement,
     place: React.useCallback(place, [])
@@ -212,6 +225,7 @@ const keys: Array<keyof PopoverStateReturn> = [
   "unstable_arrowRef",
   "unstable_popoverStyles",
   "unstable_arrowStyles",
+  "unstable_scheduleUpdate",
   "unstable_originalPlacement",
   "placement",
   "place"
