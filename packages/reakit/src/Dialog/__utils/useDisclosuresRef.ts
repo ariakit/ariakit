@@ -1,8 +1,8 @@
 import * as React from "react";
 import { DialogOptions } from "../Dialog";
 
-export function useDisclosureRefs(options: DialogOptions) {
-  const disclosureRefs = React.useRef<HTMLElement[]>([]);
+export function useDisclosuresRef(options: DialogOptions) {
+  const disclosuresRef = React.useRef<HTMLElement[]>([]);
   const lastActiveElement = React.useRef<Element | null>(null);
 
   React.useLayoutEffect(() => {
@@ -24,19 +24,19 @@ export function useDisclosureRefs(options: DialogOptions) {
 
     if (lastActiveElement.current instanceof HTMLElement) {
       if (disclosures.indexOf(lastActiveElement.current) !== -1) {
-        disclosureRefs.current = [
+        disclosuresRef.current = [
           lastActiveElement.current,
           ...disclosures.filter(
             disclosure => disclosure !== lastActiveElement.current
           )
         ];
       } else {
-        disclosureRefs.current = [lastActiveElement.current, ...disclosures];
+        disclosuresRef.current = [lastActiveElement.current, ...disclosures];
       }
     } else {
-      disclosureRefs.current = disclosures;
+      disclosuresRef.current = disclosures;
     }
   }, [options.unstable_hiddenId, options.visible]);
 
-  return disclosureRefs;
+  return disclosuresRef;
 }

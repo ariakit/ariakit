@@ -6,7 +6,7 @@ import { DialogOptions } from "../Dialog";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosureRefs: React.RefObject<HTMLElement[]>,
+  disclosuresRef: React.RefObject<HTMLElement[]>,
   options: DialogOptions
 ) {
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
@@ -30,7 +30,7 @@ export function useFocusOnHide(
     const finalFocusEl =
       (options.unstable_finalFocusRef &&
         options.unstable_finalFocusRef.current) ||
-      (disclosureRefs.current && disclosureRefs.current[0]);
+      (disclosuresRef.current && disclosuresRef.current[0]);
 
     if (finalFocusEl) {
       forceFocus(finalFocusEl);
@@ -42,5 +42,5 @@ export function useFocusOnHide(
         "See https://reakit.io/docs/dialog"
       );
     }
-  }, [dialogRef, shouldFocus]);
+  }, [dialogRef, disclosuresRef, shouldFocus]);
 }

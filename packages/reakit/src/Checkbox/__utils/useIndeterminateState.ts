@@ -22,5 +22,5 @@ export function useIndeterminateState(
     } else if (checkboxRef.current.indeterminate) {
       checkboxRef.current.indeterminate = false;
     }
-  }, [options.state]);
+  }, [options.state, checkboxRef]);
 }

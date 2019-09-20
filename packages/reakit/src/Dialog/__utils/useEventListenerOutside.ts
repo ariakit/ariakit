@@ -5,7 +5,7 @@ import { isFocusTrap } from "./useFocusTrap";
 
 export function useEventListenerOutside(
   targetRef: React.RefObject<HTMLElement>,
-  disclosureRefs: React.RefObject<HTMLElement[]>,
+  disclosuresRef: React.RefObject<HTMLElement[]>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   event: string,
   listener?: (e: Event) => void,
@@ -20,7 +20,7 @@ export function useEventListenerOutside(
       if (!listenerRef.current) return;
 
       const element = targetRef.current;
-      const disclosures = disclosureRefs.current || [];
+      const disclosures = disclosuresRef.current || [];
       const target = e.target as Element;
 
       warning(
@@ -61,10 +61,10 @@ export function useEventListenerOutside(
     };
   }, [
     targetRef,
+    disclosuresRef,
+    nestedDialogs,
     event,
     shouldListen,
-    nestedDialogs,
-    listenerRef,
-    disclosureRefs
+    listenerRef
   ]);
 }

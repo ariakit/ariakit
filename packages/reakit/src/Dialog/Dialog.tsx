@@ -8,7 +8,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { usePipe } from "reakit-utils/usePipe";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { Portal } from "../Portal/Portal";
-import { useDisclosureRefs } from "./__utils/useDisclosureRefs";
+import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
 import { useFocusTrap } from "./__utils/useFocusTrap";
@@ -131,7 +131,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     }
   ) {
     const dialog = React.useRef<HTMLElement>(null);
-    const disclosures = useDisclosureRefs(options);
+    const disclosures = useDisclosuresRef(options);
     const { dialogs, wrap } = useNestedDialogs(dialog, options);
 
     usePreventBodyScroll(dialog, options);

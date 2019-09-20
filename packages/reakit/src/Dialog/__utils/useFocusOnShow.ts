@@ -51,5 +51,5 @@ export function useFocusOnShow(
         );
       }
     }
-  }, [dialogRef, initialFocusRef, shouldFocus, nestedDialogs]);
+  }, [dialogRef, nestedDialogs, initialFocusRef, shouldFocus]);
 }
