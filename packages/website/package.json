@@ -15,7 +15,7 @@
     "test": "jest",
     "build": "gatsby build",
     "develop": "gatsby develop -H 0.0.0.0 -p 8000",
-    "serve": "gatsby serve"
+    "serve": "gatsby serve -H 0.0.0.0 -p 9000"
   },
   "dependencies": {
     "@emotion/core": "10.0.17",
