@@ -41,3 +41,23 @@ test("render visible", () => {
     </body>
   `);
 });
+
+test("render without portal", () => {
+  const { baseElement } = render(
+    <Tooltip unstable_portal={false}>tooltip</Tooltip>
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="hidden"
+          hidden=""
+          role="tooltip"
+          style="display: none; pointer-events: none;"
+        >
+          tooltip
+        </div>
+      </div>
+    </body>
+  `);
+});

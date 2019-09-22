@@ -11,7 +11,13 @@ export type TooltipOptions = HiddenOptions &
   Pick<
     Partial<TooltipStateReturn>,
     "unstable_popoverRef" | "unstable_popoverStyles"
-  >;
+  > & {
+    /**
+     * Whether or not the dialog should be rendered within `Portal`.
+     * It's `true` by default if `modal` is `true`.
+     */
+    unstable_portal?: boolean;
+  };
 
 export type TooltipHTMLProps = HiddenHTMLProps;
 
@@ -21,15 +27,29 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   name: "Tooltip",
   compose: useHidden,
   useState: useTooltipState,
+  keys: ["unstable_portal"],
+
+  useOptions({ unstable_portal = true, ...options }) {
+    return {
+      unstable_portal,
+      ...options
+    };
+  },
 
   useProps(
     options,
     { ref: htmlRef, style: htmlStyle, unstable_wrap: htmlWrap, ...htmlProps }
   ) {
     const wrap = React.useCallback(
-      (children: React.ReactNode) => <Portal>{children}</Portal>,
-      []
+      (children: React.ReactNode) => {
+        if (options.unstable_portal) {
+          return <Portal>{children}</Portal>;
+        }
+        return children;
+      },
+      [options.unstable_portal]
     );
+
     return {
       ref: mergeRefs(options.unstable_popoverRef, htmlRef),
       role: "tooltip",

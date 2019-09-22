@@ -196,13 +196,21 @@ export function usePopoverState(
     fixed
   ]);
 
+  // This fixes cases when `unstable_portal` is `true` only when popover is visible
+  // https://spectrum.chat/reakit/general/i-was-wondering-if-can-hide-portal-of-tooltip-when-conditionally-rendered~4e05ffe1-93e8-4c72-8c85-eccb1c3f2ff1
+  React.useEffect(() => {
+    if (dialog.visible && popper.current) {
+      popper.current.scheduleUpdate();
+    }
+  }, [dialog.visible]);
+
   // Schedule an update if popover has initial visible state set to true
   // So it'll be correctly positioned
   React.useEffect(() => {
-    if (sealed.visible) {
-      scheduleUpdate();
+    if (sealed.visible && popper.current) {
+      popper.current.scheduleUpdate();
     }
-  }, [sealed.visible, scheduleUpdate]);
+  }, [sealed.visible]);
 
   return {
     ...dialog,
