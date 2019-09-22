@@ -22,12 +22,7 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
 
   useProps(
     options,
-    {
-      ref: htmlRef,
-      onMouseOver: htmlOnMouseOver,
-      onMouseOut: htmlOnMouseOut,
-      ...htmlProps
-    }
+    { onMouseOver: htmlOnMouseOver, onMouseOut: htmlOnMouseOut, ...htmlProps }
   ) {
     const menu = React.useContext(MenuContext);
 
