@@ -25,5 +25,6 @@ export default {
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/cx": require("reakit-utils/cx"),
-  "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown")
+  "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
+  "reakit-utils/closest": require("reakit-utils/closest")
 };

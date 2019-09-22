@@ -4,6 +4,11 @@ import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
 import { usePortalRef } from "./usePortalRef";
 
+function removeFromDOM(element: Element) {
+  if (element.parentNode == null) return;
+  element.parentNode.removeChild(element);
+}
+
 function hasNestedOpenModals(
   nestedDialogs: Array<React.RefObject<HTMLElement>>
 ) {
@@ -65,8 +70,8 @@ export function useFocusTrap(
     portal.insertAdjacentElement("afterend", afterElement.current);
 
     return () => {
-      if (beforeElement.current) beforeElement.current.remove();
-      if (afterElement.current) afterElement.current.remove();
+      if (beforeElement.current) removeFromDOM(beforeElement.current);
+      if (afterElement.current) removeFromDOM(afterElement.current);
     };
   }, [portalRef, shouldTrap]);
 

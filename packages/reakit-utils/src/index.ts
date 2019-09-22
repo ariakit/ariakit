@@ -1,3 +1,4 @@
+export * from "./closest";
 export * from "./createOnKeyDown";
 export * from "./cx";
 export * from "./hasFocusWithin";
