@@ -73,6 +73,26 @@ function Example() {
 }
 ```
 
+### Gutter
+
+You can control the margin between `Popover` and `PopoverDisclosure` by setting the `gutter` option on `usePopoverState`.
+
+```jsx
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({ gutter: 0, placement: "bottom-start" });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        Welcome to Reakit!
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Initial focus
 
 When opening `Popover`, focus is usually set on the first tabbable element within the popover, including itself. So, if you want to set the initial focus on the popover element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
@@ -223,7 +243,7 @@ element.
 
   Shift popover on the start or end of its reference element.
 
-- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+- **`gutter`**
   <code>number | undefined</code>
 
   Offset between the reference and the popover.

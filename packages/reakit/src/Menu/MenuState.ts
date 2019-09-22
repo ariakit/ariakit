@@ -28,11 +28,9 @@ export type MenuStateReturn = MenuState & MenuActions;
 export function useMenuState(
   initialState: SealedInitialState<MenuInitialState> = {}
 ): MenuStateReturn {
-  const {
-    orientation = "vertical",
-    unstable_gutter: initialGutter = 0,
-    ...sealed
-  } = useSealedState(initialState);
+  const { orientation = "vertical", gutter = 0, ...sealed } = useSealedState(
+    initialState
+  );
 
   const parent = React.useContext(MenuContext);
 
@@ -46,7 +44,7 @@ export function useMenuState(
   const popover = usePopoverState({
     ...sealed,
     placement,
-    unstable_gutter: initialGutter
+    gutter
   });
 
   React.useEffect(() => {

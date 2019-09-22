@@ -93,7 +93,7 @@ export type PopoverInitialState = DialogInitialState &
     /**
      * Offset between the reference and the popover.
      */
-    unstable_gutter?: number;
+    gutter?: number;
     /**
      * Prevents popover from being positioned outside the boundary.
      */
@@ -110,10 +110,10 @@ export function usePopoverState(
   initialState: SealedInitialState<PopoverInitialState> = {}
 ): PopoverStateReturn {
   const {
+    gutter = 12,
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
     unstable_shift: shift = true,
-    unstable_gutter: gutter = 12,
     unstable_preventOverflow: preventOverflow = true,
     unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
