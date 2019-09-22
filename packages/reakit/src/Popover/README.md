@@ -94,6 +94,37 @@ function Example() {
 }
 ```
 
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (popover.visible) {
+      ref.current.focus();
+    }
+  }, [popover.visible]);
+
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <Button>By default, initial focus would go here</Button>
+        <br />
+        <br />
+        <Button ref={ref}>But now it goes here</Button>
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.

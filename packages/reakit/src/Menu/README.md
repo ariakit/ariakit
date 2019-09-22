@@ -107,6 +107,38 @@ function Example() {
 }
 ```
 
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+
+function Example() {
+  const menu = useMenuState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (menu.visible) {
+      ref.current.focus();
+    }
+  }, [menu.visible]);
+
+  return (
+    <>
+      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <Menu {...menu} aria-label="Preferences">
+        <MenuItem {...menu}>Settings</MenuItem>
+        <MenuItem {...menu} ref={ref}>
+          Extensions
+        </MenuItem>
+        <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
+      </Menu>
+    </>
+  );
+}
+```
+
 ### Submenu
 
 `Menu` can be used independently or nested within another one.
