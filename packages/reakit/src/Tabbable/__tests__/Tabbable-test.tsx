@@ -154,6 +154,15 @@ test("non-native button click disabled focusable", () => {
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
+test("data-active", () => {
+  const { getByText } = render(<Tabbable>tabbable</Tabbable>);
+  const tabbable = getByText("tabbable");
+  fireEvent.mouseDown(tabbable);
+  expect(tabbable).toHaveAttribute("data-active");
+  fireEvent.mouseUp(tabbable);
+  expect(tabbable).not.toHaveAttribute("data-active");
+});
+
 test("non-native button focus", () => {
   const { getByText } = render(<Tabbable as="div">tabbable</Tabbable>);
   const tabbable = getByText("tabbable");

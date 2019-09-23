@@ -28,6 +28,14 @@ export type TabbableOptions = BoxOptions & {
 
 export type TabbableHTMLProps = BoxHTMLProps & {
   disabled?: boolean;
+  /**
+   * `data-active` should be considered analogous to the `:active` pseudoclass.
+   * It is used as a selector hook to work around Firefox's behavior of not
+   * applying the `:active` pseudoclass when event.preventDefault() is called
+   * on the mouseevent that would have otherwise triggered the active state.
+   * See: https://github.com/reakit/reakit/issues/432
+   */
+  "data-active"?: boolean;
 };
 
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
@@ -76,12 +84,25 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseOver: htmlOnMouseOver,
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
+      "data-active": htmlDataActive,
       ...htmlProps
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const clickKeysRef = useLiveRef(options.unstable_clickKeys);
+    const [dataActive, setDataActive] = React.useState(htmlDataActive);
     const trulyDisabled = options.disabled && !options.focusable;
+
+    const handleMouseUp = React.useCallback(() => {
+      setDataActive(undefined);
+    }, []);
+
+    React.useEffect(() => {
+      window.addEventListener("mouseup", handleMouseUp);
+      return () => {
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+    });
 
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
@@ -113,6 +134,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           ) {
             currentTarget.focus();
           }
+          setDataActive(true);
           if (htmlOnMouseDown) {
             htmlOnMouseDown(event);
           }
@@ -178,6 +200,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       disabled: trulyDisabled,
       tabIndex: trulyDisabled ? undefined : htmlTabIndex,
       "aria-disabled": options.disabled,
+      "data-active": htmlDataActive || dataActive,
       onMouseDown,
       onClick,
       onMouseOver,
