@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.4...reakit-utils@0.6.5) (2019-09-25)
+
+
+### Bug Fixes
+
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/443)) ([8837557](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8837557)), closes [#360](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/360)
+
+
+### Features
+
+* Show warnings on console whenever it gets called, not only once ([efaa95e](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/efaa95e))
+
+
+
+
+
 ## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.3...reakit-utils@0.6.4) (2019-09-19)
 
 

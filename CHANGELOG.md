@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.8](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.7...reakit@1.0.0-beta.8) (2019-09-25)
+
+
+### Bug Fixes
+
+* Fix `MenuItem` ignoring `ref` prop ([19119ca](https://github.com/reakit/reakit/commit/19119ca))
+* Fix focus not going onto `MenuDisclosure` after closing a `Menu` opened with down arrow ([01f83ba](https://github.com/reakit/reakit/commit/01f83ba))
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/issues/443)) ([8837557](https://github.com/reakit/reakit/commit/8837557)), closes [#360](https://github.com/reakit/reakit/issues/360)
+
+
+### Features
+
+* Add `gutter` option to `usePopoverState` ([#442](https://github.com/reakit/reakit/issues/442)) ([5e9bc21](https://github.com/reakit/reakit/commit/5e9bc21))
+* Add experimental `unstable_portal` prop to `Tooltip` ([#440](https://github.com/reakit/reakit/issues/440)) ([1b2d5dd](https://github.com/reakit/reakit/commit/1b2d5dd))
+* Add experimental `unstable_scheduleUpdate` function to `usePopoverState` return (still undocumented) ([b40a4da](https://github.com/reakit/reakit/commit/b40a4da))
+
+
+
+
+
 # [1.0.0-beta.7](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.6...reakit@1.0.0-beta.7) (2019-09-19)
 
 

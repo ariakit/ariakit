@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.8](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.7...website@1.0.0-beta.8) (2019-09-25)
+
+
+### Bug Fixes
+
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/tree/master/packages/website/issues/443)) ([8837557](https://github.com/reakit/reakit/tree/master/packages/website/commit/8837557)), closes [#360](https://github.com/reakit/reakit/tree/master/packages/website/issues/360)
+
+
+
+
+
 # [1.0.0-beta.7](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.6...website@1.0.0-beta.7) (2019-09-19)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.6](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.5...reakit-playground@0.6.6) (2019-09-25)
+
+
+### Bug Fixes
+
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/443)) ([8837557](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8837557)), closes [#360](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/360)
+
+
+
+
+
 ## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.4...reakit-playground@0.6.5) (2019-09-19)
 
 
