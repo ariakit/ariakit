@@ -32,7 +32,7 @@ import {
 import { Button } from "reakit/Button";
 
 function Example() {
-  const toolbar = useToolbarState();
+  const toolbar = useToolbarState({ loop: true });
   return (
     <Toolbar {...toolbar} aria-label="My toolbar">
       <ToolbarItem {...toolbar} as={Button}>
@@ -58,7 +58,6 @@ You can render [Menu](/docs/menu/) within a `Toolbar` using the same techinique 
 import React from "react";
 import { useToolbarState, Toolbar, ToolbarItem } from "reakit/Toolbar";
 import { useMenuState, MenuDisclosure, Menu, MenuItem } from "reakit/Menu";
-import { VisuallyHidden } from "reakit/VisuallyHidden";
 import { Button } from "reakit/Button";
 
 const MoreItems = React.forwardRef((props, ref) => {
