@@ -13,7 +13,7 @@ export function usePreventBodyScroll(
   React.useEffect(() => {
     const element = targetRef.current;
     if (!element || !shouldPrevent) return undefined;
-    disableBodyScroll(element);
+    disableBodyScroll(element, { reserveScrollBarGap: true });
     return () => enableBodyScroll(element);
   }, [targetRef, shouldPrevent]);
 }
