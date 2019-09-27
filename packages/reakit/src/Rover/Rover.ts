@@ -1,20 +1,20 @@
 import * as React from "react";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useId } from "reakit-utils/useId";
+import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
+import { warning } from "reakit-utils/warning";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
   TabbableOptions,
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_useId } from "../utils/useId";
-import { useUpdateEffect } from "../__utils/useUpdateEffect";
-import { createOnKeyDown } from "../__utils/createOnKeyDown";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
-  Pick<Partial<RoverStateReturn>, "orientation"> &
+  Pick<Partial<RoverStateReturn>, "orientation" | "unstable_moves"> &
   Pick<
     RoverStateReturn,
     | "stops"
@@ -37,15 +37,23 @@ export type RoverHTMLProps = TabbableHTMLProps;
 
 export type RoverProps = RoverOptions & RoverHTMLProps;
 
-export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
+export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
   compose: useTabbable,
   useState: useRoverState,
   keys: ["stopId"],
 
-  useProps(options, { tabIndex, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      tabIndex: htmlTabIndex,
+      onKeyDown: htmlOnKeyDown,
+      ...htmlProps
+    }
+  ) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = unstable_useId("rover-");
+    const id = useId("rover-");
     const stopId = options.stopId || htmlProps.id || id;
 
     const trulyDisabled = options.disabled && !options.focusable;
@@ -60,29 +68,44 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
       return () => options.unregister(stopId);
     }, [stopId, trulyDisabled, options.register, options.unregister]);
 
-    useUpdateEffect(() => {
+    React.useEffect(() => {
       if (!ref.current) {
         warning(
           true,
-          "Can't focus rover component because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/rover",
-          "Rover"
+          "Rover",
+          "Can't focus rover component because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/rover"
         );
         return;
       }
-      if (focused) {
+      if (options.unstable_moves && focused && !hasFocusWithin(ref.current)) {
         ref.current.focus();
       }
-    }, [focused]);
+    }, [focused, options.unstable_moves]);
 
-    const onFocus = React.useCallback(() => options.move(stopId), [
-      options.move,
-      stopId
-    ]);
+    React.useEffect(() => {
+      if (!ref.current) return undefined;
+
+      const onFocus = () => options.move(stopId);
+
+      // https://github.com/facebook/react/issues/11387#issuecomment-524113945
+      ref.current.addEventListener("focus", onFocus, true);
+      return () => {
+        if (ref.current) {
+          ref.current.removeEventListener("focus", onFocus, true);
+        }
+      };
+    }, [options.move, stopId]);
 
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
+          stopPropagation: true,
+          // Ignore portals
+          shouldKeyDown: event =>
+            // https://github.com/facebook/react/issues/11387
+            event.currentTarget.contains(event.target as Node),
           keyMap: {
             ArrowUp: options.orientation !== "horizontal" && options.previous,
             ArrowRight: options.orientation !== "vertical" && options.next,
@@ -104,20 +127,17 @@ export const useRover = unstable_createHook<RoverOptions, RoverHTMLProps>({
       ]
     );
 
-    return unstable_mergeProps(
-      {
-        ref,
-        id: stopId,
-        tabIndex: shouldTabIndex ? tabIndex : -1,
-        onFocus,
-        onKeyDown
-      } as RoverHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      id: stopId,
+      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
+      onKeyDown,
+      ...htmlProps
+    };
   }
 });
 
-export const Rover = unstable_createComponent({
+export const Rover = createComponent({
   as: "button",
   useHook: useRover
 });

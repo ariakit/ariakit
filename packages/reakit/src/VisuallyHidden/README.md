@@ -42,7 +42,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Separator` uses [Box](/docs/box/).
+- `VisuallyHidden` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { unstable_FormPushButton as FormPushButton } from "../FormPushButton";
 
 test("render", () => {
@@ -17,7 +17,6 @@ test("render", () => {
       <div>
         <button
           id="base-a-push"
-          role="button"
           tabindex="0"
           type="button"
         />

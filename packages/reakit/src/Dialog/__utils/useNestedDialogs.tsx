@@ -1,5 +1,5 @@
 import * as React from "react";
-import { removeItemFromArray } from "../../__utils/removeItemFromArray";
+import { removeItemFromArray } from "reakit-utils/removeItemFromArray";
 import { DialogOptions } from "../Dialog";
 
 const DialogContext = React.createContext<{

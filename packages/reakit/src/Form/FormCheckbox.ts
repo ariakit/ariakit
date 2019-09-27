@@ -1,15 +1,13 @@
 import * as React from "react";
-import { As, PropsWithAs, ArrayValue, Omit, Keys } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
+import { As, PropsWithAs, ArrayValue, Omit } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { createHook } from "reakit-system/createHook";
 import {
   CheckboxOptions,
   CheckboxHTMLProps,
   useCheckbox
 } from "../Checkbox/Checkbox";
-import { TabbableOptions } from "../Tabbable/Tabbable";
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -47,55 +45,48 @@ export type unstable_FormCheckboxProps<
   P extends DeepPath<V, P>
 > = unstable_FormCheckboxOptions<V, P> & unstable_FormCheckboxHTMLProps;
 
-export function unstable_useFormCheckbox<V, P extends DeepPath<V, P>>(
-  options: unstable_FormCheckboxOptions<V, P>,
-  htmlProps: unstable_FormCheckboxHTMLProps = {}
-) {
-  options = unstable_useOptions("FormCheckbox", options, htmlProps);
+export const unstable_useFormCheckbox = createHook<
+  unstable_FormCheckboxOptions<any, any>,
+  unstable_FormCheckboxHTMLProps
+>({
+  name: "FormCheckbox",
+  compose: useCheckbox,
+  useState: unstable_useFormState,
+  keys: ["name", "value"],
 
-  const isBoolean = typeof options.value === "undefined";
-  const state = unstable_getIn(options.values, options.name);
-  const setState = (value: DeepPathValue<V, P>) =>
-    options.update(options.name, value);
+  useProps(options, { onBlur: htmlOnBlur, ...htmlProps }) {
+    const isBoolean = typeof options.value === "undefined";
 
-  htmlProps = unstable_mergeProps(
-    {
+    const onBlur = React.useCallback(() => {
+      options.blur(options.name);
+    }, [options.blur, options.name]);
+
+    return {
       "aria-invalid": shouldShowError(options, options.name),
       name: formatInputName(options.name),
-      onBlur: () => options.blur(options.name)
-    } as unstable_FormCheckboxHTMLProps,
-    isBoolean
-      ? ({
-          id: getInputId(options.name, options.baseId),
-          "aria-describedby": getMessageId(options.name, options.baseId),
-          "aria-labelledby": getLabelId(options.name, options.baseId)
-        } as unstable_FormCheckboxHTMLProps)
-      : {},
-    htmlProps
-  );
+      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
+      ...(isBoolean
+        ? {
+            id: getInputId(options.name, options.baseId),
+            "aria-describedby": getMessageId(options.name, options.baseId),
+            "aria-labelledby": getLabelId(options.name, options.baseId)
+          }
+        : {}),
+      ...htmlProps
+    };
+  },
 
-  htmlProps = unstable_useProps("FormCheckbox", options, htmlProps);
-  htmlProps = useCheckbox(
-    {
-      ...options,
-      state: state as any,
-      setState: setState as any
-    },
-    htmlProps
-  );
-  return htmlProps;
-}
+  useCompose(options, htmlProps) {
+    const state = unstable_getIn(options.values, options.name);
+    const setState = (value: any) => options.update(options.name, value);
+    return useCheckbox({ ...options, state, setState }, htmlProps);
+  }
+}) as <V, P extends DeepPath<V, P>>(
+  options: unstable_FormCheckboxOptions<V, P>,
+  htmlProps?: unstable_FormCheckboxHTMLProps
+) => unstable_FormCheckboxHTMLProps;
 
-const keys: Keys<
-  TabbableOptions &
-    CheckboxOptions &
-    unstable_FormStateReturn<any> &
-    unstable_FormCheckboxOptions<any, any>
-> = [...useCheckbox.__keys, ...unstable_useFormState.__keys, "name", "value"];
-
-unstable_useFormCheckbox.__keys = keys;
-
-export const unstable_FormCheckbox = (unstable_createComponent({
+export const unstable_FormCheckbox = (createComponent({
   as: "input",
   useHook: unstable_useFormCheckbox
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(

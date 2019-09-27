@@ -1,27 +1,36 @@
 ---
 path: /docs/basic-concepts/
+redirect_from:
+  - /guide/reliability/
 ---
 
 # Basic concepts
 
-Because it has so many components, Reakit has a very wide API surface. However, the API is established on principles that make it more consistent throughout the components. Understanding these concepts will give you enough base to work with any Reakit component right away.
+Reakit is established on principles that make it more consistent throughout its components. Understanding these concepts will give you enough base to work with any Reakit component right away.
 
 <carbon-ad></carbon-ad>
 
 ## Components
 
-Like any other component library, components are the **higher level API** in Reakit. The [Hidden](/docs/hidden/) component, for example, renders an element that can be hidden or visible.
+Like any other component library, components are the **highest level API** in Reakit. The [Hidden](/docs/hidden/) component, for example, renders an element that can be hidden or visible.
 
 <!-- eslint-disable -->
 ```jsx static
 <Hidden visible>Hidden</Hidden>
 ```
 
-### Options
+## Options
 
 Components receive two kinds of props: **HTML props** and **option props**. Options are just custom props that don't get rendered into the DOM (like `visible`). They affect internal behavior and translate to actual HTML attributes.
 
-### `as` prop
+<!-- eslint-disable -->
+```jsx static
+// `className` is an HTML prop
+// `visible` is an option
+<Hidden className="class" visible />
+```
+
+## `as` prop
 
 Components render only one element. You can change its type using the `as` prop:
 
@@ -39,7 +48,7 @@ function Example() {
 
 Learn more in [Composition](/docs/composition/#as-prop).
 
-### Render props
+## Render props
 
 Alternatively, you can change the underlying element by passing children as a function (also known as [render props](https://reactjs.org/docs/render-props.html)):
 
@@ -67,6 +76,7 @@ The returned options can be passed as props directly to the components, or used 
 import { useHiddenState, Hidden } from "reakit";
 
 function Example() {
+  // exposes `visible` state and methods like `show`, `hide` and `toggle`
   const hidden = useHiddenState({ visible: true });
   return (
     <>
@@ -81,7 +91,7 @@ Learn more in [Managing state](/docs/managing-state/).
 
 ## Props hooks
 
-Finally, as a **low level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [Hidden](/docs/hidden/), which in turn uses [Box](/docs/box/).
+Finally, as the **lowest level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [Hidden](/docs/hidden/), which in turn uses [Box](/docs/box/).
 
 ```jsx
 import { useHiddenState, useHidden, useHiddenDisclosure } from "reakit";

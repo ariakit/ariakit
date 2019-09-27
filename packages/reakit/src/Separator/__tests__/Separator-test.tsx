@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { Separator } from "../Separator";
 
 test("render", () => {
@@ -22,7 +22,7 @@ test("render horizontal", () => {
     <body>
       <div>
         <hr
-          aria-orientation="vertical"
+          aria-orientation="horizontal"
           role="separator"
         />
       </div>

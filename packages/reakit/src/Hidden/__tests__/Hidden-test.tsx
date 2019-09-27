@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { Hidden } from "../Hidden";
 
 test("render", () => {
@@ -9,6 +9,7 @@ test("render", () => {
       class="hidden"
       hidden=""
       role="region"
+      style="display: none;"
     >
       hidden
     </div>

@@ -1,15 +1,14 @@
 import * as React from "react";
 import {
-  unstable_useSealedState,
-  unstable_SealedInitialState
-} from "../utils/useSealedState";
+  useSealedState,
+  SealedInitialState
+} from "reakit-utils/useSealedState";
 import {
   RoverState,
   RoverActions,
   RoverInitialState,
   useRoverState
 } from "../Rover";
-import { Keys } from "../__utils/types";
 
 export type RadioState = RoverState & {
   /**
@@ -31,13 +30,13 @@ export type RadioInitialState = RoverInitialState &
 export type RadioStateReturn = RadioState & RadioActions;
 
 export function useRadioState(
-  initialState: unstable_SealedInitialState<RadioInitialState> = {}
+  initialState: SealedInitialState<RadioInitialState> = {}
 ): RadioStateReturn {
   const {
     state: initialCurrentValue,
     loop: loop = true,
     ...sealed
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
 
   const [state, setState] = React.useState(initialCurrentValue);
 
@@ -50,7 +49,7 @@ export function useRadioState(
   };
 }
 
-const keys: Keys<RadioStateReturn> = [
+const keys: Array<keyof RadioStateReturn> = [
   ...useRoverState.__keys,
   "state",
   "setState"

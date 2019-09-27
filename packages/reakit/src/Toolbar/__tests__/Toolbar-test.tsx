@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { Toolbar } from "../Toolbar";
 
 const props: Parameters<typeof Toolbar>[0] = {

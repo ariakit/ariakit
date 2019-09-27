@@ -1,10 +1,8 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormOptions = BoxOptions &
@@ -15,37 +13,33 @@ export type unstable_FormHTMLProps = BoxHTMLProps &
 
 export type unstable_FormProps = unstable_FormOptions & unstable_FormHTMLProps;
 
-export function unstable_useForm(
-  options: unstable_FormOptions,
-  htmlProps: unstable_FormHTMLProps = {}
-) {
-  options = unstable_useOptions("Form", options, htmlProps);
+export const unstable_useForm = createHook<
+  unstable_FormOptions,
+  unstable_FormHTMLProps
+>({
+  name: "Form",
+  compose: useBox,
+  useState: unstable_useFormState,
 
-  htmlProps = unstable_mergeProps(
-    {
-      role: "form",
-      noValidate: true,
-      onSubmit: event => {
+  useProps(options, { onSubmit: htmlOnSubmit, ...htmlProps }) {
+    const onSubmit = React.useCallback(
+      (event: React.FormEvent) => {
         event.preventDefault();
         options.submit();
-      }
-    } as unstable_FormHTMLProps,
-    htmlProps
-  );
+      },
+      [options.submit]
+    );
 
-  htmlProps = unstable_useProps("Form", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
+    return {
+      role: "form",
+      noValidate: true,
+      onSubmit: useAllCallbacks(onSubmit, htmlOnSubmit),
+      ...htmlProps
+    };
+  }
+});
 
-const keys: Keys<unstable_FormStateReturn<any> & unstable_FormOptions> = [
-  ...useBox.__keys,
-  ...unstable_useFormState.__keys
-];
-
-unstable_useForm.__keys = keys;
-
-export const unstable_Form = unstable_createComponent({
+export const unstable_Form = createComponent({
   as: "form",
   useHook: unstable_useForm
 });

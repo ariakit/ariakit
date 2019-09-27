@@ -7,11 +7,16 @@ redirect_from:
   - /components/overlay/overlayshow/
   - /components/overlay/overlaytoggle/
   - /components/backdrop/
+  - /components/sidebar/
+  - /components/sidebar/sidebarcontainer/
+  - /components/sidebar/sidebarhide/
+  - /components/sidebar/sidebarshow/
+  - /components/sidebar/sidebartoggle/
 ---
 
 # Dialog (Modal)
 
-`Dialog` follows the [WAI-ARIA Dialog (Modal) Pattern](https://www.w3.org/TR/wai-aria-practices/#dialog_modal). It's rendered within a [Portal](/docs/portal/) by default, but it also has a [non-modal state](#non-modal-dialogs), which doesn't use portals.
+Accessible `Dialog` component that follows the [WAI-ARIA Dialog (Modal) Pattern](https://www.w3.org/TR/wai-aria-practices/#dialog_modal). It's rendered within a [Portal](/docs/portal/) by default, but it also has a [non-modal state](#non-modal-dialogs), which doesn't use portals.
 
 <carbon-ad></carbon-ad>
 
@@ -33,7 +38,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Dialog aria-label="Welcome" {...dialog}>
+      <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
       </Dialog>
     </>
@@ -43,7 +48,10 @@ function Example() {
 
 ### Backdrop
 
+You can use the `DialogBackdrop` component to render a backdrop for the dialog.
+
 ```jsx
+import { Portal } from "reakit/Portal";
 import {
   useDialogState,
   Dialog,
@@ -56,9 +64,63 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <DialogBackdrop {...dialog} />
-      <Dialog aria-label="Welcome" {...dialog}>
+      <Portal>
+        <DialogBackdrop {...dialog} />
+      </Portal>
+      <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
+      </Dialog>
+    </>
+  );
+}
+```
+
+### Initial focus
+
+When opening `Dialog`, focus is usually set on the first tabbable element within the dialog, including itself. So, if you want to set the initial focus on the dialog element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
+
+```jsx
+import { Button } from "reakit/Button";
+import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
+
+function Example() {
+  const dialog = useDialogState();
+  return (
+    <>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <Dialog {...dialog} tabIndex={0} aria-label="Welcome">
+        <Button onClick={dialog.hide}>Close</Button>
+      </Dialog>
+    </>
+  );
+}
+```
+
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
+
+function Example() {
+  const dialog = useDialogState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (dialog.visible) {
+      ref.current.focus();
+    }
+  }, [dialog.visible]);
+
+  return (
+    <>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <Dialog {...dialog} aria-label="Welcome">
+        <Button>By default, initial focus would go here</Button>
+        <br />
+        <br />
+        <Button ref={ref}>But now it goes here</Button>
       </Dialog>
     </>
   );
@@ -86,10 +148,10 @@ function Example() {
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <Dialog
+        {...dialog}
         aria-label="Welcome"
         modal={false}
         style={{ position: "static", transform: "none" }}
-        {...dialog}
       >
         Focus is not trapped within me.
       </Dialog>
@@ -97,6 +159,8 @@ function Example() {
   );
 }
 ```
+
+### Chat dialog
 
 If desirable, a non-modal dialog can also be rendered within a [Portal](/docs/portal/). The `hideOnClickOutside` prop can be set to `false` so clicking and focusing outside doesn't close it.
 
@@ -112,6 +176,7 @@ function Example() {
       <DialogDisclosure {...dialog}>Open chat</DialogDisclosure>
       <Portal>
         <Dialog
+          {...dialog}
           aria-label="Welcome"
           modal={false}
           hideOnClickOutside={false}
@@ -124,7 +189,6 @@ function Example() {
             width: 200,
             height: 300
           }}
-          {...dialog}
         >
           <Button onClick={dialog.hide}>Close chat</Button>
         </Dialog>
@@ -148,7 +212,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog1}>Open dialog</DialogDisclosure>
-      <Dialog aria-label="Test" {...dialog1}>
+      <Dialog {...dialog1} aria-label="Test">
         <p>
           Press <kbd>ESC</kbd> to close me.
         </p>
@@ -156,7 +220,7 @@ function Example() {
           <Button onClick={dialog1.hide}>Close dialog</Button>
           <DialogDisclosure {...dialog2}>Open nested dialog</DialogDisclosure>
         </div>
-        <Dialog aria-label="Nested" {...dialog2}>
+        <Dialog {...dialog2} aria-label="Nested">
           <Button onClick={dialog2.hide}>Close nested dialog</Button>
         </Dialog>
       </Dialog>
@@ -180,7 +244,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Discard</DialogDisclosure>
-      <Dialog role="alertdialog" aria-label="Confirm discard" {...dialog}>
+      <Dialog {...dialog} role="alertdialog" aria-label="Confirm discard">
         <p>Are you sure you want to discard it?</p>
         <div style={{ display: "grid", gridGap: 16, gridAutoFlow: "column" }}>
           <Button onClick={dialog.hide}>Cancel</Button>
@@ -195,6 +259,41 @@ function Example() {
         </div>
       </Dialog>
     </>
+  );
+}
+```
+
+### Abstracting
+
+You can build your own `Dialog` component with a different API on top of Reakit.
+
+```jsx
+import React from "react";
+import {
+  useDialogState,
+  Dialog as BaseDialog,
+  DialogDisclosure
+} from "reakit/Dialog";
+
+function Dialog({ disclosure, ...props }) {
+  const dialog = useDialogState();
+  return (
+    <>
+      <DialogDisclosure {...dialog}>
+        {disclosureProps =>
+          React.cloneElement(React.Children.only(disclosure), disclosureProps)
+        }
+      </DialogDisclosure>
+      <BaseDialog {...dialog} {...props} />
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Dialog disclosure={<button>Open custom dialog</button>}>
+      My custom dialog
+    </Dialog>
   );
 }
 ```
@@ -232,28 +331,15 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-### `Dialog`
-
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
 - **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+  <code>number | boolean</code>
 
-  If `true`, the hidden element attributes will be set in different
-timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-create transitions.
-  - When it becomes visible, immediatelly remove the `hidden` attribute,
-then add the `hidden` class.
-  - When it becomes hidden, immediatelly remove the `hidden` class, then
-add the `hidden` attribute.
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
 
-- **`hide`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `false`
+### `Dialog`
 
 - **`modal`**
   <code>boolean | undefined</code>
@@ -306,7 +392,9 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-### `DialogBackdrop`
+<details><summary>4 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`visible`**
   <code>boolean</code>
@@ -314,15 +402,52 @@ It will be set to `false` if `modal` is `false`.
   Whether it's visible or not.
 
 - **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+  <code>number | boolean</code>
 
-  If `true`, the hidden element attributes will be set in different
-timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-create transitions.
-  - When it becomes visible, immediatelly remove the `hidden` attribute,
-then add the `hidden` class.
-  - When it becomes hidden, immediatelly remove the `hidden` class, then
-add the `hidden` attribute.
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+</details>
+
+### `DialogBackdrop`
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+</details>
 
 ### `DialogDisclosure`
 
@@ -338,6 +463,10 @@ add the `hidden` attribute.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+<details><summary>2 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -347,3 +476,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Toggles the `visible` state
+
+</details>

@@ -1,9 +1,8 @@
-import { warning } from "../__utils/warning";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
+import { warning } from "reakit-utils/warning";
+import { createComponent } from "reakit-system/createComponent";
+import { useCreateElement } from "reakit-system/useCreateElement";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_createHook } from "../utils/createHook";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabListOptions = BoxOptions &
@@ -13,33 +12,30 @@ export type TabListHTMLProps = BoxHTMLProps;
 
 export type TabListProps = TabListOptions & TabListHTMLProps;
 
-export const useTabList = unstable_createHook<TabListOptions, TabListHTMLProps>(
-  {
-    name: "TabList",
-    compose: useBox,
-    useState: useTabState,
+export const useTabList = createHook<TabListOptions, TabListHTMLProps>({
+  name: "TabList",
+  compose: useBox,
+  useState: useTabState,
 
-    useProps(options, htmlProps) {
-      return unstable_mergeProps(
-        {
-          role: "tablist",
-          "aria-orientation": options.orientation
-        } as TabListHTMLProps,
-        htmlProps
-      );
-    }
+  useProps(options, htmlProps) {
+    return {
+      role: "tablist",
+      "aria-orientation": options.orientation,
+      ...htmlProps
+    };
   }
-);
+});
 
-export const TabList = unstable_createComponent({
+export const TabList = createComponent({
   as: "div",
   useHook: useTabList,
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/tab",
-      "TabList"
+      "TabList",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/tab"
     );
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });

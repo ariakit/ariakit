@@ -1,7 +1,7 @@
 import * as React from "react";
-import { renderHook, act } from "react-hooks-testing-library";
+import { renderHook, act } from "@testing-library/react-hooks";
+import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { useRoverState } from "../RoverState";
-import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
@@ -22,7 +22,9 @@ test("initial state", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -36,7 +38,9 @@ test("initial state activeRef", () => {
     Object {
       "currentId": "a",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -51,7 +55,9 @@ test("initial state loop", () => {
     Object {
       "currentId": null,
       "loop": true,
+      "orientation": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -63,14 +69,15 @@ test("initial state orientation", () => {
   expect(result.current).toMatchInlineSnapshot(
     { orientation: "vertical" },
     `
-    Object {
-      "currentId": null,
-      "loop": false,
-      "orientation": "vertical",
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "orientation": "vertical",
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });
 
@@ -81,6 +88,7 @@ test("register", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -91,6 +99,7 @@ test("register", () => {
           },
         },
       ],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -105,6 +114,7 @@ test("register already registered", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -115,6 +125,7 @@ test("register already registered", () => {
           },
         },
       ],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -127,6 +138,7 @@ test("register currentId", () => {
     Object {
       "currentId": "a",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -137,6 +149,7 @@ test("register currentId", () => {
           },
         },
       ],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -150,7 +163,9 @@ test("unregister", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -163,7 +178,9 @@ test("unregister inexistent", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -182,7 +199,9 @@ test("unregister currentId", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -204,6 +223,7 @@ test("unregister pastId", () => {
     Object {
       "currentId": "b",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "b",
@@ -214,6 +234,7 @@ test("unregister pastId", () => {
           },
         },
       ],
+      "unstable_moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -232,6 +253,7 @@ test("move", () => {
     Object {
       "currentId": "a",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -242,6 +264,7 @@ test("move", () => {
           },
         },
       ],
+      "unstable_moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -263,6 +286,7 @@ test("move twice", () => {
     Object {
       "currentId": "b",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -281,6 +305,7 @@ test("move twice", () => {
           },
         },
       ],
+      "unstable_moves": 2,
       "unstable_pastId": "a",
     }
   `
@@ -302,6 +327,7 @@ test("move to the same ref", () => {
     Object {
       "currentId": "b",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -320,6 +346,7 @@ test("move to the same ref", () => {
           },
         },
       ],
+      "unstable_moves": 2,
       "unstable_pastId": null,
     }
   `
@@ -341,6 +368,7 @@ test("move to null", () => {
     Object {
       "currentId": null,
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -359,6 +387,7 @@ test("move to null", () => {
           },
         },
       ],
+      "unstable_moves": 2,
       "unstable_pastId": "b",
     }
   `
@@ -381,6 +410,7 @@ test("next", () => {
     Object {
       "currentId": "b",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -407,6 +437,7 @@ test("next", () => {
           },
         },
       ],
+      "unstable_moves": 2,
       "unstable_pastId": "a",
     }
   `
@@ -431,6 +462,7 @@ test("next thrice", () => {
     Object {
       "currentId": "c",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -457,6 +489,7 @@ test("next thrice", () => {
           },
         },
       ],
+      "unstable_moves": 3,
       "unstable_pastId": "b",
     }
   `
@@ -481,6 +514,7 @@ test("next thrice loop", () => {
     Object {
       "currentId": "a",
       "loop": true,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -507,6 +541,7 @@ test("next thrice loop", () => {
           },
         },
       ],
+      "unstable_moves": 4,
       "unstable_pastId": "c",
     }
   `
@@ -529,6 +564,7 @@ test("previous", () => {
     Object {
       "currentId": "a",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -555,6 +591,7 @@ test("previous", () => {
           },
         },
       ],
+      "unstable_moves": 2,
       "unstable_pastId": "b",
     }
   `
@@ -577,6 +614,7 @@ test("previous loop", () => {
     Object {
       "currentId": "c",
       "loop": true,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -603,6 +641,7 @@ test("previous loop", () => {
           },
         },
       ],
+      "unstable_moves": 2,
       "unstable_pastId": "a",
     }
   `
@@ -623,6 +662,7 @@ test("first", () => {
     Object {
       "currentId": "a",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -641,6 +681,7 @@ test("first", () => {
           },
         },
       ],
+      "unstable_moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -661,6 +702,7 @@ test("last", () => {
     Object {
       "currentId": "b",
       "loop": false,
+      "orientation": undefined,
       "stops": Array [
         Object {
           "id": "a",
@@ -679,6 +721,7 @@ test("last", () => {
           },
         },
       ],
+      "unstable_moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -693,13 +736,14 @@ test("orientate", () => {
       orientation: "horizontal"
     },
     `
-    Object {
-      "currentId": null,
-      "loop": false,
-      "orientation": "horizontal",
-      "stops": Array [],
-      "unstable_pastId": null,
-    }
-  `
+            Object {
+              "currentId": null,
+              "loop": false,
+              "orientation": "horizontal",
+              "stops": Array [],
+              "unstable_moves": 0,
+              "unstable_pastId": null,
+            }
+      `
   );
 });

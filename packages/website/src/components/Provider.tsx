@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Provider as ReakitProvider, unstable_mergeSystem } from "reakit";
+import { Provider as ReakitProvider } from "reakit";
+import { mergeSystem } from "reakit-system";
 import * as bootstrapSystem from "reakit-system-bootstrap";
 import * as playgroundSystem from "reakit-playground/system";
 
-const system = unstable_mergeSystem(bootstrapSystem, playgroundSystem, {
+const system = mergeSystem(bootstrapSystem, playgroundSystem, {
   palette: {
     ...bootstrapSystem.palette,
     primary: "#6a50ee",

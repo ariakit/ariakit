@@ -79,7 +79,7 @@ export default function NewsletterForm() {
           margin: 0 0 32px;
         `}
       >
-        Past emails include <strong>Enzyme vs. react-testing-library</strong>,{" "}
+        Past emails include <strong>Enzyme vs. @testing-library/react</strong>,{" "}
         <strong>TypeScript</strong> and others.
       </Paragraph>
       {form.submitSucceed ? (

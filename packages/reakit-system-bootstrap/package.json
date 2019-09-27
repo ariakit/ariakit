@@ -1,6 +1,6 @@
 {
   "name": "reakit-system-bootstrap",
-  "version": "0.4.1",
+  "version": "0.6.5",
   "description": "Reakit bootstrap system",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap",
@@ -17,7 +17,7 @@
     "start": "parcel example/index.html",
     "test": "jest",
     "coverage": "yarn test --coverage",
-    "postcoverage": "opn coverage/lcov-report/index.html",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
@@ -31,15 +31,12 @@
     "system"
   ],
   "dependencies": {
-    "emotion": "10.0.9",
-    "reakit-system-palette": "^0.4.1"
-  },
-  "devDependencies": {
-    "reakit": "^1.0.0-beta.0"
+    "emotion": "^10.0.17",
+    "reakit-system-palette": "^0.6.5"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit": "^1.0.0-alpha.0"
+    "reakit": "^1.0.0-beta.5"
   }
 }

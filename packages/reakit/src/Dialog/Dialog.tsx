@@ -1,12 +1,14 @@
 import * as React from "react";
-import { warning } from "../__utils/warning";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { Portal } from "../Portal/Portal";
+import { warning } from "reakit-utils/warning";
+import { createComponent } from "reakit-system/createComponent";
+import { useCreateElement } from "reakit-system/useCreateElement";
+import { createHook } from "reakit-system/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { usePipe } from "reakit-utils/usePipe";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
-import { unstable_createHook } from "../utils/createHook";
-import { useDisclosureRef } from "./__utils/useDisclosureRef";
+import { Portal } from "../Portal/Portal";
+import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
 import { useFocusTrap } from "./__utils/useFocusTrap";
@@ -78,7 +80,7 @@ export type DialogHTMLProps = HiddenHTMLProps;
 
 export type DialogProps = DialogOptions & DialogHTMLProps;
 
-export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
+export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   name: "Dialog",
   compose: useHidden,
   useState: useDialogState,
@@ -119,16 +121,24 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
     };
   },
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onKeyDown: htmlOnKeyDown,
+      unstable_wrap: htmlWrap,
+      ...htmlProps
+    }
+  ) {
     const dialog = React.useRef<HTMLElement>(null);
-    const disclosure = useDisclosureRef(options);
+    const disclosures = useDisclosuresRef(options);
     const { dialogs, wrap } = useNestedDialogs(dialog, options);
 
     usePreventBodyScroll(dialog, options);
     useFocusTrap(dialog, dialogs, options);
     useFocusOnShow(dialog, dialogs, options);
-    useFocusOnHide(dialog, disclosure, options);
-    useHideOnClickOutside(dialog, disclosure, dialogs, options);
+    useFocusOnHide(dialog, disclosures, options);
+    useHideOnClickOutside(dialog, disclosures, dialogs, options);
     useDisableHoverOutside(dialog, dialogs, options);
 
     const onKeyDown = React.useCallback(
@@ -137,8 +147,9 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
           if (!options.hide) {
             warning(
               true,
-              "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided. See https://reakit.io/docs/dialog",
-              "Dialog"
+              "Dialog",
+              "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided.",
+              "See https://reakit.io/docs/dialog"
             );
             return;
           }
@@ -159,31 +170,29 @@ export const useDialog = unstable_createHook<DialogOptions, DialogHTMLProps>({
       [options.unstable_portal, wrap]
     );
 
-    return unstable_mergeProps(
-      {
-        ref: dialog,
-        role: "dialog",
-        tabIndex: -1,
-        "aria-modal": options.modal,
-        "data-dialog": true,
-        style: { zIndex: 999 },
-        onKeyDown,
-        unstable_wrap: wrapChildren
-      } as DialogHTMLProps,
-      htmlProps
-    );
+    return {
+      ref: mergeRefs(dialog, htmlRef),
+      role: "dialog",
+      tabIndex: -1,
+      "aria-modal": options.modal,
+      "data-dialog": true,
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      unstable_wrap: usePipe(wrapChildren, htmlWrap),
+      ...htmlProps
+    };
   }
 });
 
-export const Dialog = unstable_createComponent({
+export const Dialog = createComponent({
   as: "div",
   useHook: useDialog,
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/dialog",
-      "Dialog"
+      "Dialog",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/dialog"
     );
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });

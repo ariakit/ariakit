@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { unstable_FormRemoveButton as FormRemoveButton } from "../FormRemoveButton";
 
 test("render", () => {
@@ -16,7 +16,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          role="button"
           tabindex="0"
           type="button"
         />

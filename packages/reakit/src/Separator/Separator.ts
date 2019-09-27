@@ -1,14 +1,10 @@
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 
 export type SeparatorOptions = BoxOptions & {
   /**
-   * Separator's context orientation.
-   * The actual separator's orientation will be flipped based on this prop.
-   * So a `"vertical"` orientation means that the separator will have a
-   * `"horizontal"` orientation.
+   * Separator's orientation.
    */
   orientation?: "horizontal" | "vertical";
 };
@@ -17,37 +13,25 @@ export type SeparatorHTMLProps = BoxHTMLProps;
 
 export type SeparatorProps = SeparatorOptions & SeparatorHTMLProps;
 
-export const useSeparator = unstable_createHook<
-  SeparatorOptions,
-  SeparatorHTMLProps
->({
+export const useSeparator = createHook<SeparatorOptions, SeparatorHTMLProps>({
   name: "Separator",
   compose: useBox,
   keys: ["orientation"],
 
-  useOptions({ orientation = "vertical", ...options }) {
+  useOptions({ orientation = "horizontal", ...options }) {
     return { orientation, ...options };
   },
 
   useProps(options, htmlProps) {
-    const flipMap = {
-      horizontal: "vertical",
-      vertical: "horizontal"
+    return {
+      role: "separator",
+      "aria-orientation": options.orientation,
+      ...htmlProps
     };
-
-    return unstable_mergeProps(
-      {
-        role: "separator",
-        "aria-orientation": options.orientation
-          ? flipMap[options.orientation]
-          : undefined
-      } as SeparatorHTMLProps,
-      htmlProps
-    );
   }
 });
 
-export const Separator = unstable_createComponent({
+export const Separator = createComponent({
   as: "hr",
   useHook: useSeparator
 });

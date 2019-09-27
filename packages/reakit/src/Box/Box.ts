@@ -1,6 +1,6 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_createHook } from "../utils/createHook";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 
 export type BoxOptions = {
   /**
@@ -20,12 +20,12 @@ export type BoxHTMLProps = React.HTMLAttributes<any> &
 
 export type BoxProps = BoxOptions & BoxHTMLProps;
 
-export const useBox = unstable_createHook<BoxOptions, BoxHTMLProps>({
+export const useBox = createHook<BoxOptions, BoxHTMLProps>({
   name: "Box",
   keys: ["unstable_system"]
 });
 
-export const Box = unstable_createComponent({
+export const Box = createComponent({
   as: "div",
   useHook: useBox
 });

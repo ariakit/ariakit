@@ -1,5 +1,5 @@
 import * as React from "react";
-import { unstable_useToken } from "reakit/system/useToken";
+import { useToken } from "reakit-system/useToken";
 import { Palette } from "../__utils/types";
 import { palette as defaultPalette } from "../palette";
 
@@ -17,6 +17,6 @@ export function getPalette(palette = defaultPalette, name?: string) {
 
 export function usePalette(name?: string) {
   React.useDebugValue(name);
-  const palette = unstable_useToken<Palette>("palette");
+  const palette = useToken<Palette>("palette");
   return getPalette(palette, name);
 }

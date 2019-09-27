@@ -1,11 +1,10 @@
 // Credits: https://github.com/stevejay/react-roving-tabindex
 import * as React from "react";
-import { warning } from "../__utils/warning";
+import { warning } from "reakit-utils/warning";
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "../utils/useSealedState";
-import { Keys } from "../__utils/types";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
 
 type Stop = {
   id: string;
@@ -30,6 +29,11 @@ export type RoverState = {
    * @private
    */
   unstable_pastId: Stop["id"] | null;
+  /**
+   * Stores the number of moves that have been made by calling `move`, `next`,
+   * `previous`, `first` or `last`.
+   */
+  unstable_moves: number;
   /**
    * If enabled:
    *  - Jumps to the first item when moving next from the last item.
@@ -100,7 +104,13 @@ type RoverAction =
     };
 
 function reducer(state: RoverState, action: RoverAction): RoverState {
-  const { stops, currentId, unstable_pastId: pastId, loop } = state;
+  const {
+    stops,
+    currentId,
+    unstable_pastId: pastId,
+    unstable_moves: moves,
+    loop
+  } = state;
 
   switch (action.type) {
     case "register": {
@@ -145,7 +155,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       const { id } = action;
       const nextStops = stops.filter(stop => stop.id !== id);
       if (nextStops.length === stops.length) {
-        warning(true, `${id} stop is not registered`, "RoverState");
+        warning(true, "RoverState", `${id} stop is not registered`);
         return state;
       }
 
@@ -163,20 +173,27 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
         return {
           ...state,
           currentId: null,
-          unstable_pastId: currentId
+          unstable_pastId: currentId,
+          unstable_moves: moves + 1
         };
       }
 
       const index = stops.findIndex(stop => stop.id === id);
 
-      if (index === -1 || stops[index].id === currentId) {
+      // Item doesn't exist, so we don't count a move
+      if (index === -1) {
         return state;
+      }
+
+      if (stops[index].id === currentId) {
+        return { ...state, unstable_moves: moves + 1 };
       }
 
       return {
         ...state,
         currentId: stops[index].id,
-        unstable_pastId: currentId
+        unstable_pastId: currentId,
+        unstable_moves: moves + 1
       };
     }
     case "next": {
@@ -201,14 +218,13 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       });
     }
     case "previous": {
-      const nextState = reducer(
+      const { stops: _, ...nextState } = reducer(
         { ...state, stops: stops.slice().reverse() },
         { type: "next" }
       );
       return {
         ...state,
-        currentId: nextState.currentId,
-        unstable_pastId: nextState.unstable_pastId
+        ...nextState
       };
     }
     case "first": {
@@ -234,16 +250,17 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
 }
 
 export function useRoverState(
-  initialState: unstable_SealedInitialState<RoverInitialState> = {}
+  initialState: SealedInitialState<RoverInitialState> = {}
 ): RoverStateReturn {
-  const { currentId = null, loop = false, ...sealed } = unstable_useSealedState(
+  const { orientation, currentId = null, loop = false } = useSealedState(
     initialState
   );
   const [state, dispatch] = React.useReducer(reducer, {
-    ...sealed,
+    orientation,
     stops: [],
     currentId,
     unstable_pastId: null,
+    unstable_moves: 0,
     loop
   });
 
@@ -270,11 +287,12 @@ export function useRoverState(
   };
 }
 
-const keys: Keys<RoverStateReturn> = [
+const keys: Array<keyof RoverStateReturn> = [
   "orientation",
   "stops",
   "currentId",
   "unstable_pastId",
+  "unstable_moves",
   "loop",
   "register",
   "unregister",

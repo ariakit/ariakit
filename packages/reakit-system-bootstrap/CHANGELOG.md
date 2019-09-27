@@ -3,6 +3,129 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.4...reakit-system-bootstrap@0.6.5) (2019-09-25)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.3...reakit-system-bootstrap@0.6.4) (2019-09-19)
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/3d13c33))
+
+
+
+
+
+## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.2...reakit-system-bootstrap@0.6.3) (2019-08-25)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix `MenuItem` styling as an anchor element ([580f5dd](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/580f5dd))
+
+
+### Features
+
+* Upgrade `reakit` peer dependency version ([73baeff](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/73baeff))
+
+
+
+
+
+## [0.6.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.1...reakit-system-bootstrap@0.6.2) (2019-06-27)
+
+
+### Features
+
+* Add new `size` prop to `PopoverArrow` and `TooltipArrow` ([11a6df1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/11a6df1)), closes [#383](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/383)
+
+
+
+
+
+## [0.6.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.0...reakit-system-bootstrap@0.6.1) (2019-06-23)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix SVG arrow being added after `MenuDisclosure` when children is a function ([3f53b33](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/3f53b33))
+
+
+### Features
+
+* Move helpers to separate package (reakit-utils, reakit-system) ([#380](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/380)) ([354b874](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/354b874))
+
+
+### BREAKING CHANGES
+
+* Utils aren't exported by `reakit` or `reakit/utils` anymore. Import them from the `reakit-utils` package instead.
+* System utils aren't exported by `reakit` or `reakit/system` anymore. Import them from the `reakit-system` package instead.
+* `Provider` isn't exported by `reakit/utils` or `reakit/utils/Provider` anymore. Import it from `reakit` or `reakit/Provider` instead.
+
+
+
+
+
+# [0.6.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.5.0...reakit-system-bootstrap@0.6.0) (2019-06-01)
+
+
+### Features
+
+* Remove z-index and extra styles from `Dialog` and `DialogBackdrop` ([#372](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/372)) ([5edd0d8](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/5edd0d8)), closes [#366](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/366)
+
+
+### BREAKING CHANGES
+
+* Removed extra styles from `Dialog` and `DialogBackdrop` and all their derivative components. Also removed default `z-index` from `Tooltip`. These styles have been moved to the `reakit-system-bootstrap` package. If you're not using this system package, you should apply the styles manually.
+
+  **Before:**
+  ```jsx
+  <DialogBackdrop />
+  <Dialog />
+  <Popover />
+  <Menu />
+  <Tooltip />
+  ```
+
+  **After:**
+  ```jsx
+  <DialogBackdrop
+    style={{
+      position: "fixed",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      zIndex: 998
+    }}
+  />
+  <Dialog style={{ zIndex: 999 }} />
+  <Popover style={{ zIndex: 999 }} />
+  <Menu style={{ zIndex: 999 }} />
+  <Tooltip style={{ zIndex: 999 }} />
+  ```
+
+
+
+
+
+# [0.5.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.4.1...reakit-system-bootstrap@0.5.0) (2019-05-21)
+
+
+### Features
+
+* Set `display: none` on `Hidden` when its `visible` prop is set to `false` ([73d6cd2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/73d6cd2))
+
+
+
+
+
 ## [0.4.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.4.0...reakit-system-bootstrap@0.4.1) (2019-05-13)
 
 **Note:** Version bump only for package reakit-system-bootstrap

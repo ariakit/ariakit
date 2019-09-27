@@ -1,10 +1,16 @@
 // TODO: Refactor this mess
 import * as React from "react";
-import { FaFacebook, FaTwitter, FaGithub } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaGithub,
+  FaStackOverflow
+} from "react-icons/fa";
 import { VisuallyHidden } from "reakit";
 import { css } from "@emotion/core";
 import { usePalette, useLighten } from "reakit-system-palette/utils";
 import track from "../utils/track";
+import SpectrumLogo from "../icons/Spectrum";
 import Anchor from "./Anchor";
 import Paragraph from "./Paragraph";
 
@@ -65,6 +71,22 @@ export default function Footer() {
         >
           <FaGithub />
           <VisuallyHidden>GitHub</VisuallyHidden>
+        </Anchor>
+        <Anchor
+          href="https://stackoverflow.com/questions/tagged/reakit"
+          target="_blank"
+          onClick={track("reakit.footerStackoverflowClick")}
+        >
+          <FaStackOverflow />
+          <VisuallyHidden>Stackoverflow</VisuallyHidden>
+        </Anchor>
+        <Anchor
+          href="https://spectrum.chat/reakit"
+          target="_blank"
+          onClick={track("reakit.footerSpectrumClick")}
+        >
+          <SpectrumLogo />
+          <VisuallyHidden>Spectrum</VisuallyHidden>
         </Anchor>
       </div>
       <Paragraph>

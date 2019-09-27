@@ -1,9 +1,8 @@
+import * as React from "react";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { Keys } from "../__utils/types";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
 
@@ -16,41 +15,43 @@ export type unstable_FormSubmitButtonHTMLProps = ButtonHTMLProps;
 export type unstable_FormSubmitButtonProps = unstable_FormSubmitButtonOptions &
   unstable_FormSubmitButtonHTMLProps;
 
-export function unstable_useFormSubmitButton(
-  options: unstable_FormSubmitButtonOptions,
-  htmlProps: unstable_FormSubmitButtonHTMLProps = {}
-) {
-  options = unstable_useOptions("FormSubmitButton", options, htmlProps);
+export const unstable_useFormSubmitButton = createHook<
+  unstable_FormSubmitButtonOptions,
+  unstable_FormSubmitButtonHTMLProps
+>({
+  name: "FormSubmitButton",
+  compose: useButton,
+  useState: unstable_useFormState,
 
-  htmlProps = unstable_mergeProps(
-    {
-      type: "submit",
+  useOptions(options) {
+    return {
       disabled: options.submitting,
-      onClick: () => {
-        window.requestAnimationFrame(() => {
-          const input = getFirstInvalidInput(options.baseId);
-          if (input) {
+      ...options
+    };
+  },
+
+  useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
+    const onClick = React.useCallback(() => {
+      window.requestAnimationFrame(() => {
+        const input = getFirstInvalidInput(options.baseId);
+        if (input) {
+          input.focus();
+          if ("select" in input) {
             input.select();
-            input.focus();
           }
-        });
-      }
-    } as unstable_FormSubmitButtonHTMLProps,
-    htmlProps
-  );
+        }
+      });
+    }, [options.baseId]);
 
-  htmlProps = unstable_useProps("FormSubmitButton", options, htmlProps);
-  htmlProps = useButton(options, htmlProps);
-  return htmlProps;
-}
+    return {
+      type: "submit",
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      ...htmlProps
+    };
+  }
+});
 
-const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormSubmitButtonOptions
-> = [...useButton.__keys, ...unstable_useFormState.__keys];
-
-unstable_useFormSubmitButton.__keys = keys;
-
-export const unstable_FormSubmitButton = unstable_createComponent({
+export const unstable_FormSubmitButton = createComponent({
   as: "button",
   useHook: unstable_useFormSubmitButton
 });

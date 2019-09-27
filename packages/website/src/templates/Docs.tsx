@@ -8,6 +8,10 @@ import {
   usePlaygroundState
 } from "reakit-playground";
 import * as emotion from "emotion";
+import * as styled from "styled-components";
+import * as spring from "react-spring";
+import * as yup from "yup";
+import set from "lodash/set";
 import createUseContext from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
 import CarbonAd from "../components/CarbonAd";
@@ -20,8 +24,17 @@ import TestTube from "../icons/TestTube";
 import Heading from "../components/Heading";
 import SEO from "../components/SEO";
 import track from "../utils/track";
+import DocsBackNext from "../components/DocsBackNext";
+import Summary from "../components/Summary";
 
 type DocsProps = {
+  pageContext: {
+    sourceUrl: string;
+    readmeUrl: string;
+    tableOfContentsAst: string;
+    nextPagePath: string;
+    prevPagePath: string;
+  };
   data: {
     markdownRemark: {
       title: string;
@@ -53,6 +66,7 @@ const { Compiler: renderAst } = new RehypeReact({
     ul: List,
     kbd: KeyboardInput,
     blockquote: Blockquote,
+    summary: Summary,
     h1: Heading,
     h2: props => <Heading as="h2" {...props} />,
     h3: props => <Heading as="h3" {...props} />,
@@ -91,7 +105,7 @@ const { Compiler: renderAst } = new RehypeReact({
 
         React.useEffect(() => {
           state.update(code);
-        }, [code]);
+        }, [state.update, code]);
 
         if (isDynamic) {
           return (
@@ -99,7 +113,11 @@ const { Compiler: renderAst } = new RehypeReact({
               <PlaygroundPreview
                 modules={{
                   emotion,
+                  yup,
+                  "lodash/set": set,
+                  "styled-components": styled,
                   constate: createUseContext,
+                  "react-spring": spring,
                   "./UniversalAccess": FaUniversalAccess
                 }}
                 {...state}
@@ -129,16 +147,18 @@ const { Compiler: renderAst } = new RehypeReact({
   }
 });
 
-export default function Docs({ data }: DocsProps) {
+export default function Docs({ data, pageContext }: DocsProps) {
   const {
     markdownRemark: { title, htmlAst, excerpt }
   } = data;
+  const { nextPagePath, prevPagePath } = pageContext;
 
   return (
     <>
-      <SEO title={title} description={excerpt} />
+      <SEO title={`${title} – Reakit`} description={excerpt} />
       <Heading>{title}</Heading>
       {renderAst(htmlAst)}
+      <DocsBackNext nextPath={nextPagePath} prevPath={prevPagePath} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { Menu } from "../Menu";
 
 function createRef(id: string) {
@@ -32,7 +32,7 @@ test("render", () => {
           hidden=""
           id="hidden"
           role="menu"
-          style="z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         />
       </div>

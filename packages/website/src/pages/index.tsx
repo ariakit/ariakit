@@ -35,7 +35,7 @@ export default function IndexPage() {
   const link = usePalette("link");
   return (
     <>
-      <SEO title="Reakit" />
+      <SEO title="Reakit – Toolkit for building accessible UIs" />
       <div
         className={css`
           width: 100%;

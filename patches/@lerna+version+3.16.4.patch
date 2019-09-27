@@ -1,0 +1,17 @@
+diff --git a/node_modules/@lerna/version/index.js b/node_modules/@lerna/version/index.js
+index 7c7f158..4fa2c2a 100644
+--- a/node_modules/@lerna/version/index.js
++++ b/node_modules/@lerna/version/index.js
+@@ -318,9 +318,9 @@ class VersionCommand extends Command {
+       const nextVersion = semver.inc(this.project.version, increment, resolvePrereleaseId(prereleaseId));
+ 
+       predicate = makeGlobalVersionPredicate(nextVersion);
+-    } else if (conventionalCommits) {
+-      // it's a bit weird to have a return here, true
+-      return this.recommendVersions(resolvePrereleaseId);
++    // } else if (conventionalCommits) {
++    //   // it's a bit weird to have a return here, true
++    //   return this.recommendVersions(resolvePrereleaseId);
+     } else if (independentVersions) {
+       // prompt for each independent update with potential prerelease ID
+       predicate = makePromptVersion(resolvePrereleaseId);

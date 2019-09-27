@@ -1,13 +1,14 @@
 import * as React from "react";
-import { ArrayValue, Keys } from "../__utils/types";
-import { useUpdateEffect } from "../__utils/useUpdateEffect";
+import { ArrayValue } from "reakit-utils/types";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
+import { isPromise } from "reakit-utils/isPromise";
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "../utils/useSealedState";
-import { unstable_useId } from "../utils/useId";
-import { isPromise } from "../__utils/isPromise";
-import { isEmpty } from "../__utils/isEmpty";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
+import { useId } from "reakit-utils/useId";
+import { isEmpty } from "reakit-utils/isEmpty";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
 import { hasMessages } from "./__utils/hasMessages";
@@ -17,11 +18,8 @@ import { unstable_setIn } from "./utils/setIn";
 
 type Messages<V> = DeepPartial<DeepMap<V, string | null | void>>;
 
-type ValidateReturn<V> =
-  | Promise<Messages<V> | null | void>
-  | Messages<V>
-  | null
-  | void;
+type ValidateOutput<V> = Messages<V> | null | void;
+type ValidateReturn<V> = Promise<ValidateOutput<V>> | ValidateOutput<V>;
 
 interface Update<V> {
   <P extends DeepPath<V, P>>(name: P, value: DeepPathValue<V, P>): void;
@@ -278,10 +276,11 @@ function reducer<V>(
 }
 
 export function unstable_useFormState<V = Record<any, any>>(
-  initialState: unstable_SealedInitialState<unstable_FormInitialState<V>> = {}
+  initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
+  const defaultId = useId("form-");
   const {
-    baseId = unstable_useId("form-"),
+    baseId = defaultId,
     values: initialValues = {} as V,
     validateOnBlur = true,
     validateOnChange = true,
@@ -289,7 +288,13 @@ export function unstable_useFormState<V = Record<any, any>>(
     resetOnUnmount = true,
     onValidate,
     onSubmit
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
+  const onValidateRef = useLiveRef(
+    typeof initialState !== "function" ? initialState.onValidate : onValidate
+  );
+  const onSubmitRef = useLiveRef(
+    typeof initialState !== "function" ? initialState.onSubmit : onSubmit
+  );
 
   const [{ initialValues: _, ...state }, dispatch] = React.useReducer(reducer, {
     baseId,
@@ -306,24 +311,28 @@ export function unstable_useFormState<V = Record<any, any>>(
   });
 
   const validate = React.useCallback(
-    async (vals = state.values) => {
-      try {
-        if (onValidate) {
-          const response = onValidate(filterAllEmpty(vals));
+    (vals = state.values) =>
+      new Promise<any>(resolve => {
+        if (onValidateRef.current) {
+          const response = onValidateRef.current(vals);
           if (isPromise(response)) {
             dispatch({ type: "startValidate" });
           }
-          const messages = await response;
-          dispatch({ type: "endValidate", messages });
-          return messages;
+
+          resolve(
+            Promise.resolve(response).then(messages => {
+              dispatch({ type: "endValidate", messages });
+              return messages;
+            })
+          );
+        } else {
+          resolve(undefined);
         }
-        return undefined;
-      } catch (errors) {
+      }).catch(errors => {
         dispatch({ type: "endValidate", errors });
         throw errors;
-      }
-    },
-    [state.values, onValidate]
+      }),
+    [state.values]
   );
 
   useUpdateEffect(() => {
@@ -346,23 +355,28 @@ export function unstable_useFormState<V = Record<any, any>>(
     values: state.values as V,
     validate,
     reset: React.useCallback(() => dispatch({ type: "reset" }), []),
-    submit: React.useCallback(async () => {
-      try {
-        dispatch({ type: "startSubmit" });
-        const validateMessages = await validate();
-        if (onSubmit) {
-          const submitMessages = await onSubmit(state.values as V);
-          const messages = { ...validateMessages, ...submitMessages };
-          dispatch({ type: "endSubmit", messages });
-          if (resetOnSubmitSucceed) {
-            dispatch({ type: "reset" });
+    submit: React.useCallback(() => {
+      dispatch({ type: "startSubmit" });
+      return validate()
+        .then(validateMessages => {
+          if (onSubmitRef.current) {
+            return Promise.resolve(
+              onSubmitRef.current(filterAllEmpty(state.values as V))
+            ).then(submitMessages => {
+              const messages = { ...validateMessages, ...submitMessages };
+              dispatch({ type: "endSubmit", messages });
+              if (resetOnSubmitSucceed) {
+                dispatch({ type: "reset" });
+              }
+            });
           }
-        } else {
+
           dispatch({ type: "endSubmit", messages: validateMessages });
-        }
-      } catch (errors) {
-        dispatch({ type: "endSubmit", errors });
-      }
+          return undefined;
+        })
+        .catch(errors => {
+          dispatch({ type: "endSubmit", errors });
+        });
     }, [validate]),
     update: React.useCallback(
       (name: any, value: any) => dispatch({ type: "update", name, value }),
@@ -388,7 +402,7 @@ export function unstable_useFormState<V = Record<any, any>>(
   };
 }
 
-const keys: Keys<unstable_FormStateReturn<any>> = [
+const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "baseId",
   "values",
   "touched",

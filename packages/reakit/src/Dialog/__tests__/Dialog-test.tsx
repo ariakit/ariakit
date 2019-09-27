@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render, wait } from "@testing-library/react";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
@@ -23,7 +23,7 @@ test("render", () => {
           hidden=""
           id="dialog"
           role="dialog"
-          style="z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         >
           dialog
@@ -33,14 +33,17 @@ test("render", () => {
   `);
 });
 
-test("render visible", () => {
+test("render visible", async () => {
   const { baseElement } = render(
     <Dialog {...props} visible>
       dialog
     </Dialog>
   );
+  await wait();
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
+    <body
+      style="overflow: hidden;"
+    >
       <div />
       <div
         aria-hidden="true"
@@ -57,7 +60,6 @@ test("render visible", () => {
           data-dialog="true"
           id="dialog"
           role="dialog"
-          style="z-index: 999;"
           tabindex="-1"
         >
           dialog
@@ -73,14 +75,17 @@ test("render visible", () => {
   `);
 });
 
-test("render non-modal", () => {
-  const { baseElement } = render(
+test("render non-modal", async () => {
+  const { baseElement } = await render(
     <Dialog {...props} modal={false}>
       test
     </Dialog>
   );
+  await wait();
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
+    <body
+      style=""
+    >
       <div>
         <div
           aria-label="dialog"
@@ -90,7 +95,7 @@ test("render non-modal", () => {
           hidden=""
           id="dialog"
           role="dialog"
-          style="z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         >
           test

@@ -1,9 +1,8 @@
 import * as React from "react";
 import {
-  unstable_useSealedState,
-  unstable_SealedInitialState
-} from "../utils/useSealedState";
-import { Keys } from "../__utils/types";
+  useSealedState,
+  SealedInitialState
+} from "reakit-utils/useSealedState";
 
 export type CheckboxState = {
   /**
@@ -29,9 +28,9 @@ export type CheckboxStateReturn = CheckboxState & CheckboxActions;
  * As simple as `React.useState(false)`
  */
 export function useCheckboxState(
-  initialState: unstable_SealedInitialState<CheckboxInitialState> = {}
+  initialState: SealedInitialState<CheckboxInitialState> = {}
 ): CheckboxStateReturn {
-  const { state: initialValue = false } = unstable_useSealedState(initialState);
+  const { state: initialValue = false } = useSealedState(initialState);
   const [state, setState] = React.useState(initialValue);
 
   return {
@@ -40,6 +39,6 @@ export function useCheckboxState(
   };
 }
 
-const keys: Keys<CheckboxStateReturn> = ["state", "setState"];
+const keys: Array<keyof CheckboxStateReturn> = ["state", "setState"];
 
 useCheckboxState.__keys = keys;

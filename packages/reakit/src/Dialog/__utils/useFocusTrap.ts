@@ -1,8 +1,13 @@
 import * as React from "react";
+import { warning } from "reakit-utils/warning";
+import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
-import { warning } from "../../__utils/warning";
-import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 import { usePortalRef } from "./usePortalRef";
+
+function removeFromDOM(element: Element) {
+  if (element.parentNode == null) return;
+  element.parentNode.removeChild(element);
+}
 
 function hasNestedOpenModals(
   nestedDialogs: Array<React.RefObject<HTMLElement>>
@@ -41,14 +46,9 @@ export function useFocusTrap(
     if (!portal) {
       warning(
         true,
-        [
-          "Can't trap focus within modal dialog because one of the following reasons:",
-          " 1. `ref` wasn't passed to component.",
-          " 2. the component wasn't rendered.",
-          " 3. the component wasn't rendered within a portal.",
-          "See https://reakit.io/docs/dialog"
-        ].join("\n"),
-        "Dialog"
+        "Dialog",
+        "Can't trap focus within modal dialog because either `ref` wasn't passed to component or the component wasn't rendered within a portal",
+        "See https://reakit.io/docs/dialog"
       );
 
       return undefined;
@@ -70,10 +70,10 @@ export function useFocusTrap(
     portal.insertAdjacentElement("afterend", afterElement.current);
 
     return () => {
-      if (beforeElement.current) beforeElement.current.remove();
-      if (afterElement.current) afterElement.current.remove();
+      if (beforeElement.current) removeFromDOM(beforeElement.current);
+      if (afterElement.current) removeFromDOM(afterElement.current);
     };
-  }, [shouldTrap]);
+  }, [portalRef, shouldTrap]);
 
   // Focus trap
   React.useEffect(() => {
@@ -107,7 +107,7 @@ export function useFocusTrap(
       before.removeEventListener("focus", handleFocus);
       after.removeEventListener("focus", handleFocus);
     };
-  }, [dialogRef, shouldTrap]);
+  }, [dialogRef, nestedDialogs, shouldTrap]);
 
   // Click trap
   React.useEffect(() => {
@@ -128,5 +128,5 @@ export function useFocusTrap(
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [dialogRef, shouldTrap]);
+  }, [dialogRef, nestedDialogs, portalRef, shouldTrap]);
 }

@@ -4,7 +4,7 @@ path: /docs/radio/
 
 # Radio
 
-`Radio` follows the [WAI-ARIA Radio Button/Group Pattern](https://www.w3.org/TR/wai-aria-practices/#radiobutton).
+Accessible `Radio` component that follows the [WAI-ARIA Radio Button/Group Pattern](https://www.w3.org/TR/wai-aria-practices/#radiobutton).
 
 <carbon-ad></carbon-ad>
 
@@ -24,7 +24,7 @@ import { useRadioState, Radio, RadioGroup } from "reakit/Radio";
 function Example() {
   const radio = useRadioState();
   return (
-    <RadioGroup aria-label="fruits" {...radio}>
+    <RadioGroup {...radio} aria-label="fruits">
       <label>
         <Radio {...radio} value="apple" /> apple
       </label>
@@ -49,7 +49,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Radio` uses [Rover](/docs/rover/), and ise used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
+- `Radio` uses [Rover](/docs/rover/), and is used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
 - `RadioGroup` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
@@ -84,6 +84,37 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `Radio`
 
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+- **`value`**
+  <code>any</code>
+
+  Same as the `value` attribute.
+
+- **`checked`**
+  <code>boolean | undefined</code>
+
+  Same as the `checked` attribute.
+
+<details><summary>13 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -93,6 +124,12 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>string | null</code>
 
   The current focused element ID.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
 
 - **`stops`**
   <code>Stop[]</code>
@@ -134,23 +171,6 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Moves focus to the last element.
 
-- **`disabled`**
-  <code>boolean | undefined</code>
-
-  Same as the HTML attribute.
-
-- **`focusable`**
-  <code>boolean | undefined</code>
-
-  When an element is `disabled`, it may still be `focusable`. It works
-similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.
-
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
 - **`state`**
   <code>any</code>
 
@@ -161,15 +181,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Sets `state`.
 
-- **`value`**
-  <code>any</code>
-
-  Same as the `value` attribute.
-
-- **`checked`**
-  <code>boolean | undefined</code>
-
-  Same as the `checked` attribute.
+</details>
 
 ### `RadioGroup`
 

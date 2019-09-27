@@ -1,10 +1,8 @@
 import * as React from "react";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { GroupOptions, GroupHTMLProps, useGroup } from "../Group/Group";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { As, PropsWithAs, Keys } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
@@ -31,33 +29,31 @@ export type unstable_FormGroupProps<
   P extends DeepPath<V, P>
 > = unstable_FormGroupOptions<V, P> & unstable_FormGroupHTMLProps;
 
-export function unstable_useFormGroup<V, P extends DeepPath<V, P>>(
-  options: unstable_FormGroupOptions<V, P>,
-  htmlProps: unstable_FormGroupHTMLProps = {}
-) {
-  options = unstable_useOptions("FormGroup", options, htmlProps);
-  htmlProps = unstable_mergeProps(
-    {
+export const unstable_useFormGroup = createHook<
+  unstable_FormGroupOptions<any, any>,
+  unstable_FormGroupHTMLProps
+>({
+  name: "FormGroup",
+  compose: useGroup,
+  useState: unstable_useFormState,
+  keys: ["name"],
+
+  useProps(options, htmlProps) {
+    return {
       id: getInputId(options.name, options.baseId),
+      tabIndex: -1,
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
-      "aria-invalid": shouldShowError(options, options.name)
-    } as unstable_FormGroupHTMLProps,
-    htmlProps
-  );
+      "aria-invalid": shouldShowError(options, options.name),
+      ...htmlProps
+    };
+  }
+}) as <V, P extends DeepPath<V, P>>(
+  options: unstable_FormGroupOptions<V, P>,
+  htmlProps?: unstable_FormGroupHTMLProps
+) => unstable_FormGroupHTMLProps;
 
-  htmlProps = unstable_useProps("FormGroup", options, htmlProps);
-  htmlProps = useGroup(options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormGroupOptions<any, any>
-> = [...useGroup.__keys, ...unstable_useFormState.__keys, "name"];
-
-unstable_useFormGroup.__keys = keys;
-
-export const unstable_FormGroup = (unstable_createComponent({
+export const unstable_FormGroup = (createComponent({
   as: "fieldset",
   useHook: unstable_useFormGroup
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(

@@ -1,11 +1,10 @@
 import * as React from "react";
 import {
-  unstable_SealedInitialState,
-  unstable_useSealedState
-} from "../utils/useSealedState";
-import { unstable_useId } from "../utils/useId";
+  SealedInitialState,
+  useSealedState
+} from "reakit-utils/useSealedState";
+import { useId } from "reakit-utils/useId";
 import { useRoverState, RoverState, RoverActions } from "../Rover/RoverState";
-import { Keys } from "../__utils/types";
 
 export type TabState = RoverState & {
   /**
@@ -35,15 +34,16 @@ export type TabInitialState = Partial<TabState>;
 export type TabStateReturn = TabState & TabActions;
 
 export function useTabState(
-  initialState: unstable_SealedInitialState<TabInitialState> = {}
+  initialState: SealedInitialState<TabInitialState> = {}
 ): TabStateReturn {
+  const defaultId = useId("tab-");
   const {
-    unstable_baseId: baseId = unstable_useId("tab-"),
+    unstable_baseId: baseId = defaultId,
     selectedId: sealedSelectedId = null,
     loop = true,
     manual = false,
     ...sealed
-  } = unstable_useSealedState(initialState);
+  } = useSealedState(initialState);
 
   const [selectedId, select] = React.useState(sealedSelectedId);
   const rover = useRoverState({
@@ -61,7 +61,7 @@ export function useTabState(
   };
 }
 
-const keys: Keys<TabStateReturn> = [
+const keys: Array<keyof TabStateReturn> = [
   ...useRoverState.__keys,
   "unstable_baseId",
   "selectedId",

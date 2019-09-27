@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "react-testing-library";
+import { render, fireEvent } from "@testing-library/react";
 import { Tabbable } from "../Tabbable";
 
 test("render", () => {
@@ -232,4 +232,17 @@ test("focus on mouse down", () => {
   expect(tabbable).not.toHaveFocus();
   fireEvent.mouseDown(tabbable);
   expect(tabbable).toHaveFocus();
+});
+
+test("focus nested native tabbables", () => {
+  const { getByText } = render(
+    <Tabbable as="div">
+      tabbable<button>button</button>
+    </Tabbable>
+  );
+  const button = getByText("button");
+  expect(button).not.toHaveFocus();
+  button.focus();
+  fireEvent.mouseDown(button);
+  expect(button).toHaveFocus();
 });

@@ -1,7 +1,8 @@
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
 export type TooltipReferenceOptions = BoxOptions &
@@ -16,7 +17,7 @@ export type TooltipReferenceHTMLProps = BoxHTMLProps;
 export type TooltipReferenceProps = TooltipReferenceOptions &
   TooltipReferenceHTMLProps;
 
-export const useTooltipReference = unstable_createHook<
+export const useTooltipReference = createHook<
   TooltipReferenceOptions,
   TooltipReferenceHTMLProps
 >({
@@ -24,23 +25,31 @@ export const useTooltipReference = unstable_createHook<
   compose: useBox,
   useState: useTooltipState,
 
-  useProps(options, htmlProps) {
-    return unstable_mergeProps(
-      {
-        ref: options.unstable_referenceRef,
-        tabIndex: 0,
-        onFocus: options.show,
-        onBlur: options.hide,
-        onMouseEnter: options.show,
-        onMouseLeave: options.hide,
-        "aria-describedby": options.unstable_hiddenId
-      } as TooltipReferenceHTMLProps,
-      htmlProps
-    );
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onFocus: htmlOnFocus,
+      onBlur: htmlOnBlur,
+      onMouseEnter: htmlOnMouseEnter,
+      onMouseLeave: htmlOnMouseLeave,
+      ...htmlProps
+    }
+  ) {
+    return {
+      ref: mergeRefs(options.unstable_referenceRef, htmlRef),
+      tabIndex: 0,
+      onFocus: useAllCallbacks(options.show, htmlOnFocus),
+      onBlur: useAllCallbacks(options.hide, htmlOnBlur),
+      onMouseEnter: useAllCallbacks(options.show, htmlOnMouseEnter),
+      onMouseLeave: useAllCallbacks(options.hide, htmlOnMouseLeave),
+      "aria-describedby": options.unstable_hiddenId,
+      ...htmlProps
+    };
   }
 });
 
-export const TooltipReference = unstable_createComponent({
+export const TooltipReference = createComponent({
   as: "div",
   useHook: useTooltipReference
 });

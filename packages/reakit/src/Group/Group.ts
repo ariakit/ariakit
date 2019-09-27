@@ -1,7 +1,6 @@
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 
 export type GroupOptions = BoxOptions;
 
@@ -9,16 +8,16 @@ export type GroupHTMLProps = BoxHTMLProps;
 
 export type GroupProps = GroupOptions & GroupHTMLProps;
 
-export const useGroup = unstable_createHook<GroupOptions, GroupHTMLProps>({
+export const useGroup = createHook<GroupOptions, GroupHTMLProps>({
   name: "Group",
   compose: useBox,
 
   useProps(_, htmlProps) {
-    return unstable_mergeProps({ role: "group" } as GroupHTMLProps, htmlProps);
+    return { role: "group", ...htmlProps };
   }
 });
 
-export const Group = unstable_createComponent({
+export const Group = createComponent({
   as: "div",
   useHook: useGroup
 });

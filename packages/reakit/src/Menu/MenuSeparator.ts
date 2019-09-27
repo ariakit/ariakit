@@ -1,10 +1,10 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import {
   SeparatorOptions,
   SeparatorHTMLProps,
   useSeparator
 } from "../Separator/Separator";
-import { unstable_createHook } from "../utils/createHook";
 import { useMenuState } from "./MenuState";
 
 export type MenuSeparatorOptions = SeparatorOptions;
@@ -13,16 +13,23 @@ export type MenuSeparatorHTMLProps = SeparatorHTMLProps;
 
 export type MenuSeparatorProps = MenuSeparatorOptions & MenuSeparatorHTMLProps;
 
-export const useMenuSeparator = unstable_createHook<
+export const useMenuSeparator = createHook<
   MenuSeparatorOptions,
   MenuSeparatorHTMLProps
 >({
   name: "MenuSeparator",
   compose: useSeparator,
-  useState: useMenuState
+  useState: useMenuState,
+
+  useOptions({ orientation = "vertical", ...options }) {
+    return {
+      orientation: orientation === "vertical" ? "horizontal" : "vertical",
+      ...options
+    };
+  }
 });
 
-export const MenuSeparator = unstable_createComponent({
+export const MenuSeparator = createComponent({
   as: "hr",
   useHook: useMenuSeparator
 });

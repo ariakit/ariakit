@@ -1,6 +1,6 @@
 {
   "name": "reakit-system-palette",
-  "version": "0.4.1",
+  "version": "0.6.5",
   "description": "Reakit palette system",
   "sideEffects": false,
   "license": "MIT",
@@ -17,7 +17,7 @@
   "scripts": {
     "test": "jest",
     "coverage": "yarn test --coverage",
-    "postcoverage": "opn coverage/lcov-report/index.html",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
@@ -30,16 +30,17 @@
     "react",
     "system"
   ],
+  "dependencies": {
+    "color": "3.1.2"
+  },
   "devDependencies": {
     "@types/color": "3.0.0",
-    "reakit": "^1.0.0-beta.0"
+    "reakit-system": "^0.6.5"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit": "^1.0.0-alpha.0"
-  },
-  "dependencies": {
-    "color": "3.1.1"
+    "reakit": "^1.0.0-beta.5",
+    "reakit-system": "^0.6.0"
   }
 }

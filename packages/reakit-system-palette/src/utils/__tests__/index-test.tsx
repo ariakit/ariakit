@@ -1,5 +1,5 @@
 import * as React from "react";
-import { renderHook } from "react-hooks-testing-library";
+import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "reakit";
 import * as system from "../..";
 import { useContrast, useContrastRatio } from "../contrast";

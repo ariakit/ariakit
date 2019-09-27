@@ -1,6 +1,6 @@
 {
   "name": "reakit-playground",
-  "version": "0.4.1",
+  "version": "0.6.6",
   "description": "Reakit Playground",
   "sideEffects": false,
   "license": "MIT",
@@ -17,7 +17,7 @@
   "scripts": {
     "test": "jest",
     "coverage": "yarn test --coverage",
-    "postcoverage": "opn coverage/lcov-report/index.html",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
@@ -32,14 +32,16 @@
   ],
   "dependencies": {
     "@types/buble": "0.19.2",
-    "@types/codemirror": "0.0.74",
-    "buble": "0.19.7",
-    "codemirror": "5.46.0",
-    "emotion": "10.0.9",
+    "@types/codemirror": "0.0.77",
+    "buble": "0.19.8",
+    "codemirror": "5.49.0",
+    "emotion": "^10.0.17",
     "react-codemirror2": "6.0.0",
-    "reakit": "^1.0.0-beta.0",
-    "reakit-system-bootstrap": "^0.4.1",
-    "reakit-system-palette": "^0.4.1"
+    "reakit": "^1.0.0-beta.8",
+    "reakit-system": "^0.6.5",
+    "reakit-system-bootstrap": "^0.6.5",
+    "reakit-system-palette": "^0.6.5",
+    "reakit-utils": "^0.6.5"
   },
   "devDependencies": {
     "raw.macro": "0.3.0"

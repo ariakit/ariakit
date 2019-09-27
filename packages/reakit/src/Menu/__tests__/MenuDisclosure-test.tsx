@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { MenuDisclosure } from "../MenuDisclosure";
 
 const props: Parameters<typeof MenuDisclosure>[0] = {
@@ -22,7 +22,6 @@ test("render", () => {
           aria-controls="disclosure"
           aria-expanded="false"
           aria-haspopup="menu"
-          role="button"
           tabindex="0"
           type="button"
         >

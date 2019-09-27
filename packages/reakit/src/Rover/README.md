@@ -1,5 +1,13 @@
 ---
 path: /docs/rover/
+redirect_from:
+ - /components/step/
+ - /components/step/stepcontainer/
+ - /components/step/stephide/
+ - /components/step/stepnext/
+ - /components/step/stepprevious/
+ - /components/step/stepshow/
+ - /components/step/steptoggle/
 ---
 
 # Rover
@@ -24,25 +32,46 @@ import { Group } from "reakit/Group";
 import { Button } from "reakit/Button";
 
 function Example() {
-  const roving = useRoverState();
+  const rover = useRoverState();
   return (
     <Group>
-      <Rover as={Button} {...roving}>
+      <Rover {...rover} as={Button}>
         Button 1
       </Rover>
-      <Rover as={Button} {...roving} disabled>
+      <Rover {...rover} as={Button} disabled>
         Button 2
       </Rover>
-      <Rover as={Button} {...roving} disabled focusable>
+      <Rover {...rover} as={Button} disabled focusable>
         Button 3
       </Rover>
-      <Rover as={Button} {...roving}>
+      <Rover {...rover} as={Button}>
         Button 4
       </Rover>
-      <Rover as={Button} {...roving}>
+      <Rover {...rover} as={Button}>
         Button 5
       </Rover>
     </Group>
+  );
+}
+```
+
+### Loop
+
+If you set `loop` to `true` on `useRoverState`, the roving tabindex will loop from the last item to the first item.
+
+```jsx
+import { useRoverState, Rover } from "reakit/Rover";
+
+function Example() {
+  const rover = useRoverState({ loop: true });
+  return (
+    <>
+      <Rover {...rover}>Button 1</Rover>
+      <Rover {...rover}>Button 2</Rover>
+      <Rover {...rover}>Button 3</Rover>
+      <Rover {...rover}>Button 4</Rover>
+      <Rover {...rover}>Button 5</Rover>
+    </>
   );
 }
 ```
@@ -102,10 +131,25 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>11 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Defines the orientation of the rover list.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
 
 - **`currentId`**
   <code>string | null</code>
@@ -152,7 +196,4 @@ similarly to `readOnly` on form elements. In this case, only
 
   Moves focus to the last element.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
+</details>

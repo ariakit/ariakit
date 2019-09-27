@@ -2,6 +2,7 @@
 path: /docs/popover/
 redirect_from:
   - /components/popover/
+  - /components/popover/popoverarrow/
   - /components/popover/popovercontainer/
   - /components/popover/popoverhide/
   - /components/popover/popovershow/
@@ -46,6 +47,146 @@ function Example() {
 }
 ```
 
+### Placement
+
+You can control how `Popover` is positioned by setting the `placement` option on `usePopoverState`.
+
+```jsx
+import {
+  usePopoverState,
+  Popover,
+  PopoverDisclosure,
+  PopoverArrow
+} from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({ placement: "right-start" });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <PopoverArrow {...popover} />
+        Welcome to Reakit!
+      </Popover>
+    </>
+  );
+}
+```
+
+### Gutter
+
+You can control the margin between `Popover` and `PopoverDisclosure` by setting the `gutter` option on `usePopoverState`.
+
+```jsx
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({ gutter: 0, placement: "bottom-start" });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        Welcome to Reakit!
+      </Popover>
+    </>
+  );
+}
+```
+
+### Initial focus
+
+When opening `Popover`, focus is usually set on the first tabbable element within the popover, including itself. So, if you want to set the initial focus on the popover element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
+
+```jsx
+import { Button } from "reakit/Button";
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState();
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} tabIndex={0} aria-label="Welcome">
+        <Button onClick={popover.hide}>Close</Button>
+      </Popover>
+    </>
+  );
+}
+```
+
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (popover.visible) {
+      ref.current.focus();
+    }
+  }, [popover.visible]);
+
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <Button>By default, initial focus would go here</Button>
+        <br />
+        <br />
+        <Button ref={ref}>But now it goes here</Button>
+      </Popover>
+    </>
+  );
+}
+```
+
+### Abstracting
+
+You can build your own `Popover` component with a different API on top of Reakit.
+
+```jsx
+import React from "react";
+import {
+  usePopoverState,
+  Popover as BasePopover,
+  PopoverDisclosure,
+  PopoverArrow
+} from "reakit/Popover";
+
+function Popover({ disclosure, ...props }) {
+  const popover = usePopoverState();
+  return (
+    <>
+      <PopoverDisclosure {...popover}>
+        {disclosureProps =>
+          React.cloneElement(React.Children.only(disclosure), disclosureProps)
+        }
+      </PopoverDisclosure>
+      <BasePopover {...popover} {...props}>
+        <PopoverArrow {...popover} />
+        {props.children}
+      </BasePopover>
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Popover
+      aria-label="Custom popover"
+      disclosure={<button>Open custom popover</button>}
+    >
+      Custom popover
+    </Popover>
+  );
+}
+```
+
 ## Accessibility
 
 - `Popover` extends the accessibility features of [Dialog](/docs/dialog/#accessibility).
@@ -73,6 +214,14 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
@@ -94,7 +243,7 @@ element.
 
   Shift popover on the start or end of its reference element.
 
-- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+- **`gutter`**
   <code>number | undefined</code>
 
   Offset between the reference and the popover.
@@ -110,27 +259,6 @@ element.
   Boundaries element used by `preventOverflow`.
 
 ### `Popover`
-
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  If `true`, the hidden element attributes will be set in different
-timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-create transitions.
-  - When it becomes visible, immediatelly remove the `hidden` attribute,
-then add the `hidden` class.
-  - When it becomes hidden, immediatelly remove the `hidden` class, then
-add the `hidden` attribute.
-
-- **`hide`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `false`
 
 - **`modal`**
   <code>boolean | undefined</code>
@@ -183,14 +311,9 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-### `PopoverArrow`
+<details><summary>4 state props</summary>
 
-- **`placement`**
-  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
-
-  Actual `placement`.
-
-### `PopoverBackdrop`
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`visible`**
   <code>boolean</code>
@@ -198,15 +321,70 @@ It will be set to `false` if `modal` is `false`.
   Whether it's visible or not.
 
 - **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+  <code>number | boolean</code>
 
-  If `true`, the hidden element attributes will be set in different
-timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-create transitions.
-  - When it becomes visible, immediatelly remove the `hidden` attribute,
-then add the `hidden` class.
-  - When it becomes hidden, immediatelly remove the `hidden` class, then
-add the `hidden` attribute.
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+</details>
+
+### `PopoverArrow`
+
+- **`size`**
+  <code>string | number | undefined</code>
+
+  Arrow's size
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+</details>
+
+### `PopoverBackdrop`
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+</details>
 
 ### `PopoverDisclosure`
 
@@ -222,6 +400,10 @@ add the `hidden` attribute.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -236,3 +418,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>RefObject&#60;HTMLElement | null&#62;</code>
 
   The reference element.
+
+</details>

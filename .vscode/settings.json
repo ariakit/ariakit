@@ -1,6 +1,6 @@
 {
   "files.autoSave": "off",
-  "eslint.enable": true,  
+  "eslint.enable": true,
   "eslint.autoFixOnSave": true,
   "eslint.validate": [
     { "language": "javascript", "autoFix": true },

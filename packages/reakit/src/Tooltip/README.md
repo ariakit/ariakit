@@ -2,6 +2,7 @@
 path: /docs/tooltip/
 redirect_from:
   - /components/tooltip/
+  - /components/tooltip/tooltiparrow/
 ---
 
 # Tooltip
@@ -28,11 +29,95 @@ function Example() {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipReference as={Button} {...tooltip}>
+      <TooltipReference {...tooltip} as={Button}>
         Reference
       </TooltipReference>
       <Tooltip {...tooltip}>Tooltip</Tooltip>
     </>
+  );
+}
+```
+
+### Placement
+
+Since `Tooltip` is composed by [Popover](/docs/popover/), you can control how it is positioned by setting the `placement` option on `useTooltipState`.
+
+```jsx
+import { Button } from "reakit/Button";
+import { Tooltip, TooltipReference, useTooltipState } from "reakit/Tooltip";
+
+function Example() {
+  const tooltip = useTooltipState({ placement: "bottom-end" });
+  return (
+    <>
+      <TooltipReference {...tooltip} as={Button}>
+        Reference
+      </TooltipReference>
+      <Tooltip {...tooltip}>Tooltip</Tooltip>
+    </>
+  );
+}
+```
+
+### Multiple tooltips
+
+Each group of `Tooltip` and `TooltipReference` should have its own corresponding `useTooltipState`.
+
+```jsx
+import { Button } from "reakit/Button";
+import { Tooltip, TooltipReference, useTooltipState } from "reakit/Tooltip";
+
+function Example() {
+  const tooltip1 = useTooltipState();
+  const tooltip2 = useTooltipState();
+  return (
+    <>
+      <TooltipReference {...tooltip1} as={Button}>
+        Reference 1
+      </TooltipReference>
+      <Tooltip {...tooltip1}>Tooltip 1</Tooltip>
+      <TooltipReference {...tooltip2} as={Button}>
+        Reference 2
+      </TooltipReference>
+      <Tooltip {...tooltip2}>Tooltip 2</Tooltip>
+    </>
+  );
+}
+```
+
+### Abstracting
+
+You can build your own `Tooltip` component with a different API on top of Reakit.
+
+```jsx
+import React from "react";
+import {
+  useTooltipState,
+  Tooltip as ReakitTooltip,
+  TooltipReference
+} from "reakit/Tooltip";
+
+function Tooltip({ children, title, ...props }) {
+  const tooltip = useTooltipState();
+  return (
+    <>
+      <TooltipReference {...tooltip}>
+        {referenceProps =>
+          React.cloneElement(React.Children.only(children), referenceProps)
+        }
+      </TooltipReference>
+      <ReakitTooltip {...tooltip} {...props}>
+        {title}
+      </ReakitTooltip>
+    </>
+  );
+}
+
+function Example() {
+  return (
+    <Tooltip title="Tooltip">
+      <button>Reference</button>
+    </Tooltip>
   );
 }
 ```
@@ -63,6 +148,14 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
@@ -84,7 +177,7 @@ element.
 
   Shift popover on the start or end of its reference element.
 
-- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+- **`gutter`**
   <code>number | undefined</code>
 
   Offset between the reference and the popover.
@@ -101,30 +194,60 @@ element.
 
 ### `Tooltip`
 
+- **`unstable_portal`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`visible`**
   <code>boolean</code>
 
   Whether it's visible or not.
 
 - **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+  <code>number | boolean</code>
 
-  If `true`, the hidden element attributes will be set in different
-timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-create transitions.
-  - When it becomes visible, immediatelly remove the `hidden` attribute,
-then add the `hidden` class.
-  - When it becomes hidden, immediatelly remove the `hidden` class, then
-add the `hidden` attribute.
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+</details>
 
 ### `TooltipArrow`
+
+- **`size`**
+  <code>string | number | undefined</code>
+
+  Arrow's size
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
   Actual `placement`.
 
+</details>
+
 ### `TooltipReference`
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>
@@ -140,3 +263,5 @@ add the `hidden` attribute.
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+</details>

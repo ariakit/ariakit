@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "react-testing-library";
+import { render, fireEvent } from "@testing-library/react";
 import { HiddenDisclosure } from "../HiddenDisclosure";
 
 const props: Parameters<typeof HiddenDisclosure>[0] = {
@@ -15,7 +15,6 @@ test("render", () => {
     <button
       aria-controls="test"
       aria-expanded="false"
-      role="button"
       tabindex="0"
       type="button"
     >
@@ -34,7 +33,24 @@ test("render visible", () => {
     <button
       aria-controls="test"
       aria-expanded="true"
-      role="button"
+      tabindex="0"
+      type="button"
+    >
+      disclosure
+    </button>
+  `);
+});
+
+test("render with aria-controls", () => {
+  const { getByText } = render(
+    <HiddenDisclosure {...props} aria-controls="a">
+      disclosure
+    </HiddenDisclosure>
+  );
+  expect(getByText("disclosure")).toMatchInlineSnapshot(`
+    <button
+      aria-controls="a test"
+      aria-expanded="false"
       tabindex="0"
       type="button"
     >

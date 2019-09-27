@@ -1,6 +1,6 @@
-import { renderHook } from "react-hooks-testing-library";
+import { renderHook } from "@testing-library/react-hooks";
+import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { useTabState } from "../TabState";
-import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
@@ -15,9 +15,11 @@ test("initial state", () => {
       "currentId": null,
       "loop": true,
       "manual": false,
+      "orientation": undefined,
       "selectedId": null,
       "stops": Array [],
       "unstable_baseId": "base",
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -35,9 +37,11 @@ test("initial state selectedId", () => {
       "currentId": "a",
       "loop": true,
       "manual": false,
+      "orientation": undefined,
       "selectedId": "a",
       "stops": Array [],
       "unstable_baseId": "base",
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `

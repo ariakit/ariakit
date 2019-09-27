@@ -1,7 +1,7 @@
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { useButton, ButtonOptions, ButtonHTMLProps } from "../Button/Button";
-import { unstable_createHook } from "../utils/createHook";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenDisclosureOptions = ButtonOptions &
@@ -13,7 +13,7 @@ export type HiddenDisclosureHTMLProps = ButtonHTMLProps;
 export type HiddenDisclosureProps = HiddenDisclosureOptions &
   HiddenDisclosureHTMLProps;
 
-export const useHiddenDisclosure = unstable_createHook<
+export const useHiddenDisclosure = createHook<
   HiddenDisclosureOptions,
   HiddenDisclosureHTMLProps
 >({
@@ -21,19 +21,24 @@ export const useHiddenDisclosure = unstable_createHook<
   compose: useButton,
   useState: useHiddenState,
 
-  useProps(options, htmlProps) {
-    return unstable_mergeProps(
-      {
-        onClick: options.toggle,
-        "aria-expanded": Boolean(options.visible),
-        "aria-controls": options.unstable_hiddenId
-      } as HiddenDisclosureHTMLProps,
-      htmlProps
-    );
+  useProps(
+    options,
+    { onClick: htmlOnClick, "aria-controls": ariaControls, ...htmlProps }
+  ) {
+    const controls = ariaControls
+      ? `${ariaControls} ${options.unstable_hiddenId}`
+      : options.unstable_hiddenId;
+
+    return {
+      onClick: useAllCallbacks(options.toggle, htmlOnClick),
+      "aria-expanded": Boolean(options.visible),
+      "aria-controls": controls,
+      ...htmlProps
+    };
   }
 });
 
-export const HiddenDisclosure = unstable_createComponent({
+export const HiddenDisclosure = createComponent({
   as: "button",
   useHook: useHiddenDisclosure
 });

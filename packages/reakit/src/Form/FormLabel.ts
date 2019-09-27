@@ -1,9 +1,7 @@
 import * as React from "react";
-import { As, PropsWithAs, Keys } from "../__utils/types";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_useOptions } from "../system/useOptions";
-import { unstable_useProps } from "../system/useProps";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
@@ -33,33 +31,29 @@ export type unstable_FormLabelProps<
   P extends DeepPath<V, P>
 > = unstable_FormLabelOptions<V, P> & unstable_FormLabelHTMLProps;
 
-export function unstable_useFormLabel<V, P extends DeepPath<V, P>>(
-  options: unstable_FormLabelOptions<V, P>,
-  htmlProps: unstable_FormLabelHTMLProps = {}
-) {
-  options = unstable_useOptions("FormLabel", options, htmlProps);
+export const unstable_useFormLabel = createHook<
+  unstable_FormLabelOptions<any, any>,
+  unstable_FormLabelHTMLProps
+>({
+  name: "FormLabel",
+  compose: useBox,
+  useState: unstable_useFormState,
+  keys: ["name", "label"],
 
-  htmlProps = unstable_mergeProps(
-    {
+  useProps(options, htmlProps) {
+    return {
       children: options.label,
       id: getLabelId(options.name, options.baseId),
-      htmlFor: getInputId(options.name, options.baseId)
-    } as unstable_FormLabelHTMLProps,
-    htmlProps
-  );
+      htmlFor: getInputId(options.name, options.baseId),
+      ...htmlProps
+    };
+  }
+}) as <V, P extends DeepPath<V, P>>(
+  options: unstable_FormLabelOptions<V, P>,
+  htmlProps?: unstable_FormLabelHTMLProps
+) => unstable_FormLabelHTMLProps;
 
-  htmlProps = unstable_useProps("FormLabel", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
-  return htmlProps;
-}
-
-const keys: Keys<
-  unstable_FormStateReturn<any> & unstable_FormLabelOptions<any, any>
-> = [...useBox.__keys, ...unstable_useFormState.__keys, "name", "label"];
-
-unstable_useFormLabel.__keys = keys;
-
-export const unstable_FormLabel = (unstable_createComponent({
+export const unstable_FormLabel = (createComponent({
   as: "label",
   useHook: unstable_useFormLabel
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "label">(

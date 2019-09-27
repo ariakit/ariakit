@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {
@@ -20,7 +20,7 @@ test("render", () => {
           hidden=""
           id="popover"
           role="dialog"
-          style="z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         >
           popover
@@ -45,7 +45,6 @@ test("render visible", () => {
           data-dialog="true"
           id="popover"
           role="dialog"
-          style="z-index: 999;"
           tabindex="-1"
         >
           popover
@@ -55,24 +54,27 @@ test("render visible", () => {
   `);
 });
 
-test("render non-modal", () => {
+test("render modal", () => {
   const { baseElement } = render(
-    <Popover {...props} modal={false}>
+    <Popover {...props} modal>
       test
     </Popover>
   );
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
-      <div>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
         <div
           aria-label="popover"
-          aria-modal="false"
+          aria-modal="true"
           class="hidden"
           data-dialog="true"
           hidden=""
           id="popover"
           role="dialog"
-          style="z-index: 999;"
+          style="display: none;"
           tabindex="-1"
         >
           test

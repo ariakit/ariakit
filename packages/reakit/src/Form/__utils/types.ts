@@ -140,7 +140,7 @@ export type DeepMap<T, V> = {
     ? DeepMap<T[K], V>
     : object extends T[K]
     ? DeepMap<T[K], V>
-    : V
+    : V;
 };
 
 /**
@@ -151,5 +151,5 @@ export type DeepPartial<T> = {
     ? Array<DeepPartial<U>>
     : T[P] extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
-    : DeepPartial<T[P]>
+    : DeepPartial<T[P]>;
 };

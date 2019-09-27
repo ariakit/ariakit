@@ -2,11 +2,13 @@
 path: /docs/toolbar/
 redirect_from:
   - /components/toolbar/
+  - /components/toolbar/toolbarcontent/
+  - /components/toolbar/toolbarfocusable/
 ---
 
 # Toolbar
 
-`Toolbar` follows the [WAI-ARIA Toolbar Pattern](https://www.w3.org/TR/wai-aria-practices/#toolbar). It's a containers for grouping a set of controls.
+Accessible `Toolbar` component that follows the [WAI-ARIA Toolbar Pattern](https://www.w3.org/TR/wai-aria-practices/#toolbar). It's a container for grouping a set of controls.
 
 <carbon-ad></carbon-ad>
 
@@ -30,9 +32,9 @@ import {
 import { Button } from "reakit/Button";
 
 function Example() {
-  const toolbar = useToolbarState();
+  const toolbar = useToolbarState({ loop: true });
   return (
-    <Toolbar {...toolbar}>
+    <Toolbar {...toolbar} aria-label="My toolbar">
       <ToolbarItem {...toolbar} as={Button}>
         Item 1
       </ToolbarItem>
@@ -43,6 +45,46 @@ function Example() {
       <ToolbarItem {...toolbar} as={Button}>
         Item 3
       </ToolbarItem>
+    </Toolbar>
+  );
+}
+```
+
+### `Toolbar` with `Menu`
+
+You can render [Menu](/docs/menu/) within a `Toolbar` using the same techinique to make a [Submenu](/docs/menu/#submenu).
+
+```jsx
+import React from "react";
+import { useToolbarState, Toolbar, ToolbarItem } from "reakit/Toolbar";
+import { useMenuState, MenuDisclosure, Menu, MenuItem } from "reakit/Menu";
+import { Button } from "reakit/Button";
+
+const MoreItems = React.forwardRef((props, ref) => {
+  const menu = useMenuState({ placement: "bottom-end" });
+  return (
+    <>
+      <MenuDisclosure {...menu} {...props} ref={ref} aria-label="More items" />
+      <Menu {...menu} aria-label="More items">
+        <MenuItem {...menu}>Item 3</MenuItem>
+        <MenuItem {...menu}>Item 4</MenuItem>
+        <MenuItem {...menu}>Item 5</MenuItem>
+      </Menu>
+    </>
+  );
+});
+
+function Example() {
+  const toolbar = useToolbarState();
+  return (
+    <Toolbar {...toolbar} aria-label="My toolbar">
+      <ToolbarItem {...toolbar} as={Button}>
+        Item 1
+      </ToolbarItem>
+      <ToolbarItem {...toolbar} as={Button}>
+        Item 2
+      </ToolbarItem>
+      <ToolbarItem {...toolbar} as={MoreItems} />
     </Toolbar>
   );
 }
@@ -88,10 +130,16 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `Toolbar`
 
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Defines the orientation of the rover list.
+
+</details>
 
 ### `ToolbarItem`
 
@@ -107,10 +155,25 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>11 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Defines the orientation of the rover list.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
 
 - **`currentId`**
   <code>string | null</code>
@@ -157,17 +220,17 @@ similarly to `readOnly` on form elements. In this case, only
 
   Moves focus to the last element.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
+</details>
 
 ### `ToolbarSeparator`
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Separator's context orientation.
-The actual separator's orientation will be flipped based on this prop.
-So a `"vertical"` orientation means that the separator will have a
-`"horizontal"` orientation.
+  Separator's orientation.
+
+</details>

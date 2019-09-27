@@ -1,8 +1,8 @@
 import * as React from "react";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
-import { unstable_createHook } from "../utils/createHook";
 import { getTabId, getTabPanelId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -15,7 +15,7 @@ export type TabHTMLProps = RoverHTMLProps;
 
 export type TabProps = TabOptions & TabHTMLProps;
 
-export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
+export const useTab = createHook<TabOptions, TabHTMLProps>({
   name: "Tab",
   compose: useRover,
   useState: useTabState,
@@ -24,7 +24,10 @@ export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
     return { focusable, ...options };
   },
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    { onClick: htmlOnClick, onFocus: htmlOnFocus, ...htmlProps }
+  ) {
     const selected = options.selectedId === options.stopId;
 
     const onClick = React.useCallback(() => {
@@ -45,18 +48,16 @@ export const useTab = unstable_createHook<TabOptions, TabHTMLProps>({
       options.stopId
     ]);
 
-    return unstable_mergeProps(
-      {
-        role: "tab",
-        id: getTabId(options.stopId, options.unstable_baseId),
-        "aria-selected": selected,
-        "aria-controls": getTabPanelId(options.stopId, options.unstable_baseId),
-        onClick,
-        onFocus
-      } as TabHTMLProps,
-      htmlProps
-    );
+    return {
+      role: "tab",
+      id: getTabId(options.stopId, options.unstable_baseId),
+      "aria-selected": selected,
+      "aria-controls": getTabPanelId(options.stopId, options.unstable_baseId),
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      ...htmlProps
+    };
   }
 });
 
-export const Tab = unstable_createComponent({ as: "button", useHook: useTab });
+export const Tab = createComponent({ as: "button", useHook: useTab });

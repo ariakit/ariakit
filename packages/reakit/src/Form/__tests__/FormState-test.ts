@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import { renderHook, act } from "react-hooks-testing-library";
+import * as React from "react";
+import { renderHook, act } from "@testing-library/react-hooks";
+import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { unstable_useFormState } from "../FormState";
-import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
-import { supressAct } from "../../__utils/supressAct";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
@@ -71,7 +71,7 @@ test("update", () => {
   expect(result.current.values.b.c).toEqual(["d", "f"]);
 });
 
-test("validate", () => {
+test("validate", async () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
       values: { a: "a" },
@@ -83,30 +83,77 @@ test("validate", () => {
       }
     })
   );
-  act(() => {
-    expect(result.current.validate()).rejects.toEqual({ a: "error" });
-  });
+  await act(() =>
+    // @ts-ignore https://github.com/DefinitelyTyped/DefinitelyTyped/pull/37426#discussion_r312717670
+    expect(result.current.validate()).rejects.toEqual({ a: "error" })
+  );
 });
 
-test(
-  "submit",
-  supressAct(async () => {
-    const { result, waitForNextUpdate } = renderHook(() =>
-      unstable_useFormState({
-        values: { a: "a" },
-        onSubmit: values => {
-          if (values.a === "a") {
-            const error = { a: "error" };
-            throw error;
-          }
+test("validate with updating onValidate", async () => {
+  jest.useFakeTimers();
+  const { result } = renderHook(() => {
+    const [message, setMessage] = React.useState("");
+    React.useEffect(() => {
+      setTimeout(() => act(() => setMessage("error")), 1000);
+    }, []);
+    return unstable_useFormState({
+      values: { a: "a" },
+      onValidate: values => {
+        if (values.a === "a") {
+          const error = { a: message };
+          throw error;
         }
-      })
-    );
-    act(result.current.submit);
-    await waitForNextUpdate();
-    expect(result.current.errors).toEqual({ a: "error" });
-  })
-);
+      }
+    });
+  });
+  // @ts-ignore
+  await act(() => expect(result.current.validate()).rejects.toEqual({ a: "" }));
+  jest.advanceTimersByTime(1000);
+  await act(() =>
+    // @ts-ignore
+    expect(result.current.validate()).rejects.toEqual({ a: "error" })
+  );
+});
+
+test("submit", async () => {
+  const { result } = renderHook(() =>
+    unstable_useFormState({
+      values: { a: "a" },
+      onSubmit: values => {
+        if (values.a === "a") {
+          const error = { a: "error" };
+          throw error;
+        }
+      }
+    })
+  );
+  await act(result.current.submit);
+  expect(result.current.errors).toEqual({ a: "error" });
+});
+
+test("submit with updating onSubmit", async () => {
+  jest.useFakeTimers();
+  const { result } = renderHook(() => {
+    const [message, setMessage] = React.useState("");
+    React.useEffect(() => {
+      setTimeout(() => act(() => setMessage("error")), 1000);
+    }, []);
+    return unstable_useFormState({
+      values: { a: "a" },
+      onSubmit: values => {
+        if (values.a === "a") {
+          const error = { a: message };
+          throw error;
+        }
+      }
+    });
+  });
+  await act(result.current.submit);
+  expect(result.current.errors).toEqual({ a: "" });
+  jest.advanceTimersByTime(1000);
+  await act(result.current.submit);
+  expect(result.current.errors).toEqual({ a: "error" });
+});
 
 test("blur", () => {
   const { result } = renderHook(() =>

@@ -18,8 +18,3 @@ Example:
   ```js
   const bar = Bar();
   ```
-
-<br>
-
-> Using Reakit at work? Please, consider asking your company to sponsor us. ❤️
-> https://opencollective.com/reakit

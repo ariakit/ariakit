@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { Tooltip } from "../Tooltip";
 
 test("render", () => {
@@ -14,7 +14,7 @@ test("render", () => {
           class="hidden"
           hidden=""
           role="tooltip"
-          style="pointer-events: none; z-index: 999;"
+          style="display: none; pointer-events: none;"
         >
           tooltip
         </div>
@@ -33,7 +33,27 @@ test("render visible", () => {
       >
         <div
           role="tooltip"
-          style="pointer-events: none; z-index: 999;"
+          style="pointer-events: none;"
+        >
+          tooltip
+        </div>
+      </div>
+    </body>
+  `);
+});
+
+test("render without portal", () => {
+  const { baseElement } = render(
+    <Tooltip unstable_portal={false}>tooltip</Tooltip>
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="hidden"
+          hidden=""
+          role="tooltip"
+          style="display: none; pointer-events: none;"
         >
           tooltip
         </div>

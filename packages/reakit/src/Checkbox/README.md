@@ -4,7 +4,7 @@ path: /docs/checkbox/
 
 # Checkbox
 
-`Checkbox` follows the [WAI-ARIA Checkbox Pattern](https://www.w3.org/TR/wai-aria-practices/#checkbox), which means you'll have a working dual or tri-state toggle button regardless of the type of the underlying element. By default, it renders the native `<input type="checkbox">`.
+Accessible `Checkbox` component that follows the [WAI-ARIA Checkbox Pattern](https://www.w3.org/TR/wai-aria-practices/#checkbox), which means you'll have a working dual or tri-state toggle button regardless of the type of the underlying element. By default, it renders the native `<input type="checkbox">`.
 
 <carbon-ad></carbon-ad>
 
@@ -162,6 +162,22 @@ going to be an array.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`value`**
+  <code>any</code>
+
+  Checkbox's value is going to be used when multiple checkboxes share the
+same state. Checking a checkbox with value will add it to the state
+array.
+
+- **`checked`**
+  <code>boolean | undefined</code>
+
+  Checkbox's checked state. If present, it's used instead of `state`.
+
+<details><summary>2 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
 - **`state`**
   <code>boolean | any[] | &#34;indeterminate&#34;</code>
 
@@ -174,14 +190,4 @@ going to be an array.
 
   Sets `state`.
 
-- **`value`**
-  <code>any</code>
-
-  Checkbox's value is going to be used when multiple checkboxes share the
-same state. Checking a checkbox with value will add it to the state
-array.
-
-- **`checked`**
-  <code>boolean | undefined</code>
-
-  Checkbox's checked state. If present, it's used instead of `state`.
+</details>

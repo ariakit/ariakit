@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.8](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.7...website@1.0.0-beta.8) (2019-09-25)
+
+
+### Bug Fixes
+
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/tree/master/packages/website/issues/443)) ([8837557](https://github.com/reakit/reakit/tree/master/packages/website/commit/8837557)), closes [#360](https://github.com/reakit/reakit/tree/master/packages/website/issues/360)
+
+
+
+
+
+# [1.0.0-beta.7](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.6...website@1.0.0-beta.7) (2019-09-19)
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/website/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/website/commit/3d13c33))
+
+
+
+
+
+# [1.0.0-beta.6](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.5...website@1.0.0-beta.6) (2019-08-25)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.5](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.4...website@1.0.0-beta.5) (2019-08-12)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.4](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.3...website@1.0.0-beta.4) (2019-06-27)
+
+
+### Bug Fixes
+
+* Fix missing React Hooks deps ([b08b62c](https://github.com/reakit/reakit/tree/master/packages/website/commit/b08b62c))
+
+
+### Features
+
+* **website:** Hide state hook props from docs ([#390](https://github.com/reakit/reakit/tree/master/packages/website/issues/390)) ([fdac912](https://github.com/reakit/reakit/tree/master/packages/website/commit/fdac912))
+
+
+
+
+
+# [1.0.0-beta.3](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.2...website@1.0.0-beta.3) (2019-06-23)
+
+
+### Features
+
+* **website:** Add previous/next links on documentation for better navigation ([#375](https://github.com/reakit/reakit/tree/master/packages/website/issues/375)) ([db97ee6](https://github.com/reakit/reakit/tree/master/packages/website/commit/db97ee6))
+* Move helpers to separate package (reakit-utils, reakit-system) ([#380](https://github.com/reakit/reakit/tree/master/packages/website/issues/380)) ([354b874](https://github.com/reakit/reakit/tree/master/packages/website/commit/354b874))
+* **website:** Add Spectrum/StackOverflow links ([#382](https://github.com/reakit/reakit/tree/master/packages/website/issues/382)) ([dff8158](https://github.com/reakit/reakit/tree/master/packages/website/commit/dff8158))
+
+
+### BREAKING CHANGES
+
+* Utils aren't exported by `reakit` or `reakit/utils` anymore. Import them from the `reakit-utils` package instead.
+* System utils aren't exported by `reakit` or `reakit/system` anymore. Import them from the `reakit-system` package instead.
+* `Provider` isn't exported by `reakit/utils` or `reakit/utils/Provider` anymore. Import it from `reakit` or `reakit/Provider` instead.
+
+
+
+
+
+# [1.0.0-beta.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.1...website@1.0.0-beta.2) (2019-06-01)
+
+
+### Features
+
+* Add `unstable_animated` option to `useHiddenState` and its derivatives ([#370](https://github.com/reakit/reakit/tree/master/packages/website/issues/370)) ([4ba7f61](https://github.com/reakit/reakit/tree/master/packages/website/commit/4ba7f61))
+
+
+
+
+
+# [1.0.0-beta.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.0...website@1.0.0-beta.1) (2019-05-21)
+
+
+### Bug Fixes
+
+* **reakit-system-palette:** Fix primary color contrast ratio ([#355](https://github.com/reakit/reakit/tree/master/packages/website/issues/355)) ([3856e1e](https://github.com/reakit/reakit/tree/master/packages/website/commit/3856e1e)), closes [#354](https://github.com/reakit/reakit/tree/master/packages/website/issues/354)
+* **website:** Add SEO to newsletter page ([9b1be52](https://github.com/reakit/reakit/tree/master/packages/website/commit/9b1be52))
+
+
+### BREAKING CHANGES
+
+* **reakit-system-palette:** The `primary` color on `reakit-system-palette` (used by `reakit-system-bootstrap`) has been changed from `#007BFF` to `#006DFF` to conform with WCAG 2.1 AA contrast ratio.
+
+
+
+
+
 # [1.0.0-beta.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@0.20.0...website@1.0.0-beta.0) (2019-05-13)
 
 

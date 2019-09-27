@@ -2,6 +2,7 @@
 path: /docs/styling/
 redirect_from:
   - /guide/styling/
+  - /guide/theming/
 ---
 
 # Styling
@@ -43,5 +44,30 @@ function Example() {
       Button
     </Button>
   );
+}
+```
+
+Example with styled-components
+
+> When using libraries like styled-components, you'll not be able to use the Reakit [`as` prop](https://reakit.io/docs/composition/#as-prop) since styled components have their own built-in `as` prop which is not passed down to the underlying component. You can use [render props](https://reakit.io/docs/composition/#render-props) instead to achieve the same functionality
+
+```jsx
+import { Button } from "reakit";
+import styled from "styled-components";
+
+const StyledButton = styled(Button)`
+  color: white;
+  background: red;
+  &:not([disabled]):hover {
+    background: green;
+  }
+
+  &:not([disabled]):active {
+    background: blue;
+  }
+`;
+
+function Example() {
+  return <StyledButton>Button</StyledButton>;
 }
 ```

@@ -1,6 +1,6 @@
-import { renderHook } from "react-hooks-testing-library";
+import { renderHook } from "@testing-library/react-hooks";
+import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
 import { useToolbarState } from "../ToolbarState";
-import { jestSerializerStripFunctions } from "../../__utils/jestSerializerStripFunctions";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
@@ -16,6 +16,7 @@ test("initial state", () => {
       "loop": false,
       "orientation": "horizontal",
       "stops": Array [],
+      "unstable_moves": 0,
       "unstable_pastId": null,
     }
   `);

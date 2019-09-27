@@ -31,7 +31,12 @@ if (typeof ${componentName} !== "undefined") {
     }
     throw new Error(`Unable to resolve path to module '${path}'.`);
   };
-  const { code: compiledCode } = transform(fullCode, { objectAssign: true });
+  const { code: compiledCode } = transform(fullCode, {
+    transforms: {
+      dangerousTaggedTemplateString: true
+    },
+    objectAssign: true
+  });
   // eslint-disable-next-line no-new-func
   const fn = new Function("require", "React", compiledCode);
   return fn(req, React);

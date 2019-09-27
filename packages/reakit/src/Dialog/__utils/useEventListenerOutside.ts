@@ -1,14 +1,14 @@
 import * as React from "react";
-import { useLiveRef } from "../../__utils/useLiveRef";
-import { warning } from "../../__utils/warning";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { warning } from "reakit-utils/warning";
 import { isFocusTrap } from "./useFocusTrap";
 
-export function useEventListenerOutside<T extends keyof DocumentEventMap>(
+export function useEventListenerOutside(
   targetRef: React.RefObject<HTMLElement>,
-  disclosureRef: React.RefObject<HTMLElement>,
+  disclosuresRef: React.RefObject<HTMLElement[]>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
-  event: T,
-  listener?: (e: DocumentEventMap[T]) => void,
+  event: string,
+  listener?: (e: Event) => void,
   shouldListen?: boolean
 ) {
   const listenerRef = useLiveRef(listener);
@@ -20,20 +20,26 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
       if (!listenerRef.current) return;
 
       const element = targetRef.current;
-      const disclosure = disclosureRef.current;
+      const disclosures = disclosuresRef.current || [];
       const target = e.target as Element;
 
       warning(
         !element,
-        "Can't detect events outside dialog because either `ref` wasn't passed to component or the component wasn't rendered. See https://reakit.io/docs/dialog",
-        "Dialog"
+        "Dialog",
+        "Can't detect events outside dialog because `ref` wasn't passed to component.",
+        "See https://reakit.io/docs/dialog"
       );
 
       // Click inside
       if (!element || element.contains(target)) return;
 
       // Click on disclosure
-      if (disclosure && disclosure.contains(target)) return;
+      if (
+        disclosures.length &&
+        disclosures.some(disclosure => disclosure.contains(target))
+      ) {
+        return;
+      }
 
       // Click inside a nested dialog or focus trap
       if (
@@ -53,5 +59,12 @@ export function useEventListenerOutside<T extends keyof DocumentEventMap>(
     return () => {
       document.removeEventListener(event, handleEvent, true);
     };
-  }, [targetRef, event, shouldListen, nestedDialogs]);
+  }, [
+    targetRef,
+    disclosuresRef,
+    nestedDialogs,
+    event,
+    shouldListen,
+    listenerRef
+  ]);
 }

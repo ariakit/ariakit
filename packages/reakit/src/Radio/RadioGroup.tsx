@@ -1,10 +1,9 @@
 import * as React from "react";
+import { createComponent } from "reakit-system/createComponent";
+import { useCreateElement } from "reakit-system/useCreateElement";
+import { createHook } from "reakit-system/createHook";
+import { warning } from "reakit-utils/warning";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_useCreateElement } from "../utils/useCreateElement";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
 import { useRadioState } from "./RadioState";
 
 export type RadioGroupOptions = BoxOptions;
@@ -14,31 +13,26 @@ export type RadioGroupHTMLProps = BoxHTMLProps &
 
 export type RadioGroupProps = RadioGroupOptions & RadioGroupHTMLProps;
 
-const useRadioGroup = unstable_createHook<
-  RadioGroupOptions,
-  RadioGroupHTMLProps
->({
+const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
   name: "RadioGroup",
   compose: useBox,
   useState: useRadioState,
 
   useProps(_, htmlProps) {
-    return unstable_mergeProps(
-      { role: "radiogroup" } as RadioGroupHTMLProps,
-      htmlProps
-    );
+    return { role: "radiogroup", ...htmlProps };
   }
 });
 
-export const RadioGroup = unstable_createComponent({
+export const RadioGroup = createComponent({
   as: "fieldset",
   useHook: useRadioGroup,
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "You should provide either `aria-label` or `aria-labelledby` props. See https://reakit.io/docs/radio",
-      "RadioGroup"
+      "RadioGroup",
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/radio"
     );
-    return unstable_useCreateElement(type, props, children);
+    return useCreateElement(type, props, children);
   }
 });

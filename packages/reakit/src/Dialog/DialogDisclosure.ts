@@ -1,11 +1,10 @@
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import {
   HiddenDisclosureOptions,
   HiddenDisclosureHTMLProps,
   useHiddenDisclosure
 } from "../Hidden/HiddenDisclosure";
-import { unstable_createHook } from "../utils/createHook";
-import { unstable_mergeProps } from "../utils";
 import { useDialogState } from "./DialogState";
 
 export type DialogDisclosureOptions = HiddenDisclosureOptions;
@@ -15,7 +14,7 @@ export type DialogDisclosureHTMLProps = HiddenDisclosureHTMLProps;
 export type DialogDisclosureProps = DialogDisclosureOptions &
   DialogDisclosureHTMLProps;
 
-export const useDialogDisclosure = unstable_createHook<
+export const useDialogDisclosure = createHook<
   DialogDisclosureOptions,
   DialogDisclosureHTMLProps
 >({
@@ -24,16 +23,11 @@ export const useDialogDisclosure = unstable_createHook<
   useState: useDialogState,
 
   useProps(_, htmlProps) {
-    return unstable_mergeProps(
-      {
-        "aria-haspopup": "dialog"
-      } as DialogDisclosureHTMLProps,
-      htmlProps
-    );
+    return { "aria-haspopup": "dialog", ...htmlProps };
   }
 });
 
-export const DialogDisclosure = unstable_createComponent({
+export const DialogDisclosure = createComponent({
   as: "button",
   useHook: useDialogDisclosure
 });

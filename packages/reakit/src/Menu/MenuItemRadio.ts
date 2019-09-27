@@ -1,8 +1,7 @@
 import * as React from "react";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
 import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
-import { unstable_createHook } from "../utils/createHook";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
 
@@ -19,7 +18,7 @@ export type MenuItemRadioHTMLProps = RadioHTMLProps & MenuItemHTMLProps;
 
 export type MenuItemRadioProps = MenuItemRadioOptions & MenuItemRadioHTMLProps;
 
-export const useMenuItemRadio = unstable_createHook<
+export const useMenuItemRadio = createHook<
   MenuItemRadioOptions,
   MenuItemRadioHTMLProps
 >({
@@ -42,14 +41,11 @@ export const useMenuItemRadio = unstable_createHook<
   },
 
   useProps(_, htmlProps) {
-    return unstable_mergeProps(
-      { role: "menuitemradio" } as MenuItemRadioHTMLProps,
-      htmlProps
-    );
+    return { role: "menuitemradio", ...htmlProps };
   }
 });
 
-export const MenuItemRadio = unstable_createComponent({
+export const MenuItemRadio = createComponent({
   as: "button",
   useHook: useMenuItemRadio
 });

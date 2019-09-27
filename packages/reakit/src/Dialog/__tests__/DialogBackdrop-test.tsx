@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { DialogBackdrop } from "../DialogBackdrop";
 
 test("render", () => {
@@ -11,7 +11,7 @@ test("render", () => {
           class="hidden"
           hidden=""
           role="presentation"
-          style="position: fixed; top: 0px; right: 0px; bottom: 0px; left: 0px; z-index: 998;"
+          style="display: none;"
         />
       </div>
     </body>
@@ -25,7 +25,6 @@ test("render visible", () => {
       <div>
         <div
           role="presentation"
-          style="position: fixed; top: 0px; right: 0px; bottom: 0px; left: 0px; z-index: 998;"
         />
       </div>
     </body>

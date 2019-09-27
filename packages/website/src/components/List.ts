@@ -1,13 +1,12 @@
 import { css, cx } from "emotion";
 import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
-import { unstable_createHook } from "reakit/utils/createHook";
-import { unstable_createComponent } from "reakit/utils/createComponent";
+import { createHook, createComponent } from "reakit-system";
 
 export type ListOptions = BoxOptions;
 export type ListHTMLProps = BoxHTMLProps;
 export type ListProps = ListOptions & ListHTMLProps;
 
-export const useList = unstable_createHook<ListOptions, ListHTMLProps>({
+export const useList = createHook<ListOptions, ListHTMLProps>({
   name: "List",
   compose: useBox,
 
@@ -17,7 +16,8 @@ export const useList = unstable_createHook<ListOptions, ListHTMLProps>({
       li {
         margin-bottom: 0.5em;
       }
-      #props ~ & {
+      #props ~ &,
+      #props ~ details > & {
         & > li {
           li {
             margin: 0;
@@ -36,7 +36,7 @@ export const useList = unstable_createHook<ListOptions, ListHTMLProps>({
   }
 });
 
-const List = unstable_createComponent({
+const List = createComponent({
   as: "ul",
   useHook: useList
 });

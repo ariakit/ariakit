@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "react-testing-library";
+import { render } from "@testing-library/react";
 import { unstable_FormGroup as FormGroup } from "../FormGroup";
 
 test("render", () => {
@@ -15,6 +15,7 @@ test("render", () => {
           aria-labelledby="base-a-label"
           id="base-a"
           role="group"
+          tabindex="-1"
         />
       </div>
     </body>

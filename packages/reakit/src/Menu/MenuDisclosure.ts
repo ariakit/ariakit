@@ -1,14 +1,14 @@
 import * as React from "react";
-import { unstable_mergeProps } from "../utils/mergeProps";
-import { unstable_createComponent } from "../utils/createComponent";
+import { createComponent } from "reakit-system/createComponent";
+import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
+import { createHook } from "reakit-system/createHook";
+import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,
   usePopoverDisclosure
 } from "../Popover/PopoverDisclosure";
-import { createOnKeyDown } from "../__utils/createOnKeyDown";
-import { warning } from "../__utils/warning";
-import { unstable_createHook } from "../utils/createHook";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -23,7 +23,7 @@ export type MenuDisclosureProps = MenuDisclosureOptions &
 
 const noop = () => {};
 
-export const useMenuDisclosure = unstable_createHook<
+export const useMenuDisclosure = createHook<
   MenuDisclosureOptions,
   MenuDisclosureHTMLProps
 >({
@@ -31,7 +31,17 @@ export const useMenuDisclosure = unstable_createHook<
   compose: usePopoverDisclosure,
   useState: useMenuState,
 
-  useProps(options, htmlProps) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onClick: htmlOnClick,
+      onKeyDown: htmlOnKeyDown,
+      onFocus: htmlOnFocus,
+      onMouseOver: htmlOnMouseOver,
+      ...htmlProps
+    }
+  ) {
     const parent = React.useContext(MenuContext);
     const ref = React.useRef<HTMLElement>(null);
     // This avoids race condition between focus and click.
@@ -39,6 +49,37 @@ export const useMenuDisclosure = unstable_createHook<
     // So we use it to disable toggling.
     const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
     const [dir] = options.placement.split("-");
+    const hasParent = Boolean(parent);
+    const parentIsMenuBar = parent && parent.role === "menubar";
+
+    const onKeyDown = React.useMemo(
+      () =>
+        createOnKeyDown({
+          stopPropagation: event => event.key !== "Escape",
+          onKey: options.show,
+          keyMap: () => {
+            // prevents scroll jump
+            const first = () => setTimeout(options.first);
+            return {
+              Escape: options.hide,
+              Enter: hasParent && first,
+              " ": hasParent && first,
+              ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
+              ArrowRight: dir === "right" && first,
+              ArrowDown: dir === "bottom" || dir === "top" ? first : false,
+              ArrowLeft: dir === "left" && first
+            };
+          }
+        }),
+      [dir, hasParent, options.show, options.hide, options.first, options.last]
+    );
+
+    const onFocus = React.useCallback(() => {
+      if (parentIsMenuBar) {
+        setHasShownOnFocus(true);
+        options.show();
+      }
+    }, [parentIsMenuBar, setHasShownOnFocus, options.show]);
 
     // Restores hasShownOnFocus
     React.useEffect(() => {
@@ -47,79 +88,62 @@ export const useMenuDisclosure = unstable_createHook<
       }
     }, [hasShownOnFocus]);
 
-    const onKeyDown = React.useMemo(
-      () =>
-        createOnKeyDown({
-          stopPropagation: event => event.key !== "Escape",
-          onKey: options.show,
-          keyMap: () => {
-            const first = () => setTimeout(options.first);
-            return {
-              Escape: options.hide,
-              Enter: parent && first,
-              " ": parent && first,
-              ArrowUp: dir === "top" || dir === "bottom" ? options.last : false,
-              ArrowRight: dir === "right" && first,
-              ArrowDown: dir === "bottom" || dir === "top" ? first : false,
-              ArrowLeft: dir === "left" && first
-            };
+    const onMouseOver = React.useCallback(
+      (event: MouseEvent) => {
+        // MenuDisclosure's don't do anything on mouse over when they aren't
+        // cointained within a Menu/MenuBar
+        if (!parent) return;
+
+        const disclosure = event.currentTarget as HTMLElement;
+
+        if (parentIsMenuBar) {
+          // if MenuDisclosure is an item inside a MenuBar, it'll only open
+          // if there's already another sibling expanded MenuDisclosure
+          const subjacentOpenMenu =
+            parent.ref.current &&
+            parent.ref.current.querySelector("[aria-expanded='true']");
+          if (subjacentOpenMenu) {
+            disclosure.focus();
           }
-        }),
-      [options.show, options.hide, options.first, options.last]
-    );
-
-    const onFocus = React.useCallback(() => {
-      if (parent && parent.orientation === "horizontal") {
-        setHasShownOnFocus(true);
-        options.show();
-      }
-    }, [parent && parent.orientation, setHasShownOnFocus, options.show]);
-
-    const onMouseOver = React.useCallback(() => {
-      if (!parent) return;
-
-      if (!ref.current) {
-        warning(
-          true,
-          "Can't respond to mouse over on `MenuDisclosure` because `ref` wasn't passed to component. See https://reakit.io/docs/menu",
-          "MenuDisclosure"
-        );
-        return;
-      }
-
-      const parentIsHorizontal = parent.orientation === "horizontal";
-
-      if (!parentIsHorizontal) {
-        setTimeout(() => {
-          if (ref.current && ref.current.contains(document.activeElement)) {
-            options.show();
-            ref.current.focus();
-          }
-        }, 200);
-      } else {
-        const parentMenu = ref.current.closest("[role=menu],[role=menubar]");
-        const subjacentOpenMenu =
-          parentMenu && parentMenu.querySelector("[role=menu]:not([hidden])");
-        if (subjacentOpenMenu) {
-          ref.current.focus();
+        } else {
+          // If it's in a Menu, open after a short delay
+          // TODO: Make the delay a prop?
+          setTimeout(() => {
+            if (disclosure.contains(document.activeElement)) {
+              options.show();
+              if (document.activeElement !== disclosure) {
+                disclosure.focus();
+              }
+            }
+          }, 200);
         }
-      }
-    }, [parent && parent.orientation, options.show]);
-
-    return unstable_mergeProps(
-      {
-        ref,
-        "aria-haspopup": "menu",
-        onClick:
-          parent && (parent.orientation !== "horizontal" || hasShownOnFocus)
-            ? options.show
-            : options.toggle,
-        onFocus,
-        onMouseOver,
-        onKeyDown
-      } as MenuDisclosureHTMLProps,
-      htmlProps
+      },
+      [parent, parentIsMenuBar, options.show]
     );
+
+    const onClick = React.useCallback(() => {
+      if (hasParent && (!parentIsMenuBar || hasShownOnFocus)) {
+        options.show();
+      } else {
+        options.toggle();
+      }
+    }, [
+      hasParent,
+      parentIsMenuBar,
+      hasShownOnFocus,
+      options.show,
+      options.toggle
+    ]);
+
+    return {
+      ref: mergeRefs(ref, htmlRef),
+      "aria-haspopup": "menu",
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      onMouseOver: useAllCallbacks(onMouseOver, htmlOnMouseOver),
+      ...htmlProps
+    };
   },
 
   useCompose(options, htmlProps) {
@@ -128,7 +152,7 @@ export const useMenuDisclosure = unstable_createHook<
   }
 });
 
-export const MenuDisclosure = unstable_createComponent({
+export const MenuDisclosure = createComponent({
   as: "button",
   useHook: useMenuDisclosure
 });

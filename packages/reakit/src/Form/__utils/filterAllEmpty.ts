@@ -1,4 +1,4 @@
-import { isObject } from "../../__utils/isObject";
+import { isObject } from "reakit-utils/isObject";
 
 export function filterAllEmpty<T extends Record<any, any> | Array<any>>(
   object: T

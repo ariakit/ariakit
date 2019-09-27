@@ -21,6 +21,12 @@
       "reakit": ["./node_modules/reakit/src"],
       "reakit/*": ["./node_modules/reakit/src/*"],
 
+      "reakit-utils": ["./node_modules/reakit-utils/src"],
+      "reakit-utils/*": ["./node_modules/reakit-utils/src/*"],
+
+      "reakit-system": ["./node_modules/reakit-system/src"],
+      "reakit-system/*": ["./node_modules/reakit-system/src/*"],
+
       "reakit-system-palette": ["./node_modules/reakit-system-palette/src"],
       "reakit-system-palette/*": ["./node_modules/reakit-system-palette/src/*"],
 

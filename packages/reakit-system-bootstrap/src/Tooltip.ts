@@ -28,10 +28,10 @@ export function useTooltipProps(
     font-size: 0.8em;
     padding: 0.5rem;
     border-radius: 0.25rem;
+    z-index: 999;
 
     & > .arrow {
       background-color: transparent;
-      font-size: 1.25em !important;
       & .stroke {
         fill: transparent;
       }

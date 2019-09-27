@@ -1,77 +1,79 @@
 import * as React from "react";
-import { unstable_createComponent } from "../utils/createComponent";
-import { unstable_mergeProps } from "../utils/mergeProps";
+import { createComponent } from "reakit-system/createComponent";
+import { createHook } from "reakit-system/createHook";
+import { cx } from "reakit-utils/cx";
+import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_createHook } from "../utils/createHook";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
+import { useWarningIfMultiple } from "./__utils/useWarningIfMultiple";
+import { useSetIsMounted } from "./__utils/useSetIsMounted";
 
 export type HiddenOptions = BoxOptions &
-  Pick<Partial<HiddenStateReturn>, "unstable_hiddenId" | "visible"> & {
-    /**
-     * If `true`, the hidden element attributes will be set in different
-     * timings to enable CSS transitions. This means that you can safely use the `.hidden` selector in the CSS to
-     * create transitions.
-     *  - When it becomes visible, immediatelly remove the `hidden` attribute,
-     * then add the `hidden` class.
-     *  - When it becomes hidden, immediatelly remove the `hidden` class, then
-     * add the `hidden` attribute.
-     */
-    unstable_animated?: boolean;
-  };
+  Pick<
+    Partial<HiddenStateReturn>,
+    | "unstable_hiddenId"
+    | "visible"
+    | "unstable_animating"
+    | "unstable_animated"
+    | "unstable_stopAnimation"
+    | "unstable_setIsMounted"
+  >;
 
 export type HiddenHTMLProps = BoxHTMLProps;
 
 export type HiddenProps = HiddenOptions & HiddenHTMLProps;
 
-export const useHidden = unstable_createHook<HiddenOptions, HiddenHTMLProps>({
+export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
   name: "Hidden",
   compose: useBox,
   useState: useHiddenState,
-  keys: ["unstable_animated"],
 
-  useProps(options, htmlProps) {
-    const [delayedVisible, setDelayedVisible] = React.useState(options.visible);
+  useProps(
+    options,
+    {
+      onAnimationEnd: htmlOnAnimationEnd,
+      onTransitionEnd: htmlOnTransitionEnd,
+      className: htmlClassName,
+      style: htmlStyle,
+      ...htmlProps
+    }
+  ) {
+    const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
+
+    useWarningIfMultiple(options);
+    useSetIsMounted(options);
 
     React.useEffect(() => {
-      if (options.unstable_animated && options.visible) {
-        setDelayedVisible(options.visible);
-      }
-    }, [options.visible, options.unstable_animated]);
+      setHiddenClass(!options.visible ? "hidden" : null);
+    }, [options.visible]);
 
     const onTransitionEnd = React.useCallback(() => {
-      if (options.unstable_animated && !options.visible) {
-        setDelayedVisible(options.visible);
+      if (options.unstable_animated && options.unstable_stopAnimation) {
+        options.unstable_stopAnimation();
       }
-    }, [options.visible, options.unstable_animated]);
+    }, [options.unstable_animated, options.unstable_stopAnimation]);
 
-    // delays hiding
-    const hidden = options.unstable_animated
-      ? options.visible
-        ? false
-        : !delayedVisible
-      : !options.visible;
+    const animating = options.unstable_animated && options.unstable_animating;
+    const hidden = !options.visible && !animating;
 
-    // delays showing
-    const shouldAddHiddenClass = options.unstable_animated
-      ? options.visible
-        ? !delayedVisible
-        : true
-      : !options.visible;
-
-    return unstable_mergeProps(
-      {
-        role: "region",
-        id: options.unstable_hiddenId,
-        className: shouldAddHiddenClass ? "hidden" : undefined,
-        hidden,
-        onTransitionEnd
-      } as HiddenHTMLProps,
-      htmlProps
-    );
+    return {
+      role: "region",
+      id: options.unstable_hiddenId,
+      className: cx(hiddenClass, htmlClassName),
+      onAnimationEnd: useAllCallbacks(onTransitionEnd, htmlOnAnimationEnd),
+      onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),
+      hidden,
+      ...(hidden
+        ? { style: { display: "none", ...htmlStyle } }
+        : htmlStyle
+        ? { style: htmlStyle }
+        : {}),
+      ...htmlProps
+    };
   }
 });
 
-export const Hidden = unstable_createComponent({
+export const Hidden = createComponent({
   as: "div",
   useHook: useHidden
 });
