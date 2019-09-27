@@ -42,7 +42,7 @@ test("render visible", async () => {
   await wait();
   expect(baseElement).toMatchInlineSnapshot(`
     <body
-      style="overflow: hidden;"
+      style="padding-right: 1024px; overflow: hidden;"
     >
       <div />
       <div
@@ -84,7 +84,7 @@ test("render non-modal", async () => {
   await wait();
   expect(baseElement).toMatchInlineSnapshot(`
     <body
-      style=""
+      style="padding-right: 1024px;"
     >
       <div>
         <div
