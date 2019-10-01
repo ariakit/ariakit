@@ -50,7 +50,10 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
 
   useHook.__keys = [
     ...composedHooks.reduce(
-      (allKeys, hook) => [...allKeys, ...(hook.__keys || [])],
+      (allKeys, hook) => {
+        allKeys.push(...(hook.__keys || []));
+        return allKeys;
+      },
       [] as string[]
     ),
     ...(options.useState ? options.useState.__keys : []),
