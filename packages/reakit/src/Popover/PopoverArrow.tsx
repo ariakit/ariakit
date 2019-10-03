@@ -26,6 +26,7 @@ export const usePopoverArrow = createHook<
   name: "PopoverArrow",
   compose: useBox,
   useState: usePopoverState,
+  keys: ["size"],
 
   useOptions({ size = 30, ...options }) {
     return { size, ...options };
