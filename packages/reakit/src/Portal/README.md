@@ -31,7 +31,3 @@ function Example() {
   );
 }
 ```
-
-## Props
-
-<!-- Automatically generated -->
