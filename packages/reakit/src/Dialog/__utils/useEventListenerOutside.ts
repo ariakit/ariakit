@@ -4,7 +4,7 @@ import { warning } from "reakit-utils/warning";
 import { isFocusTrap } from "./useFocusTrap";
 
 export function useEventListenerOutside(
-  targetRef: React.RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLElement>,
   disclosuresRef: React.RefObject<HTMLElement[]>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   event: string,
@@ -19,19 +19,22 @@ export function useEventListenerOutside(
     const handleEvent = (e: MouseEvent) => {
       if (!listenerRef.current) return;
 
-      const element = targetRef.current;
+      const container = containerRef.current;
       const disclosures = disclosuresRef.current || [];
       const target = e.target as Element;
 
-      warning(
-        !element,
-        "Dialog",
-        "Can't detect events outside dialog because `ref` wasn't passed to component.",
-        "See https://reakit.io/docs/dialog"
-      );
+      if (!container) {
+        warning(
+          true,
+          "Dialog",
+          "Can't detect events outside dialog because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/dialog"
+        );
+        return;
+      }
 
-      // Click inside
-      if (!element || element.contains(target)) return;
+      // Click inside dialog
+      if (container.contains(target)) return;
 
       // Click on disclosure
       if (
@@ -60,7 +63,7 @@ export function useEventListenerOutside(
       document.removeEventListener(event, handleEvent, true);
     };
   }, [
-    targetRef,
+    containerRef,
     disclosuresRef,
     nestedDialogs,
     event,

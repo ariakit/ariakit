@@ -89,7 +89,6 @@ test("render non-modal", async () => {
       <div>
         <div
           aria-label="dialog"
-          aria-modal="false"
           class="hidden"
           data-dialog="true"
           hidden=""
