@@ -7,7 +7,6 @@ import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { usePipe } from "reakit-utils/usePipe";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
-import { Portal } from "../Portal/Portal";
 import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -17,6 +16,7 @@ import { useNestedDialogs } from "./__utils/useNestedDialogs";
 import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
+import { usePortal } from "./__utils/usePortal";
 
 export type DialogOptions = HiddenOptions &
   Pick<Partial<DialogStateReturn>, "hide"> &
@@ -133,6 +133,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const dialog = React.useRef<HTMLElement>(null);
     const disclosures = useDisclosuresRef(options);
     const { dialogs, wrap } = useNestedDialogs(dialog, options);
+    const portalWrap = usePortal(dialog, options);
 
     usePreventBodyScroll(dialog, options);
     useFocusTrap(dialog, dialogs, options);
@@ -160,24 +161,14 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       [options.hideOnEsc, options.hide]
     );
 
-    const wrapChildren = React.useCallback(
-      (children: React.ReactNode) => {
-        if (options.unstable_portal) {
-          return <Portal>{wrap(children)}</Portal>;
-        }
-        return wrap(children);
-      },
-      [options.unstable_portal, wrap]
-    );
-
     return {
       ref: mergeRefs(dialog, htmlRef),
       role: "dialog",
       tabIndex: -1,
-      "aria-modal": options.modal,
-      "data-dialog": true,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-      unstable_wrap: usePipe(wrapChildren, htmlWrap),
+      unstable_wrap: usePipe(wrap, portalWrap, htmlWrap),
+      "aria-modal": options.modal ? true : undefined,
+      "data-dialog": true,
       ...htmlProps
     };
   }
