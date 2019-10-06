@@ -35,28 +35,3 @@ function Example() {
 ## Props
 
 <!-- Automatically generated -->
-
-### `Portal`
-
-- **`unstable_ignoresCustomContext`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Ignores custom `childContext` passed to parent portals.
-  ```jsx
-  import { Portal } from "reakit/Portal";
-
-  function Example() {
-    const ref = React.useRef();
-    const [lol, setLol] = React.useState(0);
-    React.useEffect(() => setLol(1), [])
-    return (
-      <Portal unstable_childContext={ref.current}>
-        <div ref={ref}>
-          <p>portal 0</p>
-          <Portal unstable_ignoresCustomContext>portal 1</Portal>
-          <Portal>portal 2</Portal>
-        </div>
-      </Portal>
-    );
-  }
-  ```
