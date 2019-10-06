@@ -102,21 +102,6 @@ test("focus disabled focusable", () => {
   expect(tabbable).toHaveFocus();
 });
 
-test("clickKeys", () => {
-  const fn = jest.fn();
-  const { getByText } = render(
-    <Tabbable unstable_clickKeys={["a"]} onClick={fn}>
-      tabbable
-    </Tabbable>
-  );
-  const tabbable = getByText("tabbable");
-  fireEvent.keyDown(tabbable, { key: "Enter" });
-  fireEvent.keyDown(tabbable, { key: " " });
-  expect(fn).not.toHaveBeenCalled();
-  fireEvent.keyDown(tabbable, { key: "a" });
-  expect(fn).toHaveBeenCalledTimes(1);
-});
-
 test("non-native button click", () => {
   const fn = jest.fn();
   const { getByText } = render(

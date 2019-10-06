@@ -94,7 +94,7 @@ export const useMenuDisclosure = createHook<
         // cointained within a Menu/MenuBar
         if (!parent) return;
 
-        const disclosure = event.currentTarget as HTMLElement;
+        const self = event.currentTarget as HTMLElement;
 
         if (parentIsMenuBar) {
           // if MenuDisclosure is an item inside a MenuBar, it'll only open
@@ -103,16 +103,16 @@ export const useMenuDisclosure = createHook<
             parent.ref.current &&
             parent.ref.current.querySelector("[aria-expanded='true']");
           if (subjacentOpenMenu) {
-            disclosure.focus();
+            self.focus();
           }
         } else {
           // If it's in a Menu, open after a short delay
           // TODO: Make the delay a prop?
           setTimeout(() => {
-            if (disclosure.contains(document.activeElement)) {
+            if (self.contains(document.activeElement)) {
               options.show();
-              if (document.activeElement !== disclosure) {
-                disclosure.focus();
+              if (document.activeElement !== self) {
+                self.focus();
               }
             }
           }, 200);

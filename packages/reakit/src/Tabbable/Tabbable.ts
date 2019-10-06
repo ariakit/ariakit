@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { isFocusable } from "reakit-utils/tabbable";
@@ -20,10 +19,15 @@ export type TabbableOptions = BoxOptions & {
    */
   focusable?: boolean;
   /**
-   * Keyboard keys to trigger click.
+   * Whether or not trigger click on pressing <kbd>Enter</kbd>.
    * @private
    */
-  unstable_clickKeys?: string[];
+  unstable_clickOnEnter?: boolean;
+  /**
+   * Whether or not trigger click on pressing <kbd>Space</kbd>.
+   * @private
+   */
+  unstable_clickOnSpace?: boolean;
 };
 
 export type TabbableHTMLProps = BoxHTMLProps & {
@@ -44,7 +48,7 @@ function isNativeTabbable(element: EventTarget) {
   );
 }
 
-function isFormTabbable(element: EventTarget) {
+function isInput(element: EventTarget) {
   return (
     element instanceof HTMLInputElement ||
     element instanceof HTMLTextAreaElement ||
@@ -52,17 +56,35 @@ function isFormTabbable(element: EventTarget) {
   );
 }
 
-const defaultClickKeys = ["Enter", " "];
+// https://twitter.com/diegohaz/status/1176998102139572225
+function hasFocusOnMouseDown(element: EventTarget) {
+  const { userAgent } = navigator;
+  const is = (string: string) => userAgent.indexOf(string) !== -1;
+  const isLikeMac = is("Mac") || is("like Mac");
+  const isSafariOrFirefox = is("Safari") || is("Firefox");
+  return (
+    !isLikeMac || !isSafariOrFirefox || !(element instanceof HTMLButtonElement)
+  );
+}
 
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
   compose: useBox,
-  keys: ["disabled", "focusable", "unstable_clickKeys"],
+  keys: [
+    "disabled",
+    "focusable",
+    "unstable_clickOnEnter",
+    "unstable_clickOnSpace"
+  ],
 
-  useOptions({ unstable_clickKeys = defaultClickKeys, ...options }, htmlProps) {
+  useOptions(
+    { unstable_clickOnEnter = true, unstable_clickOnSpace = true, ...options },
+    htmlProps
+  ) {
     return {
-      unstable_clickKeys,
       disabled: htmlProps.disabled,
+      unstable_clickOnEnter,
+      unstable_clickOnSpace,
       ...options
     };
   },
@@ -72,105 +94,69 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
-      onClick: htmlOnClick,
-      onMouseOver: htmlOnMouseOver,
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
+      style: htmlStyle,
       ...htmlProps
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const clickKeysRef = useLiveRef(options.unstable_clickKeys);
     const trulyDisabled = options.disabled && !options.focusable;
+    const style = options.disabled
+      ? { "pointer-events": "none", ...htmlStyle }
+      : htmlStyle;
 
-    const onMouseDown = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (
-          isFormTabbable(event.target) ||
-          // https://github.com/facebook/react/issues/11387
-          !event.currentTarget.contains(event.target as HTMLElement)
-        ) {
-          if (htmlOnMouseDown) {
-            htmlOnMouseDown(event);
-          }
-          return;
-        }
+    const onMouseDown = React.useCallback((event: React.MouseEvent) => {
+      const self = event.currentTarget as HTMLElement;
+      const target = event.target as HTMLElement;
+
+      if (
+        self.contains(target) &&
+        !isInput(target) &&
+        !hasFocusOnMouseDown(self)
+      ) {
         event.preventDefault();
-        if (options.disabled) {
-          event.stopPropagation();
-        } else {
-          const currentTarget = event.currentTarget as HTMLElement;
-          const target = event.target as HTMLElement;
-          const isFocusControl =
-            isFocusable(target) || target instanceof HTMLLabelElement;
-          if (
-            !hasFocusWithin(currentTarget) ||
-            // has focus within, but clicked on the tabbable element itself
-            currentTarget === target ||
-            // clicked on an element other than the tabbable, but it's not
-            // focusable nor a label element (controls focus)
-            !isFocusControl
-          ) {
-            currentTarget.focus();
-          }
-          if (htmlOnMouseDown) {
-            htmlOnMouseDown(event);
-          }
+        const isFocusControl =
+          isFocusable(target) || target instanceof HTMLLabelElement;
+        if (!hasFocusWithin(self) || self === target || !isFocusControl) {
+          self.focus();
         }
-      },
-      [options.disabled, htmlOnMouseDown]
-    );
-
-    const onClick = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        } else if (htmlOnClick) {
-          htmlOnClick(event);
-        }
-      },
-      [options.disabled, htmlOnClick]
-    );
-
-    const onMouseOver = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        } else if (htmlOnMouseOver) {
-          htmlOnMouseOver(event);
-        }
-      },
-      [options.disabled, htmlOnMouseOver]
-    );
+      }
+    }, []);
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
         if (options.disabled) return;
 
-        const isClickKey =
-          clickKeysRef.current &&
-          clickKeysRef.current.indexOf(event.key) !== -1;
-
-        if (!isClickKey) return;
-
-        const isDefaultClickKey = defaultClickKeys.indexOf(event.key) !== -1;
-
-        if (isDefaultClickKey && isNativeTabbable(event.target)) {
-          return;
+        if (!isNativeTabbable(event.currentTarget)) {
+          // Per the spec, space only triggers button click on key up.
+          // On key down, it triggers the :active state.
+          // Since we can't mimic this behavior, we trigger click on key down.
+          if (
+            (options.unstable_clickOnEnter && event.key === "Enter") ||
+            (options.unstable_clickOnSpace && event.key === " ")
+          ) {
+            event.preventDefault();
+            event.target.dispatchEvent(
+              new MouseEvent("click", {
+                view: window,
+                bubbles: true,
+                cancelable: false
+              })
+            );
+          }
+        } else if (
+          (!options.unstable_clickOnEnter && event.key === "Enter") ||
+          (!options.unstable_clickOnSpace && event.key === " ")
+        ) {
+          event.preventDefault();
         }
-
-        event.preventDefault();
-        event.target.dispatchEvent(
-          new MouseEvent("click", {
-            view: window,
-            bubbles: true,
-            cancelable: false
-          })
-        );
       },
-      [clickKeysRef, options.disabled]
+      [
+        options.disabled,
+        options.unstable_clickOnEnter,
+        options.unstable_clickOnSpace
+      ]
     );
 
     return {
@@ -178,10 +164,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       disabled: trulyDisabled,
       tabIndex: trulyDisabled ? undefined : htmlTabIndex,
       "aria-disabled": options.disabled,
-      onMouseDown,
-      onClick,
-      onMouseOver,
+      onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      style,
       ...htmlProps
     };
   }

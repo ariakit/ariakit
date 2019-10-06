@@ -32,8 +32,8 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
         if (isTouchDevice()) return;
         if (menu && menu.role === "menubar") return;
 
-        const menuItem = event.currentTarget as HTMLElement;
-        menuItem.focus();
+        const self = event.currentTarget as HTMLElement;
+        self.focus();
       },
       [options.orientation]
     );
@@ -42,15 +42,15 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       (event: React.MouseEvent) => {
         if (!event.currentTarget || !menu) return;
 
-        const menuItem = event.currentTarget as HTMLElement;
+        const self = event.currentTarget as HTMLElement;
 
         // Blur items on mouse out
         // Ignore disclosure, otherwise sub menu will close when blurring
         if (
-          !menuItem.hasAttribute("aria-controls") ||
-          menuItem.getAttribute("aria-expanded") !== "true"
+          !self.hasAttribute("aria-controls") ||
+          self.getAttribute("aria-expanded") !== "true"
         ) {
-          menuItem.blur();
+          self.blur();
         }
 
         // Move focus onto menu after blurring
