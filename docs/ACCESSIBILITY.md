@@ -14,7 +14,7 @@ This means that DOM attributes like `role` and `aria-*` are added automatically.
 
 ## Accessibility warnings
 
-When attributes can't be automatically inferred, Reakit will emit a warning to remember you to pass them. Like so:
+When attributes can't be automatically inferred, Reakit will emit a warning to remind you to pass them. Like so:
 
 > ⚠️ [reakit/Menu]
 > You should provide either `aria-label` or `aria-labelledby` props.
