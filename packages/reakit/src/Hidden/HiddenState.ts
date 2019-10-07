@@ -4,6 +4,7 @@ import {
   SealedInitialState
 } from "reakit-utils/useSealedState";
 import { useId } from "reakit-utils/useId";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { warning } from "reakit-utils/warning";
 
 export type HiddenState = {
@@ -67,7 +68,7 @@ export type HiddenStateReturn = HiddenState & HiddenActions;
 
 function useLastValue<T>(value: T) {
   const lastValue = React.useRef<T | null>(null);
-  React.useLayoutEffect(() => {
+  useIsomorphicEffect(() => {
     lastValue.current = value;
   }, [value]);
   return lastValue;
@@ -99,7 +100,7 @@ export function useHiddenState(
     setAnimating(true);
   }
 
-  React.useLayoutEffect(() => {
+  useIsomorphicEffect(() => {
     if (typeof animated !== "number") return undefined;
     // Stops animation after an interval defined by animated
     const id = setTimeout(() => setAnimating(false), animated);
