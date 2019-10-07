@@ -4,6 +4,7 @@ import {
   SealedInitialState,
   useSealedState
 } from "reakit-utils/useSealedState";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import {
   DialogState,
   DialogActions,
@@ -142,7 +143,7 @@ export function usePopoverState(
     return false;
   }, []);
 
-  React.useLayoutEffect(() => {
+  useIsomorphicEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
         placement: originalPlacement,
