@@ -64,6 +64,10 @@ export type PopoverState = DialogState & {
    */
   unstable_scheduleUpdate: () => boolean;
   /**
+   * @private
+   */
+  unstable_update: () => boolean;
+  /**
    * Actual `placement`.
    */
   placement: Placement;
@@ -138,6 +142,14 @@ export function usePopoverState(
   const scheduleUpdate = React.useCallback(() => {
     if (popper.current) {
       popper.current.scheduleUpdate();
+      return true;
+    }
+    return false;
+  }, []);
+
+  const update = React.useCallback(() => {
+    if (popper.current) {
+      popper.current.update();
       return true;
     }
     return false;
@@ -221,6 +233,7 @@ export function usePopoverState(
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
     unstable_scheduleUpdate: scheduleUpdate,
+    unstable_update: update,
     unstable_originalPlacement: originalPlacement,
     placement,
     place: React.useCallback(place, [])
@@ -235,6 +248,7 @@ const keys: Array<keyof PopoverStateReturn> = [
   "unstable_popoverStyles",
   "unstable_arrowStyles",
   "unstable_scheduleUpdate",
+  "unstable_update",
   "unstable_originalPlacement",
   "placement",
   "place"
