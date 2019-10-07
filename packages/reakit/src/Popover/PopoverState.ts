@@ -44,6 +44,11 @@ export type PopoverState = DialogState & {
    */
   unstable_arrowRef: React.RefObject<HTMLElement | null>;
   /**
+   * The popper instance.
+   * @private
+   */
+  unstable_popperRef: React.RefObject<Popper | null>;
+  /**
    * Popover styles.
    * @private
    */
@@ -216,6 +221,7 @@ export function usePopoverState(
     ...dialog,
     unstable_referenceRef: referenceRef,
     unstable_popoverRef: popoverRef,
+    unstable_popperRef: popper,
     unstable_arrowRef: arrowRef,
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
@@ -230,6 +236,7 @@ const keys: Array<keyof PopoverStateReturn> = [
   ...useDialogState.__keys,
   "unstable_referenceRef",
   "unstable_popoverRef",
+  "unstable_popperRef",
   "unstable_arrowRef",
   "unstable_popoverStyles",
   "unstable_arrowStyles",
