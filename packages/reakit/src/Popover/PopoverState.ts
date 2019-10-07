@@ -44,11 +44,6 @@ export type PopoverState = DialogState & {
    */
   unstable_arrowRef: React.RefObject<HTMLElement | null>;
   /**
-   * The popper instance.
-   * @private
-   */
-  unstable_popperRef: React.RefObject<Popper | null>;
-  /**
    * Popover styles.
    * @private
    */
@@ -67,6 +62,10 @@ export type PopoverState = DialogState & {
    * @private
    */
   unstable_scheduleUpdate: () => boolean;
+  /**
+   * @private
+   */
+  unstable_update: () => boolean;
   /**
    * Actual `placement`.
    */
@@ -147,6 +146,14 @@ export function usePopoverState(
     return false;
   }, []);
 
+  const update = React.useCallback(() => {
+    if (popper.current) {
+      popper.current.update();
+      return true;
+    }
+    return false;
+  }, []);
+
   React.useLayoutEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
@@ -221,11 +228,11 @@ export function usePopoverState(
     ...dialog,
     unstable_referenceRef: referenceRef,
     unstable_popoverRef: popoverRef,
-    unstable_popperRef: popper,
     unstable_arrowRef: arrowRef,
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
     unstable_scheduleUpdate: scheduleUpdate,
+    unstable_update: update,
     unstable_originalPlacement: originalPlacement,
     placement,
     place: React.useCallback(place, [])
@@ -236,11 +243,11 @@ const keys: Array<keyof PopoverStateReturn> = [
   ...useDialogState.__keys,
   "unstable_referenceRef",
   "unstable_popoverRef",
-  "unstable_popperRef",
   "unstable_arrowRef",
   "unstable_popoverStyles",
   "unstable_arrowStyles",
   "unstable_scheduleUpdate",
+  "unstable_update",
   "unstable_originalPlacement",
   "placement",
   "place"
