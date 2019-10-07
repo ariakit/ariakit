@@ -38,3 +38,22 @@ test("render", () => {
     </body>
   `);
 });
+
+test("render without state props", () => {
+  // @ts-ignore
+  const { baseElement } = render(<Menu />);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="hidden"
+          data-dialog="true"
+          hidden=""
+          role="menu"
+          style="display: none;"
+          tabindex="-1"
+        />
+      </div>
+    </body>
+  `);
+});
