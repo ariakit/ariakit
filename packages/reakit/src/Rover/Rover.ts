@@ -59,13 +59,13 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     const trulyDisabled = options.disabled && !options.focusable;
     const noFocused = options.currentId == null;
     const focused = options.currentId === stopId;
-    const isFirst = options.stops[0] && options.stops[0].id === stopId;
+    const isFirst = (options.stops || [])[0] && options.stops[0].id === stopId;
     const shouldTabIndex = focused || (isFirst && noFocused);
 
     React.useEffect(() => {
       if (trulyDisabled) return undefined;
-      options.register(stopId, ref);
-      return () => options.unregister(stopId);
+      options.register && options.register(stopId, ref);
+      return () => options.unregister && options.unregister(stopId);
     }, [stopId, trulyDisabled, options.register, options.unregister]);
 
     React.useEffect(() => {
