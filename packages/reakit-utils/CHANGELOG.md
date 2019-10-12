@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.6](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.5...reakit-utils@0.6.6) (2019-10-12)
+
+
+### Bug Fixes
+
+* Add a `useIsomorphicEffect` hook to allow proper SSR rendering ([#461](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/461)) ([47434b2](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/47434b2)), closes [#438](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/438)
+
+
+
+
+
 ## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.4...reakit-utils@0.6.5) (2019-09-25)
 
 

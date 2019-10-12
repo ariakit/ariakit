@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.7](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.6...reakit-playground@0.6.7) (2019-10-12)
+
+
+### Bug Fixes
+
+* Add a `useIsomorphicEffect` hook to allow proper SSR rendering ([#461](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/461)) ([47434b2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/47434b2)), closes [#438](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/438)
+
+
+
+
+
 ## [0.6.6](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.5...reakit-playground@0.6.6) (2019-09-25)
 
 

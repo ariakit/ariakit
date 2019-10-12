@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.9](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.8...reakit@1.0.0-beta.9) (2019-10-12)
+
+
+### Bug Fixes
+
+* Add a `useIsomorphicEffect` hook to allow proper SSR rendering ([#461](https://github.com/reakit/reakit/issues/461)) ([47434b2](https://github.com/reakit/reakit/commit/47434b2)), closes [#438](https://github.com/reakit/reakit/issues/438)
+* Fix `PopoverArrow` ignoring `size` prop ([#455](https://github.com/reakit/reakit/issues/455)) ([5f51e39](https://github.com/reakit/reakit/commit/5f51e39)), closes [#454](https://github.com/reakit/reakit/issues/454)
+* Fix nested `Dialog`s not working with VoiceOver ([#457](https://github.com/reakit/reakit/issues/457)) ([208bcb6](https://github.com/reakit/reakit/commit/208bcb6))
+* Make `Menu` run without menu state props ([#459](https://github.com/reakit/reakit/issues/459)) ([5992362](https://github.com/reakit/reakit/commit/5992362))
+* Prevent scrollbar flickering when opening `Dialog` ([#450](https://github.com/reakit/reakit/issues/450)) ([d84fd10](https://github.com/reakit/reakit/commit/d84fd10)), closes [#449](https://github.com/reakit/reakit/issues/449)
+
+
+### Features
+
+* Expose `unstable_update()` to update the popover positioning ([#463](https://github.com/reakit/reakit/issues/463)) ([eb4a8e5](https://github.com/reakit/reakit/commit/eb4a8e5))
+
+
+
+
+
 # [1.0.0-beta.8](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.7...reakit@1.0.0-beta.8) (2019-09-25)
 
 
