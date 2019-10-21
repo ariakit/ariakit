@@ -74,7 +74,7 @@ If you need to share state between multiple components within your app, you can 
 import { useHiddenState, Hidden, HiddenDisclosure } from "reakit";
 import createUseContext from "constate";
 
-const useHiddenContext = createUseContext(useHiddenState, Object.values);
+const useHiddenContext = createUseContext(useHiddenState);
 
 function Disclosure() {
   const hidden = useHiddenContext();
