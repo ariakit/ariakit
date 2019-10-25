@@ -198,16 +198,6 @@ export default function Header({ transparent }: HeaderProps) {
               >
                 Newsletter
               </Anchor>
-              <Anchor
-                href="https://spectrum.chat/reakit"
-                onClick={track("reakit.headerSpectrumClick")}
-              >
-                <SpectrumLogo />
-                <HiddenMediaQuery query="max-width: 768px">
-                  <Spacer width={8} />
-                  Spectrum
-                </HiddenMediaQuery>
-              </Anchor>
             </>
           )}
         </HiddenMediaQuery>
@@ -216,7 +206,7 @@ export default function Header({ transparent }: HeaderProps) {
           onClick={track("reakit.headerGithubClick")}
         >
           <FaGithub style={{ fontSize: "1.2em" }} />
-          <HiddenMediaQuery query="max-width: 768px">
+          <HiddenMediaQuery query="max-width: 900px">
             <Spacer width={8} />
             GitHub
           </HiddenMediaQuery>

@@ -11,7 +11,7 @@ const StyledMagnifier = styled.svg<IStyledMagnifierProps>`
   width: 15px;
 
   path {
-    fill: ${({ negative = false }) => (negative ? "white" : "unset")};
+    fill: ${({ negative = false }) => (negative ? "white" : "#757575")};
   }
 `;
 

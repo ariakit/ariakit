@@ -1,10 +1,12 @@
-import React, { useEffect, useLayoutEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { css } from "@emotion/core";
+import { useFade, usePalette } from "reakit-system-palette/utils";
 import MagnifierIcon from "../icons/Magnifier";
 import addStyleSheet from "../utils/addStyleSheet";
 
 const docSearchCSSPath =
   "https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css";
+
 const searchInputId = "docsearch-input";
 
 interface ISearchBarProps {
@@ -13,10 +15,35 @@ interface ISearchBarProps {
 
 export default function SearchBar({ variant = "default" }: ISearchBarProps) {
   const inputEl = useRef(null);
-  const [isOpen, setOpen] = useState(false);
   const [withError, setError] = useState(false);
-  const toggleSearch = () => setOpen(!isOpen);
   const isNegativeVariant = variant === "negative";
+  const dropdownStyles = `
+    .algolia-autocomplete {
+      .algolia-docsearch-footer {
+        height: 30px;
+      }
+
+      .algolia-docsearch-suggestion {
+        width: 100%;
+      }
+
+      .algolia-docsearch-suggestion--title {
+        text-transform: capitalize;
+      }
+
+      .algolia-docsearch-suggestion--text {
+        text-transform: lowercase;
+      }
+
+      .ds-dropdown-menu {
+        box-shadow: 0 1px 2px ${useFade(usePalette("foregroud"), 0.85)};
+      }
+
+      a {
+        text-decoration: none;
+      }
+    }
+  `;
 
   useEffect(() => {
     import("docsearch.js")
@@ -33,20 +60,22 @@ export default function SearchBar({ variant = "default" }: ISearchBarProps) {
       .catch(() => setError(true));
   }, []);
 
-  useLayoutEffect(() => {
-    isOpen && inputEl.current
-      ? inputEl.current.focus()
-      : inputEl.current.blur();
-  }, [isOpen]);
-
   if (withError) return null;
 
   return (
-    <>
+    <div
+      css={css`
+        display: flex;
+        background: #d0d0d042;
+        ${dropdownStyles};
+      `}
+    >
       <MagnifierIcon
-        onClick={toggleSearch}
-        onFocus={toggleSearch}
         negative={isNegativeVariant}
+        css={css`
+          display: inline-block;
+          margin-left: 10px;
+        `}
       />
       <label
         htmlFor={searchInputId}
@@ -58,26 +87,32 @@ export default function SearchBar({ variant = "default" }: ISearchBarProps) {
       </label>
       <input
         type="text"
+        id={searchInputId}
         name={searchInputId}
         ref={inputEl}
-        onBlur={toggleSearch}
         placeholder="Start typing to search"
         css={css`
-          padding: 0;
-          margin: 0;
+          padding: 10px;
+          margin: 0 0 0 5px;
           font-size: 100%;
           border: none;
           outline: none;
-          width: ${isOpen ? "200px" : "0"};
-          color: ${isNegativeVariant ? "white" : "unset"};
-          background: transparent;
+          width: 170px;
           transition: width 0.3s ease-in-out;
+          background: transparent;
 
-          &::placeholder {
-            color: ${isNegativeVariant ? "rgba(255,255,255, .4)" : "#ccc"};
+          ${isNegativeVariant
+            ? `
+            color: white;
+          `
+            : `
+          background: transparent;
+          color: unset;
+          `} &::placeholder {
+            color: ${isNegativeVariant ? "rgba(255,255,255, .6)" : "#9E9E9E"};
           }
         `}
       />
-    </>
+    </div>
   );
 }
