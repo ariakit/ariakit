@@ -5,13 +5,14 @@ interface IStyledMagnifierProps {
   negative?: boolean;
 }
 
-const StyledMagnifier = styled.svg<IStyledMagnifierProps>`
+const StyledMagnifier = styled.svg`
   cursor: pointer;
   height: auto;
   width: 15px;
 
   path {
-    fill: ${({ negative = false }) => (negative ? "white" : "#757575")};
+    fill: ${({ negative = false }: IStyledMagnifierProps) =>
+      negative ? "white" : "#757575"};
   }
 `;
 
