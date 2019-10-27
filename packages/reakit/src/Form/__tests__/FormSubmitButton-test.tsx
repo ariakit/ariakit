@@ -27,7 +27,6 @@ test("disabled", () => {
         <button
           aria-disabled="true"
           disabled=""
-          style="pointer-events: none;"
           type="submit"
         />
       </div>

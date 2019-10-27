@@ -28,7 +28,6 @@ test("render disabled", () => {
           aria-disabled="true"
           disabled=""
           role="checkbox"
-          style="pointer-events: none;"
           type="checkbox"
           value=""
         />
@@ -46,7 +45,6 @@ test("render disabled focusable", () => {
           aria-checked="false"
           aria-disabled="true"
           role="checkbox"
-          style="pointer-events: none;"
           type="checkbox"
           value=""
         />

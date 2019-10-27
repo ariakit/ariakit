@@ -17,7 +17,6 @@ test("render disabled", () => {
     <button
       aria-disabled="true"
       disabled=""
-      style="pointer-events: none;"
     >
       tabbable
     </button>
@@ -33,7 +32,6 @@ test("render disabled focusable", () => {
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
     <button
       aria-disabled="true"
-      style="pointer-events: none;"
     >
       tabbable
     </button>
