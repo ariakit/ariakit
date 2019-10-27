@@ -254,3 +254,32 @@ test("move focus in nested rover", () => {
   keyDown("ArrowLeft");
   expect(rover11).toHaveFocus();
 });
+
+test("keep rover DOM order", () => {
+  const Test = ({ renderRover2 = false }) => {
+    const rover = useRoverState();
+    return (
+      <>
+        <Rover {...rover}>rover1</Rover>
+        {renderRover2 && <Rover {...rover}>rover2</Rover>}
+        <Rover {...rover}>rover3</Rover>
+      </>
+    );
+  };
+  const { getByText, rerender } = render(<Test />);
+  const rover1 = getByText("rover1");
+  const rover3 = getByText("rover3");
+  act(() => rover1.focus());
+  expect(rover1).toHaveFocus();
+
+  keyDown("ArrowRight");
+  expect(rover3).toHaveFocus();
+
+  rerender(<Test renderRover2 />);
+  expect(rover3).toHaveFocus();
+
+  const rover2 = getByText("rover2");
+
+  keyDown("ArrowLeft");
+  expect(rover2).toHaveFocus();
+});
