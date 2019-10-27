@@ -10,7 +10,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          tabindex="0"
           type="submit"
         />
       </div>
@@ -28,6 +27,7 @@ test("disabled", () => {
         <button
           aria-disabled="true"
           disabled=""
+          style="pointer-events: none;"
           type="submit"
         />
       </div>

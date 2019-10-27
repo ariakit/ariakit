@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
@@ -57,7 +56,7 @@ function isInput(element: EventTarget) {
 }
 
 // https://twitter.com/diegohaz/status/1176998102139572225
-function hasFocusOnMouseDown(element: EventTarget) {
+function receivesFocusOnMouseDown(element: EventTarget) {
   const { userAgent } = navigator;
   const is = (string: string) => userAgent.indexOf(string) !== -1;
   const isLikeMac = is("Mac") || is("like Mac");
@@ -93,7 +92,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     options,
     {
       ref: htmlRef,
-      tabIndex: htmlTabIndex = 0,
+      tabIndex: htmlTabIndex,
+      onClick: htmlOnClick,
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
       style: htmlStyle,
@@ -102,30 +102,67 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const trulyDisabled = options.disabled && !options.focusable;
+    const [nativeTabbable, setNativeTabbable] = React.useState(true);
+    const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
     const style = options.disabled
-      ? { "pointer-events": "none", ...htmlStyle }
+      ? { pointerEvents: "none", ...htmlStyle }
       : htmlStyle;
 
-    const onMouseDown = React.useCallback((event: React.MouseEvent) => {
-      const self = event.currentTarget as HTMLElement;
-      const target = event.target as HTMLElement;
-
-      if (
-        self.contains(target) &&
-        !isInput(target) &&
-        !hasFocusOnMouseDown(self)
-      ) {
-        event.preventDefault();
-        const isFocusControl =
-          isFocusable(target) || target instanceof HTMLLabelElement;
-        if (!hasFocusWithin(self) || self === target || !isFocusControl) {
-          self.focus();
-        }
+    React.useEffect(() => {
+      if (ref.current && !isNativeTabbable(ref.current)) {
+        setNativeTabbable(false);
       }
     }, []);
 
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+        } else if (htmlOnClick) {
+          htmlOnClick(event);
+        }
+      },
+      [htmlOnClick]
+    );
+
+    const onMouseDown = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+          return;
+        }
+
+        const self = event.currentTarget as HTMLElement;
+        const target = event.target as HTMLElement;
+
+        if (
+          self.contains(target) &&
+          !isInput(target) &&
+          !receivesFocusOnMouseDown(self)
+        ) {
+          event.preventDefault();
+          const isFocusControl =
+            isFocusable(target) || target instanceof HTMLLabelElement;
+          if (!hasFocusWithin(self) || self === target || !isFocusControl) {
+            self.focus();
+          }
+        }
+
+        if (htmlOnMouseDown) {
+          htmlOnMouseDown(event);
+        }
+      },
+      [htmlOnMouseDown]
+    );
+
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
+        if (htmlOnKeyDown) {
+          htmlOnKeyDown(event);
+        }
+
         if (options.disabled) return;
 
         if (!isNativeTabbable(event.currentTarget)) {
@@ -155,17 +192,19 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       [
         options.disabled,
         options.unstable_clickOnEnter,
-        options.unstable_clickOnSpace
+        options.unstable_clickOnSpace,
+        htmlOnKeyDown
       ]
     );
 
     return {
       ref: mergeRefs(ref, htmlRef),
       disabled: trulyDisabled,
-      tabIndex: trulyDisabled ? undefined : htmlTabIndex,
+      tabIndex: trulyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,
-      onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
-      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      onClick,
+      onMouseDown,
+      onKeyDown,
       style,
       ...htmlProps
     };

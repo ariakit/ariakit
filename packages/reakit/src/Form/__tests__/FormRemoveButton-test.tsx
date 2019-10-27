@@ -16,7 +16,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          tabindex="0"
           type="button"
         />
       </div>

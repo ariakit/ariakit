@@ -5,9 +5,7 @@ import { Tabbable } from "../Tabbable";
 test("render", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-    <button
-      tabindex="0"
-    >
+    <button>
       tabbable
     </button>
   `);
@@ -19,6 +17,7 @@ test("render disabled", () => {
     <button
       aria-disabled="true"
       disabled=""
+      style="pointer-events: none;"
     >
       tabbable
     </button>
@@ -34,7 +33,7 @@ test("render disabled focusable", () => {
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
     <button
       aria-disabled="true"
-      tabindex="0"
+      style="pointer-events: none;"
     >
       tabbable
     </button>
@@ -209,14 +208,6 @@ test("non-native button space/enter disabled focusable", () => {
   fireEvent.keyDown(tabbable, { key: "Enter" });
   fireEvent.keyDown(tabbable, { key: " " });
   expect(fn).toHaveBeenCalledTimes(0);
-});
-
-test("focus on mouse down", () => {
-  const { getByText } = render(<Tabbable>tabbable</Tabbable>);
-  const tabbable = getByText("tabbable");
-  expect(tabbable).not.toHaveFocus();
-  fireEvent.mouseDown(tabbable);
-  expect(tabbable).toHaveFocus();
 });
 
 test("focus nested native tabbables", () => {
