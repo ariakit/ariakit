@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { removeIndexFromArray } from "reakit-utils/removeIndexFromArray";
-import { Omit } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
@@ -14,7 +13,7 @@ import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 import { useIndeterminateState } from "./__utils/useIndeterminateState";
 import { useDelayedEvent } from "./__utils/useDelayedEvent";
 
-export type CheckboxOptions = Omit<TabbableOptions, "unstable_clickKeys"> &
+export type CheckboxOptions = TabbableOptions &
   Pick<Partial<CheckboxStateReturn>, "state" | "setState"> & {
     /**
      * Checkbox's value is going to be used when multiple checkboxes share the
@@ -33,8 +32,6 @@ export type CheckboxHTMLProps = TabbableHTMLProps &
 
 export type CheckboxProps = CheckboxOptions & CheckboxHTMLProps;
 
-const defaultClickKeys = [" "];
-
 function getChecked(options: CheckboxOptions) {
   const isBoolean = typeof options.value === "undefined";
   if (typeof options.checked !== "undefined") {
@@ -52,6 +49,13 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   compose: useTabbable,
   useState: useCheckboxState,
   keys: ["value", "checked"],
+
+  useOptions({ unstable_clickOnEnter = false, ...options }) {
+    return {
+      unstable_clickOnEnter,
+      ...options
+    };
+  },
 
   useProps(
     options,
@@ -118,13 +122,6 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
       onClick: useAllCallbacks(onClick, htmlOnClick),
       ...htmlProps
     };
-  },
-
-  useCompose(options, htmlProps) {
-    return useTabbable(
-      { ...options, unstable_clickKeys: defaultClickKeys },
-      htmlProps
-    );
   }
 });
 

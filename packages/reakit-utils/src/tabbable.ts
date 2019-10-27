@@ -159,13 +159,13 @@ function defaultIsActive(element: Element) {
   return document.activeElement === element;
 }
 
-type ForceFocusOptions = FocusOptions & {
+type EnsureFocusOptions = FocusOptions & {
   isActive?: typeof defaultIsActive;
 };
 
-export function forceFocus(
+export function ensureFocus(
   element: HTMLElement,
-  { isActive = defaultIsActive, preventScroll }: ForceFocusOptions = {}
+  { isActive = defaultIsActive, preventScroll }: EnsureFocusOptions = {}
 ) {
   if (isActive(element)) return -1;
 

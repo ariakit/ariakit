@@ -47,7 +47,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     options,
     {
       ref: htmlRef,
-      tabIndex: htmlTabIndex,
+      tabIndex: htmlTabIndex = 0,
       onKeyDown: htmlOnKeyDown,
       ...htmlProps
     }

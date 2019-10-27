@@ -10,7 +10,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          tabindex="0"
           type="submit"
         />
       </div>

@@ -19,7 +19,7 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
 export type unstable_FormInputOptions<V, P extends DeepPath<V, P>> = Omit<
   TabbableOptions,
-  "unstable_clickKeys"
+  "unstable_clickOnEnter" | "unstable_clickOnSpace"
 > &
   Pick<
     unstable_FormStateReturn<V>,
@@ -38,8 +38,6 @@ export type unstable_FormInputProps<
   V,
   P extends DeepPath<V, P>
 > = unstable_FormInputOptions<V, P> & unstable_FormInputHTMLProps;
-
-const defaultClickKeys: string[] = [];
 
 export const unstable_useFormInput = createHook<
   unstable_FormInputOptions<any, any>,
@@ -80,7 +78,11 @@ export const unstable_useFormInput = createHook<
 
   useCompose(options, htmlProps) {
     return useTabbable(
-      { ...options, unstable_clickKeys: defaultClickKeys },
+      {
+        ...options,
+        unstable_clickOnEnter: false,
+        unstable_clickOnSpace: false
+      },
       htmlProps
     );
   }

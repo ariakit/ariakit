@@ -15,7 +15,6 @@ test("render", () => {
     <button
       aria-controls="test"
       aria-expanded="false"
-      tabindex="0"
       type="button"
     >
       disclosure
@@ -33,7 +32,6 @@ test("render visible", () => {
     <button
       aria-controls="test"
       aria-expanded="true"
-      tabindex="0"
       type="button"
     >
       disclosure
@@ -51,7 +49,6 @@ test("render with aria-controls", () => {
     <button
       aria-controls="a test"
       aria-expanded="false"
-      tabindex="0"
       type="button"
     >
       disclosure

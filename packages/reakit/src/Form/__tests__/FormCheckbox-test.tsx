@@ -25,7 +25,6 @@ test("render", () => {
           id="base-a"
           name="a"
           role="checkbox"
-          tabindex="0"
           type="checkbox"
           value=""
         />
@@ -56,7 +55,6 @@ test("render value", () => {
           checked=""
           name="a"
           role="checkbox"
-          tabindex="0"
           type="checkbox"
           value="b"
         />
