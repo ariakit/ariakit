@@ -912,7 +912,7 @@ array.
 
   MenuItemCheckbox's name as in `menu.values`.
 
-<details><summary>18 state props</summary>
+<details><summary>17 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1004,11 +1004,6 @@ going to be an array.
 
   Stores the values of radios and checkboxes within the menu.
 
-- **`unstable_update`** <span title="Experimental">⚠️</span>
-  <code>(name: string, value?: any) =&#62; void</code>
-
-  Updates checkboxes and radios values within the menu.
-
 </details>
 
 ### `MenuItemRadio`
@@ -1045,7 +1040,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   MenuItemRadio's name as in `menu.values`.
 
-<details><summary>18 state props</summary>
+<details><summary>17 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1134,11 +1129,6 @@ similarly to `readOnly` on form elements. In this case, only
   <code>{ [x: string]: any; }</code>
 
   Stores the values of radios and checkboxes within the menu.
-
-- **`unstable_update`** <span title="Experimental">⚠️</span>
-  <code>(name: string, value?: any) =&#62; void</code>
-
-  Updates checkboxes and radios values within the menu.
 
 </details>
 

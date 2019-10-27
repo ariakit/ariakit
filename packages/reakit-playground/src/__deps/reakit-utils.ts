@@ -7,6 +7,7 @@ export default {
   "reakit-utils/useSealedState": require("reakit-utils/useSealedState"),
   "reakit-utils/usePipe": require("reakit-utils/usePipe"),
   "reakit-utils/useLiveRef": require("reakit-utils/useLiveRef"),
+  "reakit-utils/useIsomorphicEffect": require("reakit-utils/useIsomorphicEffect"),
   "reakit-utils/useId": require("reakit-utils/useId"),
   "reakit-utils/useAllCallbacks": require("reakit-utils/useAllCallbacks"),
   "reakit-utils/types": require("reakit-utils/types"),

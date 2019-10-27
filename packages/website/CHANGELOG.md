@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.9](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.8...website@1.0.0-beta.9) (2019-10-12)
+
+
+### Bug Fixes
+
+* Add a `useIsomorphicEffect` hook to allow proper SSR rendering ([#461](https://github.com/reakit/reakit/tree/master/packages/website/issues/461)) ([47434b2](https://github.com/reakit/reakit/tree/master/packages/website/commit/47434b2)), closes [#438](https://github.com/reakit/reakit/tree/master/packages/website/issues/438)
+
+
+
+
+
 # [1.0.0-beta.8](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.7...website@1.0.0-beta.8) (2019-09-25)
 
 

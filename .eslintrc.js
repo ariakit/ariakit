@@ -74,9 +74,7 @@ module.exports = {
       files: ["**/*.ts", "**/*.tsx"],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: "./tsconfig.json",
-        // TODO: Temporary fix https://github.com/typescript-eslint/typescript-eslint/issues/890
-        createDefaultProgram: true
+        project: "./tsconfig.json"
       },
       plugins: ["@typescript-eslint"],
       rules: {

@@ -1,11 +1,12 @@
 import * as React from "react";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { DialogOptions } from "../Dialog";
 
 export function useDisclosuresRef(options: DialogOptions) {
   const disclosuresRef = React.useRef<HTMLElement[]>([]);
   const lastActiveElement = React.useRef<Element | null>(null);
 
-  React.useLayoutEffect(() => {
+  useIsomorphicEffect(() => {
     if (options.visible) return undefined;
     const onFocus = () => {
       lastActiveElement.current = document.activeElement;

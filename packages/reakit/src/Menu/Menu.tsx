@@ -54,7 +54,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
 
     const { next, previous, orientation } = ancestorMenuBar || {};
     const ancestorIsHorizontal = orientation === "horizontal";
-    const [dir] = options.placement.split("-");
+    const [dir] = (options.placement || "").split("-");
 
     const rovingBindings = React.useMemo(
       () =>
