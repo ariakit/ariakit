@@ -498,6 +498,12 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Stores the values of radios and checkboxes within the menu.
 
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -595,9 +601,15 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>12 state props</summary>
+<details><summary>13 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
 
 - **`visible`**
   <code>boolean</code>
@@ -730,7 +742,7 @@ It's called after given milliseconds if `animated` is a number.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>8 state props</summary>
+<details><summary>9 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -738,6 +750,12 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
 
 - **`toggle`**
   <code>() =&#62; void</code>
@@ -1049,6 +1067,12 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the rover list.
 
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
+
 - **`currentId`**
   <code>string | null</code>
 
@@ -1083,12 +1107,6 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
-
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
-
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
 
 - **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>

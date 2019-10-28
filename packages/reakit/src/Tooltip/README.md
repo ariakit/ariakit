@@ -143,6 +143,12 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useTooltipState`
 
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -200,9 +206,15 @@ element.
   Whether or not the dialog should be rendered within `Portal`.
 It's `true` by default if `modal` is `true`.
 
-<details><summary>3 state props</summary>
+<details><summary>4 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
 
 - **`visible`**
   <code>boolean</code>
@@ -245,9 +257,15 @@ It's called after given milliseconds if `animated` is a number.
 
 ### `TooltipReference`
 
-<details><summary>3 state props</summary>
+<details><summary>4 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
 
 - **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>

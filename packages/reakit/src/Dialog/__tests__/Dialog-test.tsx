@@ -3,7 +3,7 @@ import { render, wait } from "@testing-library/react";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
-  unstable_hiddenId: "dialog",
+  baseId: "dialog",
   "aria-label": "dialog"
 };
 

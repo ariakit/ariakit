@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { DialogDisclosure } from "../DialogDisclosure";
 
 const props: Parameters<typeof DialogDisclosure>[0] = {
-  unstable_hiddenId: "dialog",
+  baseId: "dialog",
   toggle: jest.fn
 };
 

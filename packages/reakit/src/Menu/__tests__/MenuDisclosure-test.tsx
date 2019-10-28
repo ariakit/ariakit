@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { MenuDisclosure } from "../MenuDisclosure";
 
 const props: Parameters<typeof MenuDisclosure>[0] = {
-  unstable_hiddenId: "disclosure",
+  baseId: "disclosure",
   toggle: jest.fn(),
   placement: "bottom",
   show: jest.fn(),

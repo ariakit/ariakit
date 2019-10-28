@@ -6,10 +6,7 @@ import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
 export type TooltipReferenceOptions = BoxOptions &
-  Pick<
-    Partial<TooltipStateReturn>,
-    "unstable_referenceRef" | "unstable_hiddenId"
-  > &
+  Pick<Partial<TooltipStateReturn>, "unstable_referenceRef" | "baseId"> &
   Pick<TooltipStateReturn, "show" | "hide">;
 
 export type TooltipReferenceHTMLProps = BoxHTMLProps;
@@ -43,7 +40,7 @@ export const useTooltipReference = createHook<
       onBlur: useAllCallbacks(options.hide, htmlOnBlur),
       onMouseEnter: useAllCallbacks(options.show, htmlOnMouseEnter),
       onMouseLeave: useAllCallbacks(options.hide, htmlOnMouseLeave),
-      "aria-describedby": options.unstable_hiddenId,
+      "aria-describedby": options.baseId,
       ...htmlProps
     };
   }

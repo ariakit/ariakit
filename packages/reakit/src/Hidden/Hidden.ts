@@ -11,7 +11,7 @@ import { useSetIsMounted } from "./__utils/useSetIsMounted";
 export type HiddenOptions = BoxOptions &
   Pick<
     Partial<HiddenStateReturn>,
-    | "unstable_hiddenId"
+    | "baseId"
     | "visible"
     | "unstable_animating"
     | "unstable_animated"
@@ -58,7 +58,7 @@ export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
 
     return {
       role: "region",
-      id: options.unstable_hiddenId,
+      id: options.baseId,
       className: cx(hiddenClass, htmlClassName),
       onAnimationEnd: useAllCallbacks(onTransitionEnd, htmlOnAnimationEnd),
       onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),

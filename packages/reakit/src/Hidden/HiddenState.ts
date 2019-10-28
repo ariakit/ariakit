@@ -9,10 +9,10 @@ import { warning } from "reakit-utils/warning";
 
 export type HiddenState = {
   /**
-   * Hidden element ID.
-   * @private
+   * `id` passed to the container element and used as a base for internal
+   * `id`s.
    */
-  unstable_hiddenId: string;
+  baseId: string;
   /**
    * Whether it's visible or not.
    */
@@ -56,7 +56,7 @@ export type HiddenActions = {
 };
 
 export type HiddenInitialState = Partial<
-  Pick<HiddenState, "unstable_hiddenId" | "visible" | "unstable_animated">
+  Pick<HiddenState, "baseId" | "visible" | "unstable_animated">
 > & {
   /**
    * @private
@@ -79,7 +79,7 @@ export function useHiddenState(
 ): HiddenStateReturn {
   const defaultId = useId("hidden-");
   const {
-    unstable_hiddenId: hiddenId = defaultId,
+    baseId = defaultId,
     unstable_animated: animated = false,
     visible: sealedVisible = false,
     unstable_isMounted: initialIsMounted = false
@@ -136,7 +136,7 @@ export function useHiddenState(
   const stopAnimation = React.useCallback(() => setAnimating(false), []);
 
   return {
-    unstable_hiddenId: hiddenId,
+    baseId,
     unstable_animated: animated,
     unstable_animating: animating,
     visible,
@@ -149,7 +149,7 @@ export function useHiddenState(
 }
 
 const keys: Array<keyof HiddenStateReturn> = [
-  "unstable_hiddenId",
+  "baseId",
   "unstable_animated",
   "unstable_animating",
   "visible",

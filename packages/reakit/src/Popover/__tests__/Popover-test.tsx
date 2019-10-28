@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {
-  unstable_hiddenId: "popover",
+  baseId: "popover",
   "aria-label": "popover"
 };
 

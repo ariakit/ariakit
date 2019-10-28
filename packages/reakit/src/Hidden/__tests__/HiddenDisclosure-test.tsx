@@ -4,7 +4,7 @@ import { HiddenDisclosure } from "../HiddenDisclosure";
 
 const props: Parameters<typeof HiddenDisclosure>[0] = {
   toggle: jest.fn,
-  unstable_hiddenId: "test"
+  baseId: "test"
 };
 
 test("render", () => {

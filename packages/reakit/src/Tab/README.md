@@ -398,9 +398,15 @@ similarly to `readOnly` on form elements. In this case, only
 
   Tab's `stopId`.
 
-<details><summary>4 state props</summary>
+<details><summary>5 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  `id` passed to the container element and used as a base for internal
+`id`s.
 
 - **`visible`**
   <code>boolean</code>

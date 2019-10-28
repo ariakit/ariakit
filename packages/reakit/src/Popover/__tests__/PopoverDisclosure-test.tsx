@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { PopoverDisclosure } from "../PopoverDisclosure";
 
 const props: Parameters<typeof PopoverDisclosure>[0] = {
-  unstable_hiddenId: "popover",
+  baseId: "popover",
   toggle: jest.fn
 };
 

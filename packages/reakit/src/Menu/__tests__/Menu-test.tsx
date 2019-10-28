@@ -10,7 +10,7 @@ function createRef(id: string) {
 }
 
 const props: Parameters<typeof Menu>[0] = {
-  unstable_hiddenId: "hidden",
+  baseId: "hidden",
   stops: [{ id: "a", ref: createRef("a") }, { id: "b", ref: createRef("b") }],
   move: jest.fn(),
   next: jest.fn(),
