@@ -1,3 +1,4 @@
+// TODO: Refactor
 import { toArray } from "reakit-utils/toArray";
 import { deepEqual } from "./__utils/deepEqual";
 import { useOptions } from "./useOptions";
@@ -6,6 +7,7 @@ import { useProps } from "./useProps";
 type Hook<O = any, P = any> = {
   (options?: O, htmlProps?: P): P;
   __keys: ReadonlyArray<any>;
+  __useOptions: (options: O, htmlProps: P) => O;
   __propsAreEqual?: (prev: O & P, next: O & P) => boolean;
 };
 
@@ -23,11 +25,26 @@ type CreateHookOptions<O, P> = {
 export function createHook<O, P>(options: CreateHookOptions<O, P>) {
   const composedHooks = toArray(options.compose) as Hook[];
 
-  const useHook: Hook<O, P> = (hookOptions = {} as O, htmlProps = {} as P) => {
+  const __useOptions = (hookOptions: O, htmlProps: P) => {
     if (options.useOptions) {
       hookOptions = options.useOptions(hookOptions, htmlProps);
     }
-    hookOptions = useOptions(options.name, hookOptions, htmlProps);
+    return useOptions(options.name, hookOptions, htmlProps);
+  };
+
+  const useHook: Hook<O, P> = (
+    hookOptions = {} as O,
+    htmlProps = {} as P,
+    unstable_ignoreUseOptions = false
+  ) => {
+    if (!unstable_ignoreUseOptions) {
+      hookOptions = __useOptions(hookOptions, htmlProps);
+    }
+    if (options.compose) {
+      composedHooks.forEach(hook => {
+        hookOptions = hook.__useOptions(hookOptions, htmlProps);
+      });
+    }
     if (options.useProps) {
       htmlProps = options.useProps(hookOptions, htmlProps);
     }
@@ -36,7 +53,8 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       htmlProps = options.useCompose(hookOptions, htmlProps);
     } else if (options.compose) {
       composedHooks.forEach(hook => {
-        htmlProps = hook(hookOptions, htmlProps);
+        // @ts-ignore
+        htmlProps = hook(hookOptions, htmlProps, true);
       });
     }
     return htmlProps;
@@ -47,6 +65,8 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       value: options.name
     });
   }
+
+  useHook.__useOptions = __useOptions;
 
   useHook.__keys = [
     ...composedHooks.reduce(
