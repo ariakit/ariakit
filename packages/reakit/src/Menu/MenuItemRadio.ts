@@ -7,7 +7,7 @@ import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
 
 export type MenuItemRadioOptions = RadioOptions &
   MenuItemOptions &
-  Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
+  Pick<MenuStateReturn, "unstable_values" | "unstable_setValue"> & {
     /**
      * MenuItemRadio's name as in `menu.values`.
      */
@@ -29,8 +29,8 @@ export const useMenuItemRadio = createHook<
 
   useOptions(options) {
     const setState = React.useCallback(
-      value => options.unstable_update(options.name, value),
-      [options.unstable_update, options.name]
+      value => options.unstable_setValue(options.name, value),
+      [options.unstable_setValue, options.name]
     );
 
     return {
