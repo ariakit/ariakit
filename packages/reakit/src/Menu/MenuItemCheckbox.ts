@@ -11,7 +11,7 @@ import { MenuStateReturn, useMenuState } from "./MenuState";
 
 export type MenuItemCheckboxOptions = CheckboxOptions &
   MenuItemOptions &
-  Pick<MenuStateReturn, "unstable_values" | "unstable_update"> & {
+  Pick<MenuStateReturn, "unstable_values" | "unstable_setValue"> & {
     /**
      * MenuItemCheckbox's name as in `menu.values`.
      */
@@ -34,8 +34,8 @@ export const useMenuItemCheckbox = createHook<
 
   useOptions(options) {
     const setState = React.useCallback(
-      value => options.unstable_update(options.name, value),
-      [options.unstable_update, options.name]
+      value => options.unstable_setValue(options.name, value),
+      [options.unstable_setValue, options.name]
     );
 
     return {
