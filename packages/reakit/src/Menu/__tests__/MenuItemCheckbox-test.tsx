@@ -15,7 +15,7 @@ const props: Parameters<typeof MenuItemCheckbox>[0] = {
   first: jest.fn(),
   last: jest.fn(),
   unstable_values: {},
-  unstable_update: jest.fn()
+  unstable_setValue: jest.fn()
 };
 
 test("render", () => {
