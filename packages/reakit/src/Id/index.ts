@@ -1,4 +1,4 @@
 export * from "./Id";
-export * from "./IdBase";
+export * from "./IdGroup";
 export * from "./IdProvider";
 export * from "./IdState";

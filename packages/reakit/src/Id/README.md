@@ -8,7 +8,7 @@ path: /docs/id/
   <strong>This is experimental</strong> and may have breaking changes in minor or patch version updates. Issues for this module will have lower priority. Even so, if you use it, feel free to <a href="https://github.com/reakit/reakit/issues/new/choose" target="_blank">give us feedback</a>.
 </blockquote>
 
-Accessible `Group` component that is used to identify a set of user interface objects. It implements the [WAI-ARIA Group Role](https://www.w3.org/TR/wai-aria-1.1/#group).
+`Id` is a component that renders an element with an automatically generated `id` attribute that is consistent across server and client. It's used by several other components.
 
 <carbon-ad></carbon-ad>
 
@@ -23,36 +23,34 @@ Learn more in [Get started](/docs/get-started/).
 ## Usage
 
 ```jsx
-import { Group } from "reakit/Group";
-import { Button } from "reakit/Button";
+import {
+  unstable_useIdState as useIdState,
+  unstable_Id as Id
+} from "reakit/Id";
 
 function Example() {
+  const id = useIdState({ baseId: "items" });
   return (
-    <Group>
-      <Button>Button1</Button>
-      <Button>Button2</Button>
-      <Button>Button3</Button>
-    </Group>
+    <>
+      <Id {...id}>Item 1</Id>
+      <Id {...id}>Item 2</Id>
+    </>
   );
 }
 ```
 
 ## Accessibility
 
-- `Group` has role `group`.
+`Id` renders unique and consistent `id` attributes so they can be used in several `aria-` props.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Group` uses [Box](/docs/box/).
+- `Id` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
 <!-- Automatically generated -->
-
-### `Group`
-
-No props to show

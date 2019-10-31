@@ -201,7 +201,7 @@ export function useMenuDisclosureProps(
           return React.cloneElement(child, {
             children: (
               <>
-                {child.props.children}
+                {child.props.children} {/* typeof function call */}
                 {svg}
               </>
             )

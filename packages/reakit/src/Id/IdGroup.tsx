@@ -5,7 +5,7 @@ import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_IdStateReturn, unstable_useIdState } from "./IdState";
 import { unstable_IdContext } from "./IdProvider";
 
-export type unstable_IdBaseOptions = BoxOptions &
+export type unstable_IdGroupOptions = BoxOptions &
   Pick<
     Partial<unstable_IdStateReturn>,
     "baseId" | "unstable_setBaseId" | "unstable_idCountRef"
@@ -16,16 +16,16 @@ export type unstable_IdBaseOptions = BoxOptions &
     id?: string;
   };
 
-export type unstable_IdBaseHTMLProps = BoxHTMLProps;
+export type unstable_IdGroupHTMLProps = BoxHTMLProps;
 
-export type unstable_IdBaseProps = unstable_IdBaseOptions &
-  unstable_IdBaseHTMLProps;
+export type unstable_IdGroupProps = unstable_IdGroupOptions &
+  unstable_IdGroupHTMLProps;
 
-export const unstable_useIdBase = createHook<
-  unstable_IdBaseOptions,
-  unstable_IdBaseHTMLProps
+export const unstable_useIdGroup = createHook<
+  unstable_IdGroupOptions,
+  unstable_IdGroupHTMLProps
 >({
-  name: "IdBase",
+  name: "IdGroup",
   compose: useBox,
   useState: unstable_useIdState,
 
@@ -47,7 +47,7 @@ export const unstable_useIdBase = createHook<
   }
 });
 
-export const unstable_IdBase = createComponent({
+export const unstable_IdGroup = createComponent({
   as: "div",
-  useHook: unstable_useIdBase
+  useHook: unstable_useIdGroup
 });
