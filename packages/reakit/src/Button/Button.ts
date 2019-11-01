@@ -28,7 +28,6 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
       if (
         ref.current &&
         (ref.current instanceof HTMLButtonElement ||
-          ref.current instanceof HTMLAnchorElement ||
           ref.current instanceof HTMLInputElement)
       ) {
         setType("button");
