@@ -16,7 +16,9 @@ test("render", () => {
 test("render anchor", () => {
   const { getByText } = render(<Button as="a">button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
-    <a>
+    <a
+      type="button"
+    >
       button
     </a>
   `);
