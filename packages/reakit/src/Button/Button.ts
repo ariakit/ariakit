@@ -22,6 +22,7 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   useProps(_, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const [role, setRole] = React.useState<"button" | undefined>(undefined);
+    const [type, setType] = React.useState<"button" | undefined>(undefined);
 
     React.useEffect(() => {
       if (
@@ -30,6 +31,7 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
           ref.current instanceof HTMLAnchorElement ||
           ref.current instanceof HTMLInputElement)
       ) {
+        setType("button");
         return;
       }
       setRole("button");
@@ -38,7 +40,7 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
     return {
       ref: mergeRefs(ref, htmlRef),
       role,
-      type: "button",
+      type,
       ...htmlProps
     };
   }
