@@ -25,16 +25,19 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
     const [type, setType] = React.useState<"button" | undefined>(undefined);
 
     React.useEffect(() => {
+      if (ref.current && ref.current instanceof HTMLAnchorElement) {
+        return;
+      }
+
       if (
         ref.current &&
         (ref.current instanceof HTMLButtonElement ||
-          ref.current instanceof HTMLAnchorElement ||
           ref.current instanceof HTMLInputElement)
       ) {
         setType("button");
-        return;
+      } else {
+        setRole("button");
       }
-      setRole("button");
     }, []);
 
     return {
