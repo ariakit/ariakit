@@ -649,7 +649,7 @@ It's called after given milliseconds if `animated` is a number.
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -700,7 +700,7 @@ It's called after given milliseconds if `animated` is a number.
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -835,7 +835,7 @@ similarly to `readOnly` on form elements. In this case, only
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -912,7 +912,7 @@ array.
 
   MenuItemCheckbox's name as in `menu.values`.
 
-<details><summary>17 state props</summary>
+<details><summary>18 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -960,7 +960,7 @@ going to be an array.
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -1004,6 +1004,11 @@ going to be an array.
 
   Stores the values of radios and checkboxes within the menu.
 
+- **`unstable_setValue`** <span title="Experimental">⚠️</span>
+  <code>(name: string, value?: any) =&#62; void</code>
+
+  Updates checkboxes and radios values within the menu.
+
 </details>
 
 ### `MenuItemRadio`
@@ -1040,7 +1045,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   MenuItemRadio's name as in `menu.values`.
 
-<details><summary>17 state props</summary>
+<details><summary>18 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1048,6 +1053,12 @@ similarly to `readOnly` on form elements. In this case, only
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Defines the orientation of the rover list.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
 
 - **`currentId`**
   <code>string | null</code>
@@ -1070,7 +1081,7 @@ similarly to `readOnly` on form elements. In this case, only
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -1083,12 +1094,6 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
-
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
-
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
 
 - **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
@@ -1129,6 +1134,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>{ [x: string]: any; }</code>
 
   Stores the values of radios and checkboxes within the menu.
+
+- **`unstable_setValue`** <span title="Experimental">⚠️</span>
+  <code>(name: string, value?: any) =&#62; void</code>
+
+  Updates checkboxes and radios values within the menu.
 
 </details>
 

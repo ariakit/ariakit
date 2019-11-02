@@ -54,7 +54,7 @@ export type RoverActions = {
   /**
    * Moves focus to a given element ID.
    */
-  move: (id: Stop["id"] | null) => void;
+  move: (id: Stop["id"] | null, unstable_silent?: boolean) => void;
   /**
    * Moves focus to the next element.
    */
@@ -92,7 +92,7 @@ export type RoverStateReturn = RoverState & RoverActions;
 type RoverAction =
   | { type: "register"; id: Stop["id"]; ref: Stop["ref"] }
   | { type: "unregister"; id: Stop["id"] }
-  | { type: "move"; id: Stop["id"] | null }
+  | { type: "move"; id: Stop["id"] | null; silent?: boolean }
   | { type: "next" }
   | { type: "previous" }
   | { type: "first" }
@@ -167,14 +167,15 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       };
     }
     case "move": {
-      const { id } = action;
+      const { id, silent } = action;
+      const nextMoves = silent ? moves : moves + 1;
 
       if (id === null) {
         return {
           ...state,
           currentId: null,
           unstable_pastId: currentId,
-          unstable_moves: moves + 1
+          unstable_moves: nextMoves
         };
       }
 
@@ -186,14 +187,14 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       }
 
       if (stops[index].id === currentId) {
-        return { ...state, unstable_moves: moves + 1 };
+        return { ...state, unstable_moves: nextMoves };
       }
 
       return {
         ...state,
         currentId: stops[index].id,
         unstable_pastId: currentId,
-        unstable_moves: moves + 1
+        unstable_moves: nextMoves
       };
     }
     case "next": {
@@ -274,7 +275,10 @@ export function useRoverState(
       id => dispatch({ type: "unregister", id }),
       []
     ),
-    move: React.useCallback(id => dispatch({ type: "move", id }), []),
+    move: React.useCallback(
+      (id, silent) => dispatch({ type: "move", id, silent }),
+      []
+    ),
     next: React.useCallback(() => dispatch({ type: "next" }), []),
     previous: React.useCallback(() => dispatch({ type: "previous" }), []),
     first: React.useCallback(() => dispatch({ type: "first" }), []),
