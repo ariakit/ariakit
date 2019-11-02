@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.10](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.9...reakit@1.0.0-beta.10) (2019-11-02)
+
+
+### Bug Fixes
+
+* Fix `MenuItemCheckbox` and `MenuItemRadio` not working ([#473](https://github.com/reakit/reakit/issues/473)) ([11b7bfa](https://github.com/reakit/reakit/commit/11b7bfa)), closes [#472](https://github.com/reakit/reakit/issues/472)
+* Fix `Rover` trying to focus itself again when it receives focus ([#476](https://github.com/reakit/reakit/issues/476)) ([b27194e](https://github.com/reakit/reakit/commit/b27194e))
+* Fix `Tabbable` focus behavior on Mac Safari/Firefox ([#458](https://github.com/reakit/reakit/issues/458)) ([8306241](https://github.com/reakit/reakit/commit/8306241))
+* Stop adding `type="button"` on `Button` by default ([#474](https://github.com/reakit/reakit/issues/474)) ([82b7279](https://github.com/reakit/reakit/commit/82b7279))
+
+
+
+
+
 # [1.0.0-beta.9](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.8...reakit@1.0.0-beta.9) (2019-10-12)
 
 
