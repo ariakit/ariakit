@@ -28,7 +28,7 @@ If possible, describe how this bug could be fixed.
 ### Environment
 
 ```sh
-$ npx envinfo --system --binaries --npmPackages
+$ npx envinfo --system --binaries --browsers --npmPackages "{react*,reakit*}"
 
 Paste here
 ```
