@@ -10,7 +10,7 @@ export function useWarningIfMultiple(options: HiddenOptions) {
 
     warning(
       document.querySelectorAll(`#${options.unstable_hiddenId}`).length > 1,
-      "Hidden",
+      "[reakit/Hidden]",
       "You're reusing the same `useModuleState` for multiple components (Hidden, Dialog, Popover, Menu etc.).",
       "This is not allowed! If you want to use multiple components, make sure you're using different states.",
       "See https://reakit.io/docs/hidden/#multiple-components"

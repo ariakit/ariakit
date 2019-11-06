@@ -17,7 +17,7 @@ export function useFocusOnShow(
 
     warning(
       Boolean(shouldFocus && !dialog),
-      "Dialog",
+      "[reakit/Dialog]",
       "Can't set initial focus on dialog because `ref` wasn't passed to component.",
       "See https://reakit.io/docs/dialog"
     );
@@ -44,7 +44,7 @@ export function useFocusOnShow(
         ensureFocus(dialog, { preventScroll: true, isActive });
         warning(
           dialog.tabIndex === undefined || dialog.tabIndex < 0,
-          "Dialog",
+          "[reakit/Dialog]",
           "It's recommended to have at least one tabbable element inside dialog. The dialog element has been automatically focused.",
           "If this is the intended behavior, pass `tabIndex={0}` to the dialog element to disable this warning.",
           "See https://reakit.io/docs/dialog/#initial-focus"

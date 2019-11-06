@@ -1,15 +1,10 @@
 const isProduction = process.env.NODE_ENV === "production";
 
-export function warning(
-  condition: boolean,
-  label?: string,
-  ...messages: string[]
-) {
+export function warning(condition: boolean, ...messages: string[]) {
   if (!isProduction) {
     if (!condition) return;
 
-    const finalLabel = label ? `[reakit/${label}]\n` : "[reakit]\n";
-    const text = `${finalLabel}${messages.join("\n\n")}`;
+    const text = messages.join("\n\n");
 
     // eslint-disable-next-line no-console
     console.warn(text);

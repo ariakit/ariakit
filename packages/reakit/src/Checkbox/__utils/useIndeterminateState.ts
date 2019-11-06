@@ -10,7 +10,7 @@ export function useIndeterminateState(
     if (!checkboxRef.current) {
       warning(
         options.state === "indeterminate",
-        "Checkbox",
+        "[reakit/Checkbox]",
         "Can't set indeterminate state because `ref` wasn't passed to component.",
         "See https://reakit.io/docs/checkbox/#indeterminate-state"
       );

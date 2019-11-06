@@ -26,7 +26,7 @@ export function useEventListenerOutside(
       if (!container) {
         warning(
           true,
-          "Dialog",
+          "[reakit/Dialog]",
           "Can't detect events outside dialog because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/dialog"
         );

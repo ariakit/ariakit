@@ -37,7 +37,7 @@ export function useFocusOnHide(
     } else {
       warning(
         true,
-        "Dialog",
+        "[reakit/Dialog]",
         "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
         "See https://reakit.io/docs/dialog"
       );
