@@ -32,14 +32,16 @@ export const unstable_useIdGroup = createHook<
   useOptions(options, htmlProps) {
     const generateId = React.useContext(unstable_IdContext);
     const [id] = React.useState(
-      () => htmlProps.id || options.baseId || generateId()
+      () => htmlProps.id || options.id || options.baseId || generateId()
     );
 
+    // If there's useIdState and IdGroup has received a different id, then set
+    // the baseId on the state.
     if (options.unstable_setBaseId && id !== options.baseId) {
       options.unstable_setBaseId(id);
     }
 
-    return { id, ...options };
+    return { ...options, id };
   },
 
   useProps(options, { id, ...htmlProps }) {

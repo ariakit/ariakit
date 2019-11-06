@@ -1,18 +1,10 @@
 import * as React from "react";
+import { generateRandomString, defaultPrefix } from "./__utils";
 
 export type unstable_IdProviderProps = {
   children: React.ReactNode;
   prefix?: string;
 };
-
-const defaultPrefix = "id";
-
-// TODO: Abstract into __utils
-export function generateRandomString(prefix = defaultPrefix) {
-  return `${prefix ? `${prefix}-` : ""}${Math.random()
-    .toString(32)
-    .substr(2, 6)}`;
-}
 
 export const unstable_IdContext = React.createContext(generateRandomString);
 

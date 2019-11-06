@@ -1,5 +1,7 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render, wait } from "@testing-library/react";
+import { unstable_IdProps } from "../Id";
+import { unstable_IdGroupProps } from "../IdGroup";
 import {
   unstable_IdProvider as IdProvider,
   unstable_useIdState as useIdState,
@@ -9,238 +11,441 @@ import {
 } from "..";
 
 // TODO: Replace getByText by getByLabelText
-// Abstract Id/IdGroup
 // Test useId
 // Test useId passing id to options and htmlProps
-// Test Provider with Id (maybe useId) with baseId passed directly to the component/hook (without useIdState)
 // Test passing id directly to IdGroup with useIdState (should update baseId)
 
-test("render without useState", () => {
+// Basically puts the id prop into the aria-label prop
+function TestId(props: unstable_IdProps) {
+  return (
+    <Id {...props}>
+      {htmlProps => (
+        <div {...htmlProps} aria-label={htmlProps.id}>
+          {props.children}
+        </div>
+      )}
+    </Id>
+  );
+}
+
+// Basically puts the id prop into the aria-label prop
+function TestIdGroup(props: unstable_IdGroupProps) {
+  return (
+    <IdGroup {...props}>
+      {htmlProps => (
+        <div {...htmlProps} aria-label={htmlProps.id}>
+          {props.children}
+        </div>
+      )}
+    </IdGroup>
+  );
+}
+
+test("Id", () => {
   const Test = () => {
     return (
       <>
-        <Id>{props => <div>{props.id}</div>}</Id>
-        <Id>{props => <div>{props.id}</div>}</Id>
+        <TestId />
+        <TestId />
       </>
     );
   };
-  const { getAllByText } = render(<Test />);
-  expect(getAllByText(/id-[a-z\d]{2,}$/)).toHaveLength(2);
+  const { getAllByLabelText, rerender } = render(<Test />);
+  const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  expect(ids).toHaveLength(2);
+  // shouldn't change ids
+  rerender(<Test />);
+  const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  expect(ids).toEqual(nextIds);
 });
 
-test("render without useState with IdGroup", () => {
+test("Id within IdGroup", () => {
   const Test = () => {
     return (
-      <IdGroup>
-        {groupProps => (
-          <>
-            <div>{groupProps.id}</div>
-            <Id>{props => <div>{props.id}</div>}</Id>
-            <Id>{props => <div>{props.id}</div>}</Id>
-          </>
-        )}
-      </IdGroup>
+      <TestIdGroup>
+        <TestId />
+        <TestId />
+      </TestIdGroup>
     );
   };
-  const { getAllByText } = render(<Test />);
-  expect(getAllByText(/id-[a-z\d]{2,}$/)).toHaveLength(3);
+  const { getAllByLabelText, rerender } = render(<Test />);
+  const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  expect(ids).toHaveLength(3);
+  // shouldn't change ids
+  rerender(<Test />);
+  const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  expect(ids).toEqual(nextIds);
 });
 
-test("render without useState with Provider", () => {
+test("Id within IdProvider", () => {
   const Test = () => {
     return (
       <IdProvider>
-        <Id>{props => <div>{props.id}</div>}</Id>
-        <Id>{props => <div>{props.id}</div>}</Id>
+        <Id />
+        <Id />
       </IdProvider>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText("id-1");
-  getByText("id-2");
+  const { container } = render(<Test />);
+  // IDs will be sequential because it's handled by the Provider
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="id-1"
+      />
+      <div
+        id="id-2"
+      />
+    </div>
+  `);
 });
 
-test("render without useState with Provider with IdGroup", () => {
+test("Id with baseId within IdProvider", () => {
+  const Test = () => {
+    return (
+      <IdProvider>
+        <Id baseId="a" />
+        <Id baseId="a" />
+      </IdProvider>
+    );
+  };
+  const { container } = render(<Test />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a-1"
+      />
+      <div
+        id="a-2"
+      />
+    </div>
+  `);
+});
+
+test("Id within IdGroup within IdProvider", () => {
   const Test = () => {
     return (
       <IdProvider>
         <IdGroup>
-          {groupProps => (
-            <>
-              <div>{groupProps.id}</div>
-              <Id>{props => <div>{props.id}</div>}</Id>
-              <Id>{props => <div>{props.id}</div>}</Id>
-            </>
-          )}
+          <Id />
+          <Id />
         </IdGroup>
       </IdProvider>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText("id-1");
-  getByText("id-2");
-  getByText("id-3");
+  const { container } = render(<Test />);
+  // IDs will be sequential because it's handled by the Provider
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="id-1"
+      >
+        <div
+          id="id-2"
+        />
+        <div
+          id="id-3"
+        />
+      </div>
+    </div>
+  `);
 });
 
-test("render without useState with Provider with prefix", () => {
+test("Id within IdProvider with prefix", () => {
   const Test = () => {
     return (
       <IdProvider prefix="a">
-        <Id>{props => <div>{props.id}</div>}</Id>
-        <Id>{props => <div>{props.id}</div>}</Id>
+        <Id />
+        <Id />
       </IdProvider>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText("a-1");
-  getByText("a-2");
+  const { container } = render(<Test />);
+  // IDs will be sequential because it's handled by the Provider
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a-1"
+      />
+      <div
+        id="a-2"
+      />
+    </div>
+  `);
 });
 
-test("render without useState with Provider with prefix with IdGroup", () => {
+test("Id within IdGroup within IdProvider with prefix", () => {
   const Test = () => {
     return (
       <IdProvider prefix="a">
         <IdGroup>
-          {groupProps => (
-            <>
-              <div>{groupProps.id}</div>
-              <Id>{props => <div>{props.id}</div>}</Id>
-              <Id>{props => <div>{props.id}</div>}</Id>
-            </>
-          )}
+          <Id />
+          <Id />
         </IdGroup>
       </IdProvider>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText("a-1");
-  getByText("a-2");
-  getByText("a-3");
+  const { container } = render(<Test />);
+  // IDs will be sequential because it's handled by the Provider
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a-1"
+      >
+        <div
+          id="a-2"
+        />
+        <div
+          id="a-3"
+        />
+      </div>
+    </div>
+  `);
 });
 
-test("render with state", () => {
+test("Id with useIdState", () => {
   const Test = () => {
     const id = useIdState();
     return (
       <>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
+        <TestId {...id} />
+        <TestId {...id} />
       </>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText(/id-[a-z\d]{2,}-1$/);
-  getByText(/id-[a-z\d]{2,}-2$/);
+  const { getByLabelText, rerender } = render(<Test />);
+  const { id: id1 } = getByLabelText(/id-[a-z\d]{2,}-1$/);
+  const { id: id2 } = getByLabelText(/id-[a-z\d]{2,}-2$/);
+  // shouldn't change ids
+  rerender(<Test />);
+  const { id: nextId1 } = getByLabelText(/id-[a-z\d]{2,}-1$/);
+  const { id: nextId2 } = getByLabelText(/id-[a-z\d]{2,}-2$/);
+  expect(id1).toBe(nextId1);
+  expect(id2).toBe(nextId2);
 });
 
-test("render with state with IdGroup", () => {
+test("Id within IdGroup with useIdState", () => {
   const Test = () => {
     const id = useIdState();
     return (
-      <IdGroup {...id}>
-        {groupProps => (
-          <>
-            <div>{groupProps.id}</div>
-            <Id {...id}>{props => <div>{props.id}</div>}</Id>
-            <Id {...id}>{props => <div>{props.id}</div>}</Id>
-          </>
-        )}
+      <TestIdGroup {...id}>
+        <TestId {...id} />
+        <TestId {...id} />
+      </TestIdGroup>
+    );
+  };
+  const { getByLabelText, rerender } = render(<Test />);
+  const { id: groupId } = getByLabelText(/id-[a-z\d]{2,}$/);
+  const { id: id1 } = getByLabelText(new RegExp(`${groupId}-1$`));
+  const { id: id2 } = getByLabelText(new RegExp(`${groupId}-2$`));
+  // shouldn't change ids
+  rerender(<Test />);
+  const { id: nextId1 } = getByLabelText(new RegExp(`${groupId}-1$`));
+  const { id: nextId2 } = getByLabelText(new RegExp(`${groupId}-2$`));
+  expect(id1).toBe(nextId1);
+  expect(id2).toBe(nextId2);
+});
+
+test("Id within IdGroup with id with useIdState", async () => {
+  const Test = () => {
+    const id = useIdState();
+    return (
+      <IdGroup {...id} id="a">
+        <Id {...id} />
+        <Id {...id} />
       </IdGroup>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText(/id-[a-z\d]{2,}$/);
-  getByText(/id-[a-z\d]{2,}-1$/);
-  getByText(/id-[a-z\d]{2,}-2$/);
+  const { container } = render(<Test />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a"
+      >
+        <div
+          id="a-1"
+        />
+        <div
+          id="a-2"
+        />
+      </div>
+    </div>
+  `);
 });
 
-test("render with state with Provider", () => {
+test("Id with useIdState within IdProvider", () => {
   const Test = () => {
     const id = useIdState();
     return (
       <>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
+        <Id {...id} />
+        <Id {...id} />
       </>
     );
   };
-  const { getByText } = render(
+  const { container } = render(
     <IdProvider>
       <Test />
     </IdProvider>
   );
-  getByText("id-1-1");
-  getByText("id-1-2");
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="id-1-1"
+      />
+      <div
+        id="id-1-2"
+      />
+    </div>
+  `);
 });
 
-test("render with state with Provider with prefux", () => {
+test("Id with useIdState within IdProvider with prefix", () => {
   const Test = () => {
     const id = useIdState();
     return (
       <>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
+        <Id {...id} />
+        <Id {...id} />
       </>
     );
   };
-  const { getByText } = render(
+  const { container } = render(
     <IdProvider prefix="a">
       <Test />
     </IdProvider>
   );
-  getByText("a-1-1");
-  getByText("a-1-2");
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a-1-1"
+      />
+      <div
+        id="a-1-2"
+      />
+    </div>
+  `);
 });
 
-test("render with state and baseId", () => {
+test("Id with useIdState with baseId", () => {
   const Test = () => {
     const id = useIdState({ baseId: "a" });
     return (
       <>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
+        <Id {...id} />
+        <Id {...id} />
       </>
     );
   };
-  const { getByText } = render(<Test />);
-  getByText("a-1");
-  getByText("a-2");
+  const { container } = render(<Test />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a-1"
+      />
+      <div
+        id="a-2"
+      />
+    </div>
+  `);
 });
 
-test("render with state and baseId with Provider", () => {
+test("Id with useIdState with baseId within IdProvider", () => {
   const Test = () => {
     const id = useIdState({ baseId: "a" });
     return (
       <>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
+        <Id {...id} />
+        <Id {...id} />
       </>
     );
   };
-  const { getByText } = render(
+  const { container } = render(
     <IdProvider>
       <Test />
     </IdProvider>
   );
-  getByText("a-1");
-  getByText("a-2");
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="a-1"
+      />
+      <div
+        id="a-2"
+      />
+    </div>
+  `);
 });
 
-test("render with state and baseId with Provider with prefix", () => {
+test("Id with useIdState with baseId within IdProvider with prefix", () => {
   const Test = () => {
     const id = useIdState({ baseId: "b" });
     return (
       <>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
-        <Id {...id}>{props => <div>{props.id}</div>}</Id>
+        <Id {...id} />
+        <Id {...id} />
       </>
     );
   };
-  const { getByText } = render(
+  const { container } = render(
     <IdProvider prefix="a">
       <Test />
     </IdProvider>
   );
-  getByText("b-1");
-  getByText("b-2");
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="b-1"
+      />
+      <div
+        id="b-2"
+      />
+    </div>
+  `);
+});
+
+test("Id within IdProvider with useIdState with baseId", () => {
+  const Test = () => {
+    const id = useIdState({ baseId: "b" });
+    return (
+      <IdProvider>
+        <Id {...id} />
+        <Id {...id} />
+      </IdProvider>
+    );
+  };
+  const { container } = render(<Test />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="b-1"
+      />
+      <div
+        id="b-2"
+      />
+    </div>
+  `);
+});
+
+test("Id within IdProvider with prefix with useIdState with baseId", () => {
+  const Test = () => {
+    const id = useIdState({ baseId: "b" });
+    return (
+      <IdProvider prefix="a">
+        <Id {...id} />
+        <Id {...id} />
+      </IdProvider>
+    );
+  };
+  const { container } = render(<Test />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        id="b-1"
+      />
+      <div
+        id="b-2"
+      />
+    </div>
+  `);
 });

@@ -13,7 +13,7 @@ type Hook<O = any, P = any> = {
 };
 
 type CreateHookOptions<O, P> = {
-  name: string;
+  name?: string;
   compose?: Hook | Hook[];
   useState?: { (): any; __keys: ReadonlyArray<any> };
   useOptions?: (options: O, htmlProps: P) => O;
@@ -30,7 +30,10 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     if (options.useOptions) {
       hookOptions = options.useOptions(hookOptions, htmlProps);
     }
-    return useOptions(options.name, hookOptions, htmlProps);
+    if (options.name) {
+      hookOptions = useOptions(options.name, hookOptions, htmlProps);
+    }
+    return hookOptions;
   };
 
   const useHook: Hook<O, P> = (
@@ -49,7 +52,9 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     if (options.useProps) {
       htmlProps = options.useProps(hookOptions, htmlProps);
     }
-    htmlProps = useProps(options.name, hookOptions, htmlProps) as P;
+    if (options.name) {
+      htmlProps = useProps(options.name, hookOptions, htmlProps) as P;
+    }
     if (options.useCompose) {
       htmlProps = options.useCompose(hookOptions, htmlProps);
     } else if (options.compose) {
@@ -61,7 +66,7 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     return htmlProps;
   };
 
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && options.name) {
     Object.defineProperty(useHook, "name", {
       value: options.name
     });

@@ -3,7 +3,8 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_IdStateReturn, unstable_useIdState } from "./IdState";
-import { unstable_IdContext, generateRandomString } from "./IdProvider";
+import { unstable_IdContext } from "./IdProvider";
+import { generateRandomString } from "./__utils";
 
 export type unstable_IdOptions = BoxOptions &
   Pick<Partial<unstable_IdStateReturn>, "baseId" | "unstable_idCountRef"> & {
@@ -29,21 +30,31 @@ export const unstable_useId = createHook<
     const generateId = React.useContext(unstable_IdContext);
 
     const [suffix] = React.useState(() => {
+      // This comes from useIdState
       if (options.unstable_idCountRef) {
         options.unstable_idCountRef.current += 1;
         return `-${options.unstable_idCountRef.current}`;
       }
+      // If there's no useIdState, we check if there is a Provider
+      // and `baseId` was passed (as a prop, not from useIdState).
       if (generateId !== generateRandomString && options.baseId) {
         return `-${generateId("")}`;
       }
       return "";
     });
 
-    const [baseId] = React.useState(() => options.baseId || generateId());
+    // `baseId` will be the prop passed directly as a prop or via useIdState.
+    // If there's neither, then it'll fallback to Context's generateId.
+    // This generateId can result in a sequential ID (if there's a Provider)
+    // or a random string (without Provider).
+    const baseId = React.useMemo(() => options.baseId || generateId(), [
+      options.baseId,
+      generateId
+    ]);
 
-    const id = htmlProps.id || `${baseId}${suffix}`;
+    const id = htmlProps.id || options.id || `${baseId}${suffix}`;
 
-    return { id, ...options };
+    return { ...options, id };
   },
 
   useProps(options, { id, ...htmlProps }) {
