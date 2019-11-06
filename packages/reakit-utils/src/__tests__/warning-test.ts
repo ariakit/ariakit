@@ -15,7 +15,7 @@ describe("warning", () => {
       warning(true, "warn", "ing");
     });
 
-    expect(warnSpy).toHaveBeenCalledWith("warn\n\ning");
+    expect(warnSpy).toHaveBeenCalledWith("warn\ning");
   });
   it('does not log to console.warn if NODE_ENV is "production"', () => {
     process.env.NODE_ENV = "production";

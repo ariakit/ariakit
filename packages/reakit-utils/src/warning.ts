@@ -4,7 +4,7 @@ export function warning(condition: boolean, ...messages: string[]) {
   if (!isProduction) {
     if (!condition) return;
 
-    const text = messages.join("\n\n");
+    const text = messages.join("\n");
 
     // eslint-disable-next-line no-console
     console.warn(text);
