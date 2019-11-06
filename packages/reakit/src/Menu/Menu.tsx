@@ -137,7 +137,7 @@ export const Menu = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "Menu",
+      "[reakit/Menu]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/menu"
     );

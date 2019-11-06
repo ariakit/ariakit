@@ -155,7 +155,7 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       const { id } = action;
       const nextStops = stops.filter(stop => stop.id !== id);
       if (nextStops.length === stops.length) {
-        warning(true, "RoverState", `${id} stop is not registered`);
+        warning(true, "[reakit/RoverState]", `${id} stop is not registered`);
         return state;
       }
 

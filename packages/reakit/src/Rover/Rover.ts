@@ -72,7 +72,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       if (!ref.current) {
         warning(
           true,
-          "Rover",
+          "[reakit/Rover]",
           "Can't focus rover component because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/rover"
         );
