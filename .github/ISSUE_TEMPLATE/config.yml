@@ -1,0 +1,7 @@
+contact_links:
+  - name: Reakit community on Spectrum
+    url: https://spectrum.chat/reakit
+    about: Please ask and answer questions here.
+  - name: Reakit tag on StackOverflow
+    url: https://stackoverflow.com/questions/tagged/reakit
+    about: Please ask and answer questions here.
