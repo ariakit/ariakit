@@ -124,7 +124,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnClick(event);
         }
       },
-      [htmlOnClick]
+      [options.disabled, htmlOnClick]
     );
 
     const onMouseDown = React.useCallback(
@@ -155,7 +155,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnMouseDown(event);
         }
       },
-      [htmlOnMouseDown]
+      [options.disabled, htmlOnMouseDown]
     );
 
     const onKeyDown = React.useCallback(
