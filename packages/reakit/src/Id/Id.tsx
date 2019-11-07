@@ -4,7 +4,6 @@ import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_IdStateReturn, unstable_useIdState } from "./IdState";
 import { unstable_IdContext } from "./IdProvider";
-import { generateRandomString } from "./__utils";
 
 export type unstable_IdOptions = BoxOptions &
   Pick<Partial<unstable_IdStateReturn>, "baseId" | "unstable_idCountRef"> & {
@@ -35,9 +34,9 @@ export const unstable_useId = createHook<
         options.unstable_idCountRef.current += 1;
         return `-${options.unstable_idCountRef.current}`;
       }
-      // If there's no useIdState, we check if there is a Provider
-      // and `baseId` was passed (as a prop, not from useIdState).
-      if (generateId !== generateRandomString && options.baseId) {
+      // If there's no useIdState, we check if `baseId` was passed (as a prop,
+      // not from useIdState).
+      if (options.baseId) {
         return `-${generateId("")}`;
       }
       return "";

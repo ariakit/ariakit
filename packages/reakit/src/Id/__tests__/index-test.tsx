@@ -59,6 +59,24 @@ test("Id", () => {
   expect(ids).toEqual(nextIds);
 });
 
+test("Id with baseId", () => {
+  const Test = () => {
+    return (
+      <>
+        <TestId baseId="a" />
+        <TestId baseId="a" />
+      </>
+    );
+  };
+  const { getAllByLabelText, rerender } = render(<Test />);
+  const ids = getAllByLabelText(/a-[a-z\d]{2,}$/).map(el => el.id);
+  expect(ids).toHaveLength(2);
+  // shouldn't change ids
+  rerender(<Test />);
+  const nextIds = getAllByLabelText(/a-[a-z\d]{2,}$/).map(el => el.id);
+  expect(ids).toEqual(nextIds);
+});
+
 test("Id within IdGroup", () => {
   const Test = () => {
     return (
