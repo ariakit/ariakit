@@ -46,6 +46,8 @@ module.exports = {
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
     "react/button-has-type": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "import/order": [
       "error",
       {
@@ -74,7 +76,7 @@ module.exports = {
       parserOptions: {
         project: "./tsconfig.json"
       },
-      plugins: ["@typescript-eslint"],
+      plugins: ["@typescript-eslint", "react-hooks"],
       rules: {
         "no-undef": "off",
         "no-unused-vars": "off",
