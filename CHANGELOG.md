@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.11](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.10...reakit@1.0.0-beta.11) (2019-11-08)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` preventing click after enabling it ([#481](https://github.com/reakit/reakit/issues/481)) ([6b58a34](https://github.com/reakit/reakit/commit/6b58a34)), closes [#480](https://github.com/reakit/reakit/issues/480)
+* Fix `Tabbable` preventing space and enter keys on `FormInput` ([3f49d6b](https://github.com/reakit/reakit/commit/3f49d6b))
+
+
+
+
+
 # [1.0.0-beta.10](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.9...reakit@1.0.0-beta.10) (2019-11-02)
 
 

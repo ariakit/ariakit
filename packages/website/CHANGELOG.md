@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.11](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.10...website@1.0.0-beta.11) (2019-11-08)
+
+**Note:** Version bump only for package website
+
+
+
+
+
 # [1.0.0-beta.10](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.9...website@1.0.0-beta.10) (2019-11-02)
 
 **Note:** Version bump only for package website
