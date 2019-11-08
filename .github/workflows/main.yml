@@ -3,14 +3,29 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
+    name: Test on ${{ matrix.os }}
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+  
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
+
     - name: Install dependencies
       run: yarn
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Test
+      run: yarn test --coverage
+
+    - name: Build
+      run: yarn build
