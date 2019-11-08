@@ -7,19 +7,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - name: Checkout repository
+      uses: actions/checkout@v1
+      
+    - name: Setup node
+      uses: actions/setup-node@v1
       with:
         node-version: '10.x'
 
-    - name: Get yarn cache directory
+    - name: Get Yarn cache directory
       id: yarn-cache-dir
       run: echo "::set-output name=dir::$(yarn cache dir)"
 
-    - uses: actions/cache@v1
+    - name: Check Yarn cache
+      uses: actions/cache@v1
       id: yarn-cache
       with:
-        path: ${{ steps.yarn-cache.outputs.dir }}
+        path: ${{ steps.yarn-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: ${{ runner.os }}-yarn-
 
@@ -33,7 +37,8 @@ jobs:
     - name: Test
       run: yarn test --coverage
 
-    - uses: codecov/codecov-action@v1.0.3
+    - name: Upload code coverage
+      uses: codecov/codecov-action@v1.0.3
       with:
         token: ${{secrets.CODECOV_TOKEN}}
 
