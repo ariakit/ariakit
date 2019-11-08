@@ -27,6 +27,9 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: ${{ runner.os }}-yarn-
 
+    - name: Check Yarn cache
+      run: yarn cache list
+
     - name: Install dependencies
       run: yarn
 
