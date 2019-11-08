@@ -24,17 +24,92 @@ Learn more in [Get started](/docs/get-started/).
 
 ```jsx
 import {
+  unstable_IdProvider as IdProvider,
+  unstable_Id as Id
+} from "reakit/Id";
+
+function Example() {
+  return (
+    <IdProvider>
+      <Id>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id>{props => <div {...props}>{props.id}</div>}</Id>
+    </IdProvider>
+  );
+}
+```
+
+### `useIdState`
+
+```jsx
+import {
   unstable_useIdState as useIdState,
   unstable_Id as Id
 } from "reakit/Id";
 
 function Example() {
-  const id = useIdState({ baseId: "items" });
+  const id = useIdState({ baseId: "a" });
   return (
     <>
-      <Id {...id}>Item 1</Id>
-      <Id {...id}>Item 2</Id>
+      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id} id="different-id">
+        {props => <div {...props}>{props.id}</div>}
+      </Id>
+      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
     </>
+  );
+}
+```
+
+### `IdGroup`
+
+```jsx
+import {
+  unstable_useIdState as useIdState,
+  unstable_IdGroup as IdGroup,
+  unstable_Id as Id
+} from "reakit/Id";
+
+function Example() {
+  const id = useIdState();
+  return (
+    <IdGroup {...id} id="a">
+      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id} id="different-id">
+        {props => <div {...props}>{props.id}</div>}
+      </Id>
+      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+    </IdGroup>
+  );
+}
+```
+
+### `useId`
+
+```jsx
+import {
+  unstable_IdProvider as IdProvider,
+  unstable_useId as useId
+} from "reakit/Id";
+
+function Item(props) {
+  const { id } = useId(props);
+  return (
+    <div {...props} id={id}>
+      {id}
+    </div>
+  );
+}
+
+function Example() {
+  return (
+    <IdProvider prefix="a">
+      <Item />
+      <Item />
+      <Item id="different-id" />
+      <Item />
+    </IdProvider>
   );
 }
 ```
@@ -54,3 +129,21 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 ## Props
 
 <!-- Automatically generated -->
+
+### `useIdState`
+
+No props to show
+
+### `Id`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  TODO: Description
+
+### `IdGroup`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  TODO: Description

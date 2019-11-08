@@ -16,6 +16,9 @@ export type unstable_IdGroupOptions = BoxOptions &
     id?: string;
   };
 
+// TODO: Probably IdGroup shouldn't set options.baseId as the id prop
+// Other components will have the choice to do this
+// But if id is passed to IdGroup, then baseId should be set (setBaseId)
 export type unstable_IdGroupHTMLProps = BoxHTMLProps;
 
 export type unstable_IdGroupProps = unstable_IdGroupOptions &

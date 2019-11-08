@@ -1,19 +1,15 @@
 import * as React from "react";
-import { render, wait } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { unstable_IdProps } from "../Id";
 import { unstable_IdGroupProps } from "../IdGroup";
 import {
   unstable_IdProvider as IdProvider,
   unstable_useIdState as useIdState,
   unstable_useId as useId,
+  unstable_useIdGroup as useIdGroup,
   unstable_Id as Id,
   unstable_IdGroup as IdGroup
 } from "..";
-
-// TODO: Replace getByText by getByLabelText
-// Test useId
-// Test useId passing id to options and htmlProps
-// Test passing id directly to IdGroup with useIdState (should update baseId)
 
 // Basically puts the id prop into the aria-label prop
 function TestId(props: unstable_IdProps) {
@@ -466,4 +462,84 @@ test("Id within IdProvider with prefix with useIdState with baseId", () => {
       />
     </div>
   `);
+});
+
+test("useId", () => {
+  const Test = () => {
+    const { id } = useId();
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText, rerender } = render(<Test />);
+  const { id } = getByLabelText(/id-[a-z\d]{2,}$/);
+  // shouldn't change ids
+  rerender(<Test />);
+  const { id: nextId } = getByLabelText(/id-[a-z\d]{2,}$/);
+  expect(id).toBe(nextId);
+});
+
+test("useId with id option", () => {
+  const Test = (props: React.HTMLAttributes<any>) => {
+    const { id } = useId(props);
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText } = render(<Test id="a" />);
+  getByLabelText("a");
+});
+
+test("useId with id prop", () => {
+  const Test = (props: React.HTMLAttributes<any>) => {
+    const { id } = useId({}, props);
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText } = render(<Test id="a" />);
+  getByLabelText("a");
+});
+
+test("useId with id prop and option", () => {
+  const Test = (props: React.HTMLAttributes<any>) => {
+    const { id } = useId({ id: "b" }, props);
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText } = render(<Test id="a" />);
+  getByLabelText("a");
+});
+
+test("useIdGroup", () => {
+  const Test = () => {
+    const { id } = useIdGroup();
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText, rerender } = render(<Test />);
+  const { id } = getByLabelText(/id-[a-z\d]{2,}$/);
+  // shouldn't change ids
+  rerender(<Test />);
+  const { id: nextId } = getByLabelText(/id-[a-z\d]{2,}$/);
+  expect(id).toBe(nextId);
+});
+
+test("useIdGroup with id option", () => {
+  const Test = (props: React.HTMLAttributes<any>) => {
+    const { id } = useIdGroup(props);
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText } = render(<Test id="a" />);
+  getByLabelText("a");
+});
+
+test("useIdGroup with id prop", () => {
+  const Test = (props: React.HTMLAttributes<any>) => {
+    const { id } = useIdGroup({}, props);
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText } = render(<Test id="a" />);
+  getByLabelText("a");
+});
+
+test("useIdGroup with id prop and option", () => {
+  const Test = (props: React.HTMLAttributes<any>) => {
+    const { id } = useIdGroup({ id: "b" }, props);
+    return <button aria-label={id} id={id} />;
+  };
+  const { getByLabelText } = render(<Test id="a" />);
+  getByLabelText("a");
 });

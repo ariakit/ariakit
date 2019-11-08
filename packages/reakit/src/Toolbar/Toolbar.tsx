@@ -2,19 +2,20 @@ import { warning } from "reakit-utils/warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { unstable_IdOptions, unstable_IdHTMLProps } from "../Id/Id";
+import { unstable_useIdGroup } from "../Id/IdGroup";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
-export type ToolbarOptions = BoxOptions &
+export type ToolbarOptions = unstable_IdOptions &
   Pick<Partial<ToolbarStateReturn>, "orientation">;
 
-export type ToolbarHTMLProps = BoxHTMLProps;
+export type ToolbarHTMLProps = unstable_IdHTMLProps;
 
 export type ToolbarProps = ToolbarOptions & ToolbarHTMLProps;
 
 export const useToolbar = createHook<ToolbarOptions, ToolbarHTMLProps>({
   name: "Toolbar",
-  compose: useBox,
+  compose: unstable_useIdGroup,
   useState: useToolbarState,
 
   useProps(options, htmlProps) {

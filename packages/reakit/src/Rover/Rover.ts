@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useId } from "reakit-utils/useId";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-utils/warning";
 import { mergeRefs } from "reakit-utils/mergeRefs";
@@ -11,9 +10,11 @@ import {
   TabbableHTMLProps,
   useTabbable
 } from "../Tabbable/Tabbable";
+import { unstable_IdOptions, unstable_useId } from "../Id/Id";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
 export type RoverOptions = TabbableOptions &
+  unstable_IdOptions &
   Pick<Partial<RoverStateReturn>, "orientation" | "unstable_moves"> &
   Pick<
     RoverStateReturn,
@@ -39,7 +40,7 @@ export type RoverProps = RoverOptions & RoverHTMLProps;
 
 export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
-  compose: useTabbable,
+  compose: [useTabbable, unstable_useId],
   useState: useRoverState,
   keys: ["stopId"],
 
@@ -53,8 +54,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = useId("rover-");
-    const stopId = options.stopId || htmlProps.id || id;
+    const stopId = options.stopId || htmlProps.id || options.id!;
 
     const trulyDisabled = options.disabled && !options.focusable;
     const noFocused = options.currentId == null;

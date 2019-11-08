@@ -8,6 +8,7 @@ import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { warning } from "reakit-utils/warning";
 
 export type HiddenState = {
+  // TODO: Roll back to unstable_hiddenId as it'll be removed later (removal of aria-controls)
   /**
    * `id` passed to the container element and used as a base for internal
    * `id`s.
