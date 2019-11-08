@@ -18,6 +18,17 @@ jobs:
       with:
         node-version: '10.x'
 
+    - name: Get yarn cache
+      id: yarn-cache
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.yarn-cache.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
     - name: Install dependencies
       run: yarn
 
@@ -25,7 +36,9 @@ jobs:
       run: yarn lint
 
     - name: Test
-      run: yarn test --coverage
+      run: |
+        yarn test --coverage
+        bash <(curl -s https://codecov.io/bash)
 
     - name: Build
       run: yarn build
