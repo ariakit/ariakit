@@ -1,4 +1,5 @@
 // TODO: Refactor this mess
+/* eslint-disable react-hooks/rules-of-hooks, react-hooks/exhaustive-deps */
 import * as React from "react";
 import RehypeReact from "rehype-react";
 import { useId } from "reakit-utils";
