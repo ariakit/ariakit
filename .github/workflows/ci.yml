@@ -12,27 +12,30 @@ jobs:
       with:
         node-version: '10.x'
 
-    - name: Get yarn cache
-      id: yarn-cache
+    - name: Get yarn cache directory
+      id: yarn-cache-dir
       run: echo "::set-output name=dir::$(yarn cache dir)"
 
     - uses: actions/cache@v1
+      id: yarn-cache
       with:
         path: ${{ steps.yarn-cache.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+        restore-keys: ${{ runner.os }}-yarn-
 
     - name: Install dependencies
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn
 
     - name: Lint
       run: yarn lint
 
     - name: Test
-      run: |
-        yarn test --coverage
-        bash <(curl -s https://codecov.io/bash)
+      run: yarn test --coverage
+
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{secrets.CODECOV_TOKEN}}
 
     - name: Build
       run: yarn build
