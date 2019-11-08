@@ -21,7 +21,7 @@ export type MenuBarActions = RoverActions & {
   /**
    * Updates checkboxes and radios values within the menu.
    */
-  unstable_update: (name: string, value?: any) => void;
+  unstable_setValue: (name: string, value?: any) => void;
 };
 
 export type MenuBarInitialState = RoverInitialState &
@@ -44,7 +44,7 @@ export function useMenuBarState(
   return {
     ...rover,
     unstable_values: values,
-    unstable_update: React.useCallback((name, value) => {
+    unstable_setValue: React.useCallback((name, value) => {
       setValues(vals => ({
         ...vals,
         [name]: typeof value === "function" ? value(vals) : value
@@ -56,7 +56,7 @@ export function useMenuBarState(
 const keys: Array<keyof MenuBarStateReturn> = [
   ...useRoverState.__keys,
   "unstable_values",
-  "unstable_update"
+  "unstable_setValue"
 ];
 
 useMenuBarState.__keys = keys;

@@ -40,7 +40,7 @@ export const Popover = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "Popover",
+      "[reakit/Popover]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/popover"
     );

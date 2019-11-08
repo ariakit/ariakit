@@ -283,3 +283,27 @@ test("keep rover DOM order", () => {
   keyDown("ArrowLeft");
   expect(rover2).toHaveFocus();
 });
+
+test("focus another component right after focusing rover", () => {
+  const Test = () => {
+    const rover = useRoverState();
+    return (
+      <>
+        <Rover {...rover}>rover1</Rover>
+        <Rover {...rover}>rover2</Rover>
+        <Rover {...rover}>rover3</Rover>
+        <button>button</button>
+      </>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const rover1 = getByText("rover1");
+  const button = getByText("button");
+  act(() => {
+    // Puting both in the same act so rover focus effects will run only after
+    // receives focus
+    rover1.focus();
+    button.focus();
+  });
+  expect(button).toHaveFocus();
+});

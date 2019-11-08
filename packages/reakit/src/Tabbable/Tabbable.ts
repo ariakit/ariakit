@@ -124,7 +124,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnClick(event);
         }
       },
-      [htmlOnClick]
+      [options.disabled, htmlOnClick]
     );
 
     const onMouseDown = React.useCallback(
@@ -155,7 +155,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnMouseDown(event);
         }
       },
-      [htmlOnMouseDown]
+      [options.disabled, htmlOnMouseDown]
     );
 
     const onKeyDown = React.useCallback(
@@ -164,30 +164,23 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnKeyDown(event);
         }
 
-        if (options.disabled) return;
+        if (options.disabled || isNativeTabbable(event.currentTarget)) return;
 
-        if (!isNativeTabbable(event.currentTarget)) {
-          // Per the spec, space only triggers button click on key up.
-          // On key down, it triggers the :active state.
-          // Since we can't mimic this behavior, we trigger click on key down.
-          if (
-            (options.unstable_clickOnEnter && event.key === "Enter") ||
-            (options.unstable_clickOnSpace && event.key === " ")
-          ) {
-            event.preventDefault();
-            event.target.dispatchEvent(
-              new MouseEvent("click", {
-                view: window,
-                bubbles: true,
-                cancelable: false
-              })
-            );
-          }
-        } else if (
-          (!options.unstable_clickOnEnter && event.key === "Enter") ||
-          (!options.unstable_clickOnSpace && event.key === " ")
+        // Per the spec, space only triggers button click on key up.
+        // On key down, it triggers the :active state.
+        // Since we can't mimic this behavior, we trigger click on key down.
+        if (
+          (options.unstable_clickOnEnter && event.key === "Enter") ||
+          (options.unstable_clickOnSpace && event.key === " ")
         ) {
           event.preventDefault();
+          event.target.dispatchEvent(
+            new MouseEvent("click", {
+              view: window,
+              bubbles: true,
+              cancelable: false
+            })
+          );
         }
       },
       [

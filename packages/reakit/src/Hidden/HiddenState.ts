@@ -111,7 +111,7 @@ export function useHiddenState(
   const show = React.useCallback(() => {
     warning(
       !isMounted,
-      "Hidden",
+      "[reakit/Hidden]",
       "You're trying to show a hidden element that hasn't been mounted yet.",
       "You shouldn't conditionally render a `Hidden` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useHiddenState` or just ignore it.",
@@ -125,7 +125,7 @@ export function useHiddenState(
   const toggle = React.useCallback(() => {
     warning(
       !isMounted,
-      "Hidden",
+      "[reakit/Hidden]",
       "You're trying to toggle a hidden element that hasn't been mounted yet.",
       "You shouldn't conditionally render a `Hidden` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useHiddenState` or just ignore it.",

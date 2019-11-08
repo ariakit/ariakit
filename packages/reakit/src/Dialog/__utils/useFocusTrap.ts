@@ -46,7 +46,7 @@ export function useFocusTrap(
     if (!portal) {
       warning(
         true,
-        "Dialog",
+        "[reakit/Dialog]",
         "Can't trap focus within modal dialog because either `ref` wasn't passed to component or the component wasn't rendered within a portal",
         "See https://reakit.io/docs/dialog"
       );

@@ -59,6 +59,19 @@ test("click disabled", () => {
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
+test("click enabled after disabled", () => {
+  const fn = jest.fn();
+  const { getByText, rerender } = render(
+    <Tabbable onClick={fn} disabled>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  rerender(<Tabbable onClick={fn}>tabbable</Tabbable>);
+  fireEvent.click(tabbable);
+  expect(fn).toHaveBeenCalledTimes(1);
+});
+
 test("click disabled focusable", () => {
   const fn = jest.fn();
   const { getByText } = render(

@@ -72,7 +72,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       if (!ref.current) {
         warning(
           true,
-          "Rover",
+          "[reakit/Rover]",
           "Can't focus rover component because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/rover"
         );
@@ -86,7 +86,8 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     React.useEffect(() => {
       if (!ref.current) return undefined;
 
-      const onFocus = () => options.move(stopId);
+      // this is already focused, so we move silently
+      const onFocus = () => options.move(stopId, true);
 
       // https://github.com/facebook/react/issues/11387#issuecomment-524113945
       ref.current.addEventListener("focus", onFocus, true);

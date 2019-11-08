@@ -148,7 +148,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
           if (!options.hide) {
             warning(
               true,
-              "Dialog",
+              "[reakit/Dialog]",
               "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided.",
               "See https://reakit.io/docs/dialog"
             );
@@ -180,7 +180,7 @@ export const Dialog = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "Dialog",
+      "[reakit/Dialog]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/dialog"
     );

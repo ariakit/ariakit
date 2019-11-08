@@ -394,6 +394,46 @@ test("move to null", () => {
   );
 });
 
+test("move silently", () => {
+  const result = render();
+  act(() => result.current.register("a", createRef("a")));
+  act(() => result.current.register("b", createRef("b")));
+  act(() => result.current.move("b"));
+  act(() => result.current.move("b", true));
+  expect(result.current).toMatchInlineSnapshot(
+    {
+      unstable_moves: 1
+    },
+    `
+    Object {
+      "currentId": "b",
+      "loop": false,
+      "orientation": undefined,
+      "stops": Array [
+        Object {
+          "id": "a",
+          "ref": Object {
+            "current": <div
+              id="a"
+            />,
+          },
+        },
+        Object {
+          "id": "b",
+          "ref": Object {
+            "current": <div
+              id="b"
+            />,
+          },
+        },
+      ],
+      "unstable_moves": 1,
+      "unstable_pastId": null,
+    }
+  `
+  );
+});
+
 test("next", () => {
   const result = render();
   act(() => result.current.register("a", createRef("a")));

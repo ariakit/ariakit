@@ -33,7 +33,7 @@ export const Toolbar = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "Toolbar",
+      "[reakit/Toolbar]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/toolbar"
     );

@@ -147,7 +147,7 @@ similarly to `readOnly` on form elements. In this case, only
   Unregisters the roving item.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 

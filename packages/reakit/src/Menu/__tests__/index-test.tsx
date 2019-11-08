@@ -1518,3 +1518,41 @@ test("pressing esc on disclosure closes the menu", async () => {
   await wait(expect(menu).not.toBeVisible);
   expect(disclosure).toHaveFocus();
 });
+
+test("clicking on menu item checkbox/radio checks it", async () => {
+  const Test = () => {
+    const menu = useMenuState();
+    return (
+      <MenuBar {...menu} aria-label="menu">
+        <MenuItemCheckbox {...menu} name="accept">
+          accept
+        </MenuItemCheckbox>
+        <MenuGroup>
+          <MenuItemRadio {...menu} name="fruit" value="apple">
+            apple
+          </MenuItemRadio>
+          <MenuItemRadio {...menu} name="fruit" value="orange">
+            orange
+          </MenuItemRadio>
+        </MenuGroup>
+      </MenuBar>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const accept = getByText("accept") as HTMLInputElement;
+  const apple = getByText("apple") as HTMLInputElement;
+  const orange = getByText("orange") as HTMLInputElement;
+
+  expect(accept.checked).toBe(false);
+  fireEvent.click(accept);
+  expect(accept.checked).toBe(true);
+
+  expect(apple.checked).toBe(false);
+  fireEvent.click(apple);
+  expect(apple.checked).toBe(true);
+
+  expect(orange.checked).toBe(false);
+  fireEvent.click(orange);
+  expect(orange.checked).toBe(true);
+  expect(apple.checked).toBe(false);
+});
