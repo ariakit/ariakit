@@ -27,6 +27,7 @@ If possible, describe how this bug could be fixed.
 
 ### Environment
 
+Please, run the command below inside your project directory.
 ```sh
 $ npx envinfo --system --binaries --browsers --npmPackages "{react*,reakit*}"
 
