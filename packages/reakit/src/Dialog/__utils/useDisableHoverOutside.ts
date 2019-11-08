@@ -7,26 +7,18 @@ export function useDisableHoverOutside(
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   options: DialogOptions
 ) {
-  useEventListenerOutside(
-    portalRef,
-    { current: null },
-    nestedDialogs,
-    "mouseover",
-    event => {
-      event.stopPropagation();
-      event.preventDefault();
-    },
-    options.visible && options.modal
-  );
-  useEventListenerOutside(
-    portalRef,
-    { current: null },
-    nestedDialogs,
-    "mouseout",
-    event => {
-      event.stopPropagation();
-      event.preventDefault();
-    },
-    options.visible && options.modal
-  );
+  const useEvent = (eventType: string) =>
+    useEventListenerOutside(
+      portalRef,
+      { current: null },
+      nestedDialogs,
+      eventType,
+      event => {
+        event.stopPropagation();
+        event.preventDefault();
+      },
+      options.visible && options.modal
+    );
+  useEvent("mouseover");
+  useEvent("mouseout");
 }

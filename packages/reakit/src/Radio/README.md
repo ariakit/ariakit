@@ -120,16 +120,16 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the rover list.
 
-- **`currentId`**
-  <code>string | null</code>
-
-  The current focused element ID.
-
 - **`unstable_moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
 
   Stores the number of moves that have been made by calling `move`, `next`,
 `previous`, `first` or `last`.
+
+- **`currentId`**
+  <code>string | null</code>
+
+  The current focused element ID.
 
 - **`stops`**
   <code>Stop[]</code>
@@ -147,7 +147,7 @@ similarly to `readOnly` on form elements. In this case, only
   Unregisters the roving item.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 

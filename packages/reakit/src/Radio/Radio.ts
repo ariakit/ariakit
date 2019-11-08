@@ -1,12 +1,11 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { Omit } from "reakit-utils/types";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
-export type RadioOptions = Omit<RoverOptions, "unstable_clickKeys"> &
+export type RadioOptions = RoverOptions &
   Pick<Partial<RadioStateReturn>, "state" | "setState"> & {
     /**
      * Same as the `value` attribute.
@@ -22,13 +21,18 @@ export type RadioHTMLProps = RoverHTMLProps & React.InputHTMLAttributes<any>;
 
 export type RadioProps = RadioOptions & RadioHTMLProps;
 
-const defaultClickKeys = [" "];
-
 export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useRover,
   useState: useRadioState,
   keys: ["value", "checked"],
+
+  useOptions({ unstable_clickOnEnter = false, ...options }) {
+    return {
+      unstable_clickOnEnter,
+      ...options
+    };
+  },
 
   useProps(
     options,
@@ -68,13 +72,6 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       onClick: useAllCallbacks(onClick, htmlOnClick),
       ...htmlProps
     };
-  },
-
-  useCompose(options, htmlProps) {
-    return useRover(
-      { ...options, unstable_clickKeys: defaultClickKeys },
-      htmlProps
-    );
   }
 });
 

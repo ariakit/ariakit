@@ -28,6 +28,7 @@ Learn more in [Get started](/docs/get-started/).
 ## Usage
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -66,6 +67,55 @@ function Example() {
 }
 ```
 
+### Textareas
+
+If your form requires a `textarea` instead of an `input` field, you can use the `as` prop on the `FormInput` component.
+
+<!-- eslint-disable no-alert -->
+
+```jsx
+import {
+  unstable_useFormState as useFormState,
+  unstable_Form as Form,
+  unstable_FormLabel as FormLabel,
+  unstable_FormInput as FormInput,
+  unstable_FormMessage as FormMessage,
+  unstable_FormSubmitButton as FormSubmitButton
+} from "reakit/Form";
+
+function Example() {
+  const form = useFormState({
+    values: { message: "" },
+    onValidate: values => {
+      if (!values.message) {
+        const errors = {
+          message: "Please enter a message."
+        };
+        throw errors;
+      }
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    }
+  });
+  return (
+    <Form {...form}>
+      <FormLabel {...form} name="message">
+        Message
+      </FormLabel>
+      <FormInput
+        {...form}
+        name="message"
+        placeholder="What's on your mind?"
+        as="textarea"
+      />
+      <FormMessage {...form} name="message" />
+      <FormSubmitButton {...form}>Submit</FormSubmitButton>
+    </Form>
+  );
+}
+```
+
 ### Arrays
 
 `Form` supports array values seamlessly. For convenience, you can reliably use the array indexes as keys on the array fragments.
@@ -73,6 +123,7 @@ function Example() {
 Focus is managed so adding a new item will move focus to the new input or to the first input if multiple inputs have been added.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import React from "react";
 import {
@@ -148,6 +199,7 @@ function Example() {
 With `FormCheckbox`, you can either manage `boolean` values (single checkbox) or `array` values (checkbox group). Error messages can also be displayed.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -214,6 +266,7 @@ function Example() {
 You can use `FormRadio` and `FormRadioGroup` to manage radio buttons. Error messages can also be displayed.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import {
   unstable_useFormState as useFormState,
@@ -323,6 +376,7 @@ You may find cumbersome having to pass `{...form}` to every component. Also, rep
 [Reakit is a low level library](/docs/basic-concepts/) designed to give you explicit building blocks so you can create anything you want, and design any API you wish. It's easy to go from explicit to implicit.
 
 <!-- eslint-disable no-alert -->
+
 ```jsx
 import React from "react";
 import {
@@ -466,6 +520,19 @@ If `onValidate` throws, `onSubmit` will not be called.
 `onSubmit` can also return promises, messages and throw error messages
 just like `onValidate`. The only difference is that this validation will
 only occur on submit.
+
+### `Form`
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`submit`**
+  <code>() =&#62; void</code>
+
+  Triggers form submission (calling `onValidate` and `onSubmit` underneath).
+
+</details>
 
 ### `FormCheckbox`
 
@@ -736,16 +803,36 @@ similarly to `readOnly` on form elements. In this case, only
 
 </details>
 
-### `Form`
+### `FormRadio`
 
-<details><summary>1 state props</summary>
+- **`name`**
+  <code>P</code>
+
+  FormRadio's name as in form values.
+
+- **`value`**
+  <code title="P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayValue&#60;V, P&#62; : P extends keyof V ? V[P] : any">P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayVa...</code>
+
+  FormRadio's value.
+
+<details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
-- **`submit`**
-  <code>() =&#62; void</code>
+- **`values`**
+  <code>V</code>
 
-  Triggers form submission (calling `onValidate` and `onSubmit` underneath).
+  Form values.
+
+- **`update`**
+  <code>Update&#60;V&#62;</code>
+
+  Updates a form value.
+
+- **`blur`**
+  <code>&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P) =&#62; void</code>
+
+  Sets field's touched state to `true`.
 
 </details>
 
@@ -857,38 +944,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Triggers form submission (calling `onValidate` and `onSubmit` underneath).
-
-</details>
-
-### `FormRadio`
-
-- **`name`**
-  <code>P</code>
-
-  FormRadio's name as in form values.
-
-- **`value`**
-  <code title="P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayValue&#60;V, P&#62; : P extends keyof V ? V[P] : any">P extends DeepPathArray&#60;V, P&#62; ? DeepPathArrayVa...</code>
-
-  FormRadio's value.
-
-<details><summary>3 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`values`**
-  <code>V</code>
-
-  Form values.
-
-- **`update`**
-  <code>Update&#60;V&#62;</code>
-
-  Updates a form value.
-
-- **`blur`**
-  <code>&#60;P extends DeepPath&#60;V, P&#62;&#62;(name: P) =&#62; void</code>
-
-  Sets field's touched state to `true`.
 
 </details>

@@ -206,3 +206,104 @@ test("move focus by calling state callbacks", () => {
   fireEvent.click(first);
   expect(rover1).toHaveFocus();
 });
+
+test("move focus in nested rover", () => {
+  const Test = () => {
+    const rover1 = useRoverState({ orientation: "horizontal" });
+    const rover2 = useRoverState({ orientation: "vertical" });
+    return (
+      <>
+        <Rover {...rover1}>rover11</Rover>
+        <Rover {...rover1} as="div">
+          rover12
+          <Rover {...rover2}>rover21</Rover>
+          <Rover {...rover2}>rover22</Rover>
+          <Rover {...rover2}>rover23</Rover>
+        </Rover>
+        <Rover {...rover1}>rover13</Rover>
+      </>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const rover11 = getByText("rover11");
+  const rover12 = getByText("rover12");
+  const rover13 = getByText("rover13");
+  const rover21 = getByText("rover21");
+  const rover22 = getByText("rover22");
+  const rover23 = getByText("rover23");
+  act(() => rover11.focus());
+  expect(rover11).toHaveFocus();
+
+  keyDown("ArrowRight");
+  expect(rover12).toHaveFocus();
+  keyDown("ArrowRight");
+  expect(rover13).toHaveFocus();
+
+  act(() => rover22.focus());
+  expect(rover22).toHaveFocus();
+
+  keyDown("ArrowDown");
+  expect(rover23).toHaveFocus();
+  keyDown("ArrowUp");
+  expect(rover22).toHaveFocus();
+  keyDown("ArrowUp");
+  expect(rover21).toHaveFocus();
+  keyDown("ArrowDown");
+  expect(rover22).toHaveFocus();
+
+  keyDown("ArrowLeft");
+  expect(rover11).toHaveFocus();
+});
+
+test("keep rover DOM order", () => {
+  const Test = ({ renderRover2 = false }) => {
+    const rover = useRoverState();
+    return (
+      <>
+        <Rover {...rover}>rover1</Rover>
+        {renderRover2 && <Rover {...rover}>rover2</Rover>}
+        <Rover {...rover}>rover3</Rover>
+      </>
+    );
+  };
+  const { getByText, rerender } = render(<Test />);
+  const rover1 = getByText("rover1");
+  const rover3 = getByText("rover3");
+  act(() => rover1.focus());
+  expect(rover1).toHaveFocus();
+
+  keyDown("ArrowRight");
+  expect(rover3).toHaveFocus();
+
+  rerender(<Test renderRover2 />);
+  expect(rover3).toHaveFocus();
+
+  const rover2 = getByText("rover2");
+
+  keyDown("ArrowLeft");
+  expect(rover2).toHaveFocus();
+});
+
+test("focus another component right after focusing rover", () => {
+  const Test = () => {
+    const rover = useRoverState();
+    return (
+      <>
+        <Rover {...rover}>rover1</Rover>
+        <Rover {...rover}>rover2</Rover>
+        <Rover {...rover}>rover3</Rover>
+        <button>button</button>
+      </>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const rover1 = getByText("rover1");
+  const button = getByText("button");
+  act(() => {
+    // Puting both in the same act so rover focus effects will run only after
+    // receives focus
+    rover1.focus();
+    button.focus();
+  });
+  expect(button).toHaveFocus();
+});

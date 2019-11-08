@@ -22,23 +22,28 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   useProps(_, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const [role, setRole] = React.useState<"button" | undefined>(undefined);
+    const [type, setType] = React.useState<"button" | undefined>(undefined);
 
     React.useEffect(() => {
+      if (ref.current && ref.current instanceof HTMLAnchorElement) {
+        return;
+      }
+
       if (
         ref.current &&
         (ref.current instanceof HTMLButtonElement ||
-          ref.current instanceof HTMLAnchorElement ||
           ref.current instanceof HTMLInputElement)
       ) {
-        return;
+        setType("button");
+      } else {
+        setRole("button");
       }
-      setRole("button");
     }, []);
 
     return {
       ref: mergeRefs(ref, htmlRef),
       role,
-      type: "button",
+      type,
       ...htmlProps
     };
   }

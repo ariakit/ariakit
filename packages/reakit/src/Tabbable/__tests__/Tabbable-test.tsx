@@ -5,9 +5,7 @@ import { Tabbable } from "../Tabbable";
 test("render", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-    <button
-      tabindex="0"
-    >
+    <button>
       tabbable
     </button>
   `);
@@ -34,7 +32,6 @@ test("render disabled focusable", () => {
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
     <button
       aria-disabled="true"
-      tabindex="0"
     >
       tabbable
     </button>
@@ -60,6 +57,19 @@ test("click disabled", () => {
   const tabbable = getByText("tabbable");
   fireEvent.click(tabbable);
   expect(fn).toHaveBeenCalledTimes(0);
+});
+
+test("click enabled after disabled", () => {
+  const fn = jest.fn();
+  const { getByText, rerender } = render(
+    <Tabbable onClick={fn} disabled>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  rerender(<Tabbable onClick={fn}>tabbable</Tabbable>);
+  fireEvent.click(tabbable);
+  expect(fn).toHaveBeenCalledTimes(1);
 });
 
 test("click disabled focusable", () => {
@@ -100,21 +110,6 @@ test("focus disabled focusable", () => {
   expect(tabbable).not.toHaveFocus();
   tabbable.focus();
   expect(tabbable).toHaveFocus();
-});
-
-test("clickKeys", () => {
-  const fn = jest.fn();
-  const { getByText } = render(
-    <Tabbable unstable_clickKeys={["a"]} onClick={fn}>
-      tabbable
-    </Tabbable>
-  );
-  const tabbable = getByText("tabbable");
-  fireEvent.keyDown(tabbable, { key: "Enter" });
-  fireEvent.keyDown(tabbable, { key: " " });
-  expect(fn).not.toHaveBeenCalled();
-  fireEvent.keyDown(tabbable, { key: "a" });
-  expect(fn).toHaveBeenCalledTimes(1);
 });
 
 test("non-native button click", () => {
@@ -226,10 +221,15 @@ test("non-native button space/enter disabled focusable", () => {
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
-test("focus on mouse down", () => {
-  const { getByText } = render(<Tabbable>tabbable</Tabbable>);
-  const tabbable = getByText("tabbable");
-  expect(tabbable).not.toHaveFocus();
-  fireEvent.mouseDown(tabbable);
-  expect(tabbable).toHaveFocus();
+test("focus nested native tabbables", () => {
+  const { getByText } = render(
+    <Tabbable as="div">
+      tabbable<button>button</button>
+    </Tabbable>
+  );
+  const button = getByText("button");
+  expect(button).not.toHaveFocus();
+  button.focus();
+  fireEvent.mouseDown(button);
+  expect(button).toHaveFocus();
 });

@@ -32,7 +32,7 @@ export const TabList = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "TabList",
+      "[reakit/TabList]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/tab"
     );

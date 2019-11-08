@@ -4,6 +4,7 @@ import {
   SealedInitialState
 } from "reakit-utils/useSealedState";
 import { useId } from "reakit-utils/useId";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { warning } from "reakit-utils/warning";
 
 export type HiddenState = {
@@ -67,7 +68,7 @@ export type HiddenStateReturn = HiddenState & HiddenActions;
 
 function useLastValue<T>(value: T) {
   const lastValue = React.useRef<T | null>(null);
-  React.useLayoutEffect(() => {
+  useIsomorphicEffect(() => {
     lastValue.current = value;
   }, [value]);
   return lastValue;
@@ -99,17 +100,17 @@ export function useHiddenState(
     setAnimating(true);
   }
 
-  React.useLayoutEffect(() => {
-    if (visible || typeof animated !== "number") return undefined;
+  useIsomorphicEffect(() => {
+    if (typeof animated !== "number") return undefined;
     // Stops animation after an interval defined by animated
     const id = setTimeout(() => setAnimating(false), animated);
     return () => clearTimeout(id);
-  }, [animated, visible]);
+  }, [animated]);
 
   const show = React.useCallback(() => {
     warning(
       !isMounted,
-      "Hidden",
+      "[reakit/Hidden]",
       "You're trying to show a hidden element that hasn't been mounted yet.",
       "You shouldn't conditionally render a `Hidden` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useHiddenState` or just ignore it.",
@@ -123,7 +124,7 @@ export function useHiddenState(
   const toggle = React.useCallback(() => {
     warning(
       !isMounted,
-      "Hidden",
+      "[reakit/Hidden]",
       "You're trying to toggle a hidden element that hasn't been mounted yet.",
       "You shouldn't conditionally render a `Hidden` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useHiddenState` or just ignore it.",
@@ -143,8 +144,7 @@ export function useHiddenState(
     hide,
     toggle,
     unstable_stopAnimation: stopAnimation,
-    unstable_setIsMounted:
-      process.env.NODE_ENV !== "production" ? setIsMounted : undefined
+    unstable_setIsMounted: setIsMounted
   };
 }
 

@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.8](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.7...reakit-system-palette@0.6.8) (2019-11-08)
+
+**Note:** Version bump only for package reakit-system-palette
+
+
+
+
+
+## [0.6.7](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.6...reakit-system-palette@0.6.7) (2019-11-02)
+
+**Note:** Version bump only for package reakit-system-palette
+
+
+
+
+
+## [0.6.6](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.5...reakit-system-palette@0.6.6) (2019-10-12)
+
+**Note:** Version bump only for package reakit-system-palette
+
+
+
+
+
+## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.4...reakit-system-palette@0.6.5) (2019-09-25)
+
+**Note:** Version bump only for package reakit-system-palette
+
+
+
+
+
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.3...reakit-system-palette@0.6.4) (2019-09-19)
+
+**Note:** Version bump only for package reakit-system-palette
+
+
+
+
+
+## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.2...reakit-system-palette@0.6.3) (2019-08-25)
+
+
+### Features
+
+* Upgrade `reakit` peer dependency version ([73baeff](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/commit/73baeff))
+
+
+
+
+
 ## [0.6.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.6.1...reakit-system-palette@0.6.2) (2019-06-27)
 
 **Note:** Version bump only for package reakit-system-palette

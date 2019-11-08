@@ -1,4 +1,5 @@
 import * as React from "react";
+import { closest } from "reakit-utils/closest";
 import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(
@@ -42,7 +43,7 @@ export function useShortcuts(
       const targetIsMenuItem =
         role &&
         role.indexOf("menuitem") >= 0 &&
-        target.closest("[role=menu],[role=menubar]") === menu;
+        closest(target, "[role=menu],[role=menubar]") === menu;
 
       if (!targetIsMenu && !targetIsMenuItem) return;
 
@@ -53,6 +54,7 @@ export function useShortcuts(
       }
     };
 
+    // https://github.com/facebook/react/issues/11387#issuecomment-524113945
     menu.addEventListener("keydown", onKeyDown);
     return () => menu.removeEventListener("keydown", onKeyDown);
   }, [menuRef, setKeys]);

@@ -1,8 +1,13 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
+import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
-import { getFirstTabbableIn, getLastTabbableIn } from "./tabbable";
 import { usePortalRef } from "./usePortalRef";
+
+function removeFromDOM(element: Element) {
+  if (element.parentNode == null) return;
+  element.parentNode.removeChild(element);
+}
 
 function hasNestedOpenModals(
   nestedDialogs: Array<React.RefObject<HTMLElement>>
@@ -41,7 +46,7 @@ export function useFocusTrap(
     if (!portal) {
       warning(
         true,
-        "Dialog",
+        "[reakit/Dialog]",
         "Can't trap focus within modal dialog because either `ref` wasn't passed to component or the component wasn't rendered within a portal",
         "See https://reakit.io/docs/dialog"
       );
@@ -65,8 +70,8 @@ export function useFocusTrap(
     portal.insertAdjacentElement("afterend", afterElement.current);
 
     return () => {
-      if (beforeElement.current) beforeElement.current.remove();
-      if (afterElement.current) afterElement.current.remove();
+      if (beforeElement.current) removeFromDOM(beforeElement.current);
+      if (afterElement.current) removeFromDOM(afterElement.current);
     };
   }, [portalRef, shouldTrap]);
 

@@ -30,6 +30,7 @@ module.exports = {
     "jsx-a11y/anchor-is-valid": "off",
     "jsx-a11y/label-has-for": "off",
     "jsx-a11y/label-has-associated-control": "off",
+    "react/jsx-props-no-spreading": "off",
     "import/export": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
@@ -46,6 +47,7 @@ module.exports = {
     "react/jsx-filename-extension": "off",
     "react/destructuring-assignment": "off",
     "react/button-has-type": "off",
+    "react/state-in-constructor": "off",
     "import/order": [
       "error",
       {

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
@@ -6,7 +5,7 @@ import { useToolbarState } from "./ToolbarState";
 
 export type ToolbarItemOptions = RoverOptions;
 
-export type ToolbarItemHTMLProps = RoverHTMLProps & React.LiHTMLAttributes<any>;
+export type ToolbarItemHTMLProps = RoverHTMLProps;
 
 export type ToolbarItemProps = ToolbarItemOptions & ToolbarItemHTMLProps;
 

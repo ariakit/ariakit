@@ -51,6 +51,7 @@ function Example() {
 You can use the `DialogBackdrop` component to render a backdrop for the dialog.
 
 ```jsx
+import { Portal } from "reakit/Portal";
 import {
   useDialogState,
   Dialog,
@@ -63,9 +64,63 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <DialogBackdrop {...dialog} />
+      <Portal>
+        <DialogBackdrop {...dialog} />
+      </Portal>
       <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
+      </Dialog>
+    </>
+  );
+}
+```
+
+### Initial focus
+
+When opening `Dialog`, focus is usually set on the first tabbable element within the dialog, including itself. So, if you want to set the initial focus on the dialog element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
+
+```jsx
+import { Button } from "reakit/Button";
+import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
+
+function Example() {
+  const dialog = useDialogState();
+  return (
+    <>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <Dialog {...dialog} tabIndex={0} aria-label="Welcome">
+        <Button onClick={dialog.hide}>Close</Button>
+      </Dialog>
+    </>
+  );
+}
+```
+
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
+
+function Example() {
+  const dialog = useDialogState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (dialog.visible) {
+      ref.current.focus();
+    }
+  }, [dialog.visible]);
+
+  return (
+    <>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <Dialog {...dialog} aria-label="Welcome">
+        <Button>By default, initial focus would go here</Button>
+        <br />
+        <br />
+        <Button ref={ref}>But now it goes here</Button>
       </Dialog>
     </>
   );

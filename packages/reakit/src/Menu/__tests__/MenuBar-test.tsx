@@ -1,8 +1,8 @@
 import * as React from "react";
 import { render } from "@testing-library/react";
-import { StaticMenu } from "../StaticMenu";
+import { MenuBar } from "../MenuBar";
 
-const props: Parameters<typeof StaticMenu>[0] = {
+const props: Parameters<typeof MenuBar>[0] = {
   stops: [],
   move: jest.fn(),
   next: jest.fn(),
@@ -11,13 +11,13 @@ const props: Parameters<typeof StaticMenu>[0] = {
 };
 
 test("render", () => {
-  const { baseElement } = render(<StaticMenu {...props} />);
+  const { baseElement } = render(<MenuBar {...props} />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
         <div
           aria-label="menu"
-          role="menu"
+          role="menubar"
         />
       </div>
     </body>

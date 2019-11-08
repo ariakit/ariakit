@@ -1,6 +1,7 @@
 import * as React from "react";
 import { storiesOf } from "@storybook/react";
 import {
+  Button,
   Dialog,
   useDialogState,
   DialogDisclosure,
@@ -8,6 +9,10 @@ import {
   MenuDisclosure,
   Menu,
   MenuItem,
+  Tooltip,
+  TooltipArrow,
+  TooltipReference,
+  useTooltipState,
   Provider
 } from "reakit";
 import * as system from "reakit-system-bootstrap";
@@ -133,3 +138,21 @@ storiesOf("Menu", module)
     }
     return <Example />;
   });
+
+storiesOf("Tooltip", module).add("Tooltip initially visible", () => {
+  const Example = () => {
+    const tooltip = useTooltipState({ visible: true });
+    return (
+      <Provider unstable_system={system}>
+        <TooltipReference {...tooltip} as={Button}>
+          Reference
+        </TooltipReference>
+        <Tooltip {...tooltip}>
+          <TooltipArrow {...tooltip} />
+          Tooltip
+        </Tooltip>
+      </Provider>
+    );
+  };
+  return <Example />;
+});

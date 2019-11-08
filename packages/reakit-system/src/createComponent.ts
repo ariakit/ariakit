@@ -1,11 +1,15 @@
 // TODO: Refactor
 import * as React from "react";
-import { BoxHTMLProps } from "reakit/Box/Box";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { splitProps } from "reakit-utils/splitProps";
 import { memo } from "./__utils/memo";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
+
+type BoxHTMLProps = React.HTMLAttributes<any> &
+  React.RefAttributes<any> & {
+    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+  };
 
 type Hook<O> = {
   (options?: O, props?: BoxHTMLProps): BoxHTMLProps;

@@ -45,7 +45,103 @@ function Example() {
 }
 ```
 
+### Menu actions
+
+You can use either `onClick` or `href` props on `MenuItem` to define menu actions.
+
+<!-- eslint-disable no-console -->
+
+```jsx
+import {
+  useMenuState,
+  Menu,
+  MenuItem,
+  MenuDisclosure,
+  MenuSeparator
+} from "reakit/Menu";
+
+function Example() {
+  const menu = useMenuState();
+
+  return (
+    <>
+      <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+      <Menu {...menu} aria-label="Example">
+        <MenuItem
+          {...menu}
+          onClick={() => {
+            menu.hide();
+            console.log("clicked on button");
+          }}
+        >
+          Button
+        </MenuItem>
+        <MenuItem {...menu} as="a" href="#" onClick={menu.hide}>
+          Link
+        </MenuItem>
+      </Menu>
+    </>
+  );
+}
+```
+
+### Initial focus
+
+When opening `Menu`, focus is usually set on the first `MenuItem`. You can set the initial focus to be the menu container itself by just passing `tabIndex={0}` to it. This will be ignored if the menu is opened by using arrow keys.
+
+```jsx
+import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+
+function Example() {
+  const menu = useMenuState();
+  return (
+    <>
+      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <Menu {...menu} tabIndex={0} aria-label="Preferences">
+        <MenuItem {...menu}>Settings</MenuItem>
+        <MenuItem {...menu}>Extensions</MenuItem>
+        <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
+      </Menu>
+    </>
+  );
+}
+```
+
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+
+function Example() {
+  const menu = useMenuState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (menu.visible) {
+      ref.current.focus();
+    }
+  }, [menu.visible]);
+
+  return (
+    <>
+      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <Menu {...menu} aria-label="Preferences">
+        <MenuItem {...menu}>Settings</MenuItem>
+        <MenuItem {...menu} ref={ref}>
+          Extensions
+        </MenuItem>
+        <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
+      </Menu>
+    </>
+  );
+}
+```
+
 ### Submenu
+
+`Menu` can be used independently or nested within another one.
 
 ```jsx
 import React from "react";
@@ -93,6 +189,8 @@ function Example() {
 ```
 
 ### Menu with dialog
+
+Reakit is built with composition in mind! You can compose any other component with `Menu`. You can nest [Dialog](/docs/dialog/)s inside it by using the same approach described on [Submenu](#submenu).
 
 ```jsx
 import React from "react";
@@ -144,15 +242,18 @@ function Example() {
 
 ### Menu bar
 
+You can combine multiple `Menu`s to compose a `MenuBar` by using the same approach described on [Submenu](#submenu). Each `Menu` can be used separately or in combination with others.
+
 ```jsx
 import React from "react";
 import {
   useMenuState,
+  useMenuBarState,
   Menu,
   MenuDisclosure,
   MenuItem,
   MenuSeparator,
-  StaticMenu,
+  MenuBar,
   MenuGroup,
   MenuItemCheckbox,
   MenuItemRadio
@@ -256,13 +357,13 @@ const ViewMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuState({ orientation: "horizontal" });
+  const menu = useMenuBarState({ orientation: "horizontal" });
   return (
-    <StaticMenu {...menu}>
+    <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />
       <MenuItem {...menu} as={EditMenu} />
       <MenuItem {...menu} as={ViewMenu} />
-    </StaticMenu>
+    </MenuBar>
   );
 }
 ```
@@ -319,7 +420,7 @@ function Example() {
 
 ## Accessibility
 
-- `StaticMenu` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
+- `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
 - `MenuDisclosure` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
 - `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
@@ -328,26 +429,50 @@ function Example() {
 - Pressing <kbd>Enter</kbd> on `MenuDisclosure` opens its menu (or submenu) and places focus on its first item.
 - Pressing <kbd>Space</kbd> on `MenuItemCheckbox` changes the state without closing `Menu`.
 - Pressing <kbd>Space</kbd> on a `MenuItemRadio` that is not checked, without closing `Menu`, checks the focused `MenuItemRadio` and unchecks any other checked `MenuItemRadio` in the same group.
-- Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `StaticMenu` whose label begins with that printable character.
+- Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `MenuBar` whose label begins with that printable character.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Menu` uses `StaticMenu` and [Popover](/docs/popover/).
+- `Menu` uses `MenuBar` and [Popover](/docs/popover/).
 - `MenuDisclosure` uses [PopoverDisclosure](/docs/popover/).
 - `MenuGroup` uses [Box](/docs/box/).
 - `MenuItem` uses [Rover](/docs/rover/).
 - `MenuItemCheckbox` uses [Checkbox](/docs/checkbox/).
 - `MenuItemRadio` uses [Radio](/docs/radio/).
 - `MenuSeparator` uses [Separator](/docs/separator/).
-- `StaticMenu` uses [Box](/docs/box/).
+- `MenuBar` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
 <!-- Automatically generated -->
+
+### `useMenuBarState`
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.
+
+- **`currentId`**
+  <code>string | null</code>
+
+  The current focused element ID.
+
+- **`loop`**
+  <code>boolean</code>
+
+  If enabled:
+  - Jumps to the first item when moving next from the last item.
+  - Jumps to the last item when moving previous from the first item.
+
+- **`unstable_values`** <span title="Experimental">⚠️</span>
+  <code>{ [x: string]: any; }</code>
+
+  Stores the values of radios and checkboxes within the menu.
 
 ### `useMenuState`
 
@@ -367,6 +492,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   If enabled:
   - Jumps to the first item when moving next from the last item.
   - Jumps to the last item when moving previous from the first item.
+
+- **`unstable_values`** <span title="Experimental">⚠️</span>
+  <code>{ [x: string]: any; }</code>
+
+  Stores the values of radios and checkboxes within the menu.
 
 - **`visible`**
   <code>boolean</code>
@@ -402,7 +532,7 @@ element.
 
   Shift popover on the start or end of its reference element.
 
-- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+- **`gutter`**
   <code>number | undefined</code>
 
   Offset between the reference and the popover.
@@ -417,12 +547,16 @@ element.
 
   Boundaries element used by `preventOverflow`.
 
-- **`unstable_values`** <span title="Experimental">⚠️</span>
-  <code>{ [x: string]: any; }</code>
-
-  Stores the values of radios and checkboxes within the menu.
-
 ### `Menu`
+
+- **`modal`**
+  <code>boolean | undefined</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
 
 - **`hideOnClickOutside`**
   <code>boolean | undefined</code>
@@ -446,6 +580,20 @@ When not set, the first tabbable element within the dialog will be used.
 
   The element that will be focused when the dialog hides.
 When not set, the disclosure component will be used.
+
+- **`unstable_portal`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.
+
+- **`unstable_orphan`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Whether or not the dialog should be a child of its parent.
+Opening a nested orphan dialog will close its parent dialog if
+`hideOnClickOutside` is set to `true` on the parent.
+It will be set to `false` if `modal` is `false`.
 
 <details><summary>12 state props</summary>
 
@@ -501,7 +649,58 @@ It's called after given milliseconds if `animated` is a number.
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
+
+  Moves focus to a given element ID.
+
+- **`next`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the next element.
+
+- **`previous`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the previous element.
+
+</details>
+
+### `MenuArrow`
+
+- **`size`**
+  <code>string | number | undefined</code>
+
+  Arrow's size
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+</details>
+
+### `MenuBar`
+
+<details><summary>5 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the rover list.
+
+- **`stops`**
+  <code>Stop[]</code>
+
+  A list of element refs and IDs of the roving items.
+
+- **`move`**
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -636,7 +835,7 @@ similarly to `readOnly` on form elements. In this case, only
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -761,7 +960,7 @@ going to be an array.
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -805,7 +1004,7 @@ going to be an array.
 
   Stores the values of radios and checkboxes within the menu.
 
-- **`unstable_update`** <span title="Experimental">⚠️</span>
+- **`unstable_setValue`** <span title="Experimental">⚠️</span>
   <code>(name: string, value?: any) =&#62; void</code>
 
   Updates checkboxes and radios values within the menu.
@@ -855,6 +1054,12 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the rover list.
 
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `first` or `last`.
+
 - **`currentId`**
   <code>string | null</code>
 
@@ -876,7 +1081,7 @@ similarly to `readOnly` on form elements. In this case, only
   A list of element refs and IDs of the roving items.
 
 - **`move`**
-  <code>(id: string | null) =&#62; void</code>
+  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
 
   Moves focus to a given element ID.
 
@@ -889,12 +1094,6 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
-
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
-
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
 
 - **`register`**
   <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
@@ -936,7 +1135,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Stores the values of radios and checkboxes within the menu.
 
-- **`unstable_update`** <span title="Experimental">⚠️</span>
+- **`unstable_setValue`** <span title="Experimental">⚠️</span>
   <code>(name: string, value?: any) =&#62; void</code>
 
   Updates checkboxes and radios values within the menu.
@@ -953,38 +1152,5 @@ similarly to `readOnly` on form elements. In this case, only
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
   Separator's orientation.
-
-</details>
-
-### `StaticMenu`
-
-<details><summary>5 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
-
-  Defines the orientation of the rover list.
-
-- **`stops`**
-  <code>Stop[]</code>
-
-  A list of element refs and IDs of the roving items.
-
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given element ID.
-
-- **`next`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the next element.
-
-- **`previous`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the previous element.
 
 </details>

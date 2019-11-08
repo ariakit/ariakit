@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.8](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.7...reakit-system-bootstrap@0.6.8) (2019-11-08)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
+## [0.6.7](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.6...reakit-system-bootstrap@0.6.7) (2019-11-02)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
+## [0.6.6](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.5...reakit-system-bootstrap@0.6.6) (2019-10-12)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
+## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.4...reakit-system-bootstrap@0.6.5) (2019-09-25)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.3...reakit-system-bootstrap@0.6.4) (2019-09-19)
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/3d13c33))
+
+
+
+
+
+## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.2...reakit-system-bootstrap@0.6.3) (2019-08-25)
+
+
+### Bug Fixes
+
+* **reakit-system-bootstrap:** Fix `MenuItem` styling as an anchor element ([580f5dd](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/580f5dd))
+
+
+### Features
+
+* Upgrade `reakit` peer dependency version ([73baeff](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/73baeff))
+
+
+
+
+
 ## [0.6.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.1...reakit-system-bootstrap@0.6.2) (2019-06-27)
 
 

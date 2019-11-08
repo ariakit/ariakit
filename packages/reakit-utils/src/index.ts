@@ -1,5 +1,7 @@
+export * from "./closest";
 export * from "./createOnKeyDown";
 export * from "./cx";
+export * from "./hasFocusWithin";
 export * from "./isEmpty";
 export * from "./isInteger";
 export * from "./isObject";
@@ -10,6 +12,7 @@ export * from "./pick";
 export * from "./removeIndexFromArray";
 export * from "./removeItemFromArray";
 export * from "./splitProps";
+export * from "./tabbable";
 export * from "./toArray";
 export * from "./types";
 export * from "./useAllCallbacks";

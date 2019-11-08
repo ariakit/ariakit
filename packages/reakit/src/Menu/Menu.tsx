@@ -5,63 +5,56 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverOptions,
   PopoverHTMLProps,
   usePopover
 } from "../Popover/Popover";
-import {
-  StaticMenuOptions,
-  StaticMenuHTMLProps,
-  useStaticMenu
-} from "./StaticMenu";
+import { MenuBarOptions, MenuBarHTMLProps, useMenuBar } from "./MenuBar";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
-export type MenuOptions = Omit<
-  PopoverOptions,
-  "modal" | "unstable_portal" | "unstable_orphan" | "hideOnEsc"
-> &
+export type MenuOptions = Omit<PopoverOptions, "hideOnEsc"> &
   Pick<MenuStateReturn, "placement"> &
   Pick<Partial<MenuStateReturn>, "first" | "last"> &
-  StaticMenuOptions;
+  MenuBarOptions;
 
-export type MenuHTMLProps = PopoverHTMLProps & StaticMenuHTMLProps;
+export type MenuHTMLProps = PopoverHTMLProps & MenuBarHTMLProps;
 
 export type MenuProps = MenuOptions & MenuHTMLProps;
 
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
-  compose: [useStaticMenu, usePopover],
+  compose: [useMenuBar, usePopover],
   useState: useMenuState,
 
   useOptions(options) {
     const parent = React.useContext(MenuContext);
-    const parentIsHorizontal = parent && parent.orientation === "horizontal";
+    const parentIsMenuBar = parent && parent.role === "menubar";
 
     return {
       unstable_autoFocusOnShow: !parent,
-      unstable_autoFocusOnHide: !parentIsHorizontal,
+      unstable_autoFocusOnHide: !parentIsMenuBar,
+      modal: false,
       ...options
     };
   },
 
-  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const parent = React.useContext(MenuContext);
-    const ref = React.useRef<HTMLElement>(null);
-
     const isHorizontal = options.orientation === "horizontal";
     const isVertical = options.orientation === "vertical";
+    const hasParent = Boolean(parent);
+    let ancestorMenuBar: MenuContextType | undefined | null = parent;
 
-    let horizontalParent: MenuContextType | undefined | null = parent;
-
-    while (horizontalParent && horizontalParent.orientation !== "horizontal") {
-      horizontalParent = horizontalParent.parent;
+    while (ancestorMenuBar && ancestorMenuBar.role !== "menubar") {
+      ancestorMenuBar = ancestorMenuBar.parent;
     }
 
-    const [dir] = options.placement.split("-");
+    const { next, previous, orientation } = ancestorMenuBar || {};
+    const ancestorIsHorizontal = orientation === "horizontal";
+    const [dir] = (options.placement || "").split("-");
 
     const rovingBindings = React.useMemo(
       () =>
@@ -69,17 +62,11 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           stopPropagation: event => {
             // On Esc, only stop propagation if there's no parent menu
             // Otherwise, pressing Esc should close all menus
-            if (event.key === "Escape" && parent) return false;
+            if (event.key === "Escape" && hasParent) return false;
             return true;
           },
           keyMap: event => {
-            warning(
-              !ref.current,
-              "Menu",
-              "Can't detect arrow keys because `ref` wasn't passed to component.",
-              "See https://reakit.io/docs/menu"
-            );
-            const targetIsMenu = event.target === ref.current;
+            const targetIsMenu = event.target === event.currentTarget;
             return {
               Escape: options.hide,
               ArrowUp: targetIsMenu && !isHorizontal && options.last,
@@ -94,7 +81,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           }
         }),
       [
-        Boolean(parent),
+        hasParent,
         isHorizontal,
         isVertical,
         options.hide,
@@ -109,53 +96,38 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           stopPropagation: true,
           shouldKeyDown: event => {
             return Boolean(
-              parent &&
-                ref.current &&
-                ref.current.contains(event.target as Element)
+              // https://github.com/facebook/react/issues/11387
+              hasParent && event.currentTarget.contains(event.target as Element)
             );
           },
-          keyMap: parent
+          keyMap: hasParent
             ? {
                 ArrowRight:
-                  horizontalParent && dir !== "left"
-                    ? horizontalParent.next
+                  ancestorIsHorizontal && dir !== "left"
+                    ? next
                     : dir === "left" && options.hide,
                 ArrowLeft:
-                  horizontalParent && dir !== "right"
-                    ? horizontalParent.previous
+                  ancestorIsHorizontal && dir !== "right"
+                    ? previous
                     : dir === "right" && options.hide
               }
             : {}
         }),
-      [
-        Boolean(parent),
-        horizontalParent && horizontalParent.next,
-        horizontalParent && horizontalParent.previous,
-        dir,
-        options.hide
-      ]
+      [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
     );
 
     return {
-      ref: mergeRefs(ref, htmlRef),
       role: "menu",
       onKeyDown: useAllCallbacks(rovingBindings, parentBindings, htmlOnKeyDown),
       ...htmlProps
     };
   },
 
+  // Need to useCompose instead of useProps to overwrite `hideOnEsc`
+  // because Menu prop types don't include `hideOnEsc`
   useCompose(options, htmlProps) {
-    htmlProps = useStaticMenu(options, htmlProps);
-    return usePopover(
-      {
-        ...options,
-        modal: false,
-        unstable_portal: false,
-        unstable_orphan: false,
-        hideOnEsc: false
-      },
-      htmlProps
-    );
+    htmlProps = useMenuBar(options, htmlProps);
+    return usePopover({ ...options, hideOnEsc: false }, htmlProps);
   }
 });
 
@@ -165,7 +137,7 @@ export const Menu = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "Menu",
+      "[reakit/Menu]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/menu"
     );

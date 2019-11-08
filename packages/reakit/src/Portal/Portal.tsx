@@ -8,7 +8,7 @@ export type PortalProps = {
   children: React.ReactNode;
 };
 
-const PortalContext = React.createContext<HTMLElement | null>(
+export const PortalContext = React.createContext<HTMLElement | null>(
   typeof document !== "undefined" ? document.body : null
 );
 
@@ -16,30 +16,30 @@ export function Portal({ children }: PortalProps) {
   // if it's a nested portal, context is the parent portal
   // otherwise it's document.body
   const context = React.useContext(PortalContext);
-  const [container] = React.useState(() => {
+  const [portal] = React.useState(() => {
     if (typeof document !== "undefined") {
-      const portal = document.createElement("div");
-      portal.className = Portal.__className;
-      return portal;
+      const element = document.createElement("div");
+      element.className = Portal.__className;
+      return element;
     }
     // ssr
     return null;
   });
 
   React.useEffect(() => {
-    if (!container || !context) return undefined;
-    context.appendChild(container);
+    if (!portal || !context) return undefined;
+    context.appendChild(portal);
     return () => {
-      context.removeChild(container);
+      context.removeChild(portal);
     };
-  }, [container, context]);
+  }, [portal, context]);
 
-  if (container) {
-    const portal = ReactDOM.createPortal(children, container);
-    return (
-      <PortalContext.Provider value={container}>
-        {portal}
-      </PortalContext.Provider>
+  if (portal) {
+    return ReactDOM.createPortal(
+      <PortalContext.Provider value={portal}>
+        {children}
+      </PortalContext.Provider>,
+      portal
     );
   }
 

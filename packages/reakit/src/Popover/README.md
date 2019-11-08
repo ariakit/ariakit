@@ -47,6 +47,104 @@ function Example() {
 }
 ```
 
+### Placement
+
+You can control how `Popover` is positioned by setting the `placement` option on `usePopoverState`.
+
+```jsx
+import {
+  usePopoverState,
+  Popover,
+  PopoverDisclosure,
+  PopoverArrow
+} from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({ placement: "right-start" });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <PopoverArrow {...popover} />
+        Welcome to Reakit!
+      </Popover>
+    </>
+  );
+}
+```
+
+### Gutter
+
+You can control the margin between `Popover` and `PopoverDisclosure` by setting the `gutter` option on `usePopoverState`.
+
+```jsx
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({ gutter: 0, placement: "bottom-start" });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        Welcome to Reakit!
+      </Popover>
+    </>
+  );
+}
+```
+
+### Initial focus
+
+When opening `Popover`, focus is usually set on the first tabbable element within the popover, including itself. So, if you want to set the initial focus on the popover element, you can simply pass `tabIndex={0}` to it. It'll be also included in the tab order.
+
+```jsx
+import { Button } from "reakit/Button";
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState();
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} tabIndex={0} aria-label="Welcome">
+        <Button onClick={popover.hide}>Close</Button>
+      </Popover>
+    </>
+  );
+}
+```
+
+Alternatively, you can define another element to get the initial focus with React hooks:
+
+```jsx
+import React from "react";
+import { Button } from "reakit/Button";
+import { usePopoverState, Popover, PopoverDisclosure } from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState();
+  const ref = React.useRef();
+
+  React.useEffect(() => {
+    if (popover.visible) {
+      ref.current.focus();
+    }
+  }, [popover.visible]);
+
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <Button>By default, initial focus would go here</Button>
+        <br />
+        <br />
+        <Button ref={ref}>But now it goes here</Button>
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.
@@ -145,7 +243,7 @@ element.
 
   Shift popover on the start or end of its reference element.
 
-- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+- **`gutter`**
   <code>number | undefined</code>
 
   Offset between the reference and the popover.

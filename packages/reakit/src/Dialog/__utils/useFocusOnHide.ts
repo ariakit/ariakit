@@ -1,15 +1,14 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-utils/warning";
+import { isTabbable, ensureFocus } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
-import { isTabbable } from "./tabbable";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosureRef: React.RefObject<HTMLElement>,
+  disclosuresRef: React.RefObject<HTMLElement[]>,
   options: DialogOptions
 ) {
-  const finalFocusRef = options.unstable_finalFocusRef || disclosureRef;
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
 
   useUpdateEffect(() => {
@@ -28,15 +27,20 @@ export function useFocusOnHide(
       return;
     }
 
-    if (finalFocusRef && finalFocusRef.current) {
-      finalFocusRef.current.focus();
+    const finalFocusEl =
+      (options.unstable_finalFocusRef &&
+        options.unstable_finalFocusRef.current) ||
+      (disclosuresRef.current && disclosuresRef.current[0]);
+
+    if (finalFocusEl) {
+      ensureFocus(finalFocusEl);
     } else {
       warning(
         true,
-        "Dialog",
+        "[reakit/Dialog]",
         "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
         "See https://reakit.io/docs/dialog"
       );
     }
-  }, [dialogRef, finalFocusRef, shouldFocus]);
+  }, [dialogRef, disclosuresRef, shouldFocus]);
 }

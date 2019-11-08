@@ -4,6 +4,7 @@ import {
   SealedInitialState,
   useSealedState
 } from "reakit-utils/useSealedState";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import {
   DialogState,
   DialogActions,
@@ -59,6 +60,14 @@ export type PopoverState = DialogState & {
    */
   unstable_originalPlacement: Placement;
   /**
+   * @private
+   */
+  unstable_scheduleUpdate: () => boolean;
+  /**
+   * @private
+   */
+  unstable_update: () => boolean;
+  /**
    * Actual `placement`.
    */
   placement: Placement;
@@ -89,7 +98,7 @@ export type PopoverInitialState = DialogInitialState &
     /**
      * Offset between the reference and the popover.
      */
-    unstable_gutter?: number;
+    gutter?: number;
     /**
      * Prevents popover from being positioned outside the boundary.
      */
@@ -106,10 +115,10 @@ export function usePopoverState(
   initialState: SealedInitialState<PopoverInitialState> = {}
 ): PopoverStateReturn {
   const {
+    gutter = 12,
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
     unstable_shift: shift = true,
-    unstable_gutter: gutter = 12,
     unstable_preventOverflow: preventOverflow = true,
     unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
@@ -130,7 +139,23 @@ export function usePopoverState(
 
   const dialog = useDialogState(sealed);
 
-  React.useLayoutEffect(() => {
+  const scheduleUpdate = React.useCallback(() => {
+    if (popper.current) {
+      popper.current.scheduleUpdate();
+      return true;
+    }
+    return false;
+  }, []);
+
+  const update = React.useCallback(() => {
+    if (popper.current) {
+      popper.current.update();
+      return true;
+    }
+    return false;
+  }, []);
+
+  useIsomorphicEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = new Popper(referenceRef.current, popoverRef.current, {
         placement: originalPlacement,
@@ -151,7 +176,17 @@ export function usePopoverState(
             fn: data => {
               setPlacement(data.placement);
               setPopoverStyles(data.styles as React.CSSProperties);
-              setArrowStyles(data.arrowStyles as React.CSSProperties);
+
+              // https://github.com/reakit/reakit/issues/408
+              if (
+                data.arrowStyles.left != null &&
+                !isNaN(+data.arrowStyles.left) &&
+                data.arrowStyles.top != null &&
+                !isNaN(+data.arrowStyles.top)
+              ) {
+                setArrowStyles(data.arrowStyles as React.CSSProperties);
+              }
+
               return data;
             }
           }
@@ -174,6 +209,22 @@ export function usePopoverState(
     fixed
   ]);
 
+  // This fixes cases when `unstable_portal` is `true` only when popover is visible
+  // https://spectrum.chat/reakit/general/i-was-wondering-if-can-hide-portal-of-tooltip-when-conditionally-rendered~4e05ffe1-93e8-4c72-8c85-eccb1c3f2ff1
+  React.useEffect(() => {
+    if (dialog.visible && popper.current) {
+      popper.current.scheduleUpdate();
+    }
+  }, [dialog.visible]);
+
+  // Schedule an update if popover has initial visible state set to true
+  // So it'll be correctly positioned
+  React.useEffect(() => {
+    if (sealed.visible && popper.current) {
+      popper.current.scheduleUpdate();
+    }
+  }, [sealed.visible]);
+
   return {
     ...dialog,
     unstable_referenceRef: referenceRef,
@@ -181,6 +232,8 @@ export function usePopoverState(
     unstable_arrowRef: arrowRef,
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
+    unstable_scheduleUpdate: scheduleUpdate,
+    unstable_update: update,
     unstable_originalPlacement: originalPlacement,
     placement,
     place: React.useCallback(place, [])
@@ -194,6 +247,8 @@ const keys: Array<keyof PopoverStateReturn> = [
   "unstable_arrowRef",
   "unstable_popoverStyles",
   "unstable_arrowStyles",
+  "unstable_scheduleUpdate",
+  "unstable_update",
   "unstable_originalPlacement",
   "placement",
   "place"

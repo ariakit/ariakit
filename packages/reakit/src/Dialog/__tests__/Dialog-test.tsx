@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render, wait } from "@testing-library/react";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
@@ -33,14 +33,17 @@ test("render", () => {
   `);
 });
 
-test("render visible", () => {
+test("render visible", async () => {
   const { baseElement } = render(
     <Dialog {...props} visible>
       dialog
     </Dialog>
   );
+  await wait();
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
+    <body
+      style="padding-right: 1024px; overflow: hidden;"
+    >
       <div />
       <div
         aria-hidden="true"
@@ -72,18 +75,20 @@ test("render visible", () => {
   `);
 });
 
-test("render non-modal", () => {
-  const { baseElement } = render(
+test("render non-modal", async () => {
+  const { baseElement } = await render(
     <Dialog {...props} modal={false}>
       test
     </Dialog>
   );
+  await wait();
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
+    <body
+      style="padding-right: 1024px;"
+    >
       <div>
         <div
           aria-label="dialog"
-          aria-modal="false"
           class="hidden"
           data-dialog="true"
           hidden=""

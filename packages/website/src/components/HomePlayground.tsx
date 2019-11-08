@@ -85,7 +85,7 @@ const submenuCode = `
 import { useMenuState, Menu, MenuDisclosure, MenuItem } from "reakit";
 import TabsModalMenu from "./TabsModalMenu";
 
-const TabsModalSubmenu = React.forwardRef((props, ref) => {
+const TabsModalMenuMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
@@ -103,17 +103,17 @@ const TabsModalSubmenu = React.forwardRef((props, ref) => {
 `.trim();
 
 const menubarCode = `
-import { useMenuState, StaticMenu, MenuItem } from "reakit";
-import TabsModalSubmenu from "./TabsModalSubmenu";
+import { useMenuState, MenuBar, MenuItem } from "reakit";
+import TabsModalMenuMenu from "./TabsModalMenuMenu";
 
-const MenuBar = () => {
+const TabsModalMenuMenuBar = () => {
   const menu = useMenuState({ orientation: "horizontal" });
   return (
-    <StaticMenu {...menu}>
+    <MenuBar {...menu}>
       <MenuItem {...menu}>Item 1</MenuItem>
       <MenuItem {...menu}>Item 2</MenuItem>
-      <MenuItem {...menu} as={TabsModalSubmenu} />
-    </StaticMenu>
+      <MenuItem {...menu} as={TabsModalMenuMenu} />
+    </MenuBar>
   );
 };
 `.trim();
@@ -206,10 +206,10 @@ export default function HomePlayground() {
         obj,
         "TabsModalMenu"
       );
-      obj["./TabsModalSubmenu"] = compileComponent(
+      obj["./TabsModalMenuMenu"] = compileComponent(
         submenuPlayground.code,
         obj,
-        "TabsModalSubmenu"
+        "TabsModalMenuMenu"
       );
       setModules(obj);
     } catch (e) {
@@ -262,7 +262,7 @@ export default function HomePlayground() {
           TabsModalMenu.js
         </Tab>
         <Tab {...tab} stopId="submenu">
-          TabsModalSubmenu.js
+          TabsModalMenuMenu.js
         </Tab>
         <Tab {...tab} stopId="menubar">
           MenuBar.js
@@ -293,14 +293,14 @@ export default function HomePlayground() {
         {...tab}
         {...submenuPlayground}
         stopId="submenu"
-        componentName="TabsModalSubmenu"
+        componentName="TabsModalMenuMenu"
         modules={modules}
       />
       <Panel
         {...tab}
         {...menubarPlayground}
         stopId="menubar"
-        componentName="MenuBar"
+        componentName="TabsModalMenuMenuBar"
         modules={modules}
       />
     </div>

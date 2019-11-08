@@ -3,6 +3,80 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.9](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.8...reakit-playground@0.6.9) (2019-11-08)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+## [0.6.8](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.7...reakit-playground@0.6.8) (2019-11-02)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+## [0.6.7](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.6...reakit-playground@0.6.7) (2019-10-12)
+
+
+### Bug Fixes
+
+* Add a `useIsomorphicEffect` hook to allow proper SSR rendering ([#461](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/461)) ([47434b2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/47434b2)), closes [#438](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/438)
+
+
+
+
+
+## [0.6.6](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.5...reakit-playground@0.6.6) (2019-09-25)
+
+
+### Bug Fixes
+
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/443)) ([8837557](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8837557)), closes [#360](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/360)
+
+
+
+
+
+## [0.6.5](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.4...reakit-playground@0.6.5) (2019-09-19)
+
+
+### Bug Fixes
+
+* **reakit-playground:** Add missing deps ([8d6316a](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8d6316a))
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/3d13c33))
+
+
+
+
+
+## [0.6.4](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.3...reakit-playground@0.6.4) (2019-08-25)
+
+
+### Features
+
+* **reakit-utils:** Move `tabbable` internal module to `reakit-utils` package ([b84acce](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/b84acce))
+* Add new `MenuArrow` component ([#422](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/422)) ([731a376](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/731a376))
+
+
+
+
+
+## [0.6.3](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.2...reakit-playground@0.6.3) (2019-08-12)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
 ## [0.6.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.1...reakit-playground@0.6.2) (2019-06-27)
 
 

@@ -32,11 +32,9 @@ export type RadioStateReturn = RadioState & RadioActions;
 export function useRadioState(
   initialState: SealedInitialState<RadioInitialState> = {}
 ): RadioStateReturn {
-  const {
-    state: initialCurrentValue,
-    loop: loop = true,
-    ...sealed
-  } = useSealedState(initialState);
+  const { state: initialCurrentValue, loop = true, ...sealed } = useSealedState(
+    initialState
+  );
 
   const [state, setState] = React.useState(initialCurrentValue);
 

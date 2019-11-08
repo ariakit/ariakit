@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.11](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.10...website@1.0.0-beta.11) (2019-11-08)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.10](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.9...website@1.0.0-beta.10) (2019-11-02)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.9](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.8...website@1.0.0-beta.9) (2019-10-12)
+
+
+### Bug Fixes
+
+* Add a `useIsomorphicEffect` hook to allow proper SSR rendering ([#461](https://github.com/reakit/reakit/tree/master/packages/website/issues/461)) ([47434b2](https://github.com/reakit/reakit/tree/master/packages/website/commit/47434b2)), closes [#438](https://github.com/reakit/reakit/tree/master/packages/website/issues/438)
+
+
+
+
+
+# [1.0.0-beta.8](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.7...website@1.0.0-beta.8) (2019-09-25)
+
+
+### Bug Fixes
+
+* Replace IE11 incompatible DOM features ([#443](https://github.com/reakit/reakit/tree/master/packages/website/issues/443)) ([8837557](https://github.com/reakit/reakit/tree/master/packages/website/commit/8837557)), closes [#360](https://github.com/reakit/reakit/tree/master/packages/website/issues/360)
+
+
+
+
+
+# [1.0.0-beta.7](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.6...website@1.0.0-beta.7) (2019-09-19)
+
+
+### Features
+
+* Add `MenuBar` component ([#436](https://github.com/reakit/reakit/tree/master/packages/website/issues/436)) ([3d13c33](https://github.com/reakit/reakit/tree/master/packages/website/commit/3d13c33))
+
+
+
+
+
+# [1.0.0-beta.6](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.5...website@1.0.0-beta.6) (2019-08-25)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.5](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.4...website@1.0.0-beta.5) (2019-08-12)
+
+**Note:** Version bump only for package website
+
+
+
+
+
 # [1.0.0-beta.4](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.3...website@1.0.0-beta.4) (2019-06-27)
 
 

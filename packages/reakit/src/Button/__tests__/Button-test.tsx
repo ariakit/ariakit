@@ -6,7 +6,6 @@ test("render", () => {
   const { getByText } = render(<Button>button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
     <button
-      tabindex="0"
       type="button"
     >
       button
@@ -17,10 +16,7 @@ test("render", () => {
 test("render anchor", () => {
   const { getByText } = render(<Button as="a">button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
-    <a
-      tabindex="0"
-      type="button"
-    >
+    <a>
       button
     </a>
   `);
@@ -32,7 +28,6 @@ test("render div", () => {
     <div
       role="button"
       tabindex="0"
-      type="button"
     >
       button
     </div>

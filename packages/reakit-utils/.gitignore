@@ -8,10 +8,12 @@
 /useSealedState
 /usePipe
 /useLiveRef
+/useIsomorphicEffect
 /useId
 /useAllCallbacks
 /types
 /toArray
+/tabbable
 /splitProps
 /removeItemFromArray
 /removeIndexFromArray
@@ -23,5 +25,7 @@
 /isObject
 /isInteger
 /isEmpty
+/hasFocusWithin
 /cx
 /createOnKeyDown
+/closest

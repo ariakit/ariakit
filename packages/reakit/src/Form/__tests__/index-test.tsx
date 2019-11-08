@@ -19,7 +19,7 @@ function keyDown(key: string) {
   fireEvent.keyDown(document.activeElement!, { key });
 }
 
-test("validate on change", () => {
+test("validate on change", async () => {
   const onValidate = jest.fn();
   const Test = () => {
     const form = useFormState({ onValidate });
@@ -34,10 +34,10 @@ test("validate on change", () => {
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
   fireEvent.change(input, { target: { value: "a" } });
-  expect(onValidate).toHaveBeenCalledWith({ input: "a" });
+  await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: "a" }));
 });
 
-test("validate on blur", () => {
+test("validate on blur", async () => {
   const onValidate = jest.fn();
   const Test = () => {
     const form = useFormState({ onValidate });
@@ -52,7 +52,7 @@ test("validate on blur", () => {
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
   fireEvent.blur(input);
-  expect(onValidate).toHaveBeenCalledWith({});
+  await wait(() => expect(onValidate).toHaveBeenCalledWith({}));
 });
 
 test("display validation error", async () => {
@@ -460,7 +460,6 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           <button
             data-testid="push"
             id="form-people-push"
-            tabindex="0"
             type="button"
           />
         </form>
@@ -484,7 +483,6 @@ test("push/remove button adds/removes entry and moves focus", async () => {
             id="form-people-0-name"
             name="people.0.name"
             placeholder="name0"
-            tabindex="0"
             value=""
           />
           <input
@@ -494,18 +492,15 @@ test("push/remove button adds/removes entry and moves focus", async () => {
             id="form-people-0-email"
             name="people.0.email"
             placeholder="email0"
-            tabindex="0"
             value=""
           />
           <button
             data-testid="remove0"
-            tabindex="0"
             type="button"
           />
           <button
             data-testid="push"
             id="form-people-push"
-            tabindex="0"
             type="button"
           />
         </form>

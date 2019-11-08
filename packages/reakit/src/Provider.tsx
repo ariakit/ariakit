@@ -5,7 +5,7 @@ import {
   SystemProvider
 } from "reakit-system/SystemProvider";
 
-export type ProviderProps = IdProviderProps & SystemProviderProps;
+export type ProviderProps = IdProviderProps & Partial<SystemProviderProps>;
 
 export function Provider({
   unstable_prefix: prefix,

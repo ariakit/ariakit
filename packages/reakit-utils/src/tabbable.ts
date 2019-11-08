@@ -53,14 +53,16 @@ export function isFocusable(element: Element) {
 }
 
 export function isTabbable(element: Element) {
-  if (!isHTMLElement(element)) return false;
-  if (!isFocusable(element)) return false;
-  if (hasNegativeTabIndex(element)) return false;
-  return true;
+  return (
+    isHTMLElement(element) &&
+    isFocusable(element) &&
+    !hasNegativeTabIndex(element)
+  );
 }
 
 export function getAllFocusableIn<T extends Element>(container: T) {
   const allFocusable = Array.from(container.querySelectorAll<T>(selector));
+  allFocusable.unshift(container);
   return allFocusable.filter(isFocusable);
 }
 
@@ -75,6 +77,11 @@ export function getAllTabbableIn<T extends Element>(
 ) {
   const allFocusable = Array.from(container.querySelectorAll<T>(selector));
   const allTabbable = allFocusable.filter(isTabbable);
+
+  if (isTabbable(container)) {
+    allTabbable.unshift(container);
+  }
+
   if (!allTabbable.length && fallbackToFocusable) {
     return allFocusable;
   }
@@ -146,4 +153,27 @@ export function focusPreviousTabbableIn<T extends Element>(
   if (previousTabbable && isHTMLElement(previousTabbable)) {
     previousTabbable.focus();
   }
+}
+
+function defaultIsActive(element: Element) {
+  return document.activeElement === element;
+}
+
+type EnsureFocusOptions = FocusOptions & {
+  isActive?: typeof defaultIsActive;
+};
+
+export function ensureFocus(
+  element: HTMLElement,
+  { isActive = defaultIsActive, preventScroll }: EnsureFocusOptions = {}
+) {
+  if (isActive(element)) return -1;
+
+  element.focus({ preventScroll });
+
+  if (isActive(element)) return -1;
+
+  return requestAnimationFrame(() => {
+    element.focus({ preventScroll });
+  });
 }

@@ -7,10 +7,12 @@ export default {
   "reakit-utils/useSealedState": require("reakit-utils/useSealedState"),
   "reakit-utils/usePipe": require("reakit-utils/usePipe"),
   "reakit-utils/useLiveRef": require("reakit-utils/useLiveRef"),
+  "reakit-utils/useIsomorphicEffect": require("reakit-utils/useIsomorphicEffect"),
   "reakit-utils/useId": require("reakit-utils/useId"),
   "reakit-utils/useAllCallbacks": require("reakit-utils/useAllCallbacks"),
   "reakit-utils/types": require("reakit-utils/types"),
   "reakit-utils/toArray": require("reakit-utils/toArray"),
+  "reakit-utils/tabbable": require("reakit-utils/tabbable"),
   "reakit-utils/splitProps": require("reakit-utils/splitProps"),
   "reakit-utils/removeItemFromArray": require("reakit-utils/removeItemFromArray"),
   "reakit-utils/removeIndexFromArray": require("reakit-utils/removeIndexFromArray"),
@@ -22,6 +24,8 @@ export default {
   "reakit-utils/isObject": require("reakit-utils/isObject"),
   "reakit-utils/isInteger": require("reakit-utils/isInteger"),
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),
+  "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/cx": require("reakit-utils/cx"),
-  "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown")
+  "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
+  "reakit-utils/closest": require("reakit-utils/closest")
 };
