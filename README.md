@@ -36,9 +36,7 @@
 
 ## Sponsors
 
-<sup><a href="https://opencollective.com/reakit">Become a sponsor</a></sup>
-
-By donating $100 or more you become a sponsor and help in the development of this project. Thank you to all our sponsors! 🙏
+By donating $100 or more you [become a sponsor](https://opencollective.com/reakit) and help in the development of this project. Thank you to all our sponsors! 🙏
 
 <p>
   <a href="https://opencollective.com/reakit/tiers/sponsor/0/website"><img src="https://opencollective.com/reakit/tiers/sponsor/0/avatar.svg"></a>
@@ -55,9 +53,7 @@ By donating $100 or more you become a sponsor and help in the development of thi
 
 ## Backers
 
-<sup><a href="https://opencollective.com/reakit">Become a sponsor</a></sup>
-
-By donating $5 or more you become a backer and help in the development of this project. Thank you to all our backers! 🙏
+By donating $5 or more you [become a backer](https://opencollective.com/reakit) and help in the development of this project. Thank you to all our backers! 🙏
 
 <p>
   <a href="https://opencollective.com/reakit/backer/0/website"><img src="https://opencollective.com/reakit/backer/0/avatar.svg"></a>
@@ -137,7 +133,7 @@ This project exists thanks to all the people who contribute.
 
 <a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1260&button=false" /></a>
 
-- <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
+<img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
 
 
 ## License
