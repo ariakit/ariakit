@@ -12,9 +12,7 @@ test("render", () => {
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
-        <div
-          id="id-1"
-        />
+        <div />
       </div>
     </body>
   `);

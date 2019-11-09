@@ -1,18 +1,16 @@
 import * as React from "react";
 import { render } from "@testing-library/react";
-import { unstable_IdProps } from "../Id";
-import { unstable_IdGroupProps } from "../IdGroup";
 import {
+  unstable_IdProps as IdProps,
   unstable_IdProvider as IdProvider,
   unstable_useIdState as useIdState,
   unstable_useId as useId,
-  unstable_useIdGroup as useIdGroup,
   unstable_Id as Id,
   unstable_IdGroup as IdGroup
 } from "..";
 
 // Basically puts the id prop into the aria-label prop
-function TestId(props: unstable_IdProps) {
+function TestId(props: IdProps) {
   return (
     <Id {...props}>
       {htmlProps => (
@@ -21,19 +19,6 @@ function TestId(props: unstable_IdProps) {
         </div>
       )}
     </Id>
-  );
-}
-
-// Basically puts the id prop into the aria-label prop
-function TestIdGroup(props: unstable_IdGroupProps) {
-  return (
-    <IdGroup {...props}>
-      {htmlProps => (
-        <div {...htmlProps} aria-label={htmlProps.id}>
-          {props.children}
-        </div>
-      )}
-    </IdGroup>
   );
 }
 
@@ -76,15 +61,15 @@ test("Id with baseId", () => {
 test("Id within IdGroup", () => {
   const Test = () => {
     return (
-      <TestIdGroup>
+      <IdGroup>
         <TestId />
         <TestId />
-      </TestIdGroup>
+      </IdGroup>
     );
   };
   const { getAllByLabelText, rerender } = render(<Test />);
   const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
-  expect(ids).toHaveLength(3);
+  expect(ids).toHaveLength(2);
   // shouldn't change ids
   rerender(<Test />);
   const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
@@ -151,9 +136,7 @@ test("Id within IdGroup within IdProvider", () => {
   // IDs will be sequential because it's handled by the Provider
   expect(container).toMatchInlineSnapshot(`
     <div>
-      <div
-        id="id-1"
-      >
+      <div>
         <div
           id="id-2"
         />
@@ -203,9 +186,7 @@ test("Id within IdGroup within IdProvider with prefix", () => {
   // IDs will be sequential because it's handled by the Provider
   expect(container).toMatchInlineSnapshot(`
     <div>
-      <div
-        id="a-1"
-      >
+      <div>
         <div
           id="a-2"
         />
@@ -232,32 +213,27 @@ test("Id with useIdState", () => {
   const { id: id2 } = getByLabelText(/id-[a-z\d]{2,}-2$/);
   // shouldn't change ids
   rerender(<Test />);
-  const { id: nextId1 } = getByLabelText(/id-[a-z\d]{2,}-1$/);
-  const { id: nextId2 } = getByLabelText(/id-[a-z\d]{2,}-2$/);
-  expect(id1).toBe(nextId1);
-  expect(id2).toBe(nextId2);
+  getByLabelText(id1);
+  getByLabelText(id2);
 });
 
 test("Id within IdGroup with useIdState", () => {
   const Test = () => {
     const id = useIdState();
     return (
-      <TestIdGroup {...id}>
+      <IdGroup {...id}>
         <TestId {...id} />
         <TestId {...id} />
-      </TestIdGroup>
+      </IdGroup>
     );
   };
   const { getByLabelText, rerender } = render(<Test />);
-  const { id: groupId } = getByLabelText(/id-[a-z\d]{2,}$/);
-  const { id: id1 } = getByLabelText(new RegExp(`${groupId}-1$`));
-  const { id: id2 } = getByLabelText(new RegExp(`${groupId}-2$`));
+  const { id: id1 } = getByLabelText(/id-[a-z\d]{2,}-1$/);
+  const { id: id2 } = getByLabelText(new RegExp(`${id1.replace("-1", "")}-2$`));
   // shouldn't change ids
   rerender(<Test />);
-  const { id: nextId1 } = getByLabelText(new RegExp(`${groupId}-1$`));
-  const { id: nextId2 } = getByLabelText(new RegExp(`${groupId}-2$`));
-  expect(id1).toBe(nextId1);
-  expect(id2).toBe(nextId2);
+  getByLabelText(id1);
+  getByLabelText(id2);
 });
 
 test("Id within IdGroup with id with useIdState", async () => {
@@ -498,46 +474,6 @@ test("useId with id prop", () => {
 test("useId with id prop and option", () => {
   const Test = (props: React.HTMLAttributes<any>) => {
     const { id } = useId({ id: "b" }, props);
-    return <button aria-label={id} id={id} />;
-  };
-  const { getByLabelText } = render(<Test id="a" />);
-  getByLabelText("a");
-});
-
-test("useIdGroup", () => {
-  const Test = () => {
-    const { id } = useIdGroup();
-    return <button aria-label={id} id={id} />;
-  };
-  const { getByLabelText, rerender } = render(<Test />);
-  const { id } = getByLabelText(/id-[a-z\d]{2,}$/);
-  // shouldn't change ids
-  rerender(<Test />);
-  const { id: nextId } = getByLabelText(/id-[a-z\d]{2,}$/);
-  expect(id).toBe(nextId);
-});
-
-test("useIdGroup with id option", () => {
-  const Test = (props: React.HTMLAttributes<any>) => {
-    const { id } = useIdGroup(props);
-    return <button aria-label={id} id={id} />;
-  };
-  const { getByLabelText } = render(<Test id="a" />);
-  getByLabelText("a");
-});
-
-test("useIdGroup with id prop", () => {
-  const Test = (props: React.HTMLAttributes<any>) => {
-    const { id } = useIdGroup({}, props);
-    return <button aria-label={id} id={id} />;
-  };
-  const { getByLabelText } = render(<Test id="a" />);
-  getByLabelText("a");
-});
-
-test("useIdGroup with id prop and option", () => {
-  const Test = (props: React.HTMLAttributes<any>) => {
-    const { id } = useIdGroup({ id: "b" }, props);
     return <button aria-label={id} id={id} />;
   };
   const { getByLabelText } = render(<Test id="a" />);

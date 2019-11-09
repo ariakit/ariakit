@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { Tab } from "../Tab";
 
 const props: Parameters<typeof Tab>[0] = {
-  unstable_baseId: "base",
+  baseId: "base",
   stopId: "tab",
   stops: [],
   currentId: null,
