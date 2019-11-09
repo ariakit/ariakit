@@ -22,13 +22,13 @@
 <br>
 
 <p align="center">
-  <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg?style=flat-square" /></a>
-  <a href="https://npmjs.org/package/reakit"><img alt="NPM downloads" src="https://img.shields.io/npm/dm/reakit.svg?style=flat-square"></a>
-  <a href="https://travis-ci.org/reakit/reakit"><img alt="Build Status" src="https://img.shields.io/travis/reakit/reakit/master.svg?style=flat-square" /></a>
-  <a href="https://codecov.io/gh/reakit/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/reakit/reakit/master.svg?style=flat-square" /></a><br>
-  <a href="https://opencollective.com/reakit"><img alt="Sponsors" src="https://opencollective.com/reakit/tiers/sponsor/badge.svg?label=sponsors&style=flat-square" /></a>
-  <a href="https://opencollective.com/reakit"><img alt="Backers" src="https://opencollective.com/reakit/tiers/backer/badge.svg?label=backers&style=flat-square" /></a>
-  <a href="https://spectrum.chat/reakit"><img src="https://img.shields.io/badge/community-spectrum-7A2DFB.svg?style=flat-square" alt="Spectrum" /></a>
+  <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg" /></a>
+  <a href="https://npmjs.org/package/reakit"><img alt="NPM downloads" src="https://img.shields.io/npm/dm/reakit.svg"></a>
+  <a href="https://github.com/reakit/reakit/actions"><img alt="Build Status" src="https://github.com/reakit/reakit/workflows/continuous-integration/badge.svg?event=push&branch=master" /></a>
+  <a href="https://codecov.io/gh/reakit/reakit/branch/master"><img alt="Coverage Status" src="https://img.shields.io/codecov/c/github/reakit/reakit/master.svg" /></a><br>
+  <a href="https://opencollective.com/reakit"><img alt="Sponsors" src="https://opencollective.com/reakit/tiers/sponsor/badge.svg?label=sponsors" /></a>
+  <a href="https://opencollective.com/reakit"><img alt="Backers" src="https://opencollective.com/reakit/tiers/backer/badge.svg?label=backers" /></a>
+  <a href="https://spectrum.chat/reakit"><img src="https://withspectrum.github.io/badge/badge.svg" alt="Spectrum" /></a>
   <a href="https://twitter.com/reakitjs">
     <img alt="Follow Reakit on Twitter" src="https://img.shields.io/twitter/follow/reakitjs.svg"></a>
 </p>
