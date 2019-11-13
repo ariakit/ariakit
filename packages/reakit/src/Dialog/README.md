@@ -64,9 +64,7 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Portal>
-        <DialogBackdrop {...dialog} />
-      </Portal>
+      <DialogBackdrop {...dialog} />
       <Dialog {...dialog} aria-label="Welcome">
         Welcome to Reakit!
       </Dialog>
