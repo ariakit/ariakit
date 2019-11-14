@@ -54,6 +54,12 @@ export const unstable_useFormCheckbox = createHook<
   useState: unstable_useFormState,
   keys: ["name", "value"],
 
+  useOptions(options) {
+    const state = unstable_getIn(options.values, options.name);
+    const setState = (value: any) => options.update(options.name, value);
+    return { ...options, state, setState };
+  },
+
   useProps(options, { onBlur: htmlOnBlur, ...htmlProps }) {
     const isBoolean = typeof options.value === "undefined";
 
@@ -74,12 +80,6 @@ export const unstable_useFormCheckbox = createHook<
         : {}),
       ...htmlProps
     };
-  },
-
-  useCompose(options, htmlProps) {
-    const state = unstable_getIn(options.values, options.name);
-    const setState = (value: any) => options.update(options.name, value);
-    return useCheckbox({ ...options, state, setState }, htmlProps);
   }
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormCheckboxOptions<V, P>,
