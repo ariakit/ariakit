@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.12](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.11...reakit@1.0.0-beta.12) (2019-11-14)
+
+
+### Features
+
+* **reakit-system:** Replace `useCompose` by `useComposeOptions` on `createHook` ([#493](https://github.com/reakit/reakit/issues/493)) ([50fd7df](https://github.com/reakit/reakit/commit/50fd7df))
+* Add `baseId` option to `useHiddenState` and derivative hooks ([837aa58](https://github.com/reakit/reakit/commit/837aa58))
+* Add `baseId` option to `useRoverState` and derivative hooks ([#494](https://github.com/reakit/reakit/issues/494)) ([42e9dd0](https://github.com/reakit/reakit/commit/42e9dd0))
+* Add experimental `Id` module ([#492](https://github.com/reakit/reakit/issues/492)) ([5d87e99](https://github.com/reakit/reakit/commit/5d87e99))
+
+
+
+
+
 # [1.0.0-beta.11](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.10...reakit@1.0.0-beta.11) (2019-11-08)
 
 

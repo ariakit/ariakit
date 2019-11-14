@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.10](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.9...reakit-playground@0.6.10) (2019-11-14)
+
+
+### Features
+
+* Add experimental `Id` module ([#492](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/492)) ([5d87e99](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/5d87e99))
+
+
+
+
+
 ## [0.6.9](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.8...reakit-playground@0.6.9) (2019-11-08)
 
 **Note:** Version bump only for package reakit-playground
