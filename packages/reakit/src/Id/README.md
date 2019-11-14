@@ -132,7 +132,10 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useIdState`
 
-No props to show
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 ### `Id`
 
@@ -141,9 +144,31 @@ No props to show
 
   Same as the HTML attribute.
 
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+</details>
+
 ### `IdGroup`
 
 - **`id`**
   <code>string | undefined</code>
 
   Same as the HTML attribute.
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+</details>
