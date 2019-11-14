@@ -20,7 +20,7 @@ import { usePortal } from "./__utils/usePortal";
 
 export type DialogOptions = HiddenOptions &
   Pick<Partial<DialogStateReturn>, "hide"> &
-  Pick<DialogStateReturn, "unstable_hiddenId"> & {
+  Pick<DialogStateReturn, "baseId"> & {
     /**
      * Toggles Dialog's `modal` state.
      *  - Non-modal: `preventBodyScroll` doesn't work and focus is free.

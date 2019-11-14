@@ -25,7 +25,8 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   useOptions(options) {
     return {
       visible: options.selectedId === options.stopId,
-      ...options
+      ...options,
+      unstable_setBaseId: undefined
     };
   },
 

@@ -6,7 +6,7 @@ import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 
 export type HiddenDisclosureOptions = ButtonOptions &
   Pick<Partial<HiddenStateReturn>, "visible"> &
-  Pick<HiddenStateReturn, "toggle" | "unstable_hiddenId">;
+  Pick<HiddenStateReturn, "toggle" | "baseId">;
 
 export type HiddenDisclosureHTMLProps = ButtonHTMLProps;
 
@@ -26,8 +26,8 @@ export const useHiddenDisclosure = createHook<
     { onClick: htmlOnClick, "aria-controls": ariaControls, ...htmlProps }
   ) {
     const controls = ariaControls
-      ? `${ariaControls} ${options.unstable_hiddenId}`
-      : options.unstable_hiddenId;
+      ? `${ariaControls} ${options.baseId}`
+      : options.baseId;
 
     return {
       onClick: useAllCallbacks(options.toggle, htmlOnClick),

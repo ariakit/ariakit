@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { MenuDisclosure } from "../MenuDisclosure";
 
 const props: Parameters<typeof MenuDisclosure>[0] = {
-  unstable_hiddenId: "disclosure",
+  baseId: "base",
   toggle: jest.fn(),
   placement: "bottom",
   show: jest.fn(),
@@ -19,7 +19,7 @@ test("render", () => {
     <body>
       <div>
         <button
-          aria-controls="disclosure"
+          aria-controls="base"
           aria-expanded="false"
           aria-haspopup="menu"
           type="button"

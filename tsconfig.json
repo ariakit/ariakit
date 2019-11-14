@@ -36,5 +36,9 @@
       "reakit-playground": ["./node_modules/reakit-playground/src"],
       "reakit-playground/*": ["./node_modules/reakit-playground/src/*"]
     }
-  }
+  },
+  "include": [
+    "packages",
+    "types"
+  ]
 }

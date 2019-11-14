@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { Tooltip } from "../Tooltip";
 
 test("render", () => {
-  const { baseElement } = render(<Tooltip>tooltip</Tooltip>);
+  const { baseElement } = render(<Tooltip id="base">tooltip</Tooltip>);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div />
@@ -13,6 +13,7 @@ test("render", () => {
         <div
           class="hidden"
           hidden=""
+          id="base"
           role="tooltip"
           style="display: none; pointer-events: none;"
         >
@@ -24,7 +25,11 @@ test("render", () => {
 });
 
 test("render visible", () => {
-  const { baseElement } = render(<Tooltip visible>tooltip</Tooltip>);
+  const { baseElement } = render(
+    <Tooltip id="base" visible>
+      tooltip
+    </Tooltip>
+  );
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div />
@@ -32,6 +37,7 @@ test("render visible", () => {
         class="__reakit-portal"
       >
         <div
+          id="base"
           role="tooltip"
           style="pointer-events: none;"
         >
@@ -44,7 +50,9 @@ test("render visible", () => {
 
 test("render without portal", () => {
   const { baseElement } = render(
-    <Tooltip unstable_portal={false}>tooltip</Tooltip>
+    <Tooltip unstable_portal={false} id="base">
+      tooltip
+    </Tooltip>
   );
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
@@ -52,6 +60,7 @@ test("render without portal", () => {
         <div
           class="hidden"
           hidden=""
+          id="base"
           role="tooltip"
           style="display: none; pointer-events: none;"
         >

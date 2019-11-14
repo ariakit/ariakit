@@ -10,7 +10,7 @@ function createRef(id: string) {
 }
 
 const props: Parameters<typeof Menu>[0] = {
-  unstable_hiddenId: "hidden",
+  baseId: "base",
   stops: [
     { id: "a", ref: createRef("a") },
     { id: "b", ref: createRef("b") }
@@ -32,7 +32,7 @@ test("render", () => {
           class="hidden"
           data-dialog="true"
           hidden=""
-          id="hidden"
+          id="base"
           role="menu"
           style="display: none;"
           tabindex="-1"
@@ -44,7 +44,7 @@ test("render", () => {
 
 test("render without state props", () => {
   // @ts-ignore
-  const { baseElement } = render(<Menu />);
+  const { baseElement } = render(<Menu id="base" />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
@@ -52,6 +52,7 @@ test("render without state props", () => {
           class="hidden"
           data-dialog="true"
           hidden=""
+          id="base"
           role="menu"
           style="display: none;"
           tabindex="-1"
