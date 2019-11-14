@@ -31,7 +31,7 @@
     "system"
   ],
   "dependencies": {
-    "emotion": "^10.0.17",
+    "emotion": "^10.0.23",
     "reakit-system-palette": "^0.6.8"
   },
   "peerDependencies": {
