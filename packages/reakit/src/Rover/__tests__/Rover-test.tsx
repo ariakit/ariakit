@@ -2,12 +2,6 @@ import * as React from "react";
 import { render } from "@testing-library/react";
 import { Rover } from "../Rover";
 
-jest.mock("reakit-utils/useId", () => {
-  return {
-    useId: jest.fn(() => "rover")
-  };
-});
-
 const props: Parameters<typeof Rover>[0] = {
   stopId: "rover",
   stops: [],
@@ -39,7 +33,7 @@ test("render", () => {
 
 test("render without state props", () => {
   // @ts-ignore
-  const { baseElement } = render(<Rover>rover</Rover>);
+  const { baseElement } = render(<Rover id="rover">rover</Rover>);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>

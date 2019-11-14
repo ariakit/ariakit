@@ -5,7 +5,7 @@ import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabPanelOptions = HiddenOptions &
-  Pick<TabStateReturn, "unstable_baseId" | "selectedId"> & {
+  Pick<TabStateReturn, "baseId" | "selectedId"> & {
     /**
      * Tab's `stopId`.
      */
@@ -33,8 +33,8 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
     return {
       role: "tabpanel",
       tabIndex: 0,
-      id: getTabPanelId(options.stopId, options.unstable_baseId),
-      "aria-labelledby": getTabId(options.stopId, options.unstable_baseId),
+      id: getTabPanelId(options.stopId, options.baseId),
+      "aria-labelledby": getTabId(options.stopId, options.baseId),
       ...htmlProps
     };
   }

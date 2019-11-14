@@ -7,7 +7,7 @@ import { unstable_IdContext } from "./IdProvider";
 
 export type unstable_IdState = {
   /**
-   * @private
+   * ID that will serve as a base for all the items IDs.
    */
   baseId: string;
   /**
