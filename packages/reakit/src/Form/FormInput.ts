@@ -48,6 +48,14 @@ export const unstable_useFormInput = createHook<
   useState: unstable_useFormState,
   keys: ["name"],
 
+  useOptions(options) {
+    return {
+      ...options,
+      unstable_clickOnEnter: false,
+      unstable_clickOnSpace: false
+    };
+  },
+
   useProps(
     options,
     { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
@@ -74,17 +82,6 @@ export const unstable_useFormInput = createHook<
       "aria-invalid": shouldShowError(options, options.name),
       ...htmlProps
     };
-  },
-
-  useCompose(options, htmlProps) {
-    return useTabbable(
-      {
-        ...options,
-        unstable_clickOnEnter: false,
-        unstable_clickOnSpace: false
-      },
-      htmlProps
-    );
   }
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,

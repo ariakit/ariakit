@@ -1,5 +1,3 @@
-// TODO: Refactor
-// Test this
 import { toArray } from "reakit-utils/toArray";
 import { deepEqual } from "./__utils/deepEqual";
 import { useOptions } from "./useOptions";
@@ -18,7 +16,7 @@ type CreateHookOptions<O, P> = {
   useState?: { (): any; __keys: ReadonlyArray<any> };
   useOptions?: (options: O, htmlProps: P) => O;
   useProps?: (options: O, htmlProps: P) => P;
-  useCompose?: (options: O, htmlProps: P) => P;
+  useComposeOptions?: (options: O, htmlProps: P) => O;
   propsAreEqual?: (prev: O & P, next: O & P) => boolean | undefined | null;
   keys?: ReadonlyArray<keyof O>;
 };
@@ -27,9 +25,11 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
   const composedHooks = toArray(options.compose) as Hook[];
 
   const __useOptions = (hookOptions: O, htmlProps: P) => {
+    // Call the current hook's useOptions first
     if (options.useOptions) {
       hookOptions = options.useOptions(hookOptions, htmlProps);
     }
+    // If there's name, call useOptions from the system context
     if (options.name) {
       hookOptions = useOptions(options.name, hookOptions, htmlProps);
     }
@@ -41,25 +41,32 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     htmlProps = {} as P,
     unstable_ignoreUseOptions = false
   ) => {
+    // This won't execute when useHook was called from within another useHook
     if (!unstable_ignoreUseOptions) {
       hookOptions = __useOptions(hookOptions, htmlProps);
     }
+    // We're already calling composed useOptions here
+    // That's why we ignoreUseOptions for composed hooks
     if (options.compose) {
       composedHooks.forEach(hook => {
         hookOptions = hook.__useOptions(hookOptions, htmlProps);
       });
     }
+    // Call the current hook's useProps
     if (options.useProps) {
       htmlProps = options.useProps(hookOptions, htmlProps);
     }
+    // If there's name, call useProps from the system context
     if (options.name) {
       htmlProps = useProps(options.name, hookOptions, htmlProps) as P;
     }
-    if (options.useCompose) {
-      htmlProps = options.useCompose(hookOptions, htmlProps);
-    } else if (options.compose) {
+
+    if (options.compose) {
+      if (options.useComposeOptions) {
+        hookOptions = options.useComposeOptions(hookOptions, htmlProps);
+      }
       composedHooks.forEach(hook => {
-        // @ts-ignore
+        // @ts-ignore The third option is only used internally
         htmlProps = hook(hookOptions, htmlProps, true);
       });
     }
@@ -68,12 +75,13 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
 
   if (process.env.NODE_ENV !== "production" && options.name) {
     Object.defineProperty(useHook, "name", {
-      value: options.name
+      value: `use${options.name}`
     });
   }
 
   useHook.__useOptions = __useOptions;
 
+  // It's used by createComponent to split option props (keys) and html props
   useHook.__keys = [
     ...composedHooks.reduce((allKeys, hook) => {
       allKeys.push(...(hook.__keys || []));
