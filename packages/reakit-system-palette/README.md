@@ -1,6 +1,6 @@
 # reakit-system-palette
 
-<a href="https://npmjs.org/package/reakit-system-palette"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit-system-palette.svg?style=flat-square" /></a>
+<a href="https://npmjs.org/package/reakit-system-palette"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit-system-palette.svg" /></a>
 
 Create color themes for Reakit components.
 

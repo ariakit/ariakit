@@ -1,6 +1,6 @@
 # reakit-system-bootstrap
 
-<a href="https://npmjs.org/package/reakit-system-bootstrap"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit-system-bootstrap.svg?style=flat-square" /></a>
+<a href="https://npmjs.org/package/reakit-system-bootstrap"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit-system-bootstrap.svg" /></a>
 
 Reakit system loosely based on [Bootstrap](https://getbootstrap.com/).
 
