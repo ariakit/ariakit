@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "body-scroll-lock": "^2.6.4",
-    "popper.js": "^1.15.0",
+    "popper.js": "^1.16.0",
     "reakit-system": "^0.6.8",
     "reakit-utils": "^0.7.0"
   },
