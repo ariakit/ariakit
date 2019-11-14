@@ -4,6 +4,7 @@ import {
   SystemProviderProps,
   SystemProvider
 } from "reakit-system/SystemProvider";
+import { unstable_IdProvider as NewIdProvider } from "./Id/IdProvider";
 
 export type ProviderProps = IdProviderProps & Partial<SystemProviderProps>;
 
@@ -14,7 +15,9 @@ export function Provider({
 }: ProviderProps) {
   return (
     <IdProvider unstable_prefix={prefix}>
-      <SystemProvider unstable_system={system}>{children}</SystemProvider>
+      <NewIdProvider prefix={prefix}>
+        <SystemProvider unstable_system={system}>{children}</SystemProvider>
+      </NewIdProvider>
     </IdProvider>
   );
 }

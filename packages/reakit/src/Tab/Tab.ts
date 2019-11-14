@@ -9,7 +9,7 @@ import { useTabState, TabStateReturn } from "./TabState";
 export type TabOptions = RoverOptions &
   Pick<Required<RoverOptions>, "stopId"> &
   Pick<Partial<TabStateReturn>, "manual"> &
-  Pick<TabStateReturn, "unstable_baseId" | "selectedId" | "select">;
+  Pick<TabStateReturn, "baseId" | "selectedId" | "select">;
 
 export type TabHTMLProps = RoverHTMLProps;
 
@@ -50,9 +50,9 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
 
     return {
       role: "tab",
-      id: getTabId(options.stopId, options.unstable_baseId),
+      id: getTabId(options.stopId, options.baseId),
       "aria-selected": selected,
-      "aria-controls": getTabPanelId(options.stopId, options.unstable_baseId),
+      "aria-controls": getTabPanelId(options.stopId, options.baseId),
       onClick: useAllCallbacks(onClick, htmlOnClick),
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       ...htmlProps
