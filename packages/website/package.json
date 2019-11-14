@@ -63,7 +63,7 @@
     "styled-components": "4.4.1",
     "unified": "8.4.2",
     "unist-util-remove": "1.0.3",
-    "unist-util-select": "2.0.2",
+    "unist-util-select": "3.0.0",
     "unist-util-visit": "2.0.1",
     "whatwg-fetch": "3.0.0",
     "yup": "0.27.0"

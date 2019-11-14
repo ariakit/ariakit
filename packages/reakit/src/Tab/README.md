@@ -418,6 +418,11 @@ similarly to `readOnly` on form elements. In this case, only
 
 ### `TabPanel`
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string</code>
 
@@ -426,6 +431,11 @@ similarly to `readOnly` on form elements. In this case, only
 <details><summary>5 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -445,11 +455,6 @@ given milliseconds.
 
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
 
 - **`selectedId`**
   <code>string | null</code>
