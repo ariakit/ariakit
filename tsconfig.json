@@ -39,6 +39,7 @@
   },
   "include": [
     "packages",
+    "stories",
     "types"
   ]
 }
