@@ -1,4 +1,5 @@
 module.exports = {
+  testEnvironment: "jest-environment-jsdom-fifteen",
   rootDir: __dirname,
   collectCoverageFrom: [
     "packages/reakit/src/**/*.{js,ts,tsx}",
