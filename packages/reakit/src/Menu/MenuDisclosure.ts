@@ -146,9 +146,12 @@ export const useMenuDisclosure = createHook<
     };
   },
 
-  useCompose(options, htmlProps) {
-    // Toggling is handled by MenuDisclosure
-    return usePopoverDisclosure({ ...options, toggle: noop }, htmlProps);
+  useComposeOptions(options) {
+    return {
+      ...options,
+      // Toggling is handled by MenuDisclosure
+      toggle: noop
+    };
   }
 });
 
