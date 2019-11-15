@@ -108,8 +108,9 @@ export function getNextTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
 ): T | null {
+  const { activeElement } = container.ownerDocument || document;
   const allFocusable = getAllFocusableIn(container);
-  const index = allFocusable.indexOf(document.activeElement as T);
+  const index = allFocusable.indexOf(activeElement as T);
   const slice = allFocusable.slice(index + 1);
   return (
     slice.find(isTabbable) ||
@@ -122,8 +123,9 @@ export function getPreviousTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
 ): T | null {
+  const { activeElement } = container.ownerDocument || document;
   const allFocusable = getAllFocusableIn(container).reverse();
-  const index = allFocusable.indexOf(document.activeElement as T);
+  const index = allFocusable.indexOf(activeElement as T);
   const slice = allFocusable.slice(index + 1);
   return (
     slice.find(isTabbable) ||
@@ -156,7 +158,8 @@ export function focusPreviousTabbableIn<T extends Element>(
 }
 
 function defaultIsActive(element: Element) {
-  return document.activeElement === element;
+  const { activeElement } = element.ownerDocument || document;
+  return activeElement === element;
 }
 
 type EnsureFocusOptions = FocusOptions & {
