@@ -9,6 +9,7 @@ export type PortalProps = {
 };
 
 export const PortalContext = React.createContext<HTMLElement | null>(
+  // TODO
   typeof document !== "undefined" ? document.body : null
 );
 
@@ -18,6 +19,7 @@ export function Portal({ children }: PortalProps) {
   const context = React.useContext(PortalContext);
   const [portal] = React.useState(() => {
     if (typeof document !== "undefined") {
+      // TODO
       const element = document.createElement("div");
       element.className = Portal.__className;
       return element;

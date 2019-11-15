@@ -37,7 +37,10 @@ export function useFocusOnShow(
       initialFocusRef.current.focus({ preventScroll: true });
     } else {
       const tabbable = getFirstTabbableIn(dialog, true);
-      const isActive = () => dialog.contains(document.activeElement);
+      const isActive = () => {
+        const { activeElement } = dialog.ownerDocument || document;
+        return dialog.contains(activeElement);
+      };
       if (tabbable) {
         ensureFocus(tabbable, { preventScroll: true, isActive });
       } else {

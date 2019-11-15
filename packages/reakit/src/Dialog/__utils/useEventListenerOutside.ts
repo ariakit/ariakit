@@ -57,10 +57,13 @@ export function useEventListenerOutside(
       listenerRef.current(e);
     };
 
-    document.addEventListener(event, handleEvent, true);
+    const container = containerRef.current;
+    const doc = container?.ownerDocument || document;
+
+    doc.addEventListener(event, handleEvent, true);
 
     return () => {
-      document.removeEventListener(event, handleEvent, true);
+      doc.removeEventListener(event, handleEvent, true);
     };
   }, [
     containerRef,

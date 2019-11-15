@@ -54,8 +54,10 @@ export function useFocusTrap(
       return undefined;
     }
 
+    const doc = portal.ownerDocument || document;
+
     if (!beforeElement.current) {
-      beforeElement.current = document.createElement("div");
+      beforeElement.current = doc.createElement("div");
       beforeElement.current.className = focusTrapClassName;
       beforeElement.current.tabIndex = 0;
       beforeElement.current.style.position = "fixed";
@@ -112,6 +114,7 @@ export function useFocusTrap(
   // Click trap
   React.useEffect(() => {
     if (!shouldTrap) return undefined;
+    const doc = portalRef.current?.ownerDocument || document;
 
     const handleClick = () => {
       const dialog = dialogRef.current;
@@ -119,14 +122,16 @@ export function useFocusTrap(
 
       if (!dialog || !portal || hasNestedOpenModals(nestedDialogs)) return;
 
-      if (!portal.contains(document.activeElement)) {
+      const { activeElement } = portal.ownerDocument || document;
+
+      if (!portal.contains(activeElement)) {
         dialog.focus();
       }
     };
 
-    document.addEventListener("click", handleClick);
+    doc.addEventListener("click", handleClick);
     return () => {
-      document.removeEventListener("click", handleClick);
+      doc.removeEventListener("click", handleClick);
     };
   }, [dialogRef, nestedDialogs, portalRef, shouldTrap]);
 }

@@ -49,6 +49,7 @@ export const unstable_useFormRemoveButton = createHook<
 
       window.requestAnimationFrame(() => {
         const selector = `[id^="${inputId}-"]`;
+        // TODO
         const inputs = document.querySelectorAll<HTMLInputElement>(selector);
 
         if (inputs.length) {
@@ -63,6 +64,7 @@ export const unstable_useFormRemoveButton = createHook<
             return final;
           }, 0);
           const nextSelector = `[id^="${inputId}-${nextIdx}"]`;
+          // TODO
           const input = document.querySelector<HTMLInputElement>(nextSelector);
           if (input) {
             input.focus();
@@ -71,6 +73,7 @@ export const unstable_useFormRemoveButton = createHook<
         }
         const pushButtonId = getPushButtonId(options.name, options.baseId);
         if (pushButtonId) {
+          // TODO
           const pushButton = document.getElementById(pushButtonId);
           if (pushButton) {
             pushButton.focus();

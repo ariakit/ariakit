@@ -43,6 +43,7 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
         if (!event.currentTarget || !menu) return;
 
         const self = event.currentTarget as HTMLElement;
+        const doc = self.ownerDocument || document;
 
         // Blur items on mouse out
         // Ignore disclosure, otherwise sub menu will close when blurring
@@ -55,7 +56,7 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
 
         // Move focus onto menu after blurring
         if (
-          document.activeElement === document.body &&
+          doc.activeElement === doc.body &&
           menu.ref.current &&
           !isTouchDevice()
         ) {

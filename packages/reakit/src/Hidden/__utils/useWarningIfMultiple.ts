@@ -9,6 +9,7 @@ export function useWarningIfMultiple(options: HiddenOptions) {
     if (!options.baseId) return;
 
     warning(
+      // TODO
       document.querySelectorAll(`#${options.baseId}`).length > 1,
       "[reakit/Hidden]",
       "You're reusing the same `useModuleState` for multiple components (Hidden, Dialog, Popover, Menu etc.).",

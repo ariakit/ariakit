@@ -11,6 +11,7 @@ export function useDisclosuresRef(options: DialogOptions) {
     const onFocus = () => {
       lastActiveElement.current = document.activeElement;
     };
+    // TODO
     document.addEventListener("focus", onFocus, true);
     return () => document.removeEventListener("focus", onFocus, true);
   }, [options.visible]);
@@ -20,6 +21,7 @@ export function useDisclosuresRef(options: DialogOptions) {
 
     const selector = `[aria-controls~="${options.baseId}"]`;
     const disclosures = Array.from(
+      // TODO
       document.querySelectorAll<HTMLElement>(selector)
     );
 

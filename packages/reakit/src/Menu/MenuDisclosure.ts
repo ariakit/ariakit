@@ -109,9 +109,10 @@ export const useMenuDisclosure = createHook<
           // If it's in a Menu, open after a short delay
           // TODO: Make the delay a prop?
           setTimeout(() => {
-            if (self.contains(document.activeElement)) {
+            const doc = self.ownerDocument || document;
+            if (self.contains(doc.activeElement)) {
               options.show();
-              if (document.activeElement !== self) {
+              if (doc.activeElement !== self) {
                 self.focus();
               }
             }
