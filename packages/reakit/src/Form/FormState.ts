@@ -6,9 +6,14 @@ import {
   SealedInitialState,
   useSealedState
 } from "reakit-utils/useSealedState";
-import { useId } from "reakit-utils/useId";
 import { isEmpty } from "reakit-utils/isEmpty";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import {
+  unstable_IdState,
+  unstable_IdActions,
+  unstable_IdInitialState,
+  unstable_useIdState
+} from "../Id/IdState";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
 import { hasMessages } from "./__utils/hasMessages";
@@ -29,11 +34,7 @@ interface Update<V> {
   ): void;
 }
 
-export type unstable_FormState<V> = {
-  /**
-   * An ID that will serve as a base for the form elements.
-   */
-  baseId: string;
+export type unstable_FormState<V> = unstable_IdState & {
   /**
    * Form values.
    */
@@ -76,7 +77,7 @@ export type unstable_FormState<V> = {
   submitFailed: number;
 };
 
-export type unstable_FormActions<V> = {
+export type unstable_FormActions<V> = unstable_IdActions & {
   /**
    * Resets the form state.
    */
@@ -111,48 +112,49 @@ export type unstable_FormActions<V> = {
   remove: <P extends DeepPath<V, P>>(name: P, index: number) => void;
 };
 
-export type unstable_FormInitialState<V> = Partial<
-  Pick<unstable_FormState<V>, "baseId" | "values">
-> & {
-  /**
-   * Whether the form should trigger `onValidate` on blur.
-   */
-  validateOnBlur?: boolean;
-  /**
-   * Whether the form should trigger `onValidate` on change.
-   */
-  validateOnChange?: boolean;
-  /**
-   * Whether the form should reset when it has been successfully submitted.
-   */
-  resetOnSubmitSucceed?: boolean;
-  /**
-   * Whether the form should reset when the component (which called
-   * `useFormState`) has been unmounted.
-   */
-  resetOnUnmount?: boolean;
-  /**
-   * A function that receives `form.values` and return or throw messages.
-   * If it returns, messages will be interpreted as successful messages.
-   * If it throws, they will be interpreted as errors.
-   * It can also return a promise for asynchronous validation.
-   */
-  onValidate?: (values: V) => ValidateReturn<V>;
-  /**
-   * A function that receives `form.values` and performs form submission.
-   * If it's triggered by `form.submit()`, `onValidate` will be called before.
-   * If `onValidate` throws, `onSubmit` will not be called.
-   * `onSubmit` can also return promises, messages and throw error messages
-   * just like `onValidate`. The only difference is that this validation will
-   * only occur on submit.
-   */
-  onSubmit?: (values: V) => ValidateReturn<V>;
-};
+export type unstable_FormInitialState<V> = unstable_IdInitialState &
+  Partial<Pick<unstable_FormState<V>, "values">> & {
+    /**
+     * Whether the form should trigger `onValidate` on blur.
+     */
+    validateOnBlur?: boolean;
+    /**
+     * Whether the form should trigger `onValidate` on change.
+     */
+    validateOnChange?: boolean;
+    /**
+     * Whether the form should reset when it has been successfully submitted.
+     */
+    resetOnSubmitSucceed?: boolean;
+    /**
+     * Whether the form should reset when the component (which called
+     * `useFormState`) has been unmounted.
+     */
+    resetOnUnmount?: boolean;
+    /**
+     * A function that receives `form.values` and return or throw messages.
+     * If it returns, messages will be interpreted as successful messages.
+     * If it throws, they will be interpreted as errors.
+     * It can also return a promise for asynchronous validation.
+     */
+    onValidate?: (values: V) => ValidateReturn<V>;
+    /**
+     * A function that receives `form.values` and performs form submission.
+     * If it's triggered by `form.submit()`, `onValidate` will be called before.
+     * If `onValidate` throws, `onSubmit` will not be called.
+     * `onSubmit` can also return promises, messages and throw error messages
+     * just like `onValidate`. The only difference is that this validation will
+     * only occur on submit.
+     */
+    onSubmit?: (values: V) => ValidateReturn<V>;
+  };
 
 export type unstable_FormStateReturn<V> = unstable_FormState<V> &
   unstable_FormActions<V>;
 
-type ReducerState<V> = unstable_FormState<V> & { initialValues: V };
+type ReducerState<V> = Omit<unstable_FormState<V>, keyof unstable_IdState> & {
+  initialValues: V;
+};
 
 type ReducerAction =
   | { type: "reset" }
@@ -278,16 +280,15 @@ function reducer<V>(
 export function unstable_useFormState<V = Record<any, any>>(
   initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
-  const defaultId = useId("form-");
   const {
-    baseId = defaultId,
     values: initialValues = {} as V,
     validateOnBlur = true,
     validateOnChange = true,
     resetOnSubmitSucceed = false,
     resetOnUnmount = true,
     onValidate,
-    onSubmit
+    onSubmit,
+    ...sealed
   } = useSealedState(initialState);
   const onValidateRef = useLiveRef(
     typeof initialState !== "function" ? initialState.onValidate : onValidate
@@ -296,8 +297,9 @@ export function unstable_useFormState<V = Record<any, any>>(
     typeof initialState !== "function" ? initialState.onSubmit : onSubmit
   );
 
+  const id = unstable_useIdState(sealed);
+
   const [{ initialValues: _, ...state }, dispatch] = React.useReducer(reducer, {
-    baseId,
     initialValues,
     values: initialValues,
     touched: {},
@@ -351,6 +353,7 @@ export function unstable_useFormState<V = Record<any, any>>(
   }, [resetOnUnmount]);
 
   return {
+    ...id,
     ...state,
     values: state.values as V,
     validate,
@@ -403,7 +406,7 @@ export function unstable_useFormState<V = Record<any, any>>(
 }
 
 const keys: Array<keyof unstable_FormStateReturn<any>> = [
-  "baseId",
+  ...unstable_useIdState.__keys,
   "values",
   "touched",
   "messages",

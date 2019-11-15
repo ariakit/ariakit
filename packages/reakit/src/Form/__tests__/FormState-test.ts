@@ -8,17 +8,20 @@ expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
 test("initial state", () => {
   const { result } = renderHook(() =>
-    unstable_useFormState({ baseId: "test" })
+    unstable_useFormState({ baseId: "base" })
   );
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "baseId": "test",
+      "baseId": "base",
       "errors": Object {},
       "messages": Object {},
       "submitFailed": 0,
       "submitSucceed": 0,
       "submitting": false,
       "touched": Object {},
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "valid": true,
       "validating": false,
       "values": Object {},
@@ -29,19 +32,22 @@ test("initial state", () => {
 test("initial state values", () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
-      baseId: "test",
+      baseId: "base",
       values: { a: "a", b: { c: ["d", "e"] } }
     })
   );
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "baseId": "test",
+      "baseId": "base",
       "errors": Object {},
       "messages": Object {},
       "submitFailed": 0,
       "submitSucceed": 0,
       "submitting": false,
       "touched": Object {},
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "valid": true,
       "validating": false,
       "values": Object {

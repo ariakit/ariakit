@@ -1,10 +1,9 @@
 // TODO: Refactor this mess
 import * as React from "react";
 import RehypeReact from "rehype-react";
-import { useId } from "reakit-utils";
-import { Button } from "reakit";
+import { Button, unstable_useId as useId } from "reakit";
 import { css } from "emotion";
-import createUseContext from "constate";
+import constate from "constate";
 import { FaEdit, FaGithub } from "react-icons/fa";
 import { usePalette, useLighten } from "reakit-system-palette/utils";
 import useLocation from "../hooks/useLocation";
@@ -36,9 +35,10 @@ function useCollection() {
   };
 }
 
-const useCollectionContext = createUseContext(useCollection, v =>
-  Object.values(v)
-);
+const useCollectionContext = constate(() => {
+  const value = useCollection();
+  return React.useMemo(() => value, Object.values(value));
+});
 
 function useScrollSpy() {
   const { items } = useCollectionContext();
@@ -71,7 +71,7 @@ function useScrollSpy() {
   return currentId;
 }
 
-const useScrollSpyContext = createUseContext(useScrollSpy);
+const useScrollSpyContext = constate(useScrollSpy);
 
 function useDocsInnerNavigationCSS() {
   const background = usePalette("background");
@@ -158,7 +158,7 @@ export default function DocsInnerNavigation({
   title,
   tableOfContentsAst
 }: Props) {
-  const id = useId();
+  const { id } = useId();
   const className = useDocsInnerNavigationCSS();
 
   return (

@@ -72,9 +72,9 @@ If you need to share state between multiple components within your app, you can 
 
 ```jsx
 import { useHiddenState, Hidden, HiddenDisclosure } from "reakit";
-import createUseContext from "constate";
+import constate from "constate";
 
-const useHiddenContext = createUseContext(useHiddenState);
+const [HiddenProvider, useHiddenContext] = constate(useHiddenState);
 
 function Disclosure() {
   const hidden = useHiddenContext();
@@ -88,10 +88,10 @@ function HiddenElement() {
 
 function Example() {
   return (
-    <useHiddenContext.Provider visible>
+    <HiddenProvider visible>
       <Disclosure />
       <HiddenElement />
-    </useHiddenContext.Provider>
+    </HiddenProvider>
   );
 }
 ```
