@@ -10,7 +10,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v1
       
-    - name: Setup Node v10.x
+    - name: Set up Node v10.x
       uses: actions/setup-node@v1
       with:
         node-version: '10.x'
