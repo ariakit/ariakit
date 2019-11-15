@@ -385,17 +385,13 @@ function Menu({ disclosure, items, ...props }) {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>
-        {disclosureProps =>
-          React.cloneElement(React.Children.only(disclosure), disclosureProps)
-        }
+      <MenuDisclosure {...menu} {...disclosure.props}>
+        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
       </MenuDisclosure>
       <BaseMenu {...menu} {...props}>
         {items.map((item, i) => (
-          <MenuItem {...menu} key={i}>
-            {itemProps =>
-              React.cloneElement(React.Children.only(item), itemProps)
-            }
+          <MenuItem {...menu} {...item.props} key={i}>
+            {itemProps => React.cloneElement(item, itemProps)}
           </MenuItem>
         ))}
       </BaseMenu>

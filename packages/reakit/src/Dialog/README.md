@@ -279,10 +279,8 @@ function Dialog({ disclosure, ...props }) {
   const dialog = useDialogState();
   return (
     <>
-      <DialogDisclosure {...dialog}>
-        {disclosureProps =>
-          React.cloneElement(React.Children.only(disclosure), disclosureProps)
-        }
+      <DialogDisclosure {...dialog} {...disclosure.props}>
+        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
       </DialogDisclosure>
       <BaseDialog {...dialog} {...props} />
     </>
