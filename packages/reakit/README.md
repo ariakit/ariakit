@@ -24,7 +24,7 @@
 <p align="center">
   <a href="https://npmjs.org/package/reakit"><img alt="NPM version" src="https://img.shields.io/npm/v/reakit.svg" /></a>
   <a href="https://npmjs.org/package/reakit"><img alt="NPM downloads" src="https://img.shields.io/npm/dm/reakit.svg"></a>
-  <a href="https://github.com/reakit/reakit/actions"><img alt="Build Status" src="https://github.com/reakit/reakit/workflows/continuous-integration/badge.svg?event=push&branch=master" /></a>
+  <a href="https://github.com/reakit/reakit/actions"><img alt="Build Status" src="https://github.com/reakit/reakit/workflows/ci/badge.svg?event=push&branch=master" /></a>
   <a href="https://codecov.io/gh/reakit/reakit"><img src="https://codecov.io/gh/reakit/reakit/branch/master/graph/badge.svg" /></a><br>
   <a href="https://opencollective.com/reakit"><img alt="Sponsors" src="https://opencollective.com/reakit/tiers/sponsor/badge.svg?label=sponsors" /></a>
   <a href="https://opencollective.com/reakit"><img alt="Backers" src="https://opencollective.com/reakit/tiers/backer/badge.svg?label=backers" /></a>
