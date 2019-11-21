@@ -1,4 +1,5 @@
 {
-  "packages": ["packages/*", "!packages/website"],
-  "buildCommand": "build:fast"
+  "packages": ["packages/reakit*"],
+  "buildCommand": "build:fast",
+  "sandboxes": ["reakit-m4n32vjkoj"]
 }
