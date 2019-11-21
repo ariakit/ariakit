@@ -1,6 +1,6 @@
 import * as React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { Checkbox, useCheckboxState } from "..";
+import { Checkbox, useCheckbox, useCheckboxState } from "..";
 
 test("single checkbox", () => {
   const Test = () => {
@@ -162,4 +162,55 @@ test("non-native checkbox onChange checked value without useCheckboxState", asyn
   fireEvent.click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(onChange).toBeCalledWith(false);
+});
+
+test("useCheckbox", () => {
+  const Test = () => {
+    const [checked, setChecked] = React.useState(false);
+    const props = useCheckbox(
+      {},
+      {
+        checked,
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+          setChecked(event.target.checked)
+      }
+    );
+    return (
+      <label>
+        <input {...props} />
+        checkbox
+      </label>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
+  expect(checkbox.checked).toBe(false);
+  expect(checkbox).toMatchInlineSnapshot(`
+    <input
+      aria-checked="false"
+      role="checkbox"
+      type="checkbox"
+      value=""
+    />
+  `);
+  fireEvent.click(checkbox);
+  expect(checkbox.checked).toBe(true);
+  expect(checkbox).toMatchInlineSnapshot(`
+    <input
+      aria-checked="true"
+      role="checkbox"
+      type="checkbox"
+      value=""
+    />
+  `);
+  fireEvent.click(checkbox);
+  expect(checkbox.checked).toBe(false);
+  expect(checkbox).toMatchInlineSnapshot(`
+    <input
+      aria-checked="false"
+      role="checkbox"
+      type="checkbox"
+      value=""
+    />
+  `);
 });
