@@ -1,1 +1,4 @@
-{}
+{
+  "packages": ["packages/*", "!packages/website"],
+  "buildCommand": "build:fast"
+}
