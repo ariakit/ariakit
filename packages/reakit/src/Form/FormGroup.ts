@@ -38,6 +38,10 @@ export const unstable_useFormGroup = createHook<
   useState: unstable_useFormState,
   keys: ["name"],
 
+  useOptions(options, { id }) {
+    return { id, ...options };
+  },
+
   useProps(options, htmlProps) {
     return {
       id: getInputId(options.name, options.baseId),

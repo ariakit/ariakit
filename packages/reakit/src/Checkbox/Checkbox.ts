@@ -55,9 +55,9 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   ) {
     return {
       unstable_clickOnEnter,
-      ...options,
-      value: typeof value !== "undefined" ? value : options.value,
-      checked: typeof checked !== "undefined" ? checked : options.checked
+      value,
+      checked,
+      ...options
     };
   },
 

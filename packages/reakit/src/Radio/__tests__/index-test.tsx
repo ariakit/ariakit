@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import { Radio, useRadioState } from "..";
+import { Radio, RadioGroup, useRadioState } from "..";
 
 test("click on radio", () => {
   const Test = () => {
@@ -78,4 +78,67 @@ test("onChange non-native radio", () => {
   expect(radio.checked).toBe(false);
   fireEvent.click(radio);
   expect(radio.checked).toBe(true);
+});
+
+test("group", () => {
+  const Test = () => {
+    const radio = useRadioState();
+    return (
+      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+        <label>
+          <Radio {...radio} value="a" />a
+        </label>
+        <label>
+          <Radio {...radio} value="b" />b
+        </label>
+        <label>
+          <Radio {...radio} value="c" />c
+        </label>
+      </RadioGroup>
+    );
+  };
+  const { container } = render(<Test />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <fieldset
+        aria-label="radiogroup"
+        id="base"
+        role="radiogroup"
+      >
+        <label>
+          <input
+            aria-checked="false"
+            id="base-1"
+            role="radio"
+            tabindex="0"
+            type="radio"
+            value="a"
+          />
+          a
+        </label>
+        <label>
+          <input
+            aria-checked="false"
+            id="base-2"
+            role="radio"
+            tabindex="-1"
+            type="radio"
+            value="b"
+          />
+          b
+        </label>
+        <label>
+          <input
+            aria-checked="false"
+            id="base-3"
+            role="radio"
+            tabindex="-1"
+            type="radio"
+            value="c"
+          />
+          c
+        </label>
+      </fieldset>
+    </div>
+  `);
 });

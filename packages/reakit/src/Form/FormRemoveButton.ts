@@ -40,6 +40,10 @@ export const unstable_useFormRemoveButton = createHook<
   useState: unstable_useFormState,
   keys: ["name", "index"],
 
+  useOptions(options, { name }) {
+    return { name, ...options };
+  },
+
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
     const onClick = React.useCallback(() => {
       options.remove(options.name, options.index);

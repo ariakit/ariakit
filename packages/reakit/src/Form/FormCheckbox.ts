@@ -54,10 +54,13 @@ export const unstable_useFormCheckbox = createHook<
   useState: unstable_useFormState,
   keys: ["name", "value"],
 
-  useOptions(options) {
-    const state = unstable_getIn(options.values, options.name);
-    const setState = (value: any) => options.update(options.name, value);
-    return { ...options, state, setState };
+  useOptions(options, htmlProps) {
+    const name = options.name || htmlProps.name;
+    const value =
+      typeof options.value !== "undefined" ? options.value : htmlProps.value;
+    const state = unstable_getIn(options.values, name);
+    const setState = (val: any) => options.update(name, val);
+    return { ...options, state, setState, name, value };
   },
 
   useProps(options, { onBlur: htmlOnBlur, ...htmlProps }) {
