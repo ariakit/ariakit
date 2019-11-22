@@ -206,6 +206,7 @@ test("unregister", () => {
 test("unregister inexistent", () => {
   const result = render();
   act(() => result.current.unregister("a"));
+  expect(console).toHaveWarned();
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "baseId": "base",

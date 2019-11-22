@@ -21,26 +21,28 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   useState: useMenuState,
 
   useProps(
-    options,
+    _,
     { onMouseOver: htmlOnMouseOver, onMouseOut: htmlOnMouseOut, ...htmlProps }
   ) {
     const menu = React.useContext(MenuContext);
+    const menuRole = menu && menu.role;
+    const menuRef = menu && menu.ref;
 
     const onMouseOver = React.useCallback(
       (event: React.MouseEvent) => {
         if (!event.currentTarget) return;
         if (isTouchDevice()) return;
-        if (menu && menu.role === "menubar") return;
+        if (menuRole === "menubar") return;
 
         const self = event.currentTarget as HTMLElement;
         self.focus();
       },
-      [options.orientation]
+      [menuRole]
     );
 
     const onMouseOut = React.useCallback(
       (event: React.MouseEvent) => {
-        if (!event.currentTarget || !menu) return;
+        if (!event.currentTarget || !menuRef) return;
 
         const self = event.currentTarget as HTMLElement;
 
@@ -56,13 +58,13 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
         // Move focus onto menu after blurring
         if (
           document.activeElement === document.body &&
-          menu.ref.current &&
+          menuRef.current &&
           !isTouchDevice()
         ) {
-          menu.ref.current.focus();
+          menuRef.current.focus();
         }
       },
-      [options.move]
+      [menuRef]
     );
 
     return {

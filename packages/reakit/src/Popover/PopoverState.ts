@@ -213,7 +213,7 @@ export function usePopoverState(
   // https://spectrum.chat/reakit/general/i-was-wondering-if-can-hide-portal-of-tooltip-when-conditionally-rendered~4e05ffe1-93e8-4c72-8c85-eccb1c3f2ff1
   React.useEffect(() => {
     if (dialog.visible && popper.current) {
-      popper.current.scheduleUpdate();
+      popper.current.update();
     }
   }, [dialog.visible]);
 
@@ -221,7 +221,7 @@ export function usePopoverState(
   // So it'll be correctly positioned
   React.useEffect(() => {
     if (sealed.visible && popper.current) {
-      popper.current.scheduleUpdate();
+      popper.current.update();
     }
   }, [sealed.visible]);
 
