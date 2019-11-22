@@ -14,6 +14,10 @@
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/reakit"
+  },
   "scripts": {
     "test": "jest",
     "coverage": "yarn test --coverage",
