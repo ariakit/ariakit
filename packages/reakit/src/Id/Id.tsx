@@ -24,6 +24,7 @@ export const unstable_useId = createHook<
   name: "Id",
   compose: useBox,
   useState: unstable_useIdState,
+  keys: ["id"],
 
   useOptions(options, htmlProps) {
     const generateId = React.useContext(unstable_IdContext);
@@ -51,13 +52,13 @@ export const unstable_useId = createHook<
       generateId
     ]);
 
-    const id = htmlProps.id || options.id || `${baseId}${suffix}`;
+    const id = options.id || htmlProps.id || `${baseId}${suffix}`;
 
     return { ...options, id };
   },
 
-  useProps(options, { id, ...htmlProps }) {
-    return { id: id || options.id, ...htmlProps };
+  useProps(options, htmlProps) {
+    return { id: options.id, ...htmlProps };
   }
 });
 

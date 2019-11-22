@@ -42,17 +42,20 @@ export const unstable_useFormRadio = createHook<
   useState: unstable_useFormState,
   keys: ["name", "value"],
 
-  useOptions(options) {
+  useOptions(options, htmlProps) {
+    const name = options.name || htmlProps.name;
+    const value =
+      typeof options.value !== "undefined" ? options.value : htmlProps.value;
     const rover = React.useContext(FormRadioGroupContext);
-    const currentChecked = unstable_getIn(options.values, options.name);
-    const checked = currentChecked === options.value;
+    const currentChecked = unstable_getIn(options.values, name);
+    const checked = currentChecked === value;
 
     if (!rover) {
       // TODO: Better error
       throw new Error("Missing FormRadioGroup");
     }
 
-    return { ...rover, ...options, checked };
+    return { ...options, ...rover, checked, name, value };
   },
 
   useProps(
