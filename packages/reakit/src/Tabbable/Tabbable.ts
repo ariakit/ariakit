@@ -78,10 +78,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
 
   useOptions(
     { unstable_clickOnEnter = true, unstable_clickOnSpace = true, ...options },
-    htmlProps
+    { disabled }
   ) {
     return {
-      disabled: htmlProps.disabled,
+      disabled,
       unstable_clickOnEnter,
       unstable_clickOnSpace,
       ...options

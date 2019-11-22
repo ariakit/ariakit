@@ -48,8 +48,9 @@ export const unstable_useFormInput = createHook<
   useState: unstable_useFormState,
   keys: ["name"],
 
-  useOptions(options) {
+  useOptions(options, { name }) {
     return {
+      name,
       ...options,
       unstable_clickOnEnter: false,
       unstable_clickOnSpace: false

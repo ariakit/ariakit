@@ -28,11 +28,12 @@ export const unstable_useIdGroup = createHook<
   name: "IdGroup",
   compose: useBox,
   useState: unstable_useIdState,
+  keys: ["id"],
 
   useOptions(options, htmlProps) {
     const generateId = React.useContext(unstable_IdContext);
     const [baseId] = React.useState(
-      () => htmlProps.id || options.id || options.baseId || generateId()
+      () => options.id || htmlProps.id || options.baseId || generateId()
     );
 
     // If there's useIdState and IdGroup has received a different id, then set
@@ -42,6 +43,10 @@ export const unstable_useIdGroup = createHook<
     }
 
     return { ...options, baseId };
+  },
+
+  useProps(options, htmlProps) {
+    return { id: options.id, ...htmlProps };
   }
 });
 
