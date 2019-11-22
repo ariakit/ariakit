@@ -264,7 +264,7 @@ function reducer<V>(
       };
     }
     case "remove": {
-      const array = unstable_getIn(state.values, action.name, []);
+      const array = unstable_getIn(state.values, action.name, []).slice();
       delete array[action.index];
       return {
         ...state,
