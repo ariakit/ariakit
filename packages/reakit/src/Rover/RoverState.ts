@@ -138,15 +138,20 @@ function reducer(
         return state;
       }
 
-      const afterRefIndex = stops.findIndex(stop => {
+      const indexToInsertAt = stops.findIndex(stop => {
         if (!stop.ref.current || !ref.current) return false;
+        // Return true if the new rover element is located earlier in the DOM
+        // than stop's element, else false:
         return Boolean(
           stop.ref.current.compareDocumentPosition(ref.current) &
             Node.DOCUMENT_POSITION_PRECEDING
         );
       });
 
-      if (afterRefIndex === -1) {
+      // findIndex returns -1 when the new rover should be inserted
+      // at the end of stops (the compareDocumentPosition test
+      // always returns false in that case).
+      if (indexToInsertAt === -1) {
         return {
           ...state,
           stops: [...stops, { id, ref }]
@@ -155,9 +160,9 @@ function reducer(
       return {
         ...state,
         stops: [
-          ...stops.slice(0, afterRefIndex),
+          ...stops.slice(0, indexToInsertAt),
           { id, ref },
-          ...stops.slice(afterRefIndex)
+          ...stops.slice(indexToInsertAt)
         ]
       };
     }
