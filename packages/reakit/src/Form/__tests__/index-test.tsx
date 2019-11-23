@@ -816,3 +816,88 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
     </div>
   `);
 });
+
+test("reset form after removing an item", async () => {
+  const Test = () => {
+    const form = useFormState({
+      baseId: "form",
+      values: {
+        names: ["a", "b", "c"]
+      }
+    });
+    return (
+      <Form {...form}>
+        {form.values.names.map((_, i) => (
+          <React.Fragment key={i}>
+            <FormInput {...form} name={["names", i]} />
+            <FormRemoveButton {...form} name="names" index={i}>
+              remove{i}
+            </FormRemoveButton>
+          </React.Fragment>
+        ))}
+        <button onClick={form.reset}>reset</button>
+      </Form>
+    );
+  };
+  const { getByText, container } = render(<Test />);
+  const remove1 = getByText("remove1");
+  const reset = getByText("reset");
+
+  fireEvent.click(remove1);
+  fireEvent.click(reset);
+
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <form
+        novalidate=""
+        role="form"
+      >
+        <input
+          aria-describedby="form-names-0-message"
+          aria-invalid="false"
+          aria-labelledby="form-names-0-label"
+          id="form-names-0"
+          name="names.0"
+          value="a"
+        />
+        <button
+          type="button"
+        >
+          remove
+          0
+        </button>
+        <input
+          aria-describedby="form-names-1-message"
+          aria-invalid="false"
+          aria-labelledby="form-names-1-label"
+          id="form-names-1"
+          name="names.1"
+          value="b"
+        />
+        <button
+          type="button"
+        >
+          remove
+          1
+        </button>
+        <input
+          aria-describedby="form-names-2-message"
+          aria-invalid="false"
+          aria-labelledby="form-names-2-label"
+          id="form-names-2"
+          name="names.2"
+          value="c"
+        />
+        <button
+          type="button"
+        >
+          remove
+          2
+        </button>
+        <button>
+          reset
+        </button>
+      </form>
+    </div>
+  `);
+});

@@ -475,7 +475,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`values`**
   <code>V</code>
@@ -523,9 +523,19 @@ only occur on submit.
 
 ### `Form`
 
-<details><summary>1 state props</summary>
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>2 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`submit`**
   <code>() =&#62; void</code>
@@ -572,7 +582,7 @@ array.
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`values`**
   <code>V</code>
@@ -618,7 +628,7 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`touched`**
   <code title="{ [P in keyof DeepMap&#60;V, boolean&#62;]?: (DeepMap&#60;V, boolean&#62;[P] extends (infer U)[] ? DeepPartial&#60;U&#62;[] : DeepMap&#60;V, boolean&#62;[P] extends readonly (infer U)[] ? readonly DeepPartial&#60;U&#62;[] : DeepPartial&#60;...&#62;) | undefined; }">{ [P in keyof DeepMap&#60;V, boolean&#62;]?: (DeepMap&#60;V...</code>
@@ -661,7 +671,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`values`**
   <code>V</code>
@@ -712,7 +722,7 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`values`**
   <code>V</code>
@@ -735,7 +745,7 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`touched`**
   <code title="{ [P in keyof DeepMap&#60;V, boolean&#62;]?: (DeepMap&#60;V, boolean&#62;[P] extends (infer U)[] ? DeepPartial&#60;U&#62;[] : DeepMap&#60;V, boolean&#62;[P] extends readonly (infer U)[] ? readonly DeepPartial&#60;U&#62;[] : DeepPartial&#60;...&#62;) | undefined; }">{ [P in keyof DeepMap&#60;V, boolean&#62;]?: (DeepMap&#60;V...</code>
@@ -789,7 +799,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`values`**
   <code>V</code>
@@ -850,7 +860,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`touched`**
   <code title="{ [P in keyof DeepMap&#60;V, boolean&#62;]?: (DeepMap&#60;V, boolean&#62;[P] extends (infer U)[] ? DeepPartial&#60;U&#62;[] : DeepMap&#60;V, boolean&#62;[P] extends readonly (infer U)[] ? readonly DeepPartial&#60;U&#62;[] : DeepPartial&#60;...&#62;) | undefined; }">{ [P in keyof DeepMap&#60;V, boolean&#62;]?: (DeepMap&#60;V...</code>
@@ -898,7 +908,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`values`**
   <code>V</code>
@@ -938,7 +948,7 @@ similarly to `readOnly` on form elements. In this case, only
 - **`baseId`**
   <code>string</code>
 
-  An ID that will serve as a base for the form elements.
+  ID that will serve as a base for all the items IDs.
 
 - **`submit`**
   <code>() =&#62; void</code>

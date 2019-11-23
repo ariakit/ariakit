@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.13](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.12...reakit@1.0.0-beta.13) (2019-11-22)
+
+
+### Bug Fixes
+
+* Fix `form.reset()` not reverting array fields to initial state ([#503](https://github.com/reakit/reakit/issues/503)) ([43ca6a8](https://github.com/reakit/reakit/commit/43ca6a8)), closes [#502](https://github.com/reakit/reakit/issues/502)
+* Prevent an unnecessary re-render on `Button` ([e39842d](https://github.com/reakit/reakit/commit/e39842d))
+* Standardize precedence when `options` and `htmlProps` conflict ([#501](https://github.com/reakit/reakit/issues/501)) ([5b8e02f](https://github.com/reakit/reakit/commit/5b8e02f))
+* Stop ignoring `checked` and `value` props passed as html props to `useCheckbox` ([#500](https://github.com/reakit/reakit/issues/500)) ([c8cb0bb](https://github.com/reakit/reakit/commit/c8cb0bb)), closes [#465](https://github.com/reakit/reakit/issues/465)
+* Stop persisting `onChange` event on `Checkbox` ([#499](https://github.com/reakit/reakit/issues/499)) ([fd4a694](https://github.com/reakit/reakit/commit/fd4a694)), closes [#498](https://github.com/reakit/reakit/issues/498)
+
+
+### BREAKING CHANGES
+
+* When passing a custom `onChange` prop to `Checkbox`, `event.target.checked` will no longer return a different value than when using the native `<input type="checkbox">` element.
+
+  **Before:**
+  ```jsx
+  <Checkbox onChange={event => setChecked(!event.target.checked)} />
+  ```
+  **After:**
+  ```jsx
+  <Checkbox onChange={event => setChecked(event.target.checked)} />
+  ```
+
+
+
+
+
 # [1.0.0-beta.12](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.11...reakit@1.0.0-beta.12) (2019-11-14)
 
 
