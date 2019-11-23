@@ -172,7 +172,7 @@ export function usePopoverState(
             : undefined,
           updateStateModifier: {
             order: 900,
-            enabled: true,
+            enabled: false,
             fn: data => {
               setPlacement(data.placement);
               setPopoverStyles(data.styles as React.CSSProperties);
@@ -196,6 +196,7 @@ export function usePopoverState(
     return () => {
       if (popper.current) {
         popper.current.destroy();
+        popper.current = null;
       }
     };
   }, [

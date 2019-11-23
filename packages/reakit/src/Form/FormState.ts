@@ -373,9 +373,7 @@ export function unstable_useFormState<V = Record<any, any>>(
               }
             });
           }
-
-          dispatch({ type: "endSubmit", messages: validateMessages });
-          return undefined;
+          return dispatch({ type: "endSubmit", messages: validateMessages });
         })
         .catch(errors => {
           dispatch({ type: "endSubmit", errors });

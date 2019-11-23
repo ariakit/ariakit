@@ -119,6 +119,7 @@ test("validate with updating onValidate", async () => {
     // @ts-ignore
     expect(result.current.validate()).rejects.toEqual({ a: "error" })
   );
+  jest.useRealTimers();
 });
 
 test("submit", async () => {
@@ -159,6 +160,7 @@ test("submit with updating onSubmit", async () => {
   jest.advanceTimersByTime(1000);
   await act(result.current.submit);
   expect(result.current.errors).toEqual({ a: "error" });
+  jest.useRealTimers();
 });
 
 test("blur", () => {

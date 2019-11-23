@@ -79,13 +79,15 @@ export const useMenuDisclosure = createHook<
         setHasShownOnFocus(true);
         options.show();
       }
-    }, [parentIsMenuBar, setHasShownOnFocus, options.show]);
+    }, [parentIsMenuBar, options.show]);
 
     // Restores hasShownOnFocus
     React.useEffect(() => {
       if (hasShownOnFocus) {
-        setTimeout(() => setHasShownOnFocus(false), 200);
+        const id = setTimeout(() => setHasShownOnFocus(false), 200);
+        return () => clearTimeout(id);
       }
+      return undefined;
     }, [hasShownOnFocus]);
 
     const onMouseOver = React.useCallback(
@@ -121,6 +123,8 @@ export const useMenuDisclosure = createHook<
       [parent, parentIsMenuBar, options.show]
     );
 
+    // EXPLAIN THIS
+    // Click and hold on MenuBar item disclosure
     const onClick = React.useCallback(() => {
       if (hasParent && (!parentIsMenuBar || hasShownOnFocus)) {
         options.show();

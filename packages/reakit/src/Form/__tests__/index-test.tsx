@@ -835,7 +835,9 @@ test("reset form after removing an item", async () => {
             </FormRemoveButton>
           </React.Fragment>
         ))}
-        <button onClick={form.reset}>reset</button>
+        <button type="button" onClick={form.reset}>
+          reset
+        </button>
       </Form>
     );
   };
@@ -894,7 +896,9 @@ test("reset form after removing an item", async () => {
           remove
           2
         </button>
-        <button>
+        <button
+          type="button"
+        >
           reset
         </button>
       </form>
