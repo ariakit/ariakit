@@ -172,7 +172,7 @@ export function usePopoverState(
             : undefined,
           updateStateModifier: {
             order: 900,
-            enabled: false,
+            enabled: true,
             fn: data => {
               setPlacement(data.placement);
               setPopoverStyles(data.styles as React.CSSProperties);
