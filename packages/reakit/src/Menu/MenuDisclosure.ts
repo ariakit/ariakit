@@ -83,11 +83,9 @@ export const useMenuDisclosure = createHook<
 
     // Restores hasShownOnFocus
     React.useEffect(() => {
-      if (hasShownOnFocus) {
-        const id = setTimeout(() => setHasShownOnFocus(false), 200);
-        return () => clearTimeout(id);
-      }
-      return undefined;
+      if (!hasShownOnFocus) return undefined;
+      const id = setTimeout(() => setHasShownOnFocus(false), 200);
+      return () => clearTimeout(id);
     }, [hasShownOnFocus]);
 
     const onMouseOver = React.useCallback(
