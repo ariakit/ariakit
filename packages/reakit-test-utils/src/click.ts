@@ -1,7 +1,7 @@
 import { fireEvent } from "@testing-library/react";
 
-export function click(element: Element) {
-  fireEvent.mouseDown(element);
-  fireEvent.mouseUp(element);
-  fireEvent.click(element);
+export function click(element: Element, options?: MouseEventInit) {
+  fireEvent.mouseDown(element, options);
+  fireEvent.mouseUp(element, options);
+  fireEvent.click(element, options);
 }

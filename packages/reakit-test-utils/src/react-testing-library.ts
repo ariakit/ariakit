@@ -1,1 +1,9 @@
-export * from "@testing-library/react";
+export {
+  act,
+  fireEvent,
+  render,
+  wait,
+  waitForDomChange,
+  waitForElement,
+  waitForElementToBeRemoved
+} from "@testing-library/react";
