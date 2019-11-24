@@ -121,8 +121,11 @@ export const useMenuDisclosure = createHook<
       [parent, parentIsMenuBar, options.show]
     );
 
-    // EXPLAIN THIS
-    // Click and hold on MenuBar item disclosure
+    // If disclosure is rendered as a menu bar item, it's toggable
+    // That is, you can click on the expanded disclosure to close its menu
+    // But, if disclosure has been focused, it may be result of a mouse down
+    // In this case, toggling it would make it close right away on click
+    // Then we check if it has been shown on focus. If so, we don't toggle
     const onClick = React.useCallback(() => {
       if (hasParent && (!parentIsMenuBar || hasShownOnFocus)) {
         options.show();
