@@ -1244,7 +1244,7 @@ test("arrow right/left in a sub-submenu moves focus between disclosures in menub
     await wait(expect(submenu1item1).toHaveFocus);
   });
   keyDown("ArrowDown");
-  expect(subdisclosure10).toHaveFocus();
+  await wait(expect(subdisclosure10).toHaveFocus);
   keyDown("ArrowRight");
   await wait(expect(submenu10).toBeVisible);
   await wait(expect(submenu10item1).toHaveFocus);
