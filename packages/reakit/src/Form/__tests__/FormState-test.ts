@@ -77,6 +77,34 @@ test("update", () => {
   expect(result.current.values.b.c).toEqual(["d", "f"]);
 });
 
+test("update with function", () => {
+  const { result } = renderHook(() =>
+    unstable_useFormState({
+      values: { a: "a", b: { c: ["d", "e"] } }
+    })
+  );
+  expect(result.current.values.a).toBe("a");
+  act(() => result.current.update("a", v => `${v}b`));
+  expect(result.current.values.a).toBe("ab");
+  expect(result.current.values.b.c).toEqual(["d", "e"]);
+  act(() => result.current.update(["b", "c", 1] as const, v => `${v}f`));
+  expect(result.current.values.b.c).toEqual(["d", "ef"]);
+});
+
+test("update undefined", () => {
+  type Values = {
+    a?: string;
+  };
+  const { result } = renderHook(() =>
+    unstable_useFormState<Values>({
+      values: { a: "a" }
+    })
+  );
+  expect(result.current.values.a).toBe("a");
+  act(() => result.current.update("a", undefined));
+  expect(result.current.values.a).toBe("");
+});
+
 test("validate", async () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
@@ -136,6 +164,20 @@ test("submit", async () => {
   );
   await act(result.current.submit);
   expect(result.current.errors).toEqual({ a: "error" });
+});
+
+test("submit with resetOnSubmitSucceed", async () => {
+  const { result } = renderHook(() =>
+    unstable_useFormState({
+      values: { a: "a" },
+      resetOnSubmitSucceed: true
+    })
+  );
+  expect(result.current.values.a).toBe("a");
+  act(() => result.current.update("a", "b"));
+  expect(result.current.values.a).toBe("b");
+  await act(result.current.submit);
+  expect(result.current.values.a).toBe("a");
 });
 
 test("submit with updating onSubmit", async () => {

@@ -44,6 +44,24 @@ test("validate on change", async () => {
   await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: "a" }));
 });
 
+test("don't validate on change if validateOnChange is false", async () => {
+  const onValidate = jest.fn();
+  const Test = () => {
+    const form = useFormState({ onValidate, validateOnChange: false });
+    return (
+      <Form {...form}>
+        <FormLabel {...form} name="input" label="input" />
+        <FormInput {...form} name="input" />
+      </Form>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const input = getByLabelText("input");
+  expect(onValidate).not.toHaveBeenCalled();
+  fireEvent.change(input, { target: { value: "a" } });
+  await wait(expect(onValidate).not.toHaveBeenCalled);
+});
+
 test("validate on blur", async () => {
   const onValidate = jest.fn();
   const Test = () => {
@@ -62,6 +80,24 @@ test("validate on blur", async () => {
   await wait(() => expect(onValidate).toHaveBeenCalledWith({}));
 });
 
+test("don't validate on blur if validateOnBlur is false", async () => {
+  const onValidate = jest.fn();
+  const Test = () => {
+    const form = useFormState({ onValidate, validateOnBlur: false });
+    return (
+      <Form {...form}>
+        <FormLabel {...form} name="input" label="input" />
+        <FormInput {...form} name="input" />
+      </Form>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const input = getByLabelText("input");
+  expect(onValidate).not.toHaveBeenCalled();
+  fireEvent.blur(input);
+  await wait(expect(onValidate).not.toHaveBeenCalled);
+});
+
 test("display validation error", async () => {
   const Test = () => {
     const form = useFormState({
@@ -71,8 +107,9 @@ test("display validation error", async () => {
       onValidate: values => {
         if (!values.input) {
           const error = { input: "required" };
-          throw error;
+          return Promise.reject(error);
         }
+        return undefined;
       }
     });
     return (
@@ -202,6 +239,88 @@ test("display submission message", async () => {
   expect(message).toBeEmpty();
   fireEvent.submit(form);
   await wait(() => expect(message).toHaveTextContent("nice"));
+});
+
+test("display validation message on submit", async () => {
+  const Test = () => {
+    const form = useFormState({
+      values: {
+        a: {
+          b: {
+            c: ["d", "e", "f"]
+          }
+        }
+      },
+      onValidate: values => {
+        if (values.a.b.c[1] === "e") {
+          return {
+            a: {
+              b: {
+                c: [null, "nice"]
+              }
+            }
+          };
+        }
+        return {};
+      }
+    });
+    return (
+      <Form {...form}>
+        <FormLabel {...form} name={["a", "b", "c", 1]} label="input" />
+        <FormInput {...form} name={["a", "b", "c", 1]} />
+        <FormMessage
+          {...form}
+          name={["a", "b", "c", 1]}
+          data-testid="message"
+        />
+      </Form>
+    );
+  };
+  const { getByRole, getByTestId } = render(<Test />);
+  const form = getByRole("form");
+  const message = getByTestId("message");
+  expect(message).toBeEmpty();
+  fireEvent.submit(form);
+  await wait(() => expect(message).toHaveTextContent("nice"));
+});
+
+test("display validation error on submit", async () => {
+  const Test = () => {
+    const form = useFormState({
+      values: {
+        a: {
+          b: {
+            c: ["d", "e", "f"]
+          }
+        }
+      },
+      onValidate: values => {
+        if (values.a.b.c[1] === "e") {
+          const error = {
+            a: {
+              b: {
+                c: [null, "error"]
+              }
+            }
+          };
+          throw error;
+        }
+      }
+    });
+    return (
+      <Form {...form}>
+        <FormLabel {...form} name={["a", "b", "c", 1]} label="input" />
+        <FormInput {...form} name={["a", "b", "c", 1]} />
+        <FormMessage {...form} name={["a", "b", "c", 1]} data-testid="error" />
+      </Form>
+    );
+  };
+  const { getByRole, getByTestId } = render(<Test />);
+  const form = getByRole("form");
+  const error = getByTestId("error");
+  expect(error).toBeEmpty();
+  fireEvent.submit(form);
+  await wait(() => expect(error).toHaveTextContent("error"));
 });
 
 test("display group error", async () => {
