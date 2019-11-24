@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { PopoverDisclosure } from "../PopoverDisclosure";
 
 const props: Parameters<typeof PopoverDisclosure>[0] = {
-  unstable_hiddenId: "popover",
+  baseId: "base",
   toggle: jest.fn
 };
 
@@ -15,7 +15,7 @@ test("render", () => {
     <body>
       <div>
         <button
-          aria-controls="popover"
+          aria-controls="base"
           aria-expanded="false"
           aria-haspopup="dialog"
           type="button"
@@ -37,7 +37,7 @@ test("render visible", () => {
     <body>
       <div>
         <button
-          aria-controls="popover"
+          aria-controls="base"
           aria-expanded="true"
           aria-haspopup="dialog"
           type="button"

@@ -11,7 +11,6 @@ import {
 } from "../Tabbable/Tabbable";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 import { useIndeterminateState } from "./__utils/useIndeterminateState";
-import { useDelayedEvent } from "./__utils/useDelayedEvent";
 
 export type CheckboxOptions = TabbableOptions &
   Pick<Partial<CheckboxStateReturn>, "state" | "setState"> & {
@@ -50,9 +49,14 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   useState: useCheckboxState,
   keys: ["value", "checked"],
 
-  useOptions({ unstable_clickOnEnter = false, ...options }) {
+  useOptions(
+    { unstable_clickOnEnter = false, ...options },
+    { value, checked }
+  ) {
     return {
       unstable_clickOnEnter,
+      value,
+      checked,
       ...options
     };
   },
@@ -63,18 +67,24 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   ) {
     const ref = React.useRef<HTMLInputElement>(null);
     const checked = getChecked(options);
-    const setDelayedEvent = useDelayedEvent(htmlOnChange);
 
     useIndeterminateState(ref, options);
 
     const onChange = React.useCallback(
       (event: React.SyntheticEvent) => {
         const { state, value, setState, disabled } = options;
+        const self = event.currentTarget as HTMLElement;
 
         if (disabled) return;
 
         if (htmlOnChange) {
-          setDelayedEvent(event);
+          // If component is NOT rendered as a native input, it will not have
+          // the `checked` property. So we assign it for consistency
+          if (!(self instanceof HTMLInputElement)) {
+            // @ts-ignore
+            self.checked = !self.checked;
+          }
+          htmlOnChange(event);
         }
 
         if (!setState) return;

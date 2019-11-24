@@ -3,15 +3,18 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { cx } from "reakit-utils/cx";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import {
+  unstable_IdGroupOptions,
+  unstable_IdGroupHTMLProps,
+  unstable_useIdGroup
+} from "../Id/IdGroup";
 import { useHiddenState, HiddenStateReturn } from "./HiddenState";
 import { useWarningIfMultiple } from "./__utils/useWarningIfMultiple";
 import { useSetIsMounted } from "./__utils/useSetIsMounted";
 
-export type HiddenOptions = BoxOptions &
+export type HiddenOptions = unstable_IdGroupOptions &
   Pick<
     Partial<HiddenStateReturn>,
-    | "unstable_hiddenId"
     | "visible"
     | "unstable_animating"
     | "unstable_animated"
@@ -19,13 +22,13 @@ export type HiddenOptions = BoxOptions &
     | "unstable_setIsMounted"
   >;
 
-export type HiddenHTMLProps = BoxHTMLProps;
+export type HiddenHTMLProps = unstable_IdGroupHTMLProps;
 
 export type HiddenProps = HiddenOptions & HiddenHTMLProps;
 
 export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
   name: "Hidden",
-  compose: useBox,
+  compose: unstable_useIdGroup,
   useState: useHiddenState,
 
   useProps(
@@ -58,7 +61,7 @@ export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
 
     return {
       role: "region",
-      id: options.unstable_hiddenId,
+      id: options.baseId,
       className: cx(hiddenClass, htmlClassName),
       onAnimationEnd: useAllCallbacks(onTransitionEnd, htmlOnAnimationEnd),
       onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),

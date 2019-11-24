@@ -1,7 +1,5 @@
-const isProduction = process.env.NODE_ENV === "production";
-
 export function warning(condition: boolean, ...messages: string[]) {
-  if (!isProduction) {
+  if (process.env.NODE_ENV !== "production") {
     if (!condition) return;
 
     const text = messages.join("\n");

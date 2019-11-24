@@ -22,21 +22,17 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   useProps(_, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const [role, setRole] = React.useState<"button" | undefined>(undefined);
-    const [type, setType] = React.useState<"button" | undefined>(undefined);
+    const [type, setType] = React.useState<"button" | undefined>("button");
 
     React.useEffect(() => {
-      if (ref.current && ref.current instanceof HTMLAnchorElement) {
-        return;
-      }
-
-      if (
-        ref.current &&
-        (ref.current instanceof HTMLButtonElement ||
-          ref.current instanceof HTMLInputElement)
-      ) {
-        setType("button");
-      } else {
-        setRole("button");
+      const self = ref.current;
+      const isNativeButton =
+        self instanceof HTMLButtonElement || self instanceof HTMLInputElement;
+      if (!isNativeButton) {
+        if (!(self instanceof HTMLAnchorElement)) {
+          setRole("button");
+        }
+        setType(undefined);
       }
     }, []);
 

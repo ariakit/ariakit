@@ -70,3 +70,76 @@ test("clicking on tab reveals the panel", () => {
   fireEvent.click(tab3);
   expect(tabpanel3).toBeVisible();
 });
+
+test("markup", () => {
+  const { container } = render(<SimpleTest baseId="base" />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        aria-label="tablist"
+        role="tablist"
+      >
+        <button
+          aria-controls="base-tab1-panel"
+          aria-selected="false"
+          id="base-tab1"
+          role="tab"
+          tabindex="0"
+        >
+          tab1
+        </button>
+        <button
+          aria-controls="base-tab2-panel"
+          aria-selected="false"
+          id="base-tab2"
+          role="tab"
+          tabindex="-1"
+        >
+          tab2
+        </button>
+        <button
+          aria-controls="base-tab3-panel"
+          aria-selected="false"
+          id="base-tab3"
+          role="tab"
+          tabindex="-1"
+        >
+          tab3
+        </button>
+      </div>
+      <div
+        aria-labelledby="base-tab1"
+        class="hidden"
+        hidden=""
+        id="base-tab1-panel"
+        role="tabpanel"
+        style="display: none;"
+        tabindex="0"
+      >
+        tabpanel1
+      </div>
+      <div
+        aria-labelledby="base-tab2"
+        class="hidden"
+        hidden=""
+        id="base-tab2-panel"
+        role="tabpanel"
+        style="display: none;"
+        tabindex="0"
+      >
+        tabpanel2
+      </div>
+      <div
+        aria-labelledby="base-tab3"
+        class="hidden"
+        hidden=""
+        id="base-tab3-panel"
+        role="tabpanel"
+        style="display: none;"
+        tabindex="0"
+      >
+        tabpanel3
+      </div>
+    </div>
+  `);
+});

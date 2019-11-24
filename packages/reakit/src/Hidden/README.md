@@ -108,6 +108,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useHiddenState`
 
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
 - **`visible`**
   <code>boolean</code>
 
@@ -123,9 +128,19 @@ given milliseconds.
 
 ### `Hidden`
 
-<details><summary>3 state props</summary>
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>4 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -162,7 +177,7 @@ It's called after given milliseconds if `animated` is a number.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>2 state props</summary>
+<details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -170,6 +185,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`toggle`**
   <code>() =&#62; void</code>

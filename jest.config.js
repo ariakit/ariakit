@@ -1,4 +1,5 @@
 module.exports = {
+  testEnvironment: "jest-environment-jsdom-fifteen",
   rootDir: __dirname,
   collectCoverageFrom: [
     "packages/reakit/src/**/*.{js,ts,tsx}",
@@ -8,6 +9,7 @@ module.exports = {
   setupFilesAfterEnv: [
     "raf/polyfill",
     "@testing-library/jest-dom/extend-expect",
+    "@wordpress/jest-console",
     "<rootDir>/jest.setup.js"
   ]
 };

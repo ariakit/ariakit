@@ -60,8 +60,8 @@ export type ExtractHTMLAttributes<P> = Pick<
  * @template U Union
  */
 export type UnionToIntersection<U> = (U extends any
-  ? (k: U) => void
-  : never) extends ((k: infer I) => void)
+? (k: U) => void
+: never) extends (k: infer I) => void
   ? I
   : never;
 

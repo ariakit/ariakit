@@ -3,16 +3,16 @@ import {
   useSealedState,
   SealedInitialState
 } from "reakit-utils/useSealedState";
-import { useId } from "reakit-utils/useId";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { warning } from "reakit-utils/warning";
+import {
+  unstable_IdState,
+  unstable_IdActions,
+  unstable_IdInitialState,
+  unstable_useIdState
+} from "../Id/IdState";
 
-export type HiddenState = {
-  /**
-   * Hidden element ID.
-   * @private
-   */
-  unstable_hiddenId: string;
+export type HiddenState = unstable_IdState & {
   /**
    * Whether it's visible or not.
    */
@@ -31,7 +31,7 @@ export type HiddenState = {
   unstable_animating: boolean;
 };
 
-export type HiddenActions = {
+export type HiddenActions = unstable_IdActions & {
   /**
    * Changes the `visible` state to `true`
    */
@@ -55,14 +55,13 @@ export type HiddenActions = {
   unstable_setIsMounted?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export type HiddenInitialState = Partial<
-  Pick<HiddenState, "unstable_hiddenId" | "visible" | "unstable_animated">
-> & {
-  /**
-   * @private
-   */
-  unstable_isMounted?: boolean;
-};
+export type HiddenInitialState = unstable_IdInitialState &
+  Partial<Pick<HiddenState, "visible" | "unstable_animated">> & {
+    /**
+     * @private
+     */
+    unstable_isMounted?: boolean;
+  };
 
 export type HiddenStateReturn = HiddenState & HiddenActions;
 
@@ -77,13 +76,14 @@ function useLastValue<T>(value: T) {
 export function useHiddenState(
   initialState: SealedInitialState<HiddenInitialState> = {}
 ): HiddenStateReturn {
-  const defaultId = useId("hidden-");
   const {
-    unstable_hiddenId: hiddenId = defaultId,
     unstable_animated: animated = false,
     visible: sealedVisible = false,
-    unstable_isMounted: initialIsMounted = false
+    unstable_isMounted: initialIsMounted = false,
+    ...sealed
   } = useSealedState(initialState);
+
+  const id = unstable_useIdState(sealed);
 
   const [visible, setVisible] = React.useState(sealedVisible);
   const [animating, setAnimating] = React.useState(false);
@@ -103,8 +103,8 @@ export function useHiddenState(
   useIsomorphicEffect(() => {
     if (typeof animated !== "number") return undefined;
     // Stops animation after an interval defined by animated
-    const id = setTimeout(() => setAnimating(false), animated);
-    return () => clearTimeout(id);
+    const timeoutId = setTimeout(() => setAnimating(false), animated);
+    return () => clearTimeout(timeoutId);
   }, [animated]);
 
   const show = React.useCallback(() => {
@@ -136,7 +136,7 @@ export function useHiddenState(
   const stopAnimation = React.useCallback(() => setAnimating(false), []);
 
   return {
-    unstable_hiddenId: hiddenId,
+    ...id,
     unstable_animated: animated,
     unstable_animating: animating,
     visible,
@@ -149,7 +149,7 @@ export function useHiddenState(
 }
 
 const keys: Array<keyof HiddenStateReturn> = [
-  "unstable_hiddenId",
+  ...unstable_useIdState.__keys,
   "unstable_animated",
   "unstable_animating",
   "visible",

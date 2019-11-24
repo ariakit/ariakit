@@ -1,4 +1,5 @@
 export function hasFocusWithin(element: Element) {
-  if (!document.activeElement) return false;
-  return element.contains(document.activeElement);
+  const doc = element.ownerDocument || document;
+  if (!doc.activeElement) return false;
+  return element.contains(doc.activeElement);
 }

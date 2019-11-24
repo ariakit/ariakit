@@ -1,6 +1,6 @@
 {
   "name": "reakit-system-bootstrap",
-  "version": "0.6.8",
+  "version": "0.6.10",
   "description": "Reakit bootstrap system",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap",
@@ -31,8 +31,8 @@
     "system"
   ],
   "dependencies": {
-    "emotion": "^10.0.17",
-    "reakit-system-palette": "^0.6.8"
+    "emotion": "^10.0.23",
+    "reakit-system-palette": "^0.6.10"
   },
   "peerDependencies": {
     "react": "^16.8.0",

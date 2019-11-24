@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { TooltipReference } from "../TooltipReference";
 
 const props: Parameters<typeof TooltipReference>[0] = {
-  unstable_hiddenId: "tooltip",
+  baseId: "base",
   show: jest.fn(),
   hide: jest.fn()
 };
@@ -16,7 +16,7 @@ test("render", () => {
     <body>
       <div>
         <div
-          aria-describedby="tooltip"
+          aria-describedby="base"
           tabindex="0"
         >
           reference

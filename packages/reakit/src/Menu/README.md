@@ -385,17 +385,13 @@ function Menu({ disclosure, items, ...props }) {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>
-        {disclosureProps =>
-          React.cloneElement(React.Children.only(disclosure), disclosureProps)
-        }
+      <MenuDisclosure {...menu} {...disclosure.props}>
+        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
       </MenuDisclosure>
       <BaseMenu {...menu} {...props}>
         {items.map((item, i) => (
-          <MenuItem {...menu} key={i}>
-            {itemProps =>
-              React.cloneElement(React.Children.only(item), itemProps)
-            }
+          <MenuItem {...menu} {...item.props} key={i}>
+            {itemProps => React.cloneElement(item, itemProps)}
           </MenuItem>
         ))}
       </BaseMenu>
@@ -452,6 +448,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useMenuBarState`
 
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -475,6 +476,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   Stores the values of radios and checkboxes within the menu.
 
 ### `useMenuState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -549,6 +555,11 @@ element.
 
 ### `Menu`
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`modal`**
   <code>boolean | undefined</code>
 
@@ -595,9 +606,14 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>12 state props</summary>
+<details><summary>13 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -730,7 +746,7 @@ It's called after given milliseconds if `animated` is a number.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>8 state props</summary>
+<details><summary>9 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -738,6 +754,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`toggle`**
   <code>() =&#62; void</code>
@@ -794,14 +815,24 @@ No props to show
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
   Element ID.
 
-<details><summary>14 state props</summary>
+<details><summary>15 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -902,6 +933,11 @@ array.
 
   Checkbox's checked state. If present, it's used instead of `state`.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
@@ -912,7 +948,7 @@ array.
 
   MenuItemCheckbox's name as in `menu.values`.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -927,6 +963,11 @@ going to be an array.
   <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
 
   Sets `state`.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -1025,6 +1066,11 @@ going to be an array.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
@@ -1045,9 +1091,14 @@ similarly to `readOnly` on form elements. In this case, only
 
   MenuItemRadio's name as in `menu.values`.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>

@@ -18,7 +18,7 @@ export function useDisclosuresRef(options: DialogOptions) {
   React.useEffect(() => {
     if (!options.visible) return;
 
-    const selector = `[aria-controls~="${options.unstable_hiddenId}"]`;
+    const selector = `[aria-controls~="${options.baseId}"]`;
     const disclosures = Array.from(
       document.querySelectorAll<HTMLElement>(selector)
     );
@@ -37,7 +37,7 @@ export function useDisclosuresRef(options: DialogOptions) {
     } else {
       disclosuresRef.current = disclosures;
     }
-  }, [options.unstable_hiddenId, options.visible]);
+  }, [options.baseId, options.visible]);
 
   return disclosuresRef;
 }

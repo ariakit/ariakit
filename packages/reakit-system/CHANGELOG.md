@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.7.0...reakit-system@0.7.1) (2019-11-22)
+
+**Note:** Version bump only for package reakit-system
+
+
+
+
+
+# [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.6.8...reakit-system@0.7.0) (2019-11-14)
+
+
+### Features
+
+* **reakit-system:** Replace `useCompose` by `useComposeOptions` on `createHook` ([#493](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/493)) ([50fd7df](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/50fd7df))
+
+
+
+
+
 ## [0.6.8](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.6.7...reakit-system@0.6.8) (2019-11-08)
 
 **Note:** Version bump only for package reakit-system

@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0-beta.13",
   "description": "Toolkit for building accessible rich web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -13,6 +13,10 @@
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/reakit"
   },
   "scripts": {
     "test": "jest",
@@ -35,9 +39,9 @@
   ],
   "dependencies": {
     "body-scroll-lock": "^2.6.4",
-    "popper.js": "^1.15.0",
-    "reakit-system": "^0.6.8",
-    "reakit-utils": "^0.7.0"
+    "popper.js": "^1.16.0",
+    "reakit-system": "^0.7.1",
+    "reakit-utils": "^0.7.2"
   },
   "peerDependencies": {
     "react": "^16.8.0",

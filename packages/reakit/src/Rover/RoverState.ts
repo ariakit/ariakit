@@ -5,13 +5,19 @@ import {
   SealedInitialState,
   useSealedState
 } from "reakit-utils/useSealedState";
+import {
+  unstable_IdState,
+  unstable_IdActions,
+  unstable_IdInitialState,
+  unstable_useIdState
+} from "../Id/IdState";
 
 type Stop = {
   id: string;
   ref: React.RefObject<HTMLElement>;
 };
 
-export type RoverState = {
+export type RoverState = unstable_IdState & {
   /**
    * Defines the orientation of the rover list.
    */
@@ -42,7 +48,7 @@ export type RoverState = {
   loop: boolean;
 };
 
-export type RoverActions = {
+export type RoverActions = unstable_IdActions & {
   /**
    * Registers the element ID and ref in the roving tab index list.
    */
@@ -83,9 +89,8 @@ export type RoverActions = {
   unstable_orientate: (orientation: RoverState["orientation"]) => void;
 };
 
-export type RoverInitialState = Partial<
-  Pick<RoverState, "orientation" | "currentId" | "loop">
->;
+export type RoverInitialState = unstable_IdInitialState &
+  Partial<Pick<RoverState, "orientation" | "currentId" | "loop">>;
 
 export type RoverStateReturn = RoverState & RoverActions;
 
@@ -103,7 +108,12 @@ type RoverAction =
       orientation?: RoverState["orientation"];
     };
 
-function reducer(state: RoverState, action: RoverAction): RoverState {
+type RoverReducerState = Omit<RoverState, keyof unstable_IdState>;
+
+function reducer(
+  state: RoverReducerState,
+  action: RoverAction
+): RoverReducerState {
   const {
     stops,
     currentId,
@@ -128,15 +138,20 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
         return state;
       }
 
-      const afterRefIndex = stops.findIndex(stop => {
+      const indexToInsertAt = stops.findIndex(stop => {
         if (!stop.ref.current || !ref.current) return false;
+        // Return true if the new rover element is located earlier in the DOM
+        // than stop's element, else false:
         return Boolean(
           stop.ref.current.compareDocumentPosition(ref.current) &
             Node.DOCUMENT_POSITION_PRECEDING
         );
       });
 
-      if (afterRefIndex === -1) {
+      // findIndex returns -1 when the new rover should be inserted
+      // at the end of stops (the compareDocumentPosition test
+      // always returns false in that case).
+      if (indexToInsertAt === -1) {
         return {
           ...state,
           stops: [...stops, { id, ref }]
@@ -145,9 +160,9 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
       return {
         ...state,
         stops: [
-          ...stops.slice(0, afterRefIndex),
+          ...stops.slice(0, indexToInsertAt),
           { id, ref },
-          ...stops.slice(afterRefIndex)
+          ...stops.slice(indexToInsertAt)
         ]
       };
     }
@@ -253,9 +268,12 @@ function reducer(state: RoverState, action: RoverAction): RoverState {
 export function useRoverState(
   initialState: SealedInitialState<RoverInitialState> = {}
 ): RoverStateReturn {
-  const { orientation, currentId = null, loop = false } = useSealedState(
-    initialState
-  );
+  const {
+    orientation,
+    currentId = null,
+    loop = false,
+    ...sealed
+  } = useSealedState(initialState);
   const [state, dispatch] = React.useReducer(reducer, {
     orientation,
     stops: [],
@@ -265,7 +283,10 @@ export function useRoverState(
     loop
   });
 
+  const idState = unstable_useIdState(sealed);
+
   return {
+    ...idState,
     ...state,
     register: React.useCallback(
       (id, ref) => dispatch({ type: "register", id, ref }),
@@ -292,6 +313,7 @@ export function useRoverState(
 }
 
 const keys: Array<keyof RoverStateReturn> = [
+  ...unstable_useIdState.__keys,
   "orientation",
   "stops",
   "currentId",

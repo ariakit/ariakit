@@ -9,28 +9,34 @@ function render(...args: Parameters<typeof useHiddenState>) {
 }
 
 test("initial state", () => {
-  const result = render({ unstable_hiddenId: "test" });
+  const result = render({ baseId: "base" });
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "unstable_animated": false,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": false,
     }
   `);
 });
 
 test("initial state visible", () => {
-  const result = render({ unstable_hiddenId: "test", visible: true });
+  const result = render({ baseId: "base", visible: true });
   expect(result.current).toMatchInlineSnapshot(
     {
       visible: true
     },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": false,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": true,
     }
   `
@@ -38,16 +44,19 @@ test("initial state visible", () => {
 });
 
 test("initial state lazy", () => {
-  const result = render(() => ({ unstable_hiddenId: "test", visible: true }));
+  const result = render(() => ({ baseId: "base", visible: true }));
   expect(result.current).toMatchInlineSnapshot(
     {
       visible: true
     },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": false,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": true,
     }
   `
@@ -56,7 +65,7 @@ test("initial state lazy", () => {
 
 test("show", () => {
   const result = render({
-    unstable_hiddenId: "test",
+    baseId: "base",
     unstable_isMounted: true
   });
   act(result.current.show);
@@ -64,9 +73,12 @@ test("show", () => {
     { visible: true },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": false,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": true,
     }
   `
@@ -76,7 +88,7 @@ test("show", () => {
 test("show animated", () => {
   jest.useFakeTimers();
   const result = render({
-    unstable_hiddenId: "test",
+    baseId: "base",
     unstable_isMounted: true,
     unstable_animated: 1000
   });
@@ -85,9 +97,12 @@ test("show animated", () => {
     { visible: true, unstable_animating: true },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": 1000,
       "unstable_animating": true,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": true,
     }
   `
@@ -99,25 +114,32 @@ test("show animated", () => {
     { visible: true, unstable_animating: false },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": 1000,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": true,
     }
   `
   );
+  jest.useRealTimers();
 });
 
 test("hide", () => {
-  const result = render({ unstable_hiddenId: "test", visible: true });
+  const result = render({ baseId: "base", visible: true });
   act(result.current.hide);
   expect(result.current).toMatchInlineSnapshot(
     { visible: false },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": false,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": false,
     }
   `
@@ -127,7 +149,7 @@ test("hide", () => {
 test("hide animated", () => {
   jest.useFakeTimers();
   const result = render({
-    unstable_hiddenId: "test",
+    baseId: "base",
     visible: true,
     unstable_animated: 1000
   });
@@ -136,9 +158,12 @@ test("hide animated", () => {
     { visible: false, unstable_animating: true },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": 1000,
       "unstable_animating": true,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": false,
     }
   `
@@ -150,18 +175,22 @@ test("hide animated", () => {
     { visible: false, unstable_animating: false },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": 1000,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": false,
     }
   `
   );
+  jest.useRealTimers();
 });
 
 test("toggle", () => {
   const result = render({
-    unstable_hiddenId: "test",
+    baseId: "base",
     unstable_isMounted: true
   });
   act(result.current.toggle);
@@ -169,9 +198,12 @@ test("toggle", () => {
     { visible: true },
     `
     Object {
+      "baseId": "base",
       "unstable_animated": false,
       "unstable_animating": false,
-      "unstable_hiddenId": "test",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "visible": true,
     }
   `

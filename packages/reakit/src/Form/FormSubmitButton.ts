@@ -24,10 +24,7 @@ export const unstable_useFormSubmitButton = createHook<
   useState: unstable_useFormState,
 
   useOptions(options) {
-    return {
-      disabled: options.submitting,
-      ...options
-    };
+    return { disabled: options.submitting, ...options };
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {

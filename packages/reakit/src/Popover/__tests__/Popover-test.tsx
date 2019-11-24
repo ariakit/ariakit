@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {
-  unstable_hiddenId: "popover",
+  baseId: "base",
   "aria-label": "popover"
 };
 
@@ -17,7 +17,7 @@ test("render", () => {
           class="hidden"
           data-dialog="true"
           hidden=""
-          id="popover"
+          id="base"
           role="dialog"
           style="display: none;"
           tabindex="-1"
@@ -41,7 +41,7 @@ test("render visible", () => {
         <div
           aria-label="popover"
           data-dialog="true"
-          id="popover"
+          id="base"
           role="dialog"
           tabindex="-1"
         >
@@ -70,7 +70,7 @@ test("render modal", () => {
           class="hidden"
           data-dialog="true"
           hidden=""
-          id="popover"
+          id="base"
           role="dialog"
           style="display: none;"
           tabindex="-1"

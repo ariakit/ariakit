@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { TabPanel } from "../TabPanel";
 
 const props: Parameters<typeof TabPanel>[0] = {
-  unstable_baseId: "base",
+  baseId: "base",
   stopId: "tab",
   selectedId: null
 };

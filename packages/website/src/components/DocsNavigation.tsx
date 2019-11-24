@@ -1,12 +1,12 @@
 // TODO: Refactor this mess
 import * as React from "react";
 import { useStaticQuery, graphql, Link, GatsbyLinkProps } from "gatsby";
-import { useId } from "reakit-utils";
 import {
   useTooltipState,
   Tooltip,
   TooltipReference,
-  TooltipArrow
+  TooltipArrow,
+  unstable_useId as useId
 } from "reakit";
 import kebabCase from "lodash/kebabCase";
 import { css } from "emotion";
@@ -112,7 +112,7 @@ function useDocsNavigationCSS() {
 
 export default function DocsNavigation() {
   const data: Data = useStaticQuery(query);
-  const baseId = useId("docs-navigation-");
+  const { id: baseId } = useId({ baseId: "docs-navigation" });
   const className = useDocsNavigationCSS();
 
   const getId = (section: string) => `${baseId}-${kebabCase(section)}`;

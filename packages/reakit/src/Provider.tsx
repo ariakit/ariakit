@@ -1,11 +1,13 @@
 import * as React from "react";
-import { IdProvider, IdProviderProps } from "reakit-utils/useId";
 import {
   SystemProviderProps,
   SystemProvider
 } from "reakit-system/SystemProvider";
+import { unstable_IdProvider as IdProvider } from "./Id/IdProvider";
 
-export type ProviderProps = IdProviderProps & Partial<SystemProviderProps>;
+export type ProviderProps = Partial<SystemProviderProps> & {
+  unstable_prefix?: string;
+};
 
 export function Provider({
   unstable_prefix: prefix,
@@ -13,7 +15,7 @@ export function Provider({
   children
 }: ProviderProps) {
   return (
-    <IdProvider unstable_prefix={prefix}>
+    <IdProvider prefix={prefix}>
       <SystemProvider unstable_system={system}>{children}</SystemProvider>
     </IdProvider>
   );

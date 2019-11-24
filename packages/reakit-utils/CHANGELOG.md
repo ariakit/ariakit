@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.1...reakit-utils@0.7.2) (2019-11-22)
+
+
+### Bug Fixes
+
+* **reakit-utils:** Support iframes ([b6b3340](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/b6b3340))
+
+
+
+
+
+## [0.7.1](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.0...reakit-utils@0.7.1) (2019-11-14)
+
+**Note:** Version bump only for package reakit-utils
+
+
+
+
+
 # [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.7...reakit-utils@0.7.0) (2019-11-08)
 
 **Note:** Version bump only for package reakit-utils
