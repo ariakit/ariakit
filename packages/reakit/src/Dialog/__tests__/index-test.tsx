@@ -12,7 +12,7 @@ test("clicking on disclosure opens the dialog", () => {
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" />
+        <Dialog {...dialog} tabIndex={0} aria-label="dialog" />
       </>
     );
   };
@@ -246,6 +246,7 @@ test("focus dialog itself if there is no tabbable descendant element", () => {
   expect(document.body).toHaveFocus();
   fireEvent.click(disclosure);
   expect(dialog).toHaveFocus();
+  expect(console).toHaveWarned();
 });
 
 test("focus is trapped within the dialog", () => {
@@ -362,6 +363,7 @@ test("focus is trapped within an empty dialog", () => {
   const dialog = getByLabelText("dialog");
   fireEvent.click(disclosure);
   expect(dialog).toHaveFocus();
+  expect(console).toHaveWarned();
 
   act(() => focusNextTabbableIn(baseElement));
   expect(dialog).toHaveFocus();
@@ -426,6 +428,7 @@ test("esc closes the dialog", () => {
   expect(dialog).toBeVisible();
   fireEvent.keyDown(dialog, { key: "Escape" });
   expect(dialog).not.toBeVisible();
+  expect(console).toHaveWarned();
 });
 
 test("esc does not close the dialog when hideOnEsc is falsy", () => {
@@ -450,6 +453,7 @@ test("clicking outside closes the dialog", () => {
   expect(dialog).toBeVisible();
   fireEvent.click(baseElement);
   expect(dialog).not.toBeVisible();
+  expect(console).toHaveWarned();
 });
 
 test("clicking on disclosure closes the dialog", () => {
@@ -477,7 +481,7 @@ test("clicking on any of multiple disclosures closes the dialog", () => {
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" />
+        <Dialog {...dialog} tabIndex={0} aria-label="dialog" />
       </>
     );
   };
@@ -643,7 +647,7 @@ test("focus disclosure when dialog closes", () => {
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" />
+        <Dialog {...dialog} tabIndex={0} aria-label="dialog" />
       </>
     );
   };
@@ -665,7 +669,7 @@ test("focus the disclosure that has been used to open the dialog when dialog clo
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
         <button onClick={dialog.toggle}>disclosure3</button>
-        <Dialog {...dialog} aria-label="dialog" />
+        <Dialog {...dialog} tabIndex={0} aria-label="dialog" />
       </>
     );
   };
@@ -1006,7 +1010,7 @@ test("clicking on the nested dialog does not close the parent dialog", () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1035,7 +1039,12 @@ test("clicking on the nested non-modal dialog does not close the parent dialog",
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" modal={false} />
+          <Dialog
+            {...dialog2}
+            tabIndex={0}
+            aria-label="dialog2"
+            modal={false}
+          />
         </Dialog>
       </>
     );
@@ -1064,7 +1073,7 @@ test("clicking on the nested dialog does not close the parent non-modal dialog",
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1" modal={false}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1096,7 +1105,7 @@ test("clicking on the nested dialog does not close the grandparent non-modal dia
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog {...dialog2} aria-label="dialog2">
             <DialogDisclosure {...dialog3}>disclosure3</DialogDisclosure>
-            <Dialog {...dialog3} aria-label="dialog3" />
+            <Dialog {...dialog3} tabIndex={0} aria-label="dialog3" />
           </Dialog>
         </Dialog>
       </>
@@ -1131,7 +1140,7 @@ test("clicking on the parent dialog closes the nested dialog", () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1160,7 +1169,12 @@ test("clicking on the parent dialog closes the nested non-modal dialog", () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" modal={false} />
+          <Dialog
+            {...dialog2}
+            tabIndex={0}
+            aria-label="dialog2"
+            modal={false}
+          />
         </Dialog>
       </>
     );
@@ -1189,7 +1203,12 @@ test("clicking on the parent non-modal dialog closes the nested non-modal dialog
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1" modal={false}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" modal={false} />
+          <Dialog
+            {...dialog2}
+            tabIndex={0}
+            aria-label="dialog2"
+            modal={false}
+          />
         </Dialog>
       </>
     );
@@ -1218,7 +1237,7 @@ test("clicking on the parent non-modal dialog closes the nested dialog", () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1" modal={false}>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1256,6 +1275,7 @@ test("esc closes nested dialog, but not parent dialog", () => {
   fireEvent.keyDown(dialog2, { key: "Escape" });
   expect(dialog1).toBeVisible();
   expect(dialog2).not.toBeVisible();
+  expect(console).toHaveWarned();
 });
 
 test("esc on parent dialog closes nested dialogs", () => {
@@ -1276,6 +1296,7 @@ test("esc on parent dialog closes nested dialogs", () => {
   fireEvent.keyDown(dialog1, { key: "Escape" });
   expect(dialog1).not.toBeVisible();
   expect(dialog2).not.toBeVisible();
+  expect(console).toHaveWarned();
 });
 
 test("disables hover outside", () => {
@@ -1310,7 +1331,12 @@ test("opening a nested orphan dialog closes the parent dialog", () => {
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2" unstable_orphan />
+          <Dialog
+            {...dialog2}
+            tabIndex={0}
+            aria-label="dialog2"
+            unstable_orphan
+          />
         </Dialog>
       </>
     );

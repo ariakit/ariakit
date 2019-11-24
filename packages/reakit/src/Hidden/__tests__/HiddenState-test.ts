@@ -124,6 +124,7 @@ test("show animated", () => {
     }
   `
   );
+  jest.useRealTimers();
 });
 
 test("hide", () => {
@@ -184,6 +185,7 @@ test("hide animated", () => {
     }
   `
   );
+  jest.useRealTimers();
 });
 
 test("toggle", () => {

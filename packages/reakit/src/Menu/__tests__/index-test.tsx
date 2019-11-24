@@ -310,15 +310,11 @@ test("hovering menu item disclosure moves focus into it and opens submenu after 
   const submenu = getByLabelText("submenu");
   fireEvent.click(disclosure);
   await wait(expect(menu).toBeVisible);
-  jest.useFakeTimers();
   fireEvent.mouseOver(subdisclosure);
   await wait(expect(subdisclosure).toHaveFocus);
   expect(submenu).not.toBeVisible();
-  act(() => {
-    jest.advanceTimersByTime(500);
-  });
   await wait(expect(subdisclosure).toHaveFocus);
-  expect(submenu).toBeVisible();
+  await wait(expect(submenu).toBeVisible);
 });
 
 test("arrow down on disclosure opens bottom menu and focus first item", async () => {
@@ -548,11 +544,7 @@ test("arrow right on menu item disclosure opens right submenu and focus first it
   await wait(expect(menu).toBeVisible);
   act(() => subdisclosure.focus());
   await wait(expect(submenu).not.toBeVisible);
-  jest.useFakeTimers();
   keyDown("ArrowRight");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu).toBeVisible);
   expect(subitem1).toHaveFocus();
   keyDown("ArrowLeft");
@@ -594,17 +586,10 @@ test("arrow left on menu item disclosure opens left submenu and focus first item
   const submenu = getByLabelText("submenu");
   act(() => subdisclosure.focus());
   await wait(expect(submenu).not.toBeVisible);
-  jest.useFakeTimers();
   keyDown("ArrowLeft");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu).toBeVisible);
   expect(subitem1).toHaveFocus();
   keyDown("ArrowRight");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu).not.toBeVisible);
   expect(subdisclosure).toHaveFocus();
 });
@@ -851,11 +836,7 @@ test("pressing enter on menubar item disclosure focus submenu first item", async
   act(() => subdisclosure.focus());
   await wait(expect(submenu).toBeVisible);
   expect(subdisclosure).toHaveFocus();
-  jest.useFakeTimers();
   keyDown("Enter");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu).toBeVisible);
   expect(subitem1).toHaveFocus();
 });
@@ -895,11 +876,7 @@ test("pressing space on menubar item disclosure focus submenu first item", async
   act(() => subdisclosure.focus());
   await wait(expect(submenu).toBeVisible);
   expect(subdisclosure).toHaveFocus();
-  jest.useFakeTimers();
   keyDown(" ");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu).toBeVisible);
   expect(subitem1).toHaveFocus();
 });
@@ -1000,11 +977,7 @@ test("move focus within submenu with arrow keys", async () => {
   await wait(expect(item3).toHaveFocus);
   keyDown("ArrowUp");
   await wait(expect(subdisclosure).toHaveFocus);
-  jest.useFakeTimers();
   keyDown("ArrowRight");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu).toBeVisible);
   expect(subitem1).toHaveFocus();
   keyDown("ArrowDown");
@@ -1055,6 +1028,7 @@ test("move focus within menu with ascii keys", async () => {
   keyDown("a");
   keyDown("b");
   await wait(expect(abc).toHaveFocus);
+  jest.useRealTimers();
 });
 
 test("move focus within submenu with ascii keys", async () => {
@@ -1184,11 +1158,7 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   act(() => item1.focus());
   await wait(expect(submenu1).toBeVisible);
   expect(item1).toHaveFocus();
-  jest.useFakeTimers();
   keyDown("ArrowDown");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu1item1).toHaveFocus);
   keyDown("ArrowRight");
   await wait(expect(submenu1).not.toBeVisible);
@@ -1203,100 +1173,10 @@ test("arrow right/left in a submenu moves focus between disclosures in menubar",
   keyDown("ArrowLeft");
   await wait(expect(item1).toHaveFocus); // not loop
   keyDown("ArrowDown");
-  act(() => {
-    jest.runAllTimers();
-  });
   await wait(expect(submenu1item1).toHaveFocus);
   keyDown("ArrowLeft");
   await wait(expect(submenu1).toBeVisible);
   expect(submenu1item1).toHaveFocus(); // not loop
-});
-
-test("arrow right/left in a sub-submenu moves focus between disclosures in menubar", async () => {
-  const Submenu = React.forwardRef(
-    (
-      { index, ...props }: { index: number } & MenuDisclosureHTMLProps,
-      ref: React.RefObject<any>
-    ) => {
-      const menu = useMenuState();
-      return (
-        <>
-          <MenuDisclosure {...menu} {...props} ref={ref}>
-            subdisclosure{index}
-          </MenuDisclosure>
-          <Menu aria-label={`submenu${index}`} {...menu}>
-            <MenuItem {...menu}>submenu{index}item1</MenuItem>
-            <MenuItem {...menu}>
-              {index >= 10
-                ? `submenu${index}item2`
-                : p => <Submenu {...p} index={index * 10} />}
-            </MenuItem>
-            <MenuItem {...menu}>submenu{index}item3</MenuItem>
-          </Menu>
-        </>
-      );
-    }
-  );
-  const Test = () => {
-    const menu = useMenuState({
-      orientation: "horizontal",
-      loop: true
-    });
-    return (
-      <MenuBar {...menu} aria-label="menu">
-        <MenuItem {...menu} as={Submenu} index={1} />
-        <MenuItem {...menu} as={Submenu} index={2} />
-      </MenuBar>
-    );
-  };
-  const { getByText, getByLabelText } = render(<Test />);
-  const subdisclosure1 = getByText("subdisclosure1");
-  const subdisclosure10 = getByText("subdisclosure10");
-  const subdisclosure2 = getByText("subdisclosure2");
-  const submenu1 = getByLabelText("submenu1");
-  const submenu10 = getByLabelText("submenu10");
-  const submenu10item1 = getByText("submenu10item1");
-  const submenu2 = getByLabelText("submenu2");
-  act(() => subdisclosure1.focus());
-  await wait(expect(submenu1).toBeVisible);
-  act(() => subdisclosure10.focus());
-  fireEvent.click(subdisclosure10);
-  await wait(expect(submenu1).toBeVisible);
-  expect(submenu10).toBeVisible();
-  jest.useFakeTimers();
-  keyDown("ArrowRight");
-  act(() => {
-    jest.runAllTimers();
-  });
-  await wait(expect(submenu10item1).toHaveFocus);
-  keyDown("ArrowRight");
-  act(() => {
-    jest.runAllTimers();
-  });
-  await wait(expect(submenu1).not.toBeVisible);
-  expect(submenu2).toBeVisible();
-  expect(subdisclosure2).toHaveFocus();
-  keyDown("ArrowLeft");
-  keyDown("ArrowDown");
-  act(() => {
-    jest.runAllTimers();
-  });
-  keyDown("ArrowDown");
-  await wait(expect(submenu1).toBeVisible);
-  expect(subdisclosure10).toHaveFocus();
-  keyDown("ArrowRight");
-  act(() => {
-    jest.runAllTimers();
-  });
-  await wait(expect(submenu10).toBeVisible);
-  expect(submenu10item1).toHaveFocus();
-  keyDown("ArrowLeft");
-  await wait(expect(submenu10).not.toBeVisible);
-  expect(subdisclosure10).toHaveFocus();
-  keyDown("ArrowLeft");
-  await wait(expect(submenu1).not.toBeVisible);
-  expect(submenu2).toBeVisible();
-  expect(subdisclosure2).toHaveFocus();
 });
 
 test("clicking on menu disclorure closes the menu", async () => {

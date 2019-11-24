@@ -9,6 +9,7 @@ module.exports = {
   setupFilesAfterEnv: [
     "raf/polyfill",
     "@testing-library/jest-dom/extend-expect",
+    "@wordpress/jest-console",
     "<rootDir>/jest.setup.js"
   ]
 };

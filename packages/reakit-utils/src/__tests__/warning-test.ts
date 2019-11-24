@@ -1,31 +1,19 @@
-describe("warning", () => {
-  const initialNodeEnv = process.env.NODE_ENV;
-  const warnSpy = jest.spyOn(global.console, "warn").mockImplementation();
+import { warning } from "../warning";
 
-  afterEach(() => {
-    process.env.NODE_ENV = initialNodeEnv;
-    warnSpy.mockRestore();
-  });
+const initialNodeEnv = process.env.NODE_ENV;
 
-  test('log to console.warn when NODE_ENV is not "production"', () => {
-    process.env.NODE_ENV = "development";
+afterEach(() => {
+  process.env.NODE_ENV = initialNodeEnv;
+});
 
-    jest.isolateModules(() => {
-      const { warning } = require("../warning");
-      warning(true, "warn", "ing");
-    });
+test('log to console.warn when NODE_ENV is not "production"', () => {
+  process.env.NODE_ENV = "development";
+  warning(true, "warn", "ing");
+  expect(console).toHaveWarnedWith("warn\ning");
+});
 
-    expect(warnSpy).toHaveBeenCalledWith("warn\ning");
-  });
-
-  test('do not log to console.warn if NODE_ENV is "production"', () => {
-    process.env.NODE_ENV = "production";
-
-    jest.isolateModules(() => {
-      const { warning } = require("../warning");
-      warning(true, "warn", "ing");
-    });
-
-    expect(warnSpy).not.toHaveBeenCalled();
-  });
+test('do not log to console.warn if NODE_ENV is "production"', () => {
+  process.env.NODE_ENV = "production";
+  warning(true, "warn", "ing");
+  expect(console).not.toHaveWarned();
 });

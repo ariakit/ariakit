@@ -368,14 +368,14 @@ export function unstable_useFormState<V = Record<any, any>>(
             ).then(submitMessages => {
               const messages = { ...validateMessages, ...submitMessages };
               dispatch({ type: "endSubmit", messages });
-              if (resetOnSubmitSucceed) {
-                dispatch({ type: "reset" });
-              }
             });
           }
-
-          dispatch({ type: "endSubmit", messages: validateMessages });
-          return undefined;
+          return dispatch({ type: "endSubmit", messages: validateMessages });
+        })
+        .then(() => {
+          if (resetOnSubmitSucceed) {
+            dispatch({ type: "reset" });
+          }
         })
         .catch(errors => {
           dispatch({ type: "endSubmit", errors });

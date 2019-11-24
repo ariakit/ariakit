@@ -229,7 +229,9 @@ test("Id within IdGroup with useIdState", () => {
   };
   const { getByLabelText, rerender } = render(<Test />);
   const { id: id1 } = getByLabelText(/id-[a-z\d]{2,}-1$/);
-  const { id: id2 } = getByLabelText(new RegExp(`${id1.replace("-1", "")}-2$`));
+  const { id: id2 } = getByLabelText(
+    new RegExp(`${id1.replace(/-1$/, "")}-2$`)
+  );
   // shouldn't change ids
   rerender(<Test />);
   getByLabelText(id1);

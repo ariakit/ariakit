@@ -44,11 +44,12 @@ test("render", () => {
 
 test("render without state props", () => {
   // @ts-ignore
-  const { baseElement } = render(<Menu id="base" />);
+  const { baseElement } = render(<Menu id="base" aria-label="menu" />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
         <div
+          aria-label="menu"
           class="hidden"
           data-dialog="true"
           hidden=""
