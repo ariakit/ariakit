@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, wait } from "@testing-library/react";
+import { render, fireEvent, wait } from "reakit-test-utils";
 import {
   Tooltip,
   TooltipArrow,

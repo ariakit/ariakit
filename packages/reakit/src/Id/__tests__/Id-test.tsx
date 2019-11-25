@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { unstable_Id as Id } from "../Id";
 import { unstable_IdProvider as IdProvider } from "../IdProvider";
 

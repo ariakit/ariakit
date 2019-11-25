@@ -1,10 +1,10 @@
 import * as React from "react";
 import { render } from "../react-testing-library";
-import { click } from "../click";
+import { blur } from "../blur";
 import { useAllEvents } from "./useAllEvents";
 
-test("click", async () => {
-  const stack = [] as string[];
+test("blur", async () => {
+  const stack = [] as any[];
   const Test = () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
@@ -12,14 +12,17 @@ test("click", async () => {
   };
   const { getByText } = render(<Test />);
   const button = getByText("button");
-  click(button);
+
+  button.focus();
+  expect(button).toHaveFocus();
+  blur(button);
+  expect(button).not.toHaveFocus();
+
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "mousedown button",
-      "focusin button",
       "focus button",
-      "mouseup button",
-      "click button",
+      "focusout button",
+      "blur button",
     ]
   `);
 });

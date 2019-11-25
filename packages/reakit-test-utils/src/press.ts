@@ -54,6 +54,7 @@ const afterKeyUpMap: Record<
 > = {
   " ": (element, options) => {
     if (options.metaKey) return;
+    // TODO: click on radio and checkbox
     if (element instanceof HTMLButtonElement) {
       fireEvent.click(element, options);
     }
@@ -100,13 +101,11 @@ function createPress(key: string, defaultOptions: KeyboardEventInit = {}) {
     press(key, element, { ...defaultOptions, ...options });
 }
 
-// Whitespace keys
+press.Escape = createPress("Escape");
 press.Tab = createPress("Tab");
 press.ShiftTab = createPress("Tab", { shiftKey: true });
 press.Enter = createPress("Enter");
 press.Space = createPress(" ");
-
-// Navigation keys
 press.ArrowUp = createPress("ArrowUp");
 press.ArrowRight = createPress("ArrowRight");
 press.ArrowDown = createPress("ArrowDown");

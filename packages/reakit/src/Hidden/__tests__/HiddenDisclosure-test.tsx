@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, click } from "reakit-test-utils";
 import { HiddenDisclosure } from "../HiddenDisclosure";
 
 const props: Parameters<typeof HiddenDisclosure>[0] = {
@@ -64,6 +64,6 @@ test("toggle", () => {
     </HiddenDisclosure>
   );
   expect(fn).toHaveBeenCalledTimes(0);
-  fireEvent.click(getByText("disclosure"));
+  click(getByText("disclosure"));
   expect(fn).toHaveBeenCalledTimes(1);
 });
