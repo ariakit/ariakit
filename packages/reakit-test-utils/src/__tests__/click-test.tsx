@@ -1,19 +1,23 @@
 import * as React from "react";
 import { render } from "../react-testing-library";
 import { click } from "../click";
+import { useAllEvents } from "./useAllEvents";
 
 test("click", async () => {
-  const called = [] as string[];
-  const { getByText } = render(
-    <button
-      onMouseDown={event => called.push(event.type)}
-      onClick={event => called.push(event.type)}
-      onMouseUp={event => called.push(event.type)}
-    >
-      button
-    </button>
-  );
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return <button ref={ref}>button</button>;
+  };
+  const { getByText } = render(<Test />);
   const button = getByText("button");
   click(button);
-  expect(called).toEqual(["mousedown", "mouseup", "click"]);
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "mousedown button",
+      "mouseup button",
+      "click button",
+    ]
+  `);
 });

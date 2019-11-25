@@ -1,27 +1,46 @@
 import getKeyCode from "keycode";
 import {
-  focusNextTabbableIn,
-  focusPreviousTabbableIn,
-  isFocusable
+  isFocusable,
+  getPreviousTabbableIn,
+  getNextTabbableIn
 } from "reakit-utils/tabbable";
 import { fireEvent } from "./react-testing-library";
+import { focus } from "./focus";
 
 const beforeKeyUpMap: Record<
   string,
   (element: Element, options: KeyboardEventInit) => void
 > = {
   Tab(_, { shiftKey }) {
-    if (shiftKey) {
-      focusPreviousTabbableIn(document.body);
-    } else {
-      focusNextTabbableIn(document.body);
+    const element = shiftKey
+      ? getPreviousTabbableIn(document.body)
+      : getNextTabbableIn(document.body);
+    if (element) {
+      focus(element);
     }
   },
   Enter(element, options) {
     if (options.metaKey) return;
-    if (element instanceof HTMLInputElement && element.type !== "button") {
-      if (element.form) {
-        fireEvent.submit(element.form, options);
+    if (
+      element instanceof HTMLInputElement &&
+      !["hidden", "radio", "checkbox"].includes(element.type)
+    ) {
+      const { form } = element;
+      if (!form) return;
+      const elements = Array.from(form.elements);
+      const validInputs = elements.filter(
+        el =>
+          el instanceof HTMLInputElement &&
+          !["hidden", "button", "submit", "reset"].includes(el.type)
+      );
+      const submitButton = elements.find(
+        el =>
+          (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
+          el.type === "submit"
+      );
+
+      if (validInputs.length === 1 || submitButton) {
+        fireEvent.submit(form, options);
       }
     } else if (isFocusable(element)) {
       fireEvent.click(element, options);
