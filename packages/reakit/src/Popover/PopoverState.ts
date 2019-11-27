@@ -29,6 +29,8 @@ type Placement =
   | "left"
   | "left-start";
 
+type FlipModifiers = Pick<Popper.Modifiers, "flip">;
+
 export type PopoverState = DialogState & {
   /**
    * The reference element.
@@ -88,9 +90,10 @@ export type PopoverInitialState = DialogInitialState &
     unstable_fixed?: boolean;
     /**
      * Flip the popover's placement when it starts to overlap its reference
-     * element.
+     * element. Can be a boolean or an object of flip modifier options which is passed
+     * to popper.js (https://popper.js.org/popper-documentation.html#modifiers..flip)
      */
-    unstable_flip?: boolean;
+    unstable_flip?: boolean | FlipModifiers;
     /**
      * Shift popover on the start or end of its reference element.
      */
@@ -163,7 +166,11 @@ export function usePopoverState(
         positionFixed: fixed,
         modifiers: {
           applyStyle: { enabled: false },
-          flip: { enabled: flip, padding: 16 },
+          flip: {
+            enabled: Boolean(flip),
+            padding: 16,
+            ...(typeof flip !== "boolean" ? flip : {})
+          },
           shift: { enabled: shift },
           offset: { enabled: shift, offset: `0, ${gutter}` },
           preventOverflow: { enabled: preventOverflow, boundariesElement },

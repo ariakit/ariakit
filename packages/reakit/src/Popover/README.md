@@ -73,6 +73,35 @@ function Example() {
 }
 ```
 
+### Flip modifiers
+
+You can control the flip behavior of `Popover` by passing a flip modifier object to the `unstable_flip` prop (https://popper.js.org/popper-documentation.html#modifiers..flip).
+
+```jsx
+import {
+  usePopoverState,
+  Popover,
+  PopoverDisclosure,
+  PopoverArrow
+} from "reakit/Popover";
+
+function Example() {
+  const popover = usePopoverState({
+    placement: "right-start",
+    unstable_flip: { behavior: ["top", "right", "bottom", "left"] }
+  });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open Popover</PopoverDisclosure>
+      <Popover {...popover} aria-label="Welcome">
+        <PopoverArrow {...popover} />
+        Welcome to Reakit! And some more text content to demonstrate the flip behavior
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Gutter
 
 You can control the margin between `Popover` and `PopoverDisclosure` by setting the `gutter` option on `usePopoverState`.
@@ -221,9 +250,9 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
-It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+  It'll wait for `stopAnimation` to be called or a CSS transition ends.
+  If it's a number, `stopAnimation` will be called automatically after
+  given milliseconds.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -239,7 +268,7 @@ given milliseconds.
   <code>boolean | undefined</code>
 
   Flip the popover's placement when it starts to overlap its reference
-element.
+  element.
 
 - **`unstable_shift`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
@@ -272,10 +301,11 @@ element.
   <code>boolean | undefined</code>
 
   Toggles Dialog's `modal` state.
+
   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
   - Modal: `preventBodyScroll` is automatically enabled, focus is
-trapped within the dialog and the dialog is rendered within a `Portal`
-by default.
+    trapped within the dialog and the dialog is rendered within a `Portal`
+    by default.
 
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
@@ -291,33 +321,33 @@ by default.
   <code>boolean | undefined</code>
 
   When enabled, user can't scroll on body when the dialog is visible.
-This option doesn't work if the dialog isn't modal.
+  This option doesn't work if the dialog isn't modal.
 
 - **`unstable_initialFocusRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog shows.
-When not set, the first tabbable element within the dialog will be used.
+  When not set, the first tabbable element within the dialog will be used.
 
 - **`unstable_finalFocusRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement&#62; | undefined</code>
 
   The element that will be focused when the dialog hides.
-When not set, the disclosure component will be used.
+  When not set, the disclosure component will be used.
 
 - **`unstable_portal`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
   Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
+  It's `true` by default if `modal` is `true`.
 
 - **`unstable_orphan`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
   Whether or not the dialog should be a child of its parent.
-Opening a nested orphan dialog will close its parent dialog if
-`hideOnClickOutside` is set to `true` on the parent.
-It will be set to `false` if `modal` is `false`.
+  Opening a nested orphan dialog will close its parent dialog if
+  `hideOnClickOutside` is set to `true` on the parent.
+  It will be set to `false` if `modal` is `false`.
 
 <details><summary>5 state props</summary>
 
@@ -337,15 +367,15 @@ It will be set to `false` if `modal` is `false`.
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
-It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+  It'll wait for `stopAnimation` to be called or a CSS transition ends.
+  If it's a number, `stopAnimation` will be called automatically after
+  given milliseconds.
 
 - **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
+  It's called after given milliseconds if `animated` is a number.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -397,15 +427,15 @@ It's called after given milliseconds if `animated` is a number.
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
-It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+  It'll wait for `stopAnimation` to be called or a CSS transition ends.
+  If it's a number, `stopAnimation` will be called automatically after
+  given milliseconds.
 
 - **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
+  It's called after given milliseconds if `animated` is a number.
 
 </details>
 
@@ -420,8 +450,8 @@ It's called after given milliseconds if `animated` is a number.
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
-similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.
+  similarly to `readOnly` on form elements. In this case, only
+  `aria-disabled` will be set.
 
 <details><summary>4 state props</summary>
 
