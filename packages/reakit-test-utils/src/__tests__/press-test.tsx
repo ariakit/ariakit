@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "../react-testing-library";
+import { render } from "../render";
 import { press } from "../press";
 import { useAllEvents } from "./useAllEvents";
 
@@ -213,6 +213,34 @@ test("press tab", async () => {
       "keyup button1",
     ]
   `);
+});
+
+test("press tab on textarea", async () => {
+  const stack = [] as string[];
+  const Test = () => {
+    const ref1 = React.useRef<HTMLButtonElement>(null);
+    const ref2 = React.useRef<HTMLTextAreaElement>(null);
+    useAllEvents(ref1, stack);
+    useAllEvents(ref2, stack);
+    return (
+      <>
+        <button ref={ref1}>button</button>
+        <textarea ref={ref2} aria-label="textarea" />
+      </>
+    );
+  };
+  const { getByText, getByLabelText } = render(<Test />);
+  const button = getByText("button");
+  const textarea = getByLabelText("textarea");
+
+  press.Tab();
+  expect(button).toHaveFocus();
+
+  press.Tab();
+  expect(textarea).toHaveFocus();
+
+  press.Tab();
+  expect(textarea).toHaveFocus();
 });
 
 test("press tab preventDefault", async () => {

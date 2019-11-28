@@ -81,7 +81,8 @@ test("validate on blur", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  blur(input);
+  focus(input);
+  blur();
   await wait(() => expect(onValidate).toHaveBeenCalledWith({}));
 });
 
@@ -99,7 +100,8 @@ test("don't validate on blur if validateOnBlur is false", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  blur(input);
+  focus(input);
+  blur();
   await wait(expect(onValidate).not.toHaveBeenCalled);
 });
 
@@ -129,7 +131,8 @@ test("display validation error", async () => {
   const input = getByLabelText("input");
   const error = getByTestId("error");
   expect(error).toBeEmpty();
-  blur(input);
+  focus(input);
+  blur();
   await wait(() => expect(error).toHaveTextContent("required"));
 });
 
@@ -160,7 +163,8 @@ test("display validation message", async () => {
   expect(message).toBeEmpty();
   type("a", input);
   expect(message).toBeEmpty();
-  blur(input);
+  focus(input);
+  blur();
   await wait(() => expect(message).toHaveTextContent("nice"));
 });
 

@@ -1,9 +1,35 @@
 import * as React from "react";
-import { render } from "../react-testing-library";
+import { render } from "../render";
 import { blur } from "../blur";
 import { useAllEvents } from "./useAllEvents";
 
 test("blur", async () => {
+  const stack = [] as any[];
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <button ref={ref} autoFocus>
+        button
+      </button>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const button = getByText("button");
+
+  expect(button).toHaveFocus();
+  blur(button);
+  expect(document.body).toHaveFocus();
+
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "blur button",
+      "focusout button",
+    ]
+  `);
+});
+
+test("blur not focused", async () => {
   const stack = [] as any[];
   const Test = () => {
     const ref = React.useRef<HTMLButtonElement>(null);
@@ -13,16 +39,30 @@ test("blur", async () => {
   const { getByText } = render(<Test />);
   const button = getByText("button");
 
-  button.focus();
-  expect(button).toHaveFocus();
-  blur(button);
-  expect(button).not.toHaveFocus();
+  expect(document.body).toHaveFocus();
+  blur(button); // does nothing
+  expect(document.body).toHaveFocus();
 
-  expect(stack).toMatchInlineSnapshot(`
-    Array [
-      "focus button",
-      "focusout button",
-      "blur button",
-    ]
-  `);
+  expect(stack).toEqual([]);
+});
+
+test("blur disabled", async () => {
+  const stack = [] as any[];
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <button ref={ref} autoFocus disabled>
+        button
+      </button>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const button = getByText("button");
+
+  expect(document.body).toHaveFocus();
+  blur(button); // does nothing
+  expect(document.body).toHaveFocus();
+
+  expect(stack).toEqual([]);
 });

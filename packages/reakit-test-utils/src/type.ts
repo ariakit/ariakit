@@ -1,5 +1,7 @@
-import { fireEvent } from "./react-testing-library";
+import { fireEvent } from "./fireEvent";
+import { focus } from "./focus";
 
+// TODO: keydown, keypress, input, keyup
 export function type(
   text: string,
   element?: Element | null,
@@ -11,6 +13,8 @@ export function type(
 
   if (!element) return;
 
+  focus(element);
+
   for (let i = 0; i < text.length; i += 1) {
     const data = text[i];
     const partialText = text.substr(0, i + 1);
@@ -18,9 +22,10 @@ export function type(
       element instanceof HTMLInputElement
         ? `${element.value}${data}`
         : partialText;
+    // Call press instead
     fireEvent.input(element, {
       data,
-      inputType: "insertText",
+      // inputType: "insertText",
       target: { value },
       ...options
     });
@@ -43,8 +48,9 @@ type.Backspace = (
       element instanceof HTMLInputElement
         ? element.value.substr(0, element.value.length - 1)
         : "";
+    // Call press instead
     fireEvent.input(element, {
-      inputType: "deleteContentBackward",
+      // inputType: "deleteContentBackward",
       target: { value },
       ...options
     });

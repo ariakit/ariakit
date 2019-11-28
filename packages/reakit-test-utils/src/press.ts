@@ -1,22 +1,24 @@
 import getKeyCode from "keycode";
 import {
-  isFocusable,
   getPreviousTabbableIn,
-  getNextTabbableIn
+  getNextTabbableIn,
+  isFocusable
 } from "reakit-utils/tabbable";
-import { fireEvent } from "./react-testing-library";
+import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
 
 const beforeKeyUpMap: Record<
   string,
   (element: Element, options: KeyboardEventInit) => void
 > = {
-  Tab(_, { shiftKey }) {
-    const element = shiftKey
+  Tab(element, { shiftKey }) {
+    const document = element.ownerDocument || window.document;
+    const tabbable = shiftKey
       ? getPreviousTabbableIn(document.body)
       : getNextTabbableIn(document.body);
-    if (element) {
-      focus(element);
+    if (tabbable) {
+      focus(tabbable);
+      // TODO: select if it's input and has value
     }
   },
   Enter(element, options) {
@@ -73,6 +75,8 @@ export function press(
   if (!element) return;
 
   const keyCode = getKeyCode(key);
+  // TODO: Test with key.charCodeAt(0) instead of getKeyCode
+  // Add which and code
 
   let event: KeyboardEvent = new KeyboardEvent("keydown");
 
@@ -88,6 +92,8 @@ export function press(
   if (!event.defaultPrevented && key in beforeKeyUpMap) {
     beforeKeyUpMap[key](element, options);
   }
+  // Add keypress here if alphanumeric
+  // Add input if input or textarea is focused
 
   fireEvent.keyUp(element, { key, keyCode, ...options });
 

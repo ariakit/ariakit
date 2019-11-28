@@ -1,8 +1,9 @@
 import * as React from "react";
-import { render } from "../react-testing-library";
+import { render } from "../render";
 import { type } from "../type";
 import { useAllEvents } from "./useAllEvents";
 
+// TEST READONLY
 test("type", () => {
   const values = [] as string[];
   const stack = [] as string[];

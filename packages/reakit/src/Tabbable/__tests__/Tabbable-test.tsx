@@ -230,6 +230,5 @@ test("focus nested native tabbables", () => {
   const button = getByText("button");
   expect(button).not.toHaveFocus();
   focus(button);
-  click(button);
   expect(button).toHaveFocus();
 });

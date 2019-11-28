@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "../react-testing-library";
+import { render } from "../render";
 import { focus } from "../focus";
 import { useAllEvents } from "./useAllEvents";
 
@@ -28,12 +28,53 @@ test("focus", async () => {
 
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "focusin button1",
       "focus button1",
-      "focusout button1",
-      "focusin button2",
+      "focusin button1",
       "blur button1",
+      "focusout button1",
       "focus button2",
+      "focusin button2",
+    ]
+  `);
+});
+
+test("focus disabled", async () => {
+  const stack = [] as any[];
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <button ref={ref} disabled>
+        button
+      </button>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const button = getByText("button");
+
+  focus(button);
+  expect(button).not.toHaveFocus();
+
+  expect(stack).toMatchInlineSnapshot(`Array []`);
+});
+
+test("focus readOnly", async () => {
+  const stack = [] as any[];
+  const Test = () => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    useAllEvents(ref, stack);
+    return <input ref={ref} readOnly aria-label="input" />;
+  };
+  const { getByLabelText } = render(<Test />);
+  const input = getByLabelText("input");
+
+  focus(input);
+  expect(input).toHaveFocus();
+
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "focus input",
+      "focusin input",
     ]
   `);
 });

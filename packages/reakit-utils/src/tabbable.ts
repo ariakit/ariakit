@@ -1,3 +1,5 @@
+import { closest } from "./closest";
+
 const selector =
   "input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable=false])";
 
@@ -134,27 +136,14 @@ export function getPreviousTabbableIn<T extends Element>(
   );
 }
 
-export function focusNextTabbableIn<T extends Element>(
-  container: T,
-  fallbackToFocusable?: boolean
-) {
-  const nextTabbable = getNextTabbableIn(container, fallbackToFocusable);
-  if (nextTabbable && isHTMLElement(nextTabbable)) {
-    nextTabbable.focus();
-  }
-}
+export function getClosestFocusable<T extends Element>(element: T): T | null {
+  let container: T | null = null;
 
-export function focusPreviousTabbableIn<T extends Element>(
-  container: T,
-  fallbackToFocusable?: boolean
-) {
-  const previousTabbable = getPreviousTabbableIn(
-    container,
-    fallbackToFocusable
-  );
-  if (previousTabbable && isHTMLElement(previousTabbable)) {
-    previousTabbable.focus();
-  }
+  do {
+    container = closest(element, selector) as T;
+  } while (container && !isFocusable(container));
+
+  return container;
 }
 
 function defaultIsActive(element: Element) {

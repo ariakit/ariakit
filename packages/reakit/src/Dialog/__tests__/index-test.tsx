@@ -208,7 +208,6 @@ test("focus a given element when dialog opens and initial focus has been manuall
             dialog.visible && (
               <div {...props}>
                 <button>button1</button>
-                {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
                 <button autoFocus>button2</button>
               </div>
             )

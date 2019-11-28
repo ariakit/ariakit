@@ -1,21 +1,16 @@
-import { act, fireEvent } from "./react-testing-library";
+import { fireEvent } from "./fireEvent";
+import { act } from "./act";
 
+// TODO: Fire change before blur if it's input/textarea/select
 export function blur(element?: Element | null) {
   if (element == null) {
-    element = document.activeElement || document.body;
+    element = document.activeElement;
   }
 
   if (!element) return;
+  if (element instanceof HTMLBodyElement) return;
+  if (element.ownerDocument?.activeElement !== element) return;
 
+  act(() => (element as HTMLElement | SVGElement).blur());
   fireEvent.focusOut(element);
-
-  if (
-    document.activeElement === element &&
-    (element instanceof HTMLElement || element instanceof SVGElement)
-  ) {
-    const el = element;
-    act(() => el.blur());
-  } else {
-    fireEvent.blur(element);
-  }
 }
