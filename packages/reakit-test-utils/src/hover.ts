@@ -2,31 +2,33 @@ import { fireEvent as domFireEvent } from "@testing-library/dom";
 import { fireEvent } from "./fireEvent";
 import { act } from "./act";
 
+type DocumentWithLastHovered = Document & {
+  lastHovered?: Element | null;
+};
+
 export function hover(element: Element, options?: MouseEventInit) {
-  const document = element.ownerDocument as Document & {
-    lastHover?: Element | null;
-  };
-  const { lastHover } = document;
+  const document = element.ownerDocument as DocumentWithLastHovered;
+  const { lastHovered } = document;
   const { disabled } = element as HTMLButtonElement;
 
-  if (lastHover) {
-    fireEvent.pointerMove(lastHover, options);
-    fireEvent.mouseMove(lastHover, options);
+  if (lastHovered) {
+    fireEvent.pointerMove(lastHovered, options);
+    fireEvent.mouseMove(lastHovered, options);
 
-    const withinLastHover = lastHover.contains(element);
+    const isElementWithinLastHovered = lastHovered.contains(element);
 
-    fireEvent.pointerOut(lastHover, options);
+    fireEvent.pointerOut(lastHovered, options);
 
-    if (!withinLastHover) {
-      fireEvent.pointerLeave(lastHover, options);
+    if (!isElementWithinLastHovered) {
+      fireEvent.pointerLeave(lastHovered, options);
     }
 
-    fireEvent.mouseOut(lastHover, options);
+    fireEvent.mouseOut(lastHovered, options);
 
-    if (!withinLastHover) {
+    if (!isElementWithinLastHovered) {
       act(() => {
         // fireEvent.mouseLeave would be the same as fireEvent.mouseOut
-        domFireEvent.mouseLeave(lastHover, options);
+        domFireEvent.mouseLeave(lastHovered, options);
       });
     }
   }
@@ -45,5 +47,5 @@ export function hover(element: Element, options?: MouseEventInit) {
     fireEvent.mouseMove(element, options);
   }
 
-  document.lastHover = element;
+  document.lastHovered = element;
 }

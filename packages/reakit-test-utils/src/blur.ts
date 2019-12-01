@@ -1,16 +1,33 @@
+import { warning } from "reakit-utils";
 import { fireEvent } from "./fireEvent";
 import { act } from "./act";
+import { DirtiableElement } from "./__types";
 
-// TODO: Fire change before blur if it's input/textarea/select
-export function blur(element?: Element | null) {
+export function blur(element?: DirtiableElement | null) {
   if (element == null) {
     element = document.activeElement;
   }
 
   if (!element) return;
-  if (element instanceof HTMLBodyElement) return;
-  if (element.ownerDocument?.activeElement !== element) return;
+  if (element.tagName === "BODY") return;
+  if (element.ownerDocument?.activeElement !== element) {
+    warning(
+      true,
+      "[reakit-test-utils/blur]",
+      "You're trying to blur() an element that is not focused. Please call focus(element) first."
+    );
+    return;
+  }
 
-  act(() => (element as HTMLElement | SVGElement).blur());
+  if (element.dirty) {
+    fireEvent.change(element);
+    element.dirty = false;
+  }
+
+  act(() => {
+    if (element instanceof HTMLElement || element instanceof SVGElement) {
+      element.blur();
+    }
+  });
   fireEvent.focusOut(element);
 }

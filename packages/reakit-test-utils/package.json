@@ -33,8 +33,7 @@
   "dependencies": {
     "@testing-library/jest-dom": "4.1.2",
     "@testing-library/react": "9.3.0",
-    "@testing-library/react-hooks": "2.0.3",
-    "keycode": "2.2.0"
+    "@testing-library/react-hooks": "2.0.3"
   },
   "devDependencies": {
     "reakit-utils": "^0.7.0"

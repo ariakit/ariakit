@@ -140,7 +140,7 @@ export function getClosestFocusable<T extends Element>(element: T): T | null {
   let container: T | null = null;
 
   do {
-    container = closest(element, selector) as T;
+    container = closest(element, selector);
   } while (container && !isFocusable(container));
 
   return container;

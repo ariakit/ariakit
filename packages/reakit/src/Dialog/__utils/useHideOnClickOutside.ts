@@ -10,6 +10,7 @@ export function useHideOnClickOutside(
 ) {
   const mouseDownRef = React.useRef<EventTarget | null>();
 
+  // TODO: Do this in another PR
   useEventListenerOutside(
     dialogRef,
     disclosuresRef,

@@ -59,10 +59,10 @@ function isInput(element: EventTarget) {
 function receivesFocusOnMouseDown(element: EventTarget) {
   const { userAgent } = navigator;
   const is = (string: string) => userAgent.indexOf(string) !== -1;
-  const isLikeMac = is("Mac") || is("like Mac");
+  const isMac = is("Mac");
   const isSafariOrFirefox = is("Safari") || is("Firefox");
   return (
-    !isLikeMac || !isSafariOrFirefox || !(element instanceof HTMLButtonElement)
+    !isMac || !isSafariOrFirefox || !(element instanceof HTMLButtonElement)
   );
 }
 

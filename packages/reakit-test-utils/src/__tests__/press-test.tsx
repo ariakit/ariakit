@@ -15,6 +15,8 @@ test("press enter on button", async () => {
   press.Enter(button);
   expect(stack).toMatchInlineSnapshot(`
     Array [
+      "focus button",
+      "focusin button",
       "keydown button",
       "click button",
       "keyup button",
@@ -38,6 +40,8 @@ test("press enter on button preventDefault", async () => {
   press.Enter(button);
   expect(stack).toMatchInlineSnapshot(`
     Array [
+      "focus button",
+      "focusin button",
       "keydown button",
       "keyup button",
     ]
@@ -62,9 +66,10 @@ test("press enter on form input", () => {
   press.Enter(input);
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "keydown ",
+      "focusin input",
+      "keydown input",
       "submit form",
-      "keyup ",
+      "keyup input",
     ]
   `);
 });
@@ -87,8 +92,9 @@ test("press enter on input within form with multiple inputs", () => {
   press.Enter(input1);
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "keydown ",
-      "keyup ",
+      "focusin input1",
+      "keydown input1",
+      "keyup input1",
     ]
   `);
 });
@@ -112,9 +118,10 @@ test("press enter on input within form with multiple inputs with submit button",
   press.Enter(input1);
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "keydown ",
+      "focusin input1",
+      "keydown input1",
       "submit form",
-      "keyup ",
+      "keyup input1",
     ]
   `);
 });
@@ -131,6 +138,8 @@ test("press space on button", async () => {
   press.Space(button);
   expect(stack).toMatchInlineSnapshot(`
     Array [
+      "focus button",
+      "focusin button",
       "keydown button",
       "keyup button",
       "click button",
@@ -154,6 +163,8 @@ test("press space on button preventDefault", async () => {
   press.Space(button);
   expect(stack).toMatchInlineSnapshot(`
     Array [
+      "focus button",
+      "focusin button",
       "keydown button",
       "keyup button",
     ]
@@ -191,56 +202,29 @@ test("press tab", async () => {
 
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "focusin button1",
       "focus button1",
-      "keydown button1",
-      "focusout button1",
-      "focusin button2",
-      "blur button1",
-      "focus button2",
+      "focusin button1",
       "keyup button1",
-      "keydown button2",
-      "focusout button2",
-      "focusin button1",
-      "blur button2",
-      "focus button1",
+      "keydown button1",
+      "blur button1",
+      "focusout button1",
+      "focus button2",
+      "focusin button2",
       "keyup button2",
-      "keydown button1",
-      "focusout button1",
-      "focusin button2",
-      "blur button1",
-      "focus button2",
+      "keydown button2",
+      "blur button2",
+      "focusout button2",
+      "focus button1",
+      "focusin button1",
       "keyup button1",
+      "keydown button1",
+      "blur button1",
+      "focusout button1",
+      "focus button2",
+      "focusin button2",
+      "keyup button2",
     ]
   `);
-});
-
-test("press tab on textarea", async () => {
-  const stack = [] as string[];
-  const Test = () => {
-    const ref1 = React.useRef<HTMLButtonElement>(null);
-    const ref2 = React.useRef<HTMLTextAreaElement>(null);
-    useAllEvents(ref1, stack);
-    useAllEvents(ref2, stack);
-    return (
-      <>
-        <button ref={ref1}>button</button>
-        <textarea ref={ref2} aria-label="textarea" />
-      </>
-    );
-  };
-  const { getByText, getByLabelText } = render(<Test />);
-  const button = getByText("button");
-  const textarea = getByLabelText("textarea");
-
-  press.Tab();
-  expect(button).toHaveFocus();
-
-  press.Tab();
-  expect(textarea).toHaveFocus();
-
-  press.Tab();
-  expect(textarea).toHaveFocus();
 });
 
 test("press tab preventDefault", async () => {
@@ -252,7 +236,14 @@ test("press tab preventDefault", async () => {
     useAllEvents(ref2, stack);
     return (
       <>
-        <button ref={ref1} onKeyDown={event => event.preventDefault()}>
+        <button
+          ref={ref1}
+          onKeyDown={event => {
+            if (event.key === "Tab" && !event.shiftKey) {
+              event.preventDefault();
+            }
+          }}
+        >
           button1
         </button>
         <button ref={ref2}>button2</button>
@@ -261,6 +252,7 @@ test("press tab preventDefault", async () => {
   };
   const { getByText } = render(<Test />);
   const button1 = getByText("button1");
+  const button2 = getByText("button2");
 
   expect(button1).not.toHaveFocus();
   press.Tab();
@@ -268,16 +260,21 @@ test("press tab preventDefault", async () => {
   press.Tab();
   expect(button1).toHaveFocus();
   press.ShiftTab();
-  expect(button1).toHaveFocus();
+  expect(button2).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
     Array [
-      "focusin button1",
       "focus button1",
-      "keydown button1",
+      "focusin button1",
       "keyup button1",
       "keydown button1",
       "keyup button1",
+      "keydown button1",
+      "blur button1",
+      "focusout button1",
+      "focus button2",
+      "focusin button2",
+      "keyup button2",
     ]
   `);
 });

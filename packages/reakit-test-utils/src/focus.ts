@@ -1,4 +1,4 @@
-import { isFocusable } from "reakit-utils/tabbable";
+import { isFocusable } from "reakit-utils";
 import { fireEvent } from "./fireEvent";
 import { act } from "./act";
 import { blur } from "./blur";
@@ -7,6 +7,10 @@ export function focus(element: Element) {
   if (element.ownerDocument?.activeElement === element) return;
   if (!isFocusable(element)) return;
   blur();
-  act(() => (element as HTMLElement | SVGElement).focus());
+  act(() => {
+    if (element instanceof HTMLElement || element instanceof SVGElement) {
+      element.focus();
+    }
+  });
   fireEvent.focusIn(element);
 }

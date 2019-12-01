@@ -1,6 +1,7 @@
 import * as React from "react";
 import { render } from "../render";
 import { blur } from "../blur";
+import { type } from "../type";
 import { useAllEvents } from "./useAllEvents";
 
 test("blur", async () => {
@@ -43,6 +44,7 @@ test("blur not focused", async () => {
   blur(button); // does nothing
   expect(document.body).toHaveFocus();
 
+  expect(console).toHaveWarned();
   expect(stack).toEqual([]);
 });
 
@@ -64,5 +66,36 @@ test("blur disabled", async () => {
   blur(button); // does nothing
   expect(document.body).toHaveFocus();
 
+  expect(console).toHaveWarned();
   expect(stack).toEqual([]);
+});
+
+test("blur input after change", () => {
+  const stack = [] as any[];
+  const Test = () => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    useAllEvents(ref, stack);
+    return <input ref={ref} aria-label="input" />;
+  };
+  const { getByLabelText } = render(<Test />);
+  const input = getByLabelText("input");
+
+  type("aa", input);
+  blur();
+
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "focus input",
+      "focusin input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "change input",
+      "blur input",
+      "focusout input",
+    ]
+  `);
 });

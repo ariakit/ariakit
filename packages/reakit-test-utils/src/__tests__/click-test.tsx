@@ -399,6 +399,142 @@ test("click label preventDefault onClick", () => {
   `);
 });
 
+test("click button preventDefault onMouseDown", () => {
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <button ref={ref} onMouseDown={event => event.preventDefault()}>
+        button
+      </button>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const button = getByText("button");
+
+  click(button);
+  expect(button).not.toHaveFocus();
+});
+
+test("click button preventDefault onPointerDown", () => {
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <button ref={ref} onPointerDown={event => event.preventDefault()}>
+        button
+      </button>
+    );
+  };
+  const { getByText } = render(<Test />);
+  const button = getByText("button");
+
+  click(button);
+  expect(button).not.toHaveFocus();
+});
+
+test("select", async () => {
+  const stack = [] as string[];
+  const Test = ({ multiple }: { multiple?: boolean }) => {
+    const ref = React.useRef<HTMLSelectElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <select ref={ref} aria-label="select" multiple={multiple}>
+        <option value="option1">option1</option>
+        <option value="option2">option2</option>
+        <option value="option3">option3</option>
+        <option value="option4">option4</option>
+      </select>
+    );
+  };
+  const { getByText, getByLabelText, rerender } = render(<Test />);
+  const select = getByLabelText("select") as HTMLSelectElement;
+  const option1 = getByText("option1") as HTMLOptionElement;
+  const option2 = getByText("option2") as HTMLOptionElement;
+  const option3 = getByText("option3") as HTMLOptionElement;
+  const option4 = getByText("option4") as HTMLOptionElement;
+
+  click(option2);
+
+  expect(option2.selected).toBe(true);
+  expect(Array.from(select.selectedOptions)).toEqual([option2]);
+
+  rerender(<Test multiple />);
+
+  click(option2);
+  click(option4, { shiftKey: true });
+  expect(Array.from(select.selectedOptions)).toEqual([
+    option2,
+    option3,
+    option4
+  ]);
+
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "pointerover option2",
+      "mouseover option2",
+      "pointermove option2",
+      "mousemove option2",
+      "pointerdown option2",
+      "mousedown option2",
+      "focus select",
+      "focusin select",
+      "pointerup option2",
+      "mouseup option2",
+      "input select",
+      "change select",
+      "click option2",
+      "pointermove option2",
+      "mousemove option2",
+      "pointerout option2",
+      "mouseout option2",
+      "pointerover option2",
+      "mouseover option2",
+      "pointermove option2",
+      "mousemove option2",
+      "pointerdown option2",
+      "mousedown option2",
+      "pointerup option2",
+      "mouseup option2",
+      "input select",
+      "change select",
+      "click option2",
+      "pointermove option2",
+      "mousemove option2",
+      "pointerout option2",
+      "mouseout option2",
+      "pointerover option4",
+      "mouseover option4",
+      "pointermove option4",
+      "mousemove option4",
+      "pointerdown option4",
+      "mousedown option4",
+      "pointerup option4",
+      "mouseup option4",
+      "input select",
+      "change select",
+      "click option4",
+    ]
+  `);
+
+  click(option3, { ctrlKey: true });
+  click(option1, { ctrlKey: true });
+  expect(Array.from(select.selectedOptions)).toEqual([
+    option1,
+    option2,
+    option4
+  ]);
+
+  click(option3, { shiftKey: true });
+  expect(Array.from(select.selectedOptions)).toEqual([
+    option1,
+    option2,
+    option3
+  ]);
+});
+
 test("click on safari", () => {
   const previousUserAgent = window.navigator.userAgent;
   Object.defineProperty(window.navigator, "userAgent", {

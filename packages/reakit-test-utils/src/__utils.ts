@@ -1,9 +1,26 @@
-export function trackEvents(element: Element, ...eventNames: string[]) {
-  const ref = { event: new Event("any") };
+export function subscribeDefaultPrevented(
+  element: Element,
+  ...eventNames: string[]
+) {
+  const ref = { current: false, unsubscribe: () => {} };
+
+  const handleEvent = (event: Event) => {
+    const preventDefault = event.preventDefault.bind(event);
+    event.preventDefault = () => {
+      ref.current = true;
+      preventDefault();
+    };
+  };
+
   eventNames.forEach(eventName => {
-    element.addEventListener(eventName, event => {
-      ref.event = event;
-    });
+    element.addEventListener(eventName, handleEvent);
   });
+
+  ref.unsubscribe = () => {
+    eventNames.forEach(eventName => {
+      element.removeEventListener(eventName, handleEvent);
+    });
+  };
+
   return ref;
 }

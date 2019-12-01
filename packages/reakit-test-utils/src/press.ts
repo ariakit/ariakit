@@ -1,63 +1,106 @@
-import getKeyCode from "keycode";
 import {
   getPreviousTabbableIn,
   getNextTabbableIn,
   isFocusable
-} from "reakit-utils/tabbable";
+} from "reakit-utils";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
+import { subscribeDefaultPrevented } from "./__utils";
+import { blur } from "./blur";
 
-const beforeKeyUpMap: Record<
+const clickableInputTypes = [
+  "button",
+  "color",
+  "file",
+  "image",
+  "reset",
+  "submit"
+];
+
+function submitFormByPressingEnterOn(
+  element: HTMLInputElement,
+  options: KeyboardEventInit
+) {
+  const { form } = element;
+  if (!form) return;
+
+  const elements = Array.from(form.elements);
+
+  // When pressing enter on an input, the form is submitted only when there is
+  // only one of these input types present (or there's a submit button).
+  const validTypes = [
+    "email",
+    "number",
+    "password",
+    "search",
+    "tel",
+    "text",
+    "url"
+  ];
+
+  const validInputs = elements.filter(
+    el => el instanceof HTMLInputElement && validTypes.includes(el.type)
+  );
+
+  const submitButton = elements.find(
+    el =>
+      (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
+      el.type === "submit"
+  );
+
+  if (validInputs.length === 1 || submitButton) {
+    fireEvent.submit(form, options);
+  }
+}
+
+const keyDownMap: Record<
   string,
   (element: Element, options: KeyboardEventInit) => void
 > = {
   Tab(element, { shiftKey }) {
-    const document = element.ownerDocument || window.document;
-    const tabbable = shiftKey
-      ? getPreviousTabbableIn(document.body)
-      : getNextTabbableIn(document.body);
-    if (tabbable) {
-      focus(tabbable);
-      // TODO: select if it's input and has value
+    const body = element.ownerDocument?.body || document.body;
+    const nextElement = shiftKey
+      ? getPreviousTabbableIn(body)
+      : getNextTabbableIn(body);
+    if (nextElement) {
+      focus(nextElement);
     }
   },
-  Enter(element, options) {
-    if (options.metaKey) return;
-    if (
-      element instanceof HTMLInputElement &&
-      !["hidden", "radio", "checkbox"].includes(element.type)
-    ) {
-      const { form } = element;
-      if (!form) return;
-      const elements = Array.from(form.elements);
-      const validInputs = elements.filter(
-        el =>
-          el instanceof HTMLInputElement &&
-          !["hidden", "button", "submit", "reset"].includes(el.type)
-      );
-      const submitButton = elements.find(
-        el =>
-          (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
-          el.type === "submit"
-      );
 
-      if (validInputs.length === 1 || submitButton) {
-        fireEvent.submit(form, options);
-      }
-    } else if (isFocusable(element)) {
+  Enter(element, options) {
+    const nonSubmittableTypes = [...clickableInputTypes, "hidden"];
+
+    const isClickable =
+      element.tagName === "BUTTON" ||
+      (element instanceof HTMLInputElement &&
+        clickableInputTypes.includes(element.type));
+
+    const isSubmittable =
+      element instanceof HTMLInputElement &&
+      !nonSubmittableTypes.includes(element.type);
+
+    if (isClickable) {
       fireEvent.click(element, options);
+    } else if (isSubmittable) {
+      submitFormByPressingEnterOn(element as HTMLInputElement, options);
     }
   }
 };
 
-const afterKeyUpMap: Record<
+const keyUpMap: Record<
   string,
   (element: Element, options: KeyboardEventInit) => void
 > = {
+  // Space
   " ": (element, options) => {
-    if (options.metaKey) return;
-    // TODO: click on radio and checkbox
-    if (element instanceof HTMLButtonElement) {
+    const spaceableTypes = [...clickableInputTypes, "checkbox", "radio"];
+
+    const isSpaceable =
+      element.tagName === "BUTTON" ||
+      (element instanceof HTMLInputElement &&
+        spaceableTypes.includes(element.type));
+
+    if (isSpaceable) {
       fireEvent.click(element, options);
     }
   }
@@ -74,32 +117,44 @@ export function press(
 
   if (!element) return;
 
-  const keyCode = getKeyCode(key);
-  // TODO: Test with key.charCodeAt(0) instead of getKeyCode
-  // Add which and code
+  // We can't press on elements that aren't focusable
+  if (!isFocusable(element) && element.tagName !== "BODY") return;
 
-  let event: KeyboardEvent = new KeyboardEvent("keydown");
-
-  const assignEvent = (evt: KeyboardEvent) => {
-    event = evt;
-  };
-
-  element.addEventListener("keydown", assignEvent);
-  element.addEventListener("keyup", assignEvent);
-
-  fireEvent.keyDown(element, { key, keyCode, ...options });
-
-  if (!event.defaultPrevented && key in beforeKeyUpMap) {
-    beforeKeyUpMap[key](element, options);
+  // If element is not focused, we should focus it
+  if (element.ownerDocument?.activeElement !== element) {
+    if (element.tagName === "BODY") {
+      blur();
+    } else {
+      focus(element);
+    }
   }
-  // Add keypress here if alphanumeric
-  // Add input if input or textarea is focused
 
-  fireEvent.keyUp(element, { key, keyCode, ...options });
+  // Track event.preventDefault() calls so we bail out of keydown/keyup effects
+  const defaultPrevented = subscribeDefaultPrevented(
+    element,
+    "keydown",
+    "keyup"
+  );
 
-  if (!event.defaultPrevented && key in afterKeyUpMap) {
-    afterKeyUpMap[key](element, options);
+  fireEvent.keyDown(element, { key, ...options });
+
+  if (!defaultPrevented.current && key in keyDownMap && !options.metaKey) {
+    keyDownMap[key](element, options);
   }
+
+  // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
+  // next element.
+  if (element.ownerDocument?.activeElement !== element) {
+    element = element.ownerDocument!.activeElement!;
+  }
+
+  fireEvent.keyUp(element, { key, ...options });
+
+  if (!defaultPrevented.current && key in keyUpMap && !options.metaKey) {
+    keyUpMap[key](element, options);
+  }
+
+  defaultPrevented.unsubscribe();
 }
 
 function createPress(key: string, defaultOptions: KeyboardEventInit = {}) {
