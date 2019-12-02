@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {

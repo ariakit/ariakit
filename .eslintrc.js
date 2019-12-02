@@ -16,6 +16,7 @@ module.exports = {
     }
   },
   rules: {
+    camelcase: "off",
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
     "no-param-reassign": "off",
@@ -26,10 +27,10 @@ module.exports = {
     "no-bitwise": "off",
     "no-nested-ternary": "off",
     "global-require": "off",
-    camelcase: "off",
     "jsx-a11y/anchor-is-valid": "off",
     "jsx-a11y/label-has-for": "off",
     "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/no-autofocus": "off",
     "react/jsx-props-no-spreading": "off",
     "import/export": "off",
     "import/extensions": "off",

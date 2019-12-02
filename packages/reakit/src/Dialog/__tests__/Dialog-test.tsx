@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, wait } from "@testing-library/react";
+import { render, wait } from "reakit-test-utils";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {

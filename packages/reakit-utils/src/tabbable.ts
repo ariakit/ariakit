@@ -1,63 +1,30 @@
+import { closest } from "./closest";
+
 const selector =
-  "input, select, textarea, a[href], button, [tabindex], audio[controls], video[controls], [contenteditable]:not([contenteditable=false])";
+  "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +
+  "textarea:not([disabled]), a[href], button:not([disabled]), [tabindex], " +
+  "iframe, object, embed, area[href], audio[controls], video[controls], " +
+  "[contenteditable]:not([contenteditable='false'])";
 
-function isHTMLElement(element: Element): element is HTMLElement {
-  return element instanceof HTMLElement;
+function isVisible(element: Element) {
+  return (
+    (element as HTMLElement).offsetWidth > 0 ||
+    (element as HTMLElement).offsetHeight > 0 ||
+    element.getClientRects().length > 0
+  );
 }
 
-function isDisabled(element: HTMLElement) {
-  return Boolean((element as HTMLInputElement).disabled);
-}
-
-function hasTabIndex(element: Element) {
-  return element.hasAttribute("tabindex");
-}
-
-function hasNegativeTabIndex(element: HTMLElement) {
-  return hasTabIndex(element) && element.tabIndex < 0;
-}
-
-function isHidden(element: HTMLElement) {
-  if (element.parentElement && isHidden(element.parentElement)) return true;
-  return element.hidden;
-}
-
-function isContentEditable(element: HTMLElement) {
-  const value = element.getAttribute("contenteditable");
-  return value !== "false" && value != null;
+function hasNegativeTabIndex(element: Element) {
+  const tabIndex = parseInt(element.getAttribute("tabIndex") || "0", 10);
+  return tabIndex < 0;
 }
 
 export function isFocusable(element: Element) {
-  if (!isHTMLElement(element)) return false;
-  if (isHidden(element)) return false;
-  if (isDisabled(element)) return false;
-
-  const { localName } = element;
-  const focusableTags = ["input", "select", "textarea", "button"];
-
-  if (focusableTags.indexOf(localName) >= 0) return true;
-
-  const others = {
-    a: () => element.hasAttribute("href"),
-    audio: () => element.hasAttribute("controls"),
-    video: () => element.hasAttribute("controls")
-  };
-
-  if (localName in others) {
-    return others[localName as keyof typeof others]();
-  }
-
-  if (isContentEditable(element)) return true;
-
-  return hasTabIndex(element);
+  return element.matches(selector) && isVisible(element);
 }
 
 export function isTabbable(element: Element) {
-  return (
-    isHTMLElement(element) &&
-    isFocusable(element) &&
-    !hasNegativeTabIndex(element)
-  );
+  return isFocusable(element) && !hasNegativeTabIndex(element);
 }
 
 export function getAllFocusableIn<T extends Element>(container: T) {
@@ -134,27 +101,14 @@ export function getPreviousTabbableIn<T extends Element>(
   );
 }
 
-export function focusNextTabbableIn<T extends Element>(
-  container: T,
-  fallbackToFocusable?: boolean
-) {
-  const nextTabbable = getNextTabbableIn(container, fallbackToFocusable);
-  if (nextTabbable && isHTMLElement(nextTabbable)) {
-    nextTabbable.focus();
-  }
-}
+export function getClosestFocusable<T extends Element>(element: T): T | null {
+  let container: T | null = null;
 
-export function focusPreviousTabbableIn<T extends Element>(
-  container: T,
-  fallbackToFocusable?: boolean
-) {
-  const previousTabbable = getPreviousTabbableIn(
-    container,
-    fallbackToFocusable
-  );
-  if (previousTabbable && isHTMLElement(previousTabbable)) {
-    previousTabbable.focus();
-  }
+  do {
+    container = closest(element, selector);
+  } while (container && !isFocusable(container));
+
+  return container;
 }
 
 function defaultIsActive(element: Element) {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent } from "reakit-test-utils";
 import { unstable_Form as Form } from "../Form";
 
 const props: Parameters<typeof Form>[0] = {

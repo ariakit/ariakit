@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { render, click } from "reakit-test-utils";
 import { Checkbox, useCheckbox, useCheckboxState } from "..";
 
 test("single checkbox", () => {
@@ -15,7 +15,7 @@ test("single checkbox", () => {
   const { getByLabelText } = render(<Test />);
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   expect(checkbox.checked).toBe(false);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
 });
 
@@ -46,7 +46,7 @@ test("group checkbox", async () => {
   expect(apple.checked).toBe(false);
   expect(orange.checked).toBe(true);
   expect(watermelon.checked).toBe(false);
-  fireEvent.click(apple);
+  click(apple);
   expect(apple.checked).toBe(true);
   expect(orange.checked).toBe(true);
   expect(watermelon.checked).toBe(false);
@@ -70,10 +70,10 @@ test("checkbox onChange checked value", async () => {
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   expect(checkbox.checked).toBe(false);
   expect(onChange).not.toBeCalled();
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   expect(onChange).toBeCalledWith(true);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(onChange).toBeCalledWith(false);
 });
@@ -97,10 +97,10 @@ test("non-native checkbox onChange checked value", async () => {
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   expect(checkbox.checked).toBe(false);
   expect(onChange).not.toBeCalled();
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   expect(onChange).toBeCalledWith(true);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(onChange).toBeCalledWith(false);
 });
@@ -126,10 +126,10 @@ test("checkbox onChange checked value without useCheckboxState", async () => {
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   expect(checkbox.checked).toBe(false);
   expect(onChange).not.toBeCalled();
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   expect(onChange).toBeCalledWith(true);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(onChange).toBeCalledWith(false);
 });
@@ -156,10 +156,10 @@ test("non-native checkbox onChange checked value without useCheckboxState", asyn
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   expect(checkbox.checked).toBe(false);
   expect(onChange).not.toBeCalled();
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   expect(onChange).toBeCalledWith(true);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(onChange).toBeCalledWith(false);
 });
@@ -193,7 +193,7 @@ test("useCheckbox", () => {
       value=""
     />
   `);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   expect(checkbox).toMatchInlineSnapshot(`
     <input
@@ -203,7 +203,7 @@ test("useCheckbox", () => {
       value=""
     />
   `);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(checkbox).toMatchInlineSnapshot(`
     <input

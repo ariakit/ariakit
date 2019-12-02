@@ -1,4 +1,4 @@
-import { isObject } from "./isObject";
+import { isObject } from "reakit-utils";
 
 export const jestSerializerStripFunctions: jest.SnapshotSerializerPlugin = {
   test: val =>

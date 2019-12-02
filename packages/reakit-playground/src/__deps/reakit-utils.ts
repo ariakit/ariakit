@@ -19,12 +19,12 @@ export default {
   "reakit-utils/pick": require("reakit-utils/pick"),
   "reakit-utils/omit": require("reakit-utils/omit"),
   "reakit-utils/mergeRefs": require("reakit-utils/mergeRefs"),
-  "reakit-utils/jestSerializerStripFunctions": require("reakit-utils/jestSerializerStripFunctions"),
   "reakit-utils/isPromise": require("reakit-utils/isPromise"),
   "reakit-utils/isObject": require("reakit-utils/isObject"),
   "reakit-utils/isInteger": require("reakit-utils/isInteger"),
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
+  "reakit-utils/getDocument": require("reakit-utils/getDocument"),
   "reakit-utils/cx": require("reakit-utils/cx"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
   "reakit-utils/closest": require("reakit-utils/closest")

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, click } from "reakit-test-utils";
 import { Radio, RadioGroup, useRadioState } from "..";
 
 test("click on radio", () => {
@@ -15,7 +15,7 @@ test("click on radio", () => {
   const { getByLabelText } = render(<Test />);
   const radio = getByLabelText("radio") as HTMLInputElement;
   expect(radio.checked).toBe(false);
-  fireEvent.click(radio);
+  click(radio);
   expect(radio.checked).toBe(true);
 });
 
@@ -32,7 +32,7 @@ test("click on non-native radio", () => {
   const { getByLabelText } = render(<Test />);
   const radio = getByLabelText("radio") as HTMLInputElement;
   expect(radio.checked).toBe(false);
-  fireEvent.click(radio);
+  click(radio);
   expect(radio.checked).toBe(true);
 });
 
@@ -51,7 +51,7 @@ test("onChange", () => {
   const { getByLabelText } = render(<Test />);
   const radio = getByLabelText("radio") as HTMLInputElement;
   expect(radio.checked).toBe(false);
-  fireEvent.click(radio);
+  click(radio);
   expect(radio.checked).toBe(true);
 });
 
@@ -76,7 +76,7 @@ test("onChange non-native radio", () => {
   const { getByLabelText } = render(<Test />);
   const radio = getByLabelText("radio") as HTMLInputElement;
   expect(radio.checked).toBe(false);
-  fireEvent.click(radio);
+  click(radio);
   expect(radio.checked).toBe(true);
 });
 

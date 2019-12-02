@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, wait } from "@testing-library/react";
+import { render, hover, wait } from "reakit-test-utils";
 import {
   Tooltip,
   TooltipArrow,
@@ -26,15 +26,16 @@ test("show", async () => {
   const disclosure = getByText("disclosure");
   const tooltip = getByText("tooltip");
   expect(tooltip).not.toBeVisible();
-  fireEvent.mouseEnter(disclosure);
+  hover(disclosure);
   await wait(expect(tooltip).toBeVisible);
 });
 
 test("hide", async () => {
-  const { getByText } = render(<Test visible />);
+  const { getByText, baseElement } = render(<Test visible />);
   const disclosure = getByText("disclosure");
   const tooltip = getByText("tooltip");
   expect(tooltip).toBeVisible();
-  fireEvent.mouseLeave(disclosure);
+  hover(disclosure);
+  hover(baseElement);
   await wait(expect(tooltip).not.toBeVisible);
 });

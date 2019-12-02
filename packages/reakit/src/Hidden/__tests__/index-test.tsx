@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, click } from "reakit-test-utils";
 import { Hidden, HiddenDisclosure, useHiddenState } from "..";
 
 test("show", () => {
@@ -16,7 +16,7 @@ test("show", () => {
   const disclosure = getByText("disclosure");
   const hidden = getByText("hidden");
   expect(hidden).not.toBeVisible();
-  fireEvent.click(disclosure);
+  click(disclosure);
   expect(hidden).toBeVisible();
 });
 
@@ -34,7 +34,7 @@ test("hide", () => {
   const disclosure = getByText("disclosure");
   const hidden = getByText("hidden");
   expect(hidden).toBeVisible();
-  fireEvent.click(disclosure);
+  click(disclosure);
   expect(hidden).not.toBeVisible();
 });
 
@@ -62,7 +62,7 @@ test("multiple components", () => {
   const hidden2 = getByText("hidden2");
   expect(hidden1).not.toBeVisible();
   expect(hidden2).not.toBeVisible();
-  fireEvent.click(disclosure);
+  click(disclosure);
   expect(hidden1).toBeVisible();
   expect(hidden2).toBeVisible();
 });

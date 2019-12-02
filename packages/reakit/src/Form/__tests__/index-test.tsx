@@ -1,5 +1,14 @@
 import * as React from "react";
-import { act, fireEvent, render, wait } from "@testing-library/react";
+import {
+  render,
+  fireEvent,
+  type,
+  wait,
+  blur,
+  click,
+  press,
+  focus
+} from "reakit-test-utils";
 import {
   unstable_Form as Form,
   unstable_FormCheckbox as FormCheckbox,
@@ -22,10 +31,6 @@ import {
   unstable_FormStateReturn as FormStateReturn
 } from "..";
 
-function keyDown(key: string) {
-  fireEvent.keyDown(document.activeElement!, { key });
-}
-
 test("validate on change", async () => {
   const onValidate = jest.fn();
   const Test = () => {
@@ -40,7 +45,7 @@ test("validate on change", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  fireEvent.change(input, { target: { value: "a" } });
+  type("a", input);
   await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: "a" }));
 });
 
@@ -58,7 +63,7 @@ test("don't validate on change if validateOnChange is false", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  fireEvent.change(input, { target: { value: "a" } });
+  type("a", input);
   await wait(expect(onValidate).not.toHaveBeenCalled);
 });
 
@@ -76,7 +81,8 @@ test("validate on blur", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  fireEvent.blur(input);
+  focus(input);
+  blur();
   await wait(() => expect(onValidate).toHaveBeenCalledWith({}));
 });
 
@@ -94,7 +100,8 @@ test("don't validate on blur if validateOnBlur is false", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  fireEvent.blur(input);
+  focus(input);
+  blur();
   await wait(expect(onValidate).not.toHaveBeenCalled);
 });
 
@@ -124,7 +131,8 @@ test("display validation error", async () => {
   const input = getByLabelText("input");
   const error = getByTestId("error");
   expect(error).toBeEmpty();
-  fireEvent.blur(input);
+  focus(input);
+  blur();
   await wait(() => expect(error).toHaveTextContent("required"));
 });
 
@@ -153,9 +161,10 @@ test("display validation message", async () => {
   const input = getByLabelText("input");
   const message = getByTestId("message");
   expect(message).toBeEmpty();
-  fireEvent.change(input, { target: { value: "a" } });
+  type("a", input);
   expect(message).toBeEmpty();
-  fireEvent.blur(input);
+  focus(input);
+  blur();
   await wait(() => expect(message).toHaveTextContent("nice"));
 });
 
@@ -361,9 +370,9 @@ test("display group error", async () => {
   expect(error).toBeEmpty();
   fireEvent.submit(form);
   await wait(() => expect(error).toHaveTextContent("error"));
-  fireEvent.click(b);
+  click(b);
   await wait(expect(error).toBeEmpty);
-  fireEvent.click(a);
+  click(a);
   await wait(() => expect(error).toHaveTextContent("error"));
 });
 
@@ -400,7 +409,7 @@ test("display group message", async () => {
   fireEvent.submit(form);
   await wait(() => expect(message).toHaveTextContent("nice"));
   expect(checkbox.checked).toBe(false);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   fireEvent.submit(form);
   await wait(expect(message).toBeEmpty);
@@ -437,7 +446,7 @@ test("focus the first invalid input on failed submit", async () => {
   const input2 = getByLabelText("input2");
   const submit = getByTestId("submit");
   expect(input2).not.toHaveFocus();
-  fireEvent.click(submit);
+  click(submit);
   await wait(expect(input2).toHaveFocus);
 });
 
@@ -477,7 +486,7 @@ test("focus the first invalid fieldset on failed submit", async () => {
   const choice1 = getByLabelText("choice1");
   const submit = getByTestId("submit");
   expect(choice1).not.toHaveFocus();
-  fireEvent.click(submit);
+  click(submit);
   await wait(expect(choice1).toHaveFocus);
 });
 
@@ -509,27 +518,27 @@ test("arrow keys control radio buttons", async () => {
   const b = getByLabelText("b") as HTMLInputElement;
   const c = getByLabelText("c") as HTMLInputElement;
 
-  act(() => b.focus());
+  focus(b);
   expect(b).toHaveFocus();
   expect(b.checked).toBe(true);
 
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(c).toHaveFocus();
   expect(c.checked).toBe(true);
 
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(a).toHaveFocus();
   expect(a.checked).toBe(true);
 
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(c).toHaveFocus();
   expect(c.checked).toBe(true);
 
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(b).toHaveFocus();
   expect(b.checked).toBe(true);
 
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(c).toHaveFocus();
   expect(c.checked).toBe(true);
 });
@@ -591,7 +600,7 @@ test("push/remove button adds/removes entry and moves focus", async () => {
     </div>
   `);
 
-  fireEvent.click(push);
+  click(push);
 
   expect(container).toMatchInlineSnapshot(`
     <div>
@@ -632,23 +641,23 @@ test("push/remove button adds/removes entry and moves focus", async () => {
 
   await wait(expect(getByPlaceholderText("name0")).toHaveFocus);
 
-  fireEvent.click(push);
+  click(push);
   await wait(expect(getByPlaceholderText("name1")).toHaveFocus);
 
-  fireEvent.click(push);
+  click(push);
   await wait(expect(getByPlaceholderText("name2")).toHaveFocus);
 
   const remove0 = getByTestId("remove0");
   const remove1 = getByTestId("remove1");
   const remove2 = getByTestId("remove2");
 
-  fireEvent.click(remove0);
+  click(remove0);
   await wait(expect(getByPlaceholderText("name1")).toHaveFocus);
 
-  fireEvent.click(remove2);
+  click(remove2);
   await wait(expect(getByPlaceholderText("name1")).toHaveFocus);
 
-  fireEvent.click(remove1);
+  click(remove1);
   await wait(expect(push).toHaveFocus);
 });
 
@@ -676,7 +685,7 @@ test("useFormCheckbox passing name as htmlProps", async () => {
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   expect(checkbox.checked).toBe(false);
   expect(onValidate).not.toHaveBeenCalled();
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(checkbox.checked).toBe(true);
   await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: true }));
 });
@@ -697,7 +706,7 @@ test("useFormInput passing name as htmlProps", async () => {
   const { getByLabelText } = render(<Test />);
   const input = getByLabelText("input");
   expect(onValidate).not.toHaveBeenCalled();
-  fireEvent.change(input, { target: { value: "a" } });
+  type("a", input);
   await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: "a" }));
 });
 
@@ -773,7 +782,7 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
     </div>
   `);
 
-  fireEvent.click(push);
+  click(push);
 
   expect(container).toMatchInlineSnapshot(`
     <div>
@@ -817,23 +826,23 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
 
   await wait(expect(getByPlaceholderText("name0")).toHaveFocus);
 
-  fireEvent.click(push);
+  click(push);
   await wait(expect(getByPlaceholderText("name1")).toHaveFocus);
 
-  fireEvent.click(push);
+  click(push);
   await wait(expect(getByPlaceholderText("name2")).toHaveFocus);
 
   const remove0 = getByTestId("remove0");
   const remove1 = getByTestId("remove1");
   const remove2 = getByTestId("remove2");
 
-  fireEvent.click(remove0);
+  click(remove0);
   await wait(expect(getByPlaceholderText("name1")).toHaveFocus);
 
-  fireEvent.click(remove2);
+  click(remove2);
   await wait(expect(getByPlaceholderText("name1")).toHaveFocus);
 
-  fireEvent.click(remove1);
+  click(remove1);
   await wait(expect(push).toHaveFocus);
 });
 
@@ -964,8 +973,8 @@ test("reset form after removing an item", async () => {
   const remove1 = getByText("remove1");
   const reset = getByText("reset");
 
-  fireEvent.click(remove1);
-  fireEvent.click(reset);
+  click(remove1);
+  click(reset);
 
   expect(container).toMatchInlineSnapshot(`
     <div>

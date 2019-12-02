@@ -5,7 +5,7 @@ module.exports = {
     "packages/reakit/src/**/*.{js,ts,tsx}",
     "!**/*-test.{js,ts,tsx}"
   ],
-  projects: ["<rootDir>/packages/*/jest.config.js"],
+  projects: ["<rootDir>/packages/*/jest*config.js"],
   setupFilesAfterEnv: [
     "raf/polyfill",
     "@testing-library/jest-dom/extend-expect",

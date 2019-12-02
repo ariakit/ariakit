@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, act } from "@testing-library/react";
+import { render, focus, click } from "reakit-test-utils";
 import { Tab, TabList, TabPanel, useTabState, TabInitialState } from "..";
 
 function SimpleTest(props: TabInitialState = {}) {
@@ -47,7 +47,7 @@ test("focusing tab reveals the panel", () => {
   const tabpanel2 = getByText("tabpanel2");
   const tabpanel3 = getByText("tabpanel3");
   expect(tabpanel1).not.toBeVisible();
-  act(() => tab1.focus());
+  focus(tab1);
   expect(tabpanel1).toBeVisible();
   expect(tabpanel2).not.toBeVisible();
   expect(tabpanel3).not.toBeVisible();
@@ -58,7 +58,7 @@ test("focusing tab does not reveal the panel when manual is truthy", () => {
   const tab2 = getByText("tab2");
   const tabpanel2 = getByText("tabpanel2");
   expect(tabpanel2).not.toBeVisible();
-  act(() => tab2.focus());
+  focus(tab2);
   expect(tabpanel2).not.toBeVisible();
 });
 
@@ -67,7 +67,7 @@ test("clicking on tab reveals the panel", () => {
   const tab3 = getByText("tab3");
   const tabpanel3 = getByText("tabpanel3");
   expect(tabpanel3).not.toBeVisible();
-  fireEvent.click(tab3);
+  click(tab3);
   expect(tabpanel3).toBeVisible();
 });
 
