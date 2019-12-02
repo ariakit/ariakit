@@ -8,12 +8,12 @@
 
 npm:
 ```sh
-npm i reakit-test-utils
+npm i @testing-library/react @testing-library/react-hooks reakit-test-utils
 ```
 
 Yarn:
 ```sh
-yarn add reakit-test-utils
+yarn add @testing-library/react @testing-library/react-hooks reakit-test-utils
 ```
 
 ## License

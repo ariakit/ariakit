@@ -28,15 +28,13 @@
     "react",
     "system"
   ],
-  "dependencies": {
-    "@testing-library/jest-dom": "4.1.2",
-    "@testing-library/react": "9.3.2",
-    "@testing-library/react-hooks": "3.2.1"
-  },
   "devDependencies": {
-    "reakit-utils": "^0.7.0"
+    "reakit-utils": "^0.7.2"
   },
   "peerDependencies": {
+    "@testing-library/dom": "^6.0.0",
+    "@testing-library/react": "^9.0.0",
+    "@testing-library/react-hooks": "^3.0.0",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "reakit-utils": "^0.7.0"
