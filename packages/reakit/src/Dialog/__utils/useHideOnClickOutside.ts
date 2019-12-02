@@ -8,15 +8,38 @@ export function useHideOnClickOutside(
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   options: DialogOptions
 ) {
-  const useEvent = (eventType: string) =>
-    useEventListenerOutside(
-      dialogRef,
-      disclosuresRef,
-      nestedDialogs,
-      eventType,
-      options.hide,
-      options.visible && options.hideOnClickOutside
-    );
-  useEvent("click");
-  useEvent("focus");
+  const mouseDownRef = React.useRef<EventTarget | null>();
+
+  useEventListenerOutside(
+    dialogRef,
+    disclosuresRef,
+    nestedDialogs,
+    "mousedown",
+    event => {
+      mouseDownRef.current = event.target;
+    },
+    options.visible && options.hideOnClickOutside
+  );
+
+  useEventListenerOutside(
+    dialogRef,
+    disclosuresRef,
+    nestedDialogs,
+    "click",
+    event => {
+      if (mouseDownRef.current === event.target && options.hide) {
+        options.hide();
+      }
+    },
+    options.visible && options.hideOnClickOutside
+  );
+
+  useEventListenerOutside(
+    dialogRef,
+    disclosuresRef,
+    nestedDialogs,
+    "focus",
+    options.hide,
+    options.visible && options.hideOnClickOutside
+  );
 }
