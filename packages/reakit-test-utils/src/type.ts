@@ -1,11 +1,12 @@
 import { isFocusable, warning } from "reakit-utils";
+import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
+import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
-import { DirtiableElement } from "./__types";
-import { subscribeDefaultPrevented } from "./__utils";
 
-type TypeableElement = DirtiableElement &
-  (HTMLInputElement | HTMLTextAreaElement);
+import "./mockClientRects";
+
+type TextField = DirtiableElement & (HTMLInputElement | HTMLTextAreaElement);
 
 const charMap: Record<string, string> = {
   "\b": "Backspace"
@@ -13,30 +14,33 @@ const charMap: Record<string, string> = {
 
 const keyMap: Record<
   string,
-  (element: TypeableElement, options: InputEventInit) => string
+  (element: TextField, options: InputEventInit) => string
 > = {
   Backspace(element) {
     return element.value.substr(0, element.value.length - 1);
   }
 };
 
-function isTypeable(element: Element): element is TypeableElement {
-  if (element.tagName === "TEXTAREA") return true;
+function isTextField(element: Element): element is TextField {
+  try {
+    const isTextInput =
+      element instanceof HTMLInputElement && element.selectionStart !== null;
+    const isContentEditable =
+      element instanceof HTMLElement && Boolean(element.contentEditable);
+    const isTextArea = element.tagName === "TEXTAREA";
 
-  const typeableInputTypes = [
-    "email",
-    "number",
-    "password",
-    "search",
-    "tel",
-    "text",
-    "url"
-  ];
-
-  return (
-    element instanceof HTMLInputElement &&
-    typeableInputTypes.includes(element.type)
-  );
+    return isTextInput || isContentEditable || isTextArea;
+  } catch (error) {
+    // Safari throws an exception when trying to get `selectionStart`
+    // on non-text <input> elements (which, understandably, don't
+    // have the text selection API). We catch this via a try/catch
+    // block, as opposed to a more explicit check of the element's
+    // input types, because of Safari's non-standard behavior. This
+    // also means we don't have to worry about the list of input
+    // types that support `selectionStart` changing as the HTML spec
+    // evolves over time.
+    return false;
+  }
 }
 
 export function type(
@@ -50,7 +54,7 @@ export function type(
 
   if (!element || !isFocusable(element)) return;
 
-  if (!isTypeable(element)) {
+  if (!isTextField(element)) {
     warning(
       true,
       "[reakit-test-utils/type]",

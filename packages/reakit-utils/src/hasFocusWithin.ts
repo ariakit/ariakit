@@ -1,5 +1,7 @@
+import { getDocument } from "./getDocument";
+
 export function hasFocusWithin(element: Element) {
-  const doc = element.ownerDocument || document;
-  if (!doc.activeElement) return false;
-  return element.contains(doc.activeElement);
+  const document = getDocument(element);
+  if (!document.activeElement) return false;
+  return element.contains(document.activeElement);
 }

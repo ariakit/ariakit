@@ -1,5 +1,5 @@
-import { renderHook } from "@testing-library/react-hooks";
-import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
+import { renderHook } from "reakit-test-utils/hooks";
+import { jestSerializerStripFunctions } from "reakit-test-utils/jestSerializerStripFunctions";
 import { useToolbarState, ToolbarInitialState } from "../ToolbarState";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);

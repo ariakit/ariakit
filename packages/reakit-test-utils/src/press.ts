@@ -3,10 +3,12 @@ import {
   getNextTabbableIn,
   isFocusable
 } from "reakit-utils";
+import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
-import { subscribeDefaultPrevented } from "./__utils";
 import { blur } from "./blur";
+
+import "./mockClientRects";
 
 const clickableInputTypes = [
   "button",

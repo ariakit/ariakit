@@ -4,11 +4,13 @@ import {
   closest,
   warning
 } from "reakit-utils";
+import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
 import { hover } from "./hover";
 import { blur } from "./blur";
-import { subscribeDefaultPrevented } from "./__utils";
+
+import "./mockClientRects";
 
 // https://twitter.com/diegohaz/status/1176998102139572225
 function shouldBlurRightAfterFocus(element: Element) {
@@ -74,6 +76,11 @@ function clickLabel(
   }
 }
 
+function setSelected(element: HTMLOptionElement, selected: boolean) {
+  element.setAttribute("selected", selected ? "selected" : "");
+  element.selected = selected;
+}
+
 function clickOption(
   element: HTMLOptionElement,
   eventOptions?: MouseEventInit
@@ -97,14 +104,14 @@ function clickOption(
     const options = Array.from(select.options);
     const resetOptions = () =>
       options.forEach(option => {
-        option.selected = false;
+        setSelected(option, false);
       });
     const selectRange = (a: number, b: number) => {
       const from = Math.min(a, b);
       const to = Math.max(a, b) + 1;
       const selectedOptions = options.slice(from, to);
       selectedOptions.forEach(option => {
-        option.selected = true;
+        setSelected(option, true);
       });
     };
 
@@ -119,7 +126,7 @@ function clickOption(
       // Select options between the reference option and the clicked element
       selectRange(elementIndex, referenceOptionIndex);
 
-      element.selected = true;
+      setSelected(element, true);
     } else {
       // Keep track of this option as this will be used later when shift key
       // is used.
@@ -127,15 +134,15 @@ function clickOption(
 
       if (eventOptions?.ctrlKey) {
         // Clicking with ctrlKey will select/deselect the option
-        element.selected = !element.selected;
+        setSelected(element, !element.selected);
       } else {
         // Simply clicking an option will select only that option
         resetOptions();
-        element.selected = true;
+        setSelected(element, true);
       }
     }
   } else {
-    element.selected = true;
+    setSelected(element, true);
   }
 
   fireEvent.input(select);

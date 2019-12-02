@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "reakit-test-utils/hooks";
 import { useSealedState } from "../useSealedState";
 
 test("useSealedState", () => {

@@ -3,6 +3,8 @@ import { fireEvent } from "./fireEvent";
 import { act } from "./act";
 import { blur } from "./blur";
 
+import "./mockClientRects";
+
 export function focus(element: Element) {
   if (element.ownerDocument?.activeElement === element) return;
   if (!isFocusable(element)) return;

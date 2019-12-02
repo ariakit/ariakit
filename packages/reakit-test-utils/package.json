@@ -2,7 +2,6 @@
   "name": "reakit-test-utils",
   "version": "0.6.8",
   "description": "Reakit System utils",
-  "sideEffects": false,
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils",
   "main": "lib/index.js",

@@ -1,7 +1,7 @@
 import { warning } from "reakit-utils";
+import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
 import { act } from "./act";
-import { DirtiableElement } from "./__types";
 
 export function blur(element?: DirtiableElement | null) {
   if (element == null) {
