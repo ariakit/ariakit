@@ -20,12 +20,12 @@
 /pick
 /omit
 /mergeRefs
-/jestSerializerStripFunctions
 /isPromise
 /isObject
 /isInteger
 /isEmpty
 /hasFocusWithin
+/getDocument
 /cx
 /createOnKeyDown
 /closest

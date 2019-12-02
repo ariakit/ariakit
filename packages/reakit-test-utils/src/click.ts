@@ -35,9 +35,10 @@ function getClosestLabel(element: Element) {
 }
 
 function getInputFromLabel(element: HTMLLabelElement) {
-  const input = element?.htmlFor
+  const input = element.htmlFor
     ? element.ownerDocument?.getElementById(element.htmlFor)
-    : element?.querySelector("input,textarea,select");
+    : element.querySelector("input,textarea,select");
+
   return input as
     | HTMLInputElement
     | HTMLTextAreaElement
