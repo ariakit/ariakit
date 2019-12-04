@@ -5,5 +5,6 @@ const pkg = require("./package.json");
 module.exports = {
   ...baseConfig,
   displayName: pkg.name,
-  testMatch: [join(__dirname, "src/**/*-test.{js,ts,tsx}")]
+  testMatch: [join(__dirname, "src/**/*-test.{js,ts,tsx}")],
+  transformIgnorePatterns: ["/node_modules/(?!body-scroll-lock).+\\.es6$"]
 };
