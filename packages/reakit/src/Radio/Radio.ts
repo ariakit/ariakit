@@ -6,7 +6,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
-export type RadioOptions<T> = RoverOptions &
+export type RadioOptions<T = any> = RoverOptions &
   Pick<Partial<RadioStateReturn<T>>, "state" | "setState"> & {
     /**
      * Same as the `value` attribute.
