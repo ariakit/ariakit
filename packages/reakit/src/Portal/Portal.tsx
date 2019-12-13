@@ -8,9 +8,12 @@ export type PortalProps = {
   children: React.ReactNode;
 };
 
-const getBodyElement = () => typeof document !== "undefined" ? document.body : null
+const getBodyElement = () =>
+  typeof document !== "undefined" ? document.body : null;
 
-export const PortalContext = React.createContext<HTMLElement | null>(getBodyElement());
+export const PortalContext = React.createContext<HTMLElement | null>(
+  getBodyElement()
+);
 
 export function Portal({ children }: PortalProps) {
   // if it's a nested portal, context is the parent portal
