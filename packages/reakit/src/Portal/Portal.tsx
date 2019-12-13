@@ -8,14 +8,15 @@ export type PortalProps = {
   children: React.ReactNode;
 };
 
-export const PortalContext = React.createContext<HTMLElement | null>(
-  typeof document !== "undefined" ? document.body : null
-);
+const getBodyElement = () => typeof document !== "undefined" ? document.body : null
+
+export const PortalContext = React.createContext<HTMLElement | null>(getBodyElement());
 
 export function Portal({ children }: PortalProps) {
   // if it's a nested portal, context is the parent portal
   // otherwise it's document.body
-  const context = React.useContext(PortalContext) || document.body;
+  // https://github.com/reakit/reakit/issues/513
+  const context = React.useContext(PortalContext) || getBodyElement();
   const [portal] = React.useState(() => {
     if (typeof document !== "undefined") {
       const element = document.createElement("div");
