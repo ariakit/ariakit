@@ -15,7 +15,7 @@ export const PortalContext = React.createContext<HTMLElement | null>(
 export function Portal({ children }: PortalProps) {
   // if it's a nested portal, context is the parent portal
   // otherwise it's document.body
-  const context = React.useContext(PortalContext);
+  const context = React.useContext(PortalContext) || document.body;
   const [portal] = React.useState(() => {
     if (typeof document !== "undefined") {
       const element = document.createElement("div");
