@@ -29,7 +29,7 @@ export type RadioInitialState<T = string> = RoverInitialState &
 
 export type RadioStateReturn<T = any> = RadioState<T> & RadioActions<T>;
 
-export function useRadioState<T = string>(
+export function useRadioState<T = any>(
   initialState: SealedInitialState<RadioInitialState<T>> = {}
 ): RadioStateReturn<T | undefined> {
   const { state: initialCurrentValue, loop = true, ...sealed } = useSealedState(
