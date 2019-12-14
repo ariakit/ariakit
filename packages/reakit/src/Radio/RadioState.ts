@@ -47,7 +47,7 @@ export function useRadioState<T = string>(
   };
 }
 
-const keys: Array<keyof RadioStateReturn<any>> = [
+const keys: Array<keyof RadioStateReturn> = [
   ...useRoverState.__keys,
   "state",
   "setState"
