@@ -27,7 +27,7 @@ export type RadioActions<T> = RoverActions & {
 export type RadioInitialState<T = string> = RoverInitialState &
   Partial<Pick<RadioState<T>, "state">>;
 
-export type RadioStateReturn<T> = RadioState<T> & RadioActions<T>;
+export type RadioStateReturn<T = any> = RadioState<T> & RadioActions<T>;
 
 export function useRadioState<T = string>(
   initialState: SealedInitialState<RadioInitialState<T>> = {}
