@@ -5,7 +5,7 @@ import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
 
-export type MenuItemRadioOptions = RadioOptions<any> &
+export type MenuItemRadioOptions = RadioOptions &
   MenuItemOptions &
   Pick<MenuStateReturn, "unstable_values" | "unstable_setValue"> & {
     /**
