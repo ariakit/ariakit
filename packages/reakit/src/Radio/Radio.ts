@@ -22,7 +22,7 @@ export type RadioHTMLProps = RoverHTMLProps & React.InputHTMLAttributes<any>;
 
 export type RadioProps<T = any> = RadioOptions<T> & RadioHTMLProps;
 
-export const useRadio = createHook<RadioOptions<string>, RadioHTMLProps>({
+export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useRover,
   useState: useRadioState,
