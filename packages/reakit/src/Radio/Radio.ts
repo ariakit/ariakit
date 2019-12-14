@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { PropsWithAs, As } from "reakit-utils/src/types";
+import { PropsWithAs, As } from "reakit-utils/types";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
 import { useRadioState, RadioStateReturn } from "./RadioState";
