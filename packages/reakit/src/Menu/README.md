@@ -538,6 +538,11 @@ element.
 
   Shift popover on the start or end of its reference element.
 
+- **`unstable_inner`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Position the popover inside the reference element.
+
 - **`gutter`**
   <code>number | undefined</code>
 
