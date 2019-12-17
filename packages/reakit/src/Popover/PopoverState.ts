@@ -96,6 +96,10 @@ export type PopoverInitialState = DialogInitialState &
      */
     unstable_shift?: boolean;
     /**
+     * Position the popover inside the reference element.
+     */
+    unstable_inner?: boolean;
+    /**
      * Offset between the reference and the popover.
      */
     gutter?: number;
@@ -119,6 +123,7 @@ export function usePopoverState(
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
     unstable_shift: shift = true,
+    unstable_inner: inner = false,
     unstable_preventOverflow: preventOverflow = true,
     unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
@@ -164,6 +169,7 @@ export function usePopoverState(
         modifiers: {
           applyStyle: { enabled: false },
           flip: { enabled: flip, padding: 16 },
+          inner: { enabled: inner },
           shift: { enabled: shift },
           offset: { enabled: shift, offset: `0, ${gutter}` },
           preventOverflow: { enabled: preventOverflow, boundariesElement },
@@ -203,6 +209,7 @@ export function usePopoverState(
     dialog.visible,
     originalPlacement,
     flip,
+    inner,
     shift,
     gutter,
     preventOverflow,
