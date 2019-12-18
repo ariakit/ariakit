@@ -11,7 +11,7 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "start": "npm run develop",
+    "start": "yarn develop",
     "test": "jest",
     "build": "gatsby build",
     "develop": "gatsby develop -H 0.0.0.0 -p 8000",
@@ -53,6 +53,7 @@
     "react-icons": "3.8.0",
     "react-spring": "8.0.27",
     "reakit": "^1.0.0-beta.13",
+    "reakit-playground": "^0.6.11",
     "reakit-system": "^0.7.1",
     "reakit-system-bootstrap": "^0.6.10",
     "reakit-system-palette": "^0.6.10",
