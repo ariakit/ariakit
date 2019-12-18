@@ -46,7 +46,8 @@ export const unstable_useIdGroup = createHook<
   },
 
   useProps(options, htmlProps) {
-    return { id: options.id, ...htmlProps };
+    const id = typeof htmlProps.id === "undefined" ? options.id : htmlProps.id;
+    return { ...htmlProps, id };
   }
 });
 

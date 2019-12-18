@@ -82,3 +82,23 @@ test("render active selected", () => {
     </body>
   `);
 });
+
+test("render without state props", () => {
+  // @ts-ignore
+  const { baseElement } = render(<Tab id="test">tab</Tab>);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <button
+          aria-controls="test-panel"
+          aria-selected="false"
+          id="test"
+          role="tab"
+          tabindex="-1"
+        >
+          tab
+        </button>
+      </div>
+    </body>
+  `);
+});
