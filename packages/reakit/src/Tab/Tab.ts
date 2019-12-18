@@ -28,31 +28,26 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
     options,
     { onClick: htmlOnClick, onFocus: htmlOnFocus, ...htmlProps }
   ) {
-    const selected = options.selectedId === options.stopId;
+    const stopId = options.stopId || options.id || htmlProps.id;
+    const selected = options.selectedId === stopId;
 
     const onClick = React.useCallback(() => {
-      if (!options.disabled && !selected) {
-        options.select(options.stopId);
+      if (stopId && !options.disabled && !selected) {
+        options.select(stopId);
       }
-    }, [options.disabled, selected, options.select, options.stopId]);
+    }, [options.disabled, selected, options.select, stopId]);
 
     const onFocus = React.useCallback(() => {
-      if (!options.disabled && !options.manual && !selected) {
-        options.select(options.stopId);
+      if (stopId && !options.disabled && !options.manual && !selected) {
+        options.select(stopId);
       }
-    }, [
-      options.disabled,
-      options.manual,
-      selected,
-      options.select,
-      options.stopId
-    ]);
+    }, [options.disabled, options.manual, selected, options.select, stopId]);
 
     return {
       role: "tab",
-      id: getTabId(options.stopId, options.baseId),
+      id: getTabId(stopId, options.baseId),
       "aria-selected": selected,
-      "aria-controls": getTabPanelId(options.stopId, options.baseId),
+      "aria-controls": getTabPanelId(stopId, options.baseId),
       onClick: useAllCallbacks(onClick, htmlOnClick),
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       ...htmlProps

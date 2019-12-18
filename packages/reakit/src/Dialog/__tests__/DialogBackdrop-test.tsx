@@ -30,3 +30,20 @@ test("render visible", () => {
     </body>
   `);
 });
+
+test("render with id", () => {
+  const { baseElement } = render(<DialogBackdrop id="test" />);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          class="hidden"
+          hidden=""
+          id="test"
+          role="presentation"
+          style="display: none;"
+        />
+      </div>
+    </body>
+  `);
+});

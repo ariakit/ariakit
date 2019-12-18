@@ -60,7 +60,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const stopId = options.stopId || htmlProps.id || options.id;
+    const stopId = options.stopId || options.id || htmlProps.id;
 
     const trulyDisabled = options.disabled && !options.focusable;
     const noFocused = options.currentId == null;
