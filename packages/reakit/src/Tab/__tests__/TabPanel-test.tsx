@@ -73,28 +73,6 @@ test("render selected", () => {
   `);
 });
 
-test("render selected", () => {
-  const { baseElement } = render(
-    <TabPanel {...props} selectedId="tab">
-      tabpanel
-    </TabPanel>
-  );
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          aria-labelledby="base-tab"
-          id="base-tab-panel"
-          role="tabpanel"
-          tabindex="0"
-        >
-          tabpanel
-        </div>
-      </div>
-    </body>
-  `);
-});
-
 test("render without state props", () => {
   // @ts-ignore
   const { baseElement } = render(<TabPanel>tabpanel</TabPanel>);
