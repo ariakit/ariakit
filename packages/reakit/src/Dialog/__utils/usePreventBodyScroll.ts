@@ -1,8 +1,5 @@
 import * as React from "react";
-import {
-  disableBodyScroll,
-  enableBodyScroll
-} from "body-scroll-lock/lib/bodyScrollLock.es6";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { DialogOptions } from "../Dialog";
 
 export function usePreventBodyScroll(
