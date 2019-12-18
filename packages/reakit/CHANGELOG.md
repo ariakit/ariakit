@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.14](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.13...reakit@1.0.0-beta.14) (2019-12-18)
+
+
+### Bug Fixes
+
+* Fix `Dialog` closing when clicking inside it and dragging outside ([#510](https://github.com/reakit/reakit/issues/510)) ([7d580e6](https://github.com/reakit/reakit/commit/7d580e6)), closes [#506](https://github.com/reakit/reakit/issues/506)
+* Fix `Portal` with `null` context on client ([#514](https://github.com/reakit/reakit/issues/514)) ([619adfd](https://github.com/reakit/reakit/commit/619adfd)), closes [#513](https://github.com/reakit/reakit/issues/513)
+* Fix components not rendering `id` prop ([#520](https://github.com/reakit/reakit/issues/520)) ([866db9d](https://github.com/reakit/reakit/commit/866db9d)), closes [#518](https://github.com/reakit/reakit/issues/518)
+* Import `body-scroll-lock` directly from es modules to fix rollup build ([#508](https://github.com/reakit/reakit/issues/508)) ([320bf7b](https://github.com/reakit/reakit/commit/320bf7b)), closes [#505](https://github.com/reakit/reakit/issues/505)
+
+
+### Features
+
+* Add `unstable_inner` option to `usePopoverState` ([#517](https://github.com/reakit/reakit/issues/517)) ([d5e1e8f](https://github.com/reakit/reakit/commit/d5e1e8f)), closes [#516](https://github.com/reakit/reakit/issues/516)
+
+
+
+
+
 # [1.0.0-beta.13](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.12...reakit@1.0.0-beta.13) (2019-11-22)
 
 
