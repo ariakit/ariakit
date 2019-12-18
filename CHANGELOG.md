@@ -11,7 +11,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * Fix `Dialog` closing when clicking inside it and dragging outside ([#510](https://github.com/reakit/reakit/issues/510)) ([7d580e6](https://github.com/reakit/reakit/commit/7d580e6)), closes [#506](https://github.com/reakit/reakit/issues/506)
 * Fix `Portal` with `null` context on client ([#514](https://github.com/reakit/reakit/issues/514)) ([619adfd](https://github.com/reakit/reakit/commit/619adfd)), closes [#513](https://github.com/reakit/reakit/issues/513)
 * Fix components not rendering `id` prop ([#520](https://github.com/reakit/reakit/issues/520)) ([866db9d](https://github.com/reakit/reakit/commit/866db9d)), closes [#518](https://github.com/reakit/reakit/issues/518)
-* Import `body-scroll-lock` directly from es modules to fix rollup build ([#508](https://github.com/reakit/reakit/issues/508)) ([320bf7b](https://github.com/reakit/reakit/commit/320bf7b)), closes [#505](https://github.com/reakit/reakit/issues/505)
 
 
 ### Features
@@ -40,11 +39,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
   **Before:**
   ```jsx
-  <Checkbox onChange={event => setChecked(!event.target.checked)} />
+  <Checkbox onChange={event => setChecked(!event.target.checked)} />;
   ```
   **After:**
   ```jsx
-  <Checkbox onChange={event => setChecked(event.target.checked)} />
+  <Checkbox onChange={event => setChecked(event.target.checked)} />;
   ```
 
 
