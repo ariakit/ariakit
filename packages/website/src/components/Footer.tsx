@@ -34,7 +34,7 @@ export default function Footer() {
 
         p {
           font-size: 0.875em;
-          margin: 0;
+          margin: 4px 0;
         }
       `}
     >
@@ -89,6 +89,11 @@ export default function Footer() {
           <VisuallyHidden>Spectrum</VisuallyHidden>
         </Anchor>
       </div>
+      <Paragraph>
+        <Anchor href="https://www.netlify.com" target="_blank">
+          This site is powered by Netlify
+        </Anchor>
+      </Paragraph>
       <Paragraph>
         Released under the{" "}
         <Anchor href="https://opensource.org/licenses/MIT" target="_blank">
