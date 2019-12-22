@@ -4,6 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { isButton } from "reakit-utils/isButton";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type TabbableOptions = BoxOptions & {
@@ -35,36 +36,26 @@ export type TabbableHTMLProps = BoxHTMLProps & {
 
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
-function isNativeTabbable(element: EventTarget) {
+function isNativeTabbable(element: Element) {
   return (
-    element instanceof HTMLButtonElement ||
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLSelectElement ||
-    element instanceof HTMLTextAreaElement ||
-    element instanceof HTMLAnchorElement ||
-    element instanceof HTMLAudioElement ||
-    element instanceof HTMLVideoElement
-  );
-}
-
-function isInput(element: EventTarget) {
-  return (
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLTextAreaElement ||
-    element instanceof HTMLSelectElement
+    element.tagName === "BUTTON" ||
+    element.tagName === "INPUT" ||
+    element.tagName === "SELECT" ||
+    element.tagName === "TEXTAREA" ||
+    element.tagName === "A" ||
+    element.tagName === "AUDIO" ||
+    element.tagName === "VIDEO"
   );
 }
 
 // https://twitter.com/diegohaz/status/1176998102139572225
-function receivesFocusOnMouseDown(element: EventTarget) {
-  const { userAgent } = navigator;
-  const is = (string: string) => userAgent.indexOf(string) !== -1;
-  const isMac = is("Mac");
-  const isSafariOrFirefox = is("Safari") || is("Firefox");
-  return (
-    !isMac || !isSafariOrFirefox || !(element instanceof HTMLButtonElement)
-  );
+function isUserAgent(string: string) {
+  if (typeof window === "undefined") return false;
+  return window.navigator.userAgent.indexOf(string) !== -1;
 }
+
+const isSafariOrFirefoxOnMac =
+  isUserAgent("Mac") && (isUserAgent("Safari") || isUserAgent("Firefox"));
 
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
@@ -138,11 +129,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         const self = event.currentTarget as HTMLElement;
         const target = event.target as HTMLElement;
 
-        if (
-          self.contains(target) &&
-          !isInput(target) &&
-          !receivesFocusOnMouseDown(self)
-        ) {
+        if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
           event.preventDefault();
           const isFocusControl =
             isFocusable(target) || target instanceof HTMLLabelElement;

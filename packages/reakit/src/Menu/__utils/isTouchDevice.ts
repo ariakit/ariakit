@@ -1,5 +1,4 @@
 // TODO: Find a better implementation
-
 export function isTouchDevice() {
   if (process.env.NODE_ENV === "test" || typeof window === "undefined")
     return false;

@@ -56,7 +56,8 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
 
     const onClick = React.useCallback(
       (event: React.MouseEvent) => {
-        if (event.target instanceof HTMLInputElement) return;
+        const self = event.currentTarget as HTMLElement;
+        if (self.tagName === "INPUT") return;
         onChange(event as any);
       },
       [onChange]

@@ -80,7 +80,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
         if (htmlOnChange) {
           // If component is NOT rendered as a native input, it will not have
           // the `checked` property. So we assign it for consistency
-          if (!(self instanceof HTMLInputElement)) {
+          if (self.tagName !== "INPUT") {
             // @ts-ignore
             self.checked = !self.checked;
           }
@@ -115,7 +115,8 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
 
     const onClick = React.useCallback(
       (event: React.MouseEvent) => {
-        if (event.target instanceof HTMLInputElement) return;
+        const self = event.currentTarget as HTMLElement;
+        if (self.tagName === "INPUT") return;
         onChange(event);
       },
       [onChange]

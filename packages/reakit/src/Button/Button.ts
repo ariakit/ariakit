@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
+import { isButton } from "reakit-utils/isButton";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -26,10 +27,11 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
 
     React.useEffect(() => {
       const self = ref.current;
-      const isNativeButton =
-        self instanceof HTMLButtonElement || self instanceof HTMLInputElement;
-      if (!isNativeButton) {
-        if (!(self instanceof HTMLAnchorElement)) {
+
+      if (!self) return;
+
+      if (!isButton(self)) {
+        if (self.tagName !== "A") {
           setRole("button");
         }
         setType(undefined);
