@@ -4,6 +4,7 @@ import {
   isFocusable
 } from "reakit-utils";
 import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
+import { isTextField } from "./__utils/isTextField";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
 import { blur } from "./blur";
@@ -28,20 +29,8 @@ function submitFormByPressingEnterOn(
 
   const elements = Array.from(form.elements);
 
-  // When pressing enter on an input, the form is submitted only when there is
-  // only one of these input types present (or there's a submit button).
-  const validTypes = [
-    "email",
-    "number",
-    "password",
-    "search",
-    "tel",
-    "text",
-    "url"
-  ];
-
   const validInputs = elements.filter(
-    el => el instanceof HTMLInputElement && validTypes.includes(el.type)
+    el => el instanceof HTMLInputElement && isTextField(el)
   );
 
   const submitButton = elements.find(
