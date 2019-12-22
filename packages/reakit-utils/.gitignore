@@ -24,6 +24,7 @@
 /isObject
 /isInteger
 /isEmpty
+/isButton
 /hasFocusWithin
 /getDocument
 /getActiveElement

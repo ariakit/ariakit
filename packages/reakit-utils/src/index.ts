@@ -3,6 +3,7 @@ export * from "./createOnKeyDown";
 export * from "./cx";
 export * from "./getDocument";
 export * from "./hasFocusWithin";
+export * from "./isButton";
 export * from "./isEmpty";
 export * from "./isInteger";
 export * from "./isObject";
