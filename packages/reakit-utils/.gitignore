@@ -26,6 +26,7 @@
 /isEmpty
 /hasFocusWithin
 /getDocument
+/getActiveElement
 /cx
 /createOnKeyDown
 /closest
