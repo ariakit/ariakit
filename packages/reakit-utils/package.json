@@ -20,8 +20,9 @@
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "clean": "../../scripts/build/clean.js",
+    "prebuild": "yarn docs",
     "build": "../../scripts/build/build.js",
-    "docs": "../../scripts/build/docs.js",
+    "docs": "documentation readme src --section=API --parse-extension ts",
     "preversion": "yarn lint && yarn test && yarn build",
     "postpublish": "yarn clean"
   },

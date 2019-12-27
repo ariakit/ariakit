@@ -1,4 +1,5 @@
 import { closest } from "./closest";
+import { getActiveElement } from "./getActiveElement";
 
 const selector =
   "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +
@@ -19,25 +20,70 @@ function hasNegativeTabIndex(element: Element) {
   return tabIndex < 0;
 }
 
-export function isFocusable(element: Element) {
+/**
+ * Checks whether `element` is focusable or not.
+ *
+ * @example
+ * import { isFocusable } from "reakit-utils";
+ *
+ * isFocusable(document.querySelector("input")); // true
+ * isFocusable(document.querySelector("input[tabindex='-1']")); // true
+ * isFocusable(document.querySelector("input[hidden]")); // false
+ * isFocusable(document.querySelector("input:disabled")); // false
+ */
+export function isFocusable(element: Element): boolean {
   return element.matches(selector) && isVisible(element);
 }
 
-export function isTabbable(element: Element) {
+/**
+ * Checks whether `element` is tabbable or not.
+ *
+ * @example
+ * import { isTabbable } from "reakit-utils";
+ *
+ * isTabbable(document.querySelector("input")); // true
+ * isTabbable(document.querySelector("input[tabindex='-1']")); // false
+ * isTabbable(document.querySelector("input[hidden]")); // false
+ * isTabbable(document.querySelector("input:disabled")); // false
+ */
+export function isTabbable(element: Element): boolean {
   return isFocusable(element) && !hasNegativeTabIndex(element);
 }
 
+/**
+ * Returns all the focusable elements in `container`.
+ *
+ * @param {Element} container
+ *
+ * @returns {Element[]}
+ */
 export function getAllFocusableIn<T extends Element>(container: T) {
   const allFocusable = Array.from(container.querySelectorAll<T>(selector));
   allFocusable.unshift(container);
   return allFocusable.filter(isFocusable);
 }
 
+/**
+ * Returns the first focusable element in `container`.
+ *
+ * @param {Element} container
+ *
+ * @returns {Element|null}
+ */
 export function getFirstFocusableIn<T extends Element>(container: T) {
   const allFocusable = getAllFocusableIn(container);
   return allFocusable.length ? allFocusable[0] : null;
 }
 
+/**
+ * Returns all the tabbable elements in `container`, including the container
+ * itself.
+ *
+ * @param {Element} container
+ * @param fallbackToFocusable If `true`, it'll return focusable elements if there are no tabbable ones.
+ *
+ * @returns {Element[]}
+ */
 export function getAllTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
@@ -55,6 +101,15 @@ export function getAllTabbableIn<T extends Element>(
   return allTabbable;
 }
 
+/**
+ * Returns the first tabbable element in `container`, including the container
+ * itself if it's tabbable.
+ *
+ * @param {Element} container
+ * @param fallbackToFocusable If `true`, it'll return the first focusable element if there are no tabbable ones.
+ *
+ * @returns {Element|null}
+ */
 export function getFirstTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
@@ -63,6 +118,15 @@ export function getFirstTabbableIn<T extends Element>(
   return first || null;
 }
 
+/**
+ * Returns the last tabbable element in `container`, including the container
+ * itself if it's tabbable.
+ *
+ * @param {Element} container
+ * @param fallbackToFocusable If `true`, it'll return the last focusable element if there are no tabbable ones.
+ *
+ * @returns {Element|null}
+ */
 export function getLastTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
@@ -71,11 +135,19 @@ export function getLastTabbableIn<T extends Element>(
   return allTabbable[allTabbable.length - 1] || null;
 }
 
+/**
+ * Returns the next tabbable element in `container`.
+ *
+ * @param {Element} container
+ * @param fallbackToFocusable If `true`, it'll return the next focusable element if there are no tabbable ones.
+ *
+ * @returns {Element|null}
+ */
 export function getNextTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
 ): T | null {
-  const { activeElement } = container.ownerDocument || document;
+  const activeElement = getActiveElement(container);
   const allFocusable = getAllFocusableIn(container);
   const index = allFocusable.indexOf(activeElement as T);
   const slice = allFocusable.slice(index + 1);
@@ -86,11 +158,19 @@ export function getNextTabbableIn<T extends Element>(
   );
 }
 
+/**
+ * Returns the previous tabbable element in `container`.
+ *
+ * @param {Element} container
+ * @param fallbackToFocusable If `true`, it'll return the previous focusable element if there are no tabbable ones.
+ *
+ * @returns {Element|null}
+ */
 export function getPreviousTabbableIn<T extends Element>(
   container: T,
   fallbackToFocusable?: boolean
 ): T | null {
-  const { activeElement } = container.ownerDocument || document;
+  const activeElement = getActiveElement(container);
   const allFocusable = getAllFocusableIn(container).reverse();
   const index = allFocusable.indexOf(activeElement as T);
   const slice = allFocusable.slice(index + 1);
@@ -101,6 +181,13 @@ export function getPreviousTabbableIn<T extends Element>(
   );
 }
 
+/**
+ * Returns the closest focusable parent of `element`.
+ *
+ * @param {Element} container
+ *
+ * @returns {Element|null}
+ */
 export function getClosestFocusable<T extends Element>(element: T): T | null {
   let container: T | null = null;
 
@@ -112,14 +199,34 @@ export function getClosestFocusable<T extends Element>(element: T): T | null {
 }
 
 function defaultIsActive(element: Element) {
-  const { activeElement } = element.ownerDocument || document;
-  return activeElement === element;
+  return getActiveElement(element) === element;
 }
 
 type EnsureFocusOptions = FocusOptions & {
   isActive?: typeof defaultIsActive;
 };
 
+/**
+ * Ensures `element` will receive focus if it's not already.
+ *
+ * @example
+ * import { ensureFocus } from "reakit-utils";
+ *
+ * ensureFocus(document.activeElement); // does nothing
+ *
+ * const element = document.querySelector("input");
+ *
+ * ensureFocus(element); // focuses element
+ * ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
+ *
+ * function isActive(el) {
+ *   return el.dataset.active === "true";
+ * }
+ *
+ * ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
+ *
+ * @returns {number} `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
+ */
 export function ensureFocus(
   element: HTMLElement,
   { isActive = defaultIsActive, preventScroll }: EnsureFocusOptions = {}

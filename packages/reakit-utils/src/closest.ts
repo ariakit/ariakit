@@ -1,5 +1,3 @@
-// closest ponyfill
-
 function matches(element: Element, selectors: string): boolean {
   if ("matches" in element) return element.matches(selectors);
   if ("msMatchesSelector" in element)
@@ -22,6 +20,16 @@ export function closest<T extends Element = Element>(
   selectors: string
 ): T | null;
 
+/**
+ * Ponyfill for `Element.prototype.closest`
+ *
+ * @example
+ * import { closest } from "reakit-utils";
+ *
+ * closest(document.getElementById("id"), "div");
+ * // same as
+ * document.getElementById("id").closest("div");
+ */
 export function closest(element: Element, selectors: string) {
   if ("closest" in element) return element.closest(selectors);
   do {
