@@ -1,3 +1,4 @@
+/** @module tabbable */
 import { closest } from "./closest";
 import { getActiveElement } from "./getActiveElement";
 
@@ -23,6 +24,8 @@ function hasNegativeTabIndex(element: Element) {
 /**
  * Checks whether `element` is focusable or not.
  *
+ * @memberof tabbable
+ *
  * @example
  * import { isFocusable } from "reakit-utils";
  *
@@ -37,6 +40,8 @@ export function isFocusable(element: Element): boolean {
 
 /**
  * Checks whether `element` is tabbable or not.
+ *
+ * @memberof tabbable
  *
  * @example
  * import { isTabbable } from "reakit-utils";
@@ -53,6 +58,8 @@ export function isTabbable(element: Element): boolean {
 /**
  * Returns all the focusable elements in `container`.
  *
+ * @memberof tabbable
+ *
  * @param {Element} container
  *
  * @returns {Element[]}
@@ -66,6 +73,8 @@ export function getAllFocusableIn<T extends Element>(container: T) {
 /**
  * Returns the first focusable element in `container`.
  *
+ * @memberof tabbable
+ *
  * @param {Element} container
  *
  * @returns {Element|null}
@@ -78,6 +87,8 @@ export function getFirstFocusableIn<T extends Element>(container: T) {
 /**
  * Returns all the tabbable elements in `container`, including the container
  * itself.
+ *
+ * @memberof tabbable
  *
  * @param {Element} container
  * @param fallbackToFocusable If `true`, it'll return focusable elements if there are no tabbable ones.
@@ -105,6 +116,8 @@ export function getAllTabbableIn<T extends Element>(
  * Returns the first tabbable element in `container`, including the container
  * itself if it's tabbable.
  *
+ * @memberof tabbable
+ *
  * @param {Element} container
  * @param fallbackToFocusable If `true`, it'll return the first focusable element if there are no tabbable ones.
  *
@@ -122,6 +135,8 @@ export function getFirstTabbableIn<T extends Element>(
  * Returns the last tabbable element in `container`, including the container
  * itself if it's tabbable.
  *
+ * @memberof tabbable
+ *
  * @param {Element} container
  * @param fallbackToFocusable If `true`, it'll return the last focusable element if there are no tabbable ones.
  *
@@ -137,6 +152,8 @@ export function getLastTabbableIn<T extends Element>(
 
 /**
  * Returns the next tabbable element in `container`.
+ *
+ * @memberof tabbable
  *
  * @param {Element} container
  * @param fallbackToFocusable If `true`, it'll return the next focusable element if there are no tabbable ones.
@@ -161,6 +178,8 @@ export function getNextTabbableIn<T extends Element>(
 /**
  * Returns the previous tabbable element in `container`.
  *
+ * @memberof tabbable
+ *
  * @param {Element} container
  * @param fallbackToFocusable If `true`, it'll return the previous focusable element if there are no tabbable ones.
  *
@@ -183,6 +202,8 @@ export function getPreviousTabbableIn<T extends Element>(
 
 /**
  * Returns the closest focusable parent of `element`.
+ *
+ * @memberof tabbable
  *
  * @param {Element} container
  *
@@ -208,6 +229,8 @@ type EnsureFocusOptions = FocusOptions & {
 
 /**
  * Ensures `element` will receive focus if it's not already.
+ *
+ * @memberof tabbable
  *
  * @example
  * import { ensureFocus } from "reakit-utils";

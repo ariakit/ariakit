@@ -70,35 +70,36 @@ yarn add reakit-utils
 -   [splitProps](#splitprops)
     -   [Parameters](#parameters-16)
     -   [Examples](#examples-11)
--   [isFocusable](#isfocusable)
-    -   [Parameters](#parameters-17)
-    -   [Examples](#examples-12)
--   [isTabbable](#istabbable)
-    -   [Parameters](#parameters-18)
-    -   [Examples](#examples-13)
--   [getAllFocusableIn](#getallfocusablein)
-    -   [Parameters](#parameters-19)
--   [getFirstFocusableIn](#getfirstfocusablein)
-    -   [Parameters](#parameters-20)
--   [getAllTabbableIn](#getalltabbablein)
-    -   [Parameters](#parameters-21)
--   [getFirstTabbableIn](#getfirsttabbablein)
-    -   [Parameters](#parameters-22)
--   [getLastTabbableIn](#getlasttabbablein)
-    -   [Parameters](#parameters-23)
--   [getNextTabbableIn](#getnexttabbablein)
-    -   [Parameters](#parameters-24)
--   [getPreviousTabbableIn](#getprevioustabbablein)
-    -   [Parameters](#parameters-25)
--   [getClosestFocusable](#getclosestfocusable)
-    -   [Parameters](#parameters-26)
--   [ensureFocus](#ensurefocus)
-    -   [Parameters](#parameters-27)
-    -   [Examples](#examples-14)
+-   [tabbable](#tabbable)
+    -   [isFocusable](#isfocusable)
+        -   [Parameters](#parameters-17)
+        -   [Examples](#examples-12)
+    -   [isTabbable](#istabbable)
+        -   [Parameters](#parameters-18)
+        -   [Examples](#examples-13)
+    -   [getAllFocusableIn](#getallfocusablein)
+        -   [Parameters](#parameters-19)
+    -   [getFirstFocusableIn](#getfirstfocusablein)
+        -   [Parameters](#parameters-20)
+    -   [getAllTabbableIn](#getalltabbablein)
+        -   [Parameters](#parameters-21)
+    -   [getFirstTabbableIn](#getfirsttabbablein)
+        -   [Parameters](#parameters-22)
+    -   [getLastTabbableIn](#getlasttabbablein)
+        -   [Parameters](#parameters-23)
+    -   [getNextTabbableIn](#getnexttabbablein)
+        -   [Parameters](#parameters-24)
+    -   [getPreviousTabbableIn](#getprevioustabbablein)
+        -   [Parameters](#parameters-25)
+    -   [getClosestFocusable](#getclosestfocusable)
+        -   [Parameters](#parameters-26)
+    -   [ensureFocus](#ensurefocus)
+        -   [Parameters](#parameters-27)
+        -   [Examples](#examples-14)
 -   [toArray](#toarray)
     -   [Parameters](#parameters-28)
     -   [Examples](#examples-15)
--   [Types](#types)
+-   [types](#types)
     -   [Omit](#omit-1)
     -   [RenderProp](#renderprop)
     -   [As](#as)
@@ -425,15 +426,17 @@ splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
 
 Returns **\[any, Omit&lt;T, K>]** 
 
-### isFocusable
+### tabbable
+
+#### isFocusable
 
 Checks whether `element` is focusable or not.
 
-#### Parameters
+##### Parameters
 
 -   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
-#### Examples
+##### Examples
 
 ```javascript
 import { isFocusable } from "reakit-utils";
@@ -446,15 +449,15 @@ isFocusable(document.querySelector("input:disabled")); // false
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### isTabbable
+#### isTabbable
 
 Checks whether `element` is tabbable or not.
 
-#### Parameters
+##### Parameters
 
 -   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
-#### Examples
+##### Examples
 
 ```javascript
 import { isTabbable } from "reakit-utils";
@@ -467,107 +470,107 @@ isTabbable(document.querySelector("input:disabled")); // false
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### getAllFocusableIn
+#### getAllFocusableIn
 
 Returns all the focusable elements in `container`.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
 
-### getFirstFocusableIn
+#### getFirstFocusableIn
 
 Returns the first focusable element in `container`.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-### getAllTabbableIn
+#### getAllTabbableIn
 
 Returns all the tabbable elements in `container`, including the container
 itself.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return focusable elements if there are no tabbable ones.
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
 
-### getFirstTabbableIn
+#### getFirstTabbableIn
 
 Returns the first tabbable element in `container`, including the container
 itself if it's tabbable.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the first focusable element if there are no tabbable ones.
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-### getLastTabbableIn
+#### getLastTabbableIn
 
 Returns the last tabbable element in `container`, including the container
 itself if it's tabbable.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the last focusable element if there are no tabbable ones.
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-### getNextTabbableIn
+#### getNextTabbableIn
 
 Returns the next tabbable element in `container`.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the next focusable element if there are no tabbable ones.
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-### getPreviousTabbableIn
+#### getPreviousTabbableIn
 
 Returns the previous tabbable element in `container`.
 
-#### Parameters
+##### Parameters
 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the previous focusable element if there are no tabbable ones.
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-### getClosestFocusable
+#### getClosestFocusable
 
 Returns the closest focusable parent of `element`.
 
-#### Parameters
+##### Parameters
 
 -   `element` **T** 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-### ensureFocus
+#### ensureFocus
 
 Ensures `element` will receive focus if it's not already.
 
-#### Parameters
+##### Parameters
 
 -   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
 -   `$1` **EnsureFocusOptions**  (optional, default `{}`)
     -   `$1.isActive`   (optional, default `defaultIsActive`)
     -   `$1.preventScroll`  
 
-#### Examples
+##### Examples
 
 ```javascript
 import { ensureFocus } from "reakit-utils";
@@ -607,7 +610,7 @@ toArray(["a"]); // ["a"]
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
 
-### Types
+### types
 
 #### Omit
 

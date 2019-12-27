@@ -1,8 +1,8 @@
-/** @module Types */
+/** @module types */
 import * as React from "react";
 
 /**
- * @memberof Types
+ * @memberof types
  * @template T Object
  * @template K Union of T keys
  */
@@ -10,14 +10,14 @@ export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 /**
  * Render prop type
- * @memberof Types
+ * @memberof types
  * @template P Props
  */
 export type RenderProp<P = {}> = (props: P) => React.ReactElement<any>;
 
 /**
  * "as" prop
- * @memberof Types
+ * @memberof types
  * @template P Props
  */
 export type As<P = any> = React.ReactType<P>;
@@ -29,7 +29,7 @@ export type As<P = any> = React.ReactType<P>;
  * type FunctionalComponent = ElementType<() => null>;
  * type Never = ElementType<"foo">;
  * ```
- * @memberof Types
+ * @memberof types
  * @template T Component type or string tag
  */
 export type ElementType<T> = T extends keyof JSX.IntrinsicElements
@@ -44,7 +44,7 @@ export type ElementType<T> = T extends keyof JSX.IntrinsicElements
   : never;
 
 /**
- * @memberof Types
+ * @memberof types
  * @template T Element type
  */
 export type HTMLAttributesWithRef<T = any> = React.HTMLAttributes<T> &
@@ -56,7 +56,7 @@ export type HTMLAttributesWithRef<T = any> = React.HTMLAttributes<T> &
  * type OnlyId = ExtractHTMLAttributes<{ id: string; foo: string }>;
  * type HTMLAttributes = ExtractHTMLAttributes<any>;
  * ```
- * @memberof Types
+ * @memberof types
  * @template P Props
  */
 export type ExtractHTMLAttributes<P> = Pick<
@@ -66,7 +66,7 @@ export type ExtractHTMLAttributes<P> = Pick<
 
 /**
  * Transforms `"a" | "b"` into `"a" & "b"`
- * @memberof Types
+ * @memberof types
  * @template U Union
  */
 export type UnionToIntersection<U> = (U extends any
@@ -77,7 +77,7 @@ export type UnionToIntersection<U> = (U extends any
 
 /**
  * Same as Pick, but with value types instead of key
- * @memberof Types
+ * @memberof types
  * @template T Object
  * @template V Value
  */
@@ -88,7 +88,7 @@ export type PickByValue<T, V> = Pick<
 
 /**
  * Generic component props with "as" prop
- * @memberof Types
+ * @memberof types
  * @template P Additional props
  * @template T React component or string element
  */
@@ -100,13 +100,13 @@ export type PropsWithAs<P, T extends As> = P &
 
 /**
  * Returns the type of the items in an array
- * @memberof Types
+ * @memberof types
  * @template T Array
  */
 export type ArrayValue<T> = T extends Array<infer U> ? U : never;
 
 /**
  * Any function
- * @memberof Types
+ * @memberof types
  */
 export type AnyFunction = (...args: any[]) => any;
