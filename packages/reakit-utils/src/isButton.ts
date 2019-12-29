@@ -7,6 +7,19 @@ const buttonInputTypes = [
   "submit"
 ];
 
+/**
+ * Checks whether `element` is a native HTML button element or not.
+ *
+ * @example
+ * import { isButton } from "reakit-utils";
+ *
+ * isButton(document.querySelector("button")); // true
+ * isButton(document.querySelector("input[type='button']")); // true
+ * isButton(document.querySelector("div")); // false
+ * isButton(document.querySelector("input[type='text']")); // false
+ *
+ * @returns {boolean}
+ */
 export function isButton(
   element: Element
 ): element is HTMLButtonElement | HTMLInputElement {

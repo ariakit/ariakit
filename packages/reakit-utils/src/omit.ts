@@ -1,9 +1,15 @@
-import { Omit } from "./types";
-
+/**
+ * Omits specific keys from an object.
+ *
+ * @example
+ * import { omit } from "reakit-utils";
+ *
+ * omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
+ */
 export function omit<T extends Record<string, any>, K extends keyof T>(
   object: T,
   paths: ReadonlyArray<K> | K[]
-) {
+): Omit<T, K> {
   const keys = Object.keys(object);
   const result = {} as Omit<T, K>;
 
