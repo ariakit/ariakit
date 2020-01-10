@@ -25,7 +25,7 @@ type Options<T extends As, O> = {
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
-export interface Component<T extends As, O> {
+export type Component<T extends As, O> = {
   // This is the desired type
   // <TT extends As = T>(props: PropsWithAs<O, TT>): JSX.Element;
   // Unfortunately, TypeScript doesn't like it. It works for string elements
@@ -34,8 +34,18 @@ export interface Component<T extends As, O> {
   // The following two types are a workaround.
   <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
   (props: PropsWithAs<O, T>): JSX.Element;
-}
+};
 
+/**
+ * Creates a React component.
+ *
+ * @example
+ * import { createComponent } from "reakit-system";
+ *
+ * const A = createComponent({ as: "a" });
+ *
+ * @param options
+ */
 export function createComponent<T extends As, O>({
   as: type,
   useHook,

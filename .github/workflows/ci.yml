@@ -40,5 +40,8 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: bash <(curl -s https://codecov.io/bash)
 
+    - name: Docs
+      run: yarn docs
+
     - name: Build
       run: yarn build
