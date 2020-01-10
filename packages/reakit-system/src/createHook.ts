@@ -21,6 +21,30 @@ type CreateHookOptions<O, P> = {
   keys?: ReadonlyArray<keyof O>;
 };
 
+/**
+ * Creates a React custom hook that will return component props.
+ *
+ * @example
+ * import { createHook } from "reakit-system";
+ *
+ * const useA = createHook({
+ *   name: "A",
+ *   keys: ["url"], // custom props/options keys
+ *   useProps(options, htmlProps) {
+ *     return {
+ *       ...htmlProps,
+ *       href: options.url
+ *     };
+ *   }
+ * });
+ *
+ * function A({ url, ...htmlProps }) {
+ *   const props = useA({ url }, htmlProps);
+ *   return <a {...props} />;
+ * }
+ *
+ * @param options
+ */
 export function createHook<O, P>(options: CreateHookOptions<O, P>) {
   const composedHooks = toArray(options.compose) as Hook[];
 

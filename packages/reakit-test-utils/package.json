@@ -20,7 +20,7 @@
     "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
     "docs": "../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn build",
+    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [

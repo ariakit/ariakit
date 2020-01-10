@@ -6,8 +6,7 @@ const {
   makeGitignore,
   makePlaygroundDeps,
   cleanBuild,
-  hasTSConfig,
-  injectPropTypes
+  hasTSConfig
 } = require("./utils");
 
 process.env.NODE_ENV = "production";
@@ -19,7 +18,6 @@ if (process.argv.includes("--no-umd")) {
 const cwd = process.cwd();
 
 cleanBuild(cwd);
-injectPropTypes(cwd);
 makeGitignore(cwd);
 makePlaygroundDeps(cwd);
 makeProxies(cwd);
