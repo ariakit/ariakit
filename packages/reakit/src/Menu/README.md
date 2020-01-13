@@ -544,7 +544,7 @@ element.
   Position the popover inside the reference element.
 
 - **`unstable_offset`** <span title="Experimental">⚠️</span>
-  <code>[string | number, string | number] | undefined</code>
+  <code title="readonly [string | number, string | number] | undefined">readonly [string | number, string | number] | u...</code>
 
   Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 

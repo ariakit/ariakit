@@ -102,7 +102,7 @@ export type PopoverInitialState = DialogInitialState &
     /**
      * Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
      */
-    unstable_offset?: [number | string, number | string];
+    unstable_offset?: readonly [number | string, number | string];
     /**
      * Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
      */
@@ -128,12 +128,14 @@ export function usePopoverState(
     unstable_flip: flip = true,
     unstable_shift: shift = true,
     unstable_inner: inner = false,
-    unstable_offset: offset = [0, gutter],
+    unstable_offset: offset = [0, gutter] as NonNullable<
+      PopoverInitialState["unstable_offset"]
+    >,
     unstable_preventOverflow: preventOverflow = true,
     unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
     ...sealed
-  }: PopoverInitialState = useSealedState(initialState);
+  } = useSealedState(initialState);
 
   const popper = React.useRef<Popper | null>(null);
   const referenceRef = React.useRef<HTMLElement>(null);
