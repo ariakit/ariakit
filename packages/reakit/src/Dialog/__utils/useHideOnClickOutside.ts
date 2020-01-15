@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getDocument } from "reakit-utils/getDocument";
 import { DialogOptions } from "../Dialog";
 import { useEventListenerOutside } from "./useEventListenerOutside";
 
@@ -10,16 +11,22 @@ export function useHideOnClickOutside(
 ) {
   const mouseDownRef = React.useRef<EventTarget | null>();
 
-  useEventListenerOutside(
-    dialogRef,
-    disclosuresRef,
-    nestedDialogs,
-    "mousedown",
-    event => {
+  React.useEffect(() => {
+    if (!options.visible || !options.hideOnClickOutside) {
+      return undefined;
+    }
+
+    const document = getDocument(dialogRef.current);
+    const onMouseDown = (event: MouseEvent) => {
       mouseDownRef.current = event.target;
-    },
-    options.visible && options.hideOnClickOutside
-  );
+    };
+
+    document.addEventListener("mousedown", onMouseDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+    };
+  }, [options.visible, options.hideOnClickOutside, dialogRef]);
 
   useEventListenerOutside(
     dialogRef,
