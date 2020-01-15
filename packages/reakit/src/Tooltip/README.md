@@ -185,10 +185,15 @@ element.
 
   Position the popover inside the reference element.
 
+- **`unstable_offset`** <span title="Experimental">⚠️</span>
+  <code title="readonly [string | number, string | number] | undefined">readonly [string | number, string | number] | u...</code>
+
+  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
+
 - **`gutter`**
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.
+  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
 
 - **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
