@@ -1,6 +1,5 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
-import { Omit } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";

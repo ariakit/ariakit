@@ -1,5 +1,5 @@
 import * as React from "react";
-import { As, PropsWithAs, Omit } from "reakit-utils/types";
+import { As, PropsWithAs } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
