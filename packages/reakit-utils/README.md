@@ -100,7 +100,6 @@ yarn add reakit-utils
     -   [Parameters](#parameters-28)
     -   [Examples](#examples-15)
 -   [types](#types)
-    -   [Omit](#omit-1)
     -   [RenderProp](#renderprop)
     -   [As](#as)
     -   [ElementType](#elementtype)
@@ -611,10 +610,6 @@ toArray(["a"]); // ["a"]
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
 
 ### types
-
-#### Omit
-
-Type: Pick&lt;T, Exclude&lt;any, K>>
 
 #### RenderProp
 
