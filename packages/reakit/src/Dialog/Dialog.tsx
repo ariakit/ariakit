@@ -104,47 +104,35 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const { modal: stateModal, portal: statePortal, orphan: stateOrphan } =
       unstable_stateValues || {};
 
-    React.useLayoutEffect(() => {
-      if (setModal && stateModal !== modal) {
-        // warning(
-        //   true,
-        //   "[reakit/Dialog]",
-        //   "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
-        //   "See https://github.com/reakit/reakit/pull/535"
-        // );
-        setModal(modal);
-      }
+    if (setModal && stateModal !== modal) {
+      // warning(
+      //   true,
+      //   "[reakit/Dialog]",
+      //   "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
+      //   "See https://github.com/reakit/reakit/pull/535"
+      // );
+      setModal(modal);
+    }
 
-      if (setPortal && statePortal !== unstable_portal) {
-        // warning(
-        //   true,
-        //   "[reakit/Dialog]",
-        //   "Setting `unstable_portal` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
-        //   "See https://github.com/reakit/reakit/pull/535"
-        // );
-        setPortal(unstable_portal);
-      }
+    if (setPortal && statePortal !== unstable_portal) {
+      // warning(
+      //   true,
+      //   "[reakit/Dialog]",
+      //   "Setting `unstable_portal` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
+      //   "See https://github.com/reakit/reakit/pull/535"
+      // );
+      setPortal(unstable_portal);
+    }
 
-      if (setOrphan && stateOrphan !== trulyOrphan) {
-        // warning(
-        //   true,
-        //   "[reakit/Dialog]",
-        //   "Setting `unstable_orphan` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
-        //   "See https://github.com/reakit/reakit/pull/535"
-        // );
-        setOrphan(trulyOrphan);
-      }
-    }, [
-      setModal,
-      stateModal,
-      modal,
-      setPortal,
-      statePortal,
-      unstable_portal,
-      setOrphan,
-      stateOrphan,
-      trulyOrphan
-    ]);
+    if (setOrphan && stateOrphan !== trulyOrphan) {
+      // warning(
+      //   true,
+      //   "[reakit/Dialog]",
+      //   "Setting `unstable_orphan` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
+      //   "See https://github.com/reakit/reakit/pull/535"
+      // );
+      setOrphan(trulyOrphan);
+    }
 
     return {
       modal,
