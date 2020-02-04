@@ -6,7 +6,8 @@ import {
   PopoverState,
   PopoverActions,
   PopoverInitialState,
-  usePopoverState
+  usePopoverState,
+  PopoverStateReturn
 } from "../Popover/PopoverState";
 
 export type TooltipState = PopoverState;
@@ -15,7 +16,9 @@ export type TooltipActions = PopoverActions;
 
 export type TooltipInitialState = PopoverInitialState;
 
-export type TooltipStateReturn = TooltipState & TooltipActions;
+export type TooltipStateReturn = PopoverStateReturn &
+  TooltipState &
+  TooltipActions;
 
 export function useTooltipState(
   initialState: SealedInitialState<TooltipInitialState> = {}

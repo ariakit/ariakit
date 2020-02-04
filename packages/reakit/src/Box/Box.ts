@@ -15,7 +15,7 @@ export type BoxHTMLProps = React.HTMLAttributes<any> &
     /**
      * Function returned by hook to wrap children.
      */
-    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+    unstable_wrap?: (children: React.ReactNode) => React.ReactNode;
   };
 
 export type BoxProps = BoxOptions & BoxHTMLProps;

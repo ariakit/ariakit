@@ -64,12 +64,11 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Portal>
-        <DialogBackdrop {...dialog} />
-      </Portal>
-      <Dialog {...dialog} aria-label="Welcome">
-        Welcome to Reakit!
-      </Dialog>
+      <DialogBackdrop {...dialog}>
+        <Dialog {...dialog} aria-label="Welcome">
+          Welcome to Reakit!
+        </Dialog>
+      </DialogBackdrop>
     </>
   );
 }
