@@ -27,6 +27,7 @@
   paths:
     - /docs/box/
     - /docs/hidden/
+    - /docs/id/
     - /docs/portal/
     - /docs/rover/
     - /docs/tabbable/
