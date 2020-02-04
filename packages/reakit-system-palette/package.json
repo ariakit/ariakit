@@ -34,7 +34,7 @@
     "color": "3.1.2"
   },
   "devDependencies": {
-    "@types/color": "3.0.0",
+    "@types/color": "3.0.1",
     "reakit-system": "^0.7.2"
   },
   "peerDependencies": {

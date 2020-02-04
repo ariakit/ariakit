@@ -42,8 +42,8 @@ export type RoverState = unstable_IdState & {
   unstable_moves: number;
   /**
    * If enabled:
-   *  - Jumps to the first item when moving next from the last item.
-   *  - Jumps to the last item when moving previous from the first item.
+   *   - Jumps to the first item when moving next from the last item.
+   *   - Jumps to the last item when moving previous from the first item.
    */
   loop: boolean;
 };

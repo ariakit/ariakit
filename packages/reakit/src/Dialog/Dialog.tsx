@@ -23,8 +23,8 @@ export type DialogOptions = HiddenOptions &
   Pick<DialogStateReturn, "baseId"> & {
     /**
      * Toggles Dialog's `modal` state.
-     *  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-     *  - Modal: `preventBodyScroll` is automatically enabled, focus is
+     *   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+     *   - Modal: `preventBodyScroll` is automatically enabled, focus is
      * trapped within the dialog and the dialog is rendered within a `Portal`
      * by default.
      */

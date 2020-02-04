@@ -404,7 +404,7 @@ function getJsDocs(symbol) {
 function getComment(symbol) {
   const jsDocs = getJsDocs(symbol);
   if (!jsDocs) return "";
-  return jsDocs.getComment();
+  return jsDocs.getDescription().trim();
 }
 
 /**
@@ -568,7 +568,7 @@ function injectPropTypes(rootPath) {
       const dir = dirname(readmePath);
       const tree = ast.parse(mdContents);
       const publicPaths = Object.values(getPublicFiles(dir));
-      const sourceFiles = project.addExistingSourceFiles(publicPaths);
+      const sourceFiles = project.addSourceFilesAtPaths(publicPaths);
       project.resolveSourceFileDependencies();
       const types = {};
 
