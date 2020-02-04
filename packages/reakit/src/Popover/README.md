@@ -225,6 +225,29 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
+- **`unstable_portal`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.
+
+- **`unstable_orphan`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  Whether or not the dialog should be a child of its parent.
+Opening a nested orphan dialog will close its parent dialog if
+`hideOnClickOutside` is set to `true` on the parent.
+It will be set to `false` if `modal` is `false`.
+
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
@@ -278,15 +301,6 @@ element.
 
   Same as the HTML attribute.
 
-- **`modal`**
-  <code>boolean | undefined</code>
-
-  Toggles Dialog's `modal` state.
-  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-  - Modal: `preventBodyScroll` is automatically enabled, focus is
-trapped within the dialog and the dialog is rendered within a `Portal`
-by default.
-
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
 
@@ -315,21 +329,7 @@ When not set, the first tabbable element within the dialog will be used.
   The element that will be focused when the dialog hides.
 When not set, the disclosure component will be used.
 
-- **`unstable_portal`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
-
-- **`unstable_orphan`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the dialog should be a child of its parent.
-Opening a nested orphan dialog will close its parent dialog if
-`hideOnClickOutside` is set to `true` on the parent.
-It will be set to `false` if `modal` is `false`.
-
-<details><summary>5 state props</summary>
+<details><summary>11 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -356,6 +356,45 @@ given milliseconds.
 
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
+- **`unstable_portal`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.
+
+- **`unstable_orphan`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  Whether or not the dialog should be a child of its parent.
+Opening a nested orphan dialog will close its parent dialog if
+`hideOnClickOutside` is set to `true` on the parent.
+It will be set to `false` if `modal` is `false`.
+
+- **`setModal`**
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `modal`.
+
+- **`unstable_setPortal`** <span title="Experimental">⚠️</span>
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `unstable_portal`.
+
+- **`unstable_setOrphan`** <span title="Experimental">⚠️</span>
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `unstable_orphan`. It has no effect if `modal` is set to `false`, in
+which case `unstable_orphan` will be always `false`.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -389,7 +428,7 @@ It's called after given milliseconds if `animated` is a number.
 
   Same as the HTML attribute.
 
-<details><summary>4 state props</summary>
+<details><summary>5 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -416,6 +455,12 @@ given milliseconds.
 
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
+
+- **`unstable_portal`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.
 
 </details>
 
