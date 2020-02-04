@@ -3,10 +3,8 @@ import { getDocument } from "reakit-utils/getDocument";
 import { DialogOptions } from "../Dialog";
 import { useEventListenerOutside } from "./useEventListenerOutside";
 
-export function useHideOnClickOutside(
+function useMouseDownRef(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosuresRef: React.RefObject<HTMLElement[]>,
-  nestedDialogs: Array<React.RefObject<HTMLElement>>,
   options: DialogOptions
 ) {
   const mouseDownRef = React.useRef<EventTarget | null>();
@@ -28,12 +26,27 @@ export function useHideOnClickOutside(
     };
   }, [options.visible, options.hideOnClickOutside, dialogRef]);
 
+  return mouseDownRef;
+}
+
+export function useHideOnClickOutside(
+  dialogRef: React.RefObject<HTMLElement>,
+  disclosuresRef: React.RefObject<HTMLElement[]>,
+  nestedDialogs: Array<React.RefObject<HTMLElement>>,
+  options: DialogOptions
+) {
+  const mouseDownRef = useMouseDownRef(dialogRef, options);
+
   useEventListenerOutside(
     dialogRef,
     disclosuresRef,
     nestedDialogs,
     "click",
     event => {
+      // Make sure the element that has been clicked is the same that last
+      // triggered the mousedown event. This prevents the dialog from closing
+      // by dragging the cursor (for example, selecting some text inside the
+      // dialog and releasing the mouse outside of it).
       if (mouseDownRef.current === event.target && options.hide) {
         options.hide();
       }
