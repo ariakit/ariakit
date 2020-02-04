@@ -151,7 +151,13 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnKeyDown(event);
         }
 
-        if (options.disabled || isNativeTabbable(event.currentTarget)) return;
+        if (
+          options.disabled ||
+          isNativeTabbable(event.currentTarget) ||
+          event.metaKey
+        ) {
+          return;
+        }
 
         // Per the spec, space only triggers button click on key up.
         // On key down, it triggers the :active state.
