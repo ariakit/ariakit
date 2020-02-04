@@ -75,7 +75,8 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     }, [stopId, trulyDisabled, options.register, options.unregister]);
 
     React.useEffect(() => {
-      if (!ref.current) {
+      const rover = ref.current;
+      if (!rover) {
         warning(
           true,
           "[reakit/Rover]",
@@ -84,8 +85,8 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         );
         return;
       }
-      if (options.unstable_moves && focused && !hasFocusWithin(ref.current)) {
-        ref.current.focus();
+      if (options.unstable_moves && focused && !hasFocusWithin(rover)) {
+        rover.focus();
       }
     }, [focused, options.unstable_moves]);
 

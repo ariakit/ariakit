@@ -101,7 +101,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         : htmlStyle;
 
     React.useEffect(() => {
-      if (ref.current && !isNativeTabbable(ref.current)) {
+      const tabbable = ref.current;
+      if (tabbable && !isNativeTabbable(tabbable)) {
         setNativeTabbable(false);
       }
     }, []);
