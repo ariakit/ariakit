@@ -10,7 +10,6 @@ test("render", () => {
         <div
           class="hidden"
           hidden=""
-          role="presentation"
           style="display: none;"
         />
       </div>
@@ -23,9 +22,7 @@ test("render visible", () => {
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
-        <div
-          role="presentation"
-        />
+        <div />
       </div>
     </body>
   `);
@@ -40,7 +37,6 @@ test("render with id", () => {
           class="hidden"
           hidden=""
           id="test"
-          role="presentation"
           style="display: none;"
         />
       </div>
