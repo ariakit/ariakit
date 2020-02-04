@@ -208,6 +208,19 @@ test("non-native button space/enter disabled", () => {
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
+test("non-native button space/enter metaKey", () => {
+  const fn = jest.fn();
+  const { getByText } = render(
+    <Tabbable as="div" onClick={fn}>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  press.Enter(tabbable, { metaKey: true });
+  press.Space(tabbable, { metaKey: true });
+  expect(fn).toHaveBeenCalledTimes(0);
+});
+
 test("non-native button space/enter disabled focusable", () => {
   const fn = jest.fn();
   const { getByText } = render(
