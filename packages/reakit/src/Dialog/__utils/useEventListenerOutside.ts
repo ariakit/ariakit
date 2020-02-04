@@ -48,7 +48,10 @@ export function useEventListenerOutside(
       if (
         isFocusTrap(target) ||
         nestedDialogs.find(dialog =>
-          Boolean(dialog.current && dialog.current.contains(target))
+          Boolean(
+            (dialog.current && dialog.current.contains(target)) ||
+              dialog.current?.parentNode?.contains(target) // backdrop TODO Improve
+          )
         )
       ) {
         return;
