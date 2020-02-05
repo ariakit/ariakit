@@ -7,7 +7,7 @@ import { useDialogState, DialogStateReturn } from "./DialogState";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 
 export type DialogBackdropOptions = HiddenOptions &
-  Pick<Partial<DialogStateReturn>, "unstable_portal">;
+  Pick<Partial<DialogStateReturn>, "modal">;
 
 export type DialogBackdropHTMLProps = HiddenHTMLProps;
 
@@ -22,10 +22,14 @@ export const useDialogBackdrop = createHook<
   compose: useHidden,
   useState: useDialogState,
 
+  useOptions({ modal = true, ...options }) {
+    return { modal, ...options };
+  },
+
   useProps(options, htmlProps) {
     const wrapChildren = React.useCallback(
       (children: React.ReactNode) => {
-        if (options.unstable_portal) {
+        if (options.modal) {
           return (
             <Portal>
               <DialogBackdropContext.Provider value>
@@ -34,15 +38,16 @@ export const useDialogBackdrop = createHook<
             </Portal>
           );
         }
-        return children as JSX.Element;
+        return children;
       },
-      [options.unstable_portal]
+      [options.modal]
     );
 
     return {
       id: undefined,
       role: undefined,
       unstable_wrap: wrapChildren,
+      "data-dialog-ref": options.baseId,
       ...htmlProps
     };
   }

@@ -1,7 +1,29 @@
 import * as React from "react";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-utils/warning";
+import { getDocument } from "reakit-utils/getDocument";
 import { isFocusTrap } from "./useFocusTrap";
+
+function dialogContains(target: Element) {
+  return (dialog: React.RefObject<HTMLElement>) => {
+    if (!dialog.current) return false;
+
+    if (dialog.current.contains(target)) {
+      return true;
+    }
+
+    const document = getDocument(dialog.current);
+    const backdrop = document.querySelector(
+      `[data-dialog-ref="${dialog.current.id}"]`
+    );
+
+    if (backdrop) {
+      return backdrop.contains(target);
+    }
+
+    return false;
+  };
+}
 
 export function useEventListenerOutside(
   containerRef: React.RefObject<HTMLElement>,
@@ -45,15 +67,7 @@ export function useEventListenerOutside(
       }
 
       // Click inside a nested dialog or focus trap
-      if (
-        isFocusTrap(target) ||
-        nestedDialogs.find(dialog =>
-          Boolean(
-            (dialog.current && dialog.current.contains(target)) ||
-              dialog.current?.parentNode?.contains(target) // backdrop TODO Improve
-          )
-        )
-      ) {
+      if (isFocusTrap(target) || nestedDialogs.find(dialogContains(target))) {
         return;
       }
 

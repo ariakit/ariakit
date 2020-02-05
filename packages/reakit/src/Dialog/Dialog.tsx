@@ -22,14 +22,7 @@ import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 export type DialogOptions = HiddenOptions &
   Pick<
     Partial<DialogStateReturn>,
-    | "modal"
-    | "setModal"
-    | "unstable_portal"
-    | "unstable_setPortal"
-    | "unstable_orphan"
-    | "unstable_setOrphan"
-    | "unstable_stateValues"
-    | "hide"
+    "modal" | "setModal" | "unstable_modal" | "hide"
   > &
   Pick<DialogStateReturn, "baseId"> & {
     /**
@@ -56,6 +49,13 @@ export type DialogOptions = HiddenOptions &
      */
     unstable_finalFocusRef?: React.RefObject<HTMLElement>;
     /**
+     * Whether or not the dialog should be a child of its parent.
+     * Opening a nested orphan dialog will close its parent dialog if
+     * `hideOnClickOutside` is set to `true` on the parent.
+     * It will be set to `false` if `modal` is `false`.
+     */
+    unstable_orphan?: boolean;
+    /**
      * Whether or not to move focus when the dialog shows.
      * @private
      */
@@ -81,6 +81,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     "preventBodyScroll",
     "unstable_initialFocusRef",
     "unstable_finalFocusRef",
+    "unstable_orphan",
     "unstable_autoFocusOnShow",
     "unstable_autoFocusOnHide"
   ],
@@ -89,60 +90,31 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     modal = true,
     hideOnEsc = true,
     hideOnClickOutside = true,
-    preventBodyScroll = true,
+    preventBodyScroll = modal,
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
-    unstable_portal = modal,
     unstable_orphan,
-    unstable_stateValues,
+    unstable_modal,
     setModal,
-    unstable_setPortal: setPortal,
-    unstable_setOrphan: setOrphan,
     ...options
   }) {
-    const trulyOrphan = Boolean(modal && unstable_orphan);
-    const { modal: stateModal, portal: statePortal, orphan: stateOrphan } =
-      unstable_stateValues || {};
-
-    if (setModal && stateModal !== modal) {
-      // warning(
-      //   true,
-      //   "[reakit/Dialog]",
-      //   "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
-      //   "See https://github.com/reakit/reakit/pull/535"
-      // );
+    if (setModal && unstable_modal !== modal) {
+      warning(
+        true,
+        "[reakit/Dialog]",
+        "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead (or a derivative state hook, such as `useMenuState`).",
+        "See https://github.com/reakit/reakit/pull/535"
+      );
       setModal(modal);
     }
-
-    if (setPortal && statePortal !== unstable_portal) {
-      // warning(
-      //   true,
-      //   "[reakit/Dialog]",
-      //   "Setting `unstable_portal` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
-      //   "See https://github.com/reakit/reakit/pull/535"
-      // );
-      setPortal(unstable_portal);
-    }
-
-    if (setOrphan && stateOrphan !== trulyOrphan) {
-      // warning(
-      //   true,
-      //   "[reakit/Dialog]",
-      //   "Setting `unstable_orphan` prop on `Dialog` is deprecated. Set it on `useDialogState` (or a derivative state hook, such as `useMenuState`) instead.",
-      //   "See https://github.com/reakit/reakit/pull/535"
-      // );
-      setOrphan(trulyOrphan);
-    }
-
     return {
       modal,
       hideOnEsc,
       hideOnClickOutside,
-      preventBodyScroll,
+      preventBodyScroll: modal && preventBodyScroll,
       unstable_autoFocusOnShow,
       unstable_autoFocusOnHide,
-      unstable_portal,
-      unstable_orphan: trulyOrphan,
+      unstable_orphan: modal && unstable_orphan,
       ...options
     };
   },
@@ -189,12 +161,12 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
 
     const wrapChildren = React.useCallback(
       (children: React.ReactNode) => {
-        if (options.unstable_portal && !backdrop) {
+        if (options.modal && !backdrop) {
           return <Portal>{wrap(children)}</Portal>;
         }
         return wrap(children);
       },
-      [options.unstable_portal, backdrop, wrap]
+      [options.modal, backdrop, wrap]
     );
 
     return {

@@ -142,14 +142,13 @@ There's a few use cases for these conditions, like [Popover](/docs/popover/) and
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
 
 function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: false });
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <Dialog
         {...dialog}
         aria-label="Welcome"
-        modal={false}
         style={{ position: "static", transform: "none" }}
       >
         Focus is not trapped within me.
@@ -169,7 +168,7 @@ import { Button } from "reakit/Button";
 import { Portal } from "reakit/Portal";
 
 function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: false });
   return (
     <>
       <DialogDisclosure {...dialog}>Open chat</DialogDisclosure>
@@ -177,7 +176,6 @@ function Example() {
         <Dialog
           {...dialog}
           aria-label="Welcome"
-          modal={false}
           hideOnClickOutside={false}
           style={{
             transform: "none",

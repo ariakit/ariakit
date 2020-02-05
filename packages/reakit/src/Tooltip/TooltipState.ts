@@ -10,13 +10,16 @@ import {
   PopoverStateReturn
 } from "../Popover/PopoverState";
 
-export type TooltipState = PopoverState;
+export type TooltipState = Omit<PopoverState, "modal">;
 
-export type TooltipActions = PopoverActions;
+export type TooltipActions = Omit<PopoverActions, "setModal">;
 
-export type TooltipInitialState = PopoverInitialState;
+export type TooltipInitialState = Omit<PopoverInitialState, "modal">;
 
-export type TooltipStateReturn = PopoverStateReturn &
+export type TooltipStateReturn = Omit<
+  PopoverStateReturn,
+  "modal" | "setModal"
+> &
   TooltipState &
   TooltipActions;
 
@@ -31,6 +34,8 @@ export function useTooltipState(
   return usePopoverState({ ...sealed, placement, unstable_boundariesElement });
 }
 
-const keys: Array<keyof TooltipStateReturn> = [...usePopoverState.__keys];
+const keys: Array<keyof PopoverStateReturn | keyof TooltipStateReturn> = [
+  ...usePopoverState.__keys
+];
 
 useTooltipState.__keys = keys;
