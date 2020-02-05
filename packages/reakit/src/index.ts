@@ -2,6 +2,7 @@ export * from "./Box";
 export * from "./Button";
 export * from "./Checkbox";
 export * from "./Dialog";
+export * from "./Disclosure";
 export * from "./Form";
 export * from "./Group";
 export * from "./Hidden";

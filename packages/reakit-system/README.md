@@ -125,7 +125,7 @@ import { mergeSystem } from "reakit-system";
 import * as bootstrapSystem from "reakit-system-bootstrap";
 
 const mySystem = {
-  useHiddenProps() {}
+  useButtonProps() {}
 };
 
 const system = mergeSystem(bootstrapSystem, mySystem);

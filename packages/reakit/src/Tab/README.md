@@ -234,7 +234,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 - `Tab` uses [Rover](/docs/rover/).
 - `TabList` uses [Box](/docs/box/).
-- `TabPanel` uses [Hidden](/docs/hidden/).
+- `TabPanel` uses [DisclosureContent](/docs/disclosure/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

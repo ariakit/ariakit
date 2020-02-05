@@ -1,11 +1,5 @@
 ---
 path: /docs/hidden/
-redirect_from:
-  - /components/hidden/
-  - /components/hidden/hiddencontainer/
-  - /components/hidden/hiddenhide/
-  - /components/hidden/hiddenshow/
-  - /components/hidden/hiddentoggle/
 ---
 
 # Hidden

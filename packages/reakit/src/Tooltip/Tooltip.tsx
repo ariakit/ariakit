@@ -3,11 +3,15 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { usePipe } from "reakit-utils/usePipe";
-import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
+import {
+  DisclosureContentOptions,
+  DisclosureContentHTMLProps,
+  useDisclosureContent
+} from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
 
-export type TooltipOptions = HiddenOptions &
+export type TooltipOptions = DisclosureContentOptions &
   Pick<
     Partial<TooltipStateReturn>,
     "unstable_popoverRef" | "unstable_popoverStyles"
@@ -19,13 +23,13 @@ export type TooltipOptions = HiddenOptions &
     unstable_portal?: boolean;
   };
 
-export type TooltipHTMLProps = HiddenHTMLProps;
+export type TooltipHTMLProps = DisclosureContentHTMLProps;
 
 export type TooltipProps = TooltipOptions & TooltipHTMLProps;
 
 export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   name: "Tooltip",
-  compose: useHidden,
+  compose: useDisclosureContent,
   useState: useTooltipState,
   keys: ["unstable_portal"],
 

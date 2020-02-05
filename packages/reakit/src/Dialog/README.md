@@ -303,15 +303,15 @@ function Example() {
 - Clicking outside the `Dialog` closes it unless `hideOnClickOutside` is set to `false`.
 - Focusing outside the non-modal `Dialog` closes it unless `hideOnClickOutside` is set to `false`.
 - When `Dialog` closes, focus returns to its disclosure unless the closing action has been triggered by a click/focus on a tabbable element outside the `Dialog`. In this case, `Dialog` closes and this element remains with focus.
-- `DialogDisclosure` extends the accessibility features of [HiddenDisclosure](/docs/hidden/#accessibility).
+- `DialogDisclosure` extends the accessibility features of [Disclosure](/docs/disclosure/#accessibility).
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Dialog` uses [Hidden](/docs/hidden/), and is used by [Popover](/docs/popover/) and its derivatives.
-- `DialogDisclosure` uses [HiddenDisclosure](/docs/hidden/), and is used by [PopoverDisclosure](/docs/popover/) and its derivatives.
-- `DialogBackdrop` uses [Hidden](/docs/hidden/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
+- `Dialog` uses [DisclosureContent](/docs/disclosure/), and is used by [Popover](/docs/popover/) and its derivatives.
+- `DialogDisclosure` uses [Disclosure](/docs/disclosure/), and is used by [PopoverDisclosure](/docs/popover/) and its derivatives.
+- `DialogBackdrop` uses [DisclosureContent](/docs/disclosure/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

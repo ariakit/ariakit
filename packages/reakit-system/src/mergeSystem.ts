@@ -43,7 +43,7 @@ function mergeObjectsInObjects(systems: Array<Record<string, any>>) {
  * import * as bootstrapSystem from "reakit-system-bootstrap";
  *
  * const mySystem = {
- *   useHiddenProps() {}
+ *   useButtonProps() {}
  * };
  *
  * const system = mergeSystem(bootstrapSystem, mySystem);
