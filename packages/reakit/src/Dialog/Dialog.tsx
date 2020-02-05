@@ -142,7 +142,19 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
-        if (event.key === "Escape" && options.hideOnEsc) {
+        const target = event.target as HTMLElement;
+        const targetIsControl = ["INPUT", "SELECT", "BUTTON"].includes(
+          target.tagName.toUpperCase()
+        );
+        const targetIsFocusable =
+          targetIsControl || Number(target.tabIndex) > -1;
+        if (
+          event.key === "Escape" &&
+          options.hideOnEsc &&
+          target &&
+          !targetIsControl &&
+          !targetIsFocusable
+        ) {
           if (!options.hide) {
             warning(
               true,

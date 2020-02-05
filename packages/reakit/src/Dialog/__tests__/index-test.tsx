@@ -436,6 +436,35 @@ test("esc does not close the dialog when hideOnEsc is falsy", () => {
   expect(dialog).toBeVisible();
 });
 
+test("esc does not close the dialog when hideOnEsc is true but focus is in input", () => {
+  const Test = () => {
+    const dialog = useDialogState({ visible: true });
+    return (
+      <Dialog {...dialog} aria-label="dialog" hideOnEsc>
+        <input />
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+        <div tabIndex={0} aria-label="div" />
+      </Dialog>
+    );
+  };
+  const { getByLabelText, getByRole } = render(<Test />);
+  const dialog = getByLabelText("dialog");
+  const input = getByRole("textbox");
+  const div = getByLabelText("div");
+  expect(dialog).toBeVisible();
+  focus(input);
+  press.Escape(input);
+  expect(dialog).toBeVisible();
+
+  focus(div);
+  press.Escape(div);
+  expect(dialog).toBeVisible();
+
+  press.Escape(dialog);
+  expect(dialog).not.toBeVisible();
+  expect(console).toHaveWarned();
+});
+
 test("clicking outside closes the dialog", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
