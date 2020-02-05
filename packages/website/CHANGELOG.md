@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.15](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.14...website@1.0.0-beta.15) (2020-02-05)
+
+
+### Features
+
+* **website:** Add `Id` to the docs menu ([95f1fd9](https://github.com/reakit/reakit/tree/master/packages/website/commit/95f1fd9))
+
+
+
+
+
 # [1.0.0-beta.14](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.13...website@1.0.0-beta.14) (2019-12-18)
 
 **Note:** Version bump only for package website

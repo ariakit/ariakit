@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.12...reakit-playground@0.7.0) (2020-02-05)
+
+
+### Features
+
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/a252fcd))
+* **reakit-utils:** Add `isButton` method ([8ff86fc](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8ff86fc))
+* **reakit-utils:** Add `isPlainObject` function ([faeb26f](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/faeb26f))
+
+
+
+
+
 ## [0.6.12](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.11...reakit-playground@0.6.12) (2019-12-18)
 
 **Note:** Version bump only for package reakit-playground

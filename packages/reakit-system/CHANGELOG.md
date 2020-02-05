@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.7.2...reakit-system@0.8.0) (2020-02-05)
+
+
+### Features
+
+* Add `modal` state to `useDialogState` ([#535](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/535)) ([f3953ad](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/f3953ad)), closes [#404](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/404)
+* Replace `unstable_wrap` by `wrapElement` ([#538](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/538)) ([17a12fb](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/17a12fb))
+
+
+
+
+
 ## [0.7.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.7.1...reakit-system@0.7.2) (2019-12-18)
 
 **Note:** Version bump only for package reakit-system

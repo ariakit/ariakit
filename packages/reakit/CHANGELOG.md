@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.15](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.14...reakit@1.0.0-beta.15) (2020-02-05)
+
+
+### Bug Fixes
+
+* Fix parent `Dialog` closing when clicking on nested `DialogBackdrop` ([#530](https://github.com/reakit/reakit/issues/530)) ([e8bc3be](https://github.com/reakit/reakit/commit/e8bc3be)), closes [#529](https://github.com/reakit/reakit/issues/529)
+* Fix warning on deprecated `Provider` import ([1cd9421](https://github.com/reakit/reakit/commit/1cd9421))
+* Prevent clicks when pressing Enter/Space with meta key on non-native `Tabbable` ([#534](https://github.com/reakit/reakit/issues/534)) ([7f0c8cf](https://github.com/reakit/reakit/commit/7f0c8cf))
+* Stop converting `File` objects into plain objects when submitting `Form` ([5899d8d](https://github.com/reakit/reakit/commit/5899d8d)), closes [#415](https://github.com/reakit/reakit/issues/415)
+
+
+### Features
+
+* Add `modal` state to `useDialogState` ([#535](https://github.com/reakit/reakit/issues/535)) ([f3953ad](https://github.com/reakit/reakit/commit/f3953ad)), closes [#404](https://github.com/reakit/reakit/issues/404)
+* Add `unstable_offset` option to `usePopoverState` ([#527](https://github.com/reakit/reakit/issues/527)) ([301fbca](https://github.com/reakit/reakit/commit/301fbca)), closes [#511](https://github.com/reakit/reakit/issues/511)
+* Render nested `Dialog` on a portal outside of its parent `Dialog` ([#533](https://github.com/reakit/reakit/issues/533)) ([9f0a5cc](https://github.com/reakit/reakit/commit/9f0a5cc))
+* Replace `unstable_wrap` by `wrapElement` ([#538](https://github.com/reakit/reakit/issues/538)) ([17a12fb](https://github.com/reakit/reakit/commit/17a12fb))
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/commit/a252fcd))
+
+
+### BREAKING CHANGES
+
+* This should affect a very small number of people: the way nested modal `Dialog`s are rendered has been changed. To avoid styling issues, nested dialogs are rendered outside of the parent `Dialog` (but still inside the parent `Portal`).
+
+
+
+
+
 # [1.0.0-beta.14](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.13...reakit@1.0.0-beta.14) (2019-12-18)
 
 
