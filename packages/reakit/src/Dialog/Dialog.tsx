@@ -17,18 +17,14 @@ import { useNestedDialogs } from "./__utils/useNestedDialogs";
 import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
+import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 
 export type DialogOptions = HiddenOptions &
-  Pick<Partial<DialogStateReturn>, "hide"> &
+  Pick<
+    Partial<DialogStateReturn>,
+    "modal" | "setModal" | "unstable_modal" | "hide"
+  > &
   Pick<DialogStateReturn, "baseId"> & {
-    /**
-     * Toggles Dialog's `modal` state.
-     *   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-     *   - Modal: `preventBodyScroll` is automatically enabled, focus is
-     * trapped within the dialog and the dialog is rendered within a `Portal`
-     * by default.
-     */
-    modal?: boolean;
     /**
      * When enabled, user can hide the dialog by pressing `Escape`.
      */
@@ -52,11 +48,6 @@ export type DialogOptions = HiddenOptions &
      * When not set, the disclosure component will be used.
      */
     unstable_finalFocusRef?: React.RefObject<HTMLElement>;
-    /**
-     * Whether or not the dialog should be rendered within `Portal`.
-     * It's `true` by default if `modal` is `true`.
-     */
-    unstable_portal?: boolean;
     /**
      * Whether or not the dialog should be a child of its parent.
      * Opening a nested orphan dialog will close its parent dialog if
@@ -85,37 +76,44 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   compose: useHidden,
   useState: useDialogState,
   keys: [
-    "modal",
     "hideOnEsc",
     "hideOnClickOutside",
     "preventBodyScroll",
     "unstable_initialFocusRef",
     "unstable_finalFocusRef",
+    "unstable_orphan",
     "unstable_autoFocusOnShow",
-    "unstable_autoFocusOnHide",
-    "unstable_portal",
-    "unstable_orphan"
+    "unstable_autoFocusOnHide"
   ],
 
   useOptions({
     modal = true,
     hideOnEsc = true,
     hideOnClickOutside = true,
-    preventBodyScroll = true,
+    preventBodyScroll = modal,
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
-    unstable_portal = modal,
     unstable_orphan,
+    unstable_modal,
+    setModal,
     ...options
   }) {
+    if (setModal && unstable_modal !== modal) {
+      warning(
+        true,
+        "[reakit/Dialog]",
+        "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
+        "See https://github.com/reakit/reakit/pull/535"
+      );
+      setModal(modal);
+    }
     return {
       modal,
       hideOnEsc,
       hideOnClickOutside,
-      preventBodyScroll,
+      preventBodyScroll: modal && preventBodyScroll,
       unstable_autoFocusOnShow,
       unstable_autoFocusOnHide,
-      unstable_portal,
       unstable_orphan: modal && unstable_orphan,
       ...options
     };
@@ -131,6 +129,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     }
   ) {
     const dialog = React.useRef<HTMLElement>(null);
+    const backdrop = React.useContext(DialogBackdropContext);
     const disclosures = useDisclosuresRef(options);
     const { dialogs, wrap } = useNestedDialogs(dialog, options);
 
@@ -162,12 +161,12 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
 
     const wrapChildren = React.useCallback(
       (children: React.ReactNode) => {
-        if (options.unstable_portal) {
+        if (options.modal && !backdrop) {
           return <Portal>{wrap(children)}</Portal>;
         }
         return wrap(children);
       },
-      [options.unstable_portal, wrap]
+      [options.modal, backdrop, wrap]
     );
 
     return {

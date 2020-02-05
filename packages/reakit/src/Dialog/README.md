@@ -64,12 +64,11 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Portal>
-        <DialogBackdrop {...dialog} />
-      </Portal>
-      <Dialog {...dialog} aria-label="Welcome">
-        Welcome to Reakit!
-      </Dialog>
+      <DialogBackdrop {...dialog}>
+        <Dialog {...dialog} aria-label="Welcome">
+          Welcome to Reakit!
+        </Dialog>
+      </DialogBackdrop>
     </>
   );
 }
@@ -143,14 +142,13 @@ There's a few use cases for these conditions, like [Popover](/docs/popover/) and
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
 
 function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: false });
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <Dialog
         {...dialog}
         aria-label="Welcome"
-        modal={false}
         style={{ position: "static", transform: "none" }}
       >
         Focus is not trapped within me.
@@ -170,7 +168,7 @@ import { Button } from "reakit/Button";
 import { Portal } from "reakit/Portal";
 
 function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: false });
   return (
     <>
       <DialogDisclosure {...dialog}>Open chat</DialogDisclosure>
@@ -178,7 +176,6 @@ function Example() {
         <Dialog
           {...dialog}
           aria-label="Welcome"
-          modal={false}
           hideOnClickOutside={false}
           style={{
             transform: "none",
@@ -342,21 +339,21 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
-### `Dialog`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
 - **`modal`**
-  <code>boolean | undefined</code>
+  <code>boolean</code>
 
   Toggles Dialog's `modal` state.
   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
   - Modal: `preventBodyScroll` is automatically enabled, focus is
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
+
+### `Dialog`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
 
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
@@ -386,12 +383,6 @@ When not set, the first tabbable element within the dialog will be used.
   The element that will be focused when the dialog hides.
 When not set, the disclosure component will be used.
 
-- **`unstable_portal`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
-
 - **`unstable_orphan`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -399,6 +390,62 @@ It's `true` by default if `modal` is `true`.
 Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
+
+<details><summary>7 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`unstable_animated`** <span title="Experimental">⚠️</span>
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` changes.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If it's a number, `stopAnimation` will be called automatically after
+given milliseconds.
+
+- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+It's called after given milliseconds if `animated` is a number.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
+- **`setModal`**
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `modal`.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+</details>
+
+### `DialogBackdrop`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
 
 <details><summary>5 state props</summary>
 
@@ -428,47 +475,14 @@ given milliseconds.
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
 
-- **`hide`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `false`
-
-</details>
-
-### `DialogBackdrop`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>4 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
-
-- **`visible`**
+- **`modal`**
   <code>boolean</code>
 
-  Whether it's visible or not.
-
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
-  <code>number | boolean</code>
-
-  If `true`, `animating` will be set to `true` when `visible` changes.
-It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
-
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
-  <code>() =&#62; void</code>
-
-  Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
 
 </details>
 

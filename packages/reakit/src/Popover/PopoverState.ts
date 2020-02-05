@@ -9,7 +9,8 @@ import {
   DialogState,
   DialogActions,
   DialogInitialState,
-  useDialogState
+  useDialogState,
+  DialogStateReturn
 } from "../Dialog/DialogState";
 
 type Placement =
@@ -117,7 +118,9 @@ export type PopoverInitialState = DialogInitialState &
     unstable_boundariesElement?: Popper.Boundary;
   };
 
-export type PopoverStateReturn = PopoverState & PopoverActions;
+export type PopoverStateReturn = DialogStateReturn &
+  PopoverState &
+  PopoverActions;
 
 export function usePopoverState(
   initialState: SealedInitialState<PopoverInitialState> = {}
@@ -134,6 +137,7 @@ export function usePopoverState(
     unstable_preventOverflow: preventOverflow = true,
     unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
+    modal = false,
     ...sealed
   } = useSealedState(initialState);
 
@@ -149,7 +153,7 @@ export function usePopoverState(
   );
   const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
 
-  const dialog = useDialogState(sealed);
+  const dialog = useDialogState({ modal, ...sealed });
 
   const scheduleUpdate = React.useCallback(() => {
     if (popper.current) {

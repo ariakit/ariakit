@@ -8,7 +8,7 @@ import { useCreateElement as defaultUseCreateElement } from "./useCreateElement"
 
 type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
-    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+    unstable_wrap?: (children: React.ReactNode) => React.ReactNode;
   };
 
 type Hook<O> = {

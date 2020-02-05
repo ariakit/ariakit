@@ -6,11 +6,13 @@ test("render", () => {
   const { baseElement } = render(<DialogBackdrop />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
-      <div>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
         <div
           class="hidden"
           hidden=""
-          role="presentation"
           style="display: none;"
         />
       </div>
@@ -22,25 +24,24 @@ test("render visible", () => {
   const { baseElement } = render(<DialogBackdrop visible />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
-      <div>
-        <div
-          role="presentation"
-        />
+      <div />
+      <div
+        class="__reakit-portal"
+      >
+        <div />
       </div>
     </body>
   `);
 });
 
-test("render with id", () => {
-  const { baseElement } = render(<DialogBackdrop id="test" />);
+test("render no modal", () => {
+  const { baseElement } = render(<DialogBackdrop modal={false} />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
         <div
           class="hidden"
           hidden=""
-          id="test"
-          role="presentation"
           style="display: none;"
         />
       </div>
