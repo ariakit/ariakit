@@ -12,21 +12,6 @@ import { blur } from "./blur";
 
 import "./mockClientRects";
 
-// https://twitter.com/diegohaz/status/1176998102139572225
-function shouldBlurRightAfterFocus(element: Element) {
-  const { userAgent } = navigator;
-  const is = (string: string) => userAgent.indexOf(string) !== -1;
-  const isMac = is("Mac");
-  const isSafariOrFirefox = is("Safari") || is("Firefox");
-  const isBlurrableElement =
-    element instanceof HTMLButtonElement ||
-    (element instanceof HTMLInputElement &&
-      ["button", "submit", "reset", "checkbox", "radio"].includes(
-        element.type
-      ));
-  return isMac && isSafariOrFirefox && isBlurrableElement;
-}
-
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {
     return closest(element, "label");
@@ -173,10 +158,6 @@ export function click(element: Element, options?: MouseEventInit) {
     // pointerdown or mousedown.
     if (isFocusable(element)) {
       focus(element);
-      // Safari and Firefox on MacOS dispatch blur right after focus
-      if (shouldBlurRightAfterFocus(element)) {
-        blur(element);
-      }
     } else if (!disabled) {
       // If the element is not focusable, focus the closest focusable parent
       const closestFocusable = getClosestFocusable(element);
