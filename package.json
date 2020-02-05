@@ -101,7 +101,7 @@
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-test-renderer": "16.12.0",
-    "reakit-test-utils": "^0.6.8",
+    "reakit-test-utils": "*",
     "rimraf": "3.0.1",
     "rollup": "1.31.0",
     "rollup-plugin-babel": "4.3.3",
