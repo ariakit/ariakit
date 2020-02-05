@@ -94,7 +94,7 @@ Learn more in [Managing state](/docs/managing-state/).
 Finally, as the **lowest level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [Hidden](/docs/hidden/), which in turn uses [Box](/docs/box/).
 
 ```jsx
-import { useHiddenState, useHidden, useHiddenDisclosure } from "reakit";
+import { Box, useHiddenState, useHidden, useHiddenDisclosure } from "reakit";
 
 function Example() {
   const state = useHiddenState({ visible: true });
@@ -102,8 +102,10 @@ function Example() {
   const disclosureProps = useHiddenDisclosure(state);
   return (
     <>
-      <button {...disclosureProps}>Disclosure</button>
-      <div {...props}>Hidden</div>
+      <Box as="button" {...disclosureProps}>
+        Disclosure
+      </Box>
+      <Box {...props}>Hidden</Box>
     </>
   );
 }

@@ -61,14 +61,16 @@ Props hooks receive two arguments: `options` and `htmlProps`; and return new `ht
 Props will be merged automatically. If there's any conflict between props, the topmost hook (in the case below, `useButton`) will take precedence.
 
 ```jsx
-import { useCheckboxState, useCheckbox, useButton } from "reakit";
+import { Box, useCheckboxState, useCheckbox, useButton } from "reakit";
 
 function Example() {
   const options = useCheckboxState();
   // Composing Checkbox and Button together
   const htmlProps = useCheckbox(options, useButton());
   return (
-    <button {...htmlProps}>{options.state ? "😄 Happy" : "😞 Sad"}</button>
+    <Box as="button" {...htmlProps}>
+      {options.state ? "😄 Happy" : "😞 Sad"}
+    </Box>
   );
 }
 ```

@@ -8,7 +8,7 @@ import { useCreateElement as defaultUseCreateElement } from "./useCreateElement"
 
 type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
-    unstable_wrap?: (children: React.ReactNode) => React.ReactNode;
+    wrapElement?: (element: React.ReactNode) => React.ReactNode;
   };
 
 type Hook<O> = {
@@ -59,7 +59,7 @@ export function createComponent<T extends As, O>({
   ) => {
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
-      const { unstable_wrap, ...elementProps } = useHook(options, {
+      const { wrapElement, ...elementProps } = useHook(options, {
         ref,
         ...htmlProps
       });
@@ -67,8 +67,8 @@ export function createComponent<T extends As, O>({
       const asKeys = as.render ? as.render.__keys : as.__keys;
       const asOptions = asKeys ? splitProps(props, asKeys)[0] : {};
       const element = useCreateElement(as, { ...elementProps, ...asOptions });
-      if (unstable_wrap) {
-        return unstable_wrap(element);
+      if (wrapElement) {
+        return wrapElement(element);
       }
       return element;
     }

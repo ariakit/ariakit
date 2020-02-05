@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { usePipe } from "reakit-utils/usePipe";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
 import { Portal } from "../Portal/Portal";
 import { useDialogState, DialogStateReturn } from "./DialogState";
@@ -26,19 +27,19 @@ export const useDialogBackdrop = createHook<
     return { modal, ...options };
   },
 
-  useProps(options, htmlProps) {
-    const wrapChildren = React.useCallback(
-      (children: React.ReactNode) => {
+  useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => {
         if (options.modal) {
           return (
             <Portal>
               <DialogBackdropContext.Provider value>
-                {children}
+                {element}
               </DialogBackdropContext.Provider>
             </Portal>
           );
         }
-        return children;
+        return element;
       },
       [options.modal]
     );
@@ -46,7 +47,7 @@ export const useDialogBackdrop = createHook<
     return {
       id: undefined,
       role: undefined,
-      unstable_wrap: wrapChildren,
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       "data-dialog-ref": options.baseId,
       ...htmlProps
     };

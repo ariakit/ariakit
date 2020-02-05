@@ -75,12 +75,12 @@ export function useMenuContext(
     ]
   );
 
-  const wrap = React.useCallback(
+  const wrapElement = React.useCallback(
     (c: React.ReactNode) => (
       <MenuContext.Provider value={providerValue}>{c}</MenuContext.Provider>
     ),
     [providerValue]
   );
 
-  return wrap;
+  return wrapElement;
 }

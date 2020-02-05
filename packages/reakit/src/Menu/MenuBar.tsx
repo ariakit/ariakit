@@ -25,10 +25,15 @@ export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
 
   useProps(
     options,
-    { ref: htmlRef, unstable_wrap: htmlWrap, role = "menubar", ...htmlProps }
+    {
+      ref: htmlRef,
+      wrapElement: htmlWrapElement,
+      role = "menubar",
+      ...htmlProps
+    }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const wrap = useMenuContext(ref, role, options);
+    const wrapElement = useMenuContext(ref, role, options);
 
     useShortcuts(ref, options);
 
@@ -36,7 +41,7 @@ export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
       ref: mergeRefs(ref, htmlRef),
       role,
       "aria-orientation": options.orientation,
-      unstable_wrap: usePipe(wrap, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       ...htmlProps
     };
   }
