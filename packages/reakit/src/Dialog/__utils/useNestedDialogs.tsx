@@ -77,9 +77,9 @@ export function useNestedDialogs(
   );
 
   const wrap = React.useCallback(
-    (children: React.ReactNode) => (
+    (element: React.ReactNode) => (
       <DialogContext.Provider value={providerValue}>
-        {children}
+        {element}
       </DialogContext.Provider>
     ),
     [providerValue]

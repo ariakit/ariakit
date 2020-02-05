@@ -16,7 +16,7 @@ export type BoxHTMLProps = React.HTMLAttributes<any> &
      * Function returned by the hook to wrap the element to which html props
      * will be passed.
      */
-    wrapElement?: (children: React.ReactNode) => React.ReactNode;
+    wrapElement?: (element: React.ReactNode) => React.ReactNode;
   };
 
 export type BoxProps = BoxOptions & BoxHTMLProps;

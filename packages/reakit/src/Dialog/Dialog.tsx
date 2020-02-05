@@ -160,11 +160,11 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     );
 
     const wrapElement = React.useCallback(
-      (children: React.ReactNode) => {
+      (element: React.ReactNode) => {
         if (options.modal && !backdrop) {
-          return <Portal>{wrap(children)}</Portal>;
+          return <Portal>{wrap(element)}</Portal>;
         }
-        return wrap(children);
+        return wrap(element);
       },
       [options.modal, backdrop, wrap]
     );

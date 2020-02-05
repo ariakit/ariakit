@@ -81,8 +81,8 @@ test("as other component created with createComponent", () => {
 
 test("wrap", () => {
   const useA = (_: any, h: any) => ({
-    wrapElement: (children: React.ReactNode) => (
-      <div id="wrapper">{children}</div>
+    wrapElement: (element: React.ReactNode) => (
+      <div id="wrapper">{element}</div>
     ),
     ...h
   });

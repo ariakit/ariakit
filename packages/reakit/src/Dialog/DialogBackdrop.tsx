@@ -29,17 +29,17 @@ export const useDialogBackdrop = createHook<
 
   useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
     const wrapElement = React.useCallback(
-      (children: React.ReactNode) => {
+      (element: React.ReactNode) => {
         if (options.modal) {
           return (
             <Portal>
               <DialogBackdropContext.Provider value>
-                {children}
+                {element}
               </DialogBackdropContext.Provider>
             </Portal>
           );
         }
-        return children;
+        return element;
       },
       [options.modal]
     );

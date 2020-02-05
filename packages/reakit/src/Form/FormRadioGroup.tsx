@@ -58,9 +58,9 @@ export const unstable_useFormRadioGroup = createHook<
     ]);
 
     const wrapElement = React.useCallback(
-      (children: React.ReactNode) => (
+      (element: React.ReactNode) => (
         <FormRadioGroupContext.Provider value={providerValue}>
-          {children}
+          {element}
         </FormRadioGroupContext.Provider>
       ),
       [providerValue]

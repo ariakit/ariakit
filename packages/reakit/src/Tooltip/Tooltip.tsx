@@ -46,11 +46,11 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
     }
   ) {
     const wrapElement = React.useCallback(
-      (children: React.ReactNode) => {
+      (element: React.ReactNode) => {
         if (options.unstable_portal) {
-          return <Portal>{children}</Portal>;
+          return <Portal>{element}</Portal>;
         }
-        return children;
+        return element;
       },
       [options.unstable_portal]
     );
