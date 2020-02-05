@@ -39,6 +39,31 @@ function Example() {
 }
 ```
 
+### Default value
+
+To set a default value, you can pass the `value` of the current checked radio to the `state` property on `useRadioState`.
+
+```jsx
+import { useRadioState, Radio, RadioGroup } from "reakit/Radio";
+
+function Example() {
+  const radio = useRadioState({ state: "orange" });
+  return (
+    <RadioGroup {...radio} aria-label="fruits">
+      <label>
+        <Radio {...radio} value="apple" /> apple
+      </label>
+      <label>
+        <Radio {...radio} value="orange" /> orange
+      </label>
+      <label>
+        <Radio {...radio} value="watermelon" /> watermelon
+      </label>
+    </RadioGroup>
+  );
+}
+```
+
 ## Accessibility
 
 - `Radio` has role `radio`.
