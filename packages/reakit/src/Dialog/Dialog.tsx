@@ -102,7 +102,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       warning(
         true,
         "[reakit/Dialog]",
-        "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead (or a derivative state hook, such as `useMenuState`).",
+        "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
         "See https://github.com/reakit/reakit/pull/535"
       );
       setModal(modal);
