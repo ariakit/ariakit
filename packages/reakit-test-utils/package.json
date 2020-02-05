@@ -37,6 +37,6 @@
     "@testing-library/react-hooks": "^3.0.0",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit-utils": "^0.7.0"
+    "reakit-utils": "^0.8.0"
   }
 }
