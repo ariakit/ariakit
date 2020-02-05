@@ -20,6 +20,7 @@ export default {
   "reakit-utils/omit": require("reakit-utils/omit"),
   "reakit-utils/mergeRefs": require("reakit-utils/mergeRefs"),
   "reakit-utils/isPromise": require("reakit-utils/isPromise"),
+  "reakit-utils/isPlainObject": require("reakit-utils/isPlainObject"),
   "reakit-utils/isObject": require("reakit-utils/isObject"),
   "reakit-utils/isInteger": require("reakit-utils/isInteger"),
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),

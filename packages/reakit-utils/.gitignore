@@ -21,6 +21,7 @@
 /omit
 /mergeRefs
 /isPromise
+/isPlainObject
 /isObject
 /isInteger
 /isEmpty
