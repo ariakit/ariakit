@@ -81,7 +81,7 @@ test("as other component created with createComponent", () => {
 
 test("wrap", () => {
   const useA = (_: any, h: any) => ({
-    unstable_wrap: (children: React.ReactNode) => (
+    wrapElement: (children: React.ReactNode) => (
       <div id="wrapper">{children}</div>
     ),
     ...h

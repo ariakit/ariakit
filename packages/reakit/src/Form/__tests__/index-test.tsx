@@ -871,12 +871,12 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
       }
     });
     // @ts-ignore
-    const { unstable_wrap: wrap, ...radioGroup } = useFormRadioGroup(form, {
+    const { wrapElement, ...radioGroup } = useFormRadioGroup(form, {
       name: "input"
     });
     return (
       <Form {...form}>
-        {wrap(
+        {wrapElement(
           <fieldset {...radioGroup}>
             <CustomFormRadio {...form} value="a" />
             <CustomFormRadio {...form} value="b" />

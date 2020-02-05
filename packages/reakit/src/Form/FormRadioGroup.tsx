@@ -48,7 +48,7 @@ export const unstable_useFormRadioGroup = createHook<
     return { name, ...options };
   },
 
-  useProps(options, { unstable_wrap: htmlWrap, ...htmlProps }) {
+  useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
     const id = getInputId(options.name, options.baseId);
     const rover = useRoverState({ baseId: id, loop: true });
     const providerValue = React.useMemo(() => rover, [
@@ -57,7 +57,7 @@ export const unstable_useFormRadioGroup = createHook<
       rover.unstable_pastId
     ]);
 
-    const wrap = React.useCallback(
+    const wrapElement = React.useCallback(
       (children: React.ReactNode) => (
         <FormRadioGroupContext.Provider value={providerValue}>
           {children}
@@ -68,7 +68,7 @@ export const unstable_useFormRadioGroup = createHook<
 
     return {
       role: "radiogroup",
-      unstable_wrap: usePipe(wrap, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       ...htmlProps
     };
   }

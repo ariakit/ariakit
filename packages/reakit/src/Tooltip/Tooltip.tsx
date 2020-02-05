@@ -38,9 +38,14 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
 
   useProps(
     options,
-    { ref: htmlRef, style: htmlStyle, unstable_wrap: htmlWrap, ...htmlProps }
+    {
+      ref: htmlRef,
+      style: htmlStyle,
+      wrapElement: htmlWrapElement,
+      ...htmlProps
+    }
   ) {
-    const wrap = React.useCallback(
+    const wrapElement = React.useCallback(
       (children: React.ReactNode) => {
         if (options.unstable_portal) {
           return <Portal>{children}</Portal>;
@@ -58,7 +63,7 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
         pointerEvents: "none",
         ...htmlStyle
       },
-      unstable_wrap: usePipe(wrap, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       ...htmlProps
     };
   }

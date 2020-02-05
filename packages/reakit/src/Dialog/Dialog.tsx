@@ -124,7 +124,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     {
       ref: htmlRef,
       onKeyDown: htmlOnKeyDown,
-      unstable_wrap: htmlWrap,
+      wrapElement: htmlWrapElement,
       ...htmlProps
     }
   ) {
@@ -159,7 +159,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       [options.hideOnEsc, options.hide]
     );
 
-    const wrapChildren = React.useCallback(
+    const wrapElement = React.useCallback(
       (children: React.ReactNode) => {
         if (options.modal && !backdrop) {
           return <Portal>{wrap(children)}</Portal>;
@@ -174,7 +174,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       role: "dialog",
       tabIndex: -1,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-      unstable_wrap: usePipe(wrapChildren, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       "aria-modal": options.modal ? true : undefined,
       "data-dialog": true,
       ...htmlProps
