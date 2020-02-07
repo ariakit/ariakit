@@ -54,53 +54,50 @@ yarn add reakit-utils
     -   [Parameters](#parameters-10)
 -   [isPromise](#ispromise)
     -   [Parameters](#parameters-11)
--   [mergeRefs](#mergerefs)
+-   [omit](#omit)
     -   [Parameters](#parameters-12)
     -   [Examples](#examples-6)
--   [omit](#omit)
+-   [pick](#pick)
     -   [Parameters](#parameters-13)
     -   [Examples](#examples-7)
--   [pick](#pick)
+-   [removeIndexFromArray](#removeindexfromarray)
     -   [Parameters](#parameters-14)
     -   [Examples](#examples-8)
--   [removeIndexFromArray](#removeindexfromarray)
+-   [removeItemFromArray](#removeitemfromarray)
     -   [Parameters](#parameters-15)
     -   [Examples](#examples-9)
--   [removeItemFromArray](#removeitemfromarray)
+-   [splitProps](#splitprops)
     -   [Parameters](#parameters-16)
     -   [Examples](#examples-10)
--   [splitProps](#splitprops)
-    -   [Parameters](#parameters-17)
-    -   [Examples](#examples-11)
 -   [tabbable](#tabbable)
     -   [isFocusable](#isfocusable)
+        -   [Parameters](#parameters-17)
+        -   [Examples](#examples-11)
+    -   [isTabbable](#istabbable)
         -   [Parameters](#parameters-18)
         -   [Examples](#examples-12)
-    -   [isTabbable](#istabbable)
-        -   [Parameters](#parameters-19)
-        -   [Examples](#examples-13)
     -   [getAllFocusableIn](#getallfocusablein)
-        -   [Parameters](#parameters-20)
+        -   [Parameters](#parameters-19)
     -   [getFirstFocusableIn](#getfirstfocusablein)
-        -   [Parameters](#parameters-21)
+        -   [Parameters](#parameters-20)
     -   [getAllTabbableIn](#getalltabbablein)
-        -   [Parameters](#parameters-22)
+        -   [Parameters](#parameters-21)
     -   [getFirstTabbableIn](#getfirsttabbablein)
-        -   [Parameters](#parameters-23)
+        -   [Parameters](#parameters-22)
     -   [getLastTabbableIn](#getlasttabbablein)
-        -   [Parameters](#parameters-24)
+        -   [Parameters](#parameters-23)
     -   [getNextTabbableIn](#getnexttabbablein)
-        -   [Parameters](#parameters-25)
+        -   [Parameters](#parameters-24)
     -   [getPreviousTabbableIn](#getprevioustabbablein)
-        -   [Parameters](#parameters-26)
+        -   [Parameters](#parameters-25)
     -   [getClosestFocusable](#getclosestfocusable)
-        -   [Parameters](#parameters-27)
+        -   [Parameters](#parameters-26)
     -   [ensureFocus](#ensurefocus)
-        -   [Parameters](#parameters-28)
-        -   [Examples](#examples-14)
+        -   [Parameters](#parameters-27)
+        -   [Examples](#examples-13)
 -   [toArray](#toarray)
-    -   [Parameters](#parameters-29)
-    -   [Examples](#examples-15)
+    -   [Parameters](#parameters-28)
+    -   [Examples](#examples-14)
 -   [types](#types)
     -   [RenderProp](#renderprop)
     -   [As](#as)
@@ -113,6 +110,9 @@ yarn add reakit-utils
     -   [ArrayValue](#arrayvalue)
     -   [AnyFunction](#anyfunction)
 -   [useAllCallbacks](#useallcallbacks)
+    -   [Parameters](#parameters-29)
+    -   [Examples](#examples-15)
+-   [useForkRef](#useforkref)
     -   [Parameters](#parameters-30)
     -   [Examples](#examples-16)
 -   [useIsomorphicEffect](#useisomorphiceffect)
@@ -313,29 +313,6 @@ Checks whether `arg` is a promise or not.
 -   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### mergeRefs
-
-Merges multiple React ref props into a single value that can be passed to
-a component.
-
-#### Parameters
-
--   `refs` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(React.Ref&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
-
-#### Examples
-
-```javascript
-import React from "react";
-import { mergeRefs } from "reakit-utils";
-
-const Component = React.forwardRef((props, ref) => {
-  const internalRef = React.useRef();
-  return <div ref={mergeRefs(internalRef, ref)} {...props} />;
-});
-```
-
-Returns **(React.Ref&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
 
 ### omit
 
@@ -715,6 +692,28 @@ function Component(props) {
 ```
 
 Returns **AnyFunction** 
+
+### useForkRef
+
+Merges up to two React Refs into a single memoized function React Ref so you
+can pass it to an element.
+
+#### Parameters
+
+-   `refA` **React.Ref&lt;any>?** 
+-   `refB` **React.Ref&lt;any>?** 
+
+#### Examples
+
+```javascript
+import React from "react";
+import { useForkRef } from "reakit-utils";
+
+const Component = React.forwardRef((props, ref) => {
+  const internalRef = React.useRef();
+  return <div {...props} ref={useForkRef(internalRef, ref)} />;
+});
+```
 
 ### useIsomorphicEffect
 

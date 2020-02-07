@@ -10,6 +10,7 @@
 /useLiveRef
 /useIsomorphicEffect
 /useId
+/useForkRef
 /useAllCallbacks
 /types
 /toArray
@@ -19,7 +20,6 @@
 /removeIndexFromArray
 /pick
 /omit
-/mergeRefs
 /isPromise
 /isPlainObject
 /isObject
