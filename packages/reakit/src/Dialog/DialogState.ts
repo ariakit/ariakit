@@ -4,14 +4,14 @@ import {
   useSealedState
 } from "reakit-utils/useSealedState";
 import {
-  useHiddenState,
-  HiddenState,
-  HiddenActions,
-  HiddenInitialState,
-  HiddenStateReturn
-} from "../Hidden/HiddenState";
+  useDisclosureState,
+  DisclosureState,
+  DisclosureActions,
+  DisclosureInitialState,
+  DisclosureStateReturn
+} from "../Disclosure/DisclosureState";
 
-export type DialogState = HiddenState & {
+export type DialogState = DisclosureState & {
   /**
    * Toggles Dialog's `modal` state.
    *   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
@@ -22,17 +22,17 @@ export type DialogState = HiddenState & {
   modal: boolean;
 };
 
-export type DialogActions = HiddenActions & {
+export type DialogActions = DisclosureActions & {
   /**
    * Sets `modal`.
    */
   setModal: React.Dispatch<React.SetStateAction<DialogState["modal"]>>;
 };
 
-export type DialogInitialState = HiddenInitialState &
+export type DialogInitialState = DisclosureInitialState &
   Partial<Pick<DialogState, "modal">>;
 
-export type DialogStateReturn = HiddenStateReturn &
+export type DialogStateReturn = DisclosureStateReturn &
   DialogState &
   DialogActions & {
     /**
@@ -49,7 +49,7 @@ export function useDialogState(
   );
 
   const [modal, setModal] = React.useState(initialModal);
-  const hidden = useHiddenState(sealed);
+  const hidden = useDisclosureState(sealed);
 
   return {
     modal,
@@ -60,7 +60,7 @@ export function useDialogState(
 }
 
 const keys: Array<keyof DialogStateReturn> = [
-  ...useHiddenState.__keys,
+  ...useDisclosureState.__keys,
   "modal",
   "setModal",
   "unstable_modal"

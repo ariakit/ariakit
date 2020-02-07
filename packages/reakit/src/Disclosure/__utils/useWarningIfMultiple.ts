@@ -1,8 +1,8 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
-import { HiddenOptions } from "../Hidden";
+import { DisclosureContentOptions } from "../DisclosureContent";
 
-export function useWarningIfMultiple(options: HiddenOptions) {
+export function useWarningIfMultiple(options: DisclosureContentOptions) {
   if (process.env.NODE_ENV === "production") return;
 
   React.useEffect(() => {
@@ -10,10 +10,10 @@ export function useWarningIfMultiple(options: HiddenOptions) {
 
     warning(
       document.querySelectorAll(`#${options.baseId}`).length > 1,
-      "[reakit/Hidden]",
-      "You're reusing the same `useModuleState` for multiple components (Hidden, Dialog, Popover, Menu etc.).",
+      "[reakit/DisclosureContent]",
+      "You're reusing the same `useModuleState` for multiple components (DisclosureContent, Dialog, Popover, Menu etc.).",
       "This is not allowed! If you want to use multiple components, make sure you're using different states.",
-      "See https://reakit.io/docs/hidden/#multiple-components"
+      "See https://reakit.io/docs/disclosure/#multiple-components"
     );
   }, [options.baseId]);
 }

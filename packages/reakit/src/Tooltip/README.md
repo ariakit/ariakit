@@ -129,7 +129,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tooltip` uses [Hidden](/docs/hidden/).
+- `Tooltip` uses [DisclosureContent](/docs/disclosure/).
 - `TooltipArrow` uses [PopoverArrow](/docs/popover/).
 - `TooltipReference` uses [Box](/docs/box/).
 

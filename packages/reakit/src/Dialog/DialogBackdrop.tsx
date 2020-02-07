@@ -2,15 +2,19 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
-import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
+import {
+  DisclosureContentOptions,
+  DisclosureContentHTMLProps,
+  useDisclosureContent
+} from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 
-export type DialogBackdropOptions = HiddenOptions &
+export type DialogBackdropOptions = DisclosureContentOptions &
   Pick<Partial<DialogStateReturn>, "modal">;
 
-export type DialogBackdropHTMLProps = HiddenHTMLProps;
+export type DialogBackdropHTMLProps = DisclosureContentHTMLProps;
 
 export type DialogBackdropProps = DialogBackdropOptions &
   DialogBackdropHTMLProps;
@@ -20,7 +24,7 @@ export const useDialogBackdrop = createHook<
   DialogBackdropHTMLProps
 >({
   name: "DialogBackdrop",
-  compose: useHidden,
+  compose: useDisclosureContent,
   useState: useDialogState,
 
   useOptions({ modal = true, ...options }) {

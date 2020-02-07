@@ -1,7 +1,7 @@
 import * as React from "react";
-import { HiddenOptions } from "../Hidden";
+import { DisclosureContentOptions } from "../DisclosureContent";
 
-export function useSetIsMounted(options: HiddenOptions) {
+export function useSetIsMounted(options: DisclosureContentOptions) {
   if (process.env.NODE_ENV === "production") return;
 
   React.useEffect(() => {

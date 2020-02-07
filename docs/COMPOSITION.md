@@ -81,18 +81,18 @@ State hooks are composable as well. For example, [`useTabState`](/docs/tab/) use
 
 ```jsx
 import React from "react";
-import { useHiddenState, Hidden, HiddenDisclosure } from "reakit";
+import { useDisclosureState, DisclosureContent, Disclosure } from "reakit";
 
-function useDelayedHiddenState({ delay, ...initialState } = {}) {
-  const hidden = useHiddenState(initialState);
+function useDelayedDisclosureState({ delay, ...initialState } = {}) {
+  const disclosure = useDisclosureState(initialState);
   const [transitioning, setTransitioning] = React.useState(false);
   return {
-    ...hidden,
+    ...disclosure,
     transitioning,
     toggle: () => {
       setTransitioning(true);
       setTimeout(() => {
-        hidden.toggle();
+        disclosure.toggle();
         setTransitioning(false);
       }, delay);
     }
@@ -100,17 +100,19 @@ function useDelayedHiddenState({ delay, ...initialState } = {}) {
 }
 
 function Example() {
-  const { transitioning, ...hidden } = useDelayedHiddenState({ delay: 500 });
+  const { transitioning, ...disclosure } = useDelayedDisclosureState({
+    delay: 500
+  });
   return (
     <>
-      <HiddenDisclosure {...hidden}>
+      <Disclosure {...disclosure}>
         {transitioning
           ? "Please wait..."
-          : hidden.visible
+          : disclosure.visible
           ? "Hide with delay"
           : "Show with delay"}
-      </HiddenDisclosure>
-      <Hidden {...hidden}>Hidden</Hidden>
+      </Disclosure>
+      <DisclosureContent {...disclosure}>Content</DisclosureContent>
     </>
   );
 }

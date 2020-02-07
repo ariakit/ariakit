@@ -1,10 +1,14 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
+import {
+  DisclosureContentOptions,
+  DisclosureContentHTMLProps,
+  useDisclosureContent
+} from "../Disclosure/DisclosureContent";
 import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
-export type TabPanelOptions = HiddenOptions &
+export type TabPanelOptions = DisclosureContentOptions &
   Pick<TabStateReturn, "baseId" | "selectedId"> & {
     /**
      * Tab's `stopId`.
@@ -12,13 +16,13 @@ export type TabPanelOptions = HiddenOptions &
     stopId: string;
   };
 
-export type TabPanelHTMLProps = HiddenHTMLProps;
+export type TabPanelHTMLProps = DisclosureContentHTMLProps;
 
 export type TabPanelProps = TabPanelOptions & TabPanelHTMLProps;
 
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   name: "TabPanel",
-  compose: useHidden,
+  compose: useDisclosureContent,
   useState: useTabState,
   keys: ["stopId"],
 
