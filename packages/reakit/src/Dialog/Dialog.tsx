@@ -3,7 +3,7 @@ import { warning } from "reakit-utils/warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { usePipe } from "reakit-utils/usePipe";
 import {
@@ -174,7 +174,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(dialog, htmlRef),
+      ref: useForkRef(dialog, htmlRef),
       role: "dialog",
       tabIndex: -1,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),

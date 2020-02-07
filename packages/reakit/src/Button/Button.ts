@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { isButton } from "reakit-utils/isButton";
 import {
   TabbableOptions,
@@ -39,7 +39,7 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
     }, []);
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       role,
       type,
       ...htmlProps

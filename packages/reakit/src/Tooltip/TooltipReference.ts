@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
@@ -34,7 +34,7 @@ export const useTooltipReference = createHook<
     }
   ) {
     return {
-      ref: mergeRefs(options.unstable_referenceRef, htmlRef),
+      ref: useForkRef(options.unstable_referenceRef, htmlRef),
       tabIndex: 0,
       onFocus: useAllCallbacks(options.show, htmlOnFocus),
       onBlur: useAllCallbacks(options.hide, htmlOnBlur),

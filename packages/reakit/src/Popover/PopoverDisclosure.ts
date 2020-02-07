@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import {
   DialogDisclosureOptions,
   DialogDisclosureHTMLProps,
@@ -26,7 +26,7 @@ export const usePopoverDisclosure = createHook<
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     return {
-      ref: mergeRefs(options.unstable_referenceRef, htmlRef),
+      ref: useForkRef(options.unstable_referenceRef, htmlRef),
       ...htmlProps
     };
   }

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
@@ -186,7 +186,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       disabled: trulyDisabled,
       tabIndex: trulyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,

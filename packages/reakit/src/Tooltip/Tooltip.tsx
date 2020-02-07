@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
@@ -60,7 +60,7 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(options.unstable_popoverRef, htmlRef),
+      ref: useForkRef(options.unstable_popoverRef, htmlRef),
       role: "tooltip",
       style: {
         ...options.unstable_popoverStyles,

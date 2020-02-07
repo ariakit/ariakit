@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverDisclosureOptions,
@@ -141,7 +141,7 @@ export const useMenuDisclosure = createHook<
     ]);
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       "aria-haspopup": "menu",
       onClick: useAllCallbacks(onClick, htmlOnClick),
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),

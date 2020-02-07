@@ -4,7 +4,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuContext } from "./__utils/MenuContext";
@@ -38,7 +38,7 @@ export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
     useShortcuts(ref, options);
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       role,
       "aria-orientation": options.orientation,
       wrapElement: usePipe(wrapElement, htmlWrapElement),

@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { removeIndexFromArray } from "reakit-utils/removeIndexFromArray";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   TabbableOptions,
@@ -123,7 +123,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       checked,
       "aria-checked": options.state === "indeterminate" ? "mixed" : checked,
       value: options.value,

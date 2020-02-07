@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
@@ -42,7 +42,7 @@ export const usePopoverArrow = createHook<
     };
     const { unstable_arrowStyles: arrowStyles } = options;
     return {
-      ref: mergeRefs(options.unstable_arrowRef, htmlRef),
+      ref: useForkRef(options.unstable_arrowRef, htmlRef),
       style: {
         ...arrowStyles,
         top: arrowStyles ? arrowStyles.top || undefined : undefined,
