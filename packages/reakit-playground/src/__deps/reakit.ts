@@ -49,6 +49,7 @@ export default {
   "reakit/Menu/MenuItem": require("reakit/Menu/MenuItem"),
   "reakit/Menu/MenuGroup": require("reakit/Menu/MenuGroup"),
   "reakit/Menu/MenuDisclosure": require("reakit/Menu/MenuDisclosure"),
+  "reakit/Menu/MenuButton": require("reakit/Menu/MenuButton"),
   "reakit/Menu/MenuBarState": require("reakit/Menu/MenuBarState"),
   "reakit/Menu/MenuBar": require("reakit/Menu/MenuBar"),
   "reakit/Menu/MenuArrow": require("reakit/Menu/MenuArrow"),

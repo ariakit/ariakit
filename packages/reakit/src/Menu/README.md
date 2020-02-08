@@ -4,7 +4,7 @@ path: /docs/menu/
 
 # Menu
 
-Accessible `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuDisclosure` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
+Accessible `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuButton` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
 
 <carbon-ad></carbon-ad>
 
@@ -23,7 +23,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -31,7 +31,7 @@ function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <MenuButton {...menu}>Preferences</MenuButton>
       <Menu {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} disabled>
@@ -56,7 +56,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -65,7 +65,7 @@ function Example() {
 
   return (
     <>
-      <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+      <MenuButton {...menu}>Menu</MenuButton>
       <Menu {...menu} aria-label="Example">
         <MenuItem
           {...menu}
@@ -90,13 +90,13 @@ function Example() {
 When opening `Menu`, focus is usually set on the first `MenuItem`. You can set the initial focus to be the menu container itself by just passing `tabIndex={0}` to it. This will be ignored if the menu is opened by using arrow keys.
 
 ```jsx
-import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+import { useMenuState, Menu, MenuItem, MenuButton } from "reakit/Menu";
 
 function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <MenuButton {...menu}>Preferences</MenuButton>
       <Menu {...menu} tabIndex={0} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu}>Extensions</MenuItem>
@@ -112,7 +112,7 @@ Alternatively, you can define another element to get the initial focus with Reac
 ```jsx
 import React from "react";
 import { Button } from "reakit/Button";
-import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+import { useMenuState, Menu, MenuItem, MenuButton } from "reakit/Menu";
 
 function Example() {
   const menu = useMenuState();
@@ -126,7 +126,7 @@ function Example() {
 
   return (
     <>
-      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <MenuButton {...menu}>Preferences</MenuButton>
       <Menu {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} ref={ref}>
@@ -149,7 +149,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -157,9 +157,9 @@ const PreferencesMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         Preferences
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} disabled>
@@ -176,7 +176,7 @@ function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Code</MenuDisclosure>
+      <MenuButton {...menu}>Code</MenuButton>
       <Menu {...menu} aria-label="Code">
         <MenuItem {...menu}>About Visual Studio Code</MenuItem>
         <MenuItem {...menu}>Check for Updates...</MenuItem>
@@ -205,7 +205,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -228,7 +228,7 @@ function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Code</MenuDisclosure>
+      <MenuButton {...menu}>Code</MenuButton>
       <Menu {...menu} aria-label="Code">
         <MenuItem {...menu}>About Visual Studio Code</MenuItem>
         <MenuItem {...menu} as={UpdatesDialog} />
@@ -250,7 +250,7 @@ import {
   useMenuState,
   useMenuBarState,
   Menu,
-  MenuDisclosure,
+  MenuButton,
   MenuItem,
   MenuSeparator,
   MenuBar,
@@ -264,9 +264,9 @@ const OpenRecentMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         Open Recent
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="Open Recent">
         <MenuItem {...menu}>Reopen Closed Editor</MenuItem>
         <MenuSeparator {...menu} />
@@ -283,9 +283,9 @@ const FileMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         File
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="File">
         <MenuItem {...menu}>New File</MenuItem>
         <MenuItem {...menu}>New Window</MenuItem>
@@ -303,9 +303,9 @@ const EditMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         Edit
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="Edit">
         <MenuItem {...menu}>Undo</MenuItem>
         <MenuItem {...menu}>Redo</MenuItem>
@@ -323,9 +323,9 @@ const ViewMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         View
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="View">
         <MenuGroup {...menu}>
           <MenuItemRadio {...menu} name="windows" value="explorer">
@@ -378,16 +378,16 @@ import {
   useMenuState,
   Menu as BaseMenu,
   MenuItem,
-  MenuDisclosure
+  MenuButton
 } from "reakit/Menu";
 
 function Menu({ disclosure, items, ...props }) {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu} {...disclosure.props}>
+      <MenuButton {...menu} {...disclosure.props}>
         {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
-      </MenuDisclosure>
+      </MenuButton>
       <BaseMenu {...menu} {...props}>
         {items.map((item, i) => (
           <MenuItem {...menu} {...item.props} key={i}>
@@ -417,12 +417,12 @@ function Example() {
 ## Accessibility
 
 - `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
-- `MenuDisclosure` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
+- `MenuButton` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
 - `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 - `MenuItemCheckbox` has role `menuitemcheckbox`.
 - `MenuItemRadio` has role `menuitemradio`.
-- Pressing <kbd>Enter</kbd> on `MenuDisclosure` opens its menu (or submenu) and places focus on its first item.
+- Pressing <kbd>Enter</kbd> on `MenuButton` opens its menu (or submenu) and places focus on its first item.
 - Pressing <kbd>Space</kbd> on `MenuItemCheckbox` changes the state without closing `Menu`.
 - Pressing <kbd>Space</kbd> on a `MenuItemRadio` that is not checked, without closing `Menu`, checks the focused `MenuItemRadio` and unchecks any other checked `MenuItemRadio` in the same group.
 - Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `MenuBar` whose label begins with that printable character.
@@ -432,7 +432,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 ## Composition
 
 - `Menu` uses `MenuBar` and [Popover](/docs/popover/).
-- `MenuDisclosure` uses [PopoverDisclosure](/docs/popover/).
+- `MenuButton` uses [PopoverDisclosure](/docs/popover/).
 - `MenuGroup` uses [Box](/docs/box/).
 - `MenuItem` uses [Rover](/docs/rover/).
 - `MenuItemCheckbox` uses [Checkbox](/docs/checkbox/).
@@ -747,6 +747,71 @@ It's called after given milliseconds if `animated` is a number.
   <code>() =&#62; void</code>
 
   Moves focus to the previous element.
+
+</details>
+
+### `MenuButton`
+
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+<details><summary>9 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`toggle`**
+  <code>() =&#62; void</code>
+
+  Toggles the `visible` state
+
+- **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement | null&#62;</code>
+
+  The reference element.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first element.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.
+
+- **`show`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `true`
 
 </details>
 

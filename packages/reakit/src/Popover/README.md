@@ -197,7 +197,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Popover` uses [Dialog](/docs/dialog/), and is used by [Menu](/docs/menu/).
 - `PopoverArrow` uses [Box](/docs/box/), and is used by [TooltipArrow](/docs/tooltip/).
 - `PopoverBackdrop` uses [DialogBackdrop](/docs/dialog/).
-- `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog/), and is used by [MenuDisclosure](/docs/menu/).
+- `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog/), and is used by [MenuButton](/docs/menu/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
