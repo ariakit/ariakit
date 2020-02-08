@@ -26,12 +26,8 @@ export type TooltipStateReturn = Omit<
 export function useTooltipState(
   initialState: SealedInitialState<TooltipInitialState> = {}
 ): TooltipStateReturn {
-  const {
-    placement = "top",
-    unstable_boundariesElement = "window",
-    ...sealed
-  } = useSealedState(initialState);
-  return usePopoverState({ ...sealed, placement, unstable_boundariesElement });
+  const { placement = "top", ...sealed } = useSealedState(initialState);
+  return usePopoverState({ ...sealed, placement });
 }
 
 const keys: Array<keyof PopoverStateReturn | keyof TooltipStateReturn> = [

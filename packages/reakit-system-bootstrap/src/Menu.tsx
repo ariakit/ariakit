@@ -103,28 +103,22 @@ export function useMenuOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
   ...options
 }: BootstrapMenuOptions): BootstrapMenuOptions {
-  const parentMenuOrientation = React.useContext(OrientationContext);
+  const parentOrientation = React.useContext(OrientationContext);
+  const unstable_system = { palette, fill, ...system };
+  const transform = options.unstable_popoverStyles?.transform || "";
 
-  if (
-    parentMenuOrientation &&
-    parentMenuOrientation !== "horizontal" &&
-    options.orientation === "vertical"
-  ) {
+  if (parentOrientation === "vertical" && options.orientation === "vertical") {
     return {
-      unstable_system: { palette, fill, ...system },
       ...options,
+      unstable_system,
       unstable_popoverStyles: {
         ...options.unstable_popoverStyles,
-        transform: `${options.unstable_popoverStyles?.transform ||
-          ""} translate3d(0px, -0.3em, 0px)`
+        transform: `${transform} translate3d(0px, -0.3em, 0px)`
       }
     };
   }
 
-  return {
-    unstable_system: { palette, fill, ...system },
-    ...options
-  };
+  return { ...options, unstable_system };
 }
 
 export function useMenuProps(

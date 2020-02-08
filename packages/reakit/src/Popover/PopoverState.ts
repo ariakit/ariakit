@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createPopper, Instance as Popper, Boundary } from "@popperjs/core";
+import { createPopper, Instance } from "@popperjs/core";
 import {
   SealedInitialState,
   useSealedState
@@ -91,7 +91,7 @@ export type PopoverInitialState = DialogInitialState &
     /**
      * Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
      */
-    unstable_offset?: readonly [number | string, number | string];
+    unstable_offset?: [number | string, number | string];
     /**
      * Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
      */
@@ -100,10 +100,6 @@ export type PopoverInitialState = DialogInitialState &
      * Prevents popover from being positioned outside the boundary.
      */
     unstable_preventOverflow?: boolean;
-    /**
-     * Boundaries element used by `preventOverflow`.
-     */
-    unstable_boundariesElement?: Boundary;
   };
 
 export type PopoverStateReturn = DialogStateReturn &
@@ -117,24 +113,21 @@ export function usePopoverState(
     gutter = 12,
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
-    unstable_offset: offset = [
-      0,
-      gutter
-    ] as PopoverInitialState["unstable_offset"],
+    unstable_offset: sealedOffset,
     unstable_preventOverflow: preventOverflow = true,
-    unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
     modal = false,
     ...sealed
   } = useSealedState(initialState);
 
-  const popper = React.useRef<Popper | null>(null);
+  const popper = React.useRef<Instance | null>(null);
   const referenceRef = React.useRef<HTMLElement>(null);
   const popoverRef = React.useRef<HTMLElement>(null);
   const arrowRef = React.useRef<HTMLElement>(null);
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);
+  const [offset] = React.useState(sealedOffset || [0, gutter]);
   const [popoverStyles, setPopoverStyles] = React.useState<React.CSSProperties>(
     {}
   );
@@ -153,43 +146,54 @@ export function usePopoverState(
   useIsomorphicEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = createPopper(referenceRef.current, popoverRef.current, {
+        // https://popper.js.org/docs/v2/constructors/#options
         placement: originalPlacement,
         strategy: fixed ? "fixed" : "absolute",
         modifiers: [
           {
+            // https://popper.js.org/docs/v2/modifiers/event-listeners/
             name: "eventListeners",
             enabled: dialog.visible
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/compute-styles/
             name: "computeStyles",
             options: {
               adaptive: !sealed.unstable_animated
             }
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/apply-styles/
             name: "applyStyles",
             enabled: false
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/flip/
             name: "flip",
             enabled: flip,
-            options: { padding: 16 }
+            options: { padding: 8 }
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/offset/
             name: "offset",
             options: { offset }
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
             name: "preventOverflow",
             enabled: preventOverflow,
-            options: { boundariesElement, padding: 5 }
+            options: {
+              tetherOffset: () => arrowRef.current?.clientWidth || 0
+            }
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/arrow/
             name: "arrow",
             enabled: Boolean(arrowRef.current),
             options: { element: arrowRef.current }
           },
           {
+            // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
             name: "updateState",
             phase: "write",
             enabled: true,
@@ -209,13 +213,13 @@ export function usePopoverState(
       }
     };
   }, [
-    dialog.visible,
     originalPlacement,
+    fixed,
+    dialog.visible,
+    sealed.unstable_animated,
     flip,
-    gutter,
-    preventOverflow,
-    boundariesElement,
-    fixed
+    offset,
+    preventOverflow
   ]);
 
   // Ensure that the popover will be correctly positioned with an additional
@@ -236,7 +240,7 @@ export function usePopoverState(
     unstable_update: update,
     unstable_originalPlacement: originalPlacement,
     placement,
-    place: React.useCallback(place, [])
+    place
   };
 }
 
