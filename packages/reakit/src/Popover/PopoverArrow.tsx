@@ -44,19 +44,22 @@ export const usePopoverArrow = createHook<
     return {
       ref: useForkRef(options.unstable_arrowRef, htmlRef),
       style: {
-        ...arrowStyles,
-        top: arrowStyles ? arrowStyles.top || undefined : undefined,
         position: "absolute",
+        ...arrowStyles,
         fontSize: options.size,
         width: "1em",
         height: "1em",
         pointerEvents: "none",
-        transform: transformMap[placement as keyof typeof transformMap],
         [placement]: "100%",
         ...htmlStyle
       },
       children: (
-        <svg viewBox="0 0 30 30">
+        <svg
+          viewBox="0 0 30 30"
+          style={{
+            transform: `${transformMap[placement as keyof typeof transformMap]}`
+          }}
+        >
           <path
             className="stroke"
             d="M23.7,27.1L17,19.9C16.5,19.3,15.8,19,15,19s-1.6,0.3-2.1,0.9l-6.6,7.2C5.3,28.1,3.4,29,2,29h26
