@@ -8,9 +8,10 @@ test("render", () => {
     <body>
       <div>
         <div
-          style="top: 100%; position: absolute; font-size: 30px; width: 1em; height: 1em; pointer-events: none; transform: rotateZ(180deg);"
+          style="font-size: 30px; width: 1em; height: 1em; pointer-events: none; top: 100%;"
         >
           <svg
+            style="transform: rotateZ(180deg);"
             viewBox="0 0 30 30"
           >
             <path
