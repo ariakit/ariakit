@@ -309,9 +309,9 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Dialog` uses [DisclosureContent](/docs/disclosure/), and is used by [Popover](/docs/popover/) and its derivatives.
+- `Dialog` uses [DisclosureRegion](/docs/disclosure/), and is used by [Popover](/docs/popover/) and its derivatives.
 - `DialogDisclosure` uses [Disclosure](/docs/disclosure/), and is used by [PopoverDisclosure](/docs/popover/) and its derivatives.
-- `DialogBackdrop` uses [DisclosureContent](/docs/disclosure/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
+- `DialogBackdrop` uses [DisclosureRegion](/docs/disclosure/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

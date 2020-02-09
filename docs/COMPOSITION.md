@@ -81,7 +81,7 @@ State hooks are composable as well. For example, [`useTabState`](/docs/tab/) use
 
 ```jsx
 import React from "react";
-import { useDisclosureState, DisclosureContent, Disclosure } from "reakit";
+import { useDisclosureState, DisclosureRegion, Disclosure } from "reakit";
 
 function useDelayedDisclosureState({ delay, ...initialState } = {}) {
   const disclosure = useDisclosureState(initialState);
@@ -112,7 +112,7 @@ function Example() {
           ? "Hide with delay"
           : "Show with delay"}
       </Disclosure>
-      <DisclosureContent {...disclosure}>Content</DisclosureContent>
+      <DisclosureRegion {...disclosure}>Content</DisclosureRegion>
     </>
   );
 }
