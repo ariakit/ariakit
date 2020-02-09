@@ -57,14 +57,14 @@ You can render [Menu](/docs/menu/) within a `Toolbar` using the same techinique 
 ```jsx
 import React from "react";
 import { useToolbarState, Toolbar, ToolbarItem } from "reakit/Toolbar";
-import { useMenuState, MenuDisclosure, Menu, MenuItem } from "reakit/Menu";
+import { useMenuState, MenuButton, Menu, MenuItem } from "reakit/Menu";
 import { Button } from "reakit/Button";
 
 const MoreItems = React.forwardRef((props, ref) => {
   const menu = useMenuState({ placement: "bottom-end" });
   return (
     <>
-      <MenuDisclosure {...menu} {...props} ref={ref} aria-label="More items" />
+      <MenuButton {...menu} {...props} ref={ref} aria-label="More items" />
       <Menu {...menu} aria-label="More items">
         <MenuItem {...menu}>Item 3</MenuItem>
         <MenuItem {...menu}>Item 4</MenuItem>

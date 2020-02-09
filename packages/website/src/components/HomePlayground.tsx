@@ -61,16 +61,16 @@ const TabsModal = React.forwardRef((props, ref) => {
 `.trim();
 
 const menuCode = `
-import { useMenuState, Menu, MenuDisclosure, MenuItem } from "reakit";
+import { useMenuState, Menu, MenuButton, MenuItem } from "reakit";
 import TabsModal from "./TabsModal";
 
 const TabsModalMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu} {...props} ref={ref}>
+      <MenuButton {...menu} {...props} ref={ref}>
         Menu
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu}>
         <MenuItem {...menu}>Item 1</MenuItem>
         <MenuItem {...menu}>Item 2</MenuItem>
@@ -82,16 +82,16 @@ const TabsModalMenu = React.forwardRef((props, ref) => {
 `.trim();
 
 const submenuCode = `
-import { useMenuState, Menu, MenuDisclosure, MenuItem } from "reakit";
+import { useMenuState, Menu, MenuButton, MenuItem } from "reakit";
 import TabsModalMenu from "./TabsModalMenu";
 
 const TabsModalMenuMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu} {...props} ref={ref}>
+      <MenuButton {...menu} {...props} ref={ref}>
         Menu
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu}>
         <MenuItem {...menu}>Item 1</MenuItem>
         <MenuItem {...menu}>Item 2</MenuItem>

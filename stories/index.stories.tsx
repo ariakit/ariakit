@@ -6,7 +6,7 @@ import {
   useDialogState,
   DialogDisclosure,
   useMenuState,
-  MenuDisclosure,
+  MenuButton,
   Menu,
   MenuItem,
   Tooltip,
@@ -41,7 +41,7 @@ storiesOf("Menu", module).add("Animated menu", () => {
     const menu = useMenuState({ unstable_animated: true });
     return (
       <>
-        <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+        <MenuButton {...menu}>Menu</MenuButton>
         <Menu
           {...menu}
           aria-label="Menu"
@@ -80,7 +80,7 @@ storiesOf("Menu", module)
 
       return (
         <Provider unstable_system={system}>
-          <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+          <MenuButton {...menu}>Menu</MenuButton>
           <Menu
             {...menu}
             as={animated.div}
@@ -127,7 +127,7 @@ storiesOf("Menu", module)
       const menu = useMenuState();
       return (
         <Provider unstable_system={system}>
-          <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+          <MenuButton {...menu}>Menu</MenuButton>
           <Menu {...menu} aria-label="Menu">
             <MenuItem {...menu}>a</MenuItem>
             <MenuItem {...menu}>b</MenuItem>

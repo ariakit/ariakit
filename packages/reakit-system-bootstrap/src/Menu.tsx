@@ -1,10 +1,7 @@
 import * as React from "react";
 import { css, cx } from "emotion";
 import { MenuHTMLProps, MenuOptions } from "reakit/Menu/Menu";
-import {
-  MenuDisclosureHTMLProps,
-  MenuDisclosureOptions
-} from "reakit/Menu/MenuDisclosure";
+import { MenuButtonHTMLProps, MenuButtonOptions } from "reakit/Menu/MenuButton";
 import {
   MenuItemCheckboxHTMLProps,
   MenuItemCheckboxOptions
@@ -120,14 +117,14 @@ export function useMenuProps(
   return { ...htmlProps, className: cx(menu, htmlProps.className) };
 }
 
-export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
-  MenuDisclosureOptions &
+export type BootstrapMenuButtonOptions = BootstrapBoxOptions &
+  MenuButtonOptions &
   Pick<Partial<MenuStateReturn>, "unstable_originalPlacement">;
 
-export function useMenuDisclosureProps(
-  options: BootstrapMenuDisclosureOptions,
-  { children, ...htmlProps }: MenuDisclosureHTMLProps = {}
-): MenuDisclosureHTMLProps {
+export function useMenuButtonProps(
+  options: BootstrapMenuButtonOptions,
+  { children, ...htmlProps }: MenuButtonHTMLProps = {}
+): MenuButtonHTMLProps {
   const placement = options.unstable_originalPlacement || options.placement;
   const dir = placement
     ? (placement.split("-")[0] as "top" | "bottom" | "right" | "left")
