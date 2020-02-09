@@ -32,7 +32,7 @@ jobs:
     - name: Lint
       run: yarn lint
 
-    - name: Type Check
+    - name: Type check
       run: yarn type-check
 
     - name: Test
