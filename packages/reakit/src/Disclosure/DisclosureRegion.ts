@@ -12,7 +12,7 @@ import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
 import { useWarningIfMultiple } from "./__utils/useWarningIfMultiple";
 import { useSetIsMounted } from "./__utils/useSetIsMounted";
 
-export type DisclosureContentOptions = unstable_IdGroupOptions &
+export type DisclosureRegionOptions = unstable_IdGroupOptions &
   Pick<
     Partial<DisclosureStateReturn>,
     | "visible"
@@ -22,16 +22,16 @@ export type DisclosureContentOptions = unstable_IdGroupOptions &
     | "unstable_setIsMounted"
   >;
 
-export type DisclosureContentHTMLProps = unstable_IdGroupHTMLProps;
+export type DisclosureRegionHTMLProps = unstable_IdGroupHTMLProps;
 
-export type DisclosureContentProps = DisclosureContentOptions &
-  DisclosureContentHTMLProps;
+export type DisclosureRegionProps = DisclosureRegionOptions &
+  DisclosureRegionHTMLProps;
 
-export const useDisclosureContent = createHook<
-  DisclosureContentOptions,
-  DisclosureContentHTMLProps
+export const useDisclosureRegion = createHook<
+  DisclosureRegionOptions,
+  DisclosureRegionHTMLProps
 >({
-  name: "DisclosureContent",
+  name: "DisclosureRegion",
   compose: unstable_useIdGroup,
   useState: useDisclosureState,
 
@@ -80,7 +80,7 @@ export const useDisclosureContent = createHook<
   }
 });
 
-export const DisclosureContent = createComponent({
+export const DisclosureRegion = createComponent({
   as: "div",
-  useHook: useDisclosureContent
+  useHook: useDisclosureRegion
 });

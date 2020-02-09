@@ -10,13 +10,13 @@ redirect_from:
 
 Reakit components are pretty much stateless, which means that they need props to be passed in so as to modify their state.
 
-[DisclosureContent](/docs/disclosure/), for example, is a generic component that can be disclosure or visible based on props:
+[DisclosureRegion](/docs/disclosure/), for example, is a generic component that can be disclosure or visible based on props:
 
 ```jsx
-import { DisclosureContent } from "reakit";
+import { DisclosureRegion } from "reakit";
 
 function Example() {
-  return <DisclosureContent visible>Content</DisclosureContent>;
+  return <DisclosureRegion visible>Content</DisclosureRegion>;
 }
 ```
 
@@ -24,14 +24,14 @@ You can pass your own state to control it:
 
 ```jsx
 import React from "react";
-import { DisclosureContent } from "reakit";
+import { DisclosureRegion } from "reakit";
 
 function Example() {
   const [visible, setVisible] = React.useState(true);
   return (
     <>
       <button onClick={() => setVisible(!visible)}>Disclosure</button>
-      <DisclosureContent visible={visible}>Content</DisclosureContent>
+      <DisclosureRegion visible={visible}>Content</DisclosureRegion>
     </>
   );
 }
@@ -44,14 +44,14 @@ As a convenience — and because some states need more complex logic —, Reakit
 The returned [options](/docs/basic-concepts/#options) can be passed as props directly to the components, or used separately to access, update and/or [extend the state](/docs/composition/#state-hooks).
 
 ```jsx
-import { useDisclosureState, DisclosureContent } from "reakit";
+import { useDisclosureState, DisclosureRegion } from "reakit";
 
 function Example() {
   const disclosure = useDisclosureState({ visible: true });
   return (
     <>
       <button onClick={disclosure.toggle}>Disclosure</button>
-      <DisclosureContent {...disclosure}>Content</DisclosureContent>
+      <DisclosureRegion {...disclosure}>Content</DisclosureRegion>
     </>
   );
 }
@@ -71,7 +71,7 @@ useDisclosureState(() => ({ visible: getExpensiveValue() }));
 If you need to share state between multiple components within your app, you can use [Constate](https://github.com/diegohaz/constate):
 
 ```jsx
-import { useDisclosureState, Disclosure, DisclosureContent } from "reakit";
+import { useDisclosureState, Disclosure, DisclosureRegion } from "reakit";
 import constate from "constate";
 
 const [DisclosureProvider, useDisclosureContext] = constate(useDisclosureState);
@@ -83,7 +83,7 @@ function Button() {
 
 function Content() {
   const disclosure = useDisclosureContext();
-  return <DisclosureContent {...disclosure}>Content</DisclosureContent>;
+  return <DisclosureRegion {...disclosure}>Content</DisclosureRegion>;
 }
 
 function Example() {

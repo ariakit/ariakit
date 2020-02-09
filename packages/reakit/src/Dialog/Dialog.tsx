@@ -7,10 +7,10 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { usePipe } from "reakit-utils/usePipe";
 import {
-  DisclosureContentOptions,
-  DisclosureContentHTMLProps,
-  useDisclosureContent
-} from "../Disclosure/DisclosureContent";
+  DisclosureRegionOptions,
+  DisclosureRegionHTMLProps,
+  useDisclosureRegion
+} from "../Disclosure/DisclosureRegion";
 import { Portal } from "../Portal/Portal";
 import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
@@ -23,7 +23,7 @@ import { useDialogState, DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 
-export type DialogOptions = DisclosureContentOptions &
+export type DialogOptions = DisclosureRegionOptions &
   Pick<
     Partial<DialogStateReturn>,
     "modal" | "setModal" | "unstable_modal" | "hide"
@@ -71,13 +71,13 @@ export type DialogOptions = DisclosureContentOptions &
     unstable_autoFocusOnHide?: boolean;
   };
 
-export type DialogHTMLProps = DisclosureContentHTMLProps;
+export type DialogHTMLProps = DisclosureRegionHTMLProps;
 
 export type DialogProps = DialogOptions & DialogHTMLProps;
 
 export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   name: "Dialog",
-  compose: useDisclosureContent,
+  compose: useDisclosureRegion,
   useState: useDialogState,
   keys: [
     "hideOnEsc",

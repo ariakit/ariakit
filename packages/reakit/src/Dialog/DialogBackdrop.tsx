@@ -3,18 +3,18 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
 import {
-  DisclosureContentOptions,
-  DisclosureContentHTMLProps,
-  useDisclosureContent
-} from "../Disclosure/DisclosureContent";
+  DisclosureRegionOptions,
+  DisclosureRegionHTMLProps,
+  useDisclosureRegion
+} from "../Disclosure/DisclosureRegion";
 import { Portal } from "../Portal/Portal";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 
-export type DialogBackdropOptions = DisclosureContentOptions &
+export type DialogBackdropOptions = DisclosureRegionOptions &
   Pick<Partial<DialogStateReturn>, "modal">;
 
-export type DialogBackdropHTMLProps = DisclosureContentHTMLProps;
+export type DialogBackdropHTMLProps = DisclosureRegionHTMLProps;
 
 export type DialogBackdropProps = DialogBackdropOptions &
   DialogBackdropHTMLProps;
@@ -24,7 +24,7 @@ export const useDialogBackdrop = createHook<
   DialogBackdropHTMLProps
 >({
   name: "DialogBackdrop",
-  compose: useDisclosureContent,
+  compose: useDisclosureRegion,
   useState: useDialogState,
 
   useOptions({ modal = true, ...options }) {

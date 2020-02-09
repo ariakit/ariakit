@@ -28,7 +28,7 @@ Learn more in [Get started](/docs/get-started/).
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureContent
+  DisclosureRegion
 } from "reakit/Disclosure";
 
 function Example() {
@@ -36,7 +36,7 @@ function Example() {
   return (
     <>
       <Disclosure {...disclosure}>Toggle</Disclosure>
-      <DisclosureContent {...disclosure}>Content</DisclosureContent>
+      <DisclosureRegion {...disclosure}>Content</DisclosureRegion>
     </>
   );
 }
@@ -44,13 +44,13 @@ function Example() {
 
 ### Conditionally rendering
 
-You shouldn't conditionally render the `DisclosureContent` component as this will make some Reakit features not work. Instead, you can use [render props](/docs/composition/#render-props) and conditionally render the underneath element:
+You shouldn't conditionally render the `DisclosureRegion` component as this will make some Reakit features not work. Instead, you can use [render props](/docs/composition/#render-props) and conditionally render the underneath element:
 
 ```jsx
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureContent
+  DisclosureRegion
 } from "reakit/Disclosure";
 
 function Example() {
@@ -58,10 +58,10 @@ function Example() {
   return (
     <>
       <Disclosure {...disclosure}>Toggle</Disclosure>
-      {/* instead of {disclosure.visible && <DisclosureContent {...disclosure}>Content</DisclosureContent>} */}
-      <DisclosureContent {...disclosure}>
+      {/* instead of {disclosure.visible && <DisclosureRegion {...disclosure}>Content</DisclosureRegion>} */}
+      <DisclosureRegion {...disclosure}>
         {props => disclosure.visible && <div {...props}>Content</div>}
-      </DisclosureContent>
+      </DisclosureRegion>
     </>
   );
 }
@@ -69,15 +69,15 @@ function Example() {
 
 ### Multiple components
 
-Each `DisclosureContent` component should have its own `useDisclosureState`. This is also true for derivative modules like [Dialog](/docs/dialog/), [Popover](/docs/popover/), [Menu](/docs/menu/), [Tooltip](/docs/tooltip/) etc.
+Each `DisclosureRegion` component should have its own `useDisclosureState`. This is also true for derivative modules like [Dialog](/docs/dialog/), [Popover](/docs/popover/), [Menu](/docs/menu/), [Tooltip](/docs/tooltip/) etc.
 
-If you want to have only one `Disclosure` element controling multiple `DisclosureContent` components, you can use [render props](/docs/composition/#render-props) to apply the same state to different `Disclosure`s that will result in a single element.
+If you want to have only one `Disclosure` element controling multiple `DisclosureRegion` components, you can use [render props](/docs/composition/#render-props) to apply the same state to different `Disclosure`s that will result in a single element.
 
 ```jsx
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureContent
+  DisclosureRegion
 } from "reakit/Disclosure";
 
 function Example() {
@@ -92,8 +92,8 @@ function Example() {
           </Disclosure>
         )}
       </Disclosure>
-      <DisclosureContent {...disclosure1}>Content 1</DisclosureContent>
-      <DisclosureContent {...disclosure2}>Content 2</DisclosureContent>
+      <DisclosureRegion {...disclosure1}>Content 1</DisclosureRegion>
+      <DisclosureRegion {...disclosure2}>Content 2</DisclosureRegion>
     </>
   );
 }
@@ -102,15 +102,15 @@ function Example() {
 ## Accessibility
 
 - `Disclosure` extends the accessibility features of [Button](/docs/button/#accessibility).
-- `Disclosure` has a value specified for `aria-controls` that refers to `DisclosureContent`.
-- When `DisclosureContent` is visible, `Disclosure` has `aria-expanded` set to `true`. When `DisclosureContent` is hidden, it is set to `false`.
+- `Disclosure` has a value specified for `aria-controls` that refers to `DisclosureRegion`.
+- When `DisclosureRegion` is visible, `Disclosure` has `aria-expanded` set to `true`. When `DisclosureRegion` is hidden, it is set to `false`.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
 - `Disclosure` uses [Button](/docs/button/), and is used by [DialogDisclosure](/docs/dialog/).
-- `DisclosureContent` uses [Box](/docs/box/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
+- `DisclosureRegion` uses [Box](/docs/box/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -173,7 +173,7 @@ similarly to `readOnly` on form elements. In this case, only
 
 </details>
 
-### `DisclosureContent`
+### `DisclosureRegion`
 
 - **`id`**
   <code>string | undefined</code>

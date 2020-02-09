@@ -1,14 +1,14 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import {
-  DisclosureContentOptions,
-  DisclosureContentHTMLProps,
-  useDisclosureContent
-} from "../Disclosure/DisclosureContent";
+  DisclosureRegionOptions,
+  DisclosureRegionHTMLProps,
+  useDisclosureRegion
+} from "../Disclosure/DisclosureRegion";
 import { getTabPanelId, getTabId } from "./__utils";
 import { useTabState, TabStateReturn } from "./TabState";
 
-export type TabPanelOptions = DisclosureContentOptions &
+export type TabPanelOptions = DisclosureRegionOptions &
   Pick<TabStateReturn, "baseId" | "selectedId"> & {
     /**
      * Tab's `stopId`.
@@ -16,13 +16,13 @@ export type TabPanelOptions = DisclosureContentOptions &
     stopId: string;
   };
 
-export type TabPanelHTMLProps = DisclosureContentHTMLProps;
+export type TabPanelHTMLProps = DisclosureRegionHTMLProps;
 
 export type TabPanelProps = TabPanelOptions & TabPanelHTMLProps;
 
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   name: "TabPanel",
-  compose: useDisclosureContent,
+  compose: useDisclosureRegion,
   useState: useTabState,
   keys: ["stopId"],
 

@@ -84,7 +84,7 @@ export default {
   "reakit/Form/Form": require("reakit/Form/Form"),
   "reakit/Disclosure": require("reakit/Disclosure"),
   "reakit/Disclosure/DisclosureState": require("reakit/Disclosure/DisclosureState"),
-  "reakit/Disclosure/DisclosureContent": require("reakit/Disclosure/DisclosureContent"),
+  "reakit/Disclosure/DisclosureRegion": require("reakit/Disclosure/DisclosureRegion"),
   "reakit/Disclosure/Disclosure": require("reakit/Disclosure/Disclosure"),
   "reakit/Dialog": require("reakit/Dialog"),
   "reakit/Dialog/DialogState": require("reakit/Dialog/DialogState"),
