@@ -39,10 +39,5 @@
       "reakit-utils": ["./node_modules/reakit-utils/src"],
       "reakit-utils/*": ["./node_modules/reakit-utils/src/*"],
     }
-  },
-  "include": [
-    "packages",
-    "stories",
-    "types"
-  ]
+  }
 }
