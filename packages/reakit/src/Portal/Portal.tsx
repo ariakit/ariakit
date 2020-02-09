@@ -22,7 +22,7 @@ export function Portal({ children }: PortalProps) {
   // otherwise it's document.body
   // https://github.com/reakit/reakit/issues/513
   const context = React.useContext(PortalContext) || getBodyElement();
-  const [portal] = React.useState(() => {
+  const [hostNode] = React.useState(() => {
     if (typeof document !== "undefined") {
       const element = document.createElement("div");
       element.className = Portal.__className;
@@ -33,19 +33,19 @@ export function Portal({ children }: PortalProps) {
   });
 
   useIsomorphicEffect(() => {
-    if (!portal || !context) return undefined;
-    context.appendChild(portal);
+    if (!hostNode || !context) return undefined;
+    context.appendChild(hostNode);
     return () => {
-      context.removeChild(portal);
+      context.removeChild(hostNode);
     };
-  }, [portal, context]);
+  }, [hostNode, context]);
 
-  if (portal) {
+  if (hostNode) {
     return ReactDOM.createPortal(
-      <PortalContext.Provider value={portal}>
+      <PortalContext.Provider value={hostNode}>
         {children}
       </PortalContext.Provider>,
-      portal
+      hostNode
     );
   }
 
