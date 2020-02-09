@@ -4,7 +4,6 @@ import {
   closest,
   warning
 } from "reakit-utils";
-import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
 import { hover } from "./hover";
@@ -32,11 +31,7 @@ function getInputFromLabel(element: HTMLLabelElement) {
     | undefined;
 }
 
-function clickLabel(
-  element: HTMLLabelElement,
-  defaultPrevented: { current?: boolean },
-  options?: MouseEventInit
-) {
+function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
   const input = getInputFromLabel(element);
   const isInputDisabled = Boolean(input?.disabled);
 
@@ -47,13 +42,13 @@ function clickLabel(
     input.disabled = true;
   }
 
-  fireEvent.click(element, options);
+  const defaultAllowed = fireEvent.click(element, options);
 
   if (input) {
     // Now we can revert input disabled state and fire events on it in the
     // right order.
     input.disabled = isInputDisabled;
-    if (!defaultPrevented.current && isFocusable(input)) {
+    if (defaultAllowed && isFocusable(input)) {
       focus(input);
       // Only "click" is fired! Browsers don't go over the whole event stack in
       // this case (mousedown, mouseup etc.).
@@ -140,20 +135,16 @@ export function click(element: Element, options?: MouseEventInit) {
   hover(element, options);
   const { disabled } = element as HTMLButtonElement;
 
-  let defaultPrevented = subscribeDefaultPrevented(
-    element,
-    "pointerdown",
-    "mousedown"
-  );
-
-  fireEvent.pointerDown(element, options);
+  let defaultAllowed = fireEvent.pointerDown(element, options);
 
   if (!disabled) {
     // Mouse events are not called on disabled elements
-    fireEvent.mouseDown(element, options);
+    if (!fireEvent.mouseDown(element, options)) {
+      defaultAllowed = false;
+    }
   }
 
-  if (!defaultPrevented.current) {
+  if (defaultAllowed) {
     // Do not enter this if event.preventDefault() has been called on
     // pointerdown or mousedown.
     if (isFocusable(element)) {
@@ -170,8 +161,6 @@ export function click(element: Element, options?: MouseEventInit) {
     }
   }
 
-  defaultPrevented = subscribeDefaultPrevented(element, "click");
-
   fireEvent.pointerUp(element, options);
 
   // mouseup and click are not called on disabled elements
@@ -182,12 +171,10 @@ export function click(element: Element, options?: MouseEventInit) {
   const label = getClosestLabel(element);
 
   if (label) {
-    clickLabel(label, defaultPrevented, options);
+    clickLabel(label, options);
   } else if (element instanceof HTMLOptionElement) {
     clickOption(element, options);
   } else {
     fireEvent.click(element, options);
   }
-
-  defaultPrevented.unsubscribe();
 }

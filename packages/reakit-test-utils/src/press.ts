@@ -3,7 +3,6 @@ import {
   getNextTabbableIn,
   isFocusable
 } from "reakit-utils";
-import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
 import { isTextField } from "./__utils/isTextField";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
@@ -120,16 +119,9 @@ export function press(
     }
   }
 
-  // Track event.preventDefault() calls so we bail out of keydown/keyup effects
-  const defaultPrevented = subscribeDefaultPrevented(
-    element,
-    "keydown",
-    "keyup"
-  );
+  let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 
-  fireEvent.keyDown(element, { key, ...options });
-
-  if (!defaultPrevented.current && key in keyDownMap && !options.metaKey) {
+  if (defaultAllowed && key in keyDownMap && !options.metaKey) {
     keyDownMap[key](element, options);
   }
 
@@ -139,13 +131,13 @@ export function press(
     element = element.ownerDocument!.activeElement!;
   }
 
-  fireEvent.keyUp(element, { key, ...options });
-
-  if (!defaultPrevented.current && key in keyUpMap && !options.metaKey) {
-    keyUpMap[key](element, options);
+  if (!fireEvent.keyUp(element, { key, ...options })) {
+    defaultAllowed = false;
   }
 
-  defaultPrevented.unsubscribe();
+  if (defaultAllowed && key in keyUpMap && !options.metaKey) {
+    keyUpMap[key](element, options);
+  }
 }
 
 function createPress(key: string, defaultOptions: KeyboardEventInit = {}) {

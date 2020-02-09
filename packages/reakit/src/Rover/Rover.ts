@@ -104,8 +104,8 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
           stopPropagation: true,
-          // Ignore portals
           shouldKeyDown: event =>
+            // Ignore portals
             // https://github.com/facebook/react/issues/11387
             event.currentTarget.contains(event.target as Node),
           keyMap: {

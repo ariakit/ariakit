@@ -364,6 +364,7 @@ test("click label preventDefault onClick", () => {
     useAllEvents(input, stack);
     return (
       <>
+        {/* eslint-disable-next-line */}
         <label
           ref={label}
           onClick={event => event.preventDefault()}

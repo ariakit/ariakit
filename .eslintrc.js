@@ -74,9 +74,6 @@ module.exports = {
     {
       files: ["**/*.ts", "**/*.tsx"],
       parser: "@typescript-eslint/parser",
-      parserOptions: {
-        project: "./tsconfig.json"
-      },
       plugins: ["@typescript-eslint"],
       rules: {
         "no-undef": "off",

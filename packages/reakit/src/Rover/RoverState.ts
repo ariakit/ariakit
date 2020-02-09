@@ -1,6 +1,5 @@
 // Credits: https://github.com/stevejay/react-roving-tabindex
 import * as React from "react";
-import { warning } from "reakit-utils/warning";
 import {
   SealedInitialState,
   useSealedState
@@ -170,7 +169,6 @@ function reducer(
       const { id } = action;
       const nextStops = stops.filter(stop => stop.id !== id);
       if (nextStops.length === stops.length) {
-        warning(true, "[reakit/RoverState]", `${id} stop is not registered`);
         return state;
       }
 
