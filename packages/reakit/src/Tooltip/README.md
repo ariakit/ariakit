@@ -175,18 +175,8 @@ given milliseconds.
   Flip the popover's placement when it starts to overlap its reference
 element.
 
-- **`unstable_shift`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Shift popover on the start or end of its reference element.
-
-- **`unstable_inner`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Position the popover inside the reference element.
-
 - **`unstable_offset`** <span title="Experimental">⚠️</span>
-  <code title="readonly [string | number, string | number] | undefined">readonly [string | number, string | number] | u...</code>
+  <code>[string | number, string | number] | undefined</code>
 
   Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 
@@ -199,11 +189,6 @@ element.
   <code>boolean | undefined</code>
 
   Prevents popover from being positioned outside the boundary.
-
-- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
-  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
-
-  Boundaries element used by `preventOverflow`.
 
 ### `Tooltip`
 

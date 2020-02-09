@@ -17,6 +17,7 @@ import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { MenuStateReturn } from "reakit/Menu/MenuState";
+import { usePipe } from "reakit-utils/usePipe";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapMenuBarOptions = BootstrapBoxOptions & MenuBarOptions;
@@ -91,30 +92,55 @@ export function useMenuItemProps(
 
 export type BootstrapMenuOptions = BootstrapBoxOptions & MenuOptions;
 
+const OrientationContext = React.createContext<
+  "horizontal" | "vertical" | undefined
+>(undefined);
+
 export function useMenuOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
   ...options
 }: BootstrapMenuOptions): BootstrapMenuOptions {
-  return {
-    unstable_system: { palette, fill, ...system },
-    ...options
-  };
+  const parentOrientation = React.useContext(OrientationContext);
+  const unstable_system = { palette, fill, ...system };
+  const transform = options.unstable_popoverStyles?.transform || "";
+
+  if (parentOrientation === "vertical" && options.orientation === "vertical") {
+    return {
+      ...options,
+      unstable_system,
+      unstable_popoverStyles: {
+        ...options.unstable_popoverStyles,
+        transform: `${transform} translate3d(0px, -0.3em, 0px)`
+      }
+    };
+  }
+
+  return { ...options, unstable_system };
 }
 
 export function useMenuProps(
-  _: BootstrapMenuOptions,
+  options: BootstrapMenuOptions,
   htmlProps: MenuHTMLProps = {}
 ): MenuHTMLProps {
   const menu = css`
     display: flex;
     border-radius: 0;
-
-    &:not([aria-orientation="horizontal"]) > &[aria-orientation="vertical"] {
-      margin-top: -0.3em;
-    }
   `;
 
-  return { ...htmlProps, className: cx(menu, htmlProps.className) };
+  const wrapElement = React.useCallback(
+    (element: React.ReactNode) => (
+      <OrientationContext.Provider value={options.orientation}>
+        {element}
+      </OrientationContext.Provider>
+    ),
+    [options.orientation]
+  );
+
+  return {
+    ...htmlProps,
+    wrapElement: usePipe(wrapElement, htmlProps.wrapElement),
+    className: cx(menu, htmlProps.className)
+  };
 }
 
 export type BootstrapMenuButtonOptions = BootstrapBoxOptions &
