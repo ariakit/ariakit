@@ -21,11 +21,11 @@ Learn more in [Get started](/docs/get-started/).
 It receives the same props as [controlled inputs](https://reactjs.org/docs/forms.html), such as `checked` and `onChange`:
 
 ```jsx
-import React from "react";
+import React, { useState } from "react";
 import { Checkbox } from "reakit/Checkbox";
 
 function Example() {
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
   const toggle = () => setChecked(!checked);
   return <Checkbox checked={checked} onChange={toggle} />;
 }
@@ -49,7 +49,7 @@ function Example() {
 You can programmatically set checkbox value as `indeterminate`:
 
 ```jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { Checkbox, useCheckboxState } from "reakit/Checkbox";
 
 function useTreeState({ values }) {
@@ -57,7 +57,7 @@ function useTreeState({ values }) {
   const items = useCheckboxState();
 
   // updates items when group is toggled
-  React.useEffect(() => {
+  useEffect(() => {
     if (group.state === true) {
       items.setState(values);
     } else if (group.state === false) {
@@ -66,7 +66,7 @@ function useTreeState({ values }) {
   }, [group.state]);
 
   // updates group when items is toggled
-  React.useEffect(() => {
+  useEffect(() => {
     if (items.state.length === values.length) {
       group.setState(true);
     } else if (items.state.length) {
