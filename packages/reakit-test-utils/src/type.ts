@@ -1,5 +1,4 @@
 import { isFocusable, warning } from "reakit-utils";
-import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
 import { isTextField } from "./__utils/isTextField";
 import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
@@ -53,16 +52,12 @@ export function type(
     const value =
       key in keyMap ? keyMap[key](element, options) : `${element.value}${char}`;
 
-    const defaultPrevented = subscribeDefaultPrevented(element, "keydown");
+    const defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 
-    fireEvent.keyDown(element, { key, ...options });
-
-    if (!defaultPrevented.current && !element.readOnly) {
+    if (defaultAllowed && !element.readOnly) {
       fireEvent.input(element, { data: char, target: { value }, ...options });
     }
 
     fireEvent.keyUp(element, { key, ...options });
-
-    defaultPrevented.unsubscribe();
   }
 }
