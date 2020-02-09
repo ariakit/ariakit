@@ -54,11 +54,16 @@ export const useDisclosureContent = createHook<
       setHiddenClass(!options.visible ? "hidden" : null);
     }, [options.visible]);
 
-    const onTransitionEnd = React.useCallback(() => {
-      if (options.unstable_animated && options.unstable_stopAnimation) {
-        options.unstable_stopAnimation();
-      }
-    }, [options.unstable_animated, options.unstable_stopAnimation]);
+    const onTransitionEnd = React.useCallback(
+      (event: React.TransitionEvent) => {
+        if (event.currentTarget !== event.target) return;
+
+        if (options.unstable_animated && options.unstable_stopAnimation) {
+          options.unstable_stopAnimation();
+        }
+      },
+      [options.unstable_animated, options.unstable_stopAnimation]
+    );
 
     const animating = options.unstable_animated && options.unstable_animating;
     const hidden = !options.visible && !animating;
