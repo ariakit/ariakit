@@ -13,12 +13,15 @@ Reakit is a low level component library for building accessible high level UI li
 
 First, make sure to have `react` and `react-dom` installed:
 ```sh
-npm install react react-dom
+npm i react react-dom
 ```
 
 Then, install `reakit`:
 ```sh
-npm install reakit
+npm i reakit
+
+##Or, use yarn
+yarn add reakit
 ```
 
 ## Usage
