@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 
 export type PortalProps = {
   /**
@@ -31,7 +32,7 @@ export function Portal({ children }: PortalProps) {
     return null;
   });
 
-  React.useEffect(() => {
+  useIsomorphicEffect(() => {
     if (!portal || !context) return undefined;
     context.appendChild(portal);
     return () => {
