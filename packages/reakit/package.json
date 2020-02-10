@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "1.0.0-beta.15",
+  "version": "1.0.0-beta.16",
   "description": "Toolkit for building accessible rich web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -40,8 +40,8 @@
   "dependencies": {
     "@popperjs/core": "^2.0.5",
     "body-scroll-lock": "^2.6.4",
-    "reakit-system": "^0.8.0",
-    "reakit-utils": "^0.8.0"
+    "reakit-system": "^0.9.0",
+    "reakit-utils": "^0.9.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",

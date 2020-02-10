@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.16](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.15...reakit@1.0.0-beta.16) (2020-02-10)
+
+
+### Bug Fixes
+
+* Check for classList existence before use ([#540](https://github.com/reakit/reakit/issues/540)) ([92a5fa1](https://github.com/reakit/reakit/commit/92a5fa1fd30e876eb8c25f3bbed48fbd7b8e15fb)), closes [#537](https://github.com/reakit/reakit/issues/537)
+* Fix `transitionEnd` capturing children transitions ([#548](https://github.com/reakit/reakit/issues/548)) ([4cf1eaa](https://github.com/reakit/reakit/commit/4cf1eaad204a787be70f9db31b25e18972723ea2)), closes [#531](https://github.com/reakit/reakit/issues/531)
+* Fix inconsistent `Tooltip` behavior on disabled `Tabbable` ([#552](https://github.com/reakit/reakit/issues/552)) ([d507772](https://github.com/reakit/reakit/commit/d507772ed470770f5db322ab68eced3b3259d8f0)), closes [#471](https://github.com/reakit/reakit/issues/471)
+* Fix portaled components without dimensions in the first render ([#547](https://github.com/reakit/reakit/issues/547)) ([8783aec](https://github.com/reakit/reakit/commit/8783aec08f68be6e432bc39be85f2824ef8ca64e)), closes [#532](https://github.com/reakit/reakit/issues/532)
+* Remove confusing `rover.unregister()` warning ([#549](https://github.com/reakit/reakit/issues/549)) ([2a72e35](https://github.com/reakit/reakit/commit/2a72e350c4134a55c77b0f2a19fea8a15af4e3bd)), closes [#488](https://github.com/reakit/reakit/issues/488)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/issues/541)) ([4397ab0](https://github.com/reakit/reakit/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/issues/544)) ([f5fa914](https://github.com/reakit/reakit/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* Upgrade to popper.js v2 ([#545](https://github.com/reakit/reakit/issues/545)) ([55f7c21](https://github.com/reakit/reakit/commit/55f7c21b6651efc7ee18e45c17bf7be3ef5d39d2))
+
+
+### BREAKING CHANGES
+
+* The internal `popper.js` dependency has been upgraded to `v2`. The stable `Popover` API remains the same. But, while this change has been tested with the most common use cases, there may be some edge cases where `Popover` and `Menu` (which uses `Popover` underneath) may behave differently.
+
+
+
+
+
 # [1.0.0-beta.15](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.14...reakit@1.0.0-beta.15) (2020-02-05)
 
 

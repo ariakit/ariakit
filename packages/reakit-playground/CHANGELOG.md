@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.7.0...reakit-playground@0.8.0) (2020-02-10)
+
+
+### Features
+
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* **reakit-utils:** Add `useForkRef` method ([8366545](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8366545bf372cb8fb7c61bd18785c780c3794361))
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/541)) ([4397ab0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `mergeRefs` has been replaced by `useForkRef`. It's now a custom hook, so it should follow the rules of hooks.
+
+  *Before*:
+  ```jsx
+  import React from "react";
+  import { mergeRefs } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={mergeRefs(internalRef, ref)} {...props} />;
+  });
+  ```
+
+  *After*:
+  ```jsx
+  import React from "react";
+  import { useForkRef } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={useForkRef(internalRef, ref)} {...props} />;
+  });
+  ```
+
+
+
+
+
 # [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.12...reakit-playground@0.7.0) (2020-02-05)
 
 

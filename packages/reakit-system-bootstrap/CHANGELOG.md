@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.7.0...reakit-system-bootstrap@0.8.0) (2020-02-10)
+
+
+### Features
+
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* Upgrade to popper.js v2 ([#545](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/545)) ([55f7c21](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/55f7c21b6651efc7ee18e45c17bf7be3ef5d39d2))
+
+
+### BREAKING CHANGES
+
+* The internal `popper.js` dependency has been upgraded to `v2`. The stable `Popover` API remains the same. But, while this change has been tested with the most common use cases, there may be some edge cases where `Popover` and `Menu` (which uses `Popover` underneath) may behave differently.
+
+
+
+
+
 # [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.11...reakit-system-bootstrap@0.7.0) (2020-02-05)
 
 **Note:** Version bump only for package reakit-system-bootstrap

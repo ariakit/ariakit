@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.8.0...reakit-utils@0.9.0) (2020-02-10)
+
+
+### Features
+
+* **reakit-utils:** Add `useForkRef` method ([8366545](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8366545bf372cb8fb7c61bd18785c780c3794361))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `mergeRefs` has been replaced by `useForkRef`. It's now a custom hook, so it should follow the rules of hooks.
+
+  *Before*:
+  ```jsx
+  import React from "react";
+  import { mergeRefs } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={mergeRefs(internalRef, ref)} {...props} />;
+  });
+  ```
+
+  *After*:
+  ```jsx
+  import React from "react";
+  import { useForkRef } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={useForkRef(internalRef, ref)} {...props} />;
+  });
+  ```
+
+
+
+
+
 # [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.3...reakit-utils@0.8.0) (2020-02-05)
 
 

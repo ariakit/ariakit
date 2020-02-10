@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.8.0...reakit-system@0.9.0) (2020-02-10)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/541)) ([4397ab0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+
+
+
+
+
 # [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.7.2...reakit-system@0.8.0) (2020-02-05)
 
 

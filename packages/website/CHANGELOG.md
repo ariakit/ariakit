@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.16](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.15...website@1.0.0-beta.16) (2020-02-10)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/tree/master/packages/website/issues/541)) ([4397ab0](https://github.com/reakit/reakit/tree/master/packages/website/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/website/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/website/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+
+
+
+
+
 # [1.0.0-beta.15](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.14...website@1.0.0-beta.15) (2020-02-05)
 
 
