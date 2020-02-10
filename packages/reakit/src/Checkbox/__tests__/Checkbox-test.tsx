@@ -21,19 +21,20 @@ test("render", () => {
 test("render disabled", () => {
   const { baseElement } = render(<Checkbox disabled />);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <input
-          aria-checked="false"
-          aria-disabled="true"
-          disabled=""
-          role="checkbox"
-          type="checkbox"
-          value=""
-        />
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <input
+      aria-checked="false"
+      aria-disabled="true"
+      disabled=""
+      role="checkbox"
+      style="pointer-events: none;"
+      type="checkbox"
+      value=""
+    />
+  </div>
+</body>
+`);
 });
 
 test("render disabled focusable", () => {

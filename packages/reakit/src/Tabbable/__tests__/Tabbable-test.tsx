@@ -14,13 +14,14 @@ test("render", () => {
 test("render disabled", () => {
   const { getByText } = render(<Tabbable disabled>tabbable</Tabbable>);
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-    <button
-      aria-disabled="true"
-      disabled=""
-    >
-      tabbable
-    </button>
-  `);
+<button
+  aria-disabled="true"
+  disabled=""
+  style="pointer-events: none;"
+>
+  tabbable
+</button>
+`);
 });
 
 test("render disabled focusable", () => {
