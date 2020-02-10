@@ -1,41 +1,23 @@
 import * as React from "react";
 import { render, hover, wait } from "reakit-test-utils";
-import {
-  Tooltip,
-  TooltipArrow,
-  TooltipReference,
-  useTooltipState,
-  TooltipInitialState
-} from "..";
+import { Tooltip, TooltipReference, useTooltipState } from "..";
 
-function Test(props: TooltipInitialState) {
-  const tooltip = useTooltipState(props);
-  return (
-    <>
-      <TooltipReference {...tooltip}>disclosure</TooltipReference>
-      <Tooltip {...tooltip} aria-label="tooltip" tabIndex={0}>
-        <TooltipArrow {...tooltip} />
-        tooltip
-      </Tooltip>
-    </>
-  );
-}
-
-test("show", async () => {
-  const { getByText } = render(<Test />);
-  const disclosure = getByText("disclosure");
+test("show tooltip on hover", async () => {
+  const Test = () => {
+    const tooltip = useTooltipState();
+    return (
+      <>
+        <TooltipReference {...tooltip}>reference</TooltipReference>
+        <Tooltip {...tooltip}>tooltip</Tooltip>
+      </>
+    );
+  };
+  const { baseElement, getByText } = render(<Test />);
+  const reference = getByText("reference");
   const tooltip = getByText("tooltip");
   expect(tooltip).not.toBeVisible();
-  hover(disclosure);
+  hover(reference);
   await wait(expect(tooltip).toBeVisible);
-});
-
-test("hide", async () => {
-  const { getByText, baseElement } = render(<Test visible />);
-  const disclosure = getByText("disclosure");
-  const tooltip = getByText("tooltip");
-  expect(tooltip).toBeVisible();
-  hover(disclosure);
   hover(baseElement);
   await wait(expect(tooltip).not.toBeVisible);
 });
