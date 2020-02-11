@@ -1,7 +1,7 @@
 import * as React from "react";
-import { DisclosureRegionOptions } from "../DisclosureRegion";
+import { DisclosureContentOptions } from "../DisclosureContent";
 
-export function useSetIsMounted(options: DisclosureRegionOptions) {
+export function useSetIsMounted(options: DisclosureContentOptions) {
   if (process.env.NODE_ENV === "production") return;
 
   React.useEffect(() => {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, click } from "reakit-test-utils";
-import { DisclosureRegion, Disclosure, useDisclosureState } from "..";
+import { DisclosureContent, Disclosure, useDisclosureState } from "..";
 
 test("show", () => {
   function Test() {
@@ -8,7 +8,7 @@ test("show", () => {
     return (
       <>
         <Disclosure {...disclosure}>disclosure</Disclosure>
-        <DisclosureRegion {...disclosure}>content</DisclosureRegion>
+        <DisclosureContent {...disclosure}>content</DisclosureContent>
       </>
     );
   }
@@ -26,7 +26,7 @@ test("hide", () => {
     return (
       <>
         <Disclosure {...disclosure}>disclosure</Disclosure>
-        <DisclosureRegion {...disclosure}>content</DisclosureRegion>
+        <DisclosureContent {...disclosure}>content</DisclosureContent>
       </>
     );
   }
@@ -51,8 +51,8 @@ test("multiple components", () => {
             </Disclosure>
           )}
         </Disclosure>
-        <DisclosureRegion {...disclosure1}>content1</DisclosureRegion>
-        <DisclosureRegion {...disclosure2}>content2</DisclosureRegion>
+        <DisclosureContent {...disclosure1}>content1</DisclosureContent>
+        <DisclosureContent {...disclosure2}>content2</DisclosureContent>
       </>
     );
   }

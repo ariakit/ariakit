@@ -10,7 +10,7 @@ redirect_from:
 
 # Disclosure
 
-Accessible `Disclosure` compoennt that controls visibility of a section of content (`DialogContent`). It follows the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
+Accessible `Disclosure` compoennt that controls visibility of a section of content (`DisclosureContent`). It follows the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
 
 <carbon-ad></carbon-ad>
 
@@ -28,7 +28,7 @@ Learn more in [Get started](/docs/get-started/).
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureRegion
+  DisclosureContent
 } from "reakit/Disclosure";
 
 function Example() {
@@ -36,7 +36,7 @@ function Example() {
   return (
     <>
       <Disclosure {...disclosure}>Toggle</Disclosure>
-      <DisclosureRegion {...disclosure}>Content</DisclosureRegion>
+      <DisclosureContent {...disclosure}>Content</DisclosureContent>
     </>
   );
 }
@@ -44,13 +44,13 @@ function Example() {
 
 ### Conditionally rendering
 
-You shouldn't conditionally render the `DisclosureRegion` component as this will make some Reakit features not work. Instead, you can use [render props](/docs/composition/#render-props) and conditionally render the underneath element:
+You shouldn't conditionally render the `DisclosureContent` component as this will make some Reakit features not work. Instead, you can use [render props](/docs/composition/#render-props) and conditionally render the underneath element:
 
 ```jsx
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureRegion
+  DisclosureContent
 } from "reakit/Disclosure";
 
 function Example() {
@@ -58,10 +58,10 @@ function Example() {
   return (
     <>
       <Disclosure {...disclosure}>Toggle</Disclosure>
-      {/* instead of {disclosure.visible && <DisclosureRegion {...disclosure}>Content</DisclosureRegion>} */}
-      <DisclosureRegion {...disclosure}>
+      {/* instead of {disclosure.visible && <DisclosureContent {...disclosure}>Content</DisclosureContent>} */}
+      <DisclosureContent {...disclosure}>
         {props => disclosure.visible && <div {...props}>Content</div>}
-      </DisclosureRegion>
+      </DisclosureContent>
     </>
   );
 }
@@ -69,15 +69,15 @@ function Example() {
 
 ### Multiple components
 
-Each `DisclosureRegion` component should have its own `useDisclosureState`. This is also true for derivative modules like [Dialog](/docs/dialog/), [Popover](/docs/popover/), [Menu](/docs/menu/), [Tooltip](/docs/tooltip/) etc.
+Each `DisclosureContent` component should have its own `useDisclosureState`. This is also true for derivative modules like [Dialog](/docs/dialog/), [Popover](/docs/popover/), [Menu](/docs/menu/), [Tooltip](/docs/tooltip/) etc.
 
-If you want to have only one `Disclosure` element controling multiple `DisclosureRegion` components, you can use [render props](/docs/composition/#render-props) to apply the same state to different `Disclosure`s that will result in a single element.
+If you want to have only one `Disclosure` element controling multiple `DisclosureContent` components, you can use [render props](/docs/composition/#render-props) to apply the same state to different `Disclosure`s that will result in a single element.
 
 ```jsx
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureRegion
+  DisclosureContent
 } from "reakit/Disclosure";
 
 function Example() {
@@ -92,8 +92,8 @@ function Example() {
           </Disclosure>
         )}
       </Disclosure>
-      <DisclosureRegion {...disclosure1}>Content 1</DisclosureRegion>
-      <DisclosureRegion {...disclosure2}>Content 2</DisclosureRegion>
+      <DisclosureContent {...disclosure1}>Content 1</DisclosureContent>
+      <DisclosureContent {...disclosure2}>Content 2</DisclosureContent>
     </>
   );
 }
@@ -102,15 +102,15 @@ function Example() {
 ## Accessibility
 
 - `Disclosure` extends the accessibility features of [Button](/docs/button/#accessibility).
-- `Disclosure` has a value specified for `aria-controls` that refers to `DisclosureRegion`.
-- When `DisclosureRegion` is visible, `Disclosure` has `aria-expanded` set to `true`. When `DisclosureRegion` is hidden, it is set to `false`.
+- `Disclosure` has a value specified for `aria-controls` that refers to `DisclosureContent`.
+- When `DisclosureContent` is visible, `Disclosure` has `aria-expanded` set to `true`. When `DisclosureContent` is hidden, it is set to `false`.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
 - `Disclosure` uses [Button](/docs/button/), and is used by [DialogDisclosure](/docs/dialog/).
-- `DisclosureRegion` uses [Box](/docs/box/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
+- `DisclosureContent` uses [Box](/docs/box/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -173,7 +173,7 @@ similarly to `readOnly` on form elements. In this case, only
 
 </details>
 
-### `DisclosureRegion`
+### `DisclosureContent`
 
 - **`id`**
   <code>string | undefined</code>
