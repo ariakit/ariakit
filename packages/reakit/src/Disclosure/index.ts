@@ -1,3 +1,3 @@
 export * from "./Disclosure";
-export * from "./DisclosureRegion";
+export * from "./DisclosureContent";
 export * from "./DisclosureState";

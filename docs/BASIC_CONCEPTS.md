@@ -12,11 +12,11 @@ Reakit is established on principles that make it more consistent throughout its 
 
 ## Components
 
-Like any other component library, components are the **highest level API** in Reakit. The [DisclosureRegion](/docs/disclosure/) component, for example, renders an element that can be hidden or visible.
+Like any other component library, components are the **highest level API** in Reakit. The [DisclosureContent](/docs/disclosure/) component, for example, renders an element that can be hidden or visible.
 
 <!-- eslint-disable -->
 ```jsx static
-<DisclosureRegion visible>Content</DisclosureRegion>
+<DisclosureContent visible>Content</DisclosureContent>
 ```
 
 ## Options
@@ -27,7 +27,7 @@ Components receive two kinds of props: **HTML props** and **option props**. Opti
 ```jsx static
 // `className` is an HTML prop
 // `visible` is an option
-<DisclosureRegion className="class" visible />
+<DisclosureContent className="class" visible />
 ```
 
 ## `as` prop
@@ -35,13 +35,13 @@ Components receive two kinds of props: **HTML props** and **option props**. Opti
 Components render only one element. You can change its type using the `as` prop:
 
 ```jsx
-import { DisclosureRegion } from "reakit";
+import { DisclosureContent } from "reakit";
 
 function Example() {
   return (
-    <DisclosureRegion visible as="button">
+    <DisclosureContent visible as="button">
       Content
-    </DisclosureRegion>
+    </DisclosureContent>
   );
 }
 ```
@@ -53,13 +53,13 @@ Learn more in [Composition](/docs/composition/#as-prop).
 Alternatively, you can change the underlying element by passing children as a function (also known as [render props](https://reactjs.org/docs/render-props.html)):
 
 ```jsx
-import { DisclosureRegion, Button } from "reakit";
+import { DisclosureContent, Button } from "reakit";
 
 function Example() {
   return (
-    <DisclosureRegion visible>
+    <DisclosureContent visible>
       {props => <Button {...props}>Content</Button>}
-    </DisclosureRegion>
+    </DisclosureContent>
   );
 }
 ```
@@ -73,7 +73,7 @@ Many Reakit components accept state props, and you can plug your own. As a conve
 The returned options can be passed as props directly to the components, or used separately to access, update and/or [extend the state](/docs/composition/#state-hooks).
 
 ```jsx
-import { useDisclosureState, DisclosureRegion } from "reakit";
+import { useDisclosureState, DisclosureContent } from "reakit";
 
 function Example() {
   // exposes `visible` state and methods like `show`, `hide` and `toggle`
@@ -81,7 +81,7 @@ function Example() {
   return (
     <>
       <button onClick={hidden.toggle}>Disclosure</button>
-      <DisclosureRegion {...hidden}>Content</DisclosureRegion>
+      <DisclosureContent {...hidden}>Content</DisclosureContent>
     </>
   );
 }
@@ -91,19 +91,19 @@ Learn more in [Managing state](/docs/managing-state/).
 
 ## Props hooks
 
-Finally, as the **lowest level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [DisclosureRegion](/docs/disclosure/), which in turn uses [Box](/docs/box/).
+Finally, as the **lowest level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [DisclosureContent](/docs/disclosure/), which in turn uses [Box](/docs/box/).
 
 ```jsx
 import {
   Box,
   useDisclosureState,
-  useDisclosureRegion,
+  useDisclosureContent,
   useDisclosure
 } from "reakit";
 
 function Example() {
   const state = useDisclosureState({ visible: true });
-  const contentProps = useDisclosureRegion(state);
+  const contentProps = useDisclosureContent(state);
   const disclosureProps = useDisclosure(state);
   return (
     <>

@@ -111,8 +111,8 @@ export function useDisclosureState(
     warning(
       !isMounted,
       "[reakit/Disclosure]",
-      "You're trying to show a `DisclosureRegion` component that hasn't been mounted yet.",
-      "You shouldn't conditionally render a `DisclosureRegion` component (or any of its derivatives) as this will make some features not work.",
+      "You're trying to show a `DisclosureContent` component that hasn't been mounted yet.",
+      "You shouldn't conditionally render a `DisclosureContent` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",
       "See https://reakit.io/docs/disclosure/#conditionally-rendering"
     );
@@ -125,8 +125,8 @@ export function useDisclosureState(
     warning(
       !isMounted,
       "[reakit/Disclosure]",
-      "You're trying to toggle a `DisclosureRegion` element that hasn't been mounted yet.",
-      "You shouldn't conditionally render a `DisclosureRegion` component (or any of its derivatives) as this will make some features not work.",
+      "You're trying to toggle a `DisclosureContent` element that hasn't been mounted yet.",
+      "You shouldn't conditionally render a `DisclosureContent` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",
       "See https://reakit.io/docs/disclosure/#conditionally-rendering"
     );
