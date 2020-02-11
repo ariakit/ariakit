@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, click, focus, press } from "reakit-test-utils";
-import { Tabbable } from "../Tabbable";
+import { Tabbable, TabbableProps } from "../Tabbable";
 
 test("render", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
@@ -245,4 +245,19 @@ test("focus nested native tabbables", () => {
   expect(button).not.toHaveFocus();
   focus(button);
   expect(button).toHaveFocus();
+});
+
+test("press enter on Tabbable as another non-native Tabbable", () => {
+  const onClick = jest.fn();
+  const NonNativeTabbable = React.forwardRef<HTMLDivElement, TabbableProps>(
+    (props, ref) => <Tabbable as="div" ref={ref} {...props} />
+  );
+  const { getByText } = render(
+    <Tabbable as={NonNativeTabbable} onClick={onClick}>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  press.Enter(tabbable);
+  expect(onClick).toHaveBeenCalledTimes(1);
 });
