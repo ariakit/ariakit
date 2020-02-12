@@ -1,9 +1,4 @@
-function matches(element: Element, selectors: string): boolean {
-  if ("matches" in element) return element.matches(selectors);
-  if ("msMatchesSelector" in element)
-    return (element as any).msMatchesSelector(selectors);
-  return (element as any).webkitMatchesSelector(selectors);
-}
+import { matches } from "./matches";
 
 export function closest<K extends keyof HTMLElementTagNameMap>(
   element: Element,
