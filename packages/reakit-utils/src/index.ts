@@ -9,6 +9,7 @@ export * from "./isInteger";
 export * from "./isObject";
 export * from "./isPlainObject";
 export * from "./isPromise";
+export * from "./matches";
 export * from "./omit";
 export * from "./pick";
 export * from "./removeIndexFromArray";

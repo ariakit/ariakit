@@ -19,6 +19,7 @@ export default {
   "reakit-utils/removeIndexFromArray": require("reakit-utils/removeIndexFromArray"),
   "reakit-utils/pick": require("reakit-utils/pick"),
   "reakit-utils/omit": require("reakit-utils/omit"),
+  "reakit-utils/matches": require("reakit-utils/matches"),
   "reakit-utils/isPromise": require("reakit-utils/isPromise"),
   "reakit-utils/isPlainObject": require("reakit-utils/isPlainObject"),
   "reakit-utils/isObject": require("reakit-utils/isObject"),
