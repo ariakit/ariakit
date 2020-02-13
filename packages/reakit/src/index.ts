@@ -1,6 +1,7 @@
 export * from "./Box";
 export * from "./Button";
 export * from "./Checkbox";
+export * from "./Composite";
 export * from "./Dialog";
 export * from "./Disclosure";
 export * from "./Form";
