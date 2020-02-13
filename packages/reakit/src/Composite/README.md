@@ -22,6 +22,7 @@ Learn more in [Get started](/docs/get-started/).
 ```jsx
 import {
   unstable_useCompositeState as useCompositeState,
+  unstable_Composite as Composite,
   unstable_CompositeRow as CompositeRow,
   unstable_CompositeItem as CompositeItem
 } from "reakit/Composite";
@@ -29,112 +30,41 @@ import { Group } from "reakit/Group";
 import { Button } from "reakit/Button";
 
 function Example() {
-  const composite = useCompositeState();
+  const composite = useCompositeState({ activeDescendant: true });
   return (
-    <>
+    <Composite {...composite}>
       <CompositeRow {...composite}>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
+        <CompositeItem {...composite} onClick={console.log}>
           Button 1
         </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 2
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-          disabled
-          focusable
-        >
+        <CompositeItem {...composite}>Button 2</CompositeItem>
+        <CompositeItem {...composite} disabled focusable>
           Button 3
         </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 4
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 5
-        </CompositeItem>
+        <CompositeItem {...composite}>Button 4</CompositeItem>
+        <CompositeItem {...composite}>Button 5</CompositeItem>
       </CompositeRow>
       <CompositeRow {...composite}>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 1
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-          disabled
-        >
+        <CompositeItem {...composite}>Button 1</CompositeItem>
+        <CompositeItem {...composite} disabled>
           Button 2
         </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 3
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-          disabled
-        >
+        <CompositeItem {...composite}>Button 3</CompositeItem>
+        <CompositeItem {...composite} disabled>
           Button 4
         </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 5
-        </CompositeItem>
+        <CompositeItem {...composite}>Button 5</CompositeItem>
       </CompositeRow>
       <CompositeRow {...composite}>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 1
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-          disabled
-          focusable
-        >
+        <CompositeItem {...composite}>Button 1</CompositeItem>
+        <CompositeItem {...composite} disabled focusable>
           Button 2
         </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 3
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 4
-        </CompositeItem>
-        <CompositeItem
-          {...composite}
-          unstable_system={{ palette: "danger", fill: "opaque" }}
-        >
-          Button 5
-        </CompositeItem>
+        <CompositeItem {...composite}>Button 3</CompositeItem>
+        <CompositeItem {...composite}>Button 4</CompositeItem>
+        <CompositeItem {...composite}>Button 5</CompositeItem>
       </CompositeRow>
-    </>
+    </Composite>
   );
 }
 ```

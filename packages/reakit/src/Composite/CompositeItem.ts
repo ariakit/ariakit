@@ -29,6 +29,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
   > &
   Pick<
     unstable_CompositeStateReturn,
+    | "activeDescendant"
     | "stops"
     | "currentId"
     | "registerStop"
@@ -106,17 +107,26 @@ export const unstable_useCompositeItem = createHook<
         return;
       }
       if (options.unstable_moves && focused && !hasFocusWithin(rover)) {
-        rover.focus();
+        if (options.activeDescendant) {
+          rover.dispatchEvent(
+            new FocusEvent("focus", { bubbles: false, cancelable: false })
+          );
+        } else {
+          rover.focus();
+        }
       }
-    }, [focused, options.unstable_moves]);
+    }, [focused, options.unstable_moves, options.activeDescendant]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         if (!stopId || !event.currentTarget.contains(event.target)) return;
+        if (options.activeDescendant) {
+          event.currentTarget.closest("[aria-activedescendant]").focus();
+        }
         // this is already focused, so we move silently
         options.setCurrentId(stopId);
       },
-      [options.setCurrentId, stopId]
+      [options.setCurrentId, stopId, options.activeDescendant]
     );
 
     const onKeyDown = React.useMemo(
@@ -199,7 +209,8 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id: stopId,
-      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
+      "aria-selected": options.activeDescendant && focused ? true : undefined,
+      tabIndex: !options.activeDescendant && shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown,
       ...htmlProps
@@ -208,6 +219,6 @@ export const unstable_useCompositeItem = createHook<
 });
 
 export const unstable_CompositeItem = createComponent({
-  as: "button",
+  as: "div",
   useHook: unstable_useCompositeItem
 });
