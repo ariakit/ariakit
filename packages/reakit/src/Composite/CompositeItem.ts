@@ -146,10 +146,12 @@ export const unstable_useCompositeItem = createHook<
 
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
-        event.preventDefault();
-        onFocus({ currentTarget: ref.current, target: ref.current });
+        if (options.activeDescendant) {
+          event.preventDefault();
+          onFocus({ currentTarget: ref.current, target: ref.current });
+        }
       },
-      [onFocus]
+      [onFocus, options.activeDescendant]
     );
 
     const onKeyDown = React.useMemo(
@@ -242,8 +244,10 @@ export const unstable_useCompositeItem = createHook<
   },
 
   useComposeProps(options, htmlProps) {
-    htmlProps = unstable_useId(options, htmlProps);
-    const tabbableHTMLProps = useTabbable(options, htmlProps);
+    // @ts-ignore
+    htmlProps = unstable_useId(options, htmlProps, true);
+    // @ts-ignore
+    const tabbableHTMLProps = useTabbable(options, htmlProps, true);
     if (options.activeDescendant) {
       return { ...tabbableHTMLProps, onMouseDown: htmlProps.onMouseDown };
     }
