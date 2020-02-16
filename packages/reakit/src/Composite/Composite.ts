@@ -11,12 +11,14 @@ import {
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps
 } from "../Id/IdGroup";
+import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import {
   unstable_CompositeStateReturn,
   unstable_useCompositeState
 } from "./CompositeState";
 
-export type unstable_CompositeOptions = unstable_IdGroupOptions &
+export type unstable_CompositeOptions = TabbableOptions &
+  unstable_IdGroupOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
     "orientation" | "unstable_moves"
@@ -24,6 +26,7 @@ export type unstable_CompositeOptions = unstable_IdGroupOptions &
   Pick<
     unstable_CompositeStateReturn,
     | "activeDescendant"
+    | "compositeRef"
     | "stops"
     | "currentId"
     | "registerStop"
@@ -38,33 +41,37 @@ export type unstable_CompositeOptions = unstable_IdGroupOptions &
     | "last"
   >;
 
-export type unstable_CompositeHTMLProps = unstable_IdGroupHTMLProps;
+export type unstable_CompositeHTMLProps = TabbableHTMLProps &
+  unstable_IdGroupHTMLProps;
 
 export type unstable_CompositeProps = unstable_CompositeOptions &
   unstable_CompositeHTMLProps;
+
+function getCurrentStop({ stops, currentId }: unstable_CompositeOptions) {
+  if (!stops) return undefined;
+  return (
+    stops.find(stop => stop.id === currentId) ||
+    stops.find(stop => !stop.disabled)
+  );
+}
 
 export const unstable_useComposite = createHook<
   unstable_CompositeOptions,
   unstable_CompositeHTMLProps
 >({
   name: "Composite",
-  // TODO: Compose from Tabbable if it's activeDescendant?
-  compose: unstable_useIdGroup,
+  compose: [unstable_useIdGroup, useTabbable],
   useState: unstable_useCompositeState,
 
-  useProps(
-    options,
-    {
-      ref: htmlRef,
-      tabIndex: htmlTabIndex = 0,
-      onFocus: htmlOnFocus,
-      onKeyDown: htmlOnKeyDown,
-      ...htmlProps
-    }
-  ) {
-    const currentStop =
-      (options.stops || []).find(stop => stop.id === options.currentId) ||
-      (options.stops || []).find(stop => !stop.disabled);
+  useProps(options, { onKeyDown: htmlOnKeyDown, ref: htmlRef, ...htmlProps }) {
+    const ref = React.useRef<HTMLElement>(null);
+    const currentStop = getCurrentStop(options);
+
+    React.useEffect(() => {
+      if (options.compositeRef) {
+        options.compositeRef.current = ref.current || undefined;
+      }
+    }, [options.compositeRef]);
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
@@ -82,11 +89,23 @@ export const unstable_useComposite = createHook<
     );
 
     return {
-      tabIndex: options.activeDescendant ? 0 : undefined,
+      ref: useForkRef(ref, htmlRef),
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       "aria-activedescendant": options.activeDescendant ? currentStop?.id : "",
       ...htmlProps
     };
+  },
+
+  useComposeProps(options, htmlProps) {
+    // @ts-ignore Passing true as the last argument so it doesn't call
+    // useIdGroup.useOptions, which was already called before.
+    htmlProps = unstable_useIdGroup(options, htmlProps, true);
+    // @ts-ignore
+    const tabbableHTMLProps = useTabbable(options, htmlProps, true);
+    if (options.activeDescendant) {
+      return tabbableHTMLProps;
+    }
+    return htmlProps;
   }
 });
 

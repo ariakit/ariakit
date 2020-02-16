@@ -6,6 +6,7 @@ import { warning } from "reakit-utils/warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { getActiveElement } from "reakit-utils/getActiveElement";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -30,6 +31,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
   Pick<
     unstable_CompositeStateReturn,
     | "activeDescendant"
+    | "compositeRef"
     | "stops"
     | "currentId"
     | "registerStop"
@@ -70,6 +72,7 @@ export const unstable_useCompositeItem = createHook<
       tabIndex: htmlTabIndex = 0,
       onFocus: htmlOnFocus,
       onKeyDown: htmlOnKeyDown,
+      onMouseDown: htmlOnMouseDown,
       ...htmlProps
     }
   ) {
@@ -96,37 +99,57 @@ export const unstable_useCompositeItem = createHook<
     }, [stopId, trulyDisabled, options.registerStop, options.unregisterStop]);
 
     React.useEffect(() => {
-      const rover = ref.current;
-      if (!rover) {
+      const self = ref.current;
+      if (!self) {
         warning(
           true,
           "[reakit/CompositeItem]",
-          "Can't focus rover component because `ref` wasn't passed to component.",
-          "See https://reakit.io/docs/rover"
+          "Can't focus composite item component because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/composite"
         );
         return;
       }
-      if (options.unstable_moves && focused && !hasFocusWithin(rover)) {
+      if (options.unstable_moves && focused && !hasFocusWithin(self)) {
         if (options.activeDescendant) {
-          rover.dispatchEvent(
-            new FocusEvent("focus", { bubbles: false, cancelable: false })
-          );
+          onFocus({ currentTarget: ref.current, target: ref.current });
         } else {
-          rover.focus();
+          self.focus();
         }
       }
-    }, [focused, options.unstable_moves, options.activeDescendant]);
+    }, [
+      onFocus,
+      stopId,
+      focused,
+      options.unstable_moves,
+      options.activeDescendant
+    ]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         if (!stopId || !event.currentTarget.contains(event.target)) return;
-        if (options.activeDescendant) {
-          event.currentTarget.closest("[aria-activedescendant]").focus();
-        }
         // this is already focused, so we move silently
         options.setCurrentId(stopId);
+        if (
+          options.activeDescendant &&
+          getActiveElement(event.currentTarget) !== options.compositeRef.current
+        ) {
+          options.compositeRef.current?.focus();
+        }
       },
-      [options.setCurrentId, stopId, options.activeDescendant]
+      [
+        options.setCurrentId,
+        stopId,
+        options.activeDescendant,
+        options.compositeRef
+      ]
+    );
+
+    const onMouseDown = React.useCallback(
+      (event: React.MouseEvent) => {
+        event.preventDefault();
+        onFocus({ currentTarget: ref.current, target: ref.current });
+      },
+      [onFocus]
     );
 
     const onKeyDown = React.useMemo(
@@ -212,13 +235,23 @@ export const unstable_useCompositeItem = createHook<
       "aria-selected": options.activeDescendant && focused ? true : undefined,
       tabIndex: !options.activeDescendant && shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
       onKeyDown,
       ...htmlProps
     };
+  },
+
+  useComposeProps(options, htmlProps) {
+    htmlProps = unstable_useId(options, htmlProps);
+    const tabbableHTMLProps = useTabbable(options, htmlProps);
+    if (options.activeDescendant) {
+      return { ...tabbableHTMLProps, onMouseDown: htmlProps.onMouseDown };
+    }
+    return tabbableHTMLProps;
   }
 });
 
 export const unstable_CompositeItem = createComponent({
-  as: "div",
+  as: "button",
   useHook: unstable_useCompositeItem
 });

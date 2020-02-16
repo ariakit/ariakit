@@ -17,6 +17,7 @@ type CreateHookOptions<O, P> = {
   useOptions?: (options: O, htmlProps: P) => O;
   useProps?: (options: O, htmlProps: P) => P;
   useComposeOptions?: (options: O, htmlProps: P) => O;
+  useComposeProps?: (options: O, htmlProps: P) => P;
   propsAreEqual?: (prev: O & P, next: O & P) => boolean | undefined | null;
   keys?: ReadonlyArray<keyof O>;
 };
@@ -89,10 +90,14 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       if (options.useComposeOptions) {
         hookOptions = options.useComposeOptions(hookOptions, htmlProps);
       }
-      composedHooks.forEach(hook => {
-        // @ts-ignore The third option is only used internally
-        htmlProps = hook(hookOptions, htmlProps, true);
-      });
+      if (options.useComposeProps) {
+        htmlProps = options.useComposeProps(hookOptions, htmlProps);
+      } else {
+        composedHooks.forEach(hook => {
+          // @ts-ignore The third option is only used internally
+          htmlProps = hook(hookOptions, htmlProps, true);
+        });
+      }
     }
     return htmlProps;
   };

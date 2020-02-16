@@ -38,7 +38,7 @@ export function useTabbableProps(
       outline: 0;
 
       &:focus,
-      &[aria-selected="true"] {
+      &:focus-within &[aria-selected="true"] {
         box-shadow: 0 0 0 0.2em ${boxShadowColor};
         position: relative;
         z-index: 2;

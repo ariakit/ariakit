@@ -33,6 +33,10 @@ export type unstable_CompositeState = unstable_IdState & {
    */
   orientation?: "horizontal" | "vertical";
   /**
+   * TODO.
+   */
+  compositeRef: React.MutableRefObject<HTMLElement | undefined>;
+  /**
    * A list of stops.
    */
   stops: Stop[];
@@ -189,7 +193,7 @@ type CompositeReducerAction =
 
 type CompositeReducerState = Omit<
   unstable_CompositeState,
-  keyof unstable_IdState
+  "compositeRef" | keyof unstable_IdState
 >;
 
 function groupByRow(stops: Stop[]) {
@@ -519,12 +523,14 @@ export function unstable_useCompositeState(
     unstable_moves: 0,
     unstable_pastId: null
   });
+  const compositeRef = React.useRef<HTMLElement>();
 
   const idState = unstable_useIdState(sealed);
 
   return {
     ...idState,
     ...state,
+    compositeRef,
     registerStop: React.useCallback(
       stop => dispatch({ type: "registerStop", stop }),
       []
@@ -582,6 +588,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
   "activeDescendant",
   "orientation",
+  "compositeRef",
   "stops",
   "rows",
   "currentId",
