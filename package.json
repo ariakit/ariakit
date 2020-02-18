@@ -86,7 +86,7 @@
     "eslint-plugin-markdown": "1.0.1",
     "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-react": "7.18.3",
-    "eslint-plugin-react-hooks": "2.3.0",
+    "eslint-plugin-react-hooks": "2.4.0",
     "fs-extra": "8.1.0",
     "husky": "4.2.1",
     "jest": "25.1.0",
