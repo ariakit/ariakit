@@ -62,7 +62,7 @@
     "@types/storybook__react": "4.0.2",
     "@types/vfile-message": "1.0.1",
     "@types/wordpress__jest-console": "3.0.1",
-    "@typescript-eslint/eslint-plugin": "2.19.0",
+    "@typescript-eslint/eslint-plugin": "2.20.0",
     "@typescript-eslint/parser": "2.19.0",
     "@wordpress/jest-console": "3.5.0",
     "ast-to-markdown": "0.2.2",
