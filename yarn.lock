@@ -9488,10 +9488,10 @@ gatsby-transformer-sharp@2.3.14:
     semver "^5.7.1"
     sharp "^0.23.4"
 
-gatsby-transformer-yaml@2.2.24:
-  version "2.2.24"
-  resolved "https://registry.yarnpkg.com/gatsby-transformer-yaml/-/gatsby-transformer-yaml-2.2.24.tgz#93989ac6cf7a1c22c597f7b6559ccfff17ed8e84"
-  integrity sha512-6+uQwzIaMRc6WPIFJIaR1MqAULpev8+eo6pdZFm/6/MAMSb9t6A9dge8+V4ahhGhLJr26HI4d2/JpnzLihKTTg==
+gatsby-transformer-yaml@2.2.25:
+  version "2.2.25"
+  resolved "https://registry.yarnpkg.com/gatsby-transformer-yaml/-/gatsby-transformer-yaml-2.2.25.tgz#4aa432d571a41d39c6cb3c85c9261b7806a98192"
+  integrity sha512-W+rbrTbpabF74U9B6PcqwbUSvlKPtnUEq+ujx4w8mqbP152ttN15TRFtZHmqQdqupokdHMzq87dTZlD4qkWbzw==
   dependencies:
     "@babel/runtime" "^7.7.6"
     js-yaml "^3.13.1"

@@ -42,7 +42,7 @@
     "gatsby-source-filesystem": "2.1.48",
     "gatsby-transformer-remark": "2.6.50",
     "gatsby-transformer-sharp": "2.3.14",
-    "gatsby-transformer-yaml": "2.2.24",
+    "gatsby-transformer-yaml": "2.2.25",
     "lodash": "4.17.15",
     "mdast-util-to-string": "1.0.7",
     "prop-types": "15.7.2",
