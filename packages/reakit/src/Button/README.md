@@ -28,6 +28,50 @@ function Example() {
 }
 ```
 
+## Styling
+
+### CSS in JS
+
+- The example below uses [Emotion](https://emotion.sh/docs/introduction) and demonstrates how CSS in JS can be used to style Reakit components. These styles can be reproduced using static CSS, other CSS in JS libraries, or Styled-Components.
+
+```jsx unstyled
+import { Button } from "reakit/Button";
+import { css } from "emotion";
+
+const className = css`
+  color: #ffffff;
+  background: #006dff;
+  padding: 0.375em 0.75em;
+  line-height: 1.5;
+  border: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 2.5px;
+  &[aria-disabled="true"] {
+    cursor: auto;
+  }
+  &:not([aria-disabled="true"]) {
+    &:hover {
+      color: #ffffff;
+      border-color: #0057cc;
+      background-color: #0062e6;
+    }
+    &:active,
+    &[aria-expanded="true"] {
+      color: #ffffff;
+      border-color: #0058cf;
+      background-color: #004eb8;
+    }
+  }
+`;
+
+function Example() {
+  return <Button className={className}>Button</Button>;
+}
+```
+
+Learn more in [Styling](/docs/styling/).
+
 ## Accessibility
 
 - `Button` has role `button`.
@@ -88,132 +132,6 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Button` uses [Tabbable](/docs/tabbable/), and is used by [FormPushButton](/docs/form/), [FormRemoveButton](/docs/form/), [Disclosure](/docs/disclosure/) and all their derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
-
-## Styling
-
-### Inline Styles
-
-- Inline styles can't access psuedo elements, so there is no `:hover` styling
-
-```jsx
-import { Button } from "reakit/Button";
-
-function Example() {
-  return (
-    <Button
-      style={{
-        color: "white",
-        background: "#006DFF",
-        padding: "0.375em 0.75em",
-        lineHeight: "1.5",
-        border: "transparent",
-        cursor: "pointer",
-        fontSize: "16px",
-        borderRadius: "2.5px"
-      }}
-    >
-      Button
-    </Button>
-  );
-}
-```
-
-### CSS in JS
-
-- Example uses emotion
-
-```jsx
-import { Button } from "reakit/Button";
-import { css } from "emotion";
-
-function Example() {
-  return (
-    <Button
-      className={css`
-        color: #ffffff;
-        background: #006dff;
-        padding: 0.375em 0.75em;
-        line-height: 1.5;
-        border: transparent;
-        cursor: pointer;
-        font-size: 16px;
-        border-radius: 2.5px;
-        &[aria-disabled="true"] {
-          cursor: auto;
-        }
-        &:not([aria-disabled="true"]) {
-          &:hover {
-            color: #ffffff;
-            border-color: #0057cc;
-            background-color: #0062e6;
-          }
-          &:active,
-          &[aria-expanded="true"] {
-            color: #ffffff;
-            border-color: #0058cf;
-            background-color: #004eb8;
-          }
-        }
-      `}
-    >
-      Button
-    </Button>
-  );
-}
-```
-
-### Styled-Components
-
-> When using libraries like styled-components, you'll not be able to use the Reakit [`as` prop](https://reakit.io/docs/composition/#as-prop) since styled components have their own built-in `as` prop which is not passed down to the underlying component. You can use [render props](https://reakit.io/docs/composition/#render-props) instead to achieve the same functionality
-
-<!-- ```jsx
-import { Button } from "reakit/Button";
-import styled from "styled-components";
-
-const StyledButton = styled(Button)`
-  color: #ffffff;
-  background: red;
-  padding: 0.375em 0.75em;
-  line-height: 1.5;
-  border: transparent;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 2.5px;
-  &[aria-disabled="true"] {
-    cursor: auto;
-  }
-  &:not([aria-disabled="true"]) {
-    &:hover {
-      color: #ffffff;
-      border-color: #0057cc;
-      background-color: #0062e6;
-    }
-    &:active,
-    &[aria-expanded="true"] {
-      color: #ffffff;
-      border-color: #0058cf;
-      background-color: #004eb8;
-    }
-  }
-`;
-
-function Example() {
-  return <StyledButton>Button</StyledButton>;
-}
-``` -->
-
-<!-- When the example above is uncommented, I get the error below. -->
-
-<!-- TypeError: Cannot read property 'length' of undefined
-areHookInputsEqual
-node_modules/react-dom/cjs/react-dom.development.js:16201
-  16198 | {
-  16199 |   // Don't bother comparing lengths in prod because these arrays should be
-  16200 |   // passed inline.
-> 16201 |   if (nextDeps.length !== prevDeps.length) {
-  16202 |     warning$1(false, 'The final argument passed to %s changed size between renders. The ' + 'order and size of this array must remain constant.\n\n' + 'Previous: %s\n' + 'Incoming: %s', currentHookNameInDev, "[" + prevDeps.join(', ') + "]", "[" + nextDeps.join(', ') + "]");
-  16203 |   }
-  16204 | } -->
 
 ## Props
 
