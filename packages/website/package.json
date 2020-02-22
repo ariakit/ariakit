@@ -44,7 +44,7 @@
     "gatsby-transformer-sharp": "2.3.14",
     "gatsby-transformer-yaml": "2.2.25",
     "lodash": "4.17.15",
-    "mdast-util-to-string": "1.0.7",
+    "mdast-util-to-string": "1.0.8",
     "prop-types": "15.7.2",
     "qs": "6.9.1",
     "react": "16.12.0",
