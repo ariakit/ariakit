@@ -2649,9 +2649,9 @@
     strip-ansi "^3"
 
 "@popperjs/core@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.0.5.tgz#90ff3013c747c499c8b1d9684b63a7334a057f7d"
-  integrity sha512-YOV1TitTNzJDXe/14sDJO/M/aL12Jhind0EkQRnqTX2167fqJsAICJfi0vsDdapPI1WaYsheyYYgy6PO02Nqqg==
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.0.6.tgz#5a39ac118811ca844155b0ad5190b8c24f35e533"
+  integrity sha512-zj7Gw8QC4jmR92eKUvtrZUEpl2ypRbq+qlE4pwf9n2hnUO9BOAcWUs4/Ht+gNIbFt98xtqhLvccdCfD469MzpQ==
 
 "@reach/router@1.2.1":
   version "1.2.1"
