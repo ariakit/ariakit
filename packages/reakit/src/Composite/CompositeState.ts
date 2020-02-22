@@ -27,7 +27,7 @@ export type unstable_CompositeState = unstable_IdState & {
   /**
    * TODO
    */
-  activeDescendant: boolean;
+  unstable_focusStrategy: "roving-tabindex" | "aria-activedescendant";
   /**
    * Defines the orientation of the composite.
    */
@@ -133,8 +133,8 @@ export type unstable_CompositeActions = unstable_IdActions & {
   /**
    * TODO
    */
-  setActiveDescendant: React.Dispatch<
-    unstable_CompositeState["activeDescendant"]
+  unstable_setFocusStrategy: React.Dispatch<
+    unstable_CompositeState["unstable_focusStrategy"]
   >;
   /**
    * TODO
@@ -158,7 +158,7 @@ export type unstable_CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
       unstable_CompositeState,
-      "activeDescendant" | "orientation" | "currentId" | "loop" | "wrap"
+      "unstable_focusStrategy" | "orientation" | "currentId" | "loop" | "wrap"
     >
   >;
 
@@ -180,8 +180,8 @@ type CompositeReducerAction =
   | { type: "last" }
   | { type: "reset" }
   | {
-      type: "setActiveDescendant";
-      activeDescendant: unstable_CompositeState["activeDescendant"];
+      type: "unstable_setFocusStrategy";
+      unstable_focusStrategy: unstable_CompositeState["unstable_focusStrategy"];
     }
   | {
       type: "setOrientation";
@@ -486,8 +486,11 @@ function reducer(
         unstable_pastId: null
       };
     }
-    case "setActiveDescendant":
-      return { ...state, activeDescendant: action.activeDescendant };
+    case "unstable_setFocusStrategy":
+      return {
+        ...state,
+        unstable_focusStrategy: action.unstable_focusStrategy
+      };
     case "setOrientation":
       return { ...state, orientation: action.orientation };
     case "setCurrentId":
@@ -506,14 +509,14 @@ export function unstable_useCompositeState(
 ): unstable_CompositeStateReturn {
   const {
     orientation,
-    activeDescendant = false,
+    unstable_focusStrategy = "roving-tabindex",
     currentId = null,
     loop = false,
     wrap = false,
     ...sealed
   } = useSealedState(initialState);
   const [state, dispatch] = React.useReducer(reducer, {
-    activeDescendant,
+    unstable_focusStrategy,
     orientation,
     stops: [],
     rows: [],
@@ -524,7 +527,6 @@ export function unstable_useCompositeState(
     unstable_pastId: null
   });
   const compositeRef = React.useRef<HTMLElement>();
-
   const idState = unstable_useIdState(sealed);
 
   return {
@@ -567,8 +569,12 @@ export function unstable_useCompositeState(
     first: React.useCallback(() => dispatch({ type: "first" }), []),
     last: React.useCallback(() => dispatch({ type: "last" }), []),
     unstable_reset: React.useCallback(() => dispatch({ type: "reset" }), []),
-    setActiveDescendant: React.useCallback(
-      a => dispatch({ type: "setActiveDescendant", activeDescendant: a }),
+    unstable_setFocusStrategy: React.useCallback(
+      a =>
+        dispatch({
+          type: "unstable_setFocusStrategy",
+          unstable_focusStrategy: a
+        }),
       []
     ),
     setOrientation: React.useCallback(
@@ -586,7 +592,7 @@ export function unstable_useCompositeState(
 
 const keys: Array<keyof unstable_CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
-  "activeDescendant",
+  "unstable_focusStrategy",
   "orientation",
   "compositeRef",
   "stops",
@@ -608,7 +614,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "first",
   "last",
   "unstable_reset",
-  "setActiveDescendant",
+  "unstable_setFocusStrategy",
   "setOrientation",
   "setCurrentId",
   "setLoop",

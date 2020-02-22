@@ -30,7 +30,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
   > &
   Pick<
     unstable_CompositeStateReturn,
-    | "activeDescendant"
+    | "unstable_focusStrategy"
     | "compositeRef"
     | "stops"
     | "currentId"
@@ -98,6 +98,29 @@ export const unstable_useCompositeItem = createHook<
       };
     }, [stopId, trulyDisabled, options.registerStop, options.unregisterStop]);
 
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        if (!stopId || !event.currentTarget.contains(event.target)) return;
+        // this is already focused, so we move silently
+        options.setCurrentId(stopId);
+        if (options.unstable_focusStrategy === "aria-activedescendant") {
+          // event.currentTarget.scrollIntoViewIfNeeded();
+          if (
+            getActiveElement(event.currentTarget) !==
+            options.compositeRef.current
+          ) {
+            options.compositeRef.current?.focus();
+          }
+        }
+      },
+      [
+        options.setCurrentId,
+        stopId,
+        options.unstable_focusStrategy,
+        options.compositeRef
+      ]
+    );
+
     React.useEffect(() => {
       const self = ref.current;
       if (!self) {
@@ -110,7 +133,7 @@ export const unstable_useCompositeItem = createHook<
         return;
       }
       if (options.unstable_moves && focused && !hasFocusWithin(self)) {
-        if (options.activeDescendant) {
+        if (options.unstable_focusStrategy === "aria-activedescendant") {
           onFocus({ currentTarget: ref.current, target: ref.current });
         } else {
           self.focus();
@@ -121,37 +144,17 @@ export const unstable_useCompositeItem = createHook<
       stopId,
       focused,
       options.unstable_moves,
-      options.activeDescendant
+      options.unstable_focusStrategy
     ]);
-
-    const onFocus = React.useCallback(
-      (event: React.FocusEvent) => {
-        if (!stopId || !event.currentTarget.contains(event.target)) return;
-        // this is already focused, so we move silently
-        options.setCurrentId(stopId);
-        if (
-          options.activeDescendant &&
-          getActiveElement(event.currentTarget) !== options.compositeRef.current
-        ) {
-          options.compositeRef.current?.focus();
-        }
-      },
-      [
-        options.setCurrentId,
-        stopId,
-        options.activeDescendant,
-        options.compositeRef
-      ]
-    );
 
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
-        if (options.activeDescendant) {
+        if (options.unstable_focusStrategy === "aria-activedescendant") {
           event.preventDefault();
           onFocus({ currentTarget: ref.current, target: ref.current });
         }
       },
-      [onFocus, options.activeDescendant]
+      [onFocus, options.unstable_focusStrategy]
     );
 
     const onKeyDown = React.useMemo(
@@ -171,17 +174,23 @@ export const unstable_useCompositeItem = createHook<
                 options.previous && options.previous();
               }
             },
-            ArrowRight:
-              options.orientation !== "vertical" && (() => options.next()),
-            ArrowDown: () => {
-              if (stop?.rowId) {
-                options.down && options.down();
-              } else if (options.orientation !== "vertical") {
+            ArrowRight: () => {
+              if (options.orientation !== "vertical") {
                 options.next && options.next();
               }
             },
-            ArrowLeft:
-              options.orientation !== "vertical" && (() => options.previous()),
+            ArrowDown: () => {
+              if (stop?.rowId) {
+                options.down && options.down();
+              } else if (options.orientation !== "horizontal") {
+                options.next && options.next();
+              }
+            },
+            ArrowLeft: () => {
+              if (options.orientation !== "vertical") {
+                options.previous && options.previous();
+              }
+            },
             Home: event => {
               if (stop?.rowId) {
                 if (event.ctrlKey) {
@@ -234,8 +243,15 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id: stopId,
-      "aria-selected": options.activeDescendant && focused ? true : undefined,
-      tabIndex: !options.activeDescendant && shouldTabIndex ? htmlTabIndex : -1,
+      "aria-selected":
+        options.unstable_focusStrategy === "aria-activedescendant" && focused
+          ? true
+          : undefined,
+      tabIndex:
+        options.unstable_focusStrategy !== "aria-activedescendant" &&
+        shouldTabIndex
+          ? htmlTabIndex
+          : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
       onKeyDown,
@@ -248,7 +264,7 @@ export const unstable_useCompositeItem = createHook<
     htmlProps = unstable_useId(options, htmlProps, true);
     // @ts-ignore
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
-    if (options.activeDescendant) {
+    if (options.unstable_focusStrategy === "aria-activedescendant") {
       return { ...tabbableHTMLProps, onMouseDown: htmlProps.onMouseDown };
     }
     return tabbableHTMLProps;

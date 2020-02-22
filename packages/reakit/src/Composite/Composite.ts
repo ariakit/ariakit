@@ -25,7 +25,7 @@ export type unstable_CompositeOptions = TabbableOptions &
   > &
   Pick<
     unstable_CompositeStateReturn,
-    | "activeDescendant"
+    | "unstable_focusStrategy"
     | "compositeRef"
     | "stops"
     | "currentId"
@@ -91,7 +91,9 @@ export const unstable_useComposite = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-      "aria-activedescendant": options.activeDescendant ? currentStop?.id : "",
+      "aria-activedescendant": options.unstable_focusStrategy
+        ? currentStop?.id
+        : "",
       ...htmlProps
     };
   },
@@ -102,7 +104,7 @@ export const unstable_useComposite = createHook<
     htmlProps = unstable_useIdGroup(options, htmlProps, true);
     // @ts-ignore
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
-    if (options.activeDescendant) {
+    if (options.unstable_focusStrategy === "aria-activedescendant") {
       return tabbableHTMLProps;
     }
     return htmlProps;
