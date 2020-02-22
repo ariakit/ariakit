@@ -6756,7 +6756,7 @@ css-select@^2.0.0:
     domutils "^1.7.0"
     nth-check "^1.0.2"
 
-css-selector-parser@^1.1.0:
+css-selector-parser@^1.0.0, css-selector-parser@^1.1.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/css-selector-parser/-/css-selector-parser-1.3.0.tgz#5f1ad43e2d8eefbfdc304fcd39a521664943e3eb"
   integrity sha1-XxrUPi2O77/cME/NOaUhZklD4+s=
@@ -14399,7 +14399,7 @@ npmlog@^4.0.1, npmlog@^4.1.2:
     gauge "~2.7.3"
     set-blocking "~2.0.0"
 
-nth-check@^1.0.1, nth-check@^1.0.2, nth-check@~1.0.1:
+nth-check@^1.0.0, nth-check@^1.0.1, nth-check@^1.0.2, nth-check@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nth-check/-/nth-check-1.0.2.tgz#b2bd295c37e3dd58a3bf0700376663ba4d9cf05c"
   integrity sha512-WeBOdju8SnzPN5vTUJYxYUxLeXpCaVP5i5e0LF8fg7WORF2Wd7wFX/pk0tYZk7s8T+J7VLy0Da6J1+wCT0AtHg==
@@ -19841,16 +19841,16 @@ unist-util-remove@1.0.3:
   dependencies:
     unist-util-is "^3.0.0"
 
-unist-util-select@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/unist-util-select/-/unist-util-select-3.0.0.tgz#36cef56c000caa09c51383269946ab17365c702e"
-  integrity sha512-eBOYflIHlKWNI/FTmObsPiPbRQG59POGuddDx4X7b99uxDDMpbOfJLozkazJhcOpKmCYAKqwpZ4IqEaOONqk3A==
+unist-util-select@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/unist-util-select/-/unist-util-select-3.0.1.tgz#787fc452db9ba77f0ade0e7dc53c3d9d4acc79c7"
+  integrity sha512-VQpTuqZVJlRbosQdnLdTPIIqwZeU70YZ5aMBOqtFNGeeCdYn6ORZt/9RiaVlbl06ocuf58SVMoFa7a13CSGPMA==
   dependencies:
-    css-selector-parser "^1.1.0"
+    css-selector-parser "^1.0.0"
     not "^0.1.0"
-    nth-check "^1.0.1"
+    nth-check "^1.0.0"
     unist-util-is "^4.0.0"
-    zwitch "^1.0.3"
+    zwitch "^1.0.0"
 
 unist-util-select@^1.5.0:
   version "1.5.0"
@@ -21083,7 +21083,7 @@ yurnalist@^1.1.1:
     strip-ansi "^5.2.0"
     strip-bom "^4.0.0"
 
-zwitch@^1.0.0, zwitch@^1.0.3:
+zwitch@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/zwitch/-/zwitch-1.0.5.tgz#d11d7381ffed16b742f6af7b3f223d5cd9fe9920"
   integrity sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==
