@@ -19,7 +19,7 @@
     "url": "https://opencollective.com/reakit"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest -i",
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",

@@ -6,7 +6,7 @@
     ]
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest -i",
     "test:all": "yarn lint && yarn docs && yarn build && yarn type-check && yarn test && yarn website:build && yarn clean && yarn website:serve",
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",

@@ -31,16 +31,15 @@
     "system"
   ],
   "dependencies": {
-    "color": "3.1.2"
+    "color": "3.1.2",
+    "reakit-system": "^0.9.0"
   },
   "devDependencies": {
-    "@types/color": "3.0.1",
-    "reakit-system": "^0.9.0"
+    "@types/color": "3.0.1"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit": "^1.0.0-beta.16",
-    "reakit-system": "^0.9.0"
+    "reakit": "^1.0.0-beta.16"
   }
 }
