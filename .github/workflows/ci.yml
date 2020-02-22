@@ -13,7 +13,7 @@ jobs:
     - name: Set up Node v10.x
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: '12.x'
 
     - name: Yarn cache directory
       id: yarn-cache-dir
@@ -32,6 +32,12 @@ jobs:
     - name: Lint
       run: yarn lint
 
+    - name: Docs
+      run: yarn docs
+
+    - name: Build
+      run: yarn build
+
     - name: Type check
       run: yarn type-check
 
@@ -42,9 +48,3 @@ jobs:
       env: 
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: bash <(curl -s https://codecov.io/bash)
-
-    - name: Docs
-      run: yarn docs
-
-    - name: Build
-      run: yarn build
