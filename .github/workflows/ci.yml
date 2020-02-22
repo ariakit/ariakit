@@ -1,20 +1,19 @@
 name: ci
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master, next, v*]
+  pull_request:
 
 jobs:
-  setup:
-    name: Setup
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Set up Node v12.x
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: 12
 
     - name: Yarn cache directory
       id: yarn-cache-dir
@@ -22,47 +21,25 @@ jobs:
 
     - name: Yarn cache
       uses: actions/cache@v1
+      id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: ${{ runner.os }}-yarn-
+        restore-keys: |
+          ${{ runner.os }}-yarn-
 
     - name: Install dependencies
       run: yarn
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: setup
+    - name: Lint
+      run: yarn lint
 
-    steps:
-      - name: Lint
-        run: yarn lint
+    - name: Docs
+      run: yarn docs
 
-  docs:
-    name: Docs
-    runs-on: ubuntu-latest
-    needs: setup
+    - name: Build
+      run: yarn build
 
-    steps:
-      - name: Docs
-        run: yarn docs
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-      - name: Build
-        run: yarn build
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
     - name: Type check
       run: yarn type-check
 
