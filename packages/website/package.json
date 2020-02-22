@@ -40,7 +40,7 @@
     "gatsby-remark-autolink-headers": "2.1.24",
     "gatsby-remark-external-links": "0.0.4",
     "gatsby-source-filesystem": "2.1.48",
-    "gatsby-transformer-remark": "2.6.50",
+    "gatsby-transformer-remark": "2.6.53",
     "gatsby-transformer-sharp": "2.3.14",
     "gatsby-transformer-yaml": "2.2.25",
     "lodash": "4.17.15",
