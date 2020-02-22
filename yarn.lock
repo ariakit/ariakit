@@ -19769,12 +19769,12 @@ unist-util-remove-position@^1.0.0, unist-util-remove-position@^1.1.4:
   dependencies:
     unist-util-visit "^1.1.0"
 
-unist-util-remove@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/unist-util-remove/-/unist-util-remove-1.0.3.tgz#58ec193dfa84b52d5a055ffbc58e5444eb8031a3"
-  integrity sha512-mB6nCHCQK0pQffUAcCVmKgIWzG/AXs/V8qpS8K72tMPtOSCMSjDeMc5yN+Ye8rB0FhcE+JvW++o1xRNc0R+++g==
+unist-util-remove@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/unist-util-remove/-/unist-util-remove-2.0.0.tgz#32c2ad5578802f2ca62ab808173d505b2c898488"
+  integrity sha512-HwwWyNHKkeg/eXRnE11IpzY8JT55JNM1YCwwU9YNCnfzk6s8GhPXrVBBZWiwLeATJbI7euvoGSzcy9M29UeW3g==
   dependencies:
-    unist-util-is "^3.0.0"
+    unist-util-is "^4.0.0"
 
 unist-util-select@3.0.1:
   version "3.0.1"
