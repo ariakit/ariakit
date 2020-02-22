@@ -38,7 +38,7 @@
     ]
   },
   "resolutions": {
-    "@types/react": "16.9.19"
+    "@types/react": "16.9.22"
   },
   "devDependencies": {
     "@babel/cli": "7.8.4",
@@ -57,7 +57,7 @@
     "@textlint/markdown-to-ast": "6.1.7",
     "@types/jest": "25.1.2",
     "@types/prop-types": "15.7.3",
-    "@types/react": "16.9.19",
+    "@types/react": "16.9.22",
     "@types/react-dom": "16.9.5",
     "@types/storybook__react": "5.2.1",
     "@types/vfile-message": "1.0.1",
