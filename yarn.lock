@@ -19493,10 +19493,10 @@ ts-dedent@^1.1.0:
   resolved "https://registry.yarnpkg.com/ts-dedent/-/ts-dedent-1.1.1.tgz#68fad040d7dbd53a90f545b450702340e17d18f3"
   integrity sha512-UGTRZu1evMw4uTPyYF66/KFd22XiU+jMaIuHrkIHQ2GivAXVlLV0v/vHrpOuTRf9BmpNHi/SO7Vd0rLu0y57jg==
 
-ts-morph@6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-6.0.2.tgz#706ea79d1e604837150a885098287bd9d65c4660"
-  integrity sha512-o7FPVY0jMSKlJHfyfEkiCWTq7vqdmNLQaQd4jXY7lxCELgh+h7zI+frvSe7S0o/TJAAKViy9wM/FzRXW+9LnZQ==
+ts-morph@6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-6.0.3.tgz#1fdd15ab45de728d3caec626e6ac71fd9707d549"
+  integrity sha512-Pq4AQvwIZoEgnZiYjMcUbuQi8SrLrFGnRM3gwBaIstPg7cFqknt1Hm1q8od9ng37y0bErHASG6tyWlx/yXPMuQ==
   dependencies:
     "@dsherret/to-absolute-glob" "^2.0.2"
     "@ts-morph/common" "~0.2.2"
