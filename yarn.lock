@@ -3603,10 +3603,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@types/yup@0.26.30":
-  version "0.26.30"
-  resolved "https://registry.yarnpkg.com/@types/yup/-/yup-0.26.30.tgz#0d6066505bb67e7b9b161b2082c4cdfcdafd6a6b"
-  integrity sha512-b/uklO68T/eShWnxjlgwOJlEFOQ11ib3i1wQQiLmHqFJTxDMvz+tb4XzThGQISzOcelMnoSdb1Po4s69YkEQeg==
+"@types/yup@0.26.32":
+  version "0.26.32"
+  resolved "https://registry.yarnpkg.com/@types/yup/-/yup-0.26.32.tgz#bd356fb405f3d641eff963854edf7ad854a8e829"
+  integrity sha512-55WFAq8lNYXdRzSP1cenMFFXtPRe7PWsqn5y9ibqKHOQZ/cSLErkcnB1LE89M7W2TSXVDFtx+T7eFePkGoB+xw==
 
 "@typescript-eslint/eslint-plugin@2.20.0", "@typescript-eslint/eslint-plugin@^2.11.0":
   version "2.20.0"
