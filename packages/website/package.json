@@ -70,6 +70,6 @@
     "yup": "0.28.1"
   },
   "devDependencies": {
-    "babel-preset-gatsby": "0.2.28"
+    "babel-preset-gatsby": "0.2.29"
   }
 }
