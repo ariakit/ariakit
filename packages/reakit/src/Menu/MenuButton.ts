@@ -53,16 +53,17 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             stopPropagation: event => event.key !== "Escape",
             onKey: options.show,
             keyMap: () => {
+              // prevents scroll jump
+              const first = () => setTimeout(options.first);
               return {
                 Escape: options.hide,
-                Enter: hasParent && options.first,
-                " ": hasParent && options.first,
+                Enter: hasParent && first,
+                " ": hasParent && first,
                 ArrowUp:
                   dir === "top" || dir === "bottom" ? options.last : false,
-                ArrowRight: dir === "right" && options.first,
-                ArrowDown:
-                  dir === "bottom" || dir === "top" ? options.first : false,
-                ArrowLeft: dir === "left" && options.first
+                ArrowRight: dir === "right" && first,
+                ArrowDown: dir === "bottom" || dir === "top" ? first : false,
+                ArrowLeft: dir === "left" && first
               };
             }
           }),
