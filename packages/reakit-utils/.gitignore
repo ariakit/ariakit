@@ -20,6 +20,7 @@
 /removeIndexFromArray
 /pick
 /omit
+/matches
 /isPromise
 /isPlainObject
 /isObject

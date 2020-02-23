@@ -1,6 +1,7 @@
 /** @module tabbable */
 import { closest } from "./closest";
 import { getActiveElement } from "./getActiveElement";
+import { matches } from "./matches";
 
 const selector =
   "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +
@@ -35,7 +36,7 @@ function hasNegativeTabIndex(element: Element) {
  * isFocusable(document.querySelector("input:disabled")); // false
  */
 export function isFocusable(element: Element): boolean {
-  return element.matches(selector) && isVisible(element);
+  return matches(element, selector) && isVisible(element);
 }
 
 /**
