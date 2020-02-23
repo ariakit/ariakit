@@ -196,7 +196,7 @@ export function usePopoverState(
             // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
             name: "updateState",
             phase: "write",
-            enabled: true,
+            enabled: process.env.NODE_ENV !== "test",
             fn({ state }) {
               setPlacement(state.placement);
               setPopoverStyles(state.styles.popper as React.CSSProperties);

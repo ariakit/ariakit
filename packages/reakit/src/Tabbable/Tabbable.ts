@@ -127,6 +127,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           return;
         }
 
+        if (htmlOnMouseDown) {
+          htmlOnMouseDown(event);
+        }
+
         const self = event.currentTarget as HTMLElement;
         const target = event.target as HTMLElement;
 
@@ -137,10 +141,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           if (!hasFocusWithin(self) || self === target || !isFocusControl) {
             self.focus();
           }
-        }
-
-        if (htmlOnMouseDown) {
-          htmlOnMouseDown(event);
         }
       },
       [options.disabled, htmlOnMouseDown]
