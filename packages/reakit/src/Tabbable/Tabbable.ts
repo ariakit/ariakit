@@ -131,6 +131,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnMouseDown(event);
         }
 
+        if (event.defaultPrevented) {
+          return;
+        }
+
         const self = event.currentTarget as HTMLElement;
         const target = event.target as HTMLElement;
 
