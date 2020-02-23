@@ -35,7 +35,7 @@ function useCollection() {
   };
 }
 
-const useCollectionContext = constate(() => {
+const [CollectionProvider, useCollectionContext] = constate(() => {
   const value = useCollection();
   return React.useMemo(() => value, Object.values(value));
 });
@@ -71,7 +71,7 @@ function useScrollSpy() {
   return currentId;
 }
 
-const useScrollSpyContext = constate(useScrollSpy);
+const [ScrollSpyProvider, useScrollSpyContext] = constate(useScrollSpy);
 
 function useDocsInnerNavigationCSS() {
   const background = usePalette("background");
@@ -162,8 +162,8 @@ export default function DocsInnerNavigation({
   const className = useDocsInnerNavigationCSS();
 
   return (
-    <useCollectionContext.Provider>
-      <useScrollSpyContext.Provider>
+    <CollectionProvider>
+      <ScrollSpyProvider>
         <div className={className} key={title}>
           <Button
             as="a"
@@ -189,7 +189,7 @@ export default function DocsInnerNavigation({
           </div>
           <nav aria-labelledby={id}>{renderAst(tableOfContentsAst)}</nav>
         </div>
-      </useScrollSpyContext.Provider>
-    </useCollectionContext.Provider>
+      </ScrollSpyProvider>
+    </CollectionProvider>
   );
 }
