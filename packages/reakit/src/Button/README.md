@@ -30,15 +30,15 @@ function Example() {
 
 ## Styling
 
-### CSS in JS
-
-- The example below uses [Emotion](https://emotion.sh/docs/introduction) and demonstrates how CSS in JS can be used to style Reakit components. These styles can be reproduced using static CSS, other CSS in JS libraries, or Styled-Components.
+The example below uses [Emotion](https://emotion.sh/docs/introduction) and demonstrates how CSS-in-JS can be used to style Reakit components. These styles can be reproduced using static CSS and other CSS-in-JS libraries, such as [styled-components](https://styled-components.com/).
 
 ```jsx unstyled
 import { Button } from "reakit/Button";
 import { css } from "emotion";
 
 const className = css`
+  transition: box-shadow 0.15s ease-in-out;
+  outline: 0;
   color: #ffffff;
   background: #006dff;
   padding: 0.375em 0.75em;
@@ -46,10 +46,13 @@ const className = css`
   border: transparent;
   cursor: pointer;
   font-size: 16px;
-  border-radius: 2.5px;
+  border-radius: 0.25rem;
+
   &[aria-disabled="true"] {
     cursor: auto;
+    opacity: 0.5;
   }
+
   &:not([aria-disabled="true"]) {
     &:hover {
       color: #ffffff;
@@ -62,6 +65,13 @@ const className = css`
       border-color: #0058cf;
       background-color: #004eb8;
     }
+  }
+
+  &:focus,
+  [aria-activedescendant] &[aria-selected="true"] {
+    box-shadow: 0 0 0 0.2em rgba(0, 109, 255, 0.4);
+    position: relative;
+    z-index: 2;
   }
 `;
 
@@ -148,5 +158,5 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
-  similarly to `readOnly` on form elements. In this case, only
-  `aria-disabled` will be set.
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.

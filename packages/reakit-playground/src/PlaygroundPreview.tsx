@@ -11,6 +11,8 @@ import { ErrorMessage } from "./ErrorMessage";
 export type PlaygroundPreviewOptions = Partial<PlaygroundStateReturn> &
   Pick<PlaygroundStateReturn, "code"> & {
     /** TODO: Description */
+    unstyled?: boolean;
+    /** TODO: Description */
     modules?: Record<string, any>;
     /** TODO: Description */
     componentName?: string;
@@ -23,6 +25,7 @@ export type PlaygroundPreviewProps = PlaygroundPreviewOptions &
 
 export function PlaygroundPreview({
   code,
+  unstyled,
   modules,
   update,
   componentName,
@@ -66,11 +69,14 @@ export function PlaygroundPreview({
 
   const renderChildren = React.useCallback(
     (children: React.ReactNode) => (
-      <Provider unstable_prefix={`${prefix}`} unstable_system={system}>
+      <Provider
+        unstable_prefix={`${prefix}`}
+        unstable_system={unstyled ? {} : system}
+      >
         {children}
       </Provider>
     ),
-    [prefix]
+    [prefix, unstyled]
   );
 
   React.useEffect(() => {
