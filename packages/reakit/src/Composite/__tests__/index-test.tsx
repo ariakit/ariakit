@@ -8,11 +8,6 @@ import {
   unstable_CompositeItem as CompositeItem
 } from "..";
 
-function expectActiveDescendant(item: HTMLElement) {
-  const id = getActiveElement(item)?.getAttribute("aria-activedescendant");
-  expect(id).toBe(item.id);
-}
-
 test("first item is active", () => {
   const Test = () => {
     const item = useCompositeState();
@@ -227,19 +222,19 @@ test("move focus with arrow keys aria-activedescendant", () => {
   press.Tab();
   expect(composite).toHaveFocus();
   press.ArrowRight();
-  expectActiveDescendant(item1);
+  expect(item1).toHaveFocus();
   press.ArrowRight();
-  expectActiveDescendant(item2);
+  expect(item2).toHaveFocus();
   press.Tab();
   expect(button2).toHaveFocus();
   press.ShiftTab();
-  expectActiveDescendant(item2);
+  expect(item2).toHaveFocus();
   press.ArrowDown();
-  expectActiveDescendant(item3);
+  expect(item3).toHaveFocus();
   press.ArrowLeft();
-  expectActiveDescendant(item2);
+  expect(item2).toHaveFocus();
   press.ArrowUp();
-  expectActiveDescendant(item1);
+  expect(item1).toHaveFocus();
   press.ArrowLeft();
-  expectActiveDescendant(item1);
+  expect(item1).toHaveFocus();
 });
