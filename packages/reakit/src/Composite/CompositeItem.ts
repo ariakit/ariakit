@@ -36,7 +36,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
     | "currentId"
     | "registerStop"
     | "unregisterStop"
-    | "setCurrentId"
+    | "move"
     | "next"
     | "previous"
     | "up"
@@ -98,27 +98,32 @@ export const unstable_useCompositeItem = createHook<
       };
     }, [stopId, trulyDisabled, options.registerStop, options.unregisterStop]);
 
-    const onFocus = React.useCallback(
-      (event: React.FocusEvent) => {
-        if (!stopId || !event.currentTarget.contains(event.target)) return;
-        // this is already focused, so we move silently
-        options.setCurrentId(stopId);
+    const handleFocus = React.useCallback(
+      (currentTarget: Element, target: Element = currentTarget) => {
+        if (!stopId || !currentTarget.contains(target)) return;
+        options.move && options.move(stopId);
         if (options.unstable_focusStrategy === "aria-activedescendant") {
-          // event.currentTarget.scrollIntoViewIfNeeded();
+          // currentTarget.scrollIntoViewIfNeeded();
           if (
-            getActiveElement(event.currentTarget) !==
-            options.compositeRef.current
+            getActiveElement(currentTarget) !== options.compositeRef.current
           ) {
             options.compositeRef.current?.focus();
           }
         }
       },
       [
-        options.setCurrentId,
+        options.move,
         stopId,
         options.unstable_focusStrategy,
         options.compositeRef
       ]
+    );
+
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        handleFocus(event.currentTarget, event.target);
+      },
+      [handleFocus]
     );
 
     React.useEffect(() => {
@@ -134,7 +139,9 @@ export const unstable_useCompositeItem = createHook<
       }
       if (options.unstable_moves && focused && !hasFocusWithin(self)) {
         if (options.unstable_focusStrategy === "aria-activedescendant") {
-          onFocus({ currentTarget: ref.current, target: ref.current });
+          if (!hasFocusWithin(options.compositeRef.current!)) {
+            handleFocus(self);
+          }
         } else {
           self.focus();
         }
@@ -151,7 +158,7 @@ export const unstable_useCompositeItem = createHook<
       (event: React.MouseEvent) => {
         if (options.unstable_focusStrategy === "aria-activedescendant") {
           event.preventDefault();
-          onFocus({ currentTarget: ref.current, target: ref.current });
+          handleFocus(event.currentTarget);
         }
       },
       [onFocus, options.unstable_focusStrategy]

@@ -30,7 +30,9 @@ import { Group } from "reakit/Group";
 import { Button } from "reakit/Button";
 
 function Example() {
-  const composite = useCompositeState({ activeDescendant: true });
+  const composite = useCompositeState({
+    unstable_focusStrategy: "aria-activedescendant"
+  });
   return (
     <Composite {...composite}>
       <CompositeRow {...composite}>
@@ -98,6 +100,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   ID that will serve as a base for all the items IDs.
 
+- **`unstable_focusStrategy`** <span title="Experimental">⚠️</span>
+  <code>&#34;roving-tabindex&#34; | &#34;aria-activedescendant&#34;</code>
+
+  TODO
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -130,7 +137,7 @@ this is going to wrap rows, columns or both, it depends on the value of
 `wrap` only works if this is a two-dimensional composite (with rows and
 cells).
 
-### `CompositeItem`
+### `Composite`
 
 - **`disabled`**
   <code>boolean | undefined</code>
@@ -149,12 +156,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
-<details><summary>12 state props</summary>
+<details><summary>17 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -174,15 +176,27 @@ similarly to `readOnly` on form elements. In this case, only
   Stores the number of moves that have been made by calling `move`, `next`,
 `previous`, `up`, `down`, `first` or `last`.
 
+- **`unstable_focusStrategy`** <span title="Experimental">⚠️</span>
+  <code>&#34;roving-tabindex&#34; | &#34;aria-activedescendant&#34;</code>
+
+  TODO
+
 - **`currentId`**
   <code>string | null</code>
 
   The current focused stop ID.
 
+- **`compositeRef`**
+  <code>MutableRefObject&#60;HTMLElement | undefined&#62;</code>
+
+  TODO.
+
 - **`stops`**
   <code>Stop[]</code>
 
   A list of stops.
+TODO: Rename to items
+Use only "id" attribute on items
 
 - **`registerStop`**
   <code>(stop: Stop) =&#62; void</code>
@@ -209,6 +223,21 @@ similarly to `readOnly` on form elements. In this case, only
 
   Moves focus to the previous element.
 
+- **`rows`**
+  <code>Row[]</code>
+
+  A list rows.
+
+- **`up`**
+  <code title="(unstable_allTheWayInRow?: boolean | undefined) =&#62; void">(unstable_allTheWayInRow?: boolean | undefined)...</code>
+
+  Moves focus to the element above.
+
+- **`down`**
+  <code title="(unstable_allTheWayInRow?: boolean | undefined) =&#62; void">(unstable_allTheWayInRow?: boolean | undefined)...</code>
+
+  Moves focus to the element below.
+
 - **`first`**
   <code>() =&#62; void</code>
 
@@ -218,5 +247,162 @@ similarly to `readOnly` on form elements. In this case, only
   <code>() =&#62; void</code>
 
   Moves focus to the last element.
+
+</details>
+
+### `CompositeItem`
+
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>16 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the composite.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `up`, `down`, `first` or `last`.
+
+- **`unstable_focusStrategy`** <span title="Experimental">⚠️</span>
+  <code>&#34;roving-tabindex&#34; | &#34;aria-activedescendant&#34;</code>
+
+  TODO
+
+- **`currentId`**
+  <code>string | null</code>
+
+  The current focused stop ID.
+
+- **`compositeRef`**
+  <code>MutableRefObject&#60;HTMLElement | undefined&#62;</code>
+
+  TODO.
+
+- **`stops`**
+  <code>Stop[]</code>
+
+  A list of stops.
+TODO: Rename to items
+Use only "id" attribute on items
+
+- **`registerStop`**
+  <code>(stop: Stop) =&#62; void</code>
+
+  TODO
+
+- **`unregisterStop`**
+  <code>(id: string) =&#62; void</code>
+
+  TODO
+
+- **`next`**
+  <code title="(unstable_allTheWayInRow?: boolean | undefined) =&#62; void">(unstable_allTheWayInRow?: boolean | undefined)...</code>
+
+  Moves focus to the next element.
+
+- **`previous`**
+  <code title="(unstable_allTheWayInRow?: boolean | undefined) =&#62; void">(unstable_allTheWayInRow?: boolean | undefined)...</code>
+
+  Moves focus to the previous element.
+
+- **`up`**
+  <code title="(unstable_allTheWayInRow?: boolean | undefined) =&#62; void">(unstable_allTheWayInRow?: boolean | undefined)...</code>
+
+  Moves focus to the element above.
+
+- **`down`**
+  <code title="(unstable_allTheWayInRow?: boolean | undefined) =&#62; void">(unstable_allTheWayInRow?: boolean | undefined)...</code>
+
+  Moves focus to the element below.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first element.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given element ID.
+
+</details>
+
+### `CompositeRow`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`stopId`**
+  <code>string | undefined</code>
+
+  Element ID.
+
+<details><summary>5 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the composite.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been made by calling `move`, `next`,
+`previous`, `up`, `down`, `first` or `last`.
+
+- **`registerRow`**
+  <code>(row: Row) =&#62; void</code>
+
+  TODO
+
+- **`unregisterRow`**
+  <code>(id: string) =&#62; void</code>
+
+  TODO
 
 </details>

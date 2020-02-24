@@ -17,6 +17,7 @@ if (global.document) {
   });
 }
 
+// Consider [aria-activedescendant="${id}"] #${id} as the focused element.
 function toHaveFocus(element) {
   const result = matchers.toHaveFocus(element);
   const { activeElement } = element.ownerDocument;

@@ -38,6 +38,8 @@ export type unstable_CompositeState = unstable_IdState & {
   compositeRef: React.MutableRefObject<HTMLElement | undefined>;
   /**
    * A list of stops.
+   * TODO: Rename to items
+   * Use only "id" attribute on items
    */
   stops: Stop[];
   /**
@@ -187,7 +189,10 @@ type CompositeReducerAction =
       type: "setOrientation";
       orientation?: unstable_CompositeState["orientation"];
     }
-  | { type: "setCurrentId"; currentId: unstable_CompositeState["currentId"] }
+  | {
+      type: "setCurrentId";
+      currentId: unstable_CompositeState["currentId"];
+    }
   | { type: "setLoop"; loop: unstable_CompositeState["loop"] }
   | { type: "setWrap"; wrap: unstable_CompositeState["wrap"] };
 
@@ -300,34 +305,42 @@ function reducer(
       const { stop } = action;
       const row = rows.find(r => r.ref.current?.contains(stop.ref.current));
       const nextStop = { ...stop, rowId: row?.id };
+      const nextId = currentId || stops[0]?.id || stop.id;
       if (stops.length === 0) {
-        return { ...state, stops: [nextStop] };
+        return { ...state, stops: [nextStop], currentId: nextId };
       }
       if (stops.some(i => i.id === nextStop.id)) {
         return state;
       }
       const stopIndex = findDOMIndex(stops, nextStop);
       if (stopIndex === -1) {
-        return { ...state, stops: [...stops, nextStop] };
+        return { ...state, stops: [...stops, nextStop], currentId: nextId };
       }
       const nextStops = [
         ...stops.slice(0, stopIndex),
         nextStop,
         ...stops.slice(stopIndex)
       ];
-      return { ...state, stops: nextStops };
+      return { ...state, stops: nextStops, currentId: nextId };
     }
     case "unregisterStop": {
       const { id } = action;
-      const nextStops = stops.filter(stop => stop.id === id);
+      const nextStops = stops.filter(stop => stop.id !== id);
       if (nextStops.length === stops.length) {
         return state;
+      }
+      let nextId = currentId;
+      if (currentId && currentId === id) {
+        const index = stops.findIndex(stop => stop.id === id);
+        const nextIndex =
+          index >= nextStops.length ? nextStops.length - 1 : index;
+        nextId = nextStops[nextIndex]?.id;
       }
       return {
         ...state,
         stops: nextStops,
-        unstable_pastId: pastId && pastId === id ? null : pastId,
-        currentId: currentId && currentId === id ? null : currentId
+        currentId: nextId,
+        unstable_pastId: pastId && pastId === id ? null : pastId
       };
     }
     case "move": {
@@ -337,7 +350,7 @@ function reducer(
       if (id === null) {
         return {
           ...state,
-          currentId: null,
+          currentId: stops[0]?.id,
           unstable_pastId: currentId,
           unstable_moves: nextMoves
         };
@@ -482,7 +495,7 @@ function reducer(
     case "reset": {
       return {
         ...state,
-        currentId: null,
+        currentId: stops[0]?.id,
         unstable_pastId: null
       };
     }
@@ -494,7 +507,7 @@ function reducer(
     case "setOrientation":
       return { ...state, orientation: action.orientation };
     case "setCurrentId":
-      return { ...state, currentId: action.currentId };
+      return { ...state, currentId: action.currentId || stops[0]?.id };
     case "setLoop":
       return { ...state, loop: action.loop };
     case "setWrap":

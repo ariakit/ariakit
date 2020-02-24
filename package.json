@@ -73,7 +73,6 @@
     "babel-plugin-macros": "2.8.0",
     "babel-plugin-module-resolver": "4.0.0",
     "chalk": "3.0.0",
-    "core-js": "3.6.4",
     "cross-spawn": "7.0.1",
     "documentation": "12.1.4",
     "eslint": "6.8.0",
