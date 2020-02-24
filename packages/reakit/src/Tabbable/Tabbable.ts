@@ -88,8 +88,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
       style: htmlStyle,
+      "data-tabbable": dataTabbable,
       ...htmlProps
-    }
+    }: TabbableHTMLProps & { "data-tabbable"?: boolean }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const trulyDisabled = options.disabled && !options.focusable;
@@ -126,6 +127,14 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           return;
         }
 
+        if (htmlOnMouseDown) {
+          htmlOnMouseDown(event);
+        }
+
+        if (event.defaultPrevented) {
+          return;
+        }
+
         const self = event.currentTarget as HTMLElement;
         const target = event.target as HTMLElement;
 
@@ -136,10 +145,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           if (!hasFocusWithin(self) || self === target || !isFocusControl) {
             self.focus();
           }
-        }
-
-        if (htmlOnMouseDown) {
-          htmlOnMouseDown(event);
         }
       },
       [options.disabled, htmlOnMouseDown]
@@ -154,7 +159,11 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         if (
           options.disabled ||
           isNativeTabbable(event.currentTarget) ||
-          event.metaKey
+          // Native interactive elements don't get clicked on cmd+Enter/Space
+          event.metaKey ||
+          // This will be true if `useTabbable` has already been used.
+          // In this case, we don't want to .click() twice.
+          dataTabbable
         ) {
           return;
         }
@@ -167,16 +176,11 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           (options.unstable_clickOnSpace && event.key === " ")
         ) {
           event.preventDefault();
-          event.target.dispatchEvent(
-            new MouseEvent("click", {
-              view: window,
-              bubbles: true,
-              cancelable: false
-            })
-          );
+          (event.target as HTMLElement).click();
         }
       },
       [
+        dataTabbable,
         options.disabled,
         options.unstable_clickOnEnter,
         options.unstable_clickOnSpace,
@@ -193,6 +197,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown,
       onKeyDown,
       style,
+      "data-tabbable": nativeTabbable ? undefined : true,
       ...htmlProps
     };
   }

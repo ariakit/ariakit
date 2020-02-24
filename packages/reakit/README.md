@@ -131,7 +131,7 @@ Play with this on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) and read th
 
 This project exists thanks to all the people who contribute.
 
-<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1260&button=false" /></a>
+<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1023&button=false" /></a>
 
 <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
 

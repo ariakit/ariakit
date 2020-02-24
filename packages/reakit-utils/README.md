@@ -54,49 +54,51 @@ yarn add reakit-utils
     -   [Parameters](#parameters-10)
 -   [isPromise](#ispromise)
     -   [Parameters](#parameters-11)
--   [omit](#omit)
+-   [matches](#matches)
     -   [Parameters](#parameters-12)
+-   [omit](#omit)
+    -   [Parameters](#parameters-13)
     -   [Examples](#examples-6)
 -   [pick](#pick)
-    -   [Parameters](#parameters-13)
+    -   [Parameters](#parameters-14)
     -   [Examples](#examples-7)
 -   [removeIndexFromArray](#removeindexfromarray)
-    -   [Parameters](#parameters-14)
+    -   [Parameters](#parameters-15)
     -   [Examples](#examples-8)
 -   [removeItemFromArray](#removeitemfromarray)
-    -   [Parameters](#parameters-15)
+    -   [Parameters](#parameters-16)
     -   [Examples](#examples-9)
 -   [splitProps](#splitprops)
-    -   [Parameters](#parameters-16)
+    -   [Parameters](#parameters-17)
     -   [Examples](#examples-10)
 -   [tabbable](#tabbable)
     -   [isFocusable](#isfocusable)
-        -   [Parameters](#parameters-17)
+        -   [Parameters](#parameters-18)
         -   [Examples](#examples-11)
     -   [isTabbable](#istabbable)
-        -   [Parameters](#parameters-18)
+        -   [Parameters](#parameters-19)
         -   [Examples](#examples-12)
     -   [getAllFocusableIn](#getallfocusablein)
-        -   [Parameters](#parameters-19)
-    -   [getFirstFocusableIn](#getfirstfocusablein)
         -   [Parameters](#parameters-20)
-    -   [getAllTabbableIn](#getalltabbablein)
+    -   [getFirstFocusableIn](#getfirstfocusablein)
         -   [Parameters](#parameters-21)
-    -   [getFirstTabbableIn](#getfirsttabbablein)
+    -   [getAllTabbableIn](#getalltabbablein)
         -   [Parameters](#parameters-22)
-    -   [getLastTabbableIn](#getlasttabbablein)
+    -   [getFirstTabbableIn](#getfirsttabbablein)
         -   [Parameters](#parameters-23)
-    -   [getNextTabbableIn](#getnexttabbablein)
+    -   [getLastTabbableIn](#getlasttabbablein)
         -   [Parameters](#parameters-24)
-    -   [getPreviousTabbableIn](#getprevioustabbablein)
+    -   [getNextTabbableIn](#getnexttabbablein)
         -   [Parameters](#parameters-25)
-    -   [getClosestFocusable](#getclosestfocusable)
+    -   [getPreviousTabbableIn](#getprevioustabbablein)
         -   [Parameters](#parameters-26)
-    -   [ensureFocus](#ensurefocus)
+    -   [getClosestFocusable](#getclosestfocusable)
         -   [Parameters](#parameters-27)
+    -   [ensureFocus](#ensurefocus)
+        -   [Parameters](#parameters-28)
         -   [Examples](#examples-13)
 -   [toArray](#toarray)
-    -   [Parameters](#parameters-28)
+    -   [Parameters](#parameters-29)
     -   [Examples](#examples-14)
 -   [types](#types)
     -   [RenderProp](#renderprop)
@@ -110,22 +112,22 @@ yarn add reakit-utils
     -   [ArrayValue](#arrayvalue)
     -   [AnyFunction](#anyfunction)
 -   [useAllCallbacks](#useallcallbacks)
-    -   [Parameters](#parameters-29)
+    -   [Parameters](#parameters-30)
     -   [Examples](#examples-15)
 -   [useForkRef](#useforkref)
-    -   [Parameters](#parameters-30)
+    -   [Parameters](#parameters-31)
     -   [Examples](#examples-16)
 -   [useIsomorphicEffect](#useisomorphiceffect)
 -   [useLiveRef](#useliveref)
-    -   [Parameters](#parameters-31)
--   [usePipe](#usepipe)
     -   [Parameters](#parameters-32)
--   [useSealedState](#usesealedstate)
+-   [usePipe](#usepipe)
     -   [Parameters](#parameters-33)
--   [useUpdateEffect](#useupdateeffect)
+-   [useSealedState](#usesealedstate)
     -   [Parameters](#parameters-34)
--   [warning](#warning)
+-   [useUpdateEffect](#useupdateeffect)
     -   [Parameters](#parameters-35)
+-   [warning](#warning)
+    -   [Parameters](#parameters-36)
     -   [Examples](#examples-17)
 
 ### closest
@@ -311,6 +313,19 @@ Checks whether `arg` is a promise or not.
 #### Parameters
 
 -   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### matches
+
+-   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>**
+
+Ponyfill for `Element.prototype.matches`
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `selectors` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 

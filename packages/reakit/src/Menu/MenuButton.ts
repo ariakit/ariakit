@@ -36,15 +36,13 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         onKeyDown: htmlOnKeyDown,
         onFocus: htmlOnFocus,
         onMouseOver: htmlOnMouseOver,
+        onMouseDown: htmlOnMouseDown,
         ...htmlProps
       }
     ) {
       const parent = React.useContext(MenuContext);
       const ref = React.useRef<HTMLElement>(null);
-      // This avoids race condition between focus and click.
-      // On some browsers, focus is triggered right before click.
-      // So we use it to disable toggling.
-      const [hasShownOnFocus, setHasShownOnFocus] = React.useState(false);
+      const hasPressedMouse = React.useRef(false);
       const [dir] = options.placement.split("-");
       const hasParent = Boolean(parent);
       const parentIsMenuBar = parent && parent.role === "menubar";
@@ -79,20 +77,6 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         ]
       );
 
-      const onFocus = React.useCallback(() => {
-        if (parentIsMenuBar) {
-          setHasShownOnFocus(true);
-          options.show();
-        }
-      }, [parentIsMenuBar, options.show]);
-
-      // Restores hasShownOnFocus
-      React.useEffect(() => {
-        if (!hasShownOnFocus) return undefined;
-        const id = setTimeout(() => setHasShownOnFocus(false), 200);
-        return () => clearTimeout(id);
-      }, [hasShownOnFocus]);
-
       const onMouseOver = React.useCallback(
         (event: MouseEvent) => {
           // MenuButton's don't do anything on mouse over when they aren't
@@ -115,7 +99,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             // TODO: Make the delay a prop?
             setTimeout(() => {
               if (self.contains(document.activeElement)) {
-                options.show();
+                options.show && options.show();
                 if (document.activeElement !== self) {
                   self.focus();
                 }
@@ -127,31 +111,40 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       );
 
       // If disclosure is rendered as a menu bar item, it's toggable
-      // That is, you can click on the expanded disclosure to close its menu
-      // But, if disclosure has been focused, it may be result of a mouse down
-      // In this case, toggling it would make it close right away on click
-      // Then we check if it has been shown on focus. If so, we don't toggle
+      // That is, you can click on the expanded disclosure to close its menu.
       const onClick = React.useCallback(() => {
-        if (hasParent && (!parentIsMenuBar || hasShownOnFocus)) {
-          options.show();
+        if (hasParent && !parentIsMenuBar) {
+          options.show && options.show();
         } else {
-          options.toggle();
+          options.toggle && options.toggle();
         }
-      }, [
-        hasParent,
-        parentIsMenuBar,
-        hasShownOnFocus,
-        options.show,
-        options.toggle
-      ]);
+        hasPressedMouse.current = false;
+      }, [hasParent, parentIsMenuBar, options.show, options.toggle]);
+
+      const onFocus = React.useCallback(() => {
+        if (parentIsMenuBar && !hasPressedMouse.current) {
+          options.show && options.show();
+        }
+      }, [parentIsMenuBar, options.show]);
+
+      const onMouseDown = React.useCallback(() => {
+        if (parentIsMenuBar) {
+          // When in menu bar, the menu button can be activated either by focus
+          // or click, but we don't want both to trigger sequentially.
+          // Otherwise, onClick would toggle (hide) the menu right after it got
+          // shown on focus.
+          hasPressedMouse.current = true;
+        }
+      }, []);
 
       return {
         ref: useForkRef(ref, htmlRef),
         "aria-haspopup": "menu",
-        onClick: useAllCallbacks(onClick, htmlOnClick),
         onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-        onFocus: useAllCallbacks(onFocus, htmlOnFocus),
         onMouseOver: useAllCallbacks(onMouseOver, htmlOnMouseOver),
+        onClick: useAllCallbacks(onClick, htmlOnClick),
+        onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+        onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
         ...htmlProps
       };
     },

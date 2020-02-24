@@ -86,7 +86,12 @@ const { Compiler: renderAst } = new RehypeReact({
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
-        const { static: isStatic, maxHeight, className } = codeElement.props;
+        const {
+          static: isStatic,
+          unstyled,
+          maxHeight,
+          className
+        } = codeElement.props;
         let [, mode] = className.match(/language-(.+)/) || ([] as any[]);
 
         const modeMap = {
@@ -111,6 +116,7 @@ const { Compiler: renderAst } = new RehypeReact({
           return (
             <div>
               <PlaygroundPreview
+                unstyled={unstyled}
                 modules={{
                   emotion,
                   yup,

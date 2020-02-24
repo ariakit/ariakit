@@ -1,6 +1,9 @@
 name: ci
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master, next, v*]
+  pull_request:
 
 jobs:
   build:
@@ -8,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
-      
-    - name: Set up Node v10.x
+      uses: actions/checkout@v2
+
+    - name: Set up Node
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: 12
 
     - name: Yarn cache directory
       id: yarn-cache-dir
@@ -21,16 +24,24 @@ jobs:
 
     - name: Yarn cache
       uses: actions/cache@v1
+      id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: ${{ runner.os }}-yarn-
+        restore-keys: |
+          ${{ runner.os }}-yarn-
 
     - name: Install dependencies
       run: yarn
 
     - name: Lint
       run: yarn lint
+
+    - name: Docs
+      run: yarn docs
+
+    - name: Build
+      run: yarn build
 
     - name: Type check
       run: yarn type-check
@@ -42,9 +53,3 @@ jobs:
       env: 
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: bash <(curl -s https://codecov.io/bash)
-
-    - name: Docs
-      run: yarn docs
-
-    - name: Build
-      run: yarn build
