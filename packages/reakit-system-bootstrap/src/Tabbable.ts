@@ -37,8 +37,7 @@ export function useTabbableProps(
       transition: box-shadow 0.15s ease-in-out;
       outline: 0;
 
-      &:focus,
-      &:focus-within &[aria-selected="true"] {
+      &:focus {
         box-shadow: 0 0 0 0.2em ${boxShadowColor};
         position: relative;
         z-index: 2;

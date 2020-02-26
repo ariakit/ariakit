@@ -1,10 +1,11 @@
 import * as React from "react";
-import { render, focus, press } from "reakit-test-utils";
+import { render, focus, press, click, type } from "reakit-test-utils";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
   unstable_CompositeRow as CompositeRow,
-  unstable_CompositeItem as CompositeItem
+  unstable_CompositeItem as CompositeItem,
+  unstable_CompositeItemWidget as CompositeItemWidget
 } from "..";
 
 const strategies = ["roving-tabindex", "aria-activedescendant"] as const;
@@ -50,7 +51,7 @@ function template(string: string) {
 
 strategies.forEach(unstable_focusStrategy => {
   describe(unstable_focusStrategy, () => {
-    test.skip("warning when there's no composite role", () => {
+    test("warning when there's no composite role", () => {
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
@@ -81,6 +82,56 @@ strategies.forEach(unstable_focusStrategy => {
       expect(item1).not.toHaveFocus();
       press.Tab();
       expect(item1).toHaveFocus();
+    });
+
+    test("list item is active when currentId is set", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          currentId: "item2"
+        });
+        return (
+          <Composite {...composite} role="toolbar">
+            <CompositeItem {...composite}>item1</CompositeItem>
+            <CompositeItem {...composite} id="item2">
+              item2
+            </CompositeItem>
+            <CompositeItem {...composite}>item3</CompositeItem>
+          </Composite>
+        );
+      };
+      const { getByText } = render(<Test />);
+      const item2 = getByText("item2");
+      expect(item2).not.toHaveFocus();
+      press.Tab();
+      expect(item2).toHaveFocus();
+    });
+
+    test("click item", () => {
+      const onClick = jest.fn();
+      const Test = () => {
+        const composite = useCompositeState({ unstable_focusStrategy });
+        return (
+          <Composite {...composite} role="toolbar">
+            <CompositeItem {...composite}>item1</CompositeItem>
+            <CompositeItem {...composite} onClick={onClick}>
+              item2
+            </CompositeItem>
+            <CompositeItem {...composite}>item3</CompositeItem>
+          </Composite>
+        );
+      };
+      const { getByText } = render(<Test />);
+      const item2 = getByText("item2");
+      expect(item2).not.toHaveFocus();
+      expect(onClick).toHaveBeenCalledTimes(0);
+      click(item2);
+      expect(item2).toHaveFocus();
+      expect(onClick).toHaveBeenCalledTimes(1);
+      press.Enter();
+      expect(onClick).toHaveBeenCalledTimes(2);
+      press.Space();
+      expect(onClick).toHaveBeenCalledTimes(3);
     });
 
     test("composite is a single tab stop", () => {
@@ -317,13 +368,115 @@ strategies.forEach(unstable_focusStrategy => {
       expect(item2).toHaveFocus();
     });
 
+    test("list item with tabbable content inside", () => {
+      const Test = () => {
+        const composite = useCompositeState({ unstable_focusStrategy });
+        return (
+          <>
+            <Composite {...composite} role="toolbar">
+              <CompositeItem {...composite}>item1</CompositeItem>
+              <CompositeItem {...composite} aria-label="item2">
+                <CompositeItemWidget
+                  {...composite}
+                  as="input"
+                  type="text"
+                  aria-label="input"
+                />
+              </CompositeItem>
+              <CompositeItem {...composite} aria-label="item3">
+                <CompositeItemWidget {...composite} as="button">
+                  innerButton
+                </CompositeItemWidget>
+              </CompositeItem>
+            </Composite>
+            <button>outerButton</button>
+          </>
+        );
+      };
+      const { getByLabelText, getByText } = render(<Test />);
+      const item2 = getByLabelText("item2");
+      const item3 = getByLabelText("item3");
+      const input = getByLabelText("input");
+      const innerButton = getByText("innerButton");
+      const outerButton = getByText("outerButton");
+      click(item2);
+      expect(item2).not.toHaveFocus();
+      expect(input).toHaveFocus();
+      press.Escape();
+      expect(item2).toHaveFocus();
+      press.Tab();
+      expect(outerButton).toHaveFocus();
+      press.ShiftTab();
+      expect(item2).toHaveFocus();
+      press.Enter();
+      expect(input).toHaveFocus();
+      press.ArrowDown();
+      press.ArrowRight();
+      expect(input).toHaveFocus();
+      press.Tab();
+      expect(innerButton).toHaveFocus();
+      press.Tab();
+      expect(outerButton).toHaveFocus();
+      press.ShiftTab();
+      expect(item3).toHaveFocus();
+      press("a");
+      expect(item3).toHaveFocus();
+      press.Enter();
+      expect(innerButton).toHaveFocus();
+      press.Enter();
+      expect(item3).toHaveFocus();
+      press.Space();
+      expect(innerButton).toHaveFocus();
+      press.ShiftTab();
+      expect(input).toHaveFocus();
+      press.Escape();
+      expect(input).not.toHaveFocus();
+      press.Space();
+      expect(input).toHaveFocus();
+      expect(input).toHaveValue("");
+      press.Escape();
+      expect(input).not.toHaveFocus();
+      press("a");
+      expect(input).toHaveFocus();
+      expect(input).toHaveValue("a");
+      type("bc d");
+      expect(input).toHaveValue("abc d");
+      press.Escape();
+      expect(input).not.toHaveFocus();
+      expect(input).toHaveValue("");
+      press("b");
+      expect(input).toHaveFocus();
+      expect(input).toHaveValue("b");
+      type("c");
+      expect(input).toHaveValue("bc");
+      press.Enter();
+      expect(item2).toHaveFocus();
+      expect(input).toHaveValue("bc");
+      press("b");
+      expect(input).toHaveFocus();
+      expect(input).toHaveValue("b");
+      press.Escape();
+      expect(item2).toHaveFocus();
+      expect(input).toHaveValue("bc");
+      press.Backspace();
+      expect(item2).toHaveFocus();
+      expect(input).toHaveValue("");
+      press("#");
+      expect(input).toHaveFocus();
+      expect(input).toHaveValue("#");
+      press.Escape();
+      press.Delete();
+      expect(item2).toHaveFocus();
+      expect(input).toHaveValue("");
+    });
+
     test("move grid focus with arrow keys", () => {
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
-          [2, 0, 0, 2],
           [2, 2, 1, 2],
+          [2, 0, 0, 2],
           [2, 2, 2, 0]
         ];
         return (
@@ -349,141 +502,127 @@ strategies.forEach(unstable_focusStrategy => {
       press.Tab();
       expect(active()).toBe(
         template(`
-          0 x x -
-          - - - -
+          0 - - -
+          - x x -
           - - - x
       `)
       );
       expect(key(">")).toBe(
         template(`
-          - x x 0
-          - - - -
+          - 0 - -
+          - x x -
           - - - x
       `)
       );
       expect(key(">")).toBe(
         template(`
-          - x x 0
-          - - - -
-          - - - x
-      `)
-      );
-      expect(key("v")).toBe(
-        template(`
-          - x x -
-          - - - 0
-          - - - x
-      `)
-      );
-      expect(key(">")).toBe(
-        template(`
-          - x x -
-          - - - 0
-          - - - x
-      `)
-      );
-      expect(key("<")).toBe(
-        template(`
-          - x x -
           - - 0 -
-          - - - x
-      `)
-      );
-      expect(key("<")).toBe(
-        template(`
           - x x -
-          - 0 - -
-          - - - x
-      `)
-      );
-      expect(key("<")).toBe(
-        template(`
-          - x x -
-          0 - - -
-          - - - x
-      `)
-      );
-      expect(key("<")).toBe(
-        template(`
-          - x x -
-          0 - - -
           - - - x
       `)
       );
       expect(key(">")).toBe(
         template(`
+          - - - 0
           - x x -
-          - 0 - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - - - 0
+          - x x -
           - - - x
       `)
       );
       expect(key("v")).toBe(
         template(`
-          - x x -
           - - - -
-          - 0 - x
+          - x x 0
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - - - -
+          - x x 0
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - - - -
+          0 x x -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - - - -
+          - x x -
+          0 - - x
       `)
       );
       expect(key(">>")).toBe(
         template(`
-          - x x -
           - - - -
+          - x x -
           - - 0 x
       `)
       );
       expect(key("<<")).toBe(
         template(`
-          - x x -
           - - - -
+          - x x -
           0 - - x
       `)
       );
       expect(key(">")).toBe(
         template(`
-          - x x -
           - - - -
+          - x x -
           - 0 - x
       `)
       );
       expect(key("^^")).toBe(
         template(`
-          - x x -
           - 0 - -
+          - x x -
           - - - x
       `)
       );
       expect(key("^")).toBe(
         template(`
-          - x x -
           - 0 - -
+          - x x -
           - - - x
       `)
       );
       expect(key("<<<")).toBe(
         template(`
-          0 x x -
-          - - - -
+          0 - - -
+          - x x -
           - - - x
       `)
       );
       expect(key("vv")).toBe(
         template(`
-          - x x -
           - - - -
+          - x x -
           0 - - x
       `)
       );
       expect(key("^")).toBe(
         template(`
-          - x x -
-          0 - - -
+          - - - -
+          0 x x -
           - - - x
       `)
       );
       expect(key(">>>")).toBe(
         template(`
-          - x x -
           - - - -
+          - x x -
           - - 0 x
       `)
       );
@@ -565,5 +704,467 @@ strategies.forEach(unstable_focusStrategy => {
       `)
       );
     });
+
+    test("move grid focus with arrow keys wrap horizontal", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          orientation: "horizontal",
+          wrap: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys wrap vertical", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          orientation: "vertical",
+          wrap: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys different number of cells", () => {
+      const Test = () => {
+        const composite = useCompositeState({ unstable_focusStrategy });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 0, 1],
+          [2, 2, 0],
+          [2, 2, 2, 2, 1],
+          [2, 2, 2]
+        ];
+        return (
+          <Composite {...composite} role="grid">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x x -
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - 0
+          - - -
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - 0
+          - - -
+      `)
+      );
+      expect(key("<<")).toBe(
+        template(`
+          - x x x -
+          - - x
+          0 - - - -
+          - - -
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          0 - -
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - 0 -
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("^^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - 0 - -
+          - - -
+      `)
+      );
+      expect(key(">>")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - 0
+          - - -
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - 0
+          - - -
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - 0 -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - 0 - - -
+          - - -
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("^^")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys different number of cells wrap", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          wrap: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 0, 1],
+          [2, 2, 0],
+          [2, 2, 2, 2, 1],
+          [2, 2, 2]
+        ];
+        return (
+          <Composite {...composite} role="grid">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x x -
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x x -
+          0 - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - 0
+          - - -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - 0 -
+          - - -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - - 0
+      `)
+      );
+      expect(key("^^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - 0 - -
+          - - -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x -
+          - - x
+          - - - - -
+          - 0 -
+      `)
+      );
+    });
+
+    test.todo("grid item with tabbable content inside");
+    test.todo("nested grid");
   });
 });

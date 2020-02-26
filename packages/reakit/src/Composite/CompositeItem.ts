@@ -173,67 +173,81 @@ export const unstable_useCompositeItem = createHook<
             // Ignore portals
             // https://github.com/facebook/react/issues/11387
             event.currentTarget.contains(event.target as Node),
-          keyMap: {
-            ArrowUp: () => {
-              if (stop?.rowId) {
-                options.up && options.up();
-              } else if (options.orientation !== "horizontal") {
-                options.previous && options.previous();
-              }
-            },
-            ArrowRight: () => {
-              if (options.orientation !== "vertical") {
-                options.next && options.next();
-              }
-            },
-            ArrowDown: () => {
-              if (stop?.rowId) {
-                options.down && options.down();
-              } else if (options.orientation !== "horizontal") {
-                options.next && options.next();
-              }
-            },
-            ArrowLeft: () => {
-              if (options.orientation !== "vertical") {
-                options.previous && options.previous();
-              }
-            },
-            Home: event => {
-              if (stop?.rowId) {
-                if (event.ctrlKey) {
+          keyMap: () => {
+            return {
+              ArrowUp:
+                stop?.rowId || options.orientation !== "horizontal"
+                  ? () => {
+                      if (stop?.rowId) {
+                        options.up && options.up();
+                      } else if (options.orientation !== "horizontal") {
+                        options.previous && options.previous();
+                      }
+                    }
+                  : undefined,
+              ArrowRight:
+                stop?.rowId || options.orientation !== "vertical"
+                  ? () => {
+                      if (stop?.rowId || options.orientation !== "vertical") {
+                        options.next && options.next();
+                      }
+                    }
+                  : undefined,
+              ArrowDown:
+                stop?.rowId || options.orientation !== "horizontal"
+                  ? () => {
+                      if (stop?.rowId) {
+                        options.down && options.down();
+                      } else if (options.orientation !== "horizontal") {
+                        options.next && options.next();
+                      }
+                    }
+                  : undefined,
+              ArrowLeft:
+                stop?.rowId || options.orientation !== "vertical"
+                  ? () => {
+                      if (stop?.rowId || options.orientation !== "vertical") {
+                        options.previous && options.previous();
+                      }
+                    }
+                  : undefined,
+              Home: event => {
+                if (stop?.rowId) {
+                  if (event.ctrlKey) {
+                    options.first && options.first();
+                  } else {
+                    options.previous && options.previous(true);
+                  }
+                } else {
                   options.first && options.first();
-                } else {
-                  options.previous && options.previous(true);
                 }
-              } else {
-                options.first && options.first();
-              }
-            },
-            End: event => {
-              if (stop?.rowId) {
-                if (event.ctrlKey) {
+              },
+              End: event => {
+                if (stop?.rowId) {
+                  if (event.ctrlKey) {
+                    options.last && options.last();
+                  } else {
+                    options.next && options.next(true);
+                  }
+                } else {
                   options.last && options.last();
-                } else {
-                  options.next && options.next(true);
                 }
-              } else {
-                options.last && options.last();
+              },
+              PageUp: () => {
+                if (stop?.rowId) {
+                  options.up && options.up(true);
+                } else {
+                  options.first && options.first();
+                }
+              },
+              PageDown: () => {
+                if (stop?.rowId) {
+                  options.down && options.down(true);
+                } else {
+                  options.last && options.last();
+                }
               }
-            },
-            PageUp: () => {
-              if (stop?.rowId) {
-                options.up && options.up(true);
-              } else {
-                options.first && options.first();
-              }
-            },
-            PageDown: () => {
-              if (stop?.rowId) {
-                options.down && options.down(true);
-              } else {
-                options.last && options.last();
-              }
-            }
+            };
           }
         }),
       [

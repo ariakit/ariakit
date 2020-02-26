@@ -1,5 +1,4 @@
-import { isFocusable, warning } from "reakit-utils";
-import { isTextField } from "./__utils/isTextField";
+import { isFocusable, isTextField, warning } from "reakit-utils";
 import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
@@ -24,11 +23,13 @@ const keyMap: Record<
 
 export function type(
   text: string,
-  element?: DirtiableElement | null,
+  element?:
+    | (DirtiableElement & (HTMLInputElement | HTMLTextAreaElement))
+    | null,
   options: InputEventInit = {}
 ) {
   if (element == null) {
-    element = document.activeElement;
+    element = document.activeElement as HTMLInputElement;
   }
 
   if (!element || !isFocusable(element)) return;
