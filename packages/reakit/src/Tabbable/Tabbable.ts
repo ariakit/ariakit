@@ -197,6 +197,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown,
       onKeyDown,
       style,
+      "data-disabled": trulyDisabled,
       "data-tabbable": nativeTabbable ? undefined : true,
       ...htmlProps
     };

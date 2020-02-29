@@ -24,30 +24,104 @@ const emojiMap = {
 } as const;
 
 function active() {
-  const { activeElement } = document;
-  const activeDescendant = activeElement?.getAttribute("aria-activedescendant");
-  if (activeDescendant) {
-    return document.getElementById(activeDescendant);
+  // const { activeElement } = document;
+  // const activeDescendant = activeElement?.getAttribute("aria-activedescendant");
+  // if (activeDescendant) {
+  //   return document.getElementById(activeDescendant);
+  // }
+  // return activeElement;
+  const items = Array.from(document.querySelectorAll("[data-item]"));
+  const itemsByRow = [] as Element[][];
+  for (const item of items) {
+    let rightRow: Element[] | undefined;
+    for (const row of itemsByRow) {
+      if (
+        row[0].closest("[data-composite-row]") ===
+        item.closest("[data-composite-row]")
+      ) {
+        rightRow = row;
+      }
+    }
+    if (rightRow) {
+      rightRow.push(item);
+    } else {
+      itemsByRow.push([item]);
+    }
   }
-  return activeElement;
+  const tmpl = itemsByRow
+    .map(row =>
+      row
+        .map(item =>
+          item.getAttribute("data-disabled") === "true"
+            ? "x"
+            : item.hasAttribute("aria-selected") ||
+              item.getAttribute("tabindex") === "0"
+            ? "0"
+            : "-"
+        )
+        .join(" ")
+    )
+    .join("\n");
+
+  if (itemsByRow.length === 1) {
+    return tmpl.replace(/\s/g, "");
+  }
+  return tmpl;
 }
 
 function key(char: keyof typeof emojiMap) {
   const [k, options] = emojiMap[char];
   press[k](null, options);
-  return active();
+  const items = Array.from(document.querySelectorAll("[data-item]"));
+  const itemsByRow = [] as Element[][];
+  for (const item of items) {
+    let rightRow: Element[] | undefined;
+    for (const row of itemsByRow) {
+      if (
+        row[0].closest("[data-composite-row]") ===
+        item.closest("[data-composite-row]")
+      ) {
+        rightRow = row;
+      }
+    }
+    if (rightRow) {
+      rightRow.push(item);
+    } else {
+      itemsByRow.push([item]);
+    }
+  }
+  const tmpl = itemsByRow
+    .map(row =>
+      row
+        .map(item =>
+          item.getAttribute("data-disabled") === "true"
+            ? "x"
+            : item.hasAttribute("aria-selected") ||
+              item.getAttribute("tabindex") === "0"
+            ? "0"
+            : "-"
+        )
+        .join(" ")
+    )
+    .join("\n");
+
+  if (itemsByRow.length === 1) {
+    return tmpl.replace(/\s/g, "");
+  }
+  return tmpl;
 }
 
 function template(string: string) {
-  const items = Array.from(document.querySelectorAll("[data-item]"));
-  const trimmedString = string.replace(/\s/gm, "");
-  const activeElement = active();
-  if (activeElement) {
-    const activeIndex = items.indexOf(activeElement);
-    // TODO, instead of null, return right template
-    return trimmedString[activeIndex] === "0" ? activeElement : null;
-  }
-  return null;
+  return string.trim().replace(/\s{2,}/gm, "\n");
+  // const items = Array.from(document.querySelectorAll("[data-item]"));
+  // const trimmedString = string.replace(/\s/gm, "");
+  // const activeElement = active();
+  // if (activeElement) {
+  //   const activeIndex = items.indexOf(activeElement);
+  //   // TODO, instead of null, return right template
+  //   return trimmedString[activeIndex] === "0" ? activeElement : null;
+  // }
+  // return null;
 }
 
 strategies.forEach(unstable_focusStrategy => {

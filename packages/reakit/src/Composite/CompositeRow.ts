@@ -61,6 +61,7 @@ export const unstable_useCompositeRow = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id: stopId,
+      "data-composite-row": "",
       ...htmlProps
     };
   }
