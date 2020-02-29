@@ -32,10 +32,10 @@ export type unstable_CompositeItemOptions = TabbableOptions &
     unstable_CompositeStateReturn,
     | "unstable_focusStrategy"
     | "compositeRef"
-    | "stops"
+    | "items"
     | "currentId"
-    | "registerStop"
-    | "unregisterStop"
+    | "registerItem"
+    | "unregisterItem"
     | "move"
     | "next"
     | "previous"
@@ -77,31 +77,37 @@ export const unstable_useCompositeItem = createHook<
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const stopId = options.stopId || options.id || htmlProps.id;
+    const id = options.stopId || options.id || htmlProps.id;
+
+    warning(
+      !!options.stopId,
+      "[reakit]",
+      "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
+    );
 
     const trulyDisabled = options.disabled && !options.focusable;
     const noFocused = options.currentId == null;
-    const focused = options.currentId === stopId;
-    const stop = (options.stops || []).find(s => s.id === stopId);
-    const isFirst = (options.stops || [])[0] && options.stops[0].id === stopId;
+    const focused = options.currentId === id;
+    const item = (options.items || []).find(s => s.id === id);
+    const isFirst = (options.items || [])[0] && options.items[0].id === id;
     const shouldTabIndex = focused || (isFirst && noFocused);
 
     React.useEffect(() => {
-      if (!stopId) return undefined;
-      if (options.registerStop) {
-        options.registerStop({ id: stopId, ref, disabled: trulyDisabled });
+      if (!id) return undefined;
+      if (options.registerItem) {
+        options.registerItem({ id, ref, disabled: trulyDisabled });
       }
       return () => {
-        if (options.unregisterStop) {
-          options.unregisterStop(stopId);
+        if (options.unregisterItem) {
+          options.unregisterItem(id);
         }
       };
-    }, [stopId, trulyDisabled, options.registerStop, options.unregisterStop]);
+    }, [id, trulyDisabled, options.registerItem, options.unregisterItem]);
 
     const handleFocus = React.useCallback(
       (currentTarget: Element, target: Element = currentTarget) => {
-        if (!stopId || !currentTarget.contains(target)) return;
-        options.move && options.move(stopId);
+        if (!id || !currentTarget.contains(target)) return;
+        options.move && options.move(id);
         if (options.unstable_focusStrategy === "aria-activedescendant") {
           // currentTarget.scrollIntoViewIfNeeded();
           if (
@@ -111,12 +117,7 @@ export const unstable_useCompositeItem = createHook<
           }
         }
       },
-      [
-        options.move,
-        stopId,
-        options.unstable_focusStrategy,
-        options.compositeRef
-      ]
+      [options.move, id, options.unstable_focusStrategy, options.compositeRef]
     );
 
     const onFocus = React.useCallback(
@@ -148,7 +149,7 @@ export const unstable_useCompositeItem = createHook<
       }
     }, [
       onFocus,
-      stopId,
+      id,
       focused,
       options.unstable_moves,
       options.unstable_focusStrategy
@@ -164,21 +165,31 @@ export const unstable_useCompositeItem = createHook<
       [onFocus, options.unstable_focusStrategy]
     );
 
+    // Add widgetHasFocus state to useCompositeState
+    // Check on shouldKeyDown if it has a [data-composite-item-widget] as a child
+    // If so, and key is Enter, Space or alphanumeric (and the widget is a text field)
+    // return true. Otherwise return false.
+    // Navigation will not be disabled here
+    // When widgetHasFocus is true, all widgets will have tabIndex={0}. Otherwise -1.
+    // Set widgetHasFocus to true on widget onFocus.
+    // Pressing enter or escape on the widget should set widgetHasFocus to false
+    // Escape should undo the value change
+    // onBlur on composite sets widgetHasFocus to false.
+    // onFocus on composite item (exact) sets widgetHasFocus to false.
+    // Try to set widgetHasFocus to false on widget blur (not sure if it'll conflict with tab key)
+    // What if there are other tabbable elements inside the grid? outside a row/item?
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
           stopPropagation: true,
-          shouldKeyDown: event =>
-            // Ignore portals
-            // https://github.com/facebook/react/issues/11387
-            event.currentTarget.contains(event.target as Node),
+          shouldKeyDown: event => event.currentTarget === event.target,
           keyMap: () => {
             return {
               ArrowUp:
-                stop?.rowId || options.orientation !== "horizontal"
+                item?.rowId || options.orientation !== "horizontal"
                   ? () => {
-                      if (stop?.rowId) {
+                      if (item?.rowId) {
                         options.up && options.up();
                       } else if (options.orientation !== "horizontal") {
                         options.previous && options.previous();
@@ -186,17 +197,17 @@ export const unstable_useCompositeItem = createHook<
                     }
                   : undefined,
               ArrowRight:
-                stop?.rowId || options.orientation !== "vertical"
+                item?.rowId || options.orientation !== "vertical"
                   ? () => {
-                      if (stop?.rowId || options.orientation !== "vertical") {
+                      if (item?.rowId || options.orientation !== "vertical") {
                         options.next && options.next();
                       }
                     }
                   : undefined,
               ArrowDown:
-                stop?.rowId || options.orientation !== "horizontal"
+                item?.rowId || options.orientation !== "horizontal"
                   ? () => {
-                      if (stop?.rowId) {
+                      if (item?.rowId) {
                         options.down && options.down();
                       } else if (options.orientation !== "horizontal") {
                         options.next && options.next();
@@ -204,15 +215,15 @@ export const unstable_useCompositeItem = createHook<
                     }
                   : undefined,
               ArrowLeft:
-                stop?.rowId || options.orientation !== "vertical"
+                item?.rowId || options.orientation !== "vertical"
                   ? () => {
-                      if (stop?.rowId || options.orientation !== "vertical") {
+                      if (item?.rowId || options.orientation !== "vertical") {
                         options.previous && options.previous();
                       }
                     }
                   : undefined,
               Home: event => {
-                if (stop?.rowId) {
+                if (item?.rowId) {
                   if (event.ctrlKey) {
                     options.first && options.first();
                   } else {
@@ -223,7 +234,7 @@ export const unstable_useCompositeItem = createHook<
                 }
               },
               End: event => {
-                if (stop?.rowId) {
+                if (item?.rowId) {
                   if (event.ctrlKey) {
                     options.last && options.last();
                   } else {
@@ -234,14 +245,14 @@ export const unstable_useCompositeItem = createHook<
                 }
               },
               PageUp: () => {
-                if (stop?.rowId) {
+                if (item?.rowId) {
                   options.up && options.up(true);
                 } else {
                   options.first && options.first();
                 }
               },
               PageDown: () => {
-                if (stop?.rowId) {
+                if (item?.rowId) {
                   options.down && options.down(true);
                 } else {
                   options.last && options.last();
@@ -252,7 +263,7 @@ export const unstable_useCompositeItem = createHook<
         }),
       [
         htmlOnKeyDown,
-        stop,
+        item,
         options.orientation,
         options.previous,
         options.next,
@@ -263,7 +274,7 @@ export const unstable_useCompositeItem = createHook<
 
     return {
       ref: useForkRef(ref, htmlRef),
-      id: stopId,
+      id,
       "aria-selected":
         options.unstable_focusStrategy === "aria-activedescendant" && focused
           ? true

@@ -44,6 +44,7 @@ function template(string: string) {
   const activeElement = active();
   if (activeElement) {
     const activeIndex = items.indexOf(activeElement);
+    // TODO, instead of null, return right template
     return trimmedString[activeIndex] === "0" ? activeElement : null;
   }
   return null;
@@ -375,7 +376,7 @@ strategies.forEach(unstable_focusStrategy => {
           <>
             <Composite {...composite} role="toolbar">
               <CompositeItem {...composite}>item1</CompositeItem>
-              <CompositeItem {...composite} aria-label="item2">
+              <CompositeItem {...composite} as="div" aria-label="item2">
                 <CompositeItemWidget
                   {...composite}
                   as="input"
@@ -383,7 +384,7 @@ strategies.forEach(unstable_focusStrategy => {
                   aria-label="input"
                 />
               </CompositeItem>
-              <CompositeItem {...composite} aria-label="item3">
+              <CompositeItem {...composite} as="div" aria-label="item3">
                 <CompositeItemWidget {...composite} as="button">
                   innerButton
                 </CompositeItemWidget>
@@ -922,6 +923,22 @@ strategies.forEach(unstable_focusStrategy => {
         template(`
           - x x x -
           - - x
+          - - - - 0
+          - - -
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x x 0
+          - - x
+          - - - - -
+          - - -
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x x -
+          - - x
           - - - - -
           - - 0
       `)
@@ -930,7 +947,7 @@ strategies.forEach(unstable_focusStrategy => {
         template(`
           - x x x -
           - - x
-          - - - - 0
+          - - 0 - -
           - - -
       `)
       );
@@ -987,54 +1004,6 @@ strategies.forEach(unstable_focusStrategy => {
           - x x x -
           - - x
           - - - - 0
-          - - -
-      `)
-      );
-      expect(key("v")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - - - - 0
-          - - -
-      `)
-      );
-      expect(key("v")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - - - - -
-          - - 0
-      `)
-      );
-      expect(key("<")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - - - - -
-          - 0 -
-      `)
-      );
-      expect(key("^")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - 0 - - -
-          - - -
-      `)
-      );
-      expect(key(">>>")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - - - - -
-          - - 0
-      `)
-      );
-      expect(key("^^")).toBe(
-        template(`
-          - x x x 0
-          - - x
-          - - - - -
           - - -
       `)
       );
@@ -1110,27 +1079,11 @@ strategies.forEach(unstable_focusStrategy => {
         template(`
           - x x x -
           - - x
-          - - - - 0
+          - - 0 - -
           - - -
       `)
       );
-      expect(key("^")).toBe(
-        template(`
-          - x x x 0
-          - - x
-          - - - - -
-          - - -
-      `)
-      );
-      expect(key("^")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - - - - -
-          - - 0
-      `)
-      );
-      expect(key("^")).toBe(
+      expect(key(">")).toBe(
         template(`
           - x x x -
           - - x
@@ -1146,25 +1099,76 @@ strategies.forEach(unstable_focusStrategy => {
           - - 0
       `)
       );
-      expect(key("^^")).toBe(
+      expect(key("v")).toBe(
         template(`
           - x x x -
           - - x
-          - - 0 - -
+          - - - 0 -
           - - -
-      `)
-      );
-      expect(key("^")).toBe(
-        template(`
-          - x x x -
-          - - x
-          - - - - -
-          - 0 -
       `)
       );
     });
 
-    test.todo("grid item with tabbable content inside");
-    test.todo("nested grid");
+    test("grid item with tabbable content inside", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          orientation: "vertical",
+          wrap: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0.5, 0, 2],
+          [2, 2.5, 1, 2],
+          [2, 2, 1.5, 0.5]
+        ];
+        return (
+          <Composite {...composite} role="grid">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    as="div"
+                    key={j}
+                    disabled={Math.floor(item) < 2}
+                    focusable={Math.floor(item) === 1}
+                    aria-label={`${i}-${j}`}
+                  >
+                    {item % 1 !== 0 && (
+                      <CompositeItemWidget
+                        {...composite}
+                        as="input"
+                        type="text"
+                        aria-label={`input-${i}-${j}`}
+                      />
+                    )}
+                  </CompositeItem>
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+
+      const { getByLabelText } = render(<Test />);
+      press.Tab();
+      expect(getByLabelText("0-0")).toHaveFocus();
+      press.ArrowDown();
+      press.ArrowRight();
+      expect(getByLabelText("1-1")).toHaveFocus();
+      press.Enter();
+      expect(getByLabelText("1-1")).not.toHaveFocus();
+      expect(getByLabelText("input-1-1")).toHaveFocus();
+      press.Tab();
+      expect(getByLabelText("2-2")).not.toHaveFocus();
+      expect(getByLabelText("input-2-2")).toHaveFocus();
+      press.Tab();
+      expect(getByLabelText("1-1")).not.toHaveFocus();
+      expect(getByLabelText("input-1-1")).toHaveFocus();
+      press.Escape();
+      expect(getByLabelText("1-1")).toHaveFocus();
+      expect(getByLabelText("input-1-1")).not.toHaveFocus();
+    });
   });
 });

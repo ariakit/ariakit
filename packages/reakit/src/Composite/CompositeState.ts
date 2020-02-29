@@ -11,11 +11,13 @@ import {
   unstable_IdStateReturn
 } from "../Id/IdState";
 
-type Stop = {
+type Item = {
   id: string;
   ref: React.RefObject<HTMLElement>;
   rowId?: string;
   disabled?: boolean;
+  colSpan?: number;
+  rowSpan?: number;
 };
 
 type Row = {
@@ -33,32 +35,34 @@ export type unstable_CompositeState = unstable_IdState & {
    */
   orientation?: "horizontal" | "vertical";
   /**
-   * TODO.
+   * TODO
    */
   compositeRef: React.MutableRefObject<HTMLElement | undefined>;
   /**
-   * A list of stops.
-   * TODO: Rename to items
-   * Use only "id" attribute on items
+   * TODO
    */
-  stops: Stop[];
+  items: Item[];
   /**
    * A list rows.
    */
   rows: Row[];
   /**
-   * The current focused stop ID.
+   * The current focused item ID.
    */
   currentId: string | null;
   /**
-   * If enabled, moving to the next stop from the last one will focus the first
-   * stop and vice-versa. It doesn't work if this is a two-dimensional
+   * TODO
+   */
+  spanIndex: number;
+  /**
+   * If enabled, moving to the next item from the last one will focus the first
+   * item and vice-versa. It doesn't work if this is a two-dimensional
    * composite (with rows and cells).
    */
   loop: boolean;
   /**
-   * If enabled, moving to the next stop from the last one in a row or column
-   * will focus the first stop in the next row or column and vice-versa. If
+   * If enabled, moving to the next item from the last one in a row or column
+   * will focus the first item in the next row or column and vice-versa. If
    * this is going to wrap rows, columns or both, it depends on the value of
    * `orientation`:
    *
@@ -86,11 +90,11 @@ export type unstable_CompositeActions = unstable_IdActions & {
   /**
    * TODO
    */
-  registerStop: (stop: Stop) => void;
+  registerItem: (item: Item) => void;
   /**
    * TODO
    */
-  unregisterStop: (id: string) => void;
+  unregisterItem: (id: string) => void;
   /**
    * TODO
    */
@@ -102,7 +106,7 @@ export type unstable_CompositeActions = unstable_IdActions & {
   /**
    * Moves focus to a given element ID.
    */
-  move: (id: string | null) => void;
+  move: (id: string | null, spanIndex?: number) => void;
   /**
    * Moves focus to the next element.
    */
@@ -131,7 +135,7 @@ export type unstable_CompositeActions = unstable_IdActions & {
    * Resets `currentId` and `pastId` states.
    * @private
    */
-  unstable_reset: () => void;
+  unstable_resetFocus: () => void;
   /**
    * TODO
    */
@@ -169,18 +173,18 @@ export type unstable_CompositeStateReturn = unstable_IdStateReturn &
   unstable_CompositeActions;
 
 type CompositeReducerAction =
-  | { type: "registerStop"; stop: Stop }
-  | { type: "unregisterStop"; id: string | null }
+  | { type: "registerItem"; item: Item }
+  | { type: "unregisterItem"; id: string | null }
   | { type: "registerRow"; row: Row }
   | { type: "unregisterRow"; id: string | null }
-  | { type: "move"; id?: string | null }
+  | { type: "move"; id?: string | null; spanIndex?: number }
   | { type: "next"; allTheWayInRow?: boolean }
   | { type: "previous"; allTheWayInRow?: boolean }
   | { type: "up"; allTheWayInRow?: boolean }
   | { type: "down"; allTheWayInRow?: boolean }
   | { type: "first" }
   | { type: "last" }
-  | { type: "reset" }
+  | { type: "resetFocus" }
   | {
       type: "unstable_setFocusStrategy";
       unstable_focusStrategy: unstable_CompositeState["unstable_focusStrategy"];
@@ -201,41 +205,79 @@ type CompositeReducerState = Omit<
   "compositeRef" | keyof unstable_IdState
 >;
 
-function groupByRow(stops: Stop[]) {
-  const rows = [[]] as Stop[][];
+function groupByRow(items: Item[]) {
+  const rows = [[]] as Item[][];
 
-  for (const stop of stops) {
+  for (const item of items) {
     const lastRow = rows[rows.length - 1];
-    if (lastRow[0]?.rowId === stop.rowId) {
-      lastRow.push(stop);
+    if (lastRow[0]?.rowId === item.rowId) {
+      lastRow.push(item);
     } else {
-      rows.push([stop]);
+      rows.push([item]);
     }
   }
 
   return rows;
 }
 
-function verticalizeStops(stops: Stop[]) {
-  const rows = [[]] as Stop[][];
+function fillGaps(items: Item[]) {
+  const rows = [] as Item[][];
   let maxLength = 0;
 
-  for (const stop of stops) {
+  for (const item of items) {
     const lastRow = rows[rows.length - 1];
-    if (lastRow[0]?.rowId === stop.rowId) {
-      lastRow.push(stop);
+    if (lastRow?.[0].rowId === item.rowId) {
+      lastRow.push(item);
     } else {
-      if (lastRow.length > maxLength) {
+      if (lastRow?.length > maxLength) {
         maxLength = lastRow.length;
       }
-      rows.push([stop]);
+      rows.push([item]);
     }
   }
-  const verticalized = [] as Stop[];
+
+  for (const row of rows) {
+    for (let i = 0; i < maxLength; i += 1) {
+      if (!row[i]) {
+        row[i] = {
+          id: "",
+          disabled: true,
+          rowId: row[i - 1].rowId,
+          ref: { current: null }
+        };
+      }
+    }
+  }
+
+  const normalizedItems = [] as Item[];
+
+  for (const row of rows) {
+    normalizedItems.push(...row);
+  }
+
+  return normalizedItems;
+}
+
+function verticalizeItems(items: Item[]) {
+  const rows = [] as Item[][];
+  let maxLength = 0;
+
+  for (const item of items) {
+    const lastRow = rows[rows.length - 1];
+    if (lastRow?.[0].rowId === item.rowId) {
+      lastRow.push(item);
+    } else {
+      if (lastRow?.length > maxLength) {
+        maxLength = lastRow.length;
+      }
+      rows.push([item]);
+    }
+  }
+  const verticalized = [] as Item[];
 
   for (let i = 0; i < maxLength; i += 1) {
     for (const row of rows) {
-      if (row[i]) {
+      if (row[1]) {
         verticalized.push(row[i]);
       }
     }
@@ -244,15 +286,15 @@ function verticalizeStops(stops: Stop[]) {
   return verticalized;
 }
 
-function findDOMIndex(stops: Stop[], stop: Stop) {
-  return stops.findIndex(currentStop => {
-    if (!currentStop.ref.current || !stop.ref.current) {
+function findDOMIndex(items: Item[], item: Item) {
+  return items.findIndex(currentItem => {
+    if (!currentItem.ref.current || !item.ref.current) {
       return false;
     }
-    // Returns true if the new stop is located earlier in the DOM compared
-    // to the current stop in the iteration.
+    // Returns true if the new item is located earlier in the DOM compared
+    // to the current item in the iteration.
     return Boolean(
-      currentStop.ref.current.compareDocumentPosition(stop.ref.current) &
+      currentItem.ref.current.compareDocumentPosition(item.ref.current) &
         Node.DOCUMENT_POSITION_PRECEDING
     );
   });
@@ -264,7 +306,7 @@ function reducer(
 ): CompositeReducerState {
   const {
     orientation,
-    stops,
+    items,
     rows,
     currentId,
     unstable_pastId: pastId,
@@ -301,56 +343,57 @@ function reducer(
       }
       return { ...state, rows: nextRows };
     }
-    case "registerStop": {
-      const { stop } = action;
-      const row = rows.find(r => r.ref.current?.contains(stop.ref.current));
-      const nextStop = { ...stop, rowId: row?.id };
-      const nextId = currentId || stops[0]?.id || stop.id;
-      if (stops.length === 0) {
-        return { ...state, stops: [nextStop], currentId: nextId };
+    case "registerItem": {
+      const { item } = action;
+      const row = rows.find(r => r.ref.current?.contains(item.ref.current));
+      const nextItem = { ...item, rowId: row?.id };
+      const nextId = currentId || items[0]?.id || item.id;
+      if (items.length === 0) {
+        return { ...state, items: [nextItem], currentId: nextId };
       }
-      if (stops.some(i => i.id === nextStop.id)) {
+      if (items.some(i => i.id === nextItem.id)) {
         return state;
       }
-      const stopIndex = findDOMIndex(stops, nextStop);
-      if (stopIndex === -1) {
-        return { ...state, stops: [...stops, nextStop], currentId: nextId };
+      const itemIndex = findDOMIndex(items, nextItem);
+      let nextItems = [...items, nextItem];
+      if (itemIndex !== -1) {
+        nextItems = [
+          ...items.slice(0, itemIndex),
+          nextItem,
+          ...items.slice(itemIndex)
+        ];
       }
-      const nextStops = [
-        ...stops.slice(0, stopIndex),
-        nextStop,
-        ...stops.slice(stopIndex)
-      ];
-      return { ...state, stops: nextStops, currentId: nextId };
+      return { ...state, items: nextItems, currentId: nextId };
     }
-    case "unregisterStop": {
+    case "unregisterItem": {
       const { id } = action;
-      const nextStops = stops.filter(stop => stop.id !== id);
-      if (nextStops.length === stops.length) {
+      const nextItems = items.filter(item => item.id !== id);
+      if (nextItems.length === items.length) {
         return state;
       }
       let nextId = currentId;
       if (currentId && currentId === id) {
-        const index = stops.findIndex(stop => stop.id === id);
+        const index = items.findIndex(item => item.id === id);
         const nextIndex =
-          index >= nextStops.length ? nextStops.length - 1 : index;
-        nextId = nextStops[nextIndex]?.id;
+          index >= nextItems.length ? nextItems.length - 1 : index;
+        nextId = nextItems[nextIndex]?.id;
       }
       return {
         ...state,
-        stops: nextStops,
+        items: nextItems,
         currentId: nextId,
         unstable_pastId: pastId && pastId === id ? null : pastId
       };
     }
     case "move": {
-      const { id } = action;
+      const { id, spanIndex = 0 } = action;
       const nextMoves = moves + 1;
 
       if (id === null) {
         return {
           ...state,
-          currentId: stops[0]?.id,
+          spanIndex,
+          currentId: items[0]?.id,
           unstable_pastId: currentId,
           unstable_moves: nextMoves
         };
@@ -360,20 +403,20 @@ function reducer(
         return state;
       }
 
-      const index = stops.findIndex(stop => stop.id === id && !stop.disabled);
+      const index = items.findIndex(item => item.id === id && !item.disabled);
 
-      // Stop doesn't exist or is disabled, so we don't count a move
+      // Item doesn't exist or is disabled, so we don't count a move
       if (index === -1) {
         return state;
       }
 
-      if (stops[index].id === currentId) {
+      if (items[index].id === currentId) {
         return { ...state, unstable_moves: nextMoves };
       }
 
       return {
         ...state,
-        currentId: stops[index].id,
+        currentId: items[index].id,
         unstable_pastId: currentId,
         unstable_moves: nextMoves
       };
@@ -383,44 +426,52 @@ function reducer(
         return reducer(state, { type: "first" });
       }
       const { allTheWayInRow } = action;
-      const currentStop = stops.find(stop => stop.id === currentId)!;
-      const currentIndex = stops.indexOf(currentStop);
-      const nextStops = stops.slice(currentIndex + 1);
-      const nextStopsInRow = nextStops.filter(
-        stop => stop.rowId === currentStop.rowId
+      const currentItem = items.find(item => item.id === currentId)!;
+      const currentIndex = items.indexOf(currentItem);
+      const nextItems = items.slice(currentIndex + 1);
+      const nextItemsInRow = nextItems.filter(
+        item => item.rowId === currentItem.rowId
       );
 
       if (allTheWayInRow) {
-        const reverseNextStopsInRow = nextStopsInRow.slice().reverse();
-        const nextStop = reverseNextStopsInRow.find(stop => !stop.disabled);
-        return reducer(state, { type: "move", id: nextStop?.id });
+        const reverseNextItemsInRow = nextItemsInRow.slice().reverse();
+        const nextItem = reverseNextItemsInRow.find(
+          item => !item.disabled && item.id !== currentId
+        );
+        return reducer(state, { type: "move", id: nextItem?.id });
       }
 
       if (
-        currentStop.rowId &&
+        currentItem.rowId &&
         wrap &&
         (!orientation || orientation === "horizontal")
       ) {
-        const nextStop = nextStops.find(stop => !stop.disabled);
-        return reducer(state, { type: "move", id: nextStop?.id });
+        const nextItem = nextItems.find(
+          item => !item.disabled && item.id !== currentId
+        );
+        return reducer(state, { type: "move", id: nextItem?.id });
       }
 
-      if (!currentStop.rowId && loop) {
+      if (!currentItem.rowId && loop) {
         // Turns [0, currentId, 2, 3] into [2, 3, 0]
-        const reorderedStops = [
-          ...stops.slice(currentIndex + 1),
-          ...stops.slice(0, currentIndex)
+        const reorderedItems = [
+          ...items.slice(currentIndex + 1),
+          ...items.slice(0, currentIndex)
         ];
-        const nextStop = reorderedStops.find(stop => !stop.disabled);
-        return reducer(state, { type: "move", id: nextStop?.id });
+        const nextItem = reorderedItems.find(
+          item => !item.disabled && item.id !== currentId
+        );
+        return reducer(state, { type: "move", id: nextItem?.id });
       }
 
-      const nextStop = nextStopsInRow.find(stop => !stop.disabled);
-      return reducer(state, { type: "move", id: nextStop?.id });
+      const nextItem = nextItemsInRow.find(
+        item => !item.disabled && item.id !== currentId
+      );
+      return reducer(state, { type: "move", id: nextItem?.id });
     }
     case "previous": {
-      const { stops: _, ...nextState } = reducer(
-        { ...state, stops: stops.slice().reverse() },
+      const { items: _, ...nextState } = reducer(
+        { ...state, items: items.slice().reverse() },
         { ...action, type: "next" }
       );
       return { ...state, ...nextState };
@@ -430,12 +481,14 @@ function reducer(
         return reducer(state, { type: "first" });
       }
       const { allTheWayInRow } = action;
-      const verticalized = verticalizeStops(stops);
-      const currentStop = verticalized.find(stop => stop.id === currentId)!;
-      const currentIndex = verticalized.indexOf(currentStop);
-      const nextStops = verticalized.slice(currentIndex + 1);
+      const verticalized = verticalizeItems(fillGaps(items));
+      const currentItem = verticalized.find(
+        item => item && item.id === currentId
+      )!;
+      const currentIndex = verticalized.indexOf(currentItem);
+      const nextItems = verticalized.slice(currentIndex + 1);
       let index = -1;
-      const nextStopsInColumn = groupByRow(stops).reduce((arr, curr) => {
+      const nextItemsInColumn = groupByRow(items).reduce((arr, curr) => {
         const idx = curr.findIndex(s => s.id === currentId);
         if (curr[index]) {
           arr.push(curr[index]);
@@ -444,58 +497,83 @@ function reducer(
           index = idx;
         }
         return arr;
-      }, [] as Stop[]);
+      }, [] as Item[]);
 
       if (allTheWayInRow) {
-        const reverseNextStopsInRow = nextStopsInColumn.slice().reverse();
-        const nextStop = reverseNextStopsInRow.find(stop => !stop.disabled);
-        return reducer(state, { type: "move", id: nextStop?.id });
+        const reverseNextItemsInColumn = nextItemsInColumn.slice().reverse();
+        const nextItem = reverseNextItemsInColumn.find(
+          item => !item.disabled && item.id !== currentId
+        );
+        const spanIndex =
+          nextItem &&
+          items.filter(item => item.id === currentId).indexOf(nextItem);
+        return reducer(state, { type: "move", id: nextItem?.id, spanIndex });
       }
 
       if (
-        currentStop.rowId &&
+        currentItem.rowId &&
         wrap &&
         (!orientation || orientation === "vertical")
       ) {
-        const nextStop = nextStops.find(stop => !stop.disabled);
-        return reducer(state, { type: "move", id: nextStop?.id });
+        const nextItem = nextItems.find(
+          item => item && !item.disabled && item.id !== currentId
+        );
+        const spanIndex =
+          nextItem &&
+          items.filter(item => item.id === currentId).indexOf(nextItem);
+        return reducer(state, { type: "move", id: nextItem?.id, spanIndex });
       }
 
-      if (!currentStop.rowId && loop) {
+      if (!currentItem.rowId && loop) {
         // Turns [0, currentId, 2, 3] into [2, 3, 0]
-        const reorderedStops = [
+        const reorderedItems = [
           ...verticalized.slice(currentIndex + 1),
           ...verticalized.slice(0, currentIndex)
         ];
-        const nextStop = reorderedStops.find(stop => !stop.disabled);
-        return reducer(state, { type: "move", id: nextStop?.id });
+        const nextItem = reorderedItems.find(
+          item => !item.disabled && item.id !== currentId
+        );
+        const spanIndex =
+          nextItem &&
+          items.filter(item => item.id === currentId).indexOf(nextItem);
+        return reducer(state, { type: "move", id: nextItem?.id, spanIndex });
       }
 
-      const nextStop = nextStopsInColumn.find(stop => !stop.disabled);
-      return reducer(state, { type: "move", id: nextStop?.id });
+      const nextItem = nextItemsInColumn.find(
+        item => !item.disabled && item.id !== currentId
+      );
+      const spanIndex =
+        nextItem &&
+        items.filter(item => item.id === currentId).indexOf(nextItem);
+      return reducer(state, { type: "move", id: nextItem?.id, spanIndex });
     }
     case "up": {
-      const { stops: _, ...nextState } = reducer(
-        { ...state, stops: stops.slice().reverse() },
+      const { items: _, ...nextState } = reducer(
+        {
+          ...state,
+          items: fillGaps(items)
+            .slice()
+            .reverse()
+        },
         { ...action, type: "down" }
       );
       return { ...state, ...nextState };
     }
     case "first": {
-      const firstStop = stops.find(stop => !stop.disabled);
-      return reducer(state, { type: "move", id: firstStop?.id });
+      const firstItem = items.find(item => !item.disabled);
+      return reducer(state, { type: "move", id: firstItem?.id });
     }
     case "last": {
-      const { stops: _, ...nextState } = reducer(
-        { ...state, stops: stops.slice().reverse() },
+      const { items: _, ...nextState } = reducer(
+        { ...state, items: items.slice().reverse() },
         { ...action, type: "first" }
       );
       return { ...state, ...nextState };
     }
-    case "reset": {
+    case "resetFocus": {
       return {
         ...state,
-        currentId: stops[0]?.id,
+        currentId: items[0]?.id,
         unstable_pastId: null
       };
     }
@@ -507,7 +585,7 @@ function reducer(
     case "setOrientation":
       return { ...state, orientation: action.orientation };
     case "setCurrentId":
-      return { ...state, currentId: action.currentId || stops[0]?.id };
+      return { ...state, currentId: action.currentId || items[0]?.id };
     case "setLoop":
       return { ...state, loop: action.loop };
     case "setWrap":
@@ -531,9 +609,10 @@ export function unstable_useCompositeState(
   const [state, dispatch] = React.useReducer(reducer, {
     unstable_focusStrategy,
     orientation,
-    stops: [],
+    items: [],
     rows: [],
     currentId,
+    spanIndex: 0,
     loop,
     wrap,
     unstable_moves: 0,
@@ -546,12 +625,12 @@ export function unstable_useCompositeState(
     ...idState,
     ...state,
     compositeRef,
-    registerStop: React.useCallback(
-      stop => dispatch({ type: "registerStop", stop }),
+    registerItem: React.useCallback(
+      item => dispatch({ type: "registerItem", item }),
       []
     ),
-    unregisterStop: React.useCallback(
-      id => dispatch({ type: "unregisterStop", id }),
+    unregisterItem: React.useCallback(
+      id => dispatch({ type: "unregisterItem", id }),
       []
     ),
     registerRow: React.useCallback(
@@ -581,7 +660,10 @@ export function unstable_useCompositeState(
     ),
     first: React.useCallback(() => dispatch({ type: "first" }), []),
     last: React.useCallback(() => dispatch({ type: "last" }), []),
-    unstable_reset: React.useCallback(() => dispatch({ type: "reset" }), []),
+    unstable_resetFocus: React.useCallback(
+      () => dispatch({ type: "resetFocus" }),
+      []
+    ),
     unstable_setFocusStrategy: React.useCallback(
       a =>
         dispatch({
@@ -608,15 +690,16 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "unstable_focusStrategy",
   "orientation",
   "compositeRef",
-  "stops",
+  "items",
   "rows",
   "currentId",
+  "spanIndex",
   "loop",
   "wrap",
   "unstable_moves",
   "unstable_pastId",
-  "registerStop",
-  "unregisterStop",
+  "registerItem",
+  "unregisterItem",
   "registerRow",
   "unregisterRow",
   "move",
@@ -626,7 +709,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "down",
   "first",
   "last",
-  "unstable_reset",
+  "unstable_resetFocus",
   "unstable_setFocusStrategy",
   "setOrientation",
   "setCurrentId",

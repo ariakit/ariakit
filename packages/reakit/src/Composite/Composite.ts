@@ -1,8 +1,10 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { useCreateElement } from "reakit-system/useCreateElement";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { warning } from "reakit-utils/warning";
 import {
   unstable_useIdGroup,
   unstable_IdGroupOptions,
@@ -24,10 +26,10 @@ export type unstable_CompositeOptions = TabbableOptions &
     unstable_CompositeStateReturn,
     | "unstable_focusStrategy"
     | "compositeRef"
-    | "stops"
+    | "items"
     | "currentId"
-    | "registerStop"
-    | "unregisterStop"
+    | "registerItem"
+    | "unregisterItem"
     | "setCurrentId"
     | "next"
     | "previous"
@@ -44,11 +46,23 @@ export type unstable_CompositeHTMLProps = TabbableHTMLProps &
 export type unstable_CompositeProps = unstable_CompositeOptions &
   unstable_CompositeHTMLProps;
 
-function getCurrentStop({ stops, currentId }: unstable_CompositeOptions) {
-  if (!stops) return undefined;
+const validCompositeRoles = [
+  "grid",
+  "tablist",
+  "listbox",
+  "menu",
+  "menubar",
+  "toolbar",
+  "radiogroup",
+  "tree",
+  "treegrid"
+];
+
+function getCurrentItem({ items, currentId }: unstable_CompositeOptions) {
+  if (!items) return undefined;
   return (
-    stops.find(stop => stop.id === currentId) ||
-    stops.find(stop => !stop.disabled)
+    items.find(item => item.id === currentId) ||
+    items.find(item => !item.disabled)
   );
 }
 
@@ -62,7 +76,7 @@ export const unstable_useComposite = createHook<
 
   useProps(options, { onKeyDown: htmlOnKeyDown, ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
-    const currentStop = getCurrentStop(options);
+    const currentItem = getCurrentItem(options);
 
     React.useEffect(() => {
       if (options.compositeRef) {
@@ -73,23 +87,23 @@ export const unstable_useComposite = createHook<
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
         if (event.target !== event.currentTarget) return;
-        if (currentStop?.ref.current) {
+        if (currentItem?.ref.current) {
           if (event.key !== "Tab" && !event.metaKey) {
             event.preventDefault();
-            currentStop.ref.current.dispatchEvent(
+            currentItem.ref.current.dispatchEvent(
               new KeyboardEvent("keydown", event)
             );
           }
         }
       },
-      [currentStop]
+      [currentItem]
     );
 
     return {
       ref: useForkRef(ref, htmlRef),
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       ...(options.unstable_focusStrategy === "aria-activedescendant"
-        ? { "aria-activedescendant": currentStop?.id }
+        ? { "aria-activedescendant": currentItem?.id }
         : {}),
       ...htmlProps
     };
@@ -110,5 +124,14 @@ export const unstable_useComposite = createHook<
 
 export const unstable_Composite = createComponent({
   as: "div",
-  useHook: unstable_useComposite
+  useHook: unstable_useComposite,
+  useCreateElement: (type, props, children) => {
+    warning(
+      validCompositeRoles.indexOf(props.role) === -1,
+      "[reakit/Composite]",
+      "You should provide a valid `role` attribute to composite components.",
+      "See https://reakit.io/docs/composite"
+    );
+    return useCreateElement(type, props, children);
+  }
 });
