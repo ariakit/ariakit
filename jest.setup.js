@@ -5,18 +5,6 @@ const {
 } = require("jest-matcher-utils");
 const matchers = require("@testing-library/jest-dom/matchers");
 
-// polyfill for document.createRange
-if (global.document) {
-  document.createRange = () => ({
-    setStart: () => {},
-    setEnd: () => {},
-    commonAncestorContainer: {
-      nodeName: "BODY",
-      ownerDocument: document
-    }
-  });
-}
-
 // Consider [aria-activedescendant="${id}"] #${id} as the focused element.
 function toHaveFocus(element) {
   const result = matchers.toHaveFocus(element);

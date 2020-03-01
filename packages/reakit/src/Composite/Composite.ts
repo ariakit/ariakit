@@ -25,7 +25,7 @@ export type unstable_CompositeOptions = TabbableOptions &
   Pick<
     unstable_CompositeStateReturn,
     | "unstable_focusStrategy"
-    | "compositeRef"
+    | "unstable_compositeRef"
     | "items"
     | "currentId"
     | "registerItem"
@@ -79,10 +79,10 @@ export const unstable_useComposite = createHook<
     const currentItem = getCurrentItem(options);
 
     React.useEffect(() => {
-      if (options.compositeRef) {
-        options.compositeRef.current = ref.current || undefined;
+      if (options.unstable_compositeRef) {
+        options.unstable_compositeRef.current = ref.current || undefined;
       }
-    }, [options.compositeRef]);
+    }, [options.unstable_compositeRef]);
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {

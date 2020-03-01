@@ -26,7 +26,7 @@ test("render div", () => {
   const { getByText } = render(<Button as="div">button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
 <div
-  data-tabbable="true"
+  data-custom-tabbable="true"
   role="button"
   tabindex="0"
 >

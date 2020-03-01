@@ -24,104 +24,24 @@ const emojiMap = {
 } as const;
 
 function active() {
-  // const { activeElement } = document;
-  // const activeDescendant = activeElement?.getAttribute("aria-activedescendant");
-  // if (activeDescendant) {
-  //   return document.getElementById(activeDescendant);
-  // }
-  // return activeElement;
-  const items = Array.from(document.querySelectorAll("[data-item]"));
-  const itemsByRow = [] as Element[][];
-  for (const item of items) {
-    let rightRow: Element[] | undefined;
-    for (const row of itemsByRow) {
-      if (
-        row[0].closest("[data-composite-row]") ===
-        item.closest("[data-composite-row]")
-      ) {
-        rightRow = row;
-      }
-    }
-    if (rightRow) {
-      rightRow.push(item);
-    } else {
-      itemsByRow.push([item]);
-    }
+  const { activeElement } = document;
+  const activeDescendant = activeElement?.getAttribute("aria-activedescendant");
+  if (activeDescendant) {
+    return document.getElementById(activeDescendant);
   }
-  const tmpl = itemsByRow
-    .map(row =>
-      row
-        .map(item =>
-          item.getAttribute("data-disabled") === "true"
-            ? "x"
-            : item.hasAttribute("aria-selected") ||
-              item.getAttribute("tabindex") === "0"
-            ? "0"
-            : "-"
-        )
-        .join(" ")
-    )
-    .join("\n");
-
-  if (itemsByRow.length === 1) {
-    return tmpl.replace(/\s/g, "");
-  }
-  return tmpl;
+  return activeElement;
 }
 
 function key(char: keyof typeof emojiMap) {
   const [k, options] = emojiMap[char];
   press[k](null, options);
-  const items = Array.from(document.querySelectorAll("[data-item]"));
-  const itemsByRow = [] as Element[][];
-  for (const item of items) {
-    let rightRow: Element[] | undefined;
-    for (const row of itemsByRow) {
-      if (
-        row[0].closest("[data-composite-row]") ===
-        item.closest("[data-composite-row]")
-      ) {
-        rightRow = row;
-      }
-    }
-    if (rightRow) {
-      rightRow.push(item);
-    } else {
-      itemsByRow.push([item]);
-    }
-  }
-  const tmpl = itemsByRow
-    .map(row =>
-      row
-        .map(item =>
-          item.getAttribute("data-disabled") === "true"
-            ? "x"
-            : item.hasAttribute("aria-selected") ||
-              item.getAttribute("tabindex") === "0"
-            ? "0"
-            : "-"
-        )
-        .join(" ")
-    )
-    .join("\n");
-
-  if (itemsByRow.length === 1) {
-    return tmpl.replace(/\s/g, "");
-  }
-  return tmpl;
+  return active();
 }
 
-function template(string: string) {
-  return string.trim().replace(/\s{2,}/gm, "\n");
-  // const items = Array.from(document.querySelectorAll("[data-item]"));
-  // const trimmedString = string.replace(/\s/gm, "");
-  // const activeElement = active();
-  // if (activeElement) {
-  //   const activeIndex = items.indexOf(activeElement);
-  //   // TODO, instead of null, return right template
-  //   return trimmedString[activeIndex] === "0" ? activeElement : null;
-  // }
-  // return null;
+function template(value: string) {
+  const items = Array.from(document.querySelectorAll("[data-item]"));
+  const withoutSpaces = value.replace(/\s/gm, "");
+  return items[withoutSpaces.indexOf("0")];
 }
 
 strategies.forEach(unstable_focusStrategy => {
@@ -287,6 +207,35 @@ strategies.forEach(unstable_focusStrategy => {
       expect(key("^^")).toBe(template("0x--"));
     });
 
+    test("move focus with arrow keys rtl", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          rtl: true
+        });
+        return (
+          <Composite {...composite} role="toolbar">
+            <CompositeItem {...composite} data-item />
+            <CompositeItem {...composite} data-item disabled />
+            <CompositeItem {...composite} data-item disabled focusable />
+            <CompositeItem {...composite} data-item />
+          </Composite>
+        );
+      };
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(template("0x--"));
+      expect(key("<")).toBe(template("-x0-"));
+      expect(key("^")).toBe(template("-x-0"));
+      expect(key(">")).toBe(template("-x0-"));
+      expect(key("v")).toBe(template("0x--"));
+      expect(key(">")).toBe(template("0x--"));
+      expect(key("<<")).toBe(template("-x-0"));
+      expect(key(">>")).toBe(template("0x--"));
+      expect(key("^^")).toBe(template("-x-0"));
+      expect(key("vv")).toBe(template("0x--"));
+    });
+
     test("move focus with arrow keys loop", () => {
       const Test = () => {
         const composite = useCompositeState({
@@ -410,17 +359,20 @@ strategies.forEach(unstable_focusStrategy => {
           <Composite {...composite} role="toolbar">
             <CompositeItem {...composite}>item1</CompositeItem>
             {renderItem2 && <CompositeItem {...composite}>item2</CompositeItem>}
-            <CompositeItem {...composite}>item3</CompositeItem>
+            <CompositeItem {...composite} disabled>
+              item3
+            </CompositeItem>
+            <CompositeItem {...composite}>item4</CompositeItem>
           </Composite>
         );
       };
       const { getByText, rerender } = render(<Test renderItem2 />);
       const item2 = getByText("item2");
-      const item3 = getByText("item3");
+      const item4 = getByText("item4");
       focus(item2);
       expect(item2).toHaveFocus();
       rerender(<Test />);
-      expect(item3).toHaveFocus();
+      expect(item4).toHaveFocus();
     });
 
     test("move to the previous item when the current active item is unmounted and it is the last one", () => {
@@ -430,15 +382,18 @@ strategies.forEach(unstable_focusStrategy => {
           <Composite {...composite} role="toolbar">
             <CompositeItem {...composite}>item1</CompositeItem>
             <CompositeItem {...composite}>item2</CompositeItem>
-            {renderItem3 && <CompositeItem {...composite}>item3</CompositeItem>}
+            <CompositeItem {...composite} disabled>
+              item3
+            </CompositeItem>
+            {renderItem3 && <CompositeItem {...composite}>item4</CompositeItem>}
           </Composite>
         );
       };
       const { getByText, rerender } = render(<Test renderItem3 />);
       const item2 = getByText("item2");
-      const item3 = getByText("item3");
-      focus(item3);
-      expect(item3).toHaveFocus();
+      const item4 = getByText("item4");
+      focus(item4);
+      expect(item4).toHaveFocus();
       rerender(<Test />);
       expect(item2).toHaveFocus();
     });
@@ -699,6 +654,104 @@ strategies.forEach(unstable_focusStrategy => {
           - - - -
           - x x -
           - - 0 x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys rtl", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          rtl: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - - - 0
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x -
+          - - 0 -
+          - - - x
+      `)
+      );
+      expect(key(">>")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<<<")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("^^")).toBe(
+        template(`
+          - x x -
+          - - 0 -
+          - - - x
       `)
       );
     });
@@ -1190,7 +1243,7 @@ strategies.forEach(unstable_focusStrategy => {
           orientation: "vertical",
           wrap: true
         });
-        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled, .5 - has widget
         const rows = [
           [2, 0.5, 0, 2],
           [2, 2.5, 1, 2],

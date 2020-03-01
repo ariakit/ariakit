@@ -31,7 +31,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
   Pick<
     unstable_CompositeStateReturn,
     | "unstable_focusStrategy"
-    | "compositeRef"
+    | "unstable_compositeRef"
     | "items"
     | "currentId"
     | "registerItem"
@@ -111,13 +111,19 @@ export const unstable_useCompositeItem = createHook<
         if (options.unstable_focusStrategy === "aria-activedescendant") {
           // currentTarget.scrollIntoViewIfNeeded();
           if (
-            getActiveElement(currentTarget) !== options.compositeRef.current
+            getActiveElement(currentTarget) !==
+            options.unstable_compositeRef.current
           ) {
-            options.compositeRef.current?.focus();
+            options.unstable_compositeRef.current?.focus();
           }
         }
       },
-      [options.move, id, options.unstable_focusStrategy, options.compositeRef]
+      [
+        options.move,
+        id,
+        options.unstable_focusStrategy,
+        options.unstable_compositeRef
+      ]
     );
 
     const onFocus = React.useCallback(
@@ -140,7 +146,7 @@ export const unstable_useCompositeItem = createHook<
       }
       if (options.unstable_moves && focused && !hasFocusWithin(self)) {
         if (options.unstable_focusStrategy === "aria-activedescendant") {
-          if (!hasFocusWithin(options.compositeRef.current!)) {
+          if (!hasFocusWithin(options.unstable_compositeRef.current!)) {
             handleFocus(self);
           }
         } else {
@@ -295,11 +301,11 @@ export const unstable_useCompositeItem = createHook<
     // @ts-ignore
     htmlProps = unstable_useId(options, htmlProps, true);
     // @ts-ignore
-    const tabbableHTMLProps = useTabbable(options, htmlProps, true);
+    htmlProps = useTabbable(options, htmlProps, true);
     if (options.unstable_focusStrategy === "aria-activedescendant") {
-      return { ...tabbableHTMLProps, onMouseDown: htmlProps.onMouseDown };
+      return { ...htmlProps, onMouseDown: htmlProps.onMouseDown };
     }
-    return tabbableHTMLProps;
+    return htmlProps;
   }
 });
 

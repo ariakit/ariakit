@@ -88,9 +88,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
       style: htmlStyle,
-      "data-tabbable": dataTabbable,
+      "data-custom-tabbable": isCustomTabbableAlready,
       ...htmlProps
-    }: TabbableHTMLProps & { "data-tabbable"?: boolean }
+    }: TabbableHTMLProps & { "data-custom-tabbable"?: boolean }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const trulyDisabled = options.disabled && !options.focusable;
@@ -163,7 +163,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           event.metaKey ||
           // This will be true if `useTabbable` has already been used.
           // In this case, we don't want to .click() twice.
-          dataTabbable
+          isCustomTabbableAlready
         ) {
           return;
         }
@@ -180,7 +180,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         }
       },
       [
-        dataTabbable,
+        isCustomTabbableAlready,
         options.disabled,
         options.unstable_clickOnEnter,
         options.unstable_clickOnSpace,
@@ -197,8 +197,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown,
       onKeyDown,
       style,
-      "data-disabled": trulyDisabled,
-      "data-tabbable": nativeTabbable ? undefined : true,
+      "data-custom-tabbable": nativeTabbable ? undefined : true,
       ...htmlProps
     };
   }
