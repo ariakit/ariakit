@@ -25,7 +25,7 @@ export type unstable_CompositeOptions = TabbableOptions &
   Pick<
     unstable_CompositeStateReturn,
     | "unstable_focusStrategy"
-    | "unstable_compositeRef"
+    | "unstable_hasFocusInsideItem"
     | "items"
     | "currentId"
     | "registerItem"
@@ -74,15 +74,18 @@ export const unstable_useComposite = createHook<
   compose: [unstable_useIdGroup, useTabbable],
   useState: unstable_useCompositeState,
 
+  useOptions(options) {
+    return {
+      ...options,
+      unstable_clickOnSpace: options.unstable_hasFocusInsideItem
+        ? false
+        : options.unstable_clickOnSpace
+    };
+  },
+
   useProps(options, { onKeyDown: htmlOnKeyDown, ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = getCurrentItem(options);
-
-    React.useEffect(() => {
-      if (options.unstable_compositeRef) {
-        options.unstable_compositeRef.current = ref.current || undefined;
-      }
-    }, [options.unstable_compositeRef]);
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
@@ -101,6 +104,7 @@ export const unstable_useComposite = createHook<
 
     return {
       ref: useForkRef(ref, htmlRef),
+      id: options.baseId,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       ...(options.unstable_focusStrategy === "aria-activedescendant"
         ? { "aria-activedescendant": currentItem?.id }

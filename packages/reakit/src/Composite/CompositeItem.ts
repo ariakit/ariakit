@@ -7,6 +7,8 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { getActiveElement } from "reakit-utils/getActiveElement";
+import { getDocument } from "reakit-utils/getDocument";
+import { isTextField } from "reakit-utils/isTextField";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -30,12 +32,14 @@ export type unstable_CompositeItemOptions = TabbableOptions &
   > &
   Pick<
     unstable_CompositeStateReturn,
+    | "baseId"
     | "unstable_focusStrategy"
-    | "unstable_compositeRef"
+    | "unstable_hasFocusInsideItem"
     | "items"
     | "currentId"
     | "registerItem"
     | "unregisterItem"
+    | "setCurrentId"
     | "move"
     | "next"
     | "previous"
@@ -56,6 +60,7 @@ export type unstable_CompositeItemHTMLProps = TabbableHTMLProps &
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
   unstable_CompositeItemHTMLProps;
 
+// TODO: WARN IF IT'S A BUTTON OR ANOTHER TABBABLE ELEMENT AND HAS WIDGET INSIDE
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
@@ -65,6 +70,15 @@ export const unstable_useCompositeItem = createHook<
   useState: unstable_useCompositeState,
   keys: ["stopId"],
 
+  useOptions(options) {
+    return {
+      ...options,
+      unstable_clickOnSpace: options.unstable_hasFocusInsideItem
+        ? false
+        : options.unstable_clickOnSpace
+    };
+  },
+
   useProps(
     options,
     {
@@ -73,6 +87,7 @@ export const unstable_useCompositeItem = createHook<
       onFocus: htmlOnFocus,
       onKeyDown: htmlOnKeyDown,
       onMouseDown: htmlOnMouseDown,
+      onClick: htmlOnClick,
       ...htmlProps
     }
   ) {
@@ -107,23 +122,25 @@ export const unstable_useCompositeItem = createHook<
     const handleFocus = React.useCallback(
       (currentTarget: Element, target: Element = currentTarget) => {
         if (!id || !currentTarget.contains(target)) return;
-        options.move && options.move(id);
-        if (options.unstable_focusStrategy === "aria-activedescendant") {
+        if (target.hasAttribute("data-composite-item-widget")) {
+          options.setCurrentId && options.setCurrentId(id);
+        } else {
+          options.move && options.move(id);
+        }
+        if (
+          options.unstable_focusStrategy === "aria-activedescendant" &&
+          currentTarget === target
+        ) {
           // currentTarget.scrollIntoViewIfNeeded();
-          if (
-            getActiveElement(currentTarget) !==
-            options.unstable_compositeRef.current
-          ) {
-            options.unstable_compositeRef.current?.focus();
+          const composite = getDocument(currentTarget).getElementById(
+            options.baseId
+          );
+          if (getActiveElement(currentTarget) !== composite) {
+            composite?.focus();
           }
         }
       },
-      [
-        options.move,
-        id,
-        options.unstable_focusStrategy,
-        options.unstable_compositeRef
-      ]
+      [options.move, id, options.unstable_focusStrategy, options.baseId]
     );
 
     const onFocus = React.useCallback(
@@ -146,7 +163,8 @@ export const unstable_useCompositeItem = createHook<
       }
       if (options.unstable_moves && focused && !hasFocusWithin(self)) {
         if (options.unstable_focusStrategy === "aria-activedescendant") {
-          if (!hasFocusWithin(options.unstable_compositeRef.current!)) {
+          const composite = getDocument(self).getElementById(options.baseId);
+          if (composite && !hasFocusWithin(composite)) {
             handleFocus(self);
           }
         } else {
@@ -155,15 +173,20 @@ export const unstable_useCompositeItem = createHook<
       }
     }, [
       onFocus,
-      id,
       focused,
       options.unstable_moves,
-      options.unstable_focusStrategy
+      options.unstable_focusStrategy,
+      options.baseId
     ]);
 
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
         if (options.unstable_focusStrategy === "aria-activedescendant") {
+          if (
+            (event.target as Element).hasAttribute("data-composite-item-widget")
+          ) {
+            return;
+          }
           event.preventDefault();
           handleFocus(event.currentTarget);
         }
@@ -171,19 +194,6 @@ export const unstable_useCompositeItem = createHook<
       [onFocus, options.unstable_focusStrategy]
     );
 
-    // Add widgetHasFocus state to useCompositeState
-    // Check on shouldKeyDown if it has a [data-composite-item-widget] as a child
-    // If so, and key is Enter, Space or alphanumeric (and the widget is a text field)
-    // return true. Otherwise return false.
-    // Navigation will not be disabled here
-    // When widgetHasFocus is true, all widgets will have tabIndex={0}. Otherwise -1.
-    // Set widgetHasFocus to true on widget onFocus.
-    // Pressing enter or escape on the widget should set widgetHasFocus to false
-    // Escape should undo the value change
-    // onBlur on composite sets widgetHasFocus to false.
-    // onFocus on composite item (exact) sets widgetHasFocus to false.
-    // Try to set widgetHasFocus to false on widget blur (not sure if it'll conflict with tab key)
-    // What if there are other tabbable elements inside the grid? outside a row/item?
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
@@ -263,6 +273,30 @@ export const unstable_useCompositeItem = createHook<
                 } else {
                   options.last && options.last();
                 }
+              },
+              Delete: (event: React.KeyboardEvent) => {
+                const widget = event.currentTarget.querySelector<HTMLElement>(
+                  "[data-composite-item-widget]"
+                );
+                if (widget && isTextField(widget)) {
+                  if (widget.isContentEditable) {
+                    widget.innerHTML = "";
+                  } else {
+                    (widget as HTMLInputElement).value = "";
+                  }
+                }
+              },
+              Backspace: (event: React.KeyboardEvent) => {
+                const widget = event.currentTarget.querySelector<HTMLElement>(
+                  "[data-composite-item-widget]"
+                );
+                if (widget && isTextField(widget)) {
+                  if (widget.isContentEditable) {
+                    widget.innerHTML = "";
+                  } else {
+                    (widget as HTMLInputElement).value = "";
+                  }
+                }
               }
             };
           }
@@ -274,9 +308,39 @@ export const unstable_useCompositeItem = createHook<
         options.previous,
         options.next,
         options.first,
-        options.last
+        options.last,
+        options.up,
+        options.down
       ]
     );
+
+    const otherOnKeyDown = React.useCallback((event: React.KeyboardEvent) => {
+      if (event.currentTarget !== event.target) {
+        return;
+      }
+      if (event.key.length === 1 && event.key !== " ") {
+        const widget = event.currentTarget.querySelector<HTMLElement>(
+          "[data-composite-item-widget]"
+        );
+        if (widget && isTextField(widget)) {
+          widget.focus();
+          if (widget.isContentEditable) {
+            widget.innerHTML = event.key;
+          } else {
+            (widget as HTMLInputElement).value = event.key;
+          }
+        }
+      }
+    }, []);
+
+    const onClick = React.useCallback((event: React.MouseEvent) => {
+      const widget = event.currentTarget.querySelector<HTMLElement>(
+        "[data-composite-item-widget]"
+      );
+      if (widget && !hasFocusWithin(widget)) {
+        widget.focus();
+      }
+    }, []);
 
     return {
       ref: useForkRef(ref, htmlRef),
@@ -287,12 +351,15 @@ export const unstable_useCompositeItem = createHook<
           : undefined,
       tabIndex:
         options.unstable_focusStrategy !== "aria-activedescendant" &&
+        !options.unstable_hasFocusInsideItem &&
         shouldTabIndex
           ? htmlTabIndex
           : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
-      onKeyDown,
+      onKeyDown: useAllCallbacks(otherOnKeyDown, onKeyDown),
+      onClick: useAllCallbacks(onClick, htmlOnClick),
+      "data-composite-item": true,
       ...htmlProps
     };
   },
@@ -301,11 +368,14 @@ export const unstable_useCompositeItem = createHook<
     // @ts-ignore
     htmlProps = unstable_useId(options, htmlProps, true);
     // @ts-ignore
-    htmlProps = useTabbable(options, htmlProps, true);
+    const tabbableHTMLProps = useTabbable(options, htmlProps, true);
     if (options.unstable_focusStrategy === "aria-activedescendant") {
-      return { ...htmlProps, onMouseDown: htmlProps.onMouseDown };
+      return {
+        ...tabbableHTMLProps,
+        onMouseDown: tabbableHTMLProps.onMouseDown
+      };
     }
-    return htmlProps;
+    return tabbableHTMLProps;
   }
 });
 

@@ -25,13 +25,6 @@ type Item = {
 
 export type unstable_CompositeState = unstable_IdState & {
   /**
-   * Determines which type of keyboard navigation the composite widget will
-   * use. [Roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex)
-   * or [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
-   * @private
-   */
-  unstable_focusStrategy: "roving-tabindex" | "aria-activedescendant";
-  /**
    * Determines how `next` and `previous` will behave. If `rtl` is set to `true`,
    * then `next` will move focus to the previous item in the DOM.
    */
@@ -84,10 +77,6 @@ export type unstable_CompositeState = unstable_IdState & {
    */
   wrap: boolean;
   /**
-   * @private
-   */
-  unstable_compositeRef: React.MutableRefObject<HTMLElement | undefined>;
-  /**
    * Stores the number of moves that have been made by calling `move`, `next`,
    * `previous`, `up`, `down`, `first` or `last`.
    * @private
@@ -98,6 +87,17 @@ export type unstable_CompositeState = unstable_IdState & {
    * @private
    */
   unstable_pastId: string | null;
+  /**
+   * Determines which type of keyboard navigation the composite widget will
+   * use. [Roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex)
+   * or [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+   * @private
+   */
+  unstable_focusStrategy: "roving-tabindex" | "aria-activedescendant";
+  /**
+   * @private
+   */
+  unstable_hasFocusInsideItem: boolean;
 };
 
 export type unstable_CompositeActions = unstable_IdActions & {
@@ -146,13 +146,6 @@ export type unstable_CompositeActions = unstable_IdActions & {
    */
   last: () => void;
   /**
-   * Sets `focusStrategy`.
-   * @private
-   */
-  unstable_setFocusStrategy: React.Dispatch<
-    unstable_CompositeState["unstable_focusStrategy"]
-  >;
-  /**
    * Sets `rtl`.
    */
   setRTL: React.Dispatch<unstable_CompositeState["rtl"]>;
@@ -172,6 +165,20 @@ export type unstable_CompositeActions = unstable_IdActions & {
    * Sets `wrap`.
    */
   setWrap: React.Dispatch<unstable_CompositeState["wrap"]>;
+  /**
+   * Sets `focusStrategy`.
+   * @private
+   */
+  unstable_setFocusStrategy: React.Dispatch<
+    unstable_CompositeState["unstable_focusStrategy"]
+  >;
+  /**
+   * Sets `hasFocusInsideItem`.
+   * @private
+   */
+  unstable_setHasFocusInsideItem: React.Dispatch<
+    unstable_CompositeState["unstable_hasFocusInsideItem"]
+  >;
 };
 
 export type unstable_CompositeInitialState = unstable_IdInitialState &
@@ -220,7 +227,9 @@ type CompositeReducerAction =
 
 type CompositeReducerState = Omit<
   unstable_CompositeState,
-  "unstable_compositeRef" | "unstable_focusStrategy" | keyof unstable_IdState
+  | "unstable_focusStrategy"
+  | "unstable_hasFocusInsideItem"
+  | keyof unstable_IdState
 >;
 
 function groupItemsByRowId(items: Item[]) {
@@ -450,9 +459,10 @@ function reducer(
       // Maybe a big part of this can be used for down and up
       const { allTheWayInRow } = action;
       // TODO: if rtl then .reverse() items
-      const currentItem = items.find(item => item.id === currentId)!;
-      const currentIndex = items.indexOf(currentItem);
-      const nextItems = items.slice(currentIndex + 1);
+      const rightItems = rtl ? items.slice().reverse() : items;
+      const currentItem = rightItems.find(item => item.id === currentId)!;
+      const currentIndex = rightItems.indexOf(currentItem);
+      const nextItems = rightItems.slice(currentIndex + 1);
       const nextItemsInRow = nextItems.filter(
         item => item.rowId === currentItem.rowId
       );
@@ -485,8 +495,8 @@ function reducer(
         // Turns [0, currentId, 2, 3] into [2, 3, 0]
         // TODO: Abstract
         const reorderedItems = [
-          ...items.slice(currentIndex + 1),
-          ...items.slice(0, currentIndex)
+          ...rightItems.slice(currentIndex + 1),
+          ...rightItems.slice(0, currentIndex)
         ];
         // TODO: Abstract
         const nextItem = reorderedItems.find(
@@ -581,7 +591,12 @@ function reducer(
       return { ...state, ...nextState };
     }
     case "first": {
-      const firstItem = items.find(item => !item.disabled);
+      const firstItem = rtl
+        ? items
+            .slice()
+            .reverse()
+            .find(item => !item.disabled)
+        : items.find(item => !item.disabled);
       return reducer(state, { type: "move", id: firstItem?.id });
     }
     case "last": {
@@ -632,7 +647,7 @@ export function unstable_useCompositeState(
   const [focusStrategy, setFocusStrategy] = React.useState(
     initialFocusStrategy
   );
-  const compositeRef = React.useRef<HTMLElement>();
+  const [hasFocusInsideItem, setHasFocusInsideItem] = React.useState(false);
   const idState = unstable_useIdState(sealed);
 
   return {
@@ -640,7 +655,8 @@ export function unstable_useCompositeState(
     ...state,
     unstable_focusStrategy: focusStrategy,
     unstable_setFocusStrategy: setFocusStrategy,
-    unstable_compositeRef: compositeRef,
+    unstable_hasFocusInsideItem: hasFocusInsideItem,
+    unstable_setHasFocusInsideItem: setHasFocusInsideItem,
     registerItem: React.useCallback(
       item => dispatch({ type: "registerItem", item }),
       []
@@ -701,10 +717,8 @@ export function unstable_useCompositeState(
 
 const keys: Array<keyof unstable_CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
-  "unstable_focusStrategy",
   "rtl",
   "orientation",
-  "unstable_compositeRef",
   "items",
   "rows",
   "currentId",
@@ -712,6 +726,8 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "wrap",
   "unstable_moves",
   "unstable_pastId",
+  "unstable_focusStrategy",
+  "unstable_hasFocusInsideItem",
   "registerItem",
   "unregisterItem",
   "registerRow",
@@ -723,12 +739,13 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "down",
   "first",
   "last",
-  "unstable_setFocusStrategy",
   "setRTL",
   "setOrientation",
   "setCurrentId",
   "setLoop",
-  "setWrap"
+  "setWrap",
+  "unstable_setFocusStrategy",
+  "unstable_setHasFocusInsideItem"
 ];
 
 unstable_useCompositeState.__keys = keys;

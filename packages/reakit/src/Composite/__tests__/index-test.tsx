@@ -453,7 +453,7 @@ strategies.forEach(unstable_focusStrategy => {
       expect(item3).toHaveFocus();
       press.Enter();
       expect(innerButton).toHaveFocus();
-      press.Enter();
+      press.Escape();
       expect(item3).toHaveFocus();
       press.Space();
       expect(innerButton).toHaveFocus();
@@ -1290,7 +1290,7 @@ strategies.forEach(unstable_focusStrategy => {
       press.Tab();
       expect(getByLabelText("2-2")).not.toHaveFocus();
       expect(getByLabelText("input-2-2")).toHaveFocus();
-      press.Tab();
+      press.ShiftTab();
       expect(getByLabelText("1-1")).not.toHaveFocus();
       expect(getByLabelText("input-1-1")).toHaveFocus();
       press.Escape();

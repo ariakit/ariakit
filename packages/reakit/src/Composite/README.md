@@ -24,7 +24,8 @@ import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
   unstable_CompositeRow as CompositeRow,
-  unstable_CompositeItem as CompositeItem
+  unstable_CompositeItem as CompositeItem,
+  unstable_CompositeItemWidget as CompositeItemWidget
 } from "reakit/Composite";
 import { Group } from "reakit/Group";
 import { Button } from "reakit/Button";
@@ -39,7 +40,9 @@ function Example() {
         <CompositeItem {...composite} onClick={console.log}>
           Button 1
         </CompositeItem>
-        <CompositeItem {...composite}>Button 2</CompositeItem>
+        <CompositeItem {...composite} as="div">
+          <CompositeItemWidget {...composite} as="input" type="text" />
+        </CompositeItem>
         <CompositeItem {...composite} disabled focusable>
           Button 3
         </CompositeItem>
@@ -62,8 +65,14 @@ function Example() {
         <CompositeItem {...composite} disabled focusable>
           Button 2
         </CompositeItem>
-        <CompositeItem {...composite}>Button 3</CompositeItem>
-        <CompositeItem {...composite}>Button 4</CompositeItem>
+        <CompositeItem {...composite} as="div">
+          <CompositeItemWidget {...composite} as="input" type="text" />
+        </CompositeItem>
+        <CompositeItem {...composite} as="div">
+          <CompositeItemWidget {...composite} as="button" onClick={console.log}>
+            Hey
+          </CompositeItemWidget>
+        </CompositeItem>
         <CompositeItem {...composite}>Button 5</CompositeItem>
       </CompositeRow>
     </Composite>
