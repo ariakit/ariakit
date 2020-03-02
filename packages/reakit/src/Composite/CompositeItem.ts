@@ -34,7 +34,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
     unstable_CompositeStateReturn,
     | "baseId"
     | "unstable_focusStrategy"
-    | "unstable_hasFocusInsideItem"
+    | "unstable_hasActiveWidget"
     | "items"
     | "currentId"
     | "registerItem"
@@ -50,6 +50,8 @@ export type unstable_CompositeItemOptions = TabbableOptions &
   > & {
     /**
      * Element ID.
+     * @deprecated Use `id` instead.
+     * @private
      */
     stopId?: string;
   };
@@ -73,7 +75,7 @@ export const unstable_useCompositeItem = createHook<
   useOptions(options) {
     return {
       ...options,
-      unstable_clickOnSpace: options.unstable_hasFocusInsideItem
+      unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
         : options.unstable_clickOnSpace
     };
@@ -324,11 +326,14 @@ export const unstable_useCompositeItem = createHook<
         );
         if (widget && isTextField(widget)) {
           widget.focus();
-          if (widget.isContentEditable) {
-            widget.innerHTML = event.key;
-          } else {
-            (widget as HTMLInputElement).value = event.key;
-          }
+          const { key } = event;
+          window.requestAnimationFrame(() => {
+            if (widget.isContentEditable) {
+              widget.innerHTML = key;
+            } else {
+              (widget as HTMLInputElement).value = key;
+            }
+          });
         }
       }
     }, []);
@@ -339,6 +344,7 @@ export const unstable_useCompositeItem = createHook<
       );
       if (widget && !hasFocusWithin(widget)) {
         widget.focus();
+        widget.click();
       }
     }, []);
 
@@ -351,7 +357,7 @@ export const unstable_useCompositeItem = createHook<
           : undefined,
       tabIndex:
         options.unstable_focusStrategy !== "aria-activedescendant" &&
-        !options.unstable_hasFocusInsideItem &&
+        !options.unstable_hasActiveWidget &&
         shouldTabIndex
           ? htmlTabIndex
           : -1,
@@ -360,6 +366,7 @@ export const unstable_useCompositeItem = createHook<
       onKeyDown: useAllCallbacks(otherOnKeyDown, onKeyDown),
       onClick: useAllCallbacks(onClick, htmlOnClick),
       "data-composite-item": true,
+      "data-focused": true,
       ...htmlProps
     };
   },
@@ -372,7 +379,7 @@ export const unstable_useCompositeItem = createHook<
     if (options.unstable_focusStrategy === "aria-activedescendant") {
       return {
         ...tabbableHTMLProps,
-        onMouseDown: tabbableHTMLProps.onMouseDown
+        onMouseDown: htmlProps.onMouseDown
       };
     }
     return tabbableHTMLProps;

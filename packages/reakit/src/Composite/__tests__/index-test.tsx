@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, focus, press, click, type } from "reakit-test-utils";
+import { render, focus, press, click, type, wait } from "reakit-test-utils";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
@@ -50,7 +50,22 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
-          <Composite {...composite} role="button">
+          <Composite {...composite} role="button" aria-label="composite">
+            <CompositeItem {...composite}>item1</CompositeItem>
+            <CompositeItem {...composite}>item2</CompositeItem>
+            <CompositeItem {...composite}>item3</CompositeItem>
+          </Composite>
+        );
+      };
+      render(<Test />);
+      expect(console).toHaveWarned();
+    });
+
+    test("warning when there's no label", () => {
+      const Test = () => {
+        const composite = useCompositeState({ unstable_focusStrategy });
+        return (
+          <Composite {...composite} role="toolbar">
             <CompositeItem {...composite}>item1</CompositeItem>
             <CompositeItem {...composite}>item2</CompositeItem>
             <CompositeItem {...composite}>item3</CompositeItem>
@@ -65,7 +80,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
             <CompositeItem {...composite}>item2</CompositeItem>
             <CompositeItem {...composite}>item3</CompositeItem>
@@ -86,7 +101,7 @@ strategies.forEach(unstable_focusStrategy => {
           currentId: "item2"
         });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
             <CompositeItem {...composite} id="item2">
               item2
@@ -107,7 +122,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
             <CompositeItem {...composite} onClick={onClick}>
               item2
@@ -135,7 +150,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <>
             <button>button1</button>
-            <Composite {...composite} role="toolbar">
+            <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
               <CompositeItem {...composite}>item2</CompositeItem>
               <CompositeItem {...composite}>item3</CompositeItem>
@@ -162,7 +177,7 @@ strategies.forEach(unstable_focusStrategy => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
           <>
-            <Composite {...composite} role="toolbar">
+            <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
               <CompositeItem {...composite}>item2</CompositeItem>
               <CompositeItem {...composite}>item3</CompositeItem>
@@ -185,7 +200,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item disabled />
             <CompositeItem {...composite} data-item disabled focusable />
@@ -214,7 +229,7 @@ strategies.forEach(unstable_focusStrategy => {
           rtl: true
         });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item disabled />
             <CompositeItem {...composite} data-item disabled focusable />
@@ -243,7 +258,7 @@ strategies.forEach(unstable_focusStrategy => {
           loop: true
         });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item disabled focusable />
             <CompositeItem {...composite} data-item />
@@ -273,7 +288,7 @@ strategies.forEach(unstable_focusStrategy => {
           orientation: "horizontal"
         });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item />
@@ -304,7 +319,7 @@ strategies.forEach(unstable_focusStrategy => {
           orientation: "vertical"
         });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item />
             <CompositeItem {...composite} data-item />
@@ -332,7 +347,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = ({ renderItem2 = false }) => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
-          <Composite {...composite} role="toolbar">
+          <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
             {renderItem2 && <CompositeItem {...composite}>item2</CompositeItem>}
             <CompositeItem {...composite}>item3</CompositeItem>
@@ -352,58 +367,69 @@ strategies.forEach(unstable_focusStrategy => {
       expect(getByText("item2")).toHaveFocus();
     });
 
-    test("move to the next item when the current active item is unmounted", () => {
-      const Test = ({ renderItem2 = false }) => {
-        const composite = useCompositeState({ unstable_focusStrategy });
-        return (
-          <Composite {...composite} role="toolbar">
-            <CompositeItem {...composite}>item1</CompositeItem>
-            {renderItem2 && <CompositeItem {...composite}>item2</CompositeItem>}
-            <CompositeItem {...composite} disabled>
-              item3
-            </CompositeItem>
-            <CompositeItem {...composite}>item4</CompositeItem>
-          </Composite>
-        );
-      };
-      const { getByText, rerender } = render(<Test renderItem2 />);
-      const item2 = getByText("item2");
-      const item4 = getByText("item4");
-      focus(item2);
-      expect(item2).toHaveFocus();
-      rerender(<Test />);
-      expect(item4).toHaveFocus();
+    ["disabled", "unmounted"].forEach(state => {
+      test(`move to the next item when the current active item is ${state}`, () => {
+        const Test = ({ disabled = false }) => {
+          const composite = useCompositeState({ unstable_focusStrategy });
+          return (
+            <Composite {...composite} role="toolbar" aria-label="composite">
+              <CompositeItem {...composite}>item1</CompositeItem>
+              {(!disabled || state !== "unmounted") && (
+                <CompositeItem {...composite} disabled={disabled}>
+                  item2
+                </CompositeItem>
+              )}
+              <CompositeItem {...composite} disabled>
+                item3
+              </CompositeItem>
+              <CompositeItem {...composite}>item4</CompositeItem>
+            </Composite>
+          );
+        };
+        const { getByText, rerender } = render(<Test />);
+        const item2 = getByText("item2");
+        const item4 = getByText("item4");
+        focus(item2);
+        expect(item2).toHaveFocus();
+        rerender(<Test disabled />);
+        expect(item4).toHaveFocus();
+      });
+
+      test(`move to the previous item when the current active item is ${state} and it is the last one`, () => {
+        const Test = ({ disabled = false }) => {
+          const composite = useCompositeState({ unstable_focusStrategy });
+          return (
+            <Composite {...composite} role="toolbar" aria-label="composite">
+              <CompositeItem {...composite}>item1</CompositeItem>
+              <CompositeItem {...composite}>item2</CompositeItem>
+              <CompositeItem {...composite} disabled>
+                item3
+              </CompositeItem>
+              {(!disabled || state !== "unmounted") && (
+                <CompositeItem {...composite} disabled={disabled}>
+                  item4
+                </CompositeItem>
+              )}
+            </Composite>
+          );
+        };
+        const { getByText, rerender } = render(<Test />);
+        const item2 = getByText("item2");
+        const item4 = getByText("item4");
+        focus(item4);
+        expect(item4).toHaveFocus();
+        rerender(<Test disabled />);
+        expect(item2).toHaveFocus();
+      });
     });
 
-    test("move to the previous item when the current active item is unmounted and it is the last one", () => {
-      const Test = ({ renderItem3 = false }) => {
-        const composite = useCompositeState({ unstable_focusStrategy });
-        return (
-          <Composite {...composite} role="toolbar">
-            <CompositeItem {...composite}>item1</CompositeItem>
-            <CompositeItem {...composite}>item2</CompositeItem>
-            <CompositeItem {...composite} disabled>
-              item3
-            </CompositeItem>
-            {renderItem3 && <CompositeItem {...composite}>item4</CompositeItem>}
-          </Composite>
-        );
-      };
-      const { getByText, rerender } = render(<Test renderItem3 />);
-      const item2 = getByText("item2");
-      const item4 = getByText("item4");
-      focus(item4);
-      expect(item4).toHaveFocus();
-      rerender(<Test />);
-      expect(item2).toHaveFocus();
-    });
-
-    test("list item with tabbable content inside", () => {
+    test("list item with tabbable content inside", async () => {
+      const onClick = jest.fn();
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
           <>
-            <Composite {...composite} role="toolbar">
+            <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
               <CompositeItem {...composite} as="div" aria-label="item2">
                 <CompositeItemWidget
@@ -414,7 +440,11 @@ strategies.forEach(unstable_focusStrategy => {
                 />
               </CompositeItem>
               <CompositeItem {...composite} as="div" aria-label="item3">
-                <CompositeItemWidget {...composite} as="button">
+                <CompositeItemWidget
+                  {...composite}
+                  as="button"
+                  onClick={onClick}
+                >
                   innerButton
                 </CompositeItemWidget>
               </CompositeItem>
@@ -451,53 +481,57 @@ strategies.forEach(unstable_focusStrategy => {
       expect(item3).toHaveFocus();
       press("a");
       expect(item3).toHaveFocus();
+      expect(onClick).toHaveBeenCalledTimes(0);
       press.Enter();
       expect(innerButton).toHaveFocus();
+      expect(onClick).toHaveBeenCalledTimes(1);
       press.Escape();
       expect(item3).toHaveFocus();
+      expect(onClick).toHaveBeenCalledTimes(1);
       press.Space();
       expect(innerButton).toHaveFocus();
+      expect(onClick).toHaveBeenCalledTimes(2);
       press.ShiftTab();
       expect(input).toHaveFocus();
       press.Escape();
       expect(input).not.toHaveFocus();
       press.Space();
       expect(input).toHaveFocus();
-      expect(input).toHaveValue("");
+      await wait(() => expect(input).toHaveValue(""));
       press.Escape();
       expect(input).not.toHaveFocus();
       press("a");
       expect(input).toHaveFocus();
-      expect(input).toHaveValue("a");
+      await wait(() => expect(input).toHaveValue("a"));
       type("bc d");
-      expect(input).toHaveValue("abc d");
+      await wait(() => expect(input).toHaveValue("abc d"));
       press.Escape();
       expect(input).not.toHaveFocus();
-      expect(input).toHaveValue("");
+      await wait(() => expect(input).toHaveValue(""));
       press("b");
       expect(input).toHaveFocus();
-      expect(input).toHaveValue("b");
+      await wait(() => expect(input).toHaveValue("b"));
       type("c");
-      expect(input).toHaveValue("bc");
+      await wait(() => expect(input).toHaveValue("bc"));
       press.Enter();
       expect(item2).toHaveFocus();
-      expect(input).toHaveValue("bc");
+      await wait(() => expect(input).toHaveValue("bc"));
       press("b");
       expect(input).toHaveFocus();
-      expect(input).toHaveValue("b");
+      await wait(() => expect(input).toHaveValue("b"));
       press.Escape();
       expect(item2).toHaveFocus();
-      expect(input).toHaveValue("bc");
+      await wait(() => expect(input).toHaveValue("bc"));
       press.Backspace();
       expect(item2).toHaveFocus();
-      expect(input).toHaveValue("");
+      await wait(() => expect(input).toHaveValue(""));
       press("#");
       expect(input).toHaveFocus();
-      expect(input).toHaveValue("#");
+      await wait(() => expect(input).toHaveValue("#"));
       press.Escape();
       press.Delete();
       expect(item2).toHaveFocus();
-      expect(input).toHaveValue("");
+      await wait(() => expect(input).toHaveValue(""));
     });
 
     test("move grid focus with arrow keys", () => {
@@ -510,7 +544,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2, 0]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -671,7 +705,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2, 0]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -769,7 +803,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2, 0]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -847,7 +881,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2, 0]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -918,7 +952,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2, 0]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -986,7 +1020,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -1150,7 +1184,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 2]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (
@@ -1250,7 +1284,7 @@ strategies.forEach(unstable_focusStrategy => {
           [2, 2, 1.5, 0.5]
         ];
         return (
-          <Composite {...composite} role="grid">
+          <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
               <CompositeRow {...composite} key={i}>
                 {items.map((item, j) => (

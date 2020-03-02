@@ -158,7 +158,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
 
         if (
           options.disabled ||
-          isNativeTabbable(event.currentTarget) ||
+          event.currentTarget !== event.target ||
+          (isNativeTabbable(event.currentTarget) && event.isTrusted) ||
           // Native interactive elements don't get clicked on cmd+Enter/Space
           event.metaKey ||
           // This will be true if `useTabbable` has already been used.

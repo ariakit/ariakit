@@ -9,23 +9,25 @@ const charMap: Record<string, string> = {
   "\b": "Backspace"
 };
 
+// TODO: Fix types
 const keyMap: Record<
   string,
-  (
-    element: HTMLInputElement | HTMLTextAreaElement,
-    options: InputEventInit
-  ) => string
+  (element: HTMLElement, options: InputEventInit) => string
 > = {
   Backspace(element) {
-    return element.value.substr(0, element.value.length - 1);
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement
+    ) {
+      return element.value.substr(0, element.value.length - 1);
+    }
+    return "";
   }
 };
 
 export function type(
   text: string,
-  element?:
-    | (DirtiableElement & (HTMLInputElement | HTMLTextAreaElement))
-    | null,
+  element?: (DirtiableElement & HTMLElement) | null,
   options: InputEventInit = {}
 ) {
   if (element == null) {
@@ -51,10 +53,12 @@ export function type(
   for (const char of text) {
     const key = char in charMap ? charMap[char] : char;
     const value =
+      // @ts-ignore
       key in keyMap ? keyMap[key](element, options) : `${element.value}${char}`;
 
     const defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 
+    // @ts-ignore
     if (defaultAllowed && !element.readOnly) {
       fireEvent.input(element, { data: char, target: { value }, ...options });
     }

@@ -14,7 +14,7 @@ import {
 export type unstable_CompositeItemWidgetOptions = BoxOptions &
   Pick<
     unstable_CompositeStateReturn,
-    "unstable_hasFocusInsideItem" | "unstable_setHasFocusInsideItem"
+    "unstable_hasActiveWidget" | "unstable_setHasActiveWidget"
   >;
 
 export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps;
@@ -43,19 +43,19 @@ export const unstable_useCompositeItemWidget = createHook<
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
-        options.unstable_setHasFocusInsideItem(true);
+        options.unstable_setHasActiveWidget(true);
         if (isTextField(event.currentTarget)) {
           initialValue.current = event.currentTarget.isContentEditable
             ? event.currentTarget.innerHTML
             : (event.currentTarget as HTMLInputElement).value;
         }
       },
-      [options.unstable_setHasFocusInsideItem]
+      [options.unstable_setHasActiveWidget]
     );
 
     const onBlur = React.useCallback(() => {
-      options.unstable_setHasFocusInsideItem(false);
-    }, [options.unstable_setHasFocusInsideItem]);
+      options.unstable_setHasActiveWidget(false);
+    }, [options.unstable_setHasActiveWidget]);
 
     const onKeyDown = React.useMemo(
       () =>
@@ -93,7 +93,7 @@ export const unstable_useCompositeItemWidget = createHook<
     );
 
     return {
-      tabIndex: options.unstable_hasFocusInsideItem ? 0 : -1,
+      tabIndex: options.unstable_hasActiveWidget ? 0 : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onBlur: useAllCallbacks(onBlur, htmlOnBlur),
       onKeyDown,

@@ -16,29 +16,13 @@ import {
   unstable_useCompositeState
 } from "./CompositeState";
 
-export type unstable_CompositeOptions = TabbableOptions &
+export type unstable_CompositeOptions = Omit<
+  TabbableOptions,
+  "unstable_clickOnSpace" | "unstable_clickOnEnter"
+> &
   unstable_IdGroupOptions &
-  Pick<
-    Partial<unstable_CompositeStateReturn>,
-    "orientation" | "unstable_moves"
-  > &
-  Pick<
-    unstable_CompositeStateReturn,
-    | "unstable_focusStrategy"
-    | "unstable_hasFocusInsideItem"
-    | "items"
-    | "currentId"
-    | "registerItem"
-    | "unregisterItem"
-    | "setCurrentId"
-    | "next"
-    | "previous"
-    | "rows"
-    | "up"
-    | "down"
-    | "first"
-    | "last"
-  >;
+  Pick<Partial<unstable_CompositeStateReturn>, "unstable_focusStrategy"> &
+  Pick<unstable_CompositeStateReturn, "items" | "currentId">;
 
 export type unstable_CompositeHTMLProps = TabbableHTMLProps &
   unstable_IdGroupHTMLProps;
@@ -60,10 +44,14 @@ const validCompositeRoles = [
 
 function getCurrentItem({ items, currentId }: unstable_CompositeOptions) {
   if (!items) return undefined;
-  return (
-    items.find(item => item.id === currentId) ||
-    items.find(item => !item.disabled)
-  );
+  return items.find(item => item.id === currentId);
+}
+
+function canTransferKeyboardEvent(event: React.KeyboardEvent) {
+  if (event.target !== event.currentTarget) return false;
+  if (event.metaKey) return false;
+  if (event.key === "Tab") return false;
+  return true;
 }
 
 export const unstable_useComposite = createHook<
@@ -77,25 +65,22 @@ export const unstable_useComposite = createHook<
   useOptions(options) {
     return {
       ...options,
-      unstable_clickOnSpace: options.unstable_hasFocusInsideItem
-        ? false
-        : options.unstable_clickOnSpace
+      unstable_clickOnSpace: false,
+      unstable_clickOnEnter: false
     };
   },
 
-  useProps(options, { onKeyDown: htmlOnKeyDown, ref: htmlRef, ...htmlProps }) {
+  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = getCurrentItem(options);
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent) => {
-        if (event.target !== event.currentTarget) return;
-        if (currentItem?.ref.current) {
-          if (event.key !== "Tab" && !event.metaKey) {
+        if (canTransferKeyboardEvent(event)) {
+          const currentElement = currentItem?.ref.current;
+          if (currentElement) {
+            currentElement.dispatchEvent(new KeyboardEvent("keydown", event));
             event.preventDefault();
-            currentItem.ref.current.dispatchEvent(
-              new KeyboardEvent("keydown", event)
-            );
           }
         }
       },
@@ -106,9 +91,10 @@ export const unstable_useComposite = createHook<
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-      ...(options.unstable_focusStrategy === "aria-activedescendant"
-        ? { "aria-activedescendant": currentItem?.id }
-        : {}),
+      "aria-activedescendant":
+        options.unstable_focusStrategy === "aria-activedescendant"
+          ? currentItem?.id
+          : undefined,
       ...htmlProps
     };
   },
@@ -120,6 +106,9 @@ export const unstable_useComposite = createHook<
     // @ts-ignore
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
     if (options.unstable_focusStrategy === "aria-activedescendant") {
+      // Composite will only be tabbable by default if the focus is managed
+      // using aria-activedescendant, which requires DOM focus on the container
+      // element (the composite)
       return tabbableHTMLProps;
     }
     return htmlProps;
@@ -130,12 +119,24 @@ export const unstable_Composite = createComponent({
   as: "div",
   useHook: unstable_useComposite,
   useCreateElement: (type, props, children) => {
-    warning(
-      validCompositeRoles.indexOf(props.role) === -1,
-      "[reakit/Composite]",
-      "You should provide a valid `role` attribute to composite components.",
-      "See https://reakit.io/docs/composite"
-    );
+    React.useEffect(() => {
+      warning(
+        validCompositeRoles.indexOf(props.role) === -1,
+        `[reakit/Composite#${props.id}]`,
+        "You should provide a valid `role` attribute to composite components.",
+        "See https://reakit.io/docs/composite"
+      );
+    }, [props.id, props.role]);
+
+    React.useEffect(() => {
+      warning(
+        !props["aria-label"] && !props["aria-labelledby"],
+        `[reakit/Composite#${props.id}]`,
+        "You should provide either `aria-label` or `aria-labelledby` props.",
+        "See https://reakit.io/docs/composite"
+      );
+    }, [props.id, props["aria-label"], props["aria-labelledby"]]);
+
     return useCreateElement(type, props, children);
   }
 });
