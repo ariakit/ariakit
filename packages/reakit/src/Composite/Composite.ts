@@ -119,23 +119,19 @@ export const unstable_Composite = createComponent({
   as: "div",
   useHook: unstable_useComposite,
   useCreateElement: (type, props, children) => {
-    React.useEffect(() => {
-      warning(
-        validCompositeRoles.indexOf(props.role) === -1,
-        `[reakit/Composite#${props.id}]`,
-        "You should provide a valid `role` attribute to composite components.",
-        "See https://reakit.io/docs/composite"
-      );
-    }, [props.id, props.role]);
+    warning(
+      validCompositeRoles.indexOf(props.role) === -1,
+      `[reakit/Composite#${props.id}]`,
+      "You should provide a valid `role` attribute to composite components.",
+      "See https://reakit.io/docs/composite"
+    );
 
-    React.useEffect(() => {
-      warning(
-        !props["aria-label"] && !props["aria-labelledby"],
-        `[reakit/Composite#${props.id}]`,
-        "You should provide either `aria-label` or `aria-labelledby` props.",
-        "See https://reakit.io/docs/composite"
-      );
-    }, [props.id, props["aria-label"], props["aria-labelledby"]]);
+    warning(
+      !props["aria-label"] && !props["aria-labelledby"],
+      `[reakit/Composite#${props.id}]`,
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/composite"
+    );
 
     return useCreateElement(type, props, children);
   }
