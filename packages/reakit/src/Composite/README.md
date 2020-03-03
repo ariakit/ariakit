@@ -20,6 +20,7 @@ Learn more in [Get started](/docs/get-started/).
 ## Usage
 
 ```jsx
+import React from "react";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
@@ -29,55 +30,96 @@ import {
 } from "reakit/Composite";
 import { Group } from "reakit/Group";
 import { Button } from "reakit/Button";
+import { useMenuState, Menu, MenuButton, MenuItem } from "reakit";
 
 function Example() {
   const composite = useCompositeState({
     unstable_focusStrategy: "aria-activedescendant"
   });
+  const menu = useMenuState();
   return (
-    <Composite {...composite}>
+    <Composite
+      {...composite}
+      style={{ display: "flex", flexDirection: "column", width: "100%" }}
+    >
       <CompositeRow {...composite}>
-        <CompositeItem {...composite} onClick={console.log}>
+        <CompositeItem {...composite} onClick={console.log} style={{ flex: 1 }}>
           Button 1
         </CompositeItem>
-        <CompositeItem {...composite} as="div">
+        <CompositeItem
+          {...composite}
+          as="div"
+          style={{ flex: 1, display: "flex" }}
+        >
           <CompositeItemWidget {...composite} as="input" type="text" />
         </CompositeItem>
-        <CompositeItem {...composite} disabled focusable>
+        <CompositeItem {...composite} disabled focusable style={{ flex: 1 }}>
           Button 3
         </CompositeItem>
-        <CompositeItem {...composite}>Button 4</CompositeItem>
-        <CompositeItem {...composite}>Button 5</CompositeItem>
-      </CompositeRow>
-      <CompositeRow {...composite}>
-        <CompositeItem {...composite}>Button 1</CompositeItem>
-        <CompositeItem {...composite} disabled>
-          Button 2
-        </CompositeItem>
-        <CompositeItem {...composite}>Button 3</CompositeItem>
-        <CompositeItem {...composite} disabled>
+        <CompositeItem {...composite} style={{ flex: 1 }}>
           Button 4
         </CompositeItem>
-        <CompositeItem {...composite}>Button 5</CompositeItem>
+        <CompositeItem {...composite} style={{ flex: 1 }}>
+          Button 5
+        </CompositeItem>
       </CompositeRow>
       <CompositeRow {...composite}>
-        <CompositeItem {...composite}>Button 1</CompositeItem>
-        <CompositeItem {...composite} disabled focusable>
+        <CompositeItem {...composite} style={{ flex: 1 }}>
+          Button 1
+        </CompositeItem>
+        <CompositeItem {...composite} disabled style={{ flex: 1 }}>
           Button 2
         </CompositeItem>
-        <CompositeItem {...composite} as="div">
+        <CompositeItem {...composite} style={{ flex: 1 }}>
+          Button 3
+        </CompositeItem>
+        <CompositeItem {...composite} disabled style={{ flex: 1 }}>
+          Button 4
+        </CompositeItem>
+        <CompositeItem {...composite} style={{ flex: 1 }}>
+          Button 5
+        </CompositeItem>
+      </CompositeRow>
+      <CompositeRow {...composite}>
+        <CompositeItem {...composite} style={{ flex: 1 }}>
+          Button 1
+        </CompositeItem>
+        <CompositeItem {...composite} disabled focusable style={{ flex: 1 }}>
+          Button 2
+        </CompositeItem>
+        <CompositeItem
+          {...composite}
+          as="div"
+          style={{ flex: 1, display: "flex" }}
+        >
           <CompositeItemWidget {...composite} as="input" type="text" />
         </CompositeItem>
-        <CompositeItem {...composite} as="div">
-          <CompositeItemWidget {...composite} as="button" onClick={console.log}>
-            Hey
-          </CompositeItemWidget>
+        <MenuButton {...menu}>
+          {props => (
+            <>
+              <CompositeItem
+                {...composite}
+                {...props}
+                style={{ flex: 1, display: "flex" }}
+              >
+                Open menu
+              </CompositeItem>
+              <Menu {...menu}>
+                <MenuItem {...menu}>Item 1</MenuItem>
+                <MenuItem {...menu}>Item 2</MenuItem>
+                <MenuItem {...menu}>Item 3</MenuItem>
+              </Menu>
+            </>
+          )}
+        </MenuButton>
+        <CompositeItem {...composite} style={{ flex: 1 }}>
+          Button 5
         </CompositeItem>
-        <CompositeItem {...composite}>Button 5</CompositeItem>
       </CompositeRow>
     </Composite>
   );
 }
+
 ```
 
 ## Accessibility

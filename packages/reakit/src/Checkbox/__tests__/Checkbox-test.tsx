@@ -9,6 +9,7 @@ test("render", () => {
       <div>
         <input
           aria-checked="false"
+          data-tabbable="true"
           role="checkbox"
           type="checkbox"
           value=""
@@ -26,6 +27,7 @@ test("render disabled", () => {
     <input
       aria-checked="false"
       aria-disabled="true"
+      data-tabbable="true"
       disabled=""
       role="checkbox"
       style="pointer-events: none;"
@@ -40,35 +42,37 @@ test("render disabled", () => {
 test("render disabled focusable", () => {
   const { baseElement } = render(<Checkbox disabled focusable />);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <input
-          aria-checked="false"
-          aria-disabled="true"
-          role="checkbox"
-          type="checkbox"
-          value=""
-        />
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <input
+      aria-checked="false"
+      aria-disabled="true"
+      data-tabbable="true"
+      role="checkbox"
+      type="checkbox"
+      value=""
+    />
+  </div>
+</body>
+`);
 });
 
 test("render checked", () => {
   const { baseElement } = render(<Checkbox checked />);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <input
-          aria-checked="true"
-          checked=""
-          role="checkbox"
-          type="checkbox"
-          value=""
-        />
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <input
+      aria-checked="true"
+      checked=""
+      data-tabbable="true"
+      role="checkbox"
+      type="checkbox"
+      value=""
+    />
+  </div>
+</body>
+`);
 });
 
 test("click", () => {

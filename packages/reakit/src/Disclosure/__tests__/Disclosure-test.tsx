@@ -13,6 +13,7 @@ test("render", () => {
     <button
       aria-controls="test"
       aria-expanded="false"
+      data-tabbable="true"
       type="button"
     >
       disclosure
@@ -27,14 +28,15 @@ test("render visible", () => {
     </Disclosure>
   );
   expect(getByText("disclosure")).toMatchInlineSnapshot(`
-    <button
-      aria-controls="test"
-      aria-expanded="true"
-      type="button"
-    >
-      disclosure
-    </button>
-  `);
+<button
+  aria-controls="test"
+  aria-expanded="true"
+  data-tabbable="true"
+  type="button"
+>
+  disclosure
+</button>
+`);
 });
 
 test("render with aria-controls", () => {
@@ -44,14 +46,15 @@ test("render with aria-controls", () => {
     </Disclosure>
   );
   expect(getByText("disclosure")).toMatchInlineSnapshot(`
-    <button
-      aria-controls="a test"
-      aria-expanded="false"
-      type="button"
-    >
-      disclosure
-    </button>
-  `);
+<button
+  aria-controls="a test"
+  aria-expanded="false"
+  data-tabbable="true"
+  type="button"
+>
+  disclosure
+</button>
+`);
 });
 
 test("toggle", () => {

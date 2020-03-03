@@ -50,6 +50,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       const onKeyDown = React.useMemo(
         () =>
           createOnKeyDown({
+            onKeyDown: htmlOnKeyDown,
             stopPropagation: event => event.key !== "Escape",
             onKey: options.show,
             keyMap: () => {
@@ -68,6 +69,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             }
           }),
         [
+          htmlOnKeyDown,
           dir,
           hasParent,
           options.show,
@@ -140,7 +142,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       return {
         ref: useForkRef(ref, htmlRef),
         "aria-haspopup": "menu",
-        onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+        onKeyDown,
         onMouseOver: useAllCallbacks(onMouseOver, htmlOnMouseOver),
         onClick: useAllCallbacks(onClick, htmlOnClick),
         onFocus: useAllCallbacks(onFocus, htmlOnFocus),

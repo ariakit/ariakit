@@ -424,7 +424,6 @@ strategies.forEach(unstable_focusStrategy => {
     });
 
     test("list item with tabbable content inside", async () => {
-      const onClick = jest.fn();
       const Test = () => {
         const composite = useCompositeState({ unstable_focusStrategy });
         return (
@@ -440,11 +439,7 @@ strategies.forEach(unstable_focusStrategy => {
                 />
               </CompositeItem>
               <CompositeItem {...composite} as="div" aria-label="item3">
-                <CompositeItemWidget
-                  {...composite}
-                  as="button"
-                  onClick={onClick}
-                >
+                <CompositeItemWidget {...composite} as="button">
                   innerButton
                 </CompositeItemWidget>
               </CompositeItem>
@@ -481,16 +476,12 @@ strategies.forEach(unstable_focusStrategy => {
       expect(item3).toHaveFocus();
       press("a");
       expect(item3).toHaveFocus();
-      expect(onClick).toHaveBeenCalledTimes(0);
       press.Enter();
       expect(innerButton).toHaveFocus();
-      expect(onClick).toHaveBeenCalledTimes(1);
       press.Escape();
       expect(item3).toHaveFocus();
-      expect(onClick).toHaveBeenCalledTimes(1);
       press.Space();
       expect(innerButton).toHaveFocus();
-      expect(onClick).toHaveBeenCalledTimes(2);
       press.ShiftTab();
       expect(input).toHaveFocus();
       press.Escape();

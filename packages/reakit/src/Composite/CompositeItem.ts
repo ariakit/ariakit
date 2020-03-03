@@ -344,7 +344,6 @@ export const unstable_useCompositeItem = createHook<
       );
       if (widget && !hasFocusWithin(widget)) {
         widget.focus();
-        widget.click();
       }
     }, []);
 

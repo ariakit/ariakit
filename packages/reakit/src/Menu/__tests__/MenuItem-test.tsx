@@ -21,6 +21,7 @@ test("render", () => {
     <body>
       <div>
         <button
+          data-tabbable="true"
           id="item"
           role="menuitem"
           tabindex="-1"
