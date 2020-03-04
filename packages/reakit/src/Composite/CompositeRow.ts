@@ -16,16 +16,7 @@ import {
 
 export type unstable_CompositeRowOptions = GroupOptions &
   unstable_IdOptions &
-  Pick<
-    Partial<unstable_CompositeStateReturn>,
-    "orientation" | "unstable_moves"
-  > &
-  Pick<unstable_CompositeStateReturn, "registerRow" | "unregisterRow"> & {
-    /**
-     * Element ID.
-     */
-    stopId?: string;
-  };
+  Pick<unstable_CompositeStateReturn, "registerRow" | "unregisterRow">;
 
 export type unstable_CompositeRowHTMLProps = GroupHTMLProps &
   unstable_IdHTMLProps;
@@ -40,28 +31,22 @@ export const unstable_useCompositeRow = createHook<
   name: "CompositeRow",
   compose: [useGroup, unstable_useId],
   useState: unstable_useCompositeState,
-  keys: ["stopId"],
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
-    const stopId = options.stopId || options.id || htmlProps.id;
+    const id = options.id || htmlProps.id;
 
+    // We need this to be called before CompositeItems' register
     useIsomorphicEffect(() => {
-      if (!stopId) return undefined;
-      if (options.registerRow) {
-        options.registerRow({ id: stopId, ref });
-      }
+      if (!id) return undefined;
+      options.registerRow?.({ id, ref });
       return () => {
-        if (options.unregisterRow) {
-          options.unregisterRow(stopId);
-        }
+        options.unregisterRow?.(id);
       };
-    }, [stopId, options.registerRow, options.unregisterRow]);
+    }, [id, options.registerRow, options.unregisterRow]);
 
     return {
       ref: useForkRef(ref, htmlRef),
-      id: stopId,
-      "data-composite-row": "",
       ...htmlProps
     };
   }

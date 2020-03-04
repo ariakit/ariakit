@@ -121,14 +121,14 @@ export const unstable_Composite = createComponent({
   useCreateElement: (type, props, children) => {
     warning(
       validCompositeRoles.indexOf(props.role) === -1,
-      `[reakit/Composite#${props.id}]`,
+      `[reakit/Composite]`,
       "You should provide a valid `role` attribute to composite components.",
       "See https://reakit.io/docs/composite"
     );
 
     warning(
       !props["aria-label"] && !props["aria-labelledby"],
-      `[reakit/Composite#${props.id}]`,
+      `[reakit/Composite]`,
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/composite"
     );

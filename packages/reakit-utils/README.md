@@ -54,52 +54,57 @@ yarn add reakit-utils
     -   [Parameters](#parameters-10)
 -   [isPromise](#ispromise)
     -   [Parameters](#parameters-11)
--   [matches](#matches)
+-   [isTextField](#istextfield)
     -   [Parameters](#parameters-12)
--   [omit](#omit)
+-   [matches](#matches)
     -   [Parameters](#parameters-13)
+-   [omit](#omit)
+    -   [Parameters](#parameters-14)
     -   [Examples](#examples-6)
 -   [pick](#pick)
-    -   [Parameters](#parameters-14)
+    -   [Parameters](#parameters-15)
     -   [Examples](#examples-7)
 -   [removeIndexFromArray](#removeindexfromarray)
-    -   [Parameters](#parameters-15)
+    -   [Parameters](#parameters-16)
     -   [Examples](#examples-8)
 -   [removeItemFromArray](#removeitemfromarray)
-    -   [Parameters](#parameters-16)
-    -   [Examples](#examples-9)
--   [splitProps](#splitprops)
     -   [Parameters](#parameters-17)
+    -   [Examples](#examples-9)
+-   [scrollIntoViewIfNeeded](#scrollintoviewifneeded)
+    -   [Parameters](#parameters-18)
     -   [Examples](#examples-10)
+-   [splitProps](#splitprops)
+    -   [Parameters](#parameters-19)
+    -   [Examples](#examples-11)
 -   [tabbable](#tabbable)
     -   [isFocusable](#isfocusable)
-        -   [Parameters](#parameters-18)
-        -   [Examples](#examples-11)
-    -   [isTabbable](#istabbable)
-        -   [Parameters](#parameters-19)
-        -   [Examples](#examples-12)
-    -   [getAllFocusableIn](#getallfocusablein)
         -   [Parameters](#parameters-20)
-    -   [getFirstFocusableIn](#getfirstfocusablein)
+        -   [Examples](#examples-12)
+    -   [isTabbable](#istabbable)
         -   [Parameters](#parameters-21)
-    -   [getAllTabbableIn](#getalltabbablein)
-        -   [Parameters](#parameters-22)
-    -   [getFirstTabbableIn](#getfirsttabbablein)
-        -   [Parameters](#parameters-23)
-    -   [getLastTabbableIn](#getlasttabbablein)
-        -   [Parameters](#parameters-24)
-    -   [getNextTabbableIn](#getnexttabbablein)
-        -   [Parameters](#parameters-25)
-    -   [getPreviousTabbableIn](#getprevioustabbablein)
-        -   [Parameters](#parameters-26)
-    -   [getClosestFocusable](#getclosestfocusable)
-        -   [Parameters](#parameters-27)
-    -   [ensureFocus](#ensurefocus)
-        -   [Parameters](#parameters-28)
         -   [Examples](#examples-13)
+    -   [getAllFocusableIn](#getallfocusablein)
+        -   [Parameters](#parameters-22)
+    -   [getFirstFocusableIn](#getfirstfocusablein)
+        -   [Parameters](#parameters-23)
+    -   [getAllTabbableIn](#getalltabbablein)
+        -   [Parameters](#parameters-24)
+    -   [getFirstTabbableIn](#getfirsttabbablein)
+        -   [Parameters](#parameters-25)
+    -   [getLastTabbableIn](#getlasttabbablein)
+        -   [Parameters](#parameters-26)
+    -   [getNextTabbableIn](#getnexttabbablein)
+        -   [Parameters](#parameters-27)
+    -   [getPreviousTabbableIn](#getprevioustabbablein)
+        -   [Parameters](#parameters-28)
+    -   [getClosestFocusable](#getclosestfocusable)
+        -   [Parameters](#parameters-29)
+    -   [ensureFocus](#ensurefocus)
+        -   [Parameters](#parameters-30)
+        -   [Examples](#examples-14)
 -   [toArray](#toarray)
-    -   [Parameters](#parameters-29)
-    -   [Examples](#examples-14)
+    -   [Parameters](#parameters-31)
+    -   [Examples](#examples-15)
 -   [types](#types)
     -   [RenderProp](#renderprop)
     -   [As](#as)
@@ -112,23 +117,23 @@ yarn add reakit-utils
     -   [ArrayValue](#arrayvalue)
     -   [AnyFunction](#anyfunction)
 -   [useAllCallbacks](#useallcallbacks)
-    -   [Parameters](#parameters-30)
-    -   [Examples](#examples-15)
--   [useForkRef](#useforkref)
-    -   [Parameters](#parameters-31)
+    -   [Parameters](#parameters-32)
     -   [Examples](#examples-16)
+-   [useForkRef](#useforkref)
+    -   [Parameters](#parameters-33)
+    -   [Examples](#examples-17)
 -   [useIsomorphicEffect](#useisomorphiceffect)
 -   [useLiveRef](#useliveref)
-    -   [Parameters](#parameters-32)
--   [usePipe](#usepipe)
-    -   [Parameters](#parameters-33)
--   [useSealedState](#usesealedstate)
     -   [Parameters](#parameters-34)
--   [useUpdateEffect](#useupdateeffect)
+-   [usePipe](#usepipe)
     -   [Parameters](#parameters-35)
--   [warning](#warning)
+-   [useSealedState](#usesealedstate)
     -   [Parameters](#parameters-36)
-    -   [Examples](#examples-17)
+-   [useUpdateEffect](#useupdateeffect)
+    -   [Parameters](#parameters-37)
+-   [warning](#warning)
+    -   [Parameters](#parameters-38)
+    -   [Examples](#examples-18)
 
 ### closest
 
@@ -316,6 +321,17 @@ Checks whether `arg` is a promise or not.
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
+### isTextField
+
+Check whether the given element is a text field, where text field is defined
+by the ability to select within the input, or that it is contenteditable.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### matches
 
 -   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>**
@@ -407,6 +423,25 @@ removeItemFromArray([obj], obj); // []
 ```
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** A new array without the passed item.
+
+### scrollIntoViewIfNeeded
+
+Ponyfill for `Element.prototype.scrollIntoViewIfNeeded`
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `center` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** 
+
+#### Examples
+
+```javascript
+import { scrollIntoViewIfNeeded } from "reakit-utils";
+
+scrollIntoViewIfNeeded(document.getElementById("id"), true);
+// same as
+document.getElementById("id").scrollIntoViewIfNeeded(true);
+```
 
 ### splitProps
 

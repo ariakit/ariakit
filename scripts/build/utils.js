@@ -509,7 +509,7 @@ function getPropTypesRow(prop) {
   return `- ${name}
   ${prop.type}
 
-  ${prop.description}
+  ${prop.description.split("\n\n").join("\n\n  ")}
 `;
 }
 

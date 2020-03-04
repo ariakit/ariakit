@@ -6,9 +6,9 @@ import { warning } from "reakit-utils/warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { getActiveElement } from "reakit-utils/getActiveElement";
 import { getDocument } from "reakit-utils/getDocument";
 import { isTextField } from "reakit-utils/isTextField";
+import { scrollIntoViewIfNeeded } from "reakit-utils/scrollIntoViewIfNeeded";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -23,24 +23,25 @@ import {
   unstable_CompositeStateReturn,
   unstable_useCompositeState
 } from "./CompositeState";
+import { setTextFieldValue } from "./__utils/setTextFieldValue";
 
 export type unstable_CompositeItemOptions = TabbableOptions &
   unstable_IdOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
-    "orientation" | "unstable_moves"
+    | "orientation"
+    | "unstable_moves"
+    | "unstable_focusStrategy"
+    | "unstable_hasActiveWidget"
   > &
   Pick<
     unstable_CompositeStateReturn,
     | "baseId"
-    | "unstable_focusStrategy"
-    | "unstable_hasActiveWidget"
     | "items"
     | "currentId"
     | "registerItem"
     | "unregisterItem"
     | "setCurrentId"
-    | "move"
     | "next"
     | "previous"
     | "up"
@@ -61,6 +62,10 @@ export type unstable_CompositeItemHTMLProps = TabbableHTMLProps &
 
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
   unstable_CompositeItemHTMLProps;
+
+function getWidget(item: Element) {
+  return item.querySelector<HTMLElement>("[data-composite-item-widget]");
+}
 
 // TODO: WARN IF IT'S A BUTTON OR ANOTHER TABBABLE ELEMENT AND HAS WIDGET INSIDE
 export const unstable_useCompositeItem = createHook<
@@ -88,13 +93,19 @@ export const unstable_useCompositeItem = createHook<
       tabIndex: htmlTabIndex = 0,
       onFocus: htmlOnFocus,
       onKeyDown: htmlOnKeyDown,
-      onMouseDown: htmlOnMouseDown,
       onClick: htmlOnClick,
       ...htmlProps
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const id = options.stopId || options.id || htmlProps.id;
+    const trulyDisabled = options.disabled && !options.focusable;
+    const isCurrentItem = options.currentId === id;
+    const item = options.items?.find(s => s.id === id);
+    const isVirtualFocus =
+      options.unstable_focusStrategy === "aria-activedescendant";
+    const shouldTabIndex =
+      !isVirtualFocus && !options.unstable_hasActiveWidget && isCurrentItem;
 
     warning(
       !!options.stopId,
@@ -102,55 +113,13 @@ export const unstable_useCompositeItem = createHook<
       "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
     );
 
-    const trulyDisabled = options.disabled && !options.focusable;
-    const noFocused = options.currentId == null;
-    const focused = options.currentId === id;
-    const item = (options.items || []).find(s => s.id === id);
-    const isFirst = (options.items || [])[0] && options.items[0].id === id;
-    const shouldTabIndex = focused || (isFirst && noFocused);
-
     React.useEffect(() => {
       if (!id) return undefined;
-      if (options.registerItem) {
-        options.registerItem({ id, ref, disabled: trulyDisabled });
-      }
+      options.registerItem?.({ id, ref, disabled: trulyDisabled });
       return () => {
-        if (options.unregisterItem) {
-          options.unregisterItem(id);
-        }
+        options.unregisterItem?.(id);
       };
     }, [id, trulyDisabled, options.registerItem, options.unregisterItem]);
-
-    const handleFocus = React.useCallback(
-      (currentTarget: Element, target: Element = currentTarget) => {
-        if (!id || !currentTarget.contains(target)) return;
-        if (target.hasAttribute("data-composite-item-widget")) {
-          options.setCurrentId && options.setCurrentId(id);
-        } else {
-          options.move && options.move(id);
-        }
-        if (
-          options.unstable_focusStrategy === "aria-activedescendant" &&
-          currentTarget === target
-        ) {
-          // currentTarget.scrollIntoViewIfNeeded();
-          const composite = getDocument(currentTarget).getElementById(
-            options.baseId
-          );
-          if (getActiveElement(currentTarget) !== composite) {
-            composite?.focus();
-          }
-        }
-      },
-      [options.move, id, options.unstable_focusStrategy, options.baseId]
-    );
-
-    const onFocus = React.useCallback(
-      (event: React.FocusEvent) => {
-        handleFocus(event.currentTarget, event.target);
-      },
-      [handleFocus]
-    );
 
     React.useEffect(() => {
       const self = ref.current;
@@ -163,37 +132,31 @@ export const unstable_useCompositeItem = createHook<
         );
         return;
       }
-      if (options.unstable_moves && focused && !hasFocusWithin(self)) {
-        if (options.unstable_focusStrategy === "aria-activedescendant") {
-          const composite = getDocument(self).getElementById(options.baseId);
-          if (composite && !hasFocusWithin(composite)) {
-            handleFocus(self);
-          }
-        } else {
-          self.focus();
-        }
+      // `moves` will be incremented whenever next, previous, up, down, first,
+      // last or move have been called. This means that the composite item will
+      // be focused whenever some of these functions are called. Unless it has
+      // already focus, in which case we don't want to focus it again.
+      if (options.unstable_moves && isCurrentItem && !hasFocusWithin(self)) {
+        self.focus({ preventScroll: true });
+        scrollIntoViewIfNeeded(self);
       }
-    }, [
-      onFocus,
-      focused,
-      options.unstable_moves,
-      options.unstable_focusStrategy,
-      options.baseId
-    ]);
+    }, [options.unstable_moves, isCurrentItem]);
 
-    const onMouseDown = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (options.unstable_focusStrategy === "aria-activedescendant") {
-          if (
-            (event.target as Element).hasAttribute("data-composite-item-widget")
-          ) {
-            return;
-          }
-          event.preventDefault();
-          handleFocus(event.currentTarget);
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        const { target, currentTarget } = event;
+        if (!id || !currentTarget.contains(target)) return;
+        options.setCurrentId?.(id);
+        // When using aria-activedescendant, we want to make sure that the
+        // composite container receives focus, not the composite item.
+        // But we don't want to do this if the target is another focusable
+        // element inside the composite item, such as CompositeItemWidget.
+        if (isVirtualFocus && currentTarget === target) {
+          const composite = getDocument(target).getElementById(options.baseId);
+          composite?.focus();
         }
       },
-      [onFocus, options.unstable_focusStrategy]
+      [id, options.setCurrentId, isVirtualFocus, options.baseId]
     );
 
     const onKeyDown = React.useMemo(
@@ -201,103 +164,70 @@ export const unstable_useCompositeItem = createHook<
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
           stopPropagation: true,
+          // We don't want to listen to focusable elements inside the composite
+          // item, such as a CompositeItemWidget.
           shouldKeyDown: event => event.currentTarget === event.target,
           keyMap: () => {
+            // `options.orientation` can also be undefined, which means that
+            // both `isVertical` and `isHorizontal` will be `true`.
+            const isVertical = options.orientation !== "horizontal";
+            const isHorizontal = options.orientation !== "vertical";
+            const isGrid = Boolean(item?.rowId);
+
+            const ArrowUp =
+              (isGrid || isVertical) &&
+              (() => (isGrid ? options.up?.() : options.previous?.()));
+
+            const ArrowRight =
+              (isGrid || isHorizontal) && (() => options.next?.());
+
+            const ArrowDown =
+              (isGrid || isVertical) &&
+              (() => (isGrid ? options.down?.() : options.next?.()));
+
+            const ArrowLeft =
+              (isGrid || isHorizontal) && (() => options.previous?.());
+
+            const Delete = (event: React.KeyboardEvent) => {
+              const widget = getWidget(event.currentTarget);
+              if (widget && isTextField(widget)) {
+                setTextFieldValue(widget, "");
+              }
+            };
+
             return {
-              ArrowUp:
-                item?.rowId || options.orientation !== "horizontal"
-                  ? () => {
-                      if (item?.rowId) {
-                        options.up && options.up();
-                      } else if (options.orientation !== "horizontal") {
-                        options.previous && options.previous();
-                      }
-                    }
-                  : undefined,
-              ArrowRight:
-                item?.rowId || options.orientation !== "vertical"
-                  ? () => {
-                      if (item?.rowId || options.orientation !== "vertical") {
-                        options.next && options.next();
-                      }
-                    }
-                  : undefined,
-              ArrowDown:
-                item?.rowId || options.orientation !== "horizontal"
-                  ? () => {
-                      if (item?.rowId) {
-                        options.down && options.down();
-                      } else if (options.orientation !== "horizontal") {
-                        options.next && options.next();
-                      }
-                    }
-                  : undefined,
-              ArrowLeft:
-                item?.rowId || options.orientation !== "vertical"
-                  ? () => {
-                      if (item?.rowId || options.orientation !== "vertical") {
-                        options.previous && options.previous();
-                      }
-                    }
-                  : undefined,
+              Delete,
+              Backspace: Delete,
+              ArrowUp,
+              ArrowRight,
+              ArrowDown,
+              ArrowLeft,
               Home: event => {
-                if (item?.rowId) {
-                  if (event.ctrlKey) {
-                    options.first && options.first();
-                  } else {
-                    options.previous && options.previous(true);
-                  }
+                if (!isGrid || event.ctrlKey) {
+                  options.first?.();
                 } else {
-                  options.first && options.first();
+                  options.previous?.(true);
                 }
               },
               End: event => {
-                if (item?.rowId) {
-                  if (event.ctrlKey) {
-                    options.last && options.last();
-                  } else {
-                    options.next && options.next(true);
-                  }
+                if (!isGrid || event.ctrlKey) {
+                  options.last?.();
                 } else {
-                  options.last && options.last();
+                  options.next?.(true);
                 }
               },
               PageUp: () => {
-                if (item?.rowId) {
-                  options.up && options.up(true);
+                if (isGrid) {
+                  options.up?.(true);
                 } else {
-                  options.first && options.first();
+                  options.first?.();
                 }
               },
               PageDown: () => {
-                if (item?.rowId) {
-                  options.down && options.down(true);
+                if (isGrid) {
+                  options.down?.(true);
                 } else {
-                  options.last && options.last();
-                }
-              },
-              Delete: (event: React.KeyboardEvent) => {
-                const widget = event.currentTarget.querySelector<HTMLElement>(
-                  "[data-composite-item-widget]"
-                );
-                if (widget && isTextField(widget)) {
-                  if (widget.isContentEditable) {
-                    widget.innerHTML = "";
-                  } else {
-                    (widget as HTMLInputElement).value = "";
-                  }
-                }
-              },
-              Backspace: (event: React.KeyboardEvent) => {
-                const widget = event.currentTarget.querySelector<HTMLElement>(
-                  "[data-composite-item-widget]"
-                );
-                if (widget && isTextField(widget)) {
-                  if (widget.isContentEditable) {
-                    widget.innerHTML = "";
-                  } else {
-                    (widget as HTMLInputElement).value = "";
-                  }
+                  options.last?.();
                 }
               }
             };
@@ -307,41 +237,35 @@ export const unstable_useCompositeItem = createHook<
         htmlOnKeyDown,
         item,
         options.orientation,
-        options.previous,
         options.next,
-        options.first,
-        options.last,
+        options.previous,
         options.up,
-        options.down
+        options.down,
+        options.first,
+        options.last
       ]
     );
 
-    const otherOnKeyDown = React.useCallback((event: React.KeyboardEvent) => {
-      if (event.currentTarget !== event.target) {
-        return;
-      }
-      if (event.key.length === 1 && event.key !== " ") {
-        const widget = event.currentTarget.querySelector<HTMLElement>(
-          "[data-composite-item-widget]"
-        );
-        if (widget && isTextField(widget)) {
-          widget.focus();
-          const { key } = event;
-          window.requestAnimationFrame(() => {
-            if (widget.isContentEditable) {
-              widget.innerHTML = key;
-            } else {
-              (widget as HTMLInputElement).value = key;
-            }
-          });
+    const onCharacterKeyDown = React.useCallback(
+      (event: React.KeyboardEvent) => {
+        if (event.currentTarget !== event.target) return;
+        if (event.key.length === 1 && event.key !== " ") {
+          const widget = getWidget(event.currentTarget);
+          if (widget && isTextField(widget)) {
+            widget.focus();
+            const { key } = event;
+            // Using RAF here because otherwise the key will be added twice
+            // to the input when using roving tabindex
+            window.requestAnimationFrame(() => setTextFieldValue(widget, key));
+          }
         }
-      }
-    }, []);
+      },
+      []
+    );
 
+    // Make sure the widget is focused on enter, space or click
     const onClick = React.useCallback((event: React.MouseEvent) => {
-      const widget = event.currentTarget.querySelector<HTMLElement>(
-        "[data-composite-item-widget]"
-      );
+      const widget = getWidget(event.currentTarget);
       if (widget && !hasFocusWithin(widget)) {
         widget.focus();
       }
@@ -350,38 +274,13 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id,
-      "aria-selected":
-        options.unstable_focusStrategy === "aria-activedescendant" && focused
-          ? true
-          : undefined,
-      tabIndex:
-        options.unstable_focusStrategy !== "aria-activedescendant" &&
-        !options.unstable_hasActiveWidget &&
-        shouldTabIndex
-          ? htmlTabIndex
-          : -1,
+      "aria-selected": isVirtualFocus && isCurrentItem ? true : undefined,
+      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
-      onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
-      onKeyDown: useAllCallbacks(otherOnKeyDown, onKeyDown),
+      onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      "data-composite-item": true,
-      "data-focused": true,
       ...htmlProps
     };
-  },
-
-  useComposeProps(options, htmlProps) {
-    // @ts-ignore
-    htmlProps = unstable_useId(options, htmlProps, true);
-    // @ts-ignore
-    const tabbableHTMLProps = useTabbable(options, htmlProps, true);
-    if (options.unstable_focusStrategy === "aria-activedescendant") {
-      return {
-        ...tabbableHTMLProps,
-        onMouseDown: htmlProps.onMouseDown
-      };
-    }
-    return tabbableHTMLProps;
   }
 });
 

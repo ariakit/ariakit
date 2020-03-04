@@ -204,18 +204,26 @@ type CompositeReducerAction =
   | { type: "last" }
   | {
       type: "setRTL";
-      rtl: unstable_CompositeState["rtl"];
+      rtl: React.SetStateAction<unstable_CompositeState["rtl"]>;
     }
   | {
       type: "setOrientation";
-      orientation?: unstable_CompositeState["orientation"];
+      orientation?: React.SetStateAction<
+        unstable_CompositeState["orientation"]
+      >;
     }
   | {
       type: "setCurrentId";
-      currentId?: unstable_CompositeState["currentId"];
+      currentId?: React.SetStateAction<unstable_CompositeState["currentId"]>;
     }
-  | { type: "setLoop"; loop: unstable_CompositeState["loop"] }
-  | { type: "setWrap"; wrap: unstable_CompositeState["wrap"] };
+  | {
+      type: "setLoop";
+      loop: React.SetStateAction<unstable_CompositeState["loop"]>;
+    }
+  | {
+      type: "setWrap";
+      wrap: React.SetStateAction<unstable_CompositeState["wrap"]>;
+    };
 
 type CompositeReducerState = Omit<
   unstable_CompositeState,
@@ -445,21 +453,38 @@ function reducer(
       return { ...state, ...nextState };
     }
     case "setRTL":
-      return { ...state, rtl: action.rtl };
+      return {
+        ...state,
+        rtl: typeof action.rtl === "function" ? action.rtl(rtl) : action.rtl
+      };
     case "setOrientation":
-      return { ...state, orientation: action.orientation };
+      return {
+        ...state,
+        orientation:
+          typeof action.orientation === "function"
+            ? action.orientation(orientation)
+            : action.orientation
+      };
     case "setCurrentId": {
-      const id =
-        action.currentId ||
-        currentId ||
-        findFirstEnabledItem(items)?.id ||
-        null;
+      const value =
+        typeof action.currentId === "function"
+          ? action.currentId(currentId)
+          : action.currentId;
+      const id = value || currentId || findFirstEnabledItem(items)?.id || null;
       return { ...state, currentId: id };
     }
     case "setLoop":
-      return { ...state, loop: action.loop };
+      return {
+        ...state,
+        loop:
+          typeof action.loop === "function" ? action.loop(loop) : action.loop
+      };
     case "setWrap":
-      return { ...state, wrap: action.wrap };
+      return {
+        ...state,
+        wrap:
+          typeof action.wrap === "function" ? action.wrap(wrap) : action.wrap
+      };
     default:
       throw new Error();
   }
