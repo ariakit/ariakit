@@ -10,7 +10,6 @@ import {
   MenuItem
 } from "..";
 
-// const focusStrategies = ["roving-tabindex"] as const;
 const focusStrategies = ["roving-tabindex", "aria-activedescendant"] as const;
 
 focusStrategies.forEach(unstable_focusStrategy => {

@@ -67,6 +67,15 @@ function getWidget(item: Element) {
   return item.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
 
+function moveCaretToEnd(contentEditableElement: HTMLElement) {
+  const range = getDocument(contentEditableElement).createRange();
+  range.selectNodeContents(contentEditableElement);
+  range.collapse(false);
+  const selection = getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
+
 // TODO: WARN IF IT'S A BUTTON OR ANOTHER TABBABLE ELEMENT AND HAS WIDGET INSIDE
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
@@ -256,7 +265,12 @@ export const unstable_useCompositeItem = createHook<
             const { key } = event;
             // Using RAF here because otherwise the key will be added twice
             // to the input when using roving tabindex
-            window.requestAnimationFrame(() => setTextFieldValue(widget, key));
+            window.requestAnimationFrame(() => {
+              setTextFieldValue(widget, key);
+              if (widget.isContentEditable) {
+                moveCaretToEnd(widget);
+              }
+            });
           }
         }
       },
@@ -268,6 +282,9 @@ export const unstable_useCompositeItem = createHook<
       const widget = getWidget(event.currentTarget);
       if (widget && !hasFocusWithin(widget)) {
         widget.focus();
+        if (widget.isContentEditable) {
+          moveCaretToEnd(widget);
+        }
       }
     }, []);
 

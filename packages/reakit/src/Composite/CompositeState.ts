@@ -276,7 +276,18 @@ function reducer(
       if (nextRows.length === rows.length) {
         return state;
       }
-      return { ...state, rows: nextRows };
+      const currentItem = items.find(item => item.id === currentId);
+      let nextState = state;
+      // If the row being unregistered has the current focused item, move focus
+      // to the item in the same position in the next row (visually, it'll
+      // occupy the same position). If this is the last row, move up instead.
+      if (currentItem?.rowId === id) {
+        nextState = reducer(state, { type: "down" });
+        if (nextState.currentId === currentId) {
+          nextState = reducer(state, { type: "up" });
+        }
+      }
+      return { ...nextState, rows: nextRows };
     }
     case "registerItem": {
       const { item } = action;
@@ -320,12 +331,12 @@ function reducer(
       // to the next item (visually, it'll occupy the same position). If this
       // is the last enabled item, move focus to the previous one.
       if (currentId && currentId === id) {
-        nextState = reducer(state, { type: "next" });
+        nextState = reducer({ ...state, wrap: true }, { type: "next" });
         if (nextState.currentId === id) {
-          nextState = reducer(state, { type: "previous" });
+          nextState = reducer({ ...state, wrap: true }, { type: "previous" });
         }
       }
-      return { ...nextState, items: nextItems };
+      return { ...nextState, wrap, items: nextItems };
     }
     case "move": {
       const { id } = action;

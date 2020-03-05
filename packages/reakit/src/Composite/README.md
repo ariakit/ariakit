@@ -96,7 +96,7 @@ function Example() {
   const composite = useCompositeState();
   return (
     <Composite {...composite} role="grid" aria-label="My grid">
-      <CompositeRow {...composite} style={{ width: 400 }}>
+      <CompositeRow {...composite}>
         <CompositeItem {...composite} onClick={alert}>
           Item 1.1
         </CompositeItem>
@@ -131,7 +131,33 @@ function Example() {
     </Composite>
   );
 }
+```
 
+### Widgets inside composite item
+
+```jsx
+import React from "react";
+import {
+  unstable_useCompositeState as useCompositeState,
+  unstable_Composite as Composite,
+  unstable_CompositeItem as CompositeItem,
+  unstable_CompositeItemWidget as CompositeItemWidget
+} from "reakit/Composite";
+
+function Example() {
+  const composite = useCompositeState({
+    unstable_focusStrategy: "aria-activedescendant"
+  });
+  return (
+    <Composite {...composite} role="toolbar" aria-label="My toolbar">
+      <CompositeItem {...composite} as="div">
+        <CompositeItemWidget {...composite} contentEditable />
+      </CompositeItem>
+      <CompositeItem {...composite}>Item 2</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+    </Composite>
+  );
+}
 ```
 
 ## Accessibility

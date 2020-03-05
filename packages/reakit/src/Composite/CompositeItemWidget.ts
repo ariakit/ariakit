@@ -59,7 +59,7 @@ export const unstable_useCompositeItemWidget = createHook<
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
-        options.unstable_setHasActiveWidget(true);
+        options.unstable_setHasActiveWidget?.(true);
         if (isTextField(event.currentTarget)) {
           initialValue.current = getTextFieldValue(event.currentTarget);
         }
@@ -68,7 +68,7 @@ export const unstable_useCompositeItemWidget = createHook<
     );
 
     const onBlur = React.useCallback(() => {
-      options.unstable_setHasActiveWidget(false);
+      options.unstable_setHasActiveWidget?.(false);
     }, [options.unstable_setHasActiveWidget]);
 
     const onKeyDown = React.useMemo(
@@ -78,22 +78,26 @@ export const unstable_useCompositeItemWidget = createHook<
           stopPropagation: true,
           preventDefault: false,
           shouldKeyDown: event => event.currentTarget === event.target,
-          keyMap: {
-            Enter: event => {
-              // It prevents combinations like `+Enter
-              if (event.nativeEvent.isComposing) return;
+          keyMap: (event: React.KeyboardEvent<HTMLElement>) => {
+            if (event.key === "Enter") {
+              if (event.nativeEvent.isComposing) return {};
               if (isTextField(event.currentTarget)) {
-                focusCurrentItem(event.currentTarget, options.currentId);
-              }
-            },
-            Escape: event => {
-              // It prevents combinations like `+Escape
-              if (event.nativeEvent.isComposing) return;
-              focusCurrentItem(event.currentTarget, options.currentId);
-              if (isTextField(event.currentTarget)) {
-                setTextFieldValue(event.currentTarget, initialValue.current);
+                return {
+                  Enter: () =>
+                    focusCurrentItem(event.currentTarget, options.currentId)
+                };
               }
             }
+            return {
+              Escape: () => {
+                // It prevents combinations like `+Escape
+                if (event.nativeEvent.isComposing) return;
+                focusCurrentItem(event.currentTarget, options.currentId);
+                if (isTextField(event.currentTarget)) {
+                  setTextFieldValue(event.currentTarget, initialValue.current);
+                }
+              }
+            };
           }
         }),
       [options.currentId, htmlOnKeyDown]

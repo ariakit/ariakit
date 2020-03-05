@@ -430,7 +430,7 @@ strategies.forEach(unstable_focusStrategy => {
           <>
             <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
-              <CompositeItem {...composite} as="div" aria-label="item2">
+              <CompositeItem {...composite} aria-label="item2">
                 <CompositeItemWidget
                   {...composite}
                   as="input"
@@ -1281,7 +1281,6 @@ strategies.forEach(unstable_focusStrategy => {
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
-                    as="div"
                     key={j}
                     disabled={Math.floor(item) < 2}
                     focusable={Math.floor(item) === 1}
@@ -1321,6 +1320,61 @@ strategies.forEach(unstable_focusStrategy => {
       press.Escape();
       expect(getByLabelText("1-1")).toHaveFocus();
       expect(getByLabelText("input-1-1")).not.toHaveFocus();
+    });
+
+    test("move to the next row when the current row is unmounted", () => {
+      const Test = ({ disableRow = false, disableItems = false }) => {
+        const composite = useCompositeState({
+          unstable_focusStrategy
+        });
+        const [rows, setRows] = React.useState<string[][]>([[]]);
+
+        React.useEffect(() => {
+          if (disableRow) {
+            setRows([
+              ["1-1", "1-2", "1-3"],
+              ["3-1", "3-2", "3-3"]
+            ]);
+          } else {
+            setRows([
+              ["1-1", "1-2", "1-3"],
+              ["2-1", "2-2", "2-3"],
+              ["3-1", "3-2", "3-3"]
+            ]);
+          }
+        }, [disableRow]);
+
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeRow {...composite} key={items.join("")}>
+                {items.map(item => (
+                  <CompositeItem
+                    {...composite}
+                    key={item}
+                    disabled={disableItems && i === 1}
+                    aria-label={item}
+                  />
+                ))}
+              </CompositeRow>
+            ))}
+          </Composite>
+        );
+      };
+      const { getByLabelText, rerender } = render(<Test />);
+      press.Tab();
+      expect(getByLabelText("1-1")).toHaveFocus();
+      press.ArrowDown();
+      press.ArrowRight();
+      expect(getByLabelText("2-2")).toHaveFocus();
+      rerender(<Test disableRow />);
+      expect(getByLabelText("3-2")).toHaveFocus();
+      rerender(<Test />);
+      expect(getByLabelText("3-2")).toHaveFocus();
+      press.ArrowUp();
+      expect(getByLabelText("2-2")).toHaveFocus();
+      rerender(<Test disableItems />);
+      expect(getByLabelText("3-1")).toHaveFocus();
     });
   });
 });
