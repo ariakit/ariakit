@@ -3,7 +3,7 @@ import { render, focus, press, click, type, wait } from "reakit-test-utils";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
-  unstable_CompositeRow as CompositeRow,
+  unstable_CompositeGroup as CompositeGroup,
   unstable_CompositeItem as CompositeItem,
   unstable_CompositeItemWidget as CompositeItemWidget
 } from "..";
@@ -430,7 +430,7 @@ strategies.forEach(unstable_focusStrategy => {
           <>
             <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
-              <CompositeItem {...composite} aria-label="item2">
+              <CompositeItem {...composite} as="div" aria-label="item2">
                 <CompositeItemWidget
                   {...composite}
                   as="input"
@@ -537,7 +537,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -547,7 +547,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -698,7 +698,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -708,7 +708,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -785,7 +785,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({
           unstable_focusStrategy,
-          wrap: true
+          focusWrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -796,7 +796,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -806,7 +806,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -863,7 +863,7 @@ strategies.forEach(unstable_focusStrategy => {
         const composite = useCompositeState({
           unstable_focusStrategy,
           orientation: "horizontal",
-          wrap: true
+          focusWrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -874,7 +874,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -884,7 +884,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -934,7 +934,7 @@ strategies.forEach(unstable_focusStrategy => {
         const composite = useCompositeState({
           unstable_focusStrategy,
           orientation: "vertical",
-          wrap: true
+          focusWrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -945,7 +945,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -955,7 +955,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -1013,7 +1013,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -1023,7 +1023,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -1165,7 +1165,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({
           unstable_focusStrategy,
-          wrap: true
+          focusWrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -1177,7 +1177,7 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
@@ -1187,7 +1187,7 @@ strategies.forEach(unstable_focusStrategy => {
                     data-item
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -1266,7 +1266,7 @@ strategies.forEach(unstable_focusStrategy => {
         const composite = useCompositeState({
           unstable_focusStrategy,
           orientation: "vertical",
-          wrap: true
+          focusWrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled, .5 - has widget
         const rows = [
@@ -1277,11 +1277,12 @@ strategies.forEach(unstable_focusStrategy => {
         return (
           <Composite {...composite} role="grid" aria-label="composite">
             {rows.map((items, i) => (
-              <CompositeRow {...composite} key={i}>
+              <CompositeGroup {...composite} key={i}>
                 {items.map((item, j) => (
                   <CompositeItem
                     {...composite}
                     key={j}
+                    as="div"
                     disabled={Math.floor(item) < 2}
                     focusable={Math.floor(item) === 1}
                     aria-label={`${i}-${j}`}
@@ -1289,14 +1290,13 @@ strategies.forEach(unstable_focusStrategy => {
                     {item % 1 !== 0 && (
                       <CompositeItemWidget
                         {...composite}
-                        as="input"
-                        type="text"
+                        as="textarea"
                         aria-label={`input-${i}-${j}`}
                       />
                     )}
                   </CompositeItem>
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -1311,6 +1311,8 @@ strategies.forEach(unstable_focusStrategy => {
       press.Enter();
       expect(getByLabelText("1-1")).not.toHaveFocus();
       expect(getByLabelText("input-1-1")).toHaveFocus();
+      press.Enter(null, { shiftKey: true });
+      expect(getByLabelText("input-1-1")).toHaveFocus();
       press.Tab();
       expect(getByLabelText("2-2")).not.toHaveFocus();
       expect(getByLabelText("input-2-2")).toHaveFocus();
@@ -1322,32 +1324,32 @@ strategies.forEach(unstable_focusStrategy => {
       expect(getByLabelText("input-1-1")).not.toHaveFocus();
     });
 
-    test("move to the next row when the current row is unmounted", () => {
-      const Test = ({ disableRow = false, disableItems = false }) => {
+    test("move to the next group when the current group is unmounted", () => {
+      const Test = ({ disableGroup = false, disableItems = false }) => {
         const composite = useCompositeState({
           unstable_focusStrategy
         });
-        const [rows, setRows] = React.useState<string[][]>([[]]);
+        const [groups, setGroups] = React.useState<string[][]>([[]]);
 
         React.useEffect(() => {
-          if (disableRow) {
-            setRows([
+          if (disableGroup) {
+            setGroups([
               ["1-1", "1-2", "1-3"],
               ["3-1", "3-2", "3-3"]
             ]);
           } else {
-            setRows([
+            setGroups([
               ["1-1", "1-2", "1-3"],
               ["2-1", "2-2", "2-3"],
               ["3-1", "3-2", "3-3"]
             ]);
           }
-        }, [disableRow]);
+        }, [disableGroup]);
 
         return (
           <Composite {...composite} role="grid" aria-label="composite">
-            {rows.map((items, i) => (
-              <CompositeRow {...composite} key={items.join("")}>
+            {groups.map((items, i) => (
+              <CompositeGroup {...composite} key={items.join("")}>
                 {items.map(item => (
                   <CompositeItem
                     {...composite}
@@ -1356,7 +1358,7 @@ strategies.forEach(unstable_focusStrategy => {
                     aria-label={item}
                   />
                 ))}
-              </CompositeRow>
+              </CompositeGroup>
             ))}
           </Composite>
         );
@@ -1367,7 +1369,7 @@ strategies.forEach(unstable_focusStrategy => {
       press.ArrowDown();
       press.ArrowRight();
       expect(getByLabelText("2-2")).toHaveFocus();
-      rerender(<Test disableRow />);
+      rerender(<Test disableGroup />);
       expect(getByLabelText("3-2")).toHaveFocus();
       rerender(<Test />);
       expect(getByLabelText("3-2")).toHaveFocus();

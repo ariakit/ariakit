@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { isTextField } from "reakit-utils/isTextField";
 import { getDocument } from "reakit-utils/getDocument";
 import { useBox, BoxOptions, BoxHTMLProps } from "../Box/Box";
@@ -13,12 +12,16 @@ import {
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 
 export type unstable_CompositeItemWidgetOptions = BoxOptions &
+  // Pick<Partial<unstable_CompositeStateReturn>, "wrap" | "rows"> &
   Pick<
     unstable_CompositeStateReturn,
     "unstable_hasActiveWidget" | "unstable_setHasActiveWidget" | "currentId"
   >;
 
-export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps;
+export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps & {
+  wrap?: unknown;
+  rows?: unknown;
+};
 
 export type unstable_CompositeItemWidgetProps = unstable_CompositeItemWidgetOptions &
   unstable_CompositeItemWidgetHTMLProps;
@@ -71,43 +74,38 @@ export const unstable_useCompositeItemWidget = createHook<
       options.unstable_setHasActiveWidget?.(false);
     }, [options.unstable_setHasActiveWidget]);
 
-    const onKeyDown = React.useMemo(
-      () =>
-        createOnKeyDown({
-          onKeyDown: htmlOnKeyDown,
-          stopPropagation: true,
-          preventDefault: false,
-          shouldKeyDown: event => event.currentTarget === event.target,
-          keyMap: (event: React.KeyboardEvent<HTMLElement>) => {
-            if (event.key === "Enter") {
-              if (event.nativeEvent.isComposing) return {};
-              if (isTextField(event.currentTarget)) {
-                return {
-                  Enter: () =>
-                    focusCurrentItem(event.currentTarget, options.currentId)
-                };
-              }
-            }
-            return {
-              Escape: () => {
-                // It prevents combinations like `+Escape
-                if (event.nativeEvent.isComposing) return;
-                focusCurrentItem(event.currentTarget, options.currentId);
-                if (isTextField(event.currentTarget)) {
-                  setTextFieldValue(event.currentTarget, initialValue.current);
-                }
-              }
-            };
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLElement>) => {
+        if (event.currentTarget !== event.target) return;
+        if (event.nativeEvent.isComposing) return;
+
+        const self = event.currentTarget;
+
+        if (event.key === "Enter") {
+          if (isTextField(self)) {
+            const isMultilineTextField =
+              self.tagName === "TEXTAREA" || self.isContentEditable;
+            // Make sure we can create new lines using Shift+Enter
+            if (isMultilineTextField && event.shiftKey) return;
+            // Make sure it'll not trigger a click on the parent button
+            event.preventDefault();
+            focusCurrentItem(self, options.currentId);
           }
-        }),
-      [options.currentId, htmlOnKeyDown]
+        } else if (event.key === "Escape") {
+          focusCurrentItem(self, options.currentId);
+          if (isTextField(self)) {
+            setTextFieldValue(self, initialValue.current);
+          }
+        }
+      },
+      [options.currentId]
     );
 
     return {
       tabIndex: options.unstable_hasActiveWidget ? 0 : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onBlur: useAllCallbacks(onBlur, htmlOnBlur),
-      onKeyDown,
+      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       "data-composite-item-widget": true,
       ...htmlProps
     };

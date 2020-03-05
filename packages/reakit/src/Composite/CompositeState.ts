@@ -11,14 +11,14 @@ import {
   unstable_IdStateReturn
 } from "../Id/IdState";
 import { reverse } from "./__utils/reverse";
-import { Item, Row } from "./__utils/types";
+import { Item, Group } from "./__utils/types";
 import { findDOMIndex } from "./__utils/findDOMIndex";
 import { findFirstEnabledItem } from "./__utils/findFirstEnabledItem";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 import { verticalizeItems } from "./__utils/verticalizeItems";
-import { groupItemsByRowId } from "./__utils/groupItemsByRowId";
-import { flattenRows } from "./__utils/flattenRows";
-import { fillRows } from "./__utils/fillRows";
+import { groupItems } from "./__utils/groupItems";
+import { flatten } from "./__utils/flatten";
+import { fillGroups } from "./__utils/fillGroups";
 
 export type unstable_CompositeState = unstable_IdState & {
   /**
@@ -29,7 +29,7 @@ export type unstable_CompositeState = unstable_IdState & {
   /**
    * Defines the orientation of the composite widget.
    *
-   * When the composite widget has multiple rows (two-dimensional) and `wrap`
+   * When the composite widget has multiple groups (two-dimensional) and `wrap`
    * is `true`, the navigation will wrap based on the value of `orientation`:
    *   - `undefined`: wraps in both directions.
    *   - `horizontal`: wraps horizontally only.
@@ -47,9 +47,9 @@ export type unstable_CompositeState = unstable_IdState & {
    */
   items: Item[];
   /**
-   * Lists all the composite rows.
+   * Lists all the composite groups.
    */
-  rows: Row[];
+  groups: Group[];
   /**
    * The current focused item ID.
    */
@@ -57,7 +57,7 @@ export type unstable_CompositeState = unstable_IdState & {
   /**
    * If enabled, moving to the next item from the last one will focus the first
    * item and vice-versa. It doesn't work if the composite widget has multiple
-   * rows (two-dimensional).
+   * groups (two-dimensional).
    */
   loop: boolean;
   /**
@@ -69,10 +69,10 @@ export type unstable_CompositeState = unstable_IdState & {
    *   - If `orientation` is `horizontal`, it wraps horizontally only.
    *   - If `orientation` is `vertical`, it wraps vertically only.
    *
-   * `wrap` only works if the composite widget has multiple rows
+   * `focusWrap` only works if the composite widget has multiple groups
    * (two-dimensional).
    */
-  wrap: boolean;
+  focusWrap: boolean;
   /**
    * Stores the number of moves that have been made by calling `move`, `next`,
    * `previous`, `up`, `down`, `first` or `last`.
@@ -102,13 +102,13 @@ export type unstable_CompositeActions = unstable_IdActions & {
    */
   unregisterItem: (id: string) => void;
   /**
-   * Registers a composite row.
+   * Registers a composite group.
    */
-  registerRow: (row: Row) => void;
+  registerGroup: (group: Group) => void;
   /**
-   * Unregisters a composite row.
+   * Unregisters a composite group.
    */
-  unregisterRow: (id: string) => void;
+  unregisterGroup: (id: string) => void;
   /**
    * Moves focus to a given item ID.
    */
@@ -154,9 +154,9 @@ export type unstable_CompositeActions = unstable_IdActions & {
    */
   setLoop: React.Dispatch<unstable_CompositeState["loop"]>;
   /**
-   * Sets `wrap`.
+   * Sets `focusWrap`.
    */
-  setWrap: React.Dispatch<unstable_CompositeState["wrap"]>;
+  setFocusWrap: React.Dispatch<unstable_CompositeState["focusWrap"]>;
   /**
    * Sets `focusStrategy`.
    * @private
@@ -182,7 +182,7 @@ export type unstable_CompositeInitialState = unstable_IdInitialState &
       | "orientation"
       | "currentId"
       | "loop"
-      | "wrap"
+      | "focusWrap"
     >
   >;
 
@@ -193,8 +193,8 @@ export type unstable_CompositeStateReturn = unstable_IdStateReturn &
 type CompositeReducerAction =
   | { type: "registerItem"; item: Item }
   | { type: "unregisterItem"; id: string | null }
-  | { type: "registerRow"; row: Row }
-  | { type: "unregisterRow"; id: string | null }
+  | { type: "registerGroup"; group: Group }
+  | { type: "unregisterGroup"; id: string | null }
   | { type: "move"; id?: string | null }
   | { type: "next"; allTheWay?: boolean }
   | { type: "previous"; allTheWay?: boolean }
@@ -221,8 +221,8 @@ type CompositeReducerAction =
       loop: React.SetStateAction<unstable_CompositeState["loop"]>;
     }
   | {
-      type: "setWrap";
-      wrap: React.SetStateAction<unstable_CompositeState["wrap"]>;
+      type: "setFocusWrap";
+      wrap: React.SetStateAction<unstable_CompositeState["focusWrap"]>;
     };
 
 type CompositeReducerState = Omit<
@@ -238,56 +238,56 @@ function reducer(
     rtl,
     orientation,
     items,
-    rows,
+    groups,
     currentId,
     loop,
-    wrap,
+    focusWrap,
     unstable_moves: moves
   } = state;
 
   switch (action.type) {
-    case "registerRow": {
-      const { row } = action;
-      // If there are no rows yet, just add it as the first one
-      if (rows.length === 0) {
-        return { ...state, rows: [row] };
+    case "registerGroup": {
+      const { group } = action;
+      // If there are no groups yet, just add it as the first one
+      if (groups.length === 0) {
+        return { ...state, groups: [group] };
       }
-      // If the row is already there, do nothing
-      if (rows.some(r => r.id === row.id)) {
+      // If the group is already there, do nothing
+      if (groups.some(r => r.id === group.id)) {
         return state;
       }
-      // Finds the row index based on DOM position
-      const rowIndex = findDOMIndex(rows, row);
+      // Finds the group index based on DOM position
+      const groupIndex = findDOMIndex(groups, group);
       // If it's -1, this should be added at the end of the list
-      if (rowIndex === -1) {
-        return { ...state, rows: [...rows, row] };
+      if (groupIndex === -1) {
+        return { ...state, groups: [...groups, group] };
       }
-      const nextRows = [
-        ...rows.slice(0, rowIndex),
-        row,
-        ...rows.slice(rowIndex)
+      const nextGroups = [
+        ...groups.slice(0, groupIndex),
+        group,
+        ...groups.slice(groupIndex)
       ];
-      return { ...state, rows: nextRows };
+      return { ...state, groups: nextGroups };
     }
-    case "unregisterRow": {
+    case "unregisterGroup": {
       const { id } = action;
-      const nextRows = rows.filter(row => row.id !== id);
-      // The row isn't registered, so do nothing
-      if (nextRows.length === rows.length) {
+      const nextGroups = groups.filter(group => group.id !== id);
+      // The group isn't registered, so do nothing
+      if (nextGroups.length === groups.length) {
         return state;
       }
       const currentItem = items.find(item => item.id === currentId);
       let nextState = state;
-      // If the row being unregistered has the current focused item, move focus
-      // to the item in the same position in the next row (visually, it'll
-      // occupy the same position). If this is the last row, move up instead.
-      if (currentItem?.rowId === id) {
+      // If the group being unregistered has the current focused item, move focus
+      // to the item in the same position in the next group (visually, it'll
+      // occupy the same position). If this is the last group, move up instead.
+      if (currentItem?.groupId === id) {
         nextState = reducer(state, { type: "down" });
         if (nextState.currentId === currentId) {
           nextState = reducer(state, { type: "up" });
         }
       }
-      return { ...nextState, rows: nextRows };
+      return { ...nextState, groups: nextGroups };
     }
     case "registerItem": {
       const { item } = action;
@@ -295,10 +295,10 @@ function reducer(
       if (items.some(i => i.id === item.id)) {
         return state;
       }
-      // Finds the item row based on the DOM hierarchy
-      const row = rows.find(r => r.ref.current?.contains(item.ref.current));
-      // Row will be null if it's a one-dimensional composite
-      const nextItem = { ...item, rowId: row?.id };
+      // Finds the item group based on the DOM hierarchy
+      const group = groups.find(r => r.ref.current?.contains(item.ref.current));
+      // Group will be null if it's a one-dimensional composite
+      const nextItem = { ...item, groupId: group?.id };
       let nextItems = [...items, nextItem];
 
       if (items.length) {
@@ -331,12 +331,15 @@ function reducer(
       // to the next item (visually, it'll occupy the same position). If this
       // is the last enabled item, move focus to the previous one.
       if (currentId && currentId === id) {
-        nextState = reducer({ ...state, wrap: true }, { type: "next" });
+        nextState = reducer({ ...state, focusWrap: true }, { type: "next" });
         if (nextState.currentId === id) {
-          nextState = reducer({ ...state, wrap: true }, { type: "previous" });
+          nextState = reducer(
+            { ...state, focusWrap: true },
+            { type: "previous" }
+          );
         }
       }
-      return { ...nextState, wrap, items: nextItems };
+      return { ...nextState, focusWrap, items: nextItems };
     }
     case "move": {
       const { id } = action;
@@ -377,29 +380,32 @@ function reducer(
       const currentIndex = itemsInDirection.indexOf(currentItem);
       // Turns [0, 1, current, 3, 4] into [3, 4]
       const nextItems = itemsInDirection.slice(currentIndex + 1);
-      const nextItemsInRow = nextItems.filter(
-        item => item.rowId === currentItem.rowId
+      const nextItemsInGroup = nextItems.filter(
+        item => item.groupId === currentItem.groupId
       );
 
       // Home, End
       if (action.allTheWay) {
         // Reverse so we can get the last one.
-        const reverseNextItemsInRow = reverse(nextItemsInRow);
-        const nextItem = findFirstEnabledItem(reverseNextItemsInRow, currentId);
+        const reverseNextItemsInGroup = reverse(nextItemsInGroup);
+        const nextItem = findFirstEnabledItem(
+          reverseNextItemsInGroup,
+          currentId
+        );
         return reducer(state, { type: "move", id: nextItem?.id });
       }
 
       const isHorizontal = !orientation || orientation === "horizontal";
 
       // Wraps horizontally
-      if (isHorizontal && currentItem.rowId && wrap) {
-        // Using nextItems instead of nextItemsInRow so we can wrap between rows
+      if (isHorizontal && currentItem.groupId && focusWrap) {
+        // Using nextItems instead of nextItemsInGroup so we can wrap between groups
         const nextItem = findFirstEnabledItem(nextItems, currentId);
         return reducer(state, { type: "move", id: nextItem?.id });
       }
 
       // Loops on one-dimensional composites
-      if (!currentItem.rowId && loop) {
+      if (!currentItem.groupId && loop) {
         // Turns [0, 1, current, 3, 4] into [3, 4, 0, 1]
         const reorderedItems = [
           ...itemsInDirection.slice(currentIndex + 1),
@@ -409,7 +415,7 @@ function reducer(
         return reducer(state, { type: "move", id: nextItem?.id });
       }
 
-      const nextItem = findFirstEnabledItem(nextItemsInRow, currentId);
+      const nextItem = findFirstEnabledItem(nextItemsInGroup, currentId);
       return reducer(state, { type: "move", id: nextItem?.id });
     }
     case "previous": {
@@ -429,9 +435,7 @@ function reducer(
           ...state,
           rtl: false,
           orientation: orientation ? orientationMap[orientation] : orientation,
-          items: verticalizeItems(
-            flattenRows(fillRows(groupItemsByRowId(items)))
-          )
+          items: verticalizeItems(flatten(fillGroups(groupItems(items))))
         },
         { ...action, type: "next" }
       );
@@ -441,7 +445,7 @@ function reducer(
       const nextState = reducer(
         {
           ...state,
-          items: reverse(flattenRows(fillRows(groupItemsByRowId(items))))
+          items: reverse(flatten(fillGroups(groupItems(items))))
         },
         { ...action, type: "down" }
       );
@@ -490,11 +494,13 @@ function reducer(
         loop:
           typeof action.loop === "function" ? action.loop(loop) : action.loop
       };
-    case "setWrap":
+    case "setFocusWrap":
       return {
         ...state,
-        wrap:
-          typeof action.wrap === "function" ? action.wrap(wrap) : action.wrap
+        focusWrap:
+          typeof action.wrap === "function"
+            ? action.wrap(focusWrap)
+            : action.wrap
       };
     default:
       throw new Error();
@@ -510,17 +516,17 @@ export function unstable_useCompositeState(
     unstable_focusStrategy: initialFocusStrategy = "roving-tabindex",
     currentId = null,
     loop = false,
-    wrap = false,
+    focusWrap = false,
     ...sealed
   } = useSealedState(initialState);
   const [state, dispatch] = React.useReducer(reducer, {
     rtl,
     orientation,
     items: [],
-    rows: [],
+    groups: [],
     currentId,
     loop,
-    wrap,
+    focusWrap,
     unstable_moves: 0
   });
   const [focusStrategy, setFocusStrategy] = React.useState(
@@ -544,12 +550,12 @@ export function unstable_useCompositeState(
       id => dispatch({ type: "unregisterItem", id }),
       []
     ),
-    registerRow: React.useCallback(
-      row => dispatch({ type: "registerRow", row }),
+    registerGroup: React.useCallback(
+      group => dispatch({ type: "registerGroup", group }),
       []
     ),
-    unregisterRow: React.useCallback(
-      id => dispatch({ type: "unregisterRow", id }),
+    unregisterGroup: React.useCallback(
+      id => dispatch({ type: "unregisterGroup", id }),
       []
     ),
     move: React.useCallback(id => dispatch({ type: "move", id }), []),
@@ -584,8 +590,8 @@ export function unstable_useCompositeState(
       value => dispatch({ type: "setLoop", loop: value }),
       []
     ),
-    setWrap: React.useCallback(
-      value => dispatch({ type: "setWrap", wrap: value }),
+    setFocusWrap: React.useCallback(
+      value => dispatch({ type: "setFocusWrap", wrap: value }),
       []
     )
   };
@@ -596,17 +602,17 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "rtl",
   "orientation",
   "items",
-  "rows",
+  "groups",
   "currentId",
   "loop",
-  "wrap",
+  "focusWrap",
   "unstable_moves",
   "unstable_focusStrategy",
   "unstable_hasActiveWidget",
   "registerItem",
   "unregisterItem",
-  "registerRow",
-  "unregisterRow",
+  "registerGroup",
+  "unregisterGroup",
   "move",
   "next",
   "previous",
@@ -618,7 +624,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "setOrientation",
   "setCurrentId",
   "setLoop",
-  "setWrap",
+  "setFocusWrap",
   "unstable_setFocusStrategy",
   "unstable_setHasActiveWidget"
 ];

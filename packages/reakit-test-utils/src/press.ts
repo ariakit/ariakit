@@ -69,8 +69,12 @@ const keyDownMap: Record<
       element instanceof HTMLInputElement &&
       !nonSubmittableTypes.includes(element.type);
 
+    const isLineBreakable = element instanceof HTMLTextAreaElement;
+
     if (isClickable) {
       fireEvent.click(element, options);
+    } else if (isLineBreakable) {
+      (element as HTMLTextAreaElement).value += "\n";
     } else if (isSubmittable) {
       submitFormByPressingEnterOn(element as HTMLInputElement, options);
     }

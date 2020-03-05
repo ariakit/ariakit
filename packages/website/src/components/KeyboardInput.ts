@@ -20,7 +20,6 @@ export const useKeyboardInput = createHook<
     const borderColor = useDarken(backgroundColor, 0.15);
     const keyboardInput = css`
       border-radius: 0.25em;
-      font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
       background-color: ${backgroundColor};
       padding: 0.3em 0.5em 0.25em;
       border: 1px solid ${borderColor};

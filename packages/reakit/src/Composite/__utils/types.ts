@@ -1,4 +1,4 @@
-export type Row = {
+export type Group = {
   id: string;
   ref: React.RefObject<HTMLElement>;
 };
@@ -6,6 +6,6 @@ export type Row = {
 export type Item = {
   id: string;
   ref: React.RefObject<HTMLElement>;
-  rowId?: Row["id"];
+  groupId?: Group["id"];
   disabled?: boolean;
 };

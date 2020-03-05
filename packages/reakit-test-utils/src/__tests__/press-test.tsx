@@ -48,6 +48,31 @@ test("press enter on button preventDefault", async () => {
   `);
 });
 
+test("press enter on textarea", () => {
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLFormElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <form ref={ref}>
+        form
+        <textarea aria-label="textarea" />
+      </form>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const textarea = getByLabelText("textarea") as HTMLTextAreaElement;
+  press.Enter(textarea);
+  expect(textarea.value).toBe("\n");
+  expect(stack).toMatchInlineSnapshot(`
+Array [
+  "focusin textarea",
+  "keydown textarea",
+  "keyup textarea",
+]
+`);
+});
+
 test("press enter on form input", () => {
   const stack = [] as string[];
   const Test = () => {

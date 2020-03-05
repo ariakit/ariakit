@@ -181,7 +181,7 @@ export const unstable_useCompositeItem = createHook<
             // both `isVertical` and `isHorizontal` will be `true`.
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
-            const isGrid = Boolean(item?.rowId);
+            const isGrid = Boolean(item?.groupId);
 
             const ArrowUp =
               (isGrid || isVertical) &&

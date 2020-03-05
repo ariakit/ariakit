@@ -1,6 +1,6 @@
 import { Item } from "./types";
 
-export function getRowsMaxLength(rows: Item[][]) {
+export function getMaxLength(rows: Item[][]) {
   let maxLength = 0;
   for (const { length } of rows) {
     if (length > maxLength) {

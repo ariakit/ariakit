@@ -14,21 +14,21 @@ import {
   unstable_useCompositeState
 } from "./CompositeState";
 
-export type unstable_CompositeRowOptions = GroupOptions &
+export type unstable_CompositeGroupOptions = GroupOptions &
   unstable_IdOptions &
-  Pick<unstable_CompositeStateReturn, "registerRow" | "unregisterRow">;
+  Pick<unstable_CompositeStateReturn, "registerGroup" | "unregisterGroup">;
 
-export type unstable_CompositeRowHTMLProps = GroupHTMLProps &
+export type unstable_CompositeGroupHTMLProps = GroupHTMLProps &
   unstable_IdHTMLProps;
 
-export type unstable_CompositeRowProps = unstable_CompositeRowOptions &
-  unstable_CompositeRowHTMLProps;
+export type unstable_CompositeGroupProps = unstable_CompositeGroupOptions &
+  unstable_CompositeGroupHTMLProps;
 
-export const unstable_useCompositeRow = createHook<
-  unstable_CompositeRowOptions,
-  unstable_CompositeRowHTMLProps
+export const unstable_useCompositeGroup = createHook<
+  unstable_CompositeGroupOptions,
+  unstable_CompositeGroupHTMLProps
 >({
-  name: "CompositeRow",
+  name: "CompositeGroup",
   compose: [useGroup, unstable_useId],
   useState: unstable_useCompositeState,
 
@@ -39,11 +39,11 @@ export const unstable_useCompositeRow = createHook<
     // We need this to be called before CompositeItems' register
     useIsomorphicEffect(() => {
       if (!id) return undefined;
-      options.registerRow?.({ id, ref });
+      options.registerGroup?.({ id, ref });
       return () => {
-        options.unregisterRow?.(id);
+        options.unregisterGroup?.(id);
       };
-    }, [id, options.registerRow, options.unregisterRow]);
+    }, [id, options.registerGroup, options.unregisterGroup]);
 
     return {
       ref: useForkRef(ref, htmlRef),
@@ -52,7 +52,7 @@ export const unstable_useCompositeRow = createHook<
   }
 });
 
-export const unstable_CompositeRow = createComponent({
+export const unstable_CompositeGroup = createComponent({
   as: "div",
-  useHook: unstable_useCompositeRow
+  useHook: unstable_useCompositeGroup
 });

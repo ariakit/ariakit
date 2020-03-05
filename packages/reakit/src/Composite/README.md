@@ -81,59 +81,50 @@ function Example() {
 
 ### Two-dimensional navigation
 
-You can build a two-dimensional `Composite` by using `CompositeRow`.
+You can build a two-dimensional `Composite` by using `CompositeGroup`.
 
 ```jsx
 import React from "react";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
-  unstable_CompositeRow as CompositeRow,
+  unstable_CompositeGroup as CompositeGroup,
   unstable_CompositeItem as CompositeItem
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState();
+  const composite = useCompositeState({ focusWrap: true });
   return (
     <Composite {...composite} role="grid" aria-label="My grid">
-      <CompositeRow {...composite}>
-        <CompositeItem {...composite} onClick={alert}>
-          Item 1.1
-        </CompositeItem>
-        <CompositeItem {...composite}>Item 1.2</CompositeItem>
-        <CompositeItem {...composite} disabled focusable>
-          Item 1.3
-        </CompositeItem>
-        <CompositeItem {...composite}>Item 1.4</CompositeItem>
-        <CompositeItem {...composite}>Item 1.5</CompositeItem>
-      </CompositeRow>
-      <CompositeRow {...composite}>
-        <CompositeItem {...composite}>Item 2.1</CompositeItem>
-        <CompositeItem {...composite} disabled>
-          Item 2.2
-        </CompositeItem>
-        <CompositeItem {...composite}>Item 2.3</CompositeItem>
-        <CompositeItem {...composite} disabled>
-          Item 2.4
-        </CompositeItem>
-        <CompositeItem {...composite}>Item 2.5</CompositeItem>
-      </CompositeRow>
-      <CompositeRow {...composite}>
-        <CompositeItem {...composite}>Item 3.1</CompositeItem>
-        <CompositeItem {...composite} disabled focusable>
-          Item 3.2
-        </CompositeItem>
-        <CompositeItem {...composite}>Item 3.3</CompositeItem>
-
-        <CompositeItem {...composite}>Item 3.4</CompositeItem>
-        <CompositeItem {...composite}>Item 3.5</CompositeItem>
-      </CompositeRow>
+      <CompositeGroup {...composite}>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+      </CompositeGroup>
+      <CompositeGroup {...composite}>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+      </CompositeGroup>
+      <CompositeGroup {...composite}>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+        <CompositeItem {...composite}>Item</CompositeItem>
+      </CompositeGroup>
     </Composite>
   );
 }
 ```
 
 ### Widgets inside composite item
+
+You may have editable content or widgets that also use keyboard navigation inside composite items. You can click, or press <kbd>Enter</kbd> or <kbd>Space</kbd> to activate the widget. It disables the composite navigation until you press <kbd>Escape</kbd> or move focus outside the composite element.
 
 ```jsx
 import React from "react";
@@ -145,16 +136,15 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({
-    unstable_focusStrategy: "aria-activedescendant"
-  });
+  const composite = useCompositeState();
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      <CompositeItem {...composite} as="div">
-        <CompositeItemWidget {...composite} contentEditable />
-      </CompositeItem>
+      <CompositeItem {...composite}>Item 1</CompositeItem>
       <CompositeItem {...composite}>Item 2</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>
+        <CompositeItemWidget {...composite} as="input" type="text" />
+      </CompositeItem>
+      <CompositeItem {...composite}>Item 4</CompositeItem>
     </Composite>
   );
 }
@@ -162,19 +152,43 @@ function Example() {
 
 ## Accessibility
 
-- `Rover` has `tabindex` set to `0` if it's the current element. Otherwise `tabindex` is set to `-1`.
-- Pressing <kbd>↑</kbd> moves focus to the previous `Rover` if `orientation` is `vertical` or not defined.
-- Pressing <kbd>↓</kbd> moves focus to the next `Rover` if `orientation` is `vertical` or not defined.
-- Pressing <kbd>→</kbd> moves focus to the next `Rover` if `orientation` is `horizontal` or not defined.
-- Pressing <kbd>←</kbd> moves focus to the previous `Rover` if `orientation` is `horizontal` or not defined.
-- Pressing <kbd>Home</kbd> or <kbd>PageUp</kbd> moves focus to the first `Rover`.
-- Pressing <kbd>End</kbd> or <kbd>PageDown</kbd> moves focus to the last `Rover`.
+- When `focusStrategy` is set to `roving-tabindex` (default):
+  - `CompositemItem` has `tabindex` set to `0` if it's the current element. Otherwise `tabindex` is set to `-1`.
+- When `focusStrategy` is set to `aria-activedescendant`:
+  - `Composite` has `tabindex` set to `0` and has `aria-activedescendant` set to the id of the current `CompositeItem`.
+  - `CompositeItem` has `aria-selected` set to `true` if it's the current element.
+- On one-dimensional composites:
+  - <kbd>↑</kbd> moves focus to the previous `CompositeItem` if `orientation` is `vertical` or not defined.
+  - <kbd>↓</kbd> moves focus to the next `CompositeItem` if `orientation` is `vertical` or not defined.
+  - <kbd>→</kbd> moves focus to the next `CompositeItem` if `orientation` is `horizontal` or not defined.
+  - <kbd>←</kbd> moves focus to the previous `CompositeItem` if `orientation` is `horizontal` or not defined.
+  - <kbd>Home</kbd> or <kbd>PageUp</kbd> moves focus to the first `CompositeItem`.
+  - <kbd>End</kbd> or <kbd>PageDown</kbd> moves focus to the last `CompositeItem`.
+- On two-dimensional composites:
+  - <kbd>↑</kbd> moves focus to the `CompositeItem` above.
+  - <kbd>↓</kbd> moves focus to the `CompositeItem` below.
+  - <kbd>→</kbd> moves focus to the next `CompositeItem`.
+  - <kbd>←</kbd> moves focus to the previous `CompositeItem`.
+  - <kbd>Home</kbd> moves focus to the first `CompositeItem` in the row.
+  - <kbd>End</kbd> moves focus to the last `CompositeItem` in the row.
+  - <kbd>PageUp</kbd> moves focus to the first `CompositeItem` in the column.
+  - <kbd>PageDown</kbd> moves focus to the last `CompositeItem` in the column.
+  - <kbd>Ctrl</kbd>+<kbd>Home</kbd> moves focus to the first `CompositeItem` in the composite element.
+  - <kbd>Ctrl</kbd>+<kbd>End</kbd> moves focus to the last `CompositeItem` in the composite element.
+- When using `CompositeItemWidget`:
+  - Clicking or pressing <kbd>Enter</kbd> or <kbd>Space</kbd> on a `CompositeItem` that has a child `CompositeItemWidget` disables composite keyboard navigation and focus the widget.
+  - <kbd>Enter</kbd> on the current focused `CompositeItemWidget` restores the composite keyboard navigation and focus the parent `CompositeItem` if the widget is a text field.
+  - <kbd>Escape</kbd> on the current focused `CompositeItemWidget` restores the composite keyboard navigation and focus the parent `CompositeItem`. If the widget is a text field, any changes are undone.
+  - If `CompositeItemWidget` is a text field, pressing any printable character on the parent `CompositeItem` changes the widget value and moves focus into it.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Rover` uses [Tabbable](/docs/tabbable/), and is used by [MenuItem](/docs/menu/), [Radio](/docs/radio/), [Tab](/docs/tab/) and [ToolbarItem](/docs/toolbar/).
+- `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/).
+- `CompositeGroup` uses [Group](/docs/group/) and [Id](/docs/id/).
+- `CompositeItem` uses [Id](/docs/id/) and [Tabbable](/docs/tabbable/).
+- `CompositeItemWidget` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -200,7 +214,7 @@ then `next` will move focus to the previous item in the DOM.
 
   Defines the orientation of the composite widget.
 
-  When the composite widget has multiple rows (two-dimensional) and `wrap`
+  When the composite widget has multiple groups (two-dimensional) and `wrap`
 is `true`, the navigation will wrap based on the value of `orientation`:
   - `undefined`: wraps in both directions.
   - `horizontal`: wraps horizontally only.
@@ -222,9 +236,9 @@ is `true`, the navigation will wrap based on the value of `orientation`:
 
   If enabled, moving to the next item from the last one will focus the first
 item and vice-versa. It doesn't work if the composite widget has multiple
-rows (two-dimensional).
+groups (two-dimensional).
 
-- **`wrap`**
+- **`focusWrap`**
   <code>boolean</code>
 
   If enabled, moving to the next item from the last one in a row or column
@@ -235,7 +249,7 @@ direction:
   - If `orientation` is `horizontal`, it wraps horizontally only.
   - If `orientation` is `vertical`, it wraps vertically only.
 
-  `wrap` only works if the composite widget has multiple rows
+  `focusWrap` only works if the composite widget has multiple groups
 (two-dimensional).
 
 ### `Composite`
@@ -278,6 +292,34 @@ similarly to `readOnly` on form elements. In this case, only
 
 </details>
 
+### `CompositeGroup`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>3 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`registerGroup`**
+  <code>(group: Group) =&#62; void</code>
+
+  Registers a composite group.
+
+- **`unregisterGroup`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters a composite group.
+
+</details>
+
 ### `CompositeItem`
 
 - **`disabled`**
@@ -311,7 +353,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the composite widget.
 
-  When the composite widget has multiple rows (two-dimensional) and `wrap`
+  When the composite widget has multiple groups (two-dimensional) and `wrap`
 is `true`, the navigation will wrap based on the value of `orientation`:
   - `undefined`: wraps in both directions.
   - `horizontal`: wraps horizontally only.
@@ -390,33 +432,5 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   <code>string | null</code>
 
   The current focused item ID.
-
-</details>
-
-### `CompositeRow`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>3 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
-
-- **`registerRow`**
-  <code>(row: Row) =&#62; void</code>
-
-  Registers a composite row.
-
-- **`unregisterRow`**
-  <code>(id: string) =&#62; void</code>
-
-  Unregisters a composite row.
 
 </details>

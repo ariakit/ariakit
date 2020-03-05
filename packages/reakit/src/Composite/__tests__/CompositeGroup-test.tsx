@@ -1,17 +1,17 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
 import {
-  unstable_CompositeRowProps,
-  unstable_CompositeRow as CompositeRow
-} from "../CompositeRow";
+  unstable_CompositeGroupProps,
+  unstable_CompositeGroup as CompositeGroup
+} from "../CompositeGroup";
 
-const props: unstable_CompositeRowProps = {
-  registerRow: jest.fn(),
-  unregisterRow: jest.fn()
+const props: unstable_CompositeGroupProps = {
+  registerGroup: jest.fn(),
+  unregisterGroup: jest.fn()
 };
 
 test("render", () => {
-  const { container } = render(<CompositeRow {...props} id="1" />);
+  const { container } = render(<CompositeGroup {...props} id="1" />);
   expect(container).toMatchInlineSnapshot(`
     <div>
       <div
@@ -24,7 +24,7 @@ test("render", () => {
 
 test("render without state props", () => {
   // @ts-ignore
-  const { container } = render(<CompositeRow id="1" />);
+  const { container } = render(<CompositeGroup id="1" />);
   expect(container).toMatchInlineSnapshot(`
 <div>
   <div
