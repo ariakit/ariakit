@@ -12,7 +12,6 @@ import {
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 
 export type unstable_CompositeItemWidgetOptions = BoxOptions &
-  // Pick<Partial<unstable_CompositeStateReturn>, "wrap" | "rows"> &
   Pick<
     unstable_CompositeStateReturn,
     "unstable_hasActiveWidget" | "unstable_setHasActiveWidget" | "currentId"

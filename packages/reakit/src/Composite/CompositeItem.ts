@@ -76,7 +76,6 @@ function moveCaretToEnd(contentEditableElement: HTMLElement) {
   selection?.addRange(range);
 }
 
-// TODO: WARN IF IT'S A BUTTON OR ANOTHER TABBABLE ELEMENT AND HAS WIDGET INSIDE
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
