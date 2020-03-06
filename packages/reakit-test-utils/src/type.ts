@@ -9,7 +9,6 @@ const charMap: Record<string, string> = {
   "\b": "Backspace"
 };
 
-// TODO: Fix types
 const keyMap: Record<
   string,
   (element: HTMLElement, options: InputEventInit) => string
@@ -50,19 +49,19 @@ export function type(
   // Set element dirty so blur() can dispatch a change event
   element.dirty = true;
 
+  const input = element as HTMLInputElement | HTMLTextAreaElement;
+
   for (const char of text) {
     const key = char in charMap ? charMap[char] : char;
     const value =
-      // @ts-ignore
-      key in keyMap ? keyMap[key](element, options) : `${element.value}${char}`;
+      key in keyMap ? keyMap[key](input, options) : `${input.value}${char}`;
 
-    const defaultAllowed = fireEvent.keyDown(element, { key, ...options });
+    const defaultAllowed = fireEvent.keyDown(input, { key, ...options });
 
-    // @ts-ignore
-    if (defaultAllowed && !element.readOnly) {
-      fireEvent.input(element, { data: char, target: { value }, ...options });
+    if (defaultAllowed && !input.readOnly) {
+      fireEvent.input(input, { data: char, target: { value }, ...options });
     }
 
-    fireEvent.keyUp(element, { key, ...options });
+    fireEvent.keyUp(input, { key, ...options });
   }
 }
