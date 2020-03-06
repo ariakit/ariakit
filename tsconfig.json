@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "incremental": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
