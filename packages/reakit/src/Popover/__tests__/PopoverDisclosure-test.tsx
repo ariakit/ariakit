@@ -18,6 +18,7 @@ test("render", () => {
           aria-controls="base"
           aria-expanded="false"
           aria-haspopup="dialog"
+          data-tabbable="true"
           type="button"
         >
           disclosure
@@ -34,17 +35,18 @@ test("render visible", () => {
     </PopoverDisclosure>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-controls="base"
-          aria-expanded="true"
-          aria-haspopup="dialog"
-          type="button"
-        >
-          disclosure
-        </button>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <button
+      aria-controls="base"
+      aria-expanded="true"
+      aria-haspopup="dialog"
+      data-tabbable="true"
+      type="button"
+    >
+      disclosure
+    </button>
+  </div>
+</body>
+`);
 });

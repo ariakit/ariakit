@@ -5,7 +5,9 @@ import { Tabbable, TabbableProps } from "../Tabbable";
 test("render", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-    <button>
+    <button
+      data-tabbable="true"
+    >
       tabbable
     </button>
   `);
@@ -16,6 +18,7 @@ test("render disabled", () => {
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
 <button
   aria-disabled="true"
+  data-tabbable="true"
   disabled=""
   style="pointer-events: none;"
 >
@@ -31,12 +34,13 @@ test("render disabled focusable", () => {
     </Tabbable>
   );
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-    <button
-      aria-disabled="true"
-    >
-      tabbable
-    </button>
-  `);
+<button
+  aria-disabled="true"
+  data-tabbable="true"
+>
+  tabbable
+</button>
+`);
 });
 
 test("click", () => {

@@ -13,6 +13,7 @@ export default {
   "reakit-system-bootstrap/Group": require("reakit-system-bootstrap/Group"),
   "reakit-system-bootstrap/Form": require("reakit-system-bootstrap/Form"),
   "reakit-system-bootstrap/Dialog": require("reakit-system-bootstrap/Dialog"),
+  "reakit-system-bootstrap/Composite": require("reakit-system-bootstrap/Composite"),
   "reakit-system-bootstrap/Button": require("reakit-system-bootstrap/Button"),
   "reakit-system-bootstrap/Box": require("reakit-system-bootstrap/Box")
 };

@@ -1,5 +1,4 @@
-import { isFocusable, warning } from "reakit-utils";
-import { isTextField } from "./__utils/isTextField";
+import { isFocusable, isTextField, warning } from "reakit-utils";
 import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
@@ -12,23 +11,26 @@ const charMap: Record<string, string> = {
 
 const keyMap: Record<
   string,
-  (
-    element: HTMLInputElement | HTMLTextAreaElement,
-    options: InputEventInit
-  ) => string
+  (element: HTMLElement, options: InputEventInit) => string
 > = {
   Backspace(element) {
-    return element.value.substr(0, element.value.length - 1);
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement
+    ) {
+      return element.value.substr(0, element.value.length - 1);
+    }
+    return "";
   }
 };
 
 export function type(
   text: string,
-  element?: DirtiableElement | null,
+  element?: (DirtiableElement & HTMLElement) | null,
   options: InputEventInit = {}
 ) {
   if (element == null) {
-    element = document.activeElement;
+    element = document.activeElement as HTMLInputElement;
   }
 
   if (!element || !isFocusable(element)) return;
@@ -47,17 +49,19 @@ export function type(
   // Set element dirty so blur() can dispatch a change event
   element.dirty = true;
 
+  const input = element as HTMLInputElement | HTMLTextAreaElement;
+
   for (const char of text) {
     const key = char in charMap ? charMap[char] : char;
     const value =
-      key in keyMap ? keyMap[key](element, options) : `${element.value}${char}`;
+      key in keyMap ? keyMap[key](input, options) : `${input.value}${char}`;
 
-    const defaultAllowed = fireEvent.keyDown(element, { key, ...options });
+    const defaultAllowed = fireEvent.keyDown(input, { key, ...options });
 
-    if (defaultAllowed && !element.readOnly) {
-      fireEvent.input(element, { data: char, target: { value }, ...options });
+    if (defaultAllowed && !input.readOnly) {
+      fireEvent.input(input, { data: char, target: { value }, ...options });
     }
 
-    fireEvent.keyUp(element, { key, ...options });
+    fireEvent.keyUp(input, { key, ...options });
   }
 }

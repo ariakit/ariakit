@@ -188,6 +188,7 @@ test("useCheckbox", () => {
   expect(checkbox).toMatchInlineSnapshot(`
     <input
       aria-checked="false"
+      data-tabbable="true"
       role="checkbox"
       type="checkbox"
       value=""
@@ -198,6 +199,7 @@ test("useCheckbox", () => {
   expect(checkbox).toMatchInlineSnapshot(`
     <input
       aria-checked="true"
+      data-tabbable="true"
       role="checkbox"
       type="checkbox"
       value=""
@@ -208,6 +210,7 @@ test("useCheckbox", () => {
   expect(checkbox).toMatchInlineSnapshot(`
     <input
       aria-checked="false"
+      data-tabbable="true"
       role="checkbox"
       type="checkbox"
       value=""

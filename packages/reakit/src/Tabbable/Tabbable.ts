@@ -88,7 +88,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
       style: htmlStyle,
-      "data-tabbable": dataTabbable,
+      "data-tabbable": isTabbableAlready,
       ...htmlProps
     }: TabbableHTMLProps & { "data-tabbable"?: boolean }
   ) {
@@ -157,13 +157,14 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         }
 
         if (
+          event.defaultPrevented ||
           options.disabled ||
-          isNativeTabbable(event.currentTarget) ||
+          (isNativeTabbable(event.currentTarget) && event.isTrusted) ||
           // Native interactive elements don't get clicked on cmd+Enter/Space
           event.metaKey ||
           // This will be true if `useTabbable` has already been used.
           // In this case, we don't want to .click() twice.
-          dataTabbable
+          isTabbableAlready
         ) {
           return;
         }
@@ -180,7 +181,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         }
       },
       [
-        dataTabbable,
+        isTabbableAlready,
         options.disabled,
         options.unstable_clickOnEnter,
         options.unstable_clickOnSpace,
@@ -193,11 +194,11 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       disabled: trulyDisabled,
       tabIndex: trulyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,
+      "data-tabbable": true,
       onClick,
       onMouseDown,
       onKeyDown,
       style,
-      "data-tabbable": nativeTabbable ? undefined : true,
       ...htmlProps
     };
   }

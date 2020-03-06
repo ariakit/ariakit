@@ -16,11 +16,13 @@
 /toArray
 /tabbable
 /splitProps
+/scrollIntoViewIfNeeded
 /removeItemFromArray
 /removeIndexFromArray
 /pick
 /omit
 /matches
+/isTextField
 /isPromise
 /isPlainObject
 /isObject

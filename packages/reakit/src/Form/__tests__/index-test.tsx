@@ -592,6 +592,7 @@ test("push/remove button adds/removes entry and moves focus", async () => {
         role="form"
       >
         <button
+          data-tabbable="true"
           data-testid="push"
           id="form-people-push"
           type="button"
@@ -612,6 +613,7 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           aria-describedby="form-people-0-name-message"
           aria-invalid="false"
           aria-labelledby="form-people-0-name-label"
+          data-tabbable="true"
           id="form-people-0-name"
           name="people.0.name"
           placeholder="name0"
@@ -621,16 +623,19 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           aria-describedby="form-people-0-email-message"
           aria-invalid="false"
           aria-labelledby="form-people-0-email-label"
+          data-tabbable="true"
           id="form-people-0-email"
           name="people.0.email"
           placeholder="email0"
           value=""
         />
         <button
+          data-tabbable="true"
           data-testid="remove0"
           type="button"
         />
         <button
+          data-tabbable="true"
           data-testid="push"
           id="form-people-push"
           type="button"
@@ -766,63 +771,68 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
   const push = getByTestId("push");
 
   expect(container).toMatchInlineSnapshot(`
-    <div>
-      <form
-        novalidate=""
-        role="form"
-      >
-        <button
-          data-testid="push"
-          id="form-people-push"
-          name="people"
-          type="button"
-          value="[object Object]"
-        />
-      </form>
-    </div>
-  `);
+<div>
+  <form
+    novalidate=""
+    role="form"
+  >
+    <button
+      data-tabbable="true"
+      data-testid="push"
+      id="form-people-push"
+      name="people"
+      type="button"
+      value="[object Object]"
+    />
+  </form>
+</div>
+`);
 
   click(push);
 
   expect(container).toMatchInlineSnapshot(`
-    <div>
-      <form
-        novalidate=""
-        role="form"
-      >
-        <input
-          aria-describedby="form-people-0-name-message"
-          aria-invalid="false"
-          aria-labelledby="form-people-0-name-label"
-          id="form-people-0-name"
-          name="people.0.name"
-          placeholder="name0"
-          value=""
-        />
-        <input
-          aria-describedby="form-people-0-email-message"
-          aria-invalid="false"
-          aria-labelledby="form-people-0-email-label"
-          id="form-people-0-email"
-          name="people.0.email"
-          placeholder="email0"
-          value=""
-        />
-        <button
-          data-testid="remove0"
-          name="people"
-          type="button"
-        />
-        <button
-          data-testid="push"
-          id="form-people-push"
-          name="people"
-          type="button"
-          value="[object Object]"
-        />
-      </form>
-    </div>
-  `);
+<div>
+  <form
+    novalidate=""
+    role="form"
+  >
+    <input
+      aria-describedby="form-people-0-name-message"
+      aria-invalid="false"
+      aria-labelledby="form-people-0-name-label"
+      data-tabbable="true"
+      id="form-people-0-name"
+      name="people.0.name"
+      placeholder="name0"
+      value=""
+    />
+    <input
+      aria-describedby="form-people-0-email-message"
+      aria-invalid="false"
+      aria-labelledby="form-people-0-email-label"
+      data-tabbable="true"
+      id="form-people-0-email"
+      name="people.0.email"
+      placeholder="email0"
+      value=""
+    />
+    <button
+      data-tabbable="true"
+      data-testid="remove0"
+      name="people"
+      type="button"
+    />
+    <button
+      data-tabbable="true"
+      data-testid="push"
+      id="form-people-push"
+      name="people"
+      type="button"
+      value="[object Object]"
+    />
+  </form>
+</div>
+`);
 
   await wait(expect(getByPlaceholderText("name0")).toHaveFocus);
 
@@ -888,61 +898,64 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
   };
   const { container } = render(<Test />);
   expect(container).toMatchInlineSnapshot(`
-    <div>
-      <form
-        novalidate=""
-        role="form"
-      >
-        <fieldset
-          aria-describedby="form-input-message"
-          aria-invalid="false"
-          aria-labelledby="form-input-label"
-          id="form-input"
+<div>
+  <form
+    novalidate=""
+    role="form"
+  >
+    <fieldset
+      aria-describedby="form-input-message"
+      aria-invalid="false"
+      aria-labelledby="form-input-label"
+      id="form-input"
+      name="input"
+      role="radiogroup"
+      tabindex="-1"
+    >
+      <label>
+        <input
+          aria-checked="true"
+          checked=""
+          data-tabbable="true"
+          id="form-input-1"
           name="input"
-          role="radiogroup"
+          role="radio"
+          tabindex="0"
+          type="radio"
+          value="a"
+        />
+        a
+      </label>
+      <label>
+        <input
+          aria-checked="false"
+          data-tabbable="true"
+          id="form-input-2"
+          name="input"
+          role="radio"
           tabindex="-1"
-        >
-          <label>
-            <input
-              aria-checked="true"
-              checked=""
-              id="form-input-1"
-              name="input"
-              role="radio"
-              tabindex="0"
-              type="radio"
-              value="a"
-            />
-            a
-          </label>
-          <label>
-            <input
-              aria-checked="false"
-              id="form-input-2"
-              name="input"
-              role="radio"
-              tabindex="-1"
-              type="radio"
-              value="b"
-            />
-            b
-          </label>
-          <label>
-            <input
-              aria-checked="false"
-              id="form-input-3"
-              name="input"
-              role="radio"
-              tabindex="-1"
-              type="radio"
-              value="c"
-            />
-            c
-          </label>
-        </fieldset>
-      </form>
-    </div>
-  `);
+          type="radio"
+          value="b"
+        />
+        b
+      </label>
+      <label>
+        <input
+          aria-checked="false"
+          data-tabbable="true"
+          id="form-input-3"
+          name="input"
+          role="radio"
+          tabindex="-1"
+          type="radio"
+          value="c"
+        />
+        c
+      </label>
+    </fieldset>
+  </form>
+</div>
+`);
 });
 
 test("reset form after removing an item", async () => {
@@ -977,59 +990,65 @@ test("reset form after removing an item", async () => {
   click(reset);
 
   expect(container).toMatchInlineSnapshot(`
-    <div>
-      <form
-        novalidate=""
-        role="form"
-      >
-        <input
-          aria-describedby="form-names-0-message"
-          aria-invalid="false"
-          aria-labelledby="form-names-0-label"
-          id="form-names-0"
-          name="names.0"
-          value="a"
-        />
-        <button
-          type="button"
-        >
-          remove
-          0
-        </button>
-        <input
-          aria-describedby="form-names-1-message"
-          aria-invalid="false"
-          aria-labelledby="form-names-1-label"
-          id="form-names-1"
-          name="names.1"
-          value="b"
-        />
-        <button
-          type="button"
-        >
-          remove
-          1
-        </button>
-        <input
-          aria-describedby="form-names-2-message"
-          aria-invalid="false"
-          aria-labelledby="form-names-2-label"
-          id="form-names-2"
-          name="names.2"
-          value="c"
-        />
-        <button
-          type="button"
-        >
-          remove
-          2
-        </button>
-        <button
-          type="button"
-        >
-          reset
-        </button>
-      </form>
-    </div>
-  `);
+<div>
+  <form
+    novalidate=""
+    role="form"
+  >
+    <input
+      aria-describedby="form-names-0-message"
+      aria-invalid="false"
+      aria-labelledby="form-names-0-label"
+      data-tabbable="true"
+      id="form-names-0"
+      name="names.0"
+      value="a"
+    />
+    <button
+      data-tabbable="true"
+      type="button"
+    >
+      remove
+      0
+    </button>
+    <input
+      aria-describedby="form-names-1-message"
+      aria-invalid="false"
+      aria-labelledby="form-names-1-label"
+      data-tabbable="true"
+      id="form-names-1"
+      name="names.1"
+      value="b"
+    />
+    <button
+      data-tabbable="true"
+      type="button"
+    >
+      remove
+      1
+    </button>
+    <input
+      aria-describedby="form-names-2-message"
+      aria-invalid="false"
+      aria-labelledby="form-names-2-label"
+      data-tabbable="true"
+      id="form-names-2"
+      name="names.2"
+      value="c"
+    />
+    <button
+      data-tabbable="true"
+      type="button"
+    >
+      remove
+      2
+    </button>
+    <button
+      type="button"
+    >
+      reset
+    </button>
+  </form>
+</div>
+`);
 });

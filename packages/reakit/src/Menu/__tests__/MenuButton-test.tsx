@@ -22,6 +22,7 @@ test("render", () => {
           aria-controls="base"
           aria-expanded="false"
           aria-haspopup="menu"
+          data-tabbable="true"
           type="button"
         >
           disclosure

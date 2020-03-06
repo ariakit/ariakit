@@ -26,6 +26,7 @@ test("render", () => {
         <button
           aria-controls="base-tab-panel"
           aria-selected="false"
+          data-tabbable="true"
           id="base-tab"
           role="tab"
           tabindex="-1"
@@ -44,20 +45,21 @@ test("render active", () => {
     </Tab>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-controls="base-tab-panel"
-          aria-selected="false"
-          id="base-tab"
-          role="tab"
-          tabindex="0"
-        >
-          tab
-        </button>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <button
+      aria-controls="base-tab-panel"
+      aria-selected="false"
+      data-tabbable="true"
+      id="base-tab"
+      role="tab"
+      tabindex="0"
+    >
+      tab
+    </button>
+  </div>
+</body>
+`);
 });
 
 test("render active selected", () => {
@@ -67,38 +69,40 @@ test("render active selected", () => {
     </Tab>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-controls="base-tab-panel"
-          aria-selected="true"
-          id="base-tab"
-          role="tab"
-          tabindex="0"
-        >
-          tab
-        </button>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <button
+      aria-controls="base-tab-panel"
+      aria-selected="true"
+      data-tabbable="true"
+      id="base-tab"
+      role="tab"
+      tabindex="0"
+    >
+      tab
+    </button>
+  </div>
+</body>
+`);
 });
 
 test("render without state props", () => {
   // @ts-ignore
   const { baseElement } = render(<Tab id="test">tab</Tab>);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-controls="test-panel"
-          aria-selected="false"
-          id="test"
-          role="tab"
-          tabindex="-1"
-        >
-          tab
-        </button>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <button
+      aria-controls="test-panel"
+      aria-selected="false"
+      data-tabbable="true"
+      id="test"
+      role="tab"
+      tabindex="-1"
+    >
+      tab
+    </button>
+  </div>
+</body>
+`);
 });

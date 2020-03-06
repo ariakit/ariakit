@@ -181,7 +181,7 @@ export function useMenuButtonProps(
       }[dir]
     : null;
 
-  const menuDisclosure = css`
+  const menuButton = css`
     position: relative;
 
     [role="menu"] > & {
@@ -236,7 +236,7 @@ export function useMenuButtonProps(
           {svg}
         </>
       ),
-    className: cx(menuDisclosure, htmlProps.className)
+    className: cx(menuButton, htmlProps.className)
   };
 }
 
