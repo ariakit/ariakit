@@ -27,6 +27,8 @@ Learn more in [Get started](/docs/get-started/).
 
 In the most basic usage, `Composite` will work as a [roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex) container that works on both directions. That is, it listens to all arrow keys. You can specify a direction by passing an `orientation` initial state to `useCompositeState`.
 
+<!-- eslint-disable no-alert -->
+
 ```jsx
 import React from "react";
 import {
@@ -39,7 +41,7 @@ function Example() {
   const composite = useCompositeState();
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      <CompositeItem {...composite} onClick={alert}>
+      <CompositeItem {...composite} onClick={() => alert("clicked")}>
         Item 1
       </CompositeItem>
       <CompositeItem {...composite}>Item 2</CompositeItem>
@@ -55,6 +57,8 @@ function Example() {
 
 You can still attach event handlers to `CompositeItem` just like it were using the roving tabindex method. You don't need to change anything else to make it work.
 
+<!-- eslint-disable no-alert -->
+
 ```jsx
 import React from "react";
 import {
@@ -69,7 +73,7 @@ function Example() {
   });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      <CompositeItem {...composite} onClick={alert}>
+      <CompositeItem {...composite} onClick={() => alert("clicked")}>
         Item 1
       </CompositeItem>
       <CompositeItem {...composite}>Item 2</CompositeItem>
