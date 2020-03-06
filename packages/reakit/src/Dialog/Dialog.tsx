@@ -102,15 +102,18 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     setModal,
     ...options
   }) {
-    if (setModal && unstable_modal !== modal) {
-      warning(
-        true,
-        "[reakit/Dialog]",
-        "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
-        "See https://github.com/reakit/reakit/pull/535"
-      );
-      setModal(modal);
-    }
+    React.useEffect(() => {
+      if (setModal && unstable_modal !== modal) {
+        warning(
+          true,
+          "[reakit/Dialog]",
+          "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
+          "See https://github.com/reakit/reakit/pull/535"
+        );
+        setModal(modal);
+      }
+    }, [setModal, unstable_modal, modal]);
+
     return {
       modal,
       hideOnEsc,

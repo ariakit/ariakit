@@ -414,7 +414,8 @@ function getComment(symbol) {
 function getTagNames(prop) {
   const jsDocs = getJsDocs(prop);
   if (!jsDocs) return [];
-  return jsDocs.getTags().map(tag => tag.getTagName());
+  // Object.getOwnPropertyNames(Object.getPrototypeOf(jsDocs));
+  return jsDocs.getTags().map(tag => tag.getKindName());
 }
 
 /**
@@ -424,7 +425,7 @@ function getProps(node) {
   return node
     .getType()
     .getProperties()
-    .filter(prop => !getTagNames(prop).includes("private"));
+    .filter(prop => !getTagNames(prop).includes("JSDocPrivateTag"));
 }
 
 /**
