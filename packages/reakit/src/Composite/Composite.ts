@@ -16,10 +16,7 @@ import {
   unstable_useCompositeState
 } from "./CompositeState";
 
-export type unstable_CompositeOptions = Omit<
-  TabbableOptions,
-  "unstable_clickOnSpace" | "unstable_clickOnEnter"
-> &
+export type unstable_CompositeOptions = TabbableOptions &
   unstable_IdGroupOptions &
   Pick<Partial<unstable_CompositeStateReturn>, "unstable_focusStrategy"> &
   Pick<unstable_CompositeStateReturn, "items" | "currentId">;
@@ -62,15 +59,15 @@ export const unstable_useComposite = createHook<
   compose: [unstable_useIdGroup, useTabbable],
   useState: unstable_useCompositeState,
 
-  useOptions(options) {
-    return {
-      ...options,
-      unstable_clickOnSpace: false,
-      unstable_clickOnEnter: false
-    };
-  },
-
-  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(
+    options,
+    {
+      ref: htmlRef,
+      onKeyDown: htmlOnKeyDown,
+      onKeyUp: htmlOnKeyUp,
+      ...htmlProps
+    }
+  ) {
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = getCurrentItem(options);
 
@@ -87,10 +84,24 @@ export const unstable_useComposite = createHook<
       [currentItem]
     );
 
+    const onKeyUp = React.useCallback(
+      (event: React.KeyboardEvent) => {
+        if (canTransferKeyboardEvent(event)) {
+          const currentElement = currentItem?.ref.current;
+          if (currentElement) {
+            currentElement.dispatchEvent(new KeyboardEvent("keyup", event));
+            event.preventDefault();
+          }
+        }
+      },
+      [currentItem]
+    );
+
     return {
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
+      onKeyUp: useAllCallbacks(onKeyUp, htmlOnKeyUp),
       "aria-activedescendant":
         options.unstable_focusStrategy === "aria-activedescendant"
           ? currentItem?.id

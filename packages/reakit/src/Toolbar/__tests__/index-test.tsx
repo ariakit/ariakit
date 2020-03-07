@@ -23,21 +23,18 @@ test("markup", () => {
         role="toolbar"
       >
         <button
-          data-tabbable="true"
           id="base-1"
           tabindex="0"
         >
           Item 1
         </button>
         <button
-          data-tabbable="true"
           id="base-2"
           tabindex="-1"
         >
           Item 2
         </button>
         <button
-          data-tabbable="true"
           id="base-3"
           tabindex="-1"
         >

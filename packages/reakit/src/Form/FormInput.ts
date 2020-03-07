@@ -17,10 +17,10 @@ import { formatInputName } from "./__utils/formatInputName";
 import { unstable_getIn } from "./utils/getIn";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
-export type unstable_FormInputOptions<V, P extends DeepPath<V, P>> = Omit<
-  TabbableOptions,
-  "unstable_clickOnEnter" | "unstable_clickOnSpace"
-> &
+export type unstable_FormInputOptions<
+  V,
+  P extends DeepPath<V, P>
+> = TabbableOptions &
   Pick<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "touched" | "errors" | "update" | "blur"
@@ -49,12 +49,7 @@ export const unstable_useFormInput = createHook<
   keys: ["name"],
 
   useOptions(options, { name }) {
-    return {
-      name,
-      ...options,
-      unstable_clickOnEnter: false,
-      unstable_clickOnSpace: false
-    };
+    return { name, ...options };
   },
 
   useProps(

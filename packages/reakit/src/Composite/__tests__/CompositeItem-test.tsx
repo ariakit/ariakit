@@ -29,7 +29,6 @@ test("render", () => {
   expect(container).toMatchInlineSnapshot(`
     <div>
       <button
-        data-tabbable="true"
         id="1"
         tabindex="-1"
       />
@@ -40,14 +39,13 @@ test("render", () => {
 test("render current", () => {
   const { container } = render(<CompositeItem {...props} id="2" />);
   expect(container).toMatchInlineSnapshot(`
-    <div>
-      <button
-        data-tabbable="true"
-        id="2"
-        tabindex="0"
-      />
-    </div>
-  `);
+<div>
+  <button
+    id="2"
+    tabindex="0"
+  />
+</div>
+`);
 });
 
 test("render without state props", () => {
@@ -56,7 +54,6 @@ test("render without state props", () => {
   expect(container).toMatchInlineSnapshot(`
 <div>
   <button
-    data-tabbable="true"
     id="1"
     tabindex="-1"
   />
@@ -86,7 +83,6 @@ test("render aria-activedescendant", () => {
   expect(container).toMatchInlineSnapshot(`
 <div>
   <button
-    data-tabbable="true"
     id="1"
     tabindex="-1"
   />
@@ -106,7 +102,6 @@ test("render aria-activedescendant current", () => {
 <div>
   <button
     aria-selected="true"
-    data-tabbable="true"
     id="2"
     tabindex="-1"
   />

@@ -592,7 +592,6 @@ test("push/remove button adds/removes entry and moves focus", async () => {
         role="form"
       >
         <button
-          data-tabbable="true"
           data-testid="push"
           id="form-people-push"
           type="button"
@@ -613,7 +612,6 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           aria-describedby="form-people-0-name-message"
           aria-invalid="false"
           aria-labelledby="form-people-0-name-label"
-          data-tabbable="true"
           id="form-people-0-name"
           name="people.0.name"
           placeholder="name0"
@@ -623,19 +621,16 @@ test("push/remove button adds/removes entry and moves focus", async () => {
           aria-describedby="form-people-0-email-message"
           aria-invalid="false"
           aria-labelledby="form-people-0-email-label"
-          data-tabbable="true"
           id="form-people-0-email"
           name="people.0.email"
           placeholder="email0"
           value=""
         />
         <button
-          data-tabbable="true"
           data-testid="remove0"
           type="button"
         />
         <button
-          data-tabbable="true"
           data-testid="push"
           id="form-people-push"
           type="button"
@@ -777,7 +772,6 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
     role="form"
   >
     <button
-      data-tabbable="true"
       data-testid="push"
       id="form-people-push"
       name="people"
@@ -800,7 +794,6 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
       aria-describedby="form-people-0-name-message"
       aria-invalid="false"
       aria-labelledby="form-people-0-name-label"
-      data-tabbable="true"
       id="form-people-0-name"
       name="people.0.name"
       placeholder="name0"
@@ -810,20 +803,17 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
       aria-describedby="form-people-0-email-message"
       aria-invalid="false"
       aria-labelledby="form-people-0-email-label"
-      data-tabbable="true"
       id="form-people-0-email"
       name="people.0.email"
       placeholder="email0"
       value=""
     />
     <button
-      data-tabbable="true"
       data-testid="remove0"
       name="people"
       type="button"
     />
     <button
-      data-tabbable="true"
       data-testid="push"
       id="form-people-push"
       name="people"
@@ -916,7 +906,6 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
         <input
           aria-checked="true"
           checked=""
-          data-tabbable="true"
           id="form-input-1"
           name="input"
           role="radio"
@@ -929,7 +918,6 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
       <label>
         <input
           aria-checked="false"
-          data-tabbable="true"
           id="form-input-2"
           name="input"
           role="radio"
@@ -942,7 +930,6 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
       <label>
         <input
           aria-checked="false"
-          data-tabbable="true"
           id="form-input-3"
           name="input"
           role="radio"
@@ -999,13 +986,11 @@ test("reset form after removing an item", async () => {
       aria-describedby="form-names-0-message"
       aria-invalid="false"
       aria-labelledby="form-names-0-label"
-      data-tabbable="true"
       id="form-names-0"
       name="names.0"
       value="a"
     />
     <button
-      data-tabbable="true"
       type="button"
     >
       remove
@@ -1015,13 +1000,11 @@ test("reset form after removing an item", async () => {
       aria-describedby="form-names-1-message"
       aria-invalid="false"
       aria-labelledby="form-names-1-label"
-      data-tabbable="true"
       id="form-names-1"
       name="names.1"
       value="b"
     />
     <button
-      data-tabbable="true"
       type="button"
     >
       remove
@@ -1031,13 +1014,11 @@ test("reset form after removing an item", async () => {
       aria-describedby="form-names-2-message"
       aria-invalid="false"
       aria-labelledby="form-names-2-label"
-      data-tabbable="true"
       id="form-names-2"
       name="names.2"
       value="c"
     />
     <button
-      data-tabbable="true"
       type="button"
     >
       remove

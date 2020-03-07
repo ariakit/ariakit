@@ -18,16 +18,6 @@ export type TabbableOptions = BoxOptions & {
    * `aria-disabled` will be set.
    */
   focusable?: boolean;
-  /**
-   * Whether or not trigger click on pressing <kbd>Enter</kbd>.
-   * @private
-   */
-  unstable_clickOnEnter?: boolean;
-  /**
-   * Whether or not trigger click on pressing <kbd>Space</kbd>.
-   * @private
-   */
-  unstable_clickOnSpace?: boolean;
 };
 
 export type TabbableHTMLProps = BoxHTMLProps & {
@@ -60,23 +50,10 @@ const isSafariOrFirefoxOnMac =
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
   compose: useBox,
-  keys: [
-    "disabled",
-    "focusable",
-    "unstable_clickOnEnter",
-    "unstable_clickOnSpace"
-  ],
+  keys: ["disabled", "focusable"],
 
-  useOptions(
-    { unstable_clickOnEnter = true, unstable_clickOnSpace = true, ...options },
-    { disabled }
-  ) {
-    return {
-      disabled,
-      unstable_clickOnEnter,
-      unstable_clickOnSpace,
-      ...options
-    };
+  useOptions(options, { disabled }) {
+    return { disabled, ...options };
   },
 
   useProps(
@@ -86,11 +63,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       tabIndex: htmlTabIndex,
       onClick: htmlOnClick,
       onMouseDown: htmlOnMouseDown,
-      onKeyDown: htmlOnKeyDown,
       style: htmlStyle,
-      "data-tabbable": isTabbableAlready,
       ...htmlProps
-    }: TabbableHTMLProps & { "data-tabbable"?: boolean }
+    }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const trulyDisabled = options.disabled && !options.focusable;
@@ -150,61 +125,20 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       [options.disabled, htmlOnMouseDown]
     );
 
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent) => {
-        if (htmlOnKeyDown) {
-          htmlOnKeyDown(event);
-        }
-
-        if (
-          event.defaultPrevented ||
-          options.disabled ||
-          (isNativeTabbable(event.currentTarget) && event.isTrusted) ||
-          // Native interactive elements don't get clicked on cmd+Enter/Space
-          event.metaKey ||
-          // This will be true if `useTabbable` has already been used.
-          // In this case, we don't want to .click() twice.
-          isTabbableAlready
-        ) {
-          return;
-        }
-
-        // Per the spec, space only triggers button click on key up.
-        // On key down, it triggers the :active state.
-        // Since we can't mimic this behavior, we trigger click on key down.
-        if (
-          (options.unstable_clickOnEnter && event.key === "Enter") ||
-          (options.unstable_clickOnSpace && event.key === " ")
-        ) {
-          event.preventDefault();
-          (event.target as HTMLElement).click();
-        }
-      },
-      [
-        isTabbableAlready,
-        options.disabled,
-        options.unstable_clickOnEnter,
-        options.unstable_clickOnSpace,
-        htmlOnKeyDown
-      ]
-    );
-
     return {
       ref: useForkRef(ref, htmlRef),
-      disabled: trulyDisabled,
-      tabIndex: trulyDisabled ? undefined : tabIndex,
-      "aria-disabled": options.disabled,
-      "data-tabbable": true,
       onClick,
       onMouseDown,
-      onKeyDown,
       style,
+      ...(trulyDisabled && nativeTabbable ? { disabled: true } : {}),
+      ...(options.disabled ? { "aria-disabled": true } : {}),
+      ...(trulyDisabled ? {} : { tabIndex }),
       ...htmlProps
     };
   }
 });
 
 export const Tabbable = createComponent({
-  as: "button",
+  as: "div",
   useHook: useTabbable
 });

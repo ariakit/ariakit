@@ -7,10 +7,10 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
-  TabbableOptions,
-  TabbableHTMLProps,
-  useTabbable
-} from "../Tabbable/Tabbable";
+  ClickableOptions,
+  ClickableHTMLProps,
+  useClickable
+} from "../Clickable/Clickable";
 import {
   unstable_useId,
   unstable_IdOptions,
@@ -18,7 +18,7 @@ import {
 } from "../Id/Id";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
-export type RoverOptions = TabbableOptions &
+export type RoverOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<Partial<RoverStateReturn>, "orientation" | "unstable_moves"> &
   Pick<
@@ -39,13 +39,13 @@ export type RoverOptions = TabbableOptions &
     stopId?: string;
   };
 
-export type RoverHTMLProps = TabbableHTMLProps & unstable_IdHTMLProps;
+export type RoverHTMLProps = ClickableHTMLProps & unstable_IdHTMLProps;
 
 export type RoverProps = RoverOptions & RoverHTMLProps;
 
 export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
-  compose: [useTabbable, unstable_useId],
+  compose: [useClickable, unstable_useId],
   useState: useRoverState,
   keys: ["stopId"],
 

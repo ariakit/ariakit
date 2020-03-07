@@ -26,7 +26,6 @@ test("render", () => {
       <div>
         <button
           aria-checked="false"
-          data-tabbable="true"
           id="item"
           role="menuitemradio"
           tabindex="-1"

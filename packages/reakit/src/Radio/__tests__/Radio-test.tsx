@@ -23,7 +23,6 @@ test("render", () => {
       <div>
         <input
           aria-checked="false"
-          data-tabbable="true"
           id="radio"
           role="radio"
           tabindex="-1"

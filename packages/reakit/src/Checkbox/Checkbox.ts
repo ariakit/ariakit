@@ -5,14 +5,14 @@ import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
-  TabbableOptions,
-  TabbableHTMLProps,
-  useTabbable
-} from "../Tabbable/Tabbable";
+  ClickableOptions,
+  ClickableHTMLProps,
+  useClickable
+} from "../Clickable/Clickable";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 import { useIndeterminateState } from "./__utils/useIndeterminateState";
 
-export type CheckboxOptions = TabbableOptions &
+export type CheckboxOptions = ClickableOptions &
   Pick<Partial<CheckboxStateReturn>, "state" | "setState"> & {
     /**
      * Checkbox's value is going to be used when multiple checkboxes share the
@@ -26,7 +26,7 @@ export type CheckboxOptions = TabbableOptions &
     checked?: boolean;
   };
 
-export type CheckboxHTMLProps = TabbableHTMLProps &
+export type CheckboxHTMLProps = ClickableHTMLProps &
   React.InputHTMLAttributes<any>;
 
 export type CheckboxProps = CheckboxOptions & CheckboxHTMLProps;
@@ -45,7 +45,7 @@ function getChecked(options: CheckboxOptions) {
 
 export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   name: "Checkbox",
-  compose: useTabbable,
+  compose: useClickable,
   useState: useCheckboxState,
   keys: ["value", "checked"],
 

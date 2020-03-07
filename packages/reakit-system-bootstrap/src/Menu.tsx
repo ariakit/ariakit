@@ -81,7 +81,8 @@ export function useMenuItemProps(
         box-shadow: none !important;
       }
 
-      &:active {
+      &:active,
+      &[data-active] {
         background-color: ${darkPrimary} !important;
       }
     }
