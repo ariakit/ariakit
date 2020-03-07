@@ -62,6 +62,7 @@ export function useButtonProps(
         background-color: ${hoverBackgroundColor};
       }
       &:active,
+      &[data-active],
       &[aria-expanded="true"] {
         color: ${activeColor};
         border-color: ${activeBorderColor};
