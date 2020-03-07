@@ -18,7 +18,6 @@ test("render", () => {
           aria-controls="base"
           aria-expanded="false"
           aria-haspopup="dialog"
-          data-tabbable="true"
           type="button"
         >
           disclosure
@@ -41,7 +40,6 @@ test("render visible", () => {
       aria-controls="base"
       aria-expanded="true"
       aria-haspopup="dialog"
-      data-tabbable="true"
       type="button"
     >
       disclosure

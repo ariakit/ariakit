@@ -82,7 +82,6 @@ test("markup", () => {
         <button
           aria-controls="base-tab1-panel"
           aria-selected="false"
-          data-tabbable="true"
           id="base-tab1"
           role="tab"
           tabindex="0"
@@ -92,7 +91,6 @@ test("markup", () => {
         <button
           aria-controls="base-tab2-panel"
           aria-selected="false"
-          data-tabbable="true"
           id="base-tab2"
           role="tab"
           tabindex="-1"
@@ -102,7 +100,6 @@ test("markup", () => {
         <button
           aria-controls="base-tab3-panel"
           aria-selected="false"
-          data-tabbable="true"
           id="base-tab3"
           role="tab"
           tabindex="-1"

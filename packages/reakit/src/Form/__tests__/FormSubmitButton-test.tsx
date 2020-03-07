@@ -10,7 +10,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          data-tabbable="true"
           type="submit"
         />
       </div>
@@ -27,7 +26,6 @@ test("disabled", () => {
   <div>
     <button
       aria-disabled="true"
-      data-tabbable="true"
       disabled=""
       style="pointer-events: none;"
       type="submit"

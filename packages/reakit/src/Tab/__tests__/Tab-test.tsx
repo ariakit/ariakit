@@ -26,7 +26,6 @@ test("render", () => {
         <button
           aria-controls="base-tab-panel"
           aria-selected="false"
-          data-tabbable="true"
           id="base-tab"
           role="tab"
           tabindex="-1"
@@ -50,7 +49,6 @@ test("render active", () => {
     <button
       aria-controls="base-tab-panel"
       aria-selected="false"
-      data-tabbable="true"
       id="base-tab"
       role="tab"
       tabindex="0"
@@ -74,7 +72,6 @@ test("render active selected", () => {
     <button
       aria-controls="base-tab-panel"
       aria-selected="true"
-      data-tabbable="true"
       id="base-tab"
       role="tab"
       tabindex="0"
@@ -95,7 +92,6 @@ test("render without state props", () => {
     <button
       aria-controls="test-panel"
       aria-selected="false"
-      data-tabbable="true"
       id="test"
       role="tab"
       tabindex="-1"

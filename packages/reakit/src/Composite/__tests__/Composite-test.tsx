@@ -36,7 +36,6 @@ test("render aria-activedescendant", () => {
 <div>
   <div
     aria-activedescendant="2"
-    data-tabbable="true"
     id="composite"
     tabindex="0"
   />

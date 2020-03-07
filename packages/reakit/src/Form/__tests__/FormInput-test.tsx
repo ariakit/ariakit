@@ -22,7 +22,6 @@ test("render", () => {
           aria-describedby="base-a-message"
           aria-invalid="false"
           aria-labelledby="base-a-label"
-          data-tabbable="true"
           id="base-a"
           name="a"
           value="b"

@@ -21,7 +21,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          data-tabbable="true"
           id="rover"
           tabindex="-1"
         >
@@ -39,7 +38,6 @@ test("render without state props", () => {
 <body>
   <div>
     <button
-      data-tabbable="true"
       id="rover"
       tabindex="-1"
     >
@@ -60,7 +58,6 @@ test("render currentId equals to stopId", () => {
 <body>
   <div>
     <button
-      data-tabbable="true"
       id="rover"
       tabindex="0"
     >

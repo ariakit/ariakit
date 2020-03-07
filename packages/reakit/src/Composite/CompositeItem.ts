@@ -10,10 +10,10 @@ import { getDocument } from "reakit-utils/getDocument";
 import { isTextField } from "reakit-utils/isTextField";
 import { scrollIntoViewIfNeeded } from "reakit-utils/scrollIntoViewIfNeeded";
 import {
-  TabbableOptions,
-  TabbableHTMLProps,
-  useTabbable
-} from "../Tabbable/Tabbable";
+  ClickableOptions,
+  ClickableHTMLProps,
+  useClickable
+} from "../Clickable/Clickable";
 import {
   unstable_useId,
   unstable_IdOptions,
@@ -25,7 +25,7 @@ import {
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 
-export type unstable_CompositeItemOptions = TabbableOptions &
+export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
@@ -57,7 +57,7 @@ export type unstable_CompositeItemOptions = TabbableOptions &
     stopId?: string;
   };
 
-export type unstable_CompositeItemHTMLProps = TabbableHTMLProps &
+export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
   unstable_IdHTMLProps;
 
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
@@ -81,7 +81,7 @@ export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemHTMLProps
 >({
   name: "CompositeItem",
-  compose: [useTabbable, unstable_useId],
+  compose: [useClickable, unstable_useId],
   useState: unstable_useCompositeState,
   keys: ["stopId"],
 
@@ -123,7 +123,7 @@ export const unstable_useCompositeItem = createHook<
 
     React.useEffect(() => {
       if (!id) return undefined;
-      options.registerItem?.({ id, ref, disabled: trulyDisabled });
+      options.registerItem?.({ id, ref, disabled: Boolean(trulyDisabled) });
       return () => {
         options.unregisterItem?.(id);
       };

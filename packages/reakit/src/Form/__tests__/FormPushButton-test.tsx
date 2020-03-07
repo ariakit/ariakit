@@ -16,7 +16,6 @@ test("render", () => {
     <body>
       <div>
         <button
-          data-tabbable="true"
           id="base-a-push"
           type="button"
         />

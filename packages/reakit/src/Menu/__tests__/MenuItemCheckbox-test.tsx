@@ -25,7 +25,6 @@ test("render", () => {
       <div>
         <button
           aria-checked="false"
-          data-tabbable="true"
           id="item"
           name="checkbox"
           role="menuitemcheckbox"

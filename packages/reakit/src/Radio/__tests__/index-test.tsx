@@ -108,7 +108,6 @@ test("group", () => {
         <label>
           <input
             aria-checked="false"
-            data-tabbable="true"
             id="base-1"
             role="radio"
             tabindex="0"
@@ -120,7 +119,6 @@ test("group", () => {
         <label>
           <input
             aria-checked="false"
-            data-tabbable="true"
             id="base-2"
             role="radio"
             tabindex="-1"
@@ -132,7 +130,6 @@ test("group", () => {
         <label>
           <input
             aria-checked="false"
-            data-tabbable="true"
             id="base-3"
             role="radio"
             tabindex="-1"

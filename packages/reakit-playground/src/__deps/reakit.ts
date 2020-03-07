@@ -95,6 +95,8 @@ export default {
   "reakit/Composite/CompositeItem": require("reakit/Composite/CompositeItem"),
   "reakit/Composite/CompositeGroup": require("reakit/Composite/CompositeGroup"),
   "reakit/Composite/Composite": require("reakit/Composite/Composite"),
+  "reakit/Clickable": require("reakit/Clickable"),
+  "reakit/Clickable/Clickable": require("reakit/Clickable/Clickable"),
   "reakit/Checkbox": require("reakit/Checkbox"),
   "reakit/Checkbox/CheckboxState": require("reakit/Checkbox/CheckboxState"),
   "reakit/Checkbox/Checkbox": require("reakit/Checkbox/Checkbox"),

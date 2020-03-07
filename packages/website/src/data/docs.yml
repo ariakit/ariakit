@@ -27,6 +27,7 @@
 - section: Abstract components
   paths:
     - /docs/box/
+    - /docs/clickable/
     - /docs/id/
     - /docs/portal/
     - /docs/rover/
