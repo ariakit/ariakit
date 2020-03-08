@@ -131,7 +131,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Checkbox` uses [Tabbable](/docs/tabbable/), and is used by [FormCheckbox](/docs/form/) and [MenuItemCheckbox](/docs/menu/).
+- `Checkbox` uses [Clickable](/docs/clickable/), and is used by [FormCheckbox](/docs/form/) and [MenuItemCheckbox](/docs/menu/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

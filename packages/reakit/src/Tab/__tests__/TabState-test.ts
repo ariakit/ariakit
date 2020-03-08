@@ -22,7 +22,7 @@ test("initial state", () => {
       "orientation": undefined,
       "panels": Array [],
       "rtl": false,
-      "selectedId": null,
+      "selectedId": undefined,
       "unstable_focusStrategy": "roving-tabindex",
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
@@ -31,35 +31,4 @@ test("initial state", () => {
       "unstable_moves": 0,
     }
   `);
-});
-
-test("initial state selectedId", () => {
-  const result = render({ selectedId: "a" });
-  expect(result.current).toMatchInlineSnapshot(
-    {
-      currentId: "a",
-      selectedId: "a"
-    },
-    `
-    Object {
-      "baseId": "base",
-      "currentId": "a",
-      "focusWrap": false,
-      "groups": Array [],
-      "items": Array [],
-      "loop": true,
-      "manual": false,
-      "orientation": undefined,
-      "panels": Array [],
-      "rtl": false,
-      "selectedId": "a",
-      "unstable_focusStrategy": "roving-tabindex",
-      "unstable_hasActiveWidget": false,
-      "unstable_idCountRef": Object {
-        "current": 0,
-      },
-      "unstable_moves": 0,
-    }
-  `
-  );
 });

@@ -38,16 +38,47 @@ export type TabPanelHTMLProps = DisclosureContentHTMLProps &
 
 export type TabPanelProps = TabPanelOptions & TabPanelHTMLProps;
 
-function getTabId({ panels, id, tabId, stopId, items }: TabPanelOptions) {
-  const panel = panels?.find(p => p.id === id);
-  const maybeId = panel?.groupId || tabId || stopId;
-  if (panels && items && panel && !maybeId) {
-    const tabIds = panels.map(p => p.groupId).filter(Boolean);
-    const index = panels.filter(p => !p.groupId).indexOf(panel);
-    const filteredItems = items.filter(i => tabIds.indexOf(i.id) === -1);
-    return filteredItems[index]?.id;
+function getTabsWithoutPanel(
+  tabs: TabPanelOptions["items"],
+  panels: TabPanelOptions["panels"]
+) {
+  const panelsTabIds = panels.map(panel => panel.groupId).filter(Boolean);
+  return tabs.filter(item => panelsTabIds.indexOf(item.id) === -1);
+}
+
+function getPanelIndex(
+  panels: TabPanelOptions["panels"],
+  panel: typeof panels[number]
+) {
+  const panelsWithoutTabId = panels.filter(p => !p.groupId);
+  return panelsWithoutTabId.indexOf(panel);
+}
+
+/**
+ * When <TabPanel> is used without tabId:
+ *
+ *  - First render: getTabId will return undefined because options.panels
+ * doesn't contain the current panel yet (registerPanel wasn't called yet).
+ * Thus registerPanel will be called without groupId (tabId).
+ *
+ *  - Second render: options.panels already contains the current panel (because
+ * registerPanel was called in the previous render). This means that we'll be
+ * able to get the related tabId with the tab panel index. Basically,
+ * we filter out all the tabs and panels that have already matched. In this
+ * phase, registerPanel will be called again with the proper groupId (tabId).
+ *
+ *  - In the third render, panel.groupId will be already defined, so we just
+ * return it. registerPanel is not called.
+ */
+function getTabId(options: TabPanelOptions) {
+  const panel = options.panels?.find(p => p.id === options.id);
+  const tabId = options.tabId || options.stopId || panel?.groupId;
+  if (tabId || !panel || !options.panels || !options.items) {
+    return tabId;
   }
-  return maybeId;
+  const panelIndex = getPanelIndex(options.panels, panel);
+  const tabsWithoutPanel = getTabsWithoutPanel(options.items, options.panels);
+  return tabsWithoutPanel[panelIndex].id;
 }
 
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
@@ -68,17 +99,17 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
       "See https://reakit.io/docs/tab"
     );
 
-    const { id } = options;
-    const tabId = getTabId(options);
     const ref = React.useRef<HTMLElement>(null);
+    const tabId = getTabId(options);
+    const { id, registerPanel, unregisterPanel } = options;
 
     React.useEffect(() => {
       if (!id) return undefined;
-      options.registerPanel?.({ id, ref, groupId: tabId });
+      registerPanel?.({ id, ref, groupId: tabId });
       return () => {
-        options.unregisterPanel?.(id);
+        unregisterPanel?.(id);
       };
-    }, [tabId, id, options.registerPanel, options.unregisterPanel]);
+    }, [tabId, id, registerPanel, unregisterPanel]);
 
     return {
       ref: useForkRef(ref, htmlRef),

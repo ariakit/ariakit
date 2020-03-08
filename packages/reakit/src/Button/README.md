@@ -139,7 +139,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Button` uses [Tabbable](/docs/tabbable/), and is used by [FormPushButton](/docs/form/), [FormRemoveButton](/docs/form/), [Disclosure](/docs/disclosure/) and all their derivatives.
+- `Button` uses [Clickable](/docs/clickable/), and is used by [FormPushButton](/docs/form/), [FormRemoveButton](/docs/form/), [Disclosure](/docs/disclosure/) and all their derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

@@ -24,6 +24,28 @@ test("first tab is selected", () => {
   expect($("tabpanel3")).not.toBeVisible();
 });
 
+test("first tab is selected with tablist below", () => {
+  const Test = () => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel1")).toBeVisible();
+  expect($("tabpanel2")).not.toBeVisible();
+  expect($("tabpanel3")).not.toBeVisible();
+});
+
 test("focusing tab reveals the panel", () => {
   const Test = () => {
     const tab = useTabState();
@@ -138,6 +160,30 @@ test("tab is selected based on the value of selectedId", () => {
   expect($("tabpanel3")).not.toBeVisible();
 });
 
+test("tab is selected based on the value of selectedId with tablist below", () => {
+  const Test = () => {
+    const tab = useTabState({ selectedId: "tab2" });
+    return (
+      <>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab} id="tab2">
+            tab2
+          </Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel1")).not.toBeVisible();
+  expect($("tabpanel2")).toBeVisible();
+  expect($("tabpanel3")).not.toBeVisible();
+});
+
 test("no tab is selected if selectedId is null", () => {
   const Test = () => {
     const tab = useTabState({ selectedId: null });
@@ -175,6 +221,34 @@ test("select the last selected tab when the current one is unmounted", () => {
         {renderTab2 && <TabPanel {...tab}>tabpanel2</TabPanel>}
         <TabPanel {...tab}>tabpanel3</TabPanel>
         <TabPanel {...tab}>tabpanel4</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $, rerender } = render(<Test renderTab2 />);
+  expect($("tabpanel1")).toBeVisible();
+  click($("tab4"));
+  expect($("tabpanel4")).toBeVisible();
+  click($("tab2"));
+  expect($("tabpanel2")).toBeVisible();
+  rerender(<Test />);
+  expect($("tabpanel4")).toBeVisible();
+});
+
+test("select the last selected tab when the current one is unmounted with tablist below", () => {
+  const Test = ({ renderTab2 = false }) => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        {renderTab2 && <TabPanel {...tab}>tabpanel2</TabPanel>}
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+        <TabPanel {...tab}>tabpanel4</TabPanel>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          {renderTab2 && <Tab {...tab}>tab2</Tab>}
+          <Tab {...tab}>tab3</Tab>
+          <Tab {...tab}>tab4</Tab>
+        </TabList>
       </>
     );
   };

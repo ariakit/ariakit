@@ -1,11 +1,13 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { TabPanel } from "../TabPanel";
+import { TabPanel, TabPanelProps } from "../TabPanel";
 
-const props: Parameters<typeof TabPanel>[0] = {
-  baseId: "base",
-  stopId: "tab",
-  selectedId: null
+const props: TabPanelProps = {
+  id: "panel",
+  registerPanel: jest.fn(),
+  unregisterPanel: jest.fn(),
+  panels: [],
+  items: []
 };
 
 test("render", () => {
@@ -16,51 +18,9 @@ test("render", () => {
         <div
           class="hidden"
           hidden=""
-          id="base"
+          id="panel"
           role="tabpanel"
           style="display: none;"
-          tabindex="0"
-        >
-          tabpanel
-        </div>
-      </div>
-    </body>
-  `);
-});
-
-test("render visible", () => {
-  const { baseElement } = render(
-    <TabPanel {...props} visible>
-      tabpanel
-    </TabPanel>
-  );
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          id="base"
-          role="tabpanel"
-          tabindex="0"
-        >
-          tabpanel
-        </div>
-      </div>
-    </body>
-  `);
-});
-
-test("render selected", () => {
-  const { baseElement } = render(
-    <TabPanel {...props} selectedId="tab">
-      tabpanel
-    </TabPanel>
-  );
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          id="base"
-          role="tabpanel"
           tabindex="0"
         >
           tabpanel
@@ -72,42 +32,42 @@ test("render selected", () => {
 
 test("render without state props", () => {
   // @ts-ignore
-  const { baseElement } = render(<TabPanel>tabpanel</TabPanel>);
+  const { baseElement } = render(<TabPanel id="panel">tabpanel</TabPanel>);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          class="hidden"
-          hidden=""
-          id="id-a5pmrk"
-          role="tabpanel"
-          style="display: none;"
-          tabindex="0"
-        >
-          tabpanel
-        </div>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <div
+      class="hidden"
+      hidden=""
+      id="panel"
+      role="tabpanel"
+      style="display: none;"
+      tabindex="0"
+    >
+      tabpanel
+    </div>
+  </div>
+</body>
+`);
 });
 
-test("render without state props with id", () => {
-  // @ts-ignore
-  const { baseElement } = render(<TabPanel id="test">tabpanel</TabPanel>);
+test("render visible", () => {
+  const { baseElement } = render(
+    <TabPanel {...props} visible>
+      tabpanel
+    </TabPanel>
+  );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          class="hidden"
-          hidden=""
-          id="test"
-          role="tabpanel"
-          style="display: none;"
-          tabindex="0"
-        >
-          tabpanel
-        </div>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <div
+      id="panel"
+      role="tabpanel"
+      tabindex="0"
+    >
+      tabpanel
+    </div>
+  </div>
+</body>
+`);
 });
