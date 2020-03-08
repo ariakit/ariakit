@@ -256,16 +256,6 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-- **`items`**
-  <code>Item[]</code>
-
-  Lists all the composite items.
-
-- **`groups`**
-  <code>Group[]</code>
-
-  Lists all the composite groups.
-
 - **`currentId`**
   <code>string | null</code>
 
@@ -296,11 +286,6 @@ direction:
   <code>string | null | undefined</code>
 
   The current selected tab's `id`.
-
-- **`panels`**
-  <code>Item[]</code>
-
-  Lists all the panels.
 
 - **`manual`**
   <code>boolean</code>
@@ -352,15 +337,15 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-- **`items`**
-  <code>Item[]</code>
-
-  Lists all the composite items.
-
 - **`currentId`**
   <code>string | null</code>
 
   The current focused item ID.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items.
 
 - **`setCurrentId`**
   <code>(value: SetStateAction&#60;string | null&#62;) =&#62; void</code>
@@ -457,15 +442,15 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
-- **`items`**
-  <code>Item[]</code>
-
-  Lists all the composite items.
-
 - **`currentId`**
   <code>string | null</code>
 
   The current focused item ID.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -526,15 +511,15 @@ given milliseconds.
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
 
-- **`items`**
-  <code>Item[]</code>
-
-  Lists all the composite items.
-
 - **`selectedId`**
   <code>string | null | undefined</code>
 
   The current selected tab's `id`.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items.
 
 - **`panels`**
   <code>Item[]</code>
