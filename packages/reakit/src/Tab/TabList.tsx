@@ -3,22 +3,22 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import {
-  unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps,
-  unstable_useIdGroup
-} from "../Id/IdGroup";
+  unstable_CompositeOptions,
+  unstable_CompositeHTMLProps,
+  unstable_useComposite
+} from "../Composite/Composite";
 import { useTabState, TabStateReturn } from "./TabState";
 
-export type TabListOptions = unstable_IdGroupOptions &
+export type TabListOptions = unstable_CompositeOptions &
   Pick<Partial<TabStateReturn>, "orientation">;
 
-export type TabListHTMLProps = unstable_IdGroupHTMLProps;
+export type TabListHTMLProps = unstable_CompositeHTMLProps;
 
 export type TabListProps = TabListOptions & TabListHTMLProps;
 
 export const useTabList = createHook<TabListOptions, TabListHTMLProps>({
   name: "TabList",
-  compose: unstable_useIdGroup,
+  compose: unstable_useComposite,
   useState: useTabState,
 
   useProps(options, htmlProps) {

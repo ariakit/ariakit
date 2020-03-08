@@ -14,10 +14,9 @@ test("render", () => {
     <body>
       <div>
         <div
-          aria-labelledby="base-tab"
           class="hidden"
           hidden=""
-          id="base-tab-panel"
+          id="base"
           role="tabpanel"
           style="display: none;"
           tabindex="0"
@@ -39,8 +38,7 @@ test("render visible", () => {
     <body>
       <div>
         <div
-          aria-labelledby="base-tab"
-          id="base-tab-panel"
+          id="base"
           role="tabpanel"
           tabindex="0"
         >
@@ -61,8 +59,7 @@ test("render selected", () => {
     <body>
       <div>
         <div
-          aria-labelledby="base-tab"
-          id="base-tab-panel"
+          id="base"
           role="tabpanel"
           tabindex="0"
         >
@@ -80,7 +77,11 @@ test("render without state props", () => {
     <body>
       <div>
         <div
+          class="hidden"
+          hidden=""
+          id="id-a5pmrk"
           role="tabpanel"
+          style="display: none;"
           tabindex="0"
         >
           tabpanel
@@ -97,8 +98,11 @@ test("render without state props with id", () => {
     <body>
       <div>
         <div
+          class="hidden"
+          hidden=""
           id="test"
           role="tabpanel"
+          style="display: none;"
           tabindex="0"
         >
           tabpanel

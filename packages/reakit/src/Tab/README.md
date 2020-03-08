@@ -33,9 +33,7 @@ function Example() {
   return (
     <>
       <TabList {...tab} aria-label="My tabs">
-        <Tab {...tab} stopId="tab1">
-          Tab 1
-        </Tab>
+        <Tab {...tab}>Tab 1</Tab>
         <Tab {...tab} stopId="tab2" disabled>
           Tab 2
         </Tab>
@@ -43,9 +41,7 @@ function Example() {
           Tab 3
         </Tab>
       </TabList>
-      <TabPanel {...tab} stopId="tab1">
-        Tab 1
-      </TabPanel>
+      <TabPanel {...tab}>Tab 1</TabPanel>
       <TabPanel {...tab} stopId="tab2">
         Tab 2
       </TabPanel>

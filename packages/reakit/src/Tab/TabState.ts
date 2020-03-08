@@ -3,60 +3,156 @@ import {
   SealedInitialState,
   useSealedState
 } from "reakit-utils/useSealedState";
-import { useRoverState, RoverState, RoverActions } from "../Rover/RoverState";
+import {
+  unstable_useCompositeState as useCompositeState,
+  unstable_CompositeState as CompositeState,
+  unstable_CompositeActions as CompositeActions
+} from "../Composite/CompositeState";
 
-export type TabState = RoverState & {
+export type TabState = CompositeState & {
   /**
-   * The current selected tab's `stopId`.
+   * The current selected tab's `id`.
    */
-  selectedId: RoverState["currentId"];
+  selectedId?: TabState["currentId"];
+  /**
+   * Lists all the panels.
+   */
+  panels: TabState["items"];
   /**
    * Whether the tab selection should be manual.
    */
   manual: boolean;
 };
 
-export type TabActions = RoverActions & {
+export type TabActions = CompositeActions & {
   /**
-   * Selects a tab by its `stopId`.
+   * Moves into and selects a tab by its `id`.
    */
-  select: (id: TabState["selectedId"]) => void;
+  select: TabActions["move"];
+  /**
+   * Sets `selectedId`.
+   */
+  setSelectedId: TabActions["setCurrentId"];
+  /**
+   * Registers a tab panel.
+   */
+  registerPanel: TabActions["registerItem"];
+  /**
+   * Unregisters a tab panel.
+   */
+  unregisterPanel: TabActions["unregisterItem"];
 };
 
 export type TabInitialState = Partial<TabState>;
 
 export type TabStateReturn = TabState & TabActions;
 
+function useUnregisterItem(
+  composite: CompositeActions,
+  selectedId: TabState["selectedId"],
+  select: TabActions["select"]
+) {
+  const [id, setId] = React.useState<typeof selectedId>(null);
+  const history = React.useRef<string[]>([]);
+
+  // Asynchronously calls composite.unregisterItem so we can select another id
+  // on `unregisterItem` below before composite.unregisterItem is called. This
+  // is necessary so useTabState can take control over which tab is selected
+  // when the current selected tab is unmounted.
+  React.useEffect(() => {
+    if (!id) return;
+    composite.unregisterItem(id);
+  }, [id, composite.unregisterItem]);
+
+  // Keeps record of the selectedId history
+  React.useEffect(() => {
+    if (!selectedId) return;
+    history.current = [
+      selectedId,
+      ...history.current.filter(i => i !== selectedId)
+    ];
+  }, [selectedId]);
+
+  const unregisterItem = React.useCallback(
+    (itemId: string) => {
+      const filtered = history.current.filter(i => i !== itemId);
+      // Sets id to get asynchronously unregistered
+      setId(itemId);
+      // Selects the previously selected id if the unregistered id is the
+      // current one
+      if (history.current[0] === itemId) {
+        select(filtered[0]);
+      }
+      history.current = filtered;
+    },
+    [select]
+  );
+
+  return unregisterItem;
+}
+
 export function useTabState(
   initialState: SealedInitialState<TabInitialState> = {}
 ): TabStateReturn {
   const {
-    selectedId: sealedSelectedId = null,
+    selectedId: initialSelectedId,
     loop = true,
     manual = false,
     ...sealed
   } = useSealedState(initialState);
 
-  const [selectedId, select] = React.useState(sealedSelectedId);
-  const rover = useRoverState({
+  const composite = useCompositeState({
     loop,
-    currentId: selectedId,
+    currentId: initialSelectedId,
     ...sealed
   });
+  const panels = useCompositeState();
+  const [selectedId, setSelectedId] = React.useState(initialSelectedId);
+
+  const select = React.useCallback(
+    (id: string) => {
+      setSelectedId(id);
+      composite.move(id);
+    },
+    [composite.move]
+  );
+
+  const unregisterItem = useUnregisterItem(composite, selectedId, select);
+
+  // If selectedId is not set, use the currentId. It still possible to have no
+  // selected tab with useTabState({ selectedId: null });
+  React.useEffect(() => {
+    if (typeof selectedId === "undefined" && composite.currentId) {
+      setSelectedId(composite.currentId);
+    }
+  }, [selectedId, composite.currentId]);
 
   return {
-    ...rover,
+    ...composite,
     selectedId,
+    panels: panels.items,
     manual,
-    select
+    select,
+    setSelectedId,
+    unregisterItem,
+    registerPanel: React.useCallback(panel => panels.registerItem(panel), [
+      panels.registerItem
+    ]),
+    unregisterPanel: React.useCallback(id => panels.unregisterItem(id), [
+      panels.unregisterItem
+    ])
   };
 }
 
 const keys: Array<keyof TabStateReturn> = [
-  ...useRoverState.__keys,
+  ...useCompositeState.__keys,
   "selectedId",
+  "panels",
+  "manual",
   "select",
-  "manual"
+  "setSelectedId",
+  "registerPanel",
+  "unregisterPanel"
 ];
 
 useTabState.__keys = keys;

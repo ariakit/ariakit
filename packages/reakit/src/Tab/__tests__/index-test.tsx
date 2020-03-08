@@ -1,106 +1,271 @@
 import * as React from "react";
 import { render, focus, click } from "reakit-test-utils";
-import { Tab, TabList, TabPanel, useTabState, TabInitialState } from "..";
+import { Tab, TabList, TabPanel, useTabState } from "..";
 
-function SimpleTest(props: TabInitialState = {}) {
-  const tab = useTabState(props);
-  return (
-    <>
-      <TabList {...tab} aria-label="tablist">
-        <Tab {...tab} stopId="tab1">
-          tab1
-        </Tab>
-        <Tab {...tab} stopId="tab2">
-          tab2
-        </Tab>
-        <Tab {...tab} stopId="tab3">
-          tab3
-        </Tab>
-      </TabList>
-      <TabPanel {...tab} stopId="tab1">
-        tabpanel1
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab2">
-        tabpanel2
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab3">
-        tabpanel3
-      </TabPanel>
-    </>
-  );
-}
-
-test("no tab is selected", () => {
-  const { getByText } = render(<SimpleTest />);
-  const tabpanel1 = getByText("tabpanel1");
-  const tabpanel2 = getByText("tabpanel2");
-  const tabpanel3 = getByText("tabpanel3");
-  expect(tabpanel1).not.toBeVisible();
-  expect(tabpanel2).not.toBeVisible();
-  expect(tabpanel3).not.toBeVisible();
+test("first tab is selected", () => {
+  const Test = () => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel1")).toBeVisible();
+  expect($("tabpanel2")).not.toBeVisible();
+  expect($("tabpanel3")).not.toBeVisible();
 });
 
 test("focusing tab reveals the panel", () => {
-  const { getByText } = render(<SimpleTest />);
-  const tab1 = getByText("tab1");
-  const tabpanel1 = getByText("tabpanel1");
-  const tabpanel2 = getByText("tabpanel2");
-  const tabpanel3 = getByText("tabpanel3");
-  expect(tabpanel1).not.toBeVisible();
-  focus(tab1);
-  expect(tabpanel1).toBeVisible();
-  expect(tabpanel2).not.toBeVisible();
-  expect(tabpanel3).not.toBeVisible();
+  const Test = () => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel2")).not.toBeVisible();
+  focus($("tab2"));
+  expect($("tabpanel1")).not.toBeVisible();
+  expect($("tabpanel2")).toBeVisible();
+  expect($("tabpanel3")).not.toBeVisible();
 });
 
-test("focusing tab does not reveal the panel when manual is truthy", () => {
-  const { getByText } = render(<SimpleTest manual />);
-  const tab2 = getByText("tab2");
-  const tabpanel2 = getByText("tabpanel2");
-  expect(tabpanel2).not.toBeVisible();
-  focus(tab2);
-  expect(tabpanel2).not.toBeVisible();
+test("focusing tab does not reveal the panel when manual is true", () => {
+  const Test = () => {
+    const tab = useTabState({ manual: true });
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel2")).not.toBeVisible();
+  focus($("tab2"));
+  expect($("tabpanel2")).not.toBeVisible();
 });
 
 test("clicking on tab reveals the panel", () => {
-  const { getByText } = render(<SimpleTest />);
-  const tab3 = getByText("tab3");
-  const tabpanel3 = getByText("tabpanel3");
-  expect(tabpanel3).not.toBeVisible();
-  click(tab3);
-  expect(tabpanel3).toBeVisible();
+  const Test = () => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel3")).not.toBeVisible();
+  click($("tab3"));
+  expect($("tabpanel3")).toBeVisible();
 });
 
-test("markup", () => {
-  const { container } = render(<SimpleTest baseId="base" />);
+test("clicking on tab reveals the panel when manual is true", () => {
+  const Test = () => {
+    const tab = useTabState({ manual: true });
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel3")).not.toBeVisible();
+  click($("tab3"));
+  expect($("tabpanel3")).toBeVisible();
+});
+
+test("tab is selected based on the value of selectedId", () => {
+  const Test = () => {
+    const tab = useTabState({ selectedId: "tab2" });
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab} id="tab2">
+            tab2
+          </Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel1")).not.toBeVisible();
+  expect($("tabpanel2")).toBeVisible();
+  expect($("tabpanel3")).not.toBeVisible();
+});
+
+test("no tab is selected if selectedId is null", () => {
+  const Test = () => {
+    const tab = useTabState({ selectedId: null });
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  expect($("tabpanel1")).not.toBeVisible();
+  expect($("tabpanel2")).not.toBeVisible();
+  expect($("tabpanel3")).not.toBeVisible();
+});
+
+test("select the last selected tab when the current one is unmounted", () => {
+  const Test = ({ renderTab2 = false }) => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          {renderTab2 && <Tab {...tab}>tab2</Tab>}
+          <Tab {...tab}>tab3</Tab>
+          <Tab {...tab}>tab4</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        {renderTab2 && <TabPanel {...tab}>tabpanel2</TabPanel>}
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+        <TabPanel {...tab}>tabpanel4</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $, rerender } = render(<Test renderTab2 />);
+  expect($("tabpanel1")).toBeVisible();
+  click($("tab4"));
+  expect($("tabpanel4")).toBeVisible();
+  click($("tab2"));
+  expect($("tabpanel2")).toBeVisible();
+  rerender(<Test />);
+  expect($("tabpanel4")).toBeVisible();
+});
+
+test("select the last selected tab when the current one is unmounted when manual is true", () => {
+  const Test = ({ renderTab2 = false }) => {
+    const tab = useTabState({ manual: true });
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          {renderTab2 && <Tab {...tab}>tab2</Tab>}
+          <Tab {...tab}>tab3</Tab>
+          <Tab {...tab}>tab4</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        {renderTab2 && <TabPanel {...tab}>tabpanel2</TabPanel>}
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+        <TabPanel {...tab}>tabpanel4</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $, rerender } = render(<Test renderTab2 />);
+  expect($("tabpanel1")).toBeVisible();
+  click($("tab4"));
+  expect($("tabpanel4")).toBeVisible();
+  click($("tab2"));
+  expect($("tabpanel2")).toBeVisible();
+  rerender(<Test />);
+  expect($("tabpanel4")).toBeVisible();
+});
+
+test("tab panel with tabId different order", () => {
+  const Test = () => {
+    const tab = useTabState({ baseId: "base" });
+    return (
+      <>
+        <TabList {...tab} aria-label="tablist">
+          <Tab {...tab} id="tab1">
+            tab1
+          </Tab>
+          <Tab {...tab}>tab2</Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab} tabId="tab1">
+          tabpanel1
+        </TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { container } = render(<Test />);
   expect(container).toMatchInlineSnapshot(`
     <div>
       <div
         aria-label="tablist"
+        id="base"
         role="tablist"
       >
         <button
-          aria-controls="base-tab1-panel"
-          aria-selected="false"
-          id="base-tab1"
+          aria-controls="base-5"
+          aria-selected="true"
+          id="tab1"
           role="tab"
           tabindex="0"
         >
           tab1
         </button>
         <button
-          aria-controls="base-tab2-panel"
+          aria-controls="base-4"
           aria-selected="false"
-          id="base-tab2"
+          id="base-2"
           role="tab"
           tabindex="-1"
         >
           tab2
         </button>
         <button
-          aria-controls="base-tab3-panel"
+          aria-controls="base-6"
           aria-selected="false"
-          id="base-tab3"
+          id="base-3"
           role="tab"
           tabindex="-1"
         >
@@ -108,21 +273,10 @@ test("markup", () => {
         </button>
       </div>
       <div
-        aria-labelledby="base-tab1"
+        aria-labelledby="base-2"
         class="hidden"
         hidden=""
-        id="base-tab1-panel"
-        role="tabpanel"
-        style="display: none;"
-        tabindex="0"
-      >
-        tabpanel1
-      </div>
-      <div
-        aria-labelledby="base-tab2"
-        class="hidden"
-        hidden=""
-        id="base-tab2-panel"
+        id="base-4"
         role="tabpanel"
         style="display: none;"
         tabindex="0"
@@ -130,10 +284,19 @@ test("markup", () => {
         tabpanel2
       </div>
       <div
-        aria-labelledby="base-tab3"
+        aria-labelledby="tab1"
+        id="base-5"
+        role="tabpanel"
+        style=""
+        tabindex="0"
+      >
+        tabpanel1
+      </div>
+      <div
+        aria-labelledby="base-3"
         class="hidden"
         hidden=""
-        id="base-tab3-panel"
+        id="base-6"
         role="tabpanel"
         style="display: none;"
         tabindex="0"

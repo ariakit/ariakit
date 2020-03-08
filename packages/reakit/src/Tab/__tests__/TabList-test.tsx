@@ -13,6 +13,7 @@ test("render", () => {
       <div>
         <div
           aria-label="tablist"
+          id="id-f3t0fi"
           role="tablist"
         >
           tablist
@@ -34,6 +35,7 @@ test("render orientation", () => {
         <div
           aria-label="tablist"
           aria-orientation="horizontal"
+          id="id-iqsgqj"
           role="tablist"
         >
           tablist

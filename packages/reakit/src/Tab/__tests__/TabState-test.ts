@@ -14,16 +14,21 @@ test("initial state", () => {
     Object {
       "baseId": "base",
       "currentId": null,
+      "focusWrap": false,
+      "groups": Array [],
+      "items": Array [],
       "loop": true,
       "manual": false,
       "orientation": undefined,
+      "panels": Array [],
+      "rtl": false,
       "selectedId": null,
-      "stops": Array [],
+      "unstable_focusStrategy": "roving-tabindex",
+      "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
       "unstable_moves": 0,
-      "unstable_pastId": null,
     }
   `);
 });
@@ -39,16 +44,21 @@ test("initial state selectedId", () => {
     Object {
       "baseId": "base",
       "currentId": "a",
+      "focusWrap": false,
+      "groups": Array [],
+      "items": Array [],
       "loop": true,
       "manual": false,
       "orientation": undefined,
+      "panels": Array [],
+      "rtl": false,
       "selectedId": "a",
-      "stops": Array [],
+      "unstable_focusStrategy": "roving-tabindex",
+      "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
       "unstable_moves": 0,
-      "unstable_pastId": null,
     }
   `
   );

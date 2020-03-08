@@ -26,8 +26,9 @@ test("render", () => {
         <button
           aria-controls="base-tab-panel"
           aria-selected="false"
-          id="base-tab"
+          id="tab"
           role="tab"
+          stops=""
           tabindex="-1"
         >
           tab
@@ -44,20 +45,21 @@ test("render active", () => {
     </Tab>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="base-tab-panel"
-      aria-selected="false"
-      id="base-tab"
-      role="tab"
-      tabindex="0"
-    >
-      tab
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="base-tab-panel"
+          aria-selected="false"
+          id="tab"
+          role="tab"
+          stops=""
+          tabindex="0"
+        >
+          tab
+        </button>
+      </div>
+    </body>
+  `);
 });
 
 test("render active selected", () => {
@@ -67,20 +69,21 @@ test("render active selected", () => {
     </Tab>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      aria-controls="base-tab-panel"
-      aria-selected="true"
-      id="base-tab"
-      role="tab"
-      tabindex="0"
-    >
-      tab
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          aria-controls="base-tab-panel"
+          aria-selected="true"
+          id="tab"
+          role="tab"
+          stops=""
+          tabindex="0"
+        >
+          tab
+        </button>
+      </div>
+    </body>
+  `);
 });
 
 test("render without state props", () => {

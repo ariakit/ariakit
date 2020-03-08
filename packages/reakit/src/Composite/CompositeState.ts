@@ -140,36 +140,44 @@ export type unstable_CompositeActions = unstable_IdActions & {
   /**
    * Sets `rtl`.
    */
-  setRTL: React.Dispatch<unstable_CompositeState["rtl"]>;
+  setRTL: React.Dispatch<React.SetStateAction<unstable_CompositeState["rtl"]>>;
   /**
    * Sets `orientation`.
    */
-  setOrientation: React.Dispatch<unstable_CompositeState["orientation"]>;
+  setOrientation: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["orientation"]>
+  >;
   /**
    * Sets `currentId`.
    */
-  setCurrentId: React.Dispatch<unstable_CompositeState["currentId"]>;
+  setCurrentId: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["currentId"]>
+  >;
   /**
    * Sets `loop`.
    */
-  setLoop: React.Dispatch<unstable_CompositeState["loop"]>;
+  setLoop: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["loop"]>
+  >;
   /**
    * Sets `focusWrap`.
    */
-  setFocusWrap: React.Dispatch<unstable_CompositeState["focusWrap"]>;
+  setFocusWrap: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["focusWrap"]>
+  >;
   /**
    * Sets `focusStrategy`.
    * @private
    */
   unstable_setFocusStrategy: React.Dispatch<
-    unstable_CompositeState["unstable_focusStrategy"]
+    React.SetStateAction<unstable_CompositeState["unstable_focusStrategy"]>
   >;
   /**
    * Sets `hasFocusInsideItem`.
    * @private
    */
   unstable_setHasActiveWidget: React.Dispatch<
-    unstable_CompositeState["unstable_hasActiveWidget"]
+    React.SetStateAction<unstable_CompositeState["unstable_hasActiveWidget"]>
   >;
 };
 
@@ -298,7 +306,7 @@ function reducer(
       // Finds the item group based on the DOM hierarchy
       const group = groups.find(r => r.ref.current?.contains(item.ref.current));
       // Group will be null if it's a one-dimensional composite
-      const nextItem = { ...item, groupId: group?.id };
+      const nextItem = { groupId: group?.id, ...item };
       let nextItems = [...items, nextItem];
 
       if (items.length) {
