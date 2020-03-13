@@ -191,7 +191,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 - `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/).
 - `CompositeGroup` uses [Group](/docs/group/) and [Id](/docs/id/).
-- `CompositeItem` uses [Id](/docs/id/) and [Tabbable](/docs/tabbable/).
+- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/).
 - `CompositeItemWidget` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
@@ -420,7 +420,7 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   Moves focus to the last item.
 
 - **`setCurrentId`**
-  <code>(value: string | null) =&#62; void</code>
+  <code>(value: SetStateAction&#60;string | null&#62;) =&#62; void</code>
 
   Sets `currentId`.
 

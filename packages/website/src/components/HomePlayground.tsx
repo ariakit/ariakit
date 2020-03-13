@@ -22,17 +22,17 @@ const tabCode = `
 import { useTabState, Tab, TabList, TabPanel } from "reakit";
 
 const Tabs = () => {
-  const tab = useTabState({ selectedId: "orders" });
+  const tab = useTabState();
   return (
     <>
       <TabList {...tab}>
-        <Tab {...tab} stopId="orders">Orders</Tab>
-        <Tab {...tab} stopId="transactions">Transactions</Tab>
+        <Tab {...tab}>Orders</Tab>
+        <Tab {...tab}>Transactions</Tab>
       </TabList>
-      <TabPanel {...tab} stopId="orders">
+      <TabPanel {...tab}>
         <p>List of orders</p>
       </TabPanel>
-      <TabPanel {...tab} stopId="transactions">
+      <TabPanel {...tab}>
         <p>List of transactions</p>
       </TabPanel>
     </>
@@ -178,7 +178,7 @@ function Panel({
 }
 
 export default function HomePlayground() {
-  const tab = useTabState({ selectedId: "tab" });
+  const tab = useTabState();
   const tabPlayground = usePlaygroundState({ code: tabCode });
   const dialogPlayground = usePlaygroundState({ code: dialogCode });
   const menuPlayground = usePlaygroundState({ code: menuCode });
@@ -252,54 +252,39 @@ export default function HomePlayground() {
           }
         `}
       >
-        <Tab {...tab} stopId="tab">
-          Tabs.js
-        </Tab>
-        <Tab {...tab} stopId="dialog">
-          TabsModal.js
-        </Tab>
-        <Tab {...tab} stopId="menu">
-          TabsModalMenu.js
-        </Tab>
-        <Tab {...tab} stopId="submenu">
-          TabsModalMenuMenu.js
-        </Tab>
-        <Tab {...tab} stopId="menubar">
-          MenuBar.js
-        </Tab>
+        <Tab {...tab}>Tabs.js</Tab>
+        <Tab {...tab}>TabsModal.js</Tab>
+        <Tab {...tab}>TabsModalMenu.js</Tab>
+        <Tab {...tab}>TabsModalMenuMenu.js</Tab>
+        <Tab {...tab}>MenuBar.js</Tab>
       </TabList>
       <Panel
         {...tab}
         {...tabPlayground}
-        stopId="tab"
         componentName="Tabs"
         modules={modules}
       />
       <Panel
         {...tab}
         {...dialogPlayground}
-        stopId="dialog"
         componentName="TabsModal"
         modules={modules}
       />
       <Panel
         {...tab}
         {...menuPlayground}
-        stopId="menu"
         componentName="TabsModalMenu"
         modules={modules}
       />
       <Panel
         {...tab}
         {...submenuPlayground}
-        stopId="submenu"
         componentName="TabsModalMenuMenu"
         modules={modules}
       />
       <Panel
         {...tab}
         {...menubarPlayground}
-        stopId="menubar"
         componentName="TabsModalMenuMenuBar"
         modules={modules}
       />

@@ -28,7 +28,7 @@ export const useDialogBackdrop = createHook<
   useState: useDialogState,
 
   useOptions({ modal = true, ...options }) {
-    return { modal, ...options };
+    return { modal, ...options, unstable_setBaseId: undefined };
   },
 
   useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {

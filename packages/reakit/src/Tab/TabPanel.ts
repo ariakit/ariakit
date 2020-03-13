@@ -1,46 +1,130 @@
+import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { warning } from "reakit-utils/warning";
+import { useForkRef } from "reakit-utils/useForkRef";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
   useDisclosureContent
 } from "../Disclosure/DisclosureContent";
-import { getTabPanelId, getTabId } from "./__utils";
+import {
+  unstable_useId,
+  unstable_IdOptions,
+  unstable_IdHTMLProps
+} from "../Id/Id";
 import { useTabState, TabStateReturn } from "./TabState";
 
 export type TabPanelOptions = DisclosureContentOptions &
-  Pick<TabStateReturn, "baseId" | "selectedId"> & {
+  unstable_IdOptions &
+  Pick<
+    TabStateReturn,
+    "selectedId" | "registerPanel" | "unregisterPanel" | "panels" | "items"
+  > & {
     /**
      * Tab's `stopId`.
+     * @deprecated Use `tabId` instead.
+     * @private
      */
-    stopId: string;
+    stopId?: string;
+    /**
+     * Tab's id
+     */
+    tabId?: string;
   };
 
-export type TabPanelHTMLProps = DisclosureContentHTMLProps;
+export type TabPanelHTMLProps = DisclosureContentHTMLProps &
+  unstable_IdHTMLProps;
 
 export type TabPanelProps = TabPanelOptions & TabPanelHTMLProps;
 
+function getTabsWithoutPanel(
+  tabs: TabPanelOptions["items"],
+  panels: TabPanelOptions["panels"]
+) {
+  const panelsTabIds = panels.map(panel => panel.groupId).filter(Boolean);
+  return tabs.filter(item => panelsTabIds.indexOf(item.id) === -1);
+}
+
+function getPanelIndex(
+  panels: TabPanelOptions["panels"],
+  panel: typeof panels[number]
+) {
+  const panelsWithoutTabId = panels.filter(p => !p.groupId);
+  return panelsWithoutTabId.indexOf(panel);
+}
+
+/**
+ * When <TabPanel> is used without tabId:
+ *
+ *  - First render: getTabId will return undefined because options.panels
+ * doesn't contain the current panel yet (registerPanel wasn't called yet).
+ * Thus registerPanel will be called without groupId (tabId).
+ *
+ *  - Second render: options.panels already contains the current panel (because
+ * registerPanel was called in the previous render). This means that we'll be
+ * able to get the related tabId with the tab panel index. Basically,
+ * we filter out all the tabs and panels that have already matched. In this
+ * phase, registerPanel will be called again with the proper groupId (tabId).
+ *
+ *  - In the third render, panel.groupId will be already defined, so we just
+ * return it. registerPanel is not called.
+ */
+function getTabId(options: TabPanelOptions) {
+  const panel = options.panels?.find(p => p.id === options.id);
+  const tabId = options.tabId || options.stopId || panel?.groupId;
+  if (tabId || !panel || !options.panels || !options.items) {
+    return tabId;
+  }
+  const panelIndex = getPanelIndex(options.panels, panel);
+  const tabsWithoutPanel = getTabsWithoutPanel(options.items, options.panels);
+  return tabsWithoutPanel[panelIndex].id;
+}
+
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   name: "TabPanel",
-  compose: useDisclosureContent,
+  compose: [unstable_useId, useDisclosureContent],
   useState: useTabState,
-  keys: ["stopId"],
+  keys: ["stopId", "tabId"],
 
   useOptions(options) {
+    return { ...options, unstable_setBaseId: undefined };
+  },
+
+  useProps(options, { ref: htmlRef, ...htmlProps }) {
+    warning(
+      Boolean(options.stopId),
+      "[reakit/TabPanel]",
+      "`TabPanel`'s `stopId` prop is deprecated. Use `tabId` instead.",
+      "See https://reakit.io/docs/tab"
+    );
+
+    const ref = React.useRef<HTMLElement>(null);
+    const tabId = getTabId(options);
+    const { id, registerPanel, unregisterPanel } = options;
+
+    React.useEffect(() => {
+      if (!id) return undefined;
+      registerPanel?.({ id, ref, groupId: tabId });
+      return () => {
+        unregisterPanel?.(id);
+      };
+    }, [tabId, id, registerPanel, unregisterPanel]);
+
     return {
-      visible: options.selectedId === options.stopId,
-      ...options,
-      unstable_setBaseId: undefined
+      ref: useForkRef(ref, htmlRef),
+      role: "tabpanel",
+      tabIndex: 0,
+      "aria-labelledby": tabId,
+      ...htmlProps
     };
   },
 
-  useProps(options, htmlProps) {
+  useComposeOptions(options) {
+    const tabId = getTabId(options);
     return {
-      role: "tabpanel",
-      tabIndex: 0,
-      id: getTabPanelId(options.stopId, options.baseId),
-      "aria-labelledby": getTabId(options.stopId, options.baseId),
-      ...htmlProps
+      visible: tabId ? options.selectedId === tabId : false,
+      ...options
     };
   }
 });

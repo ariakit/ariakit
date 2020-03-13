@@ -44,7 +44,7 @@ function Example() {
 ## Accessibility
 
 - Pressing <kbd>Enter</kbd> or <kbd>Space</kbd> triggers a click event on `Clickable` regardless of its rendered element.
-- `Clickable` extends the accessibility features of [Tabbable](/docs/tabbable/).
+- `Clickable` extends the accessibility features of [Tabbable](/docs/tabbable/#accessibility).
 
 Learn more in [Accessibility](/docs/accessibility/).
 

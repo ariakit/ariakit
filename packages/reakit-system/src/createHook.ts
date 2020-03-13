@@ -58,6 +58,13 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     if (options.name) {
       hookOptions = useOptions(options.name, hookOptions, htmlProps);
     }
+    // Run composed hooks useOptions
+    if (options.compose) {
+      composedHooks.forEach(hook => {
+        hookOptions = hook.__useOptions(hookOptions, htmlProps);
+      });
+    }
+
     return hookOptions;
   };
 
@@ -69,13 +76,6 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     // This won't execute when useHook was called from within another useHook
     if (!unstable_ignoreUseOptions) {
       hookOptions = __useOptions(hookOptions, htmlProps);
-    }
-    // We're already calling composed useOptions here
-    // That's why we ignoreUseOptions for composed hooks
-    if (options.compose) {
-      composedHooks.forEach(hook => {
-        hookOptions = hook.__useOptions(hookOptions, htmlProps);
-      });
     }
     // Call the current hook's useProps
     if (options.useProps) {

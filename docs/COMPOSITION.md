@@ -6,7 +6,7 @@ redirect_from:
 
 # Composition
 
-Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box/), [Tabbable](/docs/tabbable/) and [Rover](/docs/rover/).
+Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box/), [Tabbable](/docs/tabbable/) and [Composite](/docs/composite/).
 
 The API isn't different. It's designed so you can create new things based on any existing module.
 
