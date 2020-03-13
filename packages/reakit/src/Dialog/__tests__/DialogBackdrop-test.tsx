@@ -3,7 +3,7 @@ import { render } from "reakit-test-utils";
 import { DialogBackdrop } from "../DialogBackdrop";
 
 test("render", () => {
-  const { baseElement } = render(<DialogBackdrop />);
+  const { baseElement } = render(<DialogBackdrop baseId="dialog" />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div />
@@ -12,6 +12,7 @@ test("render", () => {
       >
         <div
           class="hidden"
+          data-dialog-ref="dialog"
           hidden=""
           style="display: none;"
         />
@@ -21,30 +22,35 @@ test("render", () => {
 });
 
 test("render visible", () => {
-  const { baseElement } = render(<DialogBackdrop visible />);
+  const { baseElement } = render(<DialogBackdrop baseId="dialog" visible />);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div />
-      <div
-        class="__reakit-portal"
-      >
-        <div />
-      </div>
-    </body>
-  `);
+<body>
+  <div />
+  <div
+    class="__reakit-portal"
+  >
+    <div
+      data-dialog-ref="dialog"
+    />
+  </div>
+</body>
+`);
 });
 
 test("render no modal", () => {
-  const { baseElement } = render(<DialogBackdrop modal={false} />);
+  const { baseElement } = render(
+    <DialogBackdrop baseId="dialog" modal={false} />
+  );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          class="hidden"
-          hidden=""
-          style="display: none;"
-        />
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <div
+      class="hidden"
+      data-dialog-ref="dialog"
+      hidden=""
+      style="display: none;"
+    />
+  </div>
+</body>
+`);
 });
