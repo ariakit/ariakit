@@ -59,6 +59,7 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       hookOptions = useOptions(options.name, hookOptions, htmlProps);
     }
 
+    // TODO: Check it and test DialogBackdrop
     if (options.compose) {
       composedHooks.forEach(hook => {
         hookOptions = hook.__useOptions(hookOptions, htmlProps);
@@ -77,6 +78,7 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     if (!unstable_ignoreUseOptions) {
       hookOptions = __useOptions(hookOptions, htmlProps);
     }
+    // TODO
     // We're already calling composed useOptions here
     // That's why we ignoreUseOptions for composed hooks
     // if (options.compose) {
