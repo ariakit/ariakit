@@ -111,10 +111,7 @@ export const unstable_useComposite = createHook<
   },
 
   useComposeProps(options, htmlProps) {
-    // @ts-ignore Passing true as the last argument so it doesn't call
-    // useIdGroup.useOptions, which was already called before.
     htmlProps = unstable_useIdGroup(options, htmlProps, true);
-    // @ts-ignore
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
     if (options.unstable_focusStrategy === "aria-activedescendant") {
       // Composite will only be tabbable by default if the focus is managed

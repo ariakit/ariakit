@@ -115,29 +115,29 @@ test("unregisterItem", () => {
   act(() => result.current.registerItem({ id: "2", ref: createRef() }));
   act(() => result.current.unregisterItem("1"));
   expect(result.current).toMatchInlineSnapshot(`
+Object {
+  "baseId": "base",
+  "currentId": "2",
+  "focusWrap": false,
+  "groups": Array [],
+  "items": Array [
     Object {
-      "baseId": "base",
-      "currentId": "2",
-      "focusWrap": false,
-      "groups": Array [],
-      "items": Array [
-        Object {
-          "groupId": undefined,
-          "id": "2",
-          "ref": Object {
-            "current": <div />,
-          },
-        },
-      ],
-      "loop": false,
-      "orientation": undefined,
-      "rtl": false,
-      "unstable_focusStrategy": "roving-tabindex",
-      "unstable_hasActiveWidget": false,
-      "unstable_idCountRef": Object {
-        "current": 0,
+      "groupId": undefined,
+      "id": "2",
+      "ref": Object {
+        "current": <div />,
       },
-      "unstable_moves": 1,
-    }
-  `);
+    },
+  ],
+  "loop": false,
+  "orientation": undefined,
+  "rtl": false,
+  "unstable_focusStrategy": "roving-tabindex",
+  "unstable_hasActiveWidget": false,
+  "unstable_idCountRef": Object {
+    "current": 0,
+  },
+  "unstable_moves": 0,
+}
+`);
 });

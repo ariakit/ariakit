@@ -13,6 +13,7 @@ const props: unstable_CompositeItemProps = {
     { id: "3", ref: { current: null } }
   ],
   currentId: "2",
+  move: jest.fn(),
   setCurrentId: jest.fn(),
   registerItem: jest.fn(),
   unregisterItem: jest.fn(),

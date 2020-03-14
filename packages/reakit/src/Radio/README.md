@@ -22,7 +22,9 @@ Learn more in [Get started](/docs/get-started/).
 import { useRadioState, Radio, RadioGroup } from "reakit/Radio";
 
 function Example() {
-  const radio = useRadioState();
+  const radio = useRadioState({
+    unstable_focusStrategy: "aria-activedescendant"
+  });
   return (
     <RadioGroup {...radio} aria-label="fruits">
       <label>
@@ -90,22 +92,54 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   ID that will serve as a base for all the items IDs.
 
+- **`rtl`**
+  <code>boolean</code>
+
+  Determines how `next` and `previous` will behave. If `rtl` is set to `true`,
+then `next` will move focus to the previous item in the DOM.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.
+  Defines the orientation of the composite widget.
+
+  When the composite widget has multiple groups (two-dimensional) and `wrap`
+is `true`, the navigation will wrap based on the value of `orientation`:
+  - `undefined`: wraps in both directions.
+  - `horizontal`: wraps horizontally only.
+  - `vertical`: wraps vertically only.
+
+  If the composite widget has a single row or column (one-dimensional), the
+`orientation` value determines which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
 
 - **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.
+  The current focused item ID.
 
 - **`loop`**
   <code>boolean</code>
 
-  If enabled:
-  - Jumps to the first item when moving next from the last item.
-  - Jumps to the last item when moving previous from the first item.
+  If enabled, moving to the next item from the last one will focus the first
+item and vice-versa. It doesn't work if the composite widget has multiple
+groups (two-dimensional).
+
+- **`focusWrap`**
+  <code>boolean</code>
+
+  If enabled, moving to the next item from the last one in a row or column
+will focus the first item in the next row or column and vice-versa.
+Depending on the value of the `orientation` state, it'll wrap in only one
+direction:
+  - If `orientation` is `undefined`, it wraps in both directions.
+  - If `orientation` is `horizontal`, it wraps horizontally only.
+  - If `orientation` is `vertical`, it wraps vertically only.
+
+  `focusWrap` only works if the composite widget has multiple groups
+(two-dimensional).
 
 - **`state`**
   <code>any</code>
@@ -131,11 +165,6 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
 - **`value`**
   <code>any</code>
 
@@ -146,7 +175,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the `checked` attribute.
 
-<details><summary>14 state props</summary>
+<details><summary>16 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -158,58 +187,79 @@ similarly to `readOnly` on form elements. In this case, only
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.
+  Defines the orientation of the composite widget.
 
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
+  When the composite widget has multiple groups (two-dimensional) and `wrap`
+is `true`, the navigation will wrap based on the value of `orientation`:
+  - `undefined`: wraps in both directions.
+  - `horizontal`: wraps horizontally only.
+  - `vertical`: wraps vertically only.
 
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
+  If the composite widget has a single row or column (one-dimensional), the
+`orientation` value determines which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
 
 - **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.
+  The current focused item ID.
 
-- **`stops`**
-  <code>Stop[]</code>
+- **`items`**
+  <code>Item[]</code>
 
-  A list of element refs and IDs of the roving items.
+  Lists all the composite items.
 
-- **`register`**
-  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
+- **`registerItem`**
+  <code>(item: Item) =&#62; void</code>
 
-  Registers the element ID and ref in the roving tab index list.
+  Registers a composite item.
 
-- **`unregister`**
+- **`unregisterItem`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.
+  Unregisters a composite item.
 
 - **`move`**
-  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
+  <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.
+  Moves focus to a given item ID.
+
+- **`setCurrentId`**
+  <code>(value: SetStateAction&#60;string | null&#62;) =&#62; void</code>
+
+  Sets `currentId`.
 
 - **`next`**
-  <code>() =&#62; void</code>
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
-  Moves focus to the next element.
+  Moves focus to the next item.
 
 - **`previous`**
-  <code>() =&#62; void</code>
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
-  Moves focus to the previous element.
+  Moves focus to the previous item.
+
+- **`up`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item above.
+
+- **`down`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item below.
 
 - **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.
+  Moves focus to the first item.
 
 - **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.
+  Moves focus to the last item.
 
 - **`state`**
   <code>any</code>
@@ -225,12 +275,24 @@ similarly to `readOnly` on form elements. In this case, only
 
 ### `RadioGroup`
 
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
 - **`id`**
   <code>string | undefined</code>
 
   Same as the HTML attribute.
 
-<details><summary>1 state props</summary>
+<details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -238,5 +300,15 @@ similarly to `readOnly` on form elements. In this case, only
   <code>string</code>
 
   ID that will serve as a base for all the items IDs.
+
+- **`currentId`**
+  <code>string | null</code>
+
+  The current focused item ID.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items.
 
 </details>

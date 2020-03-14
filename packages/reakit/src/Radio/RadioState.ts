@@ -4,27 +4,27 @@ import {
   SealedInitialState
 } from "reakit-utils/useSealedState";
 import {
-  RoverState,
-  RoverActions,
-  RoverInitialState,
-  useRoverState
-} from "../Rover";
+  unstable_CompositeState as CompositeState,
+  unstable_CompositeActions as CompositeActions,
+  unstable_CompositeInitialState as CompositeInitialState,
+  unstable_useCompositeState as useCompositeState
+} from "../Composite";
 
-export type RadioState = RoverState & {
+export type RadioState = CompositeState & {
   /**
    * The `value` attribute of the current checked radio.
    */
   state: any;
 };
 
-export type RadioActions = RoverActions & {
+export type RadioActions = CompositeActions & {
   /**
    * Sets `state`.
    */
   setState: React.Dispatch<React.SetStateAction<any>>;
 };
 
-export type RadioInitialState = RoverInitialState &
+export type RadioInitialState = CompositeInitialState &
   Partial<Pick<RadioState, "state">>;
 
 export type RadioStateReturn = RadioState & RadioActions;
@@ -32,23 +32,20 @@ export type RadioStateReturn = RadioState & RadioActions;
 export function useRadioState(
   initialState: SealedInitialState<RadioInitialState> = {}
 ): RadioStateReturn {
-  const { state: initialCurrentValue, loop = true, ...sealed } = useSealedState(
+  const { state: initialValue, loop = true, ...sealed } = useSealedState(
     initialState
   );
-
-  const [state, setState] = React.useState(initialCurrentValue);
-
-  const rover = useRoverState({ ...sealed, loop });
-
+  const [state, setState] = React.useState(initialValue);
+  const composite = useCompositeState({ ...sealed, loop });
   return {
-    ...rover,
+    ...composite,
     state,
     setState
   };
 }
 
 const keys: Array<keyof RadioStateReturn> = [
-  ...useRoverState.__keys,
+  ...useCompositeState.__keys,
   "state",
   "setState"
 ];

@@ -311,7 +311,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-<details><summary>17 state props</summary>
+<details><summary>18 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -346,6 +346,11 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   <code>Item[]</code>
 
   Lists all the composite items.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`setCurrentId`**
   <code>(value: SetStateAction&#60;string | null&#62;) =&#62; void</code>

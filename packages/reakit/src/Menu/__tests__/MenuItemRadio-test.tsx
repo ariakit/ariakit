@@ -5,7 +5,7 @@ import { MenuItemRadio } from "../MenuItemRadio";
 const props: Parameters<typeof MenuItemRadio>[0] = {
   name: "radio",
   value: "radio",
-  stopId: "item",
+  id: "item",
   stops: [],
   currentId: null,
   register: jest.fn(),

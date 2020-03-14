@@ -46,16 +46,16 @@ export const unstable_useFormRadio = createHook<
     const name = options.name || htmlProps.name;
     const value =
       typeof options.value !== "undefined" ? options.value : htmlProps.value;
-    const rover = React.useContext(FormRadioGroupContext);
+    const composite = React.useContext(FormRadioGroupContext);
     const currentChecked = unstable_getIn(options.values, name);
     const checked = currentChecked === value;
 
-    if (!rover) {
+    if (!composite) {
       // TODO: Better error
       throw new Error("Missing FormRadioGroup");
     }
 
-    return { ...options, ...rover, checked, name, value };
+    return { ...options, ...composite, checked, name, value };
   },
 
   useProps(
@@ -75,15 +75,10 @@ export const unstable_useFormRadio = createHook<
       options.blur(options.name);
     }, [options.blur, options.name]);
 
-    const onFocus = React.useCallback(() => {
-      options.update(options.name, options.value);
-    }, [options.update, options.name, options.value]);
-
     return {
       name: formatInputName(options.name),
       onChange: useAllCallbacks(onChange, htmlOnChange),
       onBlur: useAllCallbacks(onBlur, htmlOnBlur),
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       ...htmlProps
     };
   }

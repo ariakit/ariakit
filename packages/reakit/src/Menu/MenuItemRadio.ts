@@ -5,7 +5,10 @@ import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
 
-export type MenuItemRadioOptions = RadioOptions &
+export type MenuItemRadioOptions = Omit<
+  RadioOptions,
+  "items" | "registerItem" | "unregisterItem" | "up" | "down" | "setCurrentId"
+> &
   MenuItemOptions &
   Pick<MenuStateReturn, "unstable_values" | "unstable_setValue"> & {
     /**
@@ -35,6 +38,7 @@ export const useMenuItemRadio = createHook<
 
     return {
       ...options,
+      unstable_checkOnFocus: false,
       state: options.unstable_values[options.name],
       setState
     };
@@ -42,6 +46,13 @@ export const useMenuItemRadio = createHook<
 
   useProps(_, htmlProps) {
     return { role: "menuitemradio", ...htmlProps };
+  },
+
+  useComposeProps(options, htmlProps) {
+    htmlProps = useMenuItem(options, htmlProps, true);
+    // @ts-ignore
+    const radioHTMLProps = useRadio(options, htmlProps, true);
+    return { ...radioHTMLProps, tabIndex: htmlProps.tabIndex };
   }
 });
 

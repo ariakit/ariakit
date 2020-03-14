@@ -3,7 +3,10 @@ import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
-import { RoverStateReturn, useRoverState } from "../Rover/RoverState";
+import {
+  unstable_CompositeStateReturn as CompositeStateReturn,
+  unstable_useCompositeState as useCompositeState
+} from "../Composite/CompositeState";
 import {
   unstable_FormGroupOptions,
   unstable_FormGroupHTMLProps,
@@ -31,7 +34,7 @@ export type unstable_FormRadioGroupProps<
   P extends DeepPath<V, P>
 > = unstable_FormRadioGroupOptions<V, P> & unstable_FormRadioGroupHTMLProps;
 
-export const FormRadioGroupContext = React.createContext<RoverStateReturn | null>(
+export const FormRadioGroupContext = React.createContext<CompositeStateReturn | null>(
   null
 );
 
@@ -50,12 +53,11 @@ export const unstable_useFormRadioGroup = createHook<
 
   useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
     const id = getInputId(options.name, options.baseId);
-    const rover = useRoverState({ baseId: id, loop: true });
-    const providerValue = React.useMemo(() => rover, [
-      rover.stops,
-      rover.currentId,
-      rover.unstable_pastId
-    ]);
+    const composite = useCompositeState({ baseId: id, loop: true });
+    const providerValue = React.useMemo(
+      () => composite,
+      Object.values(composite)
+    );
 
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => (
