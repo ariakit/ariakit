@@ -22,9 +22,7 @@ Learn more in [Get started](/docs/get-started/).
 import { useRadioState, Radio, RadioGroup } from "reakit/Radio";
 
 function Example() {
-  const radio = useRadioState({
-    unstable_focusStrategy: "aria-activedescendant"
-  });
+  const radio = useRadioState();
   return (
     <RadioGroup {...radio} aria-label="fruits">
       <label>
@@ -70,14 +68,14 @@ function Example() {
 
 - `Radio` has role `radio`.
 - `Radio` has `aria-checked` set to `true` when it's checked. Otherwise, `aria-checked` is set to `false`.
-- `Radio` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
+- `Radio` extends the accessibility features of [CompositeItem](/docs/composite/#accessibility), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Radio` uses [Rover](/docs/rover/), and is used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
-- `RadioGroup` uses [Box](/docs/box/).
+- `Radio` uses [CompositeItem](/docs/composite/), and is used by [FormRadio](/docs/form/) and [MenuItemRadio](/docs/radio/).
+- `RadioGroup` uses [Composite](/docs/composite/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

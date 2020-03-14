@@ -143,8 +143,8 @@ export const unstable_useCompositeItem = createHook<
       }
       // `moves` will be incremented whenever next, previous, up, down, first,
       // last or move have been called. This means that the composite item will
-      // be focused whenever some of these functions are called. Unless it is
-      // already active, in which case we don't want to focus it again.
+      // be focused whenever some of these functions are called. Unless it has
+      // already focus, in which case we don't want to focus it again.
       if (options.unstable_moves && isCurrentItem && !hasFocusWithin(self)) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
@@ -155,7 +155,7 @@ export const unstable_useCompositeItem = createHook<
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        if (isCurrentItem) {
+        if (isCurrentItem || isVirtualFocus) {
           options.setCurrentId?.(id);
         } else {
           options.move?.(id);
