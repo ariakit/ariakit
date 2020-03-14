@@ -1122,6 +1122,11 @@ going to be an array.
 
 ### `MenuItemRadio`
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`disabled`**
   <code>boolean | undefined</code>
 
@@ -1133,16 +1138,6 @@ going to be an array.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
 
 - **`value`**
   <code>any</code>
@@ -1159,7 +1154,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   MenuItemRadio's name as in `menu.values`.
 
-<details><summary>19 state props</summary>
+<details><summary>18 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1171,58 +1166,49 @@ similarly to `readOnly` on form elements. In this case, only
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.
+  Defines the orientation of the composite widget.
 
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
+  When the composite widget has multiple groups (two-dimensional) and `wrap`
+is `true`, the navigation will wrap based on the value of `orientation`:
+  - `undefined`: wraps in both directions.
+  - `horizontal`: wraps horizontally only.
+  - `vertical`: wraps vertically only.
 
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
+  If the composite widget has a single row or column (one-dimensional), the
+`orientation` value determines which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
 
 - **`currentId`**
   <code>string | null</code>
 
-  The current focused element ID.
+  The current focused item ID.
 
 - **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.
+  Moves focus to the first item.
 
 - **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.
-
-- **`stops`**
-  <code>Stop[]</code>
-
-  A list of element refs and IDs of the roving items.
+  Moves focus to the last item.
 
 - **`move`**
-  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
+  <code>(id: string | null) =&#62; void</code>
 
-  Moves focus to a given element ID.
+  Moves focus to a given item ID.
 
 - **`next`**
-  <code>() =&#62; void</code>
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
-  Moves focus to the next element.
+  Moves focus to the next item.
 
 - **`previous`**
-  <code>() =&#62; void</code>
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
-  Moves focus to the previous element.
-
-- **`register`**
-  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
-
-  Registers the element ID and ref in the roving tab index list.
-
-- **`unregister`**
-  <code>(id: string) =&#62; void</code>
-
-  Unregisters the roving item.
+  Moves focus to the previous item.
 
 - **`state`**
   <code>any</code>
@@ -1233,6 +1219,21 @@ similarly to `readOnly` on form elements. In this case, only
   <code>(value: any) =&#62; void</code>
 
   Sets `state`.
+
+- **`stops`**
+  <code>Stop[]</code>
+
+  A list of element refs and IDs of the roving items.
+
+- **`register`**
+  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
+
+  Registers the element ID and ref in the roving tab index list.
+
+- **`unregister`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters the roving item.
 
 - **`visible`**
   <code>boolean</code>

@@ -189,9 +189,9 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/).
+- `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/), and is used by [TabList](/docs/tab/) and [RadioGroup](/docs/radio/).
 - `CompositeGroup` uses [Group](/docs/group/) and [Id](/docs/id/).
-- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/).
+- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/), and is used by [Tab](/docs/tab/) and [Radio](/docs/radio/).
 - `CompositeItemWidget` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
@@ -343,7 +343,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-<details><summary>13 state props</summary>
+<details><summary>14 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -388,6 +388,11 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   <code>(id: string) =&#62; void</code>
 
   Unregisters a composite item.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>

@@ -17,7 +17,7 @@ export function unstable_IdProvider({
   const generateId = React.useCallback(
     (localPrefix: string = prefix) =>
       `${localPrefix ? `${localPrefix}-` : ""}${++count.current}`,
-    []
+    [prefix]
   );
   return (
     <unstable_IdContext.Provider value={generateId}>

@@ -11,6 +11,7 @@ const props: TabProps = {
   selectedId: null,
   registerItem: jest.fn(),
   unregisterItem: jest.fn(),
+  move: jest.fn(),
   setCurrentId: jest.fn(),
   select: jest.fn(),
   next: jest.fn(),

@@ -4,7 +4,7 @@ import { useOptions } from "./useOptions";
 import { useProps } from "./useProps";
 
 type Hook<O = any, P = any> = {
-  (options?: O, htmlProps?: P): P;
+  (options?: O, htmlProps?: P, unstable_ignoreUseOptions?: boolean): P;
   __keys: ReadonlyArray<any>;
   __useOptions: (options: O, htmlProps: P) => O;
   __propsAreEqual?: (prev: O & P, next: O & P) => boolean;
@@ -94,7 +94,6 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
         htmlProps = options.useComposeProps(hookOptions, htmlProps);
       } else {
         composedHooks.forEach(hook => {
-          // @ts-ignore The third option is only used internally
           htmlProps = hook(hookOptions, htmlProps, true);
         });
       }

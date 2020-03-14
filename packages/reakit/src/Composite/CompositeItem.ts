@@ -29,6 +29,7 @@ export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
+    | "baseId"
     | "orientation"
     | "unstable_moves"
     | "unstable_focusStrategy"
@@ -36,11 +37,11 @@ export type unstable_CompositeItemOptions = ClickableOptions &
   > &
   Pick<
     unstable_CompositeStateReturn,
-    | "baseId"
     | "items"
     | "currentId"
     | "registerItem"
     | "unregisterItem"
+    | "move"
     | "setCurrentId"
     | "next"
     | "previous"
@@ -154,17 +155,28 @@ export const unstable_useCompositeItem = createHook<
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        options.setCurrentId?.(id);
+        if (isCurrentItem || isVirtualFocus) {
+          options.setCurrentId?.(id);
+        } else {
+          options.move?.(id);
+        }
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (isVirtualFocus && currentTarget === target) {
+        if (isVirtualFocus && currentTarget === target && options.baseId) {
           const composite = getDocument(target).getElementById(options.baseId);
           composite?.focus();
         }
       },
-      [id, options.setCurrentId, isVirtualFocus, options.baseId]
+      [
+        id,
+        isCurrentItem,
+        options.setCurrentId,
+        options.move,
+        isVirtualFocus,
+        options.baseId
+      ]
     );
 
     const onKeyDown = React.useMemo(

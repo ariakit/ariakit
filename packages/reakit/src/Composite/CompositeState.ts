@@ -203,13 +203,13 @@ type CompositeReducerAction =
   | { type: "unregisterItem"; id: string | null }
   | { type: "registerGroup"; group: Group }
   | { type: "unregisterGroup"; id: string | null }
-  | { type: "move"; id?: string | null }
-  | { type: "next"; allTheWay?: boolean }
-  | { type: "previous"; allTheWay?: boolean }
-  | { type: "up"; allTheWay?: boolean }
-  | { type: "down"; allTheWay?: boolean }
-  | { type: "first" }
-  | { type: "last" }
+  | { type: "move"; id?: string | null; silently?: boolean }
+  | { type: "next"; allTheWay?: boolean; silently?: boolean }
+  | { type: "previous"; allTheWay?: boolean; silently?: boolean }
+  | { type: "up"; allTheWay?: boolean; silently?: boolean }
+  | { type: "down"; allTheWay?: boolean; silently?: boolean }
+  | { type: "first"; silently?: boolean }
+  | { type: "last"; silently?: boolean }
   | {
       type: "setRTL";
       rtl: React.SetStateAction<unstable_CompositeState["rtl"]>;
@@ -290,9 +290,9 @@ function reducer(
       // to the item in the same position in the next group (visually, it'll
       // occupy the same position). If this is the last group, move up instead.
       if (currentItem?.groupId === id) {
-        nextState = reducer(state, { type: "down" });
+        nextState = reducer(state, { type: "down", silently: true });
         if (nextState.currentId === currentId) {
-          nextState = reducer(state, { type: "up" });
+          nextState = reducer(state, { type: "up", silently: true });
         }
       }
       return { ...nextState, groups: nextGroups };
@@ -339,22 +339,25 @@ function reducer(
       // to the next item (visually, it'll occupy the same position). If this
       // is the last enabled item, move focus to the previous one.
       if (currentId && currentId === id) {
-        nextState = reducer({ ...state, focusWrap: true }, { type: "next" });
+        nextState = reducer(
+          { ...state, focusWrap: true },
+          { type: "next", silently: true }
+        );
         if (nextState.currentId === id) {
           nextState = reducer(
             { ...state, focusWrap: true },
-            { type: "previous" }
+            { type: "previous", silently: true }
           );
         }
       }
       return { ...nextState, focusWrap, items: nextItems };
     }
     case "move": {
-      const { id } = action;
-      const nextMoves = moves + 1;
+      const { id, silently } = action;
+      const nextMoves = silently ? moves : moves + 1;
       // move(null) moves to the first item
       if (id === null) {
-        return reducer(state, { type: "first" });
+        return reducer(state, { ...action, type: "first" });
       }
       // move() does nothing
       if (id === undefined) {
@@ -374,7 +377,7 @@ function reducer(
     case "next": {
       if (currentId == null) {
         // If there's no item focused, we just move the first one
-        return reducer(state, { type: "first" });
+        return reducer(state, { ...action, type: "first" });
       }
 
       const itemsInDirection = rtl ? reverse(items) : items;
@@ -382,7 +385,7 @@ function reducer(
 
       if (!currentItem) {
         // If there's no item focused, we just move the first one
-        return reducer(state, { type: "first" });
+        return reducer(state, { ...action, type: "first" });
       }
 
       const currentIndex = itemsInDirection.indexOf(currentItem);
@@ -400,7 +403,7 @@ function reducer(
           reverseNextItemsInGroup,
           currentId
         );
-        return reducer(state, { type: "move", id: nextItem?.id });
+        return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
       const isHorizontal = !orientation || orientation === "horizontal";
@@ -409,7 +412,7 @@ function reducer(
       if (isHorizontal && currentItem.groupId && focusWrap) {
         // Using nextItems instead of nextItemsInGroup so we can wrap between groups
         const nextItem = findFirstEnabledItem(nextItems, currentId);
-        return reducer(state, { type: "move", id: nextItem?.id });
+        return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
       // Loops on one-dimensional composites
@@ -420,11 +423,11 @@ function reducer(
           ...itemsInDirection.slice(0, currentIndex)
         ];
         const nextItem = findFirstEnabledItem(reorderedItems, currentId);
-        return reducer(state, { type: "move", id: nextItem?.id });
+        return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
       const nextItem = findFirstEnabledItem(nextItemsInGroup, currentId);
-      return reducer(state, { type: "move", id: nextItem?.id });
+      return reducer(state, { ...action, type: "move", id: nextItem?.id });
     }
     case "previous": {
       const nextState = reducer(
@@ -466,7 +469,7 @@ function reducer(
             .reverse()
             .find(item => !item.disabled)
         : items.find(item => !item.disabled);
-      return reducer(state, { type: "move", id: firstItem?.id });
+      return reducer(state, { ...action, type: "move", id: firstItem?.id });
     }
     case "last": {
       const { items: _, ...nextState } = reducer(

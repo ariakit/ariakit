@@ -1,19 +1,23 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { Radio } from "../Radio";
+import { Radio, RadioProps } from "../Radio";
 
-const props: Parameters<typeof Radio>[0] = {
+const props: RadioProps = {
   value: "radio",
-  stopId: "radio",
-  stops: [],
+  baseId: "radio",
+  id: "radio",
+  items: [],
   currentId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
+  registerItem: jest.fn(),
+  unregisterItem: jest.fn(),
+  setCurrentId: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
+  up: jest.fn(),
+  down: jest.fn()
 };
 
 test("render", () => {
@@ -32,4 +36,23 @@ test("render", () => {
       </div>
     </body>
   `);
+});
+
+test("render without state props", () => {
+  // @ts-ignore
+  const { baseElement } = render(<Radio id="radio" value="radio" />);
+  expect(baseElement).toMatchInlineSnapshot(`
+<body>
+  <div>
+    <input
+      aria-checked="false"
+      id="radio"
+      role="radio"
+      tabindex="-1"
+      type="radio"
+      value="radio"
+    />
+  </div>
+</body>
+`);
 });
