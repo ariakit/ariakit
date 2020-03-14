@@ -60,12 +60,7 @@ export const unstable_useFormRadio = createHook<
 
   useProps(
     options,
-    {
-      onChange: htmlOnChange,
-      onBlur: htmlOnBlur,
-      onFocus: htmlOnFocus,
-      ...htmlProps
-    }
+    { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
   ) {
     const onChange = React.useCallback(() => {
       options.update(options.name, options.value);
