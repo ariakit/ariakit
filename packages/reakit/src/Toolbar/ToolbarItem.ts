@@ -1,11 +1,15 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
+import {
+  unstable_CompositeItemOptions as CompositeItemOptions,
+  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
+  unstable_useCompositeItem as useCompositeItem
+} from "../Composite/CompositeItem";
 import { useToolbarState } from "./ToolbarState";
 
-export type ToolbarItemOptions = RoverOptions;
+export type ToolbarItemOptions = CompositeItemOptions;
 
-export type ToolbarItemHTMLProps = RoverHTMLProps;
+export type ToolbarItemHTMLProps = CompositeItemHTMLProps;
 
 export type ToolbarItemProps = ToolbarItemOptions & ToolbarItemHTMLProps;
 
@@ -14,7 +18,7 @@ export const useToolbarItem = createHook<
   ToolbarItemHTMLProps
 >({
   name: "ToolbarItem",
-  compose: useRover,
+  compose: useCompositeItem,
   useState: useToolbarState
 });
 

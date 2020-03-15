@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, focus, click } from "reakit-test-utils";
+import { render, focus, click, press } from "reakit-test-utils";
 import { Tab, TabList, TabPanel, useTabState } from "..";
 
 test("first tab is selected", () => {
@@ -288,6 +288,64 @@ test("select the last selected tab when the current one is unmounted when manual
   expect($("tabpanel2")).toBeVisible();
   rerender(<Test />);
   expect($("tabpanel4")).toBeVisible();
+});
+
+test("select the last selected tab when the current one is unmounted when id is passed", () => {
+  const Test = ({ renderTab2 = false }) => {
+    const tab = useTabState({ manual: true });
+    return (
+      <>
+        <TabList {...tab} id="base" aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          {renderTab2 && <Tab {...tab}>tab2</Tab>}
+          <Tab {...tab}>tab3</Tab>
+          <Tab {...tab}>tab4</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        {renderTab2 && <TabPanel {...tab}>tabpanel2</TabPanel>}
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+        <TabPanel {...tab}>tabpanel4</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $, rerender } = render(<Test renderTab2 />);
+  expect($("tabpanel1")).toBeVisible();
+  click($("tab4"));
+  expect($("tabpanel4")).toBeVisible();
+  click($("tab2"));
+  expect($("tabpanel2")).toBeVisible();
+  rerender(<Test />);
+  expect($("tabpanel4")).toBeVisible();
+});
+
+test("can't select disabled tab", () => {
+  const Test = () => {
+    const tab = useTabState();
+    return (
+      <>
+        <TabList {...tab} id="base" aria-label="tablist">
+          <Tab {...tab}>tab1</Tab>
+          <Tab {...tab} disabled>
+            tab2
+          </Tab>
+          <Tab {...tab}>tab3</Tab>
+        </TabList>
+        <TabPanel {...tab}>tabpanel1</TabPanel>
+        <TabPanel {...tab}>tabpanel2</TabPanel>
+        <TabPanel {...tab}>tabpanel3</TabPanel>
+      </>
+    );
+  };
+  const { getByText: $ } = render(<Test />);
+  click($("tab2"));
+  expect($("tab2")).not.toHaveFocus();
+  expect($("tabpanel2")).not.toBeVisible();
+  press.Tab();
+  expect($("tab1")).toHaveFocus();
+  expect($("tabpanel1")).toBeVisible();
+  press.ArrowRight();
+  expect($("tab2")).toHaveFocus();
+  expect($("tabpanel2")).not.toBeVisible();
 });
 
 test("tab panel with tabId different order", () => {

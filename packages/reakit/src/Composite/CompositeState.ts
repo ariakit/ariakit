@@ -203,13 +203,13 @@ type CompositeReducerAction =
   | { type: "unregisterItem"; id: string | null }
   | { type: "registerGroup"; group: Group }
   | { type: "unregisterGroup"; id: string | null }
-  | { type: "move"; id?: string | null; silently?: boolean }
-  | { type: "next"; allTheWay?: boolean; silently?: boolean }
-  | { type: "previous"; allTheWay?: boolean; silently?: boolean }
-  | { type: "up"; allTheWay?: boolean; silently?: boolean }
-  | { type: "down"; allTheWay?: boolean; silently?: boolean }
-  | { type: "first"; silently?: boolean }
-  | { type: "last"; silently?: boolean }
+  | { type: "move"; id?: string | null }
+  | { type: "next"; allTheWay?: boolean }
+  | { type: "previous"; allTheWay?: boolean }
+  | { type: "up"; allTheWay?: boolean }
+  | { type: "down"; allTheWay?: boolean }
+  | { type: "first" }
+  | { type: "last" }
   | {
       type: "setRTL";
       rtl: React.SetStateAction<unstable_CompositeState["rtl"]>;
@@ -236,7 +236,7 @@ type CompositeReducerAction =
 type CompositeReducerState = Omit<
   unstable_CompositeState,
   "unstable_focusStrategy" | "unstable_hasActiveWidget" | keyof unstable_IdState
->;
+> & { pastIds: string[] };
 
 function reducer(
   state: CompositeReducerState,
@@ -250,6 +250,7 @@ function reducer(
     currentId,
     loop,
     focusWrap,
+    pastIds,
     unstable_moves: moves
   } = state;
 
@@ -284,18 +285,7 @@ function reducer(
       if (nextGroups.length === groups.length) {
         return state;
       }
-      const currentItem = items.find(item => item.id === currentId);
-      let nextState = state;
-      // If the group being unregistered has the current focused item, move focus
-      // to the item in the same position in the next group (visually, it'll
-      // occupy the same position). If this is the last group, move up instead.
-      if (currentItem?.groupId === id) {
-        nextState = reducer(state, { type: "down", silently: true });
-        if (nextState.currentId === currentId) {
-          nextState = reducer(state, { type: "up", silently: true });
-        }
-      }
-      return { ...nextState, groups: nextGroups };
+      return { ...state, groups: nextGroups };
     }
     case "registerItem": {
       const { item } = action;
@@ -320,12 +310,7 @@ function reducer(
           ];
         }
       }
-      // If currentId is not explicitly set on useCompositeState, get the first
-      // enabled item id
-      const nextCurrentId =
-        currentId || findFirstEnabledItem(nextItems)?.id || null;
-
-      return { ...state, currentId: nextCurrentId, items: nextItems };
+      return reducer({ ...state, items: nextItems }, { type: "setCurrentId" });
     }
     case "unregisterItem": {
       const { id } = action;
@@ -334,27 +319,22 @@ function reducer(
       if (nextItems.length === items.length) {
         return state;
       }
-      let nextState = state;
-      // If the item being unregistered is the current focused item, move focus
-      // to the next item (visually, it'll occupy the same position). If this
-      // is the last enabled item, move focus to the previous one.
+      const nextPastIds = pastIds.filter(pastId => pastId !== id);
+      const nextState = {
+        ...state,
+        pastIds: nextPastIds,
+        items: nextItems
+      };
       if (currentId && currentId === id) {
-        nextState = reducer(
-          { ...state, focusWrap: true },
-          { type: "next", silently: true }
+        return reducer(
+          { ...nextState, currentId: nextPastIds[0] },
+          { type: "setCurrentId" }
         );
-        if (nextState.currentId === id) {
-          nextState = reducer(
-            { ...state, focusWrap: true },
-            { type: "previous", silently: true }
-          );
-        }
       }
-      return { ...nextState, focusWrap, items: nextItems };
+      return nextState;
     }
     case "move": {
-      const { id, silently } = action;
-      const nextMoves = silently ? moves : moves + 1;
+      const { id } = action;
       // move(null) moves to the first item
       if (id === null) {
         return reducer(state, { ...action, type: "first" });
@@ -364,15 +344,17 @@ function reducer(
         return state;
       }
       const item = findEnabledItemById(items, id);
-      // Item doesn't exist or is disabled, so we don't count a move
-      if (!item) {
-        return state;
-      }
-      return {
-        ...state,
-        currentId: item.id,
-        unstable_moves: nextMoves
-      };
+      const filteredPastIds = pastIds.filter(
+        pastId => pastId !== currentId && pastId !== id
+      );
+      return reducer(
+        {
+          ...state,
+          unstable_moves: item ? moves + 1 : moves,
+          pastIds: currentId ? [currentId, ...filteredPastIds] : filteredPastIds
+        },
+        { type: "setCurrentId", currentId: item?.id }
+      );
     }
     case "next": {
       if (currentId == null) {
@@ -530,7 +512,7 @@ export function unstable_useCompositeState(
     focusWrap = false,
     ...sealed
   } = useSealedState(initialState);
-  const [state, dispatch] = React.useReducer(reducer, {
+  const [{ pastIds, ...state }, dispatch] = React.useReducer(reducer, {
     rtl,
     orientation,
     items: [],
@@ -538,6 +520,7 @@ export function unstable_useCompositeState(
     currentId,
     loop,
     focusWrap,
+    pastIds: [],
     unstable_moves: 0
   });
   const [focusStrategy, setFocusStrategy] = React.useState(

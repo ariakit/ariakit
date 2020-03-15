@@ -17,14 +17,18 @@ test("initial state", () => {
     Object {
       "baseId": "base",
       "currentId": null,
+      "focusWrap": false,
+      "groups": Array [],
+      "items": Array [],
       "loop": false,
       "orientation": "horizontal",
-      "stops": Array [],
+      "rtl": false,
+      "unstable_focusStrategy": "roving-tabindex",
+      "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
       "unstable_moves": 0,
-      "unstable_pastId": null,
     }
   `);
 });

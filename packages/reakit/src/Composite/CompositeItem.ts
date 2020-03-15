@@ -41,8 +41,8 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "currentId"
     | "registerItem"
     | "unregisterItem"
-    | "move"
     | "setCurrentId"
+    | "move"
     | "next"
     | "previous"
     | "up"
@@ -110,11 +110,14 @@ export const unstable_useCompositeItem = createHook<
     const id = options.stopId || options.id || htmlProps.id;
     const trulyDisabled = options.disabled && !options.focusable;
     const isCurrentItem = options.currentId === id;
-    const item = options.items?.find(s => s.id === id);
+    const item = options.items?.find(i => i.id === id);
     const isVirtualFocus =
       options.unstable_focusStrategy === "aria-activedescendant";
     const shouldTabIndex =
-      !isVirtualFocus && !options.unstable_hasActiveWidget && isCurrentItem;
+      (!isVirtualFocus && !options.unstable_hasActiveWidget && isCurrentItem) ||
+      // We don't want to set tabIndex="-1" when using CompositeItem as a
+      // standalone component, without state props.
+      !options.items;
 
     warning(
       !!options.stopId,
@@ -155,7 +158,7 @@ export const unstable_useCompositeItem = createHook<
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        if (isCurrentItem || isVirtualFocus) {
+        if (isVirtualFocus) {
           options.setCurrentId?.(id);
         } else {
           options.move?.(id);
@@ -169,14 +172,7 @@ export const unstable_useCompositeItem = createHook<
           composite?.focus();
         }
       },
-      [
-        id,
-        isCurrentItem,
-        options.setCurrentId,
-        options.move,
-        isVirtualFocus,
-        options.baseId
-      ]
+      [id, isVirtualFocus, options.setCurrentId, options.move, options.baseId]
     );
 
     const onKeyDown = React.useMemo(

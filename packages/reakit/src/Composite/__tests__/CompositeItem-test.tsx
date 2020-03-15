@@ -6,7 +6,6 @@ import {
 } from "../CompositeItem";
 
 const props: unstable_CompositeItemProps = {
-  baseId: "composite",
   items: [
     { id: "1", ref: { current: null } },
     { id: "2", ref: { current: null } },
@@ -56,7 +55,7 @@ test("render without state props", () => {
 <div>
   <button
     id="1"
-    tabindex="-1"
+    tabindex="0"
   />
 </div>
 `);

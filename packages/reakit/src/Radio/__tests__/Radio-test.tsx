@@ -4,7 +4,6 @@ import { Radio, RadioProps } from "../Radio";
 
 const props: RadioProps = {
   value: "radio",
-  baseId: "radio",
   id: "radio",
   items: [],
   currentId: null,
@@ -48,7 +47,7 @@ test("render without state props", () => {
       aria-checked="false"
       id="radio"
       role="radio"
-      tabindex="-1"
+      tabindex="0"
       type="radio"
       value="radio"
     />

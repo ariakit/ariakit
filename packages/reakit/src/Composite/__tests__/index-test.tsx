@@ -368,7 +368,7 @@ strategies.forEach(unstable_focusStrategy => {
     });
 
     ["disabled", "unmounted"].forEach(state => {
-      test(`move to the next item when the current active item is ${state}`, () => {
+      test(`move to the past item when the current active item is ${state}`, () => {
         const Test = ({ disabled = false }) => {
           const composite = useCompositeState({ unstable_focusStrategy });
           return (
@@ -386,40 +386,97 @@ strategies.forEach(unstable_focusStrategy => {
             </Composite>
           );
         };
-        const { getByText, rerender } = render(<Test />);
-        const item2 = getByText("item2");
-        const item4 = getByText("item4");
-        focus(item2);
-        expect(item2).toHaveFocus();
+        const { getByText: $, rerender } = render(<Test />);
+        focus($("item2"));
+        expect($("item2")).toHaveFocus();
         rerender(<Test disabled />);
-        expect(item4).toHaveFocus();
+        expect($("item1")).toHaveFocus();
+        rerender(<Test />);
+        press.ArrowRight();
+        expect($("item2")).toHaveFocus();
+        press.ArrowRight();
+        expect($("item4")).toHaveFocus();
+        press.ArrowLeft();
+        expect($("item2")).toHaveFocus();
+        rerender(<Test disabled />);
+        expect($("item4")).toHaveFocus();
       });
 
-      test(`move to the previous item when the current active item is ${state} and it is the last one`, () => {
+      test(`move to the past item when the current active item is ${state} and currentId is set`, () => {
         const Test = ({ disabled = false }) => {
-          const composite = useCompositeState({ unstable_focusStrategy });
+          const composite = useCompositeState({
+            unstable_focusStrategy,
+            currentId: "item2"
+          });
           return (
             <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
-              <CompositeItem {...composite}>item2</CompositeItem>
+              {(!disabled || state !== "unmounted") && (
+                <CompositeItem {...composite} disabled={disabled} id="item2">
+                  item2
+                </CompositeItem>
+              )}
               <CompositeItem {...composite} disabled>
                 item3
               </CompositeItem>
-              {(!disabled || state !== "unmounted") && (
-                <CompositeItem {...composite} disabled={disabled}>
-                  item4
-                </CompositeItem>
-              )}
+              <CompositeItem {...composite}>item4</CompositeItem>
             </Composite>
           );
         };
-        const { getByText, rerender } = render(<Test />);
-        const item2 = getByText("item2");
-        const item4 = getByText("item4");
-        focus(item4);
-        expect(item4).toHaveFocus();
+        const { getByText: $, rerender } = render(<Test />);
+        expect($("item2")).not.toHaveFocus();
         rerender(<Test disabled />);
-        expect(item2).toHaveFocus();
+        expect($("item1")).not.toHaveFocus();
+        press.Tab();
+        expect($("item1")).toHaveFocus();
+        rerender(<Test />);
+        press.ArrowRight();
+        expect($("item2")).toHaveFocus();
+        press.ArrowRight();
+        expect($("item4")).toHaveFocus();
+        press.ArrowLeft();
+        expect($("item2")).toHaveFocus();
+        rerender(<Test disabled />);
+        expect($("item4")).toHaveFocus();
+      });
+
+      test(`move to the past item when the current active item is ${state} and id is set`, () => {
+        const Test = ({ disabled = false }) => {
+          const composite = useCompositeState({ unstable_focusStrategy });
+          return (
+            <Composite
+              {...composite}
+              id="toolbar"
+              role="toolbar"
+              aria-label="composite"
+            >
+              <CompositeItem {...composite}>item1</CompositeItem>
+              {(!disabled || state !== "unmounted") && (
+                <CompositeItem {...composite} disabled={disabled}>
+                  item2
+                </CompositeItem>
+              )}
+              <CompositeItem {...composite} disabled>
+                item3
+              </CompositeItem>
+              <CompositeItem {...composite}>item4</CompositeItem>
+            </Composite>
+          );
+        };
+        const { getByText: $, rerender } = render(<Test />);
+        focus($("item2"));
+        expect($("item2")).toHaveFocus();
+        rerender(<Test disabled />);
+        expect($("item1")).toHaveFocus();
+        rerender(<Test />);
+        press.ArrowRight();
+        expect($("item2")).toHaveFocus();
+        press.ArrowRight();
+        expect($("item4")).toHaveFocus();
+        press.ArrowLeft();
+        expect($("item2")).toHaveFocus();
+        rerender(<Test disabled />);
+        expect($("item4")).toHaveFocus();
       });
     });
 
@@ -1324,7 +1381,7 @@ strategies.forEach(unstable_focusStrategy => {
       expect(getByLabelText("input-1-1")).not.toHaveFocus();
     });
 
-    test("move to the next group when the current group is unmounted", () => {
+    test("move to the past item when the current group is unmounted", () => {
       const Test = ({ disableGroup = false, disableItems = false }) => {
         const composite = useCompositeState({
           unstable_focusStrategy
@@ -1370,13 +1427,13 @@ strategies.forEach(unstable_focusStrategy => {
       press.ArrowRight();
       expect(getByLabelText("2-2")).toHaveFocus();
       rerender(<Test disableGroup />);
-      expect(getByLabelText("3-2")).toHaveFocus();
+      expect(getByLabelText("1-1")).toHaveFocus();
       rerender(<Test />);
-      expect(getByLabelText("3-2")).toHaveFocus();
-      press.ArrowUp();
-      expect(getByLabelText("2-2")).toHaveFocus();
+      expect(getByLabelText("1-1")).toHaveFocus();
+      press.ArrowDown();
+      expect(getByLabelText("2-1")).toHaveFocus();
       rerender(<Test disableItems />);
-      expect(getByLabelText("3-1")).toHaveFocus();
+      expect(getByLabelText("1-1")).toHaveFocus();
     });
   });
 });
