@@ -115,6 +115,8 @@ export const unstable_useCompositeItem = createHook<
       options.unstable_focusStrategy === "aria-activedescendant";
     const shouldTabIndex =
       (!isVirtualFocus && !options.unstable_hasActiveWidget && isCurrentItem) ||
+      // We don't want to set tabIndex="-1" when using CompositeItem as a
+      // standalone component, without state props.
       !options.items;
 
     warning(

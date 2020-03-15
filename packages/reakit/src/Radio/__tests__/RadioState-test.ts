@@ -23,7 +23,6 @@ test("initial state", () => {
         "current": 0,
       },
       "unstable_moves": 0,
-      "unstable_pastIds": Array [],
     }
   `);
 });

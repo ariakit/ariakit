@@ -189,9 +189,9 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/), and is used by [TabList](/docs/tab/) and [RadioGroup](/docs/radio/).
+- `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/), and is used by [TabList](/docs/tab/), [RadioGroup](/docs/radio/) and [Toolbar](/docs/toolbar/).
 - `CompositeGroup` uses [Group](/docs/group/) and [Id](/docs/id/).
-- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/), and is used by [Tab](/docs/tab/) and [Radio](/docs/radio/).
+- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/), and is used by [Tab](/docs/tab/), [Radio](/docs/radio/) and [ToolbarItem](/docs/toolbar/).
 - `CompositeItemWidget` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).

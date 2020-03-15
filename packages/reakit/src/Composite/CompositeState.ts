@@ -74,11 +74,6 @@ export type unstable_CompositeState = unstable_IdState & {
    */
   focusWrap: boolean;
   /**
-   * Keeps record of the selectedId history.
-   * @private
-   */
-  unstable_pastIds: string[];
-  /**
    * Stores the number of moves that have been made by calling `move`, `next`,
    * `previous`, `up`, `down`, `first` or `last`.
    * @private
@@ -241,7 +236,7 @@ type CompositeReducerAction =
 type CompositeReducerState = Omit<
   unstable_CompositeState,
   "unstable_focusStrategy" | "unstable_hasActiveWidget" | keyof unstable_IdState
->;
+> & { pastIds: string[] };
 
 function reducer(
   state: CompositeReducerState,
@@ -255,7 +250,7 @@ function reducer(
     currentId,
     loop,
     focusWrap,
-    unstable_pastIds: pastIds,
+    pastIds,
     unstable_moves: moves
   } = state;
 
@@ -327,7 +322,7 @@ function reducer(
       const nextPastIds = pastIds.filter(pastId => pastId !== id);
       const nextState = {
         ...state,
-        unstable_pastIds: nextPastIds,
+        pastIds: nextPastIds,
         items: nextItems
       };
       if (currentId && currentId === id) {
@@ -355,13 +350,10 @@ function reducer(
       return reducer(
         {
           ...state,
-          currentId: item?.id || null,
           unstable_moves: item ? moves + 1 : moves,
-          unstable_pastIds: currentId
-            ? [currentId, ...filteredPastIds]
-            : filteredPastIds
+          pastIds: currentId ? [currentId, ...filteredPastIds] : filteredPastIds
         },
-        { type: "setCurrentId" }
+        { type: "setCurrentId", currentId: item?.id }
       );
     }
     case "next": {
@@ -520,7 +512,7 @@ export function unstable_useCompositeState(
     focusWrap = false,
     ...sealed
   } = useSealedState(initialState);
-  const [state, dispatch] = React.useReducer(reducer, {
+  const [{ pastIds, ...state }, dispatch] = React.useReducer(reducer, {
     rtl,
     orientation,
     items: [],
@@ -528,7 +520,7 @@ export function unstable_useCompositeState(
     currentId,
     loop,
     focusWrap,
-    unstable_pastIds: [],
+    pastIds: [],
     unstable_moves: 0
   });
   const [focusStrategy, setFocusStrategy] = React.useState(
@@ -608,7 +600,6 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "currentId",
   "loop",
   "focusWrap",
-  "unstable_pastIds",
   "unstable_moves",
   "unstable_focusStrategy",
   "unstable_hasActiveWidget",
