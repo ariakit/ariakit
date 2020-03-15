@@ -1,18 +1,21 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { ToolbarItem } from "../ToolbarItem";
+import { ToolbarItem, ToolbarItemProps } from "../ToolbarItem";
 
-const props: Parameters<typeof ToolbarItem>[0] = {
-  stopId: "rover",
-  stops: [],
+const props: ToolbarItemProps = {
+  id: "item",
+  items: [],
   currentId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
+  registerItem: jest.fn(),
+  unregisterItem: jest.fn(),
+  setCurrentId: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
+  up: jest.fn(),
+  down: jest.fn()
 };
 
 test("render", () => {
@@ -21,7 +24,7 @@ test("render", () => {
     <body>
       <div>
         <button
-          id="rover"
+          id="item"
           tabindex="-1"
         >
           button
@@ -29,4 +32,21 @@ test("render", () => {
       </div>
     </body>
   `);
+});
+
+test("render without state props", () => {
+  // @ts-ignore
+  const { baseElement } = render(<ToolbarItem id="item">button</ToolbarItem>);
+  expect(baseElement).toMatchInlineSnapshot(`
+<body>
+  <div>
+    <button
+      id="item"
+      tabindex="0"
+    >
+      button
+    </button>
+  </div>
+</body>
+`);
 });

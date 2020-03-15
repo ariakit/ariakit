@@ -49,50 +49,6 @@ export type TabInitialState = CompositeInitialState &
 
 export type TabStateReturn = TabState & TabActions;
 
-function useUnregisterItem(
-  composite: CompositeActions,
-  selectedId: TabState["selectedId"],
-  select: TabActions["select"]
-) {
-  const [id, setId] = React.useState<typeof selectedId>(null);
-  const history = React.useRef<string[]>([]);
-
-  // Asynchronously calls composite.unregisterItem so we can select another id
-  // on `unregisterItem` below before composite.unregisterItem is called. This
-  // is necessary so useTabState can take control over which tab is selected
-  // when the current selected tab is unmounted.
-  React.useEffect(() => {
-    if (!id) return;
-    composite.unregisterItem(id);
-  }, [id, composite.unregisterItem]);
-
-  // Keeps record of the selectedId history
-  React.useEffect(() => {
-    if (!selectedId) return;
-    history.current = [
-      selectedId,
-      ...history.current.filter(i => i !== selectedId)
-    ];
-  }, [selectedId]);
-
-  const unregisterItem = React.useCallback(
-    (itemId: string) => {
-      const filtered = history.current.filter(i => i !== itemId);
-      // Sets id to get asynchronously unregistered
-      setId(itemId);
-      // Selects the previously selected id if the unregistered id is the
-      // current one
-      if (history.current[0] === itemId) {
-        select(filtered[0]);
-      }
-      history.current = filtered;
-    },
-    [select]
-  );
-
-  return unregisterItem;
-}
-
 export function useTabState(
   initialState: SealedInitialState<TabInitialState> = {}
 ): TabStateReturn {
@@ -113,21 +69,22 @@ export function useTabState(
 
   const select = React.useCallback(
     (id: string) => {
-      setSelectedId(id);
       composite.move(id);
+      setSelectedId(id);
     },
     [composite.move]
   );
 
-  const unregisterItem = useUnregisterItem(composite, selectedId, select);
-
-  // If selectedId is not set, use the currentId. It still possible to have no
-  // selected tab with useTabState({ selectedId: null });
+  // If selectedId is not set, use the currentId. It's still possible to have
+  // no selected tab with useTabState({ selectedId: null });
   React.useEffect(() => {
-    if (typeof selectedId === "undefined" && composite.currentId) {
+    if (selectedId === null) return;
+    const selectedItem = composite.items.find(item => item.id === selectedId);
+    if (selectedItem) return;
+    if (composite.currentId) {
       setSelectedId(composite.currentId);
     }
-  }, [selectedId, composite.currentId]);
+  }, [selectedId, composite.items, composite.currentId]);
 
   return {
     ...composite,
@@ -136,7 +93,6 @@ export function useTabState(
     manual,
     select,
     setSelectedId,
-    unregisterItem,
     registerPanel: React.useCallback(panel => panels.registerItem(panel), [
       panels.registerItem
     ]),

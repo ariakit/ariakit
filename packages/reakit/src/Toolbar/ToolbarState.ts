@@ -3,17 +3,17 @@ import {
   useSealedState
 } from "reakit-utils/useSealedState";
 import {
-  useRoverState,
-  RoverState,
-  RoverActions,
-  RoverInitialState
-} from "../Rover/RoverState";
+  unstable_useCompositeState as useCompositeState,
+  unstable_CompositeState as CompositeState,
+  unstable_CompositeActions as CompositeActions,
+  unstable_CompositeInitialState as CompositeInitialState
+} from "../Composite/CompositeState";
 
-export type ToolbarState = RoverState;
+export type ToolbarState = CompositeState;
 
-export type ToolbarActions = RoverActions;
+export type ToolbarActions = CompositeActions;
 
-export type ToolbarInitialState = RoverInitialState;
+export type ToolbarInitialState = CompositeInitialState;
 
 export type ToolbarStateReturn = ToolbarState & ToolbarActions;
 
@@ -23,9 +23,9 @@ export function useToolbarState(
   const { orientation = "horizontal", ...sealed } = useSealedState(
     initialState
   );
-  return useRoverState({ orientation, ...sealed });
+  return useCompositeState({ orientation, ...sealed });
 }
 
-const keys: Array<keyof ToolbarStateReturn> = [...useRoverState.__keys];
+const keys: Array<keyof ToolbarStateReturn> = [...useCompositeState.__keys];
 
 useToolbarState.__keys = keys;

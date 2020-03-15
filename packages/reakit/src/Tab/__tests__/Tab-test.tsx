@@ -50,7 +50,7 @@ test("render without state props", () => {
       aria-selected="false"
       id="tab"
       role="tab"
-      tabindex="-1"
+      tabindex="0"
     >
       tab
     </button>

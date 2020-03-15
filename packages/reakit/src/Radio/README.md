@@ -219,15 +219,15 @@ is `true`, the navigation will wrap based on the value of `orientation`:
 
   Unregisters a composite item.
 
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given item ID.
-
 - **`setCurrentId`**
   <code>(value: SetStateAction&#60;string | null&#62;) =&#62; void</code>
 
   Sets `currentId`.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>

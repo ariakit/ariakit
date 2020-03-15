@@ -1,9 +1,12 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { Toolbar } from "../Toolbar";
+import { Toolbar, ToolbarProps } from "../Toolbar";
 
-const props: Parameters<typeof Toolbar>[0] = {
-  "aria-label": "toolbar"
+const props: ToolbarProps = {
+  "aria-label": "toolbar",
+  baseId: "toolbar",
+  currentId: null,
+  items: []
 };
 
 test("render", () => {
@@ -13,6 +16,7 @@ test("render", () => {
       <div>
         <div
           aria-label="toolbar"
+          id="toolbar"
           role="toolbar"
         >
           toolbar
@@ -34,6 +38,7 @@ test("render orientation", () => {
         <div
           aria-label="toolbar"
           aria-orientation="horizontal"
+          id="toolbar"
           role="toolbar"
         >
           toolbar
@@ -41,4 +46,26 @@ test("render orientation", () => {
       </div>
     </body>
   `);
+});
+
+test("render without state props", () => {
+  const { baseElement } = render(
+    // @ts-ignore
+    <Toolbar id="toolbar" aria-label="toolbar">
+      toolbar
+    </Toolbar>
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+<body>
+  <div>
+    <div
+      aria-label="toolbar"
+      id="toolbar"
+      role="toolbar"
+    >
+      toolbar
+    </div>
+  </div>
+</body>
+`);
 });
