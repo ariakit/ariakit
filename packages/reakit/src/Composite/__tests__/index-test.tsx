@@ -29,7 +29,7 @@ function active() {
   if (activeDescendant) {
     return document.getElementById(activeDescendant);
   }
-  return activeElement;
+  return activeElement?.hasAttribute("data-item") ? activeElement : undefined;
 }
 
 function key(char: keyof typeof emojiMap) {
@@ -115,6 +115,114 @@ strategies.forEach(unstable_focusStrategy => {
       expect(item2).not.toHaveFocus();
       press.Tab();
       expect(item2).toHaveFocus();
+    });
+
+    test("composite becomes the first item when currentId is null", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          currentId: null
+        });
+        return (
+          <Composite {...composite} role="toolbar" aria-label="composite">
+            <CompositeItem {...composite}>item1</CompositeItem>
+            <CompositeItem {...composite}>item2</CompositeItem>
+            <CompositeItem {...composite}>item3</CompositeItem>
+          </Composite>
+        );
+      };
+      const { getByText, getByLabelText } = render(<Test />);
+      const composite = getByLabelText("composite");
+      const item1 = getByText("item1");
+      const item2 = getByText("item2");
+      const item3 = getByText("item3");
+      expect(composite).not.toHaveFocus();
+      press.Tab();
+      expect(composite).toHaveFocus();
+      expect(item1).not.toHaveFocus();
+      press.ArrowDown();
+      expect(item1).toHaveFocus();
+      press.ArrowRight();
+      expect(item2).toHaveFocus();
+      press.ArrowDown();
+      expect(item3).toHaveFocus();
+      press.ArrowDown();
+      expect(item3).toHaveFocus();
+      press.ArrowUp();
+      expect(item2).toHaveFocus();
+      press.ArrowLeft();
+      expect(item1).toHaveFocus();
+      press.ArrowUp();
+      expect(item1).not.toHaveFocus();
+      expect(composite).toHaveFocus();
+      press.ArrowUp();
+      expect(item3).toHaveFocus();
+      press.Home();
+      press.ArrowUp();
+      expect(composite).toHaveFocus();
+      press.PageDown();
+      expect(item3).toHaveFocus();
+      press.PageUp();
+      press.ArrowLeft();
+      expect(composite).toHaveFocus();
+      press.Home();
+      expect(item1).toHaveFocus();
+      press.ArrowUp();
+      expect(composite).toHaveFocus();
+      press.End();
+      expect(item3).toHaveFocus();
+    });
+
+    test("composite becomes the first item when currentId is null and loop is true", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          currentId: null,
+          loop: true
+        });
+        return (
+          <Composite {...composite} role="toolbar" aria-label="composite">
+            <CompositeItem {...composite}>item1</CompositeItem>
+            <CompositeItem {...composite}>item2</CompositeItem>
+            <CompositeItem {...composite}>item3</CompositeItem>
+          </Composite>
+        );
+      };
+      const { getByText, getByLabelText } = render(<Test />);
+      const composite = getByLabelText("composite");
+      const item1 = getByText("item1");
+      const item2 = getByText("item2");
+      const item3 = getByText("item3");
+      expect(composite).not.toHaveFocus();
+      press.Tab();
+      expect(composite).toHaveFocus();
+      expect(item1).not.toHaveFocus();
+      press.ArrowRight();
+      expect(item1).toHaveFocus();
+      press.ArrowDown();
+      expect(item2).toHaveFocus();
+      press.ArrowRight();
+      expect(item3).toHaveFocus();
+      press.ArrowRight();
+      expect(item1).not.toHaveFocus();
+      expect(item3).not.toHaveFocus();
+      expect(composite).toHaveFocus();
+      press.ArrowDown();
+      expect(item1).toHaveFocus();
+      press.ArrowLeft();
+      expect(item1).not.toHaveFocus();
+      expect(item3).not.toHaveFocus();
+      expect(composite).toHaveFocus();
+      press.PageDown();
+      expect(item3).toHaveFocus();
+      press.ArrowDown();
+      expect(composite).toHaveFocus();
+      press.Home();
+      expect(item1).toHaveFocus();
+      press.ArrowUp();
+      expect(composite).toHaveFocus();
+      press.End();
+      expect(item3).toHaveFocus();
     });
 
     test("click item", () => {
@@ -919,8 +1027,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({
           unstable_focusStrategy,
-          orientation: "horizontal",
-          focusWrap: true
+          focusWrap: "horizontal"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -990,8 +1097,7 @@ strategies.forEach(unstable_focusStrategy => {
       const Test = () => {
         const composite = useCompositeState({
           unstable_focusStrategy,
-          orientation: "vertical",
-          focusWrap: true
+          focusWrap: "vertical"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -1053,6 +1159,465 @@ strategies.forEach(unstable_focusStrategy => {
           - x x 0
           - - - -
           - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys loop", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          loop: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    aria-label={`${i + 1}-${j + 1}`}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - 0
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys loop horizontal", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          loop: "horizontal"
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys loop vertical", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          loop: "vertical"
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys wrap loop", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          focusWrap: true,
+          loop: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    aria-label={`${i + 1}-${j + 1}`}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - - - 0
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - 0
+          - - - x
+      `)
+      );
+    });
+
+    test("move grid focus with arrow keys wrap horizontal loop vertical", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          focusWrap: "horizontal",
+          loop: "vertical"
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - - 0 -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
       `)
       );
     });
@@ -1434,6 +1999,211 @@ strategies.forEach(unstable_focusStrategy => {
       expect(getByLabelText("2-1")).toHaveFocus();
       rerender(<Test disableItems />);
       expect(getByLabelText("1-1")).toHaveFocus();
+    });
+
+    test("composite grid becomes the first item when currentId is null", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          unstable_focusStrategy,
+          currentId: null
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+      const { getByLabelText: $ } = render(<Test />);
+      press.Tab();
+      expect($("composite")).toHaveFocus();
+      expect(active()).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("vv")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("^^")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect($("composite")).toHaveFocus();
+      expect(key(">")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect($("composite")).toHaveFocus();
+      expect(key("<")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("<<<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^^")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<<<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">>")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("<<<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
     });
   });
 });

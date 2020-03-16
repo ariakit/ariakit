@@ -4,27 +4,27 @@ import {
   useSealedState
 } from "reakit-utils/useSealedState";
 import {
-  RoverState,
-  RoverActions,
-  RoverInitialState,
-  useRoverState
-} from "../Rover";
+  unstable_CompositeState as CompositeState,
+  unstable_CompositeActions as CompositeActions,
+  unstable_CompositeInitialState as CompositeInitialState,
+  unstable_useCompositeState as useCompositeState
+} from "../Composite";
 
-export type MenuBarState = RoverState & {
+export type MenuBarState = CompositeState & {
   /**
    * Stores the values of radios and checkboxes within the menu.
    */
   unstable_values: Record<string, any>;
 };
 
-export type MenuBarActions = RoverActions & {
+export type MenuBarActions = CompositeActions & {
   /**
    * Updates checkboxes and radios values within the menu.
    */
   unstable_setValue: (name: string, value?: any) => void;
 };
 
-export type MenuBarInitialState = RoverInitialState &
+export type MenuBarInitialState = CompositeInitialState &
   Partial<Pick<MenuBarState, "unstable_values">>;
 
 export type MenuBarStateReturn = MenuBarState & MenuBarActions;
@@ -39,10 +39,10 @@ export function useMenuBarState(
   } = useSealedState(initialState);
 
   const [values, setValues] = React.useState(initialValues);
-  const rover = useRoverState({ ...sealed, orientation });
+  const composite = useCompositeState({ ...sealed, orientation });
 
   return {
-    ...rover,
+    ...composite,
     unstable_values: values,
     unstable_setValue: React.useCallback((name, value) => {
       setValues(vals => ({
@@ -54,7 +54,7 @@ export function useMenuBarState(
 }
 
 const keys: Array<keyof MenuBarStateReturn> = [
-  ...useRoverState.__keys,
+  ...useCompositeState.__keys,
   "unstable_values",
   "unstable_setValue"
 ];

@@ -139,6 +139,11 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
         }
       }
 
+      // @ts-ignore
+      if (prev.children !== next.children) {
+        return false;
+      }
+
       return deepEqual(prev, next);
     };
   }

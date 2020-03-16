@@ -5,22 +5,26 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
 import { useForkRef } from "reakit-utils/useForkRef";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import {
+  unstable_CompositeOptions as CompositeOptions,
+  unstable_CompositeHTMLProps as CompositeHTMLProps,
+  unstable_useComposite as useComposite
+} from "../Composite/Composite";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuContext } from "./__utils/MenuContext";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 
-export type MenuBarOptions = BoxOptions &
+export type MenuBarOptions = CompositeOptions &
   Pick<Partial<MenuStateReturn>, "orientation"> &
-  Pick<MenuStateReturn, "stops" | "move" | "next" | "previous">;
+  Pick<MenuStateReturn, "items" | "move" | "next" | "previous">;
 
-export type MenuBarHTMLProps = BoxHTMLProps;
+export type MenuBarHTMLProps = CompositeHTMLProps;
 
 export type MenuBarProps = MenuBarOptions & MenuBarHTMLProps;
 
 export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
   name: "MenuBar",
-  compose: useBox,
+  compose: useComposite,
   useState: useMenuState,
 
   useProps(

@@ -60,35 +60,11 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const rovingBindings = React.useMemo(
       () =>
         createOnKeyDown({
-          stopPropagation: event => {
-            // On Esc, only stop propagation if there's no parent menu
-            // Otherwise, pressing Esc should close all menus
-            if (event.key === "Escape" && hasParent) return false;
-            return true;
-          },
-          keyMap: event => {
-            const targetIsMenu = event.target === event.currentTarget;
-            return {
-              Escape: options.hide,
-              ArrowUp: targetIsMenu && !isHorizontal && options.last,
-              ArrowRight: targetIsMenu && !isVertical && options.first,
-              ArrowDown: targetIsMenu && !isHorizontal && options.first,
-              ArrowLeft: targetIsMenu && !isVertical && options.last,
-              Home: targetIsMenu && options.first,
-              End: targetIsMenu && options.last,
-              PageUp: targetIsMenu && options.first,
-              PageDown: targetIsMenu && options.last
-            };
+          keyMap: {
+            Escape: options.hide
           }
         }),
-      [
-        hasParent,
-        isHorizontal,
-        isVertical,
-        options.hide,
-        options.last,
-        options.first
-      ]
+      [options.hide]
     );
 
     const parentBindings = React.useMemo(

@@ -28,7 +28,9 @@ import {
 } from "reakit/Menu";
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuState({
+    unstable_focusStrategy: "aria-activedescendant"
+  });
   return (
     <>
       <MenuButton {...menu}>Preferences</MenuButton>
@@ -154,7 +156,9 @@ import {
 } from "reakit/Menu";
 
 const PreferencesMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuState({
+    unstable_focusStrategy: "aria-activedescendant"
+  });
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -173,7 +177,9 @@ const PreferencesMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuState();
+  const menu = useMenuState({
+    unstable_focusStrategy: "aria-activedescendant"
+  });
   return (
     <>
       <MenuButton {...menu}>Code</MenuButton>

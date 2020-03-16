@@ -25,6 +25,13 @@ function dialogContains(target: Element) {
   };
 }
 
+/**
+ * TODO:
+ * Composite needs to have the concept of null current id
+ * On roving-tabindex, the first item should still be tabindex="0"
+ * But on aria-activedescendant, there should be no aria-selected nor aria-activedescendant id
+ * useCompositeState({ currentId: null });
+ */
 export function useEventListenerOutside(
   containerRef: React.RefObject<HTMLElement>,
   disclosuresRef: React.RefObject<HTMLElement[]>,
@@ -61,7 +68,7 @@ export function useEventListenerOutside(
       // Click on disclosure
       if (
         disclosures.length &&
-        disclosures.some(disclosure => disclosure.contains(target))
+        disclosures.some(disclosure => disclosure === target)
       ) {
         return;
       }

@@ -100,8 +100,12 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             // If it's in a Menu, open after a short delay
             // TODO: Make the delay a prop?
             setTimeout(() => {
-              if (self.contains(document.activeElement)) {
-                options.show && options.show();
+              if (
+                self.contains(document.activeElement) ||
+                parent.ref.current?.getAttribute("aria-activedescendant") ===
+                  self.id
+              ) {
+                options.show?.();
                 if (document.activeElement !== self) {
                   self.focus();
                 }
