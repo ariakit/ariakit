@@ -8,8 +8,6 @@ import {
   unstable_CompositeItemWidget as CompositeItemWidget
 } from "..";
 
-const strategies = ["roving-tabindex", "aria-activedescendant"] as const;
-
 const emojiMap = {
   "^": ["ArrowUp"],
   ">": ["ArrowRight"],
@@ -44,11 +42,11 @@ function template(value: string) {
   return items[withoutSpaces.indexOf("0")];
 }
 
-strategies.forEach(unstable_focusStrategy => {
-  describe(unstable_focusStrategy, () => {
+[true, false].forEach(virtual => {
+  describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("warning when there's no composite role", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <Composite {...composite} role="button" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -63,7 +61,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("warning when there's no label", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <Composite {...composite} role="toolbar">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -78,7 +76,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("first list item is active", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -97,7 +95,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("list item is active when currentId is set", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           currentId: "item2"
         });
         return (
@@ -120,7 +118,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("composite becomes the first item when currentId is null", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           currentId: null
         });
         return (
@@ -176,7 +174,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("composite becomes the first item when currentId is null and loop is true", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           currentId: null,
           loop: true
         });
@@ -228,7 +226,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("click item", () => {
       const onClick = jest.fn();
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -254,7 +252,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("composite is a single tab stop", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <>
             <button>button1</button>
@@ -282,7 +280,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("remember the last focused item", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <>
             <Composite {...composite} role="toolbar" aria-label="composite">
@@ -306,7 +304,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("move focus with arrow keys", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
@@ -333,7 +331,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move focus with arrow keys rtl", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           rtl: true
         });
         return (
@@ -362,7 +360,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move focus with arrow keys loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           loop: true
         });
         return (
@@ -392,7 +390,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move focus with arrow keys horizontal", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           orientation: "horizontal"
         });
         return (
@@ -423,7 +421,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move focus with arrow keys vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           orientation: "vertical"
         });
         return (
@@ -453,7 +451,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("keep DOM order", () => {
       const Test = ({ renderItem2 = false }) => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -478,7 +476,7 @@ strategies.forEach(unstable_focusStrategy => {
     ["disabled", "unmounted"].forEach(state => {
       test(`move to the past item when the current active item is ${state}`, () => {
         const Test = ({ disabled = false }) => {
-          const composite = useCompositeState({ unstable_focusStrategy });
+          const composite = useCompositeState({ virtual });
           return (
             <Composite {...composite} role="toolbar" aria-label="composite">
               <CompositeItem {...composite}>item1</CompositeItem>
@@ -513,7 +511,7 @@ strategies.forEach(unstable_focusStrategy => {
       test(`move to the past item when the current active item is ${state} and currentId is set`, () => {
         const Test = ({ disabled = false }) => {
           const composite = useCompositeState({
-            unstable_focusStrategy,
+            virtual,
             currentId: "item2"
           });
           return (
@@ -550,7 +548,7 @@ strategies.forEach(unstable_focusStrategy => {
 
       test(`move to the past item when the current active item is ${state} and id is set`, () => {
         const Test = ({ disabled = false }) => {
-          const composite = useCompositeState({ unstable_focusStrategy });
+          const composite = useCompositeState({ virtual });
           return (
             <Composite
               {...composite}
@@ -590,7 +588,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("list item with tabbable content inside", async () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         return (
           <>
             <Composite {...composite} role="toolbar" aria-label="composite">
@@ -692,7 +690,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("move grid focus with arrow keys", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 2, 1, 2],
@@ -851,7 +849,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys rtl", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           rtl: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -949,8 +947,8 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys wrap", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
-          focusWrap: true
+          virtual,
+          wrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -1026,8 +1024,8 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys wrap horizontal", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
-          focusWrap: "horizontal"
+          virtual,
+          wrap: "horizontal"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -1096,8 +1094,8 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys wrap vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
-          focusWrap: "vertical"
+          virtual,
+          wrap: "vertical"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -1166,7 +1164,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           loop: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1286,7 +1284,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys loop horizontal", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           loop: "horizontal"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1356,7 +1354,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys loop vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           loop: "vertical"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1433,8 +1431,8 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys wrap loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
-          focusWrap: true,
+          virtual,
+          wrap: true,
           loop: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1540,8 +1538,8 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys wrap horizontal loop vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
-          focusWrap: "horizontal",
+          virtual,
+          wrap: "horizontal",
           loop: "vertical"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1624,7 +1622,7 @@ strategies.forEach(unstable_focusStrategy => {
 
     test("move grid focus with arrow keys different number of cells", () => {
       const Test = () => {
-        const composite = useCompositeState({ unstable_focusStrategy });
+        const composite = useCompositeState({ virtual });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 0, 1],
@@ -1786,8 +1784,8 @@ strategies.forEach(unstable_focusStrategy => {
     test("move grid focus with arrow keys different number of cells wrap", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
-          focusWrap: true
+          virtual,
+          wrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
@@ -1886,9 +1884,9 @@ strategies.forEach(unstable_focusStrategy => {
     test("grid item with tabbable content inside", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           orientation: "vertical",
-          focusWrap: true
+          wrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled, .5 - has widget
         const rows = [
@@ -1949,7 +1947,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("move to the past item when the current group is unmounted", () => {
       const Test = ({ disableGroup = false, disableItems = false }) => {
         const composite = useCompositeState({
-          unstable_focusStrategy
+          virtual
         });
         const [groups, setGroups] = React.useState<string[][]>([[]]);
 
@@ -2004,7 +2002,7 @@ strategies.forEach(unstable_focusStrategy => {
     test("composite grid becomes the first item when currentId is null", () => {
       const Test = () => {
         const composite = useCompositeState({
-          unstable_focusStrategy,
+          virtual,
           currentId: null
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -2204,6 +2202,78 @@ strategies.forEach(unstable_focusStrategy => {
           - - 0 x
       `)
       );
+    });
+
+    test("composite grid becomes the first item when currentId is null and wrap", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          virtual,
+          wrap: true,
+          currentId: null
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+      const { getByLabelText: $ } = render(<Test />);
+      press.Tab();
+      expect($("composite")).toHaveFocus();
+      expect(active()).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("vv")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - 0 - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect($("composite")).toHaveFocus();
     });
   });
 });

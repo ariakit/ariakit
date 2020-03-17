@@ -125,7 +125,7 @@ is `true`, the navigation will wrap based on the value of `orientation`:
 item and vice-versa. It doesn't work if the composite widget has multiple
 groups (two-dimensional).
 
-- **`focusWrap`**
+- **`wrap`**
   <code>boolean</code>
 
   If enabled, moving to the next item from the last one in a row or column
@@ -136,7 +136,7 @@ direction:
   - If `orientation` is `horizontal`, it wraps horizontally only.
   - If `orientation` is `vertical`, it wraps vertically only.
 
-  `focusWrap` only works if the composite widget has multiple groups
+  `wrap` only works if the composite widget has multiple groups
 (two-dimensional).
 
 - **`state`**

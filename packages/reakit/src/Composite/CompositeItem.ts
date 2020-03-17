@@ -29,11 +29,7 @@ export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
-    | "baseId"
-    | "orientation"
-    | "unstable_moves"
-    | "unstable_focusStrategy"
-    | "unstable_hasActiveWidget"
+    "virtual" | "baseId" | "orientation" | "moves" | "unstable_hasActiveWidget"
   > &
   Pick<
     unstable_CompositeStateReturn,
@@ -111,10 +107,10 @@ export const unstable_useCompositeItem = createHook<
     const trulyDisabled = options.disabled && !options.focusable;
     const isCurrentItem = options.currentId === id;
     const item = options.items?.find(i => i.id === id);
-    const isVirtualFocus =
-      options.unstable_focusStrategy === "aria-activedescendant";
     const shouldTabIndex =
-      (!isVirtualFocus && !options.unstable_hasActiveWidget && isCurrentItem) ||
+      (!options.virtual &&
+        !options.unstable_hasActiveWidget &&
+        isCurrentItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
       !options.items;
@@ -148,17 +144,17 @@ export const unstable_useCompositeItem = createHook<
       // last or move have been called. This means that the composite item will
       // be focused whenever some of these functions are called. Unless it has
       // already focus, in which case we don't want to focus it again.
-      if (options.unstable_moves && isCurrentItem && !hasFocusWithin(self)) {
+      if (options.moves && isCurrentItem && !hasFocusWithin(self)) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
       }
-    }, [options.unstable_moves, isCurrentItem]);
+    }, [options.moves, isCurrentItem]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        if (isVirtualFocus) {
+        if (options.virtual) {
           options.setCurrentId?.(id);
         } else {
           options.move?.(id);
@@ -167,12 +163,12 @@ export const unstable_useCompositeItem = createHook<
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (isVirtualFocus && currentTarget === target && options.baseId) {
+        if (options.virtual && currentTarget === target && options.baseId) {
           const composite = getDocument(target).getElementById(options.baseId);
           composite?.focus();
         }
       },
-      [id, isVirtualFocus, options.setCurrentId, options.move, options.baseId]
+      [id, options.virtual, options.setCurrentId, options.move, options.baseId]
     );
 
     const onKeyDown = React.useMemo(
@@ -298,7 +294,7 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id,
-      "aria-selected": isVirtualFocus && isCurrentItem ? true : undefined,
+      "aria-selected": options.virtual && isCurrentItem ? true : undefined,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),

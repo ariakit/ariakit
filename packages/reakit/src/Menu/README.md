@@ -29,7 +29,7 @@ import {
 
 function Example() {
   const menu = useMenuState({
-    unstable_focusStrategy: "aria-activedescendant"
+    virtual: "aria-activedescendant"
   });
   return (
     <>
@@ -157,7 +157,7 @@ import {
 
 const PreferencesMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState({
-    unstable_focusStrategy: "aria-activedescendant"
+    virtual: "aria-activedescendant"
   });
   return (
     <>
@@ -178,7 +178,7 @@ const PreferencesMenu = React.forwardRef((props, ref) => {
 
 function Example() {
   const menu = useMenuState({
-    unstable_focusStrategy: "aria-activedescendant"
+    virtual: "aria-activedescendant"
   });
   return (
     <>
@@ -913,7 +913,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Defines the orientation of the rover list.
 
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
+- **`moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
 
   Stores the number of moves that have been made by calling `move`, `next`,
@@ -1048,7 +1048,7 @@ going to be an array.
 
   Defines the orientation of the rover list.
 
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
+- **`moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
 
   Stores the number of moves that have been made by calling `move`, `next`,

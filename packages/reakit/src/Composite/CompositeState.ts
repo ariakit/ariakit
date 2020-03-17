@@ -3,6 +3,7 @@ import {
   SealedInitialState,
   useSealedState
 } from "reakit-utils/useSealedState";
+import { applyState } from "reakit-utils/applyState";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -24,70 +25,65 @@ import { orderItemsStartingFrom } from "./__utils/orderItemsStartingFrom";
 
 export type unstable_CompositeState = unstable_IdState & {
   /**
-   * Determines how `next` and `previous` will behave. If `rtl` is set to `true`,
-   * then `next` will move focus to the previous item in the DOM.
+   * If enabled, the composite element will act as an
+   * [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+   * container. DOM focus will remain on the composite while its items receive
+   * virtual focus.
+   */
+  virtual: boolean;
+  /**
+   * Determines how `next` and `previous` functions will behave. If `rtl` is
+   * set to `true`, then they will be inverted. You still need to set
+   * `dir="rtl"` on HTML.
    */
   rtl: boolean;
   /**
-   * Defines the orientation of the composite widget.
-   *
-   * When the composite widget has multiple groups (two-dimensional) and `wrap`
-   * is `true`, the navigation will wrap based on the value of `orientation`:
-   *   - `undefined`: wraps in both directions.
-   *   - `horizontal`: wraps horizontally only.
-   *   - `vertical`: wraps vertically only.
-   *
-   * If the composite widget has a single row or column (one-dimensional), the
-   * `orientation` value determines which arrow keys can be used to move focus:
+   * Defines the orientation of the composite widget. If the composite widget
+   * has a single row or column (one-dimensional), the `orientation` value
+   * determines which arrow keys can be used to move focus:
    *   - `undefined`: all arrow keys work.
    *   - `horizontal`: only left and right arrow keys work.
    *   - `vertical`: only up and down arrow keys work.
    */
   orientation?: "horizontal" | "vertical";
   /**
-   * Lists all the composite items.
+   * Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+   * and `groupId` if any. This state is automatically updated when
+   * `registerItem` and `unregisterItem` are called.
    */
   items: Item[];
   /**
-   * Lists all the composite groups.
+   * Lists all the composite groups with their `id` and DOM `ref`. This state
+   * is automatically updated when `registerGroup` and `unregisterGroup` are
+   * called.
    */
   groups: Group[];
   /**
-   * The current focused item ID.
+   * The current focused item `id`. It's `undefined` by default, which means
+   * that the composite will automatically set the first enabled item as the
+   * current item.
+   *   - If `currentId` is set to `null`, the composite element itself will
+   * have focus and users will be able to navigate out of it using arrow keys.
+   *   - If `currentId` is explicitly set to `null` in the initial state, the
+   * composite element itself will have focus and users will be able to
+   * navigate **in and out** of it using arrow keys.
    */
   currentId?: string | null;
   /**
    * If enabled, moving to the next item from the last one will focus the first
-   * item and vice-versa. It doesn't work if the composite widget has multiple
-   * groups (two-dimensional).
+   * item and vice-versa.
    */
   loop: boolean | "horizontal" | "vertical";
   /**
    * If enabled, moving to the next item from the last one in a row or column
    * will focus the first item in the next row or column and vice-versa.
-   * Depending on the value of the `orientation` state, it'll wrap in only one
-   * direction:
-   *   - If `orientation` is `undefined`, it wraps in both directions.
-   *   - If `orientation` is `horizontal`, it wraps horizontally only.
-   *   - If `orientation` is `vertical`, it wraps vertically only.
-   *
-   * `focusWrap` only works if the composite widget has multiple groups
-   * (two-dimensional).
    */
-  focusWrap: boolean | "horizontal" | "vertical";
+  wrap: boolean | "horizontal" | "vertical";
   /**
-   * Stores the number of moves that have been made by calling `move`, `next`,
-   * `previous`, `up`, `down`, `first` or `last`.
-   * @private
+   * Stores the number of moves that have been performed by calling `move`,
+   * `next`, `previous`, `up`, `down`, `first` or `last`.
    */
-  unstable_moves: number;
-  /**
-   * Determines which type of keyboard navigation the composite widget will
-   * use. [Roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex)
-   * or [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
-   * @private
-   */
-  unstable_focusStrategy: "roving-tabindex" | "aria-activedescendant";
+  moves: number;
   /**
    * @private
    */
@@ -140,6 +136,12 @@ export type unstable_CompositeActions = unstable_IdActions & {
    */
   last: () => void;
   /**
+   * Sets `virtual`.
+   */
+  setVirtual: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["virtual"]>
+  >;
+  /**
    * Sets `rtl`.
    */
   setRTL: React.Dispatch<React.SetStateAction<unstable_CompositeState["rtl"]>>;
@@ -162,17 +164,10 @@ export type unstable_CompositeActions = unstable_IdActions & {
     React.SetStateAction<unstable_CompositeState["loop"]>
   >;
   /**
-   * Sets `focusWrap`.
+   * Sets `wrap`.
    */
-  setFocusWrap: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["focusWrap"]>
-  >;
-  /**
-   * Sets `focusStrategy`.
-   * @private
-   */
-  unstable_setFocusStrategy: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["unstable_focusStrategy"]>
+  setWrap: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["wrap"]>
   >;
   /**
    * Sets `hasFocusInsideItem`.
@@ -187,12 +182,7 @@ export type unstable_CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
       unstable_CompositeState,
-      | "unstable_focusStrategy"
-      | "rtl"
-      | "orientation"
-      | "currentId"
-      | "loop"
-      | "focusWrap"
+      "virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
     >
   >;
 
@@ -231,14 +221,18 @@ type CompositeReducerAction =
       loop: React.SetStateAction<unstable_CompositeState["loop"]>;
     }
   | {
-      type: "setFocusWrap";
-      wrap: React.SetStateAction<unstable_CompositeState["focusWrap"]>;
+      type: "setWrap";
+      wrap: React.SetStateAction<unstable_CompositeState["wrap"]>;
     };
 
 type CompositeReducerState = Omit<
   unstable_CompositeState,
-  "unstable_focusStrategy" | "unstable_hasActiveWidget" | keyof unstable_IdState
-> & { pastIds: string[]; hasNullItem: boolean; lol?: boolean };
+  "virtual" | "unstable_hasActiveWidget" | keyof unstable_IdState
+> & {
+  pastIds: string[];
+  hasNullItem?: boolean;
+  initialCurrentId?: unstable_CompositeState["currentId"];
+};
 
 function reducer(
   state: CompositeReducerState,
@@ -251,11 +245,11 @@ function reducer(
     groups,
     currentId,
     loop,
-    focusWrap,
+    wrap,
     pastIds,
+    initialCurrentId,
     hasNullItem,
-    lol,
-    unstable_moves: moves
+    moves
   } = state;
 
   switch (action.type) {
@@ -363,7 +357,7 @@ function reducer(
       return {
         ...state,
         pastIds: nextPastIds,
-        unstable_moves: item ? moves + 1 : moves,
+        moves: item ? moves + 1 : moves,
         currentId: getCurrentId(state, item?.id)
       };
     }
@@ -382,6 +376,7 @@ function reducer(
         return reducer(state, { ...action, type: "first" });
       }
 
+      const isGrid = !!currentItem.groupId;
       const currentIndex = allItems.indexOf(currentItem);
       // Turns [0, 1, current, 3, 4] into [3, 4]
       const nextItems = allItems.slice(currentIndex + 1);
@@ -403,27 +398,45 @@ function reducer(
         return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
-      if (loop && loop !== "vertical") {
+      const orientationMap = {
+        horizontal: "vertical",
+        vertical: "horizontal"
+      } as const;
+
+      // TODO: Test this
+      const oppositeOrientation =
+        orientation && !currentItem.groupId
+          ? orientationMap[orientation]
+          : "vertical";
+      const canLoop = loop && loop !== oppositeOrientation;
+      const canWrap = isGrid && wrap && wrap !== oppositeOrientation;
+
+      if (canLoop) {
         const nextItem = findFirstEnabledItem(
           orderItemsStartingFrom(
-            focusWrap ? allItems : itemsInGroup,
+            canWrap && !hasNullItem ? allItems : itemsInGroup,
             currentId,
-            lol || action.lol
+            hasNullItem || (initialCurrentId === null && !isGrid)
           ),
           currentId
         );
         return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
-      if (currentItem.groupId && focusWrap && focusWrap !== "vertical") {
+      if (canWrap) {
         // Using nextItems instead of nextItemsInGroup so we can wrap between groups
-        const nextItem = findFirstEnabledItem(nextItems, currentId);
-        return reducer(state, { ...action, type: "move", id: nextItem?.id });
+        // TODO: Test wrap: true, currentId: null, loop: true
+        const nextItem = findFirstEnabledItem(
+          hasNullItem ? nextItemsInGroup : nextItems,
+          currentId
+        );
+        const nextId = hasNullItem ? nextItem?.id || null : nextItem?.id;
+        return reducer(state, { ...action, type: "move", id: nextId });
       }
 
       const nextItem = findFirstEnabledItem(nextItemsInGroup, currentId);
 
-      if (!nextItem && lol) {
+      if (!nextItem && hasNullItem) {
         return reducer(state, { ...action, type: "move", id: null });
       }
 
@@ -433,203 +446,147 @@ function reducer(
       const nextState = reducer(
         {
           ...state,
-          lol: !groups.length && hasNullItem,
-          focusWrap: focusWrap && focusWrap !== "vertical",
+          hasNullItem: !groups.length && initialCurrentId === null,
+          wrap: wrap && wrap !== "vertical",
           loop: loop && loop !== "vertical",
           items: reverse(items)
         },
         { ...action, type: "next" }
       );
-      return { ...nextState, lol, focusWrap, loop, items };
+      return { ...nextState, hasNullItem, wrap, loop, items };
     }
     case "down": {
       const nextState = reducer(
         {
           ...state,
           rtl: false,
-          focusWrap: focusWrap && focusWrap !== "horizontal",
+          wrap: wrap && wrap !== "horizontal",
           loop: loop && loop !== "horizontal",
           items: verticalizeItems(flatten(fillGroups(groupItems(items))))
         },
         { ...action, type: "next" }
       );
-      return { ...nextState, rtl, focusWrap, loop, items };
+      return { ...nextState, rtl, wrap, loop, items };
     }
     case "up": {
       const nextState = reducer(
         {
           ...state,
-          lol: hasNullItem,
+          hasNullItem: initialCurrentId === null,
           items: reverse(flatten(fillGroups(groupItems(items))))
         },
         { ...action, type: "down" }
       );
-      return { ...nextState, lol, items };
+      return { ...nextState, hasNullItem, items };
     }
     case "first": {
-      const firstItem = rtl
-        ? items
-            .slice()
-            .reverse()
-            .find(item => !item.disabled)
-        : items.find(item => !item.disabled);
+      const allItems = rtl ? items.slice().reverse() : items;
+      const firstItem = findFirstEnabledItem(allItems);
       return reducer(state, { ...action, type: "move", id: firstItem?.id });
     }
     case "last": {
-      const { items: _, ...nextState } = reducer(
-        { ...state, items: items.slice().reverse() },
+      const nextState = reducer(
+        { ...state, rtl: !rtl },
         { ...action, type: "first" }
       );
-      return { ...state, ...nextState };
+      return { ...nextState, rtl };
     }
     case "setRTL":
-      return {
-        ...state,
-        rtl: typeof action.rtl === "function" ? action.rtl(rtl) : action.rtl
-      };
+      return { ...state, rtl: applyState(action.rtl, rtl) };
     case "setOrientation":
       return {
         ...state,
-        orientation:
-          typeof action.orientation === "function"
-            ? action.orientation(orientation)
-            : action.orientation
+        orientation: applyState(action.orientation, orientation)
       };
-    case "setCurrentId": {
-      return {
-        ...state,
-        currentId:
-          typeof action.currentId === "function"
-            ? action.currentId(currentId)
-            : action.currentId
-      };
-    }
+    case "setCurrentId":
+      return { ...state, currentId: applyState(action.currentId, currentId) };
     case "setLoop":
-      return {
-        ...state,
-        loop:
-          typeof action.loop === "function" ? action.loop(loop) : action.loop
-      };
-    case "setFocusWrap":
-      return {
-        ...state,
-        focusWrap:
-          typeof action.wrap === "function"
-            ? action.wrap(focusWrap)
-            : action.wrap
-      };
+      return { ...state, loop: applyState(action.loop, loop) };
+    case "setWrap":
+      return { ...state, wrap: applyState(action.wrap, wrap) };
     default:
       throw new Error();
   }
+}
+
+function useAction<T extends (...args: any[]) => any>(fn: T) {
+  return React.useCallback(fn, []);
 }
 
 export function unstable_useCompositeState(
   initialState: SealedInitialState<unstable_CompositeInitialState> = {}
 ): unstable_CompositeStateReturn {
   const {
+    virtual: initialVirtual = false,
     rtl = false,
     orientation,
-    unstable_focusStrategy: initialFocusStrategy = "roving-tabindex",
     currentId,
     loop = false,
-    focusWrap = false,
+    wrap = false,
     ...sealed
   } = useSealedState(initialState);
-  const [{ pastIds, hasNullItem, ...state }, dispatch] = React.useReducer(
-    reducer,
-    {
-      rtl,
-      orientation,
-      items: [],
-      groups: [],
-      currentId,
-      loop,
-      focusWrap,
-      pastIds: [],
-      hasNullItem: currentId === null,
-      unstable_moves: 0
-    }
-  );
-  const [focusStrategy, setFocusStrategy] = React.useState(
-    initialFocusStrategy
-  );
+  const [
+    { pastIds, initialCurrentId, hasNullItem, ...state },
+    dispatch
+  ] = React.useReducer(reducer, {
+    rtl,
+    orientation,
+    items: [],
+    groups: [],
+    currentId,
+    loop,
+    wrap,
+    moves: 0,
+    pastIds: [],
+    initialCurrentId: currentId
+  });
+  const [virtual, setVirtual] = React.useState(initialVirtual);
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
 
   return {
     ...idState,
     ...state,
-    unstable_focusStrategy: focusStrategy,
-    unstable_setFocusStrategy: setFocusStrategy,
+    virtual,
+    setVirtual,
     unstable_hasActiveWidget: hasActiveWidget,
     unstable_setHasActiveWidget: setHasActiveWidget,
-    registerItem: React.useCallback(
-      item => dispatch({ type: "registerItem", item }),
-      []
+    registerItem: useAction(item => dispatch({ type: "registerItem", item })),
+    unregisterItem: useAction(id => dispatch({ type: "unregisterItem", id })),
+    registerGroup: useAction(group =>
+      dispatch({ type: "registerGroup", group })
     ),
-    unregisterItem: React.useCallback(
-      id => dispatch({ type: "unregisterItem", id }),
-      []
+    unregisterGroup: useAction(id => dispatch({ type: "unregisterGroup", id })),
+    move: useAction(id => dispatch({ type: "move", id })),
+    next: useAction(allTheWay => dispatch({ type: "next", allTheWay })),
+    previous: useAction(allTheWay => dispatch({ type: "previous", allTheWay })),
+    up: useAction(allTheWay => dispatch({ type: "up", allTheWay })),
+    down: useAction(allTheWay => dispatch({ type: "down", allTheWay })),
+    first: useAction(() => dispatch({ type: "first" })),
+    last: useAction(() => dispatch({ type: "last" })),
+    setRTL: useAction(value => dispatch({ type: "setRTL", rtl: value })),
+    setOrientation: useAction(value =>
+      dispatch({ type: "setOrientation", orientation: value })
     ),
-    registerGroup: React.useCallback(
-      group => dispatch({ type: "registerGroup", group }),
-      []
+    setCurrentId: useAction(value =>
+      dispatch({ type: "setCurrentId", currentId: value })
     ),
-    unregisterGroup: React.useCallback(
-      id => dispatch({ type: "unregisterGroup", id }),
-      []
-    ),
-    move: React.useCallback(id => dispatch({ type: "move", id }), []),
-    next: React.useCallback(
-      allTheWay =>
-        dispatch({ type: "next", allTheWay, lol: currentId === null }),
-      []
-    ),
-    previous: React.useCallback(
-      allTheWay => dispatch({ type: "previous", allTheWay }),
-      []
-    ),
-    up: React.useCallback(allTheWay => dispatch({ type: "up", allTheWay }), []),
-    down: React.useCallback(
-      allTheWay => dispatch({ type: "down", allTheWay }),
-      []
-    ),
-    first: React.useCallback(() => dispatch({ type: "first" }), []),
-    last: React.useCallback(() => dispatch({ type: "last" }), []),
-    setRTL: React.useCallback(
-      value => dispatch({ type: "setRTL", rtl: value }),
-      []
-    ),
-    setOrientation: React.useCallback(
-      value => dispatch({ type: "setOrientation", orientation: value }),
-      []
-    ),
-    setCurrentId: React.useCallback(
-      value => dispatch({ type: "setCurrentId", currentId: value }),
-      []
-    ),
-    setLoop: React.useCallback(
-      value => dispatch({ type: "setLoop", loop: value }),
-      []
-    ),
-    setFocusWrap: React.useCallback(
-      value => dispatch({ type: "setFocusWrap", wrap: value }),
-      []
-    )
+    setLoop: useAction(value => dispatch({ type: "setLoop", loop: value })),
+    setWrap: useAction(value => dispatch({ type: "setWrap", wrap: value }))
   };
 }
 
 const keys: Array<keyof unstable_CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
+  "virtual",
   "rtl",
   "orientation",
   "items",
   "groups",
   "currentId",
   "loop",
-  "focusWrap",
-  "unstable_moves",
-  "unstable_focusStrategy",
+  "wrap",
+  "moves",
   "unstable_hasActiveWidget",
   "registerItem",
   "unregisterItem",
@@ -642,12 +599,12 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "down",
   "first",
   "last",
+  "setVirtual",
   "setRTL",
   "setOrientation",
   "setCurrentId",
   "setLoop",
-  "setFocusWrap",
-  "unstable_setFocusStrategy",
+  "setWrap",
   "unstable_setHasActiveWidget"
 ];
 

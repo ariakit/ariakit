@@ -29,7 +29,7 @@ test("render", () => {
 
 test("render aria-activedescendant", () => {
   const { container } = render(
-    <Composite {...props} unstable_focusStrategy="aria-activedescendant" />
+    <Composite {...props} virtual="aria-activedescendant" />
   );
   expect(console).toHaveWarned();
   expect(container).toMatchInlineSnapshot(`

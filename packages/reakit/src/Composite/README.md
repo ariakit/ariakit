@@ -53,7 +53,7 @@ function Example() {
 
 ### aria-activedescendant
 
-`Composite` may work as an [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices/#kbd_focus_activedescendant) container by just setting the `unstable_focusStrategy` initial state to `useCompositeState`.
+`Composite` may work as an [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices/#kbd_focus_activedescendant) container by just setting the `virtual` initial state to `useCompositeState`.
 
 You can still attach event handlers to `CompositeItem` just like it were using the roving tabindex method. You don't need to change anything else to make it work.
 
@@ -69,7 +69,7 @@ import {
 
 function Example() {
   const composite = useCompositeState({
-    unstable_focusStrategy: "aria-activedescendant"
+    virtual: "aria-activedescendant"
   });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
@@ -97,7 +97,7 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({ focusWrap: true });
+  const composite = useCompositeState({ wrap: true });
   return (
     <Composite {...composite} role="grid" aria-label="My grid">
       <CompositeGroup {...composite}>
@@ -242,7 +242,7 @@ is `true`, the navigation will wrap based on the value of `orientation`:
 item and vice-versa. It doesn't work if the composite widget has multiple
 groups (two-dimensional).
 
-- **`focusWrap`**
+- **`wrap`**
   <code>boolean</code>
 
   If enabled, moving to the next item from the last one in a row or column
@@ -253,7 +253,7 @@ direction:
   - If `orientation` is `horizontal`, it wraps horizontally only.
   - If `orientation` is `vertical`, it wraps vertically only.
 
-  `focusWrap` only works if the composite widget has multiple groups
+  `wrap` only works if the composite widget has multiple groups
 (two-dimensional).
 
 ### `Composite`

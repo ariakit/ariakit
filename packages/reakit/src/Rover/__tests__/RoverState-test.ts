@@ -28,7 +28,7 @@ test("initial state", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -48,7 +48,7 @@ test("initial state activeRef", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -69,7 +69,7 @@ test("initial state loop", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -90,7 +90,7 @@ test("initial state orientation", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -119,7 +119,7 @@ test("register", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -149,7 +149,7 @@ test("register already registered", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -177,7 +177,7 @@ test("register currentId", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -197,7 +197,7 @@ test("unregister", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -216,7 +216,7 @@ test("unregister inexistent", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `);
@@ -241,7 +241,7 @@ test("unregister currentId", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `
@@ -278,7 +278,7 @@ test("unregister pastId", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 1,
+      "moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -312,7 +312,7 @@ test("move", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 1,
+      "moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -357,7 +357,7 @@ test("move twice", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 2,
+      "moves": 2,
       "unstable_pastId": "a",
     }
   `
@@ -402,7 +402,7 @@ test("move to the same ref", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 2,
+      "moves": 2,
       "unstable_pastId": null,
     }
   `
@@ -447,7 +447,7 @@ test("move to null", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 2,
+      "moves": 2,
       "unstable_pastId": "b",
     }
   `
@@ -462,7 +462,7 @@ test("move silently", () => {
   act(() => result.current.move("b", true));
   expect(result.current).toMatchInlineSnapshot(
     {
-      unstable_moves: 1
+      moves: 1
     },
     `
     Object {
@@ -491,7 +491,7 @@ test("move silently", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 1,
+      "moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -545,7 +545,7 @@ test("next", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 2,
+      "moves": 2,
       "unstable_pastId": "a",
     }
   `
@@ -601,7 +601,7 @@ test("next thrice", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 3,
+      "moves": 3,
       "unstable_pastId": "b",
     }
   `
@@ -657,7 +657,7 @@ test("next thrice loop", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 4,
+      "moves": 4,
       "unstable_pastId": "c",
     }
   `
@@ -711,7 +711,7 @@ test("previous", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 2,
+      "moves": 2,
       "unstable_pastId": "b",
     }
   `
@@ -765,7 +765,7 @@ test("previous loop", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 2,
+      "moves": 2,
       "unstable_pastId": "a",
     }
   `
@@ -809,7 +809,7 @@ test("first", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 1,
+      "moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -853,7 +853,7 @@ test("last", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 1,
+      "moves": 1,
       "unstable_pastId": null,
     }
   `
@@ -877,7 +877,7 @@ test("orientate", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "unstable_moves": 0,
+      "moves": 0,
       "unstable_pastId": null,
     }
   `

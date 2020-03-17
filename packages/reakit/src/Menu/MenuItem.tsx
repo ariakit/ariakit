@@ -61,7 +61,7 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
         // Move focus onto menu after blurring
         if (
           (document.activeElement === document.body ||
-            options.unstable_focusStrategy === "aria-activedescendant") &&
+            options.virtual === "aria-activedescendant") &&
           !isTouchDevice()
         ) {
           options.setCurrentId(null);

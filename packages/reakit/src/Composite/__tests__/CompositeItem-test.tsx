@@ -74,11 +74,7 @@ test("interact without state props", () => {
 
 test("render aria-activedescendant", () => {
   const { container } = render(
-    <CompositeItem
-      {...props}
-      id="1"
-      unstable_focusStrategy="aria-activedescendant"
-    />
+    <CompositeItem {...props} id="1" virtual="aria-activedescendant" />
   );
   expect(container).toMatchInlineSnapshot(`
 <div>
@@ -92,11 +88,7 @@ test("render aria-activedescendant", () => {
 
 test("render aria-activedescendant current", () => {
   const { container } = render(
-    <CompositeItem
-      {...props}
-      id="2"
-      unstable_focusStrategy="aria-activedescendant"
-    />
+    <CompositeItem {...props} id="2" virtual="aria-activedescendant" />
   );
   expect(container).toMatchInlineSnapshot(`
 <div>

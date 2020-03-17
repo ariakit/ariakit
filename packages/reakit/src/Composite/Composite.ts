@@ -23,7 +23,7 @@ export type unstable_CompositeOptions = TabbableOptions &
   unstable_IdGroupOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
-    "unstable_focusStrategy" | "orientation" | "unstable_moves"
+    "virtual" | "orientation" | "moves" | "wrap"
   > &
   Pick<
     unstable_CompositeStateReturn,
@@ -37,6 +37,7 @@ export type unstable_CompositeProps = unstable_CompositeOptions &
   unstable_CompositeHTMLProps;
 
 const validCompositeRoles = [
+  "combobox",
   "grid",
   "tablist",
   "listbox",
@@ -102,14 +103,10 @@ export const unstable_useComposite = createHook<
         // TODO: Warning
         return;
       }
-      if (
-        options.unstable_moves &&
-        !currentItem &&
-        getActiveElement(self) !== self
-      ) {
+      if (options.moves && !currentItem && getActiveElement(self) !== self) {
         self.focus();
       }
-    }, [options.unstable_moves, currentItem]);
+    }, [options.moves, currentItem]);
 
     const bindings = React.useMemo(
       () =>
@@ -147,10 +144,9 @@ export const unstable_useComposite = createHook<
       id: options.baseId,
       onKeyDown: useAllCallbacks(bindings, onKeyDown, htmlOnKeyDown),
       onKeyUp: useAllCallbacks(onKeyUp, htmlOnKeyUp),
-      "aria-activedescendant":
-        options.unstable_focusStrategy === "aria-activedescendant"
-          ? currentItem?.id
-          : undefined,
+      "aria-activedescendant": options.virtual
+        ? currentItem?.id || undefined
+        : undefined,
       ...htmlProps
     };
   },
@@ -158,10 +154,7 @@ export const unstable_useComposite = createHook<
   useComposeProps(options, htmlProps) {
     htmlProps = unstable_useIdGroup(options, htmlProps, true);
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
-    if (
-      options.unstable_focusStrategy === "aria-activedescendant" ||
-      !getCurrentItem(options)
-    ) {
+    if (options.virtual || !getCurrentItem(options)) {
       // Composite will only be tabbable by default if the focus is managed
       // using aria-activedescendant, which requires DOM focus on the container
       // element (the composite)
