@@ -12,7 +12,7 @@ import {
   unstable_IdStateReturn
 } from "../Id/IdState";
 import { reverse } from "./__utils/reverse";
-import { Item, Group } from "./__utils/types";
+import { Item, Group, Orientation } from "./__utils/types";
 import { findDOMIndex } from "./__utils/findDOMIndex";
 import { findFirstEnabledItem } from "./__utils/findFirstEnabledItem";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
@@ -21,7 +21,9 @@ import { groupItems } from "./__utils/groupItems";
 import { flatten } from "./__utils/flatten";
 import { fillGroups } from "./__utils/fillGroups";
 import { getCurrentId } from "./__utils/getCurrentId";
-import { orderItemsStartingFrom } from "./__utils/orderItemsStartingFrom";
+import { placeItemsAfter } from "./__utils/placeItemsAfter";
+import { getItemsInGroup } from "./__utils/getItemsInGroup";
+import { getOppositeOrientation } from "./__utils/getOppositeOrientation";
 
 export type unstable_CompositeState = unstable_IdState & {
   /**
@@ -45,7 +47,7 @@ export type unstable_CompositeState = unstable_IdState & {
    *   - `horizontal`: only left and right arrow keys work.
    *   - `vertical`: only up and down arrow keys work.
    */
-  orientation?: "horizontal" | "vertical";
+  orientation?: Orientation;
   /**
    * Lists all the composite items with their `id`, DOM `ref`, `disabled` state
    * and `groupId` if any. This state is automatically updated when
@@ -73,12 +75,12 @@ export type unstable_CompositeState = unstable_IdState & {
    * If enabled, moving to the next item from the last one will focus the first
    * item and vice-versa.
    */
-  loop: boolean | "horizontal" | "vertical";
+  loop: boolean | Orientation;
   /**
    * If enabled, moving to the next item from the last one in a row or column
    * will focus the first item in the next row or column and vice-versa.
    */
-  wrap: boolean | "horizontal" | "vertical";
+  wrap: boolean | Orientation;
   /**
    * Stores the number of moves that have been performed by calling `move`,
    * `next`, `previous`, `up`, `down`, `first` or `last`.
@@ -196,7 +198,7 @@ type CompositeReducerAction =
   | { type: "registerGroup"; group: Group }
   | { type: "unregisterGroup"; id: string | null }
   | { type: "move"; id?: string | null }
-  | { type: "next"; allTheWay?: boolean; lol?: boolean }
+  | { type: "next"; allTheWay?: boolean; hasNullItem?: boolean }
   | { type: "previous"; allTheWay?: boolean }
   | { type: "up"; allTheWay?: boolean }
   | { type: "down"; allTheWay?: boolean }
@@ -230,7 +232,6 @@ type CompositeReducerState = Omit<
   "virtual" | "unstable_hasActiveWidget" | keyof unstable_IdState
 > & {
   pastIds: string[];
-  hasNullItem?: boolean;
   initialCurrentId?: unstable_CompositeState["currentId"];
 };
 
@@ -248,7 +249,6 @@ function reducer(
     wrap,
     pastIds,
     initialCurrentId,
-    hasNullItem,
     moves
   } = state;
 
@@ -378,14 +378,8 @@ function reducer(
 
       const isGrid = !!currentItem.groupId;
       const currentIndex = allItems.indexOf(currentItem);
-      // Turns [0, 1, current, 3, 4] into [3, 4]
       const nextItems = allItems.slice(currentIndex + 1);
-      const itemsInGroup = allItems.filter(
-        item => item.groupId === currentItem.groupId
-      );
-      const nextItemsInGroup = nextItems.filter(
-        item => item.groupId === currentItem.groupId
-      );
+      const nextItemsInGroup = getItemsInGroup(nextItems, currentItem.groupId);
 
       // Home, End
       if (action.allTheWay) {
@@ -398,34 +392,36 @@ function reducer(
         return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
-      const orientationMap = {
-        horizontal: "vertical",
-        vertical: "horizontal"
-      } as const;
-
-      // TODO: Test this
-      const oppositeOrientation =
-        orientation && !currentItem.groupId
-          ? orientationMap[orientation]
-          : "vertical";
+      const oppositeOrientation = getOppositeOrientation(
+        // If it's a grid and orientation is not set, it's a next/previous
+        // call, which is inherently horizontal. up/down will call next with
+        // orientation set to vertical by default (see below on up/down cases).
+        isGrid ? orientation || "horizontal" : orientation
+      );
       const canLoop = loop && loop !== oppositeOrientation;
       const canWrap = isGrid && wrap && wrap !== oppositeOrientation;
+      const hasNullItem =
+        // `previous` and `up` will set action.hasNullItem, but when calling
+        // next directly, hasNullItem will only be true if it's not a grid and
+        // loop is set to true, which means that pressing right or down keys on
+        // grids will never focus the composite element. On one-dimensional
+        // composites that don't loop, pressing right or down keys also doesn't
+        // focus the composite element.
+        action.hasNullItem || (!isGrid && canLoop && initialCurrentId === null);
 
       if (canLoop) {
-        const nextItem = findFirstEnabledItem(
-          orderItemsStartingFrom(
-            canWrap && !hasNullItem ? allItems : itemsInGroup,
-            currentId,
-            hasNullItem || (initialCurrentId === null && !isGrid)
-          ),
-          currentId
-        );
+        const loopItems =
+          canWrap && !hasNullItem
+            ? allItems
+            : getItemsInGroup(allItems, currentItem.groupId);
+        // Turns [0, 1, current, 3, 4] into [3, 4, 0, 1]
+        const sortedItems = placeItemsAfter(loopItems, currentId, hasNullItem);
+        const nextItem = findFirstEnabledItem(sortedItems, currentId);
         return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
 
       if (canWrap) {
         // Using nextItems instead of nextItemsInGroup so we can wrap between groups
-        // TODO: Test wrap: true, currentId: null, loop: true
         const nextItem = findFirstEnabledItem(
           hasNullItem ? nextItemsInGroup : nextItems,
           currentId
@@ -443,41 +439,40 @@ function reducer(
       return reducer(state, { ...action, type: "move", id: nextItem?.id });
     }
     case "previous": {
+      const isGrid = !!groups.length;
       const nextState = reducer(
+        { ...state, items: reverse(items) },
         {
-          ...state,
-          hasNullItem: !groups.length && initialCurrentId === null,
-          wrap: wrap && wrap !== "vertical",
-          loop: loop && loop !== "vertical",
-          items: reverse(items)
-        },
-        { ...action, type: "next" }
+          ...action,
+          type: "next",
+          hasNullItem: !isGrid && initialCurrentId === null
+        }
       );
-      return { ...nextState, hasNullItem, wrap, loop, items };
+      return { ...nextState, items };
     }
     case "down": {
       const nextState = reducer(
         {
           ...state,
-          rtl: false,
-          wrap: wrap && wrap !== "horizontal",
-          loop: loop && loop !== "horizontal",
+          orientation: "vertical",
           items: verticalizeItems(flatten(fillGroups(groupItems(items))))
         },
         { ...action, type: "next" }
       );
-      return { ...nextState, rtl, wrap, loop, items };
+      return { ...nextState, orientation, items };
     }
     case "up": {
       const nextState = reducer(
         {
           ...state,
-          hasNullItem: initialCurrentId === null,
-          items: reverse(flatten(fillGroups(groupItems(items))))
+          orientation: "vertical",
+          items: verticalizeItems(
+            reverse(flatten(fillGroups(groupItems(items))))
+          )
         },
-        { ...action, type: "down" }
+        { ...action, type: "next", hasNullItem: initialCurrentId === null }
       );
-      return { ...nextState, hasNullItem, items };
+      return { ...nextState, orientation, items };
     }
     case "first": {
       const allItems = rtl ? items.slice().reverse() : items;
@@ -525,21 +520,21 @@ export function unstable_useCompositeState(
     wrap = false,
     ...sealed
   } = useSealedState(initialState);
-  const [
-    { pastIds, initialCurrentId, hasNullItem, ...state },
-    dispatch
-  ] = React.useReducer(reducer, {
-    rtl,
-    orientation,
-    items: [],
-    groups: [],
-    currentId,
-    loop,
-    wrap,
-    moves: 0,
-    pastIds: [],
-    initialCurrentId: currentId
-  });
+  const [{ pastIds, initialCurrentId, ...state }, dispatch] = React.useReducer(
+    reducer,
+    {
+      rtl,
+      orientation,
+      items: [],
+      groups: [],
+      currentId,
+      loop,
+      wrap,
+      moves: 0,
+      pastIds: [],
+      initialCurrentId: currentId
+    }
+  );
   const [virtual, setVirtual] = React.useState(initialVirtual);
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);

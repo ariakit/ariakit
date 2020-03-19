@@ -9,3 +9,5 @@ export type Item = {
   groupId?: Group["id"];
   disabled?: boolean;
 };
+
+export type Orientation = "horizontal" | "vertical";

@@ -9,20 +9,20 @@ test("initial state", () => {
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "baseId": "base",
-      "currentId": null,
-      "wrap": false,
+      "currentId": undefined,
       "groups": Array [],
       "items": Array [],
       "loop": true,
+      "moves": 0,
       "orientation": undefined,
       "rtl": false,
       "state": undefined,
-      "virtual": "roving-tabindex",
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "moves": 0,
+      "virtual": false,
+      "wrap": false,
     }
   `);
 });

@@ -19,6 +19,7 @@ test("render", () => {
           aria-label="radiogroup"
           id="radiogroup"
           role="radiogroup"
+          tabindex="0"
         />
       </div>
     </body>

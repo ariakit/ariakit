@@ -2,7 +2,7 @@ import { Item } from "./types";
 
 const nullItem = { id: null, ref: { current: null } };
 
-export function orderItemsStartingFrom(
+export function placeItemsAfter(
   items: Item[],
   id: string,
   shouldInsertNullItem?: boolean

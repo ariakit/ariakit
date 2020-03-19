@@ -38,7 +38,7 @@ export type RoverState = unstable_IdState & {
    * Stores the number of moves that have been made by calling `move`, `next`,
    * `previous`, `first` or `last`.
    */
-  moves: number;
+  unstable_moves: number;
   /**
    * If enabled:
    *   - Jumps to the first item when moving next from the last item.
@@ -113,7 +113,13 @@ function reducer(
   state: RoverReducerState,
   action: RoverAction
 ): RoverReducerState {
-  const { stops, currentId, unstable_pastId: pastId, moves, loop } = state;
+  const {
+    stops,
+    currentId,
+    unstable_pastId: pastId,
+    unstable_moves: moves,
+    loop
+  } = state;
 
   switch (action.type) {
     case "register": {
@@ -182,7 +188,7 @@ function reducer(
           ...state,
           currentId: null,
           unstable_pastId: currentId,
-          moves: nextMoves
+          unstable_moves: nextMoves
         };
       }
 
@@ -194,14 +200,14 @@ function reducer(
       }
 
       if (stops[index].id === currentId) {
-        return { ...state, moves: nextMoves };
+        return { ...state, unstable_moves: nextMoves };
       }
 
       return {
         ...state,
         currentId: stops[index].id,
         unstable_pastId: currentId,
-        moves: nextMoves
+        unstable_moves: nextMoves
       };
     }
     case "next": {
@@ -271,7 +277,7 @@ export function useRoverState(
     stops: [],
     currentId,
     unstable_pastId: null,
-    moves: 0,
+    unstable_moves: 0,
     loop
   });
 
@@ -310,7 +316,7 @@ const keys: Array<keyof RoverStateReturn> = [
   "stops",
   "currentId",
   "unstable_pastId",
-  "moves",
+  "unstable_moves",
   "loop",
   "register",
   "unregister",

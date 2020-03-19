@@ -2252,6 +2252,13 @@ function template(value: string) {
           - - - x
       `)
       );
+      expect(key("<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
       expect(key("vv")).toBe(
         template(`
           - x x -
@@ -2263,6 +2270,79 @@ function template(value: string) {
         template(`
           - x x -
           - 0 - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect($("composite")).toHaveFocus();
+    });
+
+    test("composite grid becomes the first item when currentId is null, wrap and loop", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          virtual,
+          wrap: true,
+          loop: true,
+          currentId: null
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+      const { getByLabelText: $ } = render(<Test />);
+      press.Tab();
+      expect($("composite")).toHaveFocus();
+      expect(active()).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          0 x x -
+          - - - -
           - - - x
       `)
       );

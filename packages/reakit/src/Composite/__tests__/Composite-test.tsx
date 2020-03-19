@@ -7,12 +7,15 @@ import {
 
 const props: unstable_CompositeProps = {
   id: "composite",
+  groups: [],
   items: [
     { id: "1", ref: { current: null } },
     { id: "2", ref: { current: null } },
     { id: "3", ref: { current: null } }
   ],
-  currentId: "2"
+  currentId: "2",
+  first: jest.fn(),
+  last: jest.fn()
 };
 
 test("render", () => {
@@ -28,9 +31,7 @@ test("render", () => {
 });
 
 test("render aria-activedescendant", () => {
-  const { container } = render(
-    <Composite {...props} virtual="aria-activedescendant" />
-  );
+  const { container } = render(<Composite {...props} virtual />);
   expect(console).toHaveWarned();
   expect(container).toMatchInlineSnapshot(`
 <div>

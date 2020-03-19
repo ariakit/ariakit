@@ -18,6 +18,7 @@ test("render", () => {
           aria-label="tablist"
           id="base"
           role="tablist"
+          tabindex="0"
         >
           tablist
         </div>
@@ -55,17 +56,18 @@ test("render orientation", () => {
     </TabList>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          aria-label="tablist"
-          aria-orientation="horizontal"
-          id="base"
-          role="tablist"
-        >
-          tablist
-        </div>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <div
+      aria-label="tablist"
+      aria-orientation="horizontal"
+      id="base"
+      role="tablist"
+      tabindex="0"
+    >
+      tablist
+    </div>
+  </div>
+</body>
+`);
 });

@@ -113,7 +113,7 @@ export const unstable_useComposite = createHook<
         createOnKeyDown({
           stopPropagation: true,
           shouldKeyDown: event =>
-            event.target === event.currentTarget && !currentItem,
+            event.target === event.currentTarget && options.currentId === null,
           keyMap: () => {
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
@@ -131,7 +131,7 @@ export const unstable_useComposite = createHook<
           }
         }),
       [
-        currentItem,
+        options.currentId,
         options.orientation,
         options.groups,
         options.last,
@@ -154,7 +154,7 @@ export const unstable_useComposite = createHook<
   useComposeProps(options, htmlProps) {
     htmlProps = unstable_useIdGroup(options, htmlProps, true);
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
-    if (options.virtual || !getCurrentItem(options)) {
+    if (options.virtual || options.currentId === null) {
       // Composite will only be tabbable by default if the focus is managed
       // using aria-activedescendant, which requires DOM focus on the container
       // element (the composite)
