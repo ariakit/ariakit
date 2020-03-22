@@ -18,6 +18,10 @@ import {
   unstable_useCompositeState
 } from "./CompositeState";
 import { Item } from "./__utils/types";
+import { groupItems } from "./__utils/groupItems";
+import { flatten } from "./__utils/flatten";
+import { findFirstEnabledItem } from "./__utils/findFirstEnabledItem";
+import { reverse } from "./__utils/reverse";
 
 export type unstable_CompositeOptions = TabbableOptions &
   unstable_IdGroupOptions &
@@ -27,7 +31,7 @@ export type unstable_CompositeOptions = TabbableOptions &
   > &
   Pick<
     unstable_CompositeStateReturn,
-    "items" | "groups" | "currentId" | "first" | "last"
+    "items" | "groups" | "currentId" | "first" | "last" | "move"
   >;
 
 export type unstable_CompositeHTMLProps = TabbableHTMLProps &
@@ -119,7 +123,20 @@ export const unstable_useComposite = createHook<
             const isHorizontal = options.orientation !== "vertical";
             const isGrid = Boolean(options.groups?.length);
             return {
-              ArrowUp: (isGrid || isVertical) && options.last,
+              ArrowUp:
+                (isGrid || isVertical) &&
+                (() => {
+                  if (isGrid) {
+                    const id = findFirstEnabledItem(
+                      flatten(reverse(groupItems(options.items)))
+                    )?.id;
+                    if (id) {
+                      options.move?.(id);
+                    }
+                  } else {
+                    options.last?.();
+                  }
+                }),
               ArrowRight: (isGrid || isHorizontal) && options.first,
               ArrowDown: (isGrid || isVertical) && options.first,
               ArrowLeft: (isGrid || isHorizontal) && options.last,
@@ -134,8 +151,10 @@ export const unstable_useComposite = createHook<
         options.currentId,
         options.orientation,
         options.groups,
+        options.items,
         options.last,
-        options.first
+        options.first,
+        options.move
       ]
     );
 

@@ -13,7 +13,7 @@ export type ToolbarState = CompositeState;
 
 export type ToolbarActions = CompositeActions;
 
-export type ToolbarInitialState = CompositeInitialState;
+export type ToolbarInitialState = Omit<CompositeInitialState, "virtual">;
 
 export type ToolbarStateReturn = ToolbarState & ToolbarActions;
 

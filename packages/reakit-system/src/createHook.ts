@@ -82,6 +82,7 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       htmlProps = options.useProps(hookOptions, htmlProps);
     }
     // If there's name, call useProps from the system context
+    // TODO: Move below (https://codesandbox.io/s/reakit-replacing-hidden-class-name-pkdbq)
     if (options.name) {
       htmlProps = useProps(options.name, hookOptions, htmlProps) as P;
     }

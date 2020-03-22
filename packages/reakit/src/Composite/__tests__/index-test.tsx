@@ -351,10 +351,10 @@ function template(value: string) {
       expect(key(">")).toBe(template("-x0-"));
       expect(key("v")).toBe(template("0x--"));
       expect(key(">")).toBe(template("0x--"));
-      expect(key("<<")).toBe(template("-x-0"));
-      expect(key(">>")).toBe(template("0x--"));
-      expect(key("^^")).toBe(template("-x-0"));
-      expect(key("vv")).toBe(template("0x--"));
+      expect(key(">>")).toBe(template("-x-0"));
+      expect(key("<<")).toBe(template("0x--"));
+      expect(key("vv")).toBe(template("-x-0"));
+      expect(key("^^")).toBe(template("0x--"));
     });
 
     test("move focus with arrow keys loop", () => {
@@ -917,29 +917,29 @@ function template(value: string) {
       expect(key(">>")).toBe(
         template(`
           - x x -
-          0 - - -
+          - - - 0
           - - - x
       `)
       );
       expect(key(">>>")).toBe(
-        template(`
-          0 x x -
-          - - - -
-          - - - x
-      `)
-      );
-      expect(key("<<<")).toBe(
         template(`
           - x x -
           - - - -
           - - 0 x
       `)
       );
-      expect(key("^^")).toBe(
+      expect(key("<<<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("vv")).toBe(
         template(`
           - x x -
-          - - 0 -
-          - - - x
+          - - - -
+          0 - - x
       `)
       );
     });
@@ -1620,6 +1620,107 @@ function template(value: string) {
       );
     });
 
+    test("move grid focus with arrow keys rtl wrap loop", () => {
+      const Test = () => {
+        const composite = useCompositeState({
+          virtual,
+          rtl: true,
+          wrap: true,
+          loop: true
+        });
+        // 2 - enabled, 1 - disabled focusable, 0 - disabled
+        const rows = [
+          [2, 0, 0, 2],
+          [2, 2, 1, 2],
+          [2, 2, 2, 0]
+        ];
+        return (
+          <Composite {...composite} role="grid" aria-label="composite">
+            {rows.map((items, i) => (
+              <CompositeGroup {...composite} key={i}>
+                {items.map((item, j) => (
+                  <CompositeItem
+                    {...composite}
+                    key={j}
+                    disabled={item < 2}
+                    focusable={item === 1}
+                    aria-label={`${i + 1}-${j + 1}`}
+                    data-item
+                  />
+                ))}
+              </CompositeGroup>
+            ))}
+          </Composite>
+        );
+      };
+
+      render(<Test />);
+      press.Tab();
+      expect(active()).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          - x x -
+          0 - - -
+          - - - x
+      `)
+      );
+      expect(key(">>>")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key(">")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - 0 x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x 0
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          - x x -
+          - - - 0
+          - - - x
+      `)
+      );
+      expect(key("v")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+    });
+
     test("move grid focus with arrow keys different number of cells", () => {
       const Test = () => {
         const composite = useCompositeState({ virtual });
@@ -2202,6 +2303,27 @@ function template(value: string) {
           - - 0 x
       `)
       );
+      expect(key("<<<")).toBe(
+        template(`
+          0 x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
     });
 
     test("composite grid becomes the first item when currentId is null and wrap", () => {
@@ -2347,6 +2469,21 @@ function template(value: string) {
       `)
       );
       expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          - - - x
+      `)
+      );
+      expect($("composite")).toHaveFocus();
+      expect(key("^")).toBe(
+        template(`
+          - x x -
+          - - - -
+          0 - - x
+      `)
+      );
+      expect(key("v")).toBe(
         template(`
           - x x -
           - - - -

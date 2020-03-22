@@ -15,7 +15,8 @@ const props: unstable_CompositeProps = {
   ],
   currentId: "2",
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
+  move: jest.fn()
 };
 
 test("render", () => {

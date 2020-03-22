@@ -105,6 +105,7 @@ export const unstable_useCompositeItem = createHook<
     const ref = React.useRef<HTMLElement>(null);
     const id = options.stopId || options.id || htmlProps.id;
     const trulyDisabled = options.disabled && !options.focusable;
+    // TODO: getCurrentId(options);
     const isCurrentItem = options.currentId === id;
     const item = options.items?.find(i => i.id === id);
     const shouldTabIndex =
