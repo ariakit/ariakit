@@ -137,16 +137,18 @@ export const unstable_useComposite = createHook<
         if (event.target !== event.currentTarget) return;
         if (options.virtual) {
           if (
-            lastFocused.current !== currentItem?.ref.current &&
+            !options.items?.some(
+              item => item.ref.current === lastFocused.current
+            ) &&
             options.currentId
           ) {
-            // options.move?.(options.currentId);
+            options.move?.(options.currentId);
           }
         } else {
           options.setCurrentId?.(null);
         }
       },
-      [options.virtual, currentItem, options.move, options.currentId]
+      [options.virtual, options.items, options.move, options.currentId]
     );
 
     const onMove = React.useMemo(
@@ -195,7 +197,7 @@ export const unstable_useComposite = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
-      // onFocusCapture: useAllCallbacks(onFocusCapture, htmlOnFocusCapture),
+      onFocusCapture: useAllCallbacks(onFocusCapture, htmlOnFocusCapture),
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown: useAllCallbacks(onMove, onKeyDown, htmlOnKeyDown),
       onKeyUp: useAllCallbacks(onKeyUp, htmlOnKeyUp),

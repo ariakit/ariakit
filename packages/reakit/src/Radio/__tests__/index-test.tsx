@@ -80,9 +80,9 @@ test("onChange non-native radio", () => {
   expect(radio.checked).toBe(true);
 });
 
-[true /* , false */].forEach(virtual => {
+[true, false].forEach(virtual => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
-    test.only("arrow keys", () => {
+    test("arrow keys", () => {
       const Test = () => {
         const radio = useRadioState({ virtual });
         return (
