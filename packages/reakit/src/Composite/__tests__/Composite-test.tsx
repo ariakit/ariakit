@@ -7,13 +7,13 @@ import {
 
 const props: unstable_CompositeProps = {
   id: "composite",
-  groups: [],
   items: [
     { id: "1", ref: { current: null } },
     { id: "2", ref: { current: null } },
     { id: "3", ref: { current: null } }
   ],
   currentId: "2",
+  setCurrentId: jest.fn(),
   first: jest.fn(),
   last: jest.fn(),
   move: jest.fn()

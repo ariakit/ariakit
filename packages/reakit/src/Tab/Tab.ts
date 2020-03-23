@@ -18,7 +18,9 @@ export type TabHTMLProps = CompositeItemHTMLProps;
 export type TabProps = TabOptions & TabHTMLProps;
 
 function getTabPanelId(options: TabOptions) {
-  return options.panels?.find(panel => panel.groupId === options.id)?.id;
+  return (
+    options.panels?.find(panel => panel.groupId === options.id)?.id || undefined
+  );
 }
 
 export const useTab = createHook<TabOptions, TabHTMLProps>({

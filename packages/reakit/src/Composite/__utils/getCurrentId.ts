@@ -11,5 +11,5 @@ export function getCurrentId(
   if (options.currentId || options.currentId === null) {
     return options.currentId;
   }
-  return findFirstEnabledItem(options.items)?.id;
+  return findFirstEnabledItem(options.items || [])?.id;
 }

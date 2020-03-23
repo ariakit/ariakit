@@ -80,65 +80,69 @@ test("onChange non-native radio", () => {
   expect(radio.checked).toBe(true);
 });
 
-test("arrow keys", () => {
-  const Test = () => {
-    const radio = useRadioState();
-    return (
-      <>
-        <RadioGroup {...radio} aria-label="radiogroup">
-          <label>
-            <Radio {...radio} value="a" />a
-          </label>
-          <label>
-            <Radio {...radio} value="b" />b
-          </label>
-          <label>
-            <Radio {...radio} value="c" />c
-          </label>
-        </RadioGroup>
-        <button>button</button>
-      </>
-    );
-  };
-  const { getByLabelText } = render(<Test />);
-  press.Tab();
-  expect(getByLabelText("a")).toHaveFocus();
-  expect(getByLabelText("a")).toBeChecked();
-  press.ArrowLeft();
-  expect(getByLabelText("c")).toHaveFocus();
-  expect(getByLabelText("c")).toBeChecked();
-  press.ArrowRight();
-  expect(getByLabelText("a")).toHaveFocus();
-  expect(getByLabelText("a")).toBeChecked();
-  press.ArrowDown();
-  expect(getByLabelText("b")).toHaveFocus();
-  expect(getByLabelText("b")).toBeChecked();
-  press.Tab();
-  press.ShiftTab();
-  expect(getByLabelText("b")).toHaveFocus();
-  expect(getByLabelText("b")).toBeChecked();
-});
+[true /* , false */].forEach(virtual => {
+  describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
+    test.only("arrow keys", () => {
+      const Test = () => {
+        const radio = useRadioState({ virtual });
+        return (
+          <>
+            <RadioGroup {...radio} aria-label="radiogroup">
+              <label>
+                <Radio {...radio} value="a" />a
+              </label>
+              <label>
+                <Radio {...radio} value="b" />b
+              </label>
+              <label>
+                <Radio {...radio} value="c" />c
+              </label>
+            </RadioGroup>
+            <button>button</button>
+          </>
+        );
+      };
+      const { getByLabelText } = render(<Test />);
+      press.Tab();
+      expect(getByLabelText("a")).toHaveFocus();
+      expect(getByLabelText("a")).toBeChecked();
+      press.ArrowLeft();
+      expect(getByLabelText("c")).toHaveFocus();
+      expect(getByLabelText("c")).toBeChecked();
+      press.ArrowRight();
+      expect(getByLabelText("a")).toHaveFocus();
+      expect(getByLabelText("a")).toBeChecked();
+      press.ArrowDown();
+      expect(getByLabelText("b")).toHaveFocus();
+      expect(getByLabelText("b")).toBeChecked();
+      press.Tab();
+      press.ShiftTab();
+      expect(getByLabelText("b")).toHaveFocus();
+      expect(getByLabelText("b")).toBeChecked();
+    });
 
-test("initial checked radio gets initial focus", () => {
-  const Test = () => {
-    const radio = useRadioState({ state: "b" });
-    return (
-      <RadioGroup {...radio} aria-label="radiogroup">
-        <label>
-          <Radio {...radio} value="a" />a
-        </label>
-        <label>
-          <Radio {...radio} value="b" />b
-        </label>
-        <label>
-          <Radio {...radio} value="c" />c
-        </label>
-      </RadioGroup>
-    );
-  };
-  const { getByLabelText } = render(<Test />);
-  press.Tab();
-  expect(getByLabelText("b")).toHaveFocus();
+    test("initial checked radio gets initial focus", () => {
+      const Test = () => {
+        const radio = useRadioState({ virtual, state: "b" });
+        return (
+          <RadioGroup {...radio} aria-label="radiogroup">
+            <label>
+              <Radio {...radio} value="a" />a
+            </label>
+            <label>
+              <Radio {...radio} value="b" />b
+            </label>
+            <label>
+              <Radio {...radio} value="c" />c
+            </label>
+          </RadioGroup>
+        );
+      };
+      const { getByLabelText } = render(<Test />);
+      press.Tab();
+      expect(getByLabelText("b")).toHaveFocus();
+    });
+  });
 });
 
 test("group", () => {

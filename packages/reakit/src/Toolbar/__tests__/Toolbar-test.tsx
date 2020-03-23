@@ -6,7 +6,11 @@ const props: ToolbarProps = {
   "aria-label": "toolbar",
   baseId: "toolbar",
   currentId: null,
-  items: []
+  items: [],
+  setCurrentId: jest.fn(),
+  move: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn()
 };
 
 test("render", () => {

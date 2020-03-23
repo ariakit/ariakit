@@ -6,7 +6,11 @@ const props: TabListProps = {
   "aria-label": "tablist",
   id: "base",
   items: [],
-  currentId: null
+  currentId: null,
+  move: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn(),
+  setCurrentId: jest.fn()
 };
 
 test("render", () => {

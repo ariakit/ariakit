@@ -348,10 +348,14 @@ function reducer(
       };
       // If the current item is the item that is being removed, focus pastId
       if (currentId && currentId === id) {
-        return {
+        const nextId = getCurrentId({
           ...nextState,
-          currentId: getCurrentId({ ...nextState, currentId: nextPastIds[0] })
-        };
+          currentId: nextPastIds[0]
+        });
+        if (moves) {
+          return reducer(nextState, { type: "move", id: nextId });
+        }
+        return { ...nextState, currentId: nextId };
       }
       return nextState;
     }
@@ -525,8 +529,13 @@ function reducer(
         ...state,
         orientation: applyState(action.orientation, orientation)
       };
-    case "setCurrentId":
-      return { ...state, currentId: applyState(action.currentId, currentId) };
+    case "setCurrentId": {
+      const nextCurrentId = getCurrentId({
+        ...state,
+        currentId: applyState(action.currentId, currentId)
+      });
+      return { ...state, currentId: nextCurrentId };
+    }
     case "setLoop":
       return { ...state, loop: applyState(action.loop, loop) };
     case "setWrap":
@@ -539,7 +548,9 @@ function reducer(
         orientation: initialOrientation,
         currentId: initialCurrentId,
         loop: initialLoop,
-        wrap: initialWrap
+        wrap: initialWrap,
+        moves: 0,
+        pastIds: []
       };
     default:
       throw new Error();

@@ -68,7 +68,7 @@ export function useEventListenerOutside(
       // Click on disclosure
       if (
         disclosures.length &&
-        disclosures.some(disclosure => disclosure === target)
+        disclosures.some(disclosure => disclosure.contains(target))
       ) {
         return;
       }

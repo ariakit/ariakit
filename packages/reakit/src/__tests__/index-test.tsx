@@ -10,10 +10,10 @@ import {
   MenuItem
 } from "..";
 
-const focusStrategies = ["roving-tabindex", "aria-activedescendant"] as const;
+[true, false].forEach(virtual => {
+  const strategy = virtual ? "aria-activedescendant" : "roving-tabindex";
 
-focusStrategies.forEach(virtual => {
-  test(`${virtual} composite with menu button controlling arrow keys`, async () => {
+  test(`${strategy} composite with menu button controlling arrow keys`, async () => {
     const Test = () => {
       const composite = useCompositeState({ virtual });
       const menu = useMenuState({ placement: "right-start" });
@@ -57,7 +57,7 @@ focusStrategies.forEach(virtual => {
     expect(get("menuitem1")).toHaveFocus();
   });
 
-  test(`${virtual} composite with menu button not controlling arrow keys`, async () => {
+  test(`${strategy} composite with menu button not controlling arrow keys`, async () => {
     const Test = () => {
       const composite = useCompositeState({ virtual });
       const menu = useMenuState({ placement: "right-start" });

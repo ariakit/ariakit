@@ -9,6 +9,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { getDocument } from "reakit-utils/getDocument";
 import { isTextField } from "reakit-utils/isTextField";
 import { scrollIntoViewIfNeeded } from "reakit-utils/scrollIntoViewIfNeeded";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -24,6 +25,7 @@ import {
   unstable_useCompositeState
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
+import { getCurrentId } from "./__utils/getCurrentId";
 
 export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
@@ -103,10 +105,10 @@ export const unstable_useCompositeItem = createHook<
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = options.stopId || options.id || htmlProps.id;
+    const id = options.stopId || options.id;
     const trulyDisabled = options.disabled && !options.focusable;
-    // TODO: getCurrentId(options);
-    const isCurrentItem = options.currentId === id;
+    const isCurrentItem = getCurrentId(options) === id;
+    const isCurrentItemRef = useLiveRef(isCurrentItem);
     const item = options.items?.find(i => i.id === id);
     const shouldTabIndex =
       (!options.virtual &&
@@ -145,16 +147,17 @@ export const unstable_useCompositeItem = createHook<
       // last or move have been called. This means that the composite item will
       // be focused whenever some of these functions are called. Unless it has
       // already focus, in which case we don't want to focus it again.
-      if (options.moves && isCurrentItem && !hasFocusWithin(self)) {
+      if (options.moves && isCurrentItemRef.current && !hasFocusWithin(self)) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
       }
-    }, [options.moves, isCurrentItem]);
+    }, [options.moves]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
+        // TODO: Test without move
         if (options.virtual) {
           options.setCurrentId?.(id);
         } else {
@@ -185,7 +188,7 @@ export const unstable_useCompositeItem = createHook<
             // both `isVertical` and `isHorizontal` will be `true`.
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
-            const isGrid = Boolean(item?.groupId);
+            const isGrid = !!item?.groupId;
 
             const ArrowUp =
               (isGrid || isVertical) &&

@@ -22,16 +22,17 @@ import { groupItems } from "./__utils/groupItems";
 import { flatten } from "./__utils/flatten";
 import { findFirstEnabledItem } from "./__utils/findFirstEnabledItem";
 import { reverse } from "./__utils/reverse";
+import { getCurrentId } from "./__utils/getCurrentId";
 
 export type unstable_CompositeOptions = TabbableOptions &
   unstable_IdGroupOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
-    "virtual" | "orientation" | "moves" | "wrap"
+    "virtual" | "currentId" | "orientation" | "moves" | "wrap" | "groups"
   > &
   Pick<
     unstable_CompositeStateReturn,
-    "items" | "groups" | "currentId" | "first" | "last" | "move"
+    "items" | "setCurrentId" | "first" | "last" | "move"
   >;
 
 export type unstable_CompositeHTMLProps = TabbableHTMLProps &
@@ -53,8 +54,9 @@ const validCompositeRoles = [
   "treegrid"
 ];
 
-function getCurrentItem({ items, currentId }: unstable_CompositeOptions) {
-  return items?.find(item => item.id === currentId);
+function getCurrentItem(options: unstable_CompositeOptions) {
+  const currentId = getCurrentId(options);
+  return options.items?.find(item => item.id === currentId);
 }
 
 function canProxyKeyboardEvent(event: React.KeyboardEvent) {
@@ -79,6 +81,10 @@ function useKeyboardEventProxy(currentItem?: Item) {
   );
 }
 
+function findFirstEnabledItemInTheLastRow(items: Item[]) {
+  return findFirstEnabledItem(flatten(reverse(groupItems(items))));
+}
+
 export const unstable_useComposite = createHook<
   unstable_CompositeOptions,
   unstable_CompositeHTMLProps
@@ -91,6 +97,8 @@ export const unstable_useComposite = createHook<
     options,
     {
       ref: htmlRef,
+      onFocus: htmlOnFocus,
+      onFocusCapture: htmlOnFocusCapture,
       onKeyDown: htmlOnKeyDown,
       onKeyUp: htmlOnKeyUp,
       ...htmlProps
@@ -100,11 +108,17 @@ export const unstable_useComposite = createHook<
     const currentItem = getCurrentItem(options);
     const onKeyDown = useKeyboardEventProxy(currentItem);
     const onKeyUp = useKeyboardEventProxy(currentItem);
+    const lastFocused = React.useRef<HTMLElement | null>(null);
 
     React.useEffect(() => {
       const self = ref.current;
       if (!self) {
-        // TODO: Warning
+        warning(
+          true,
+          "[reakit/Composite]",
+          "Can't focus composite component because `ref` wasn't passed to component.",
+          "See https://reakit.io/docs/composite"
+        );
         return;
       }
       if (options.moves && !currentItem && getActiveElement(self) !== self) {
@@ -112,7 +126,30 @@ export const unstable_useComposite = createHook<
       }
     }, [options.moves, currentItem]);
 
-    const bindings = React.useMemo(
+    const onFocusCapture = React.useCallback((event: React.FocusEvent) => {
+      if (event.target !== event.currentTarget) {
+        lastFocused.current = event.target as HTMLElement;
+      }
+    }, []);
+
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        if (event.target !== event.currentTarget) return;
+        if (options.virtual) {
+          if (
+            lastFocused.current !== currentItem?.ref.current &&
+            options.currentId
+          ) {
+            // options.move?.(options.currentId);
+          }
+        } else {
+          options.setCurrentId?.(null);
+        }
+      },
+      [options.virtual, currentItem, options.move, options.currentId]
+    );
+
+    const onMove = React.useMemo(
       () =>
         createOnKeyDown({
           stopPropagation: true,
@@ -121,22 +158,19 @@ export const unstable_useComposite = createHook<
           keyMap: () => {
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
-            const isGrid = Boolean(options.groups?.length);
+            const isGrid = !!options.groups?.length;
+            const up = () => {
+              if (isGrid) {
+                const item = findFirstEnabledItemInTheLastRow(options.items);
+                if (item?.id) {
+                  options.move?.(item.id);
+                }
+              } else {
+                options.last?.();
+              }
+            };
             return {
-              ArrowUp:
-                (isGrid || isVertical) &&
-                (() => {
-                  if (isGrid) {
-                    const id = findFirstEnabledItem(
-                      flatten(reverse(groupItems(options.items)))
-                    )?.id;
-                    if (id) {
-                      options.move?.(id);
-                    }
-                  } else {
-                    options.last?.();
-                  }
-                }),
+              ArrowUp: (isGrid || isVertical) && up,
               ArrowRight: (isGrid || isHorizontal) && options.first,
               ArrowDown: (isGrid || isVertical) && options.first,
               ArrowLeft: (isGrid || isHorizontal) && options.last,
@@ -161,7 +195,9 @@ export const unstable_useComposite = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
-      onKeyDown: useAllCallbacks(bindings, onKeyDown, htmlOnKeyDown),
+      // onFocusCapture: useAllCallbacks(onFocusCapture, htmlOnFocusCapture),
+      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      onKeyDown: useAllCallbacks(onMove, onKeyDown, htmlOnKeyDown),
       onKeyUp: useAllCallbacks(onKeyUp, htmlOnKeyUp),
       "aria-activedescendant": options.virtual
         ? currentItem?.id || undefined
@@ -179,7 +215,7 @@ export const unstable_useComposite = createHook<
       // element (the composite)
       return tabbableHTMLProps;
     }
-    return htmlProps;
+    return { ...htmlProps, ref: tabbableHTMLProps.ref };
   }
 });
 

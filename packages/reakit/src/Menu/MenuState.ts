@@ -54,9 +54,9 @@ export function useMenuState(
 
   React.useEffect(() => {
     if (!popover.visible) {
-      menuBar.setCurrentId(undefined);
+      menuBar.reset();
     }
-  }, [popover.visible, menuBar.setCurrentId]);
+  }, [popover.visible, menuBar.reset]);
 
   return {
     ...menuBar,

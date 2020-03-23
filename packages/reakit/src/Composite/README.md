@@ -53,7 +53,7 @@ function Example() {
 
 ### aria-activedescendant
 
-`Composite` may work as an [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices/#kbd_focus_activedescendant) container by just setting the `virtual` initial state to `useCompositeState`.
+`Composite` may work as an [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices/#kbd_focus_activedescendant) container by just setting the `virtual` initial state to `true`.
 
 You can still attach event handlers to `CompositeItem` just like it were using the roving tabindex method. You don't need to change anything else to make it work.
 
@@ -68,9 +68,7 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({
-    virtual: "aria-activedescendant"
-  });
+  const composite = useCompositeState({ virtual: true });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
       <CompositeItem {...composite} onClick={() => alert("clicked")}>
@@ -97,9 +95,9 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({ wrap: true, loop: true, rtl: true });
+  const composite = useCompositeState({ virtual: true, wrap: true });
   return (
-    <Composite {...composite} role="grid" aria-label="My grid" dir="rtl">
+    <Composite {...composite} role="grid" aria-label="My grid">
       <CompositeGroup {...composite}>
         <CompositeItem {...composite}>Item</CompositeItem>
         <CompositeItem {...composite}>Item</CompositeItem>
@@ -156,9 +154,9 @@ function Example() {
 
 ## Accessibility
 
-- When `focusStrategy` is set to `roving-tabindex` (default):
+- When `virtual` is set to `false` (default):
   - `CompositemItem` has `tabindex` set to `0` if it's the current element. Otherwise `tabindex` is set to `-1`.
-- When `focusStrategy` is set to `aria-activedescendant`:
+- When `virtual` is set to `true`:
   - `Composite` has `tabindex` set to `0` and has `aria-activedescendant` set to the id of the current `CompositeItem`.
   - `CompositeItem` has `aria-selected` set to `true` if it's the current element.
 - On one-dimensional composites:

@@ -5,7 +5,11 @@ import { RadioGroup, RadioGroupProps } from "../RadioGroup";
 const props: RadioGroupProps = {
   baseId: "radiogroup",
   items: [],
-  currentId: null
+  currentId: null,
+  move: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn(),
+  setCurrentId: jest.fn()
 };
 
 test("render", () => {
