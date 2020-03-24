@@ -157,10 +157,10 @@ export const unstable_useCompositeItem = createHook<
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        // TODO: Test without move
-        if (options.virtual) {
+        if (options.moves || options.virtual) {
           options.setCurrentId?.(id);
         } else {
+          // In case this hasn't been moved yet.
           options.move?.(id);
         }
         // When using aria-activedescendant, we want to make sure that the
@@ -172,7 +172,14 @@ export const unstable_useCompositeItem = createHook<
           composite?.focus();
         }
       },
-      [id, options.virtual, options.setCurrentId, options.move, options.baseId]
+      [
+        id,
+        options.moves,
+        options.virtual,
+        options.setCurrentId,
+        options.move,
+        options.baseId
+      ]
     );
 
     const onKeyDown = React.useMemo(
@@ -189,35 +196,20 @@ export const unstable_useCompositeItem = createHook<
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
             const isGrid = !!item?.groupId;
-
-            const ArrowUp =
-              (isGrid || isVertical) &&
-              (() => (isGrid ? options.up?.() : options.previous?.()));
-
-            const ArrowRight =
-              (isGrid || isHorizontal) && (() => options.next?.());
-
-            const ArrowDown =
-              (isGrid || isVertical) &&
-              (() => (isGrid ? options.down?.() : options.next?.()));
-
-            const ArrowLeft =
-              (isGrid || isHorizontal) && (() => options.previous?.());
-
             const Delete = (event: React.KeyboardEvent) => {
               const widget = getWidget(event.currentTarget);
               if (widget && isTextField(widget)) {
                 setTextFieldValue(widget, "");
               }
             };
-
             return {
               Delete,
               Backspace: Delete,
-              ArrowUp,
-              ArrowRight,
-              ArrowDown,
-              ArrowLeft,
+              ArrowUp: (isGrid || isVertical) && (() => options.up?.()),
+              ArrowRight: (isGrid || isHorizontal) && (() => options.next?.()),
+              ArrowDown: (isGrid || isVertical) && (() => options.down?.()),
+              ArrowLeft:
+                (isGrid || isHorizontal) && (() => options.previous?.()),
               Home: event => {
                 if (!isGrid || event.ctrlKey) {
                   options.first?.();

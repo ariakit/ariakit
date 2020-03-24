@@ -98,7 +98,6 @@ export const unstable_useComposite = createHook<
     {
       ref: htmlRef,
       onFocus: htmlOnFocus,
-      onFocusCapture: htmlOnFocusCapture,
       onKeyDown: htmlOnKeyDown,
       onKeyUp: htmlOnKeyUp,
       ...htmlProps
@@ -108,7 +107,6 @@ export const unstable_useComposite = createHook<
     const currentItem = getCurrentItem(options);
     const onKeyDown = useKeyboardEventProxy(currentItem);
     const onKeyUp = useKeyboardEventProxy(currentItem);
-    const lastFocused = React.useRef<HTMLElement | null>(null);
 
     React.useEffect(() => {
       const self = ref.current;
@@ -126,29 +124,39 @@ export const unstable_useComposite = createHook<
       }
     }, [options.moves, currentItem]);
 
-    const onFocusCapture = React.useCallback((event: React.FocusEvent) => {
-      if (event.target !== event.currentTarget) {
-        lastFocused.current = event.target as HTMLElement;
-      }
-    }, []);
-
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         if (event.target !== event.currentTarget) return;
         if (options.virtual) {
-          if (
-            !options.items?.some(
-              item => item.ref.current === lastFocused.current
-            ) &&
-            options.currentId
-          ) {
+          const hasItemWithFocus = options.items?.some(
+            item => item.ref.current === event.relatedTarget
+          );
+          // It means that the composite element has been focused while the
+          // composite item has not. For example, by clicking on the composite
+          // element without touching any item, or by tabbing into the
+          // composite element. In this case, we want to trigger focus on the
+          // item, just like it would happen with roving tabindex.
+          // When it receives focus, the composite item will put focus back on
+          // the composite element, in which case event.target will be
+          // different from event.currentTarget.
+          if (!hasItemWithFocus && options.currentId) {
             options.move?.(options.currentId);
           }
         } else {
+          // When the roving tabindex composite gets intentionally focused (for
+          // example, by clicking directly on it, and not on an item), we make
+          // sure to set the current id to null (which means the composite
+          // itself is focused).
           options.setCurrentId?.(null);
         }
       },
-      [options.virtual, options.items, options.move, options.currentId]
+      [
+        options.virtual,
+        options.items,
+        options.currentId,
+        options.move,
+        options.setCurrentId
+      ]
     );
 
     const onMove = React.useMemo(
@@ -197,7 +205,6 @@ export const unstable_useComposite = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
-      onFocusCapture: useAllCallbacks(onFocusCapture, htmlOnFocusCapture),
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown: useAllCallbacks(onMove, onKeyDown, htmlOnKeyDown),
       onKeyUp: useAllCallbacks(onKeyUp, htmlOnKeyUp),

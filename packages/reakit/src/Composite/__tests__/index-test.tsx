@@ -347,9 +347,9 @@ function template(value: string) {
       press.Tab();
       expect(active()).toBe(template("0x--"));
       expect(key("<")).toBe(template("-x0-"));
-      expect(key("^")).toBe(template("-x-0"));
+      expect(key("v")).toBe(template("-x-0"));
       expect(key(">")).toBe(template("-x0-"));
-      expect(key("v")).toBe(template("0x--"));
+      expect(key("^")).toBe(template("0x--"));
       expect(key(">")).toBe(template("0x--"));
       expect(key(">>")).toBe(template("-x-0"));
       expect(key("<<")).toBe(template("0x--"));

@@ -15,7 +15,7 @@ export function verticalizeItems(items: Item[]) {
       if (group[i]) {
         verticalized.push({
           ...group[i],
-          groupId: `${i}`
+          groupId: group[i].groupId ? `${i}` : undefined
         });
       }
     }

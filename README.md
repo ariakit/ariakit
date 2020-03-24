@@ -137,7 +137,7 @@ Play with this on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) and read th
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. Contribute Guide.
+This project exists thanks to all the people who contribute. Learn more on the [contributing guide](https://github.com/reakit/reakit/blob/master/CONTRIBUTING.md).
 
 <a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1227&button=false" /></a>
 
