@@ -380,6 +380,7 @@ function reducer(
         return {
           ...state,
           pastIds: nextPastIds,
+          moves: moves + 1,
           currentId: getCurrentId(state, id)
         };
       }

@@ -54,9 +54,11 @@ const validCompositeRoles = [
   "treegrid"
 ];
 
-function getCurrentItem(options: unstable_CompositeOptions) {
-  const currentId = getCurrentId(options);
-  return options.items?.find(item => item.id === currentId);
+function getCurrentItem(
+  items: unstable_CompositeOptions["items"],
+  currentId: unstable_CompositeOptions["currentId"]
+) {
+  return items?.find(item => item.id === currentId);
 }
 
 function canProxyKeyboardEvent(event: React.KeyboardEvent) {
@@ -66,18 +68,39 @@ function canProxyKeyboardEvent(event: React.KeyboardEvent) {
   return true;
 }
 
-function useKeyboardEventProxy(currentItem?: Item) {
+function useKeyboardEventProxy(
+  virtual?: boolean,
+  currentItem?: Item,
+  htmlEventHandler?: React.KeyboardEventHandler
+) {
   return React.useCallback(
     (event: React.KeyboardEvent) => {
-      if (canProxyKeyboardEvent(event)) {
+      if (virtual && canProxyKeyboardEvent(event)) {
         const currentElement = currentItem?.ref.current;
         if (currentElement) {
-          currentElement.dispatchEvent(new KeyboardEvent(event.type, event));
-          event.preventDefault();
+          // TODO: Refactor && Test
+          const keyboardEvent = new KeyboardEvent(event.type, event);
+          let isPropagationStopped = false;
+          const stopPropagation = keyboardEvent.stopPropagation.bind(
+            keyboardEvent
+          );
+          keyboardEvent.stopPropagation = () => {
+            stopPropagation();
+            isPropagationStopped = true;
+          };
+          currentElement.dispatchEvent(keyboardEvent);
+          if (keyboardEvent.defaultPrevented) {
+            event.preventDefault();
+          }
+          // if (isPropagationStopped) {
+          // }
+          event.stopPropagation();
+          return;
         }
       }
+      htmlEventHandler?.(event);
     },
-    [currentItem]
+    [virtual, currentItem, htmlEventHandler]
   );
 }
 
@@ -104,9 +127,18 @@ export const unstable_useComposite = createHook<
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const currentItem = getCurrentItem(options);
-    const onKeyDown = useKeyboardEventProxy(currentItem);
-    const onKeyUp = useKeyboardEventProxy(currentItem);
+    const currentId = getCurrentId(options);
+    const currentItem = getCurrentItem(options.items, currentId);
+    const onKeyDown = useKeyboardEventProxy(
+      options.virtual,
+      currentItem,
+      htmlOnKeyDown
+    );
+    const onKeyUp = useKeyboardEventProxy(
+      options.virtual,
+      currentItem,
+      htmlOnKeyUp
+    );
 
     React.useEffect(() => {
       const self = ref.current;
@@ -119,7 +151,10 @@ export const unstable_useComposite = createHook<
         );
         return;
       }
-      if (options.moves && !currentItem && getActiveElement(self) !== self) {
+      if (options.moves && !currentItem) {
+        if (getActiveElement(self) === self) {
+          self.dispatchEvent(new FocusEvent("focus"));
+        }
         self.focus();
       }
     }, [options.moves, currentItem]);
@@ -128,7 +163,8 @@ export const unstable_useComposite = createHook<
       (event: React.FocusEvent) => {
         if (event.target !== event.currentTarget) return;
         if (options.virtual) {
-          const hasItemWithFocus = options.items?.some(
+          if (!currentId || !options.items) return;
+          const hasItemWithFocus = options.items.some(
             item => item.ref.current === event.relatedTarget
           );
           // It means that the composite element has been focused while the
@@ -139,8 +175,8 @@ export const unstable_useComposite = createHook<
           // When it receives focus, the composite item will put focus back on
           // the composite element, in which case event.target will be
           // different from event.currentTarget.
-          if (!hasItemWithFocus && options.currentId) {
-            options.move?.(options.currentId);
+          if (!hasItemWithFocus) {
+            options.move?.(currentId);
           }
         } else {
           // When the roving tabindex composite gets intentionally focused (for
@@ -153,7 +189,7 @@ export const unstable_useComposite = createHook<
       [
         options.virtual,
         options.items,
-        options.currentId,
+        currentId,
         options.move,
         options.setCurrentId
       ]
@@ -206,8 +242,8 @@ export const unstable_useComposite = createHook<
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
-      onKeyDown: useAllCallbacks(onMove, onKeyDown, htmlOnKeyDown),
-      onKeyUp: useAllCallbacks(onKeyUp, htmlOnKeyUp),
+      onKeyDown: useAllCallbacks(onMove, onKeyDown),
+      onKeyUp,
       "aria-activedescendant": options.virtual
         ? currentItem?.id || undefined
         : undefined,

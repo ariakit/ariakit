@@ -68,7 +68,18 @@ export function useEventListenerOutside(
       // Click on disclosure
       if (
         disclosures.length &&
-        disclosures.some(disclosure => disclosure.contains(target))
+        disclosures.some(disclosure => {
+          if (disclosure.contains(target)) {
+            return true;
+          }
+          if (disclosure.id) {
+            const el = document.querySelector(
+              `[aria-activedescendant~="${disclosure.id}"]`
+            );
+            return el && el === target;
+          }
+          return false;
+        })
       ) {
         return;
       }
@@ -81,6 +92,7 @@ export function useEventListenerOutside(
       listenerRef.current(event);
     };
 
+    // TODO: Document
     document.addEventListener(eventType, handleEvent, true);
 
     return () => {

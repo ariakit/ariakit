@@ -29,7 +29,7 @@ import {
 
 function Example() {
   const menu = useMenuState({
-    virtual: "aria-activedescendant"
+    virtual: true
   });
   return (
     <>
@@ -157,7 +157,7 @@ import {
 
 const PreferencesMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState({
-    virtual: "aria-activedescendant"
+    virtual: true
   });
   return (
     <>
@@ -178,7 +178,7 @@ const PreferencesMenu = React.forwardRef((props, ref) => {
 
 function Example() {
   const menu = useMenuState({
-    virtual: "aria-activedescendant"
+    virtual: true
   });
   return (
     <>
@@ -267,7 +267,7 @@ import {
 
 // OPEN RECENT
 const OpenRecentMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuState({ virtual: true });
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -286,7 +286,7 @@ const OpenRecentMenu = React.forwardRef((props, ref) => {
 
 // FILE
 const FileMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuState({ virtual: true });
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -306,7 +306,7 @@ const FileMenu = React.forwardRef((props, ref) => {
 
 // EDIT
 const EditMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuState({ virtual: true });
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -326,7 +326,7 @@ const EditMenu = React.forwardRef((props, ref) => {
 
 // VIEW
 const ViewMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState();
+  const menu = useMenuState({ virtual: true });
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -363,7 +363,7 @@ const ViewMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuBarState({ orientation: "horizontal" });
+  const menu = useMenuBarState({ virtual: true, orientation: "horizontal" });
   return (
     <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />

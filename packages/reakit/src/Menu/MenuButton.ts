@@ -35,7 +35,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         onClick: htmlOnClick,
         onKeyDown: htmlOnKeyDown,
         onFocus: htmlOnFocus,
-        onMouseOver: htmlOnMouseOver,
+        onMouseEnter: htmlOnMouseEnter,
         onMouseDown: htmlOnMouseDown,
         ...htmlProps
       }
@@ -79,7 +79,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         ]
       );
 
-      const onMouseOver = React.useCallback(
+      const onMouseEnter = React.useCallback(
         (event: MouseEvent) => {
           // MenuButton's don't do anything on mouse over when they aren't
           // cointained within a Menu/MenuBar
@@ -106,8 +106,9 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
                   self.id
               ) {
                 options.show?.();
+                // TODO
                 if (document.activeElement !== self) {
-                  self.focus();
+                  // self.focus();
                 }
               }
             }, 200);
@@ -147,7 +148,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         ref: useForkRef(ref, htmlRef),
         "aria-haspopup": "menu",
         onKeyDown,
-        onMouseOver: useAllCallbacks(onMouseOver, htmlOnMouseOver),
+        onMouseEnter: useAllCallbacks(onMouseEnter, htmlOnMouseEnter),
         onClick: useAllCallbacks(onClick, htmlOnClick),
         onFocus: useAllCallbacks(onFocus, htmlOnFocus),
         onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),

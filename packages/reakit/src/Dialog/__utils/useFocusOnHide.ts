@@ -14,6 +14,7 @@ export function useFocusOnHide(
   useUpdateEffect(() => {
     if (!shouldFocus) return;
     const dialog = dialogRef.current;
+    // TODO: Document
 
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
@@ -22,6 +23,10 @@ export function useFocusOnHide(
       dialog &&
       !dialog.contains(document.activeElement) &&
       (isTabbable(document.activeElement) ||
+        (document.activeElement.id &&
+          document.querySelector(
+            `[aria-activedescendant="${document.activeElement.id}"]`
+          )) ||
         document.activeElement.getAttribute("data-dialog") === "true")
     ) {
       return;

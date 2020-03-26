@@ -1,43 +1,59 @@
 import * as React from "react";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { getDocument } from "reakit-utils/getDocument";
 import { DialogOptions } from "../Dialog";
 
-export function useDisclosuresRef(options: DialogOptions) {
-  const disclosuresRef = React.useRef<HTMLElement[]>([]);
-  const lastActiveElement = React.useRef<Element | null>(null);
+function useLastActiveElementRef(
+  dialogRef: React.RefObject<HTMLElement>,
+  options: DialogOptions
+) {
+  const lastActiveElementRef = React.useRef<Element | null>(null);
 
   useIsomorphicEffect(() => {
     if (options.visible) return undefined;
-    const onFocus = () => {
-      lastActiveElement.current = document.activeElement;
+    const document = getDocument(dialogRef.current);
+    const onFocus = (event: FocusEvent) => {
+      lastActiveElementRef.current = event.target as Element;
     };
     document.addEventListener("focus", onFocus, true);
     return () => document.removeEventListener("focus", onFocus, true);
-  }, [options.visible]);
+  }, [options.visible, dialogRef]);
+
+  return lastActiveElementRef;
+}
+
+export function useDisclosuresRef(
+  dialogRef: React.RefObject<HTMLElement>,
+  options: DialogOptions
+) {
+  const disclosuresRef = React.useRef<HTMLElement[]>([]);
+  const lastActiveElementRef = useLastActiveElementRef(dialogRef, options);
 
   React.useEffect(() => {
     if (!options.visible) return;
 
+    const document = getDocument(dialogRef.current);
     const selector = `[aria-controls~="${options.baseId}"]`;
     const disclosures = Array.from(
       document.querySelectorAll<HTMLElement>(selector)
     );
 
-    if (lastActiveElement.current instanceof HTMLElement) {
-      if (disclosures.indexOf(lastActiveElement.current) !== -1) {
+    if (lastActiveElementRef.current instanceof HTMLElement) {
+      if (disclosures.indexOf(lastActiveElementRef.current) !== -1) {
+        const withoutLastActiveElement = disclosures.filter(
+          disclosure => disclosure !== lastActiveElementRef.current
+        );
         disclosuresRef.current = [
-          lastActiveElement.current,
-          ...disclosures.filter(
-            disclosure => disclosure !== lastActiveElement.current
-          )
+          lastActiveElementRef.current,
+          ...withoutLastActiveElement
         ];
       } else {
-        disclosuresRef.current = [lastActiveElement.current, ...disclosures];
+        disclosuresRef.current = [lastActiveElementRef.current, ...disclosures];
       }
     } else {
       disclosuresRef.current = disclosures;
     }
-  }, [options.baseId, options.visible]);
+  }, [options.visible, dialogRef, options.baseId]);
 
   return disclosuresRef;
 }

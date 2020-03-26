@@ -23,6 +23,7 @@ test("render", () => {
           aria-label="menu"
           id="base"
           role="menubar"
+          style="position: relative;"
         />
       </div>
     </body>

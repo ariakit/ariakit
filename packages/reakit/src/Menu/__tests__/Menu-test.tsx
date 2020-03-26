@@ -37,7 +37,7 @@ test("render", () => {
           hidden=""
           id="base"
           role="menu"
-          style="display: none;"
+          style="position: relative; display: none;"
           tabindex="-1"
         />
       </div>
@@ -58,7 +58,7 @@ test("render without state props", () => {
           hidden=""
           id="base"
           role="menu"
-          style="display: none;"
+          style="position: relative; display: none;"
           tabindex="-1"
         />
       </div>

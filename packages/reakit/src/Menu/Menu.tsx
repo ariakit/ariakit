@@ -4,7 +4,6 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -16,7 +15,6 @@ import { MenuContext, MenuContextType } from "./__utils/MenuContext";
 
 export type MenuOptions = Omit<PopoverOptions, "hideOnEsc"> &
   Pick<MenuStateReturn, "placement"> &
-  Pick<Partial<MenuStateReturn>, "first" | "last"> &
   MenuBarOptions;
 
 export type MenuHTMLProps = PopoverHTMLProps & MenuBarHTMLProps;
@@ -25,7 +23,7 @@ export type MenuProps = MenuOptions & MenuHTMLProps;
 
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
-  compose: [useMenuBar, usePopover],
+  compose: [usePopover, useMenuBar],
   useState: useMenuState,
 
   useOptions(options) {
@@ -44,8 +42,6 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
 
   useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const parent = React.useContext(MenuContext);
-    const isHorizontal = options.orientation === "horizontal";
-    const isVertical = options.orientation === "vertical";
     const hasParent = Boolean(parent);
     let ancestorMenuBar: MenuContextType | undefined | null = parent;
 
@@ -57,47 +53,40 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const ancestorIsHorizontal = orientation === "horizontal";
     const [dir] = (options.placement || "").split("-");
 
-    const rovingBindings = React.useMemo(
+    const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
-          keyMap: {
-            Escape: options.hide
-          }
-        }),
-      [options.hide]
-    );
-
-    const parentBindings = React.useMemo(
-      () =>
-        createOnKeyDown({
-          stopPropagation: true,
-          shouldKeyDown: event => {
-            return Boolean(
-              // https://github.com/facebook/react/issues/11387
-              hasParent && event.currentTarget.contains(event.target as Element)
-            );
+          onKeyDown: htmlOnKeyDown,
+          stopPropagation: event => {
+            return event.key !== "Escape";
           },
-          keyMap: hasParent
-            ? {
-                ArrowRight:
-                  ancestorIsHorizontal && dir !== "left"
-                    ? next
-                    : dir === "left" && options.hide,
-                ArrowLeft:
-                  ancestorIsHorizontal && dir !== "right"
-                    ? previous
-                    : dir === "right" && options.hide
-              }
-            : {}
+          keyMap: event => {
+            const Escape = options.hide;
+            if (
+              hasParent &&
+              event.currentTarget.contains(event.target as Element)
+            ) {
+              const ArrowRight =
+                ancestorIsHorizontal && dir !== "left"
+                  ? next && (() => next())
+                  : dir === "left" && options.hide;
+              const ArrowLeft =
+                ancestorIsHorizontal && dir !== "right"
+                  ? previous && (() => previous())
+                  : dir === "right" && options.hide;
+              return {
+                Escape: options.hide,
+                ArrowRight,
+                ArrowLeft
+              };
+            }
+            return { Escape };
+          }
         }),
       [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
     );
 
-    return {
-      role: "menu",
-      onKeyDown: useAllCallbacks(rovingBindings, parentBindings, htmlOnKeyDown),
-      ...htmlProps
-    };
+    return { role: "menu", onKeyDown, ...htmlProps };
   }
 });
 
