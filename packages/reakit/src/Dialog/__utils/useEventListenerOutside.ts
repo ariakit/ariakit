@@ -25,13 +25,20 @@ function dialogContains(target: Element) {
   };
 }
 
-/**
- * TODO:
- * Composite needs to have the concept of null current id
- * On roving-tabindex, the first item should still be tabindex="0"
- * But on aria-activedescendant, there should be no aria-selected nor aria-activedescendant id
- * useCompositeState({ currentId: null });
- */
+function isDisclosure(target: Element) {
+  return (disclosure: HTMLElement) => {
+    if (disclosure.contains(target)) {
+      return true;
+    }
+    if (disclosure.id && disclosure.getAttribute("aria-selected") === "true") {
+      const selector = `[aria-activedescendant="${disclosure.id}"]`;
+      const composite = getDocument(target).querySelector(selector);
+      return composite === target;
+    }
+    return false;
+  };
+}
+
 export function useEventListenerOutside(
   containerRef: React.RefObject<HTMLElement>,
   disclosuresRef: React.RefObject<HTMLElement[]>,
@@ -66,21 +73,7 @@ export function useEventListenerOutside(
       if (container.contains(target)) return;
 
       // Click on disclosure
-      if (
-        disclosures.length &&
-        disclosures.some(disclosure => {
-          if (disclosure.contains(target)) {
-            return true;
-          }
-          if (disclosure.id) {
-            const el = document.querySelector(
-              `[aria-activedescendant~="${disclosure.id}"]`
-            );
-            return el && el === target;
-          }
-          return false;
-        })
-      ) {
+      if (disclosures.length && disclosures.some(isDisclosure(target))) {
         return;
       }
 
@@ -92,9 +85,8 @@ export function useEventListenerOutside(
       listenerRef.current(event);
     };
 
-    // TODO: Document
+    const document = getDocument(containerRef.current);
     document.addEventListener(eventType, handleEvent, true);
-
     return () => {
       document.removeEventListener(eventType, handleEvent, true);
     };

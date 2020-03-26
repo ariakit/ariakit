@@ -3,23 +3,23 @@ import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { getDocument } from "reakit-utils/getDocument";
 import { DialogOptions } from "../Dialog";
 
-function useLastActiveElementRef(
+function useActiveElementRef(
   dialogRef: React.RefObject<HTMLElement>,
   options: DialogOptions
 ) {
-  const lastActiveElementRef = React.useRef<Element | null>(null);
+  const activeElementRef = React.useRef<Element | null>(null);
 
   useIsomorphicEffect(() => {
     if (options.visible) return undefined;
     const document = getDocument(dialogRef.current);
     const onFocus = (event: FocusEvent) => {
-      lastActiveElementRef.current = event.target as Element;
+      activeElementRef.current = event.target as Element;
     };
     document.addEventListener("focus", onFocus, true);
     return () => document.removeEventListener("focus", onFocus, true);
   }, [options.visible, dialogRef]);
 
-  return lastActiveElementRef;
+  return activeElementRef;
 }
 
 export function useDisclosuresRef(
@@ -27,7 +27,7 @@ export function useDisclosuresRef(
   options: DialogOptions
 ) {
   const disclosuresRef = React.useRef<HTMLElement[]>([]);
-  const lastActiveElementRef = useLastActiveElementRef(dialogRef, options);
+  const activeElementRef = useActiveElementRef(dialogRef, options);
 
   React.useEffect(() => {
     if (!options.visible) return;
@@ -38,17 +38,17 @@ export function useDisclosuresRef(
       document.querySelectorAll<HTMLElement>(selector)
     );
 
-    if (lastActiveElementRef.current instanceof HTMLElement) {
-      if (disclosures.indexOf(lastActiveElementRef.current) !== -1) {
-        const withoutLastActiveElement = disclosures.filter(
-          disclosure => disclosure !== lastActiveElementRef.current
+    if (activeElementRef.current instanceof HTMLElement) {
+      if (disclosures.indexOf(activeElementRef.current) !== -1) {
+        const withoutActiveElement = disclosures.filter(
+          disclosure => disclosure !== activeElementRef.current
         );
         disclosuresRef.current = [
-          lastActiveElementRef.current,
-          ...withoutLastActiveElement
+          activeElementRef.current,
+          ...withoutActiveElement
         ];
       } else {
-        disclosuresRef.current = [lastActiveElementRef.current, ...disclosures];
+        disclosuresRef.current = [activeElementRef.current, ...disclosures];
       }
     } else {
       disclosuresRef.current = disclosures;

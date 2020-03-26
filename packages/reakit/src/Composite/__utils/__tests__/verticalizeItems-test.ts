@@ -1,7 +1,7 @@
 import { verticalizeItems } from "../verticalizeItems";
 import { Item } from "../types";
 
-test("with group id", () => {
+test("verticalizeItems", () => {
   const items: Item[] = [
     { id: "0", ref: { current: null } },
     { id: "1", ref: { current: null } },

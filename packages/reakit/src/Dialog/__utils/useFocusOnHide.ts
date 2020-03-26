@@ -2,7 +2,23 @@ import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-utils/warning";
 import { isTabbable, ensureFocus } from "reakit-utils/tabbable";
+import { getActiveElement } from "reakit-utils/getActiveElement";
 import { DialogOptions } from "../Dialog";
+
+function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {
+  const dialog = dialogRef.current;
+
+  if (!dialog) return false;
+
+  const activeElement = getActiveElement(dialog);
+
+  if (!activeElement) return false;
+  if (dialog.contains(activeElement)) return false;
+  if (isTabbable(activeElement)) return true;
+  if (activeElement.getAttribute("data-dialog") === "true") return true;
+
+  return false;
+}
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
@@ -13,22 +29,10 @@ export function useFocusOnHide(
 
   useUpdateEffect(() => {
     if (!shouldFocus) return;
-    const dialog = dialogRef.current;
-    // TODO: Document
 
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
-    if (
-      document.activeElement &&
-      dialog &&
-      !dialog.contains(document.activeElement) &&
-      (isTabbable(document.activeElement) ||
-        (document.activeElement.id &&
-          document.querySelector(
-            `[aria-activedescendant="${document.activeElement.id}"]`
-          )) ||
-        document.activeElement.getAttribute("data-dialog") === "true")
-    ) {
+    if (hidByFocusingAnotherElement(dialogRef)) {
       return;
     }
 

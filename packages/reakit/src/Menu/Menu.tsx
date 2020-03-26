@@ -23,7 +23,7 @@ export type MenuProps = MenuOptions & MenuHTMLProps;
 
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
-  compose: [usePopover, useMenuBar],
+  compose: [useMenuBar, usePopover],
   useState: useMenuState,
 
   useOptions(options) {
@@ -58,14 +58,15 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
           stopPropagation: event => {
-            return event.key !== "Escape";
+            // On Esc, only stop propagation if there's no parent menu.
+            // Otherwise, pressing Esc should close all menus
+            return event.key !== "Escape" && hasParent;
           },
-          keyMap: event => {
+          keyMap: ({ currentTarget, target }) => {
             const Escape = options.hide;
-            if (
-              hasParent &&
-              event.currentTarget.contains(event.target as Element)
-            ) {
+            if (hasParent && currentTarget.contains(target as Element)) {
+              // Moves to the next menu button in a horizontal menu bar or
+              // close the menu if it's a sub menu
               const ArrowRight =
                 ancestorIsHorizontal && dir !== "left"
                   ? next && (() => next())
@@ -74,11 +75,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
                 ancestorIsHorizontal && dir !== "right"
                   ? previous && (() => previous())
                   : dir === "right" && options.hide;
-              return {
-                Escape: options.hide,
-                ArrowRight,
-                ArrowLeft
-              };
+              return { Escape, ArrowRight, ArrowLeft };
             }
             return { Escape };
           }
