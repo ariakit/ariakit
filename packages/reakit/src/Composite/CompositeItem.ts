@@ -169,7 +169,6 @@ export const unstable_useCompositeItem = createHook<
         // element inside the composite item, such as CompositeItemWidget.
         if (options.virtual && currentTarget === target && options.baseId) {
           const composite = getDocument(target).getElementById(options.baseId);
-          if (composite?.getAttribute("role") === "menu") return;
           composite?.focus();
         }
       },

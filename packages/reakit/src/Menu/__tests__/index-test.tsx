@@ -78,48 +78,6 @@ import {
       expect(item1).not.toHaveFocus();
     });
 
-    test.skip("hovering out expanded menu item disclosure does not move focus", async () => {
-      const Submenu = React.forwardRef(
-        (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
-          return (
-            <>
-              <MenuButton {...menu} {...props} ref={ref}>
-                subdisclosure
-              </MenuButton>
-              <Menu {...menu} aria-label="submenu">
-                <MenuItem {...menu}>subitem1</MenuItem>
-                <MenuItem {...menu}>subitem2</MenuItem>
-                <MenuItem {...menu}>subitem3</MenuItem>
-              </Menu>
-            </>
-          );
-        }
-      );
-      const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
-        return (
-          <Menu {...menu} aria-label="menu">
-            <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu} as={Submenu} />
-            <MenuItem {...menu}>item3</MenuItem>
-          </Menu>
-        );
-      };
-      const { getByText, getByLabelText, baseElement } = render(<Test />);
-      const menu = getByLabelText("menu");
-      const subdisclosure = getByText("subdisclosure");
-      const submenu = getByLabelText("submenu");
-      expect(menu).toBeVisible();
-      expect(subdisclosure).not.toHaveFocus();
-      hover(subdisclosure);
-      expect(subdisclosure).toHaveFocus();
-      await wait(expect(submenu).toBeVisible);
-      hover(baseElement);
-      expect(subdisclosure).toHaveFocus();
-      expect(submenu).toBeVisible();
-    });
-
     test("clicking on menu item disclosure opens submenu without moving focus", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {

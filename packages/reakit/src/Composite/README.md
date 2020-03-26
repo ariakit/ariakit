@@ -95,7 +95,7 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({ virtual: true, wrap: true });
+  const composite = useCompositeState({ wrap: true });
   return (
     <Composite {...composite} role="grid" aria-label="My grid">
       <CompositeGroup {...composite}>

@@ -6,7 +6,6 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { warning } from "reakit-utils/warning";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { getActiveElement } from "reakit-utils/getActiveElement";
 import {
   unstable_useIdGroup,
   unstable_IdGroupOptions,
@@ -54,13 +53,6 @@ const validCompositeRoles = [
   "treegrid"
 ];
 
-function getCurrentItem(
-  items: unstable_CompositeOptions["items"],
-  currentId: unstable_CompositeOptions["currentId"]
-) {
-  return items?.find(item => item.id === currentId);
-}
-
 function canProxyKeyboardEvent(event: React.KeyboardEvent) {
   if (event.target !== event.currentTarget) return false;
   if (event.metaKey) return false;
@@ -78,24 +70,15 @@ function useKeyboardEventProxy(
       if (virtual && canProxyKeyboardEvent(event)) {
         const currentElement = currentItem?.ref.current;
         if (currentElement) {
-          // TODO: Refactor && Test
-          const keyboardEvent = new KeyboardEvent(event.type, event);
-          let isPropagationStopped = false;
-          const stopPropagation = keyboardEvent.stopPropagation.bind(
-            keyboardEvent
-          );
-          keyboardEvent.stopPropagation = () => {
-            stopPropagation();
-            isPropagationStopped = true;
-          };
-          currentElement.dispatchEvent(keyboardEvent);
-          if (keyboardEvent.defaultPrevented) {
+          currentElement.dispatchEvent(new KeyboardEvent(event.type, event));
+          // The event will be triggered on the composite item and then
+          // propagated up to this composite element again, so we can pretend
+          // that it wasn't called on this component in the first place.
+          if (event.currentTarget.contains(currentElement)) {
+            event.stopPropagation();
             event.preventDefault();
+            return;
           }
-          // if (isPropagationStopped) {
-          // }
-          event.stopPropagation();
-          return;
         }
       }
       htmlEventHandler?.(event);
@@ -128,7 +111,7 @@ export const unstable_useComposite = createHook<
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const currentId = getCurrentId(options);
-    const currentItem = getCurrentItem(options.items, currentId);
+    const currentItem = options.items?.find(item => item.id === currentId);
     const onKeyDown = useKeyboardEventProxy(
       options.virtual,
       currentItem,
@@ -152,9 +135,6 @@ export const unstable_useComposite = createHook<
         return;
       }
       if (options.moves && !currentItem) {
-        if (getActiveElement(self) === self) {
-          self.dispatchEvent(new FocusEvent("focus"));
-        }
         self.focus();
       }
     }, [options.moves, currentItem]);

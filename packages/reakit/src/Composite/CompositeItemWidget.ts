@@ -18,10 +18,7 @@ export type unstable_CompositeItemWidgetOptions = BoxOptions &
     "unstable_hasActiveWidget" | "unstable_setHasActiveWidget" | "currentId"
   >;
 
-export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps & {
-  wrap?: unknown;
-  rows?: unknown;
-};
+export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps;
 
 export type unstable_CompositeItemWidgetProps = unstable_CompositeItemWidgetOptions &
   unstable_CompositeItemWidgetHTMLProps;
