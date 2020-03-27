@@ -1,6 +1,6 @@
 {
   "name": "reakit-system-bootstrap",
-  "version": "0.6.8",
+  "version": "0.8.0",
   "description": "Reakit bootstrap system",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap",
@@ -22,7 +22,7 @@
     "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
     "docs": "../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn build",
+    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [
@@ -31,12 +31,12 @@
     "system"
   ],
   "dependencies": {
-    "emotion": "^10.0.17",
-    "reakit-system-palette": "^0.6.8"
+    "emotion": "^10.0.27",
+    "reakit-system-palette": "^0.8.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit": "^1.0.0-beta.11"
+    "reakit": "^1.0.0-beta.16"
   }
 }

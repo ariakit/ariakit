@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render, wait } from "@testing-library/react";
+import { render, wait } from "reakit-test-utils";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
-  unstable_hiddenId: "dialog",
+  baseId: "base",
   "aria-label": "dialog"
 };
 
@@ -21,7 +21,7 @@ test("render", () => {
           class="hidden"
           data-dialog="true"
           hidden=""
-          id="dialog"
+          id="base"
           role="dialog"
           style="display: none;"
           tabindex="-1"
@@ -58,7 +58,7 @@ test("render visible", async () => {
           aria-label="dialog"
           aria-modal="true"
           data-dialog="true"
-          id="dialog"
+          id="base"
           role="dialog"
           tabindex="-1"
         >
@@ -92,7 +92,7 @@ test("render non-modal", async () => {
           class="hidden"
           data-dialog="true"
           hidden=""
-          id="dialog"
+          id="base"
           role="dialog"
           style="display: none;"
           tabindex="-1"

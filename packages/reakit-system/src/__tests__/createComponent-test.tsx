@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { createComponent } from "../createComponent";
 
 test("keys", () => {
@@ -81,8 +81,8 @@ test("as other component created with createComponent", () => {
 
 test("wrap", () => {
   const useA = (_: any, h: any) => ({
-    unstable_wrap: (children: React.ReactNode) => (
-      <div id="wrapper">{children}</div>
+    wrapElement: (element: React.ReactNode) => (
+      <div id="wrapper">{element}</div>
     ),
     ...h
   });

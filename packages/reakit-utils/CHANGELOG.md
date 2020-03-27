@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.8.0...reakit-utils@0.9.0) (2020-02-10)
+
+
+### Features
+
+* **reakit-utils:** Add `useForkRef` method ([8366545](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8366545bf372cb8fb7c61bd18785c780c3794361))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `mergeRefs` has been replaced by `useForkRef`. It's now a custom hook, so it should follow the rules of hooks.
+
+  *Before*:
+  ```jsx
+  import React from "react";
+  import { mergeRefs } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={mergeRefs(internalRef, ref)} {...props} />;
+  });
+  ```
+
+  *After*:
+  ```jsx
+  import React from "react";
+  import { useForkRef } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={useForkRef(internalRef, ref)} {...props} />;
+  });
+  ```
+
+
+
+
+
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.3...reakit-utils@0.8.0) (2020-02-05)
+
+
+### Features
+
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/a252fcd))
+* **reakit-utils:** Add `isButton` method ([8ff86fc](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8ff86fc))
+* **reakit-utils:** Add `isPlainObject` function ([faeb26f](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/faeb26f))
+* **reakit-utils:** Remove `Omit` type ([24797e0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/24797e0))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `Omit` has been removed from `reakit-utils/types`. [TypeScript now supports it natively](https://www.typescriptlang.org/docs/handbook/utility-types.html#omittk).
+
+
+
+
+
+## [0.7.3](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.2...reakit-utils@0.7.3) (2019-12-18)
+
+**Note:** Version bump only for package reakit-utils
+
+
+
+
+
+## [0.7.2](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.1...reakit-utils@0.7.2) (2019-11-22)
+
+
+### Bug Fixes
+
+* **reakit-utils:** Support iframes ([b6b3340](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/b6b3340))
+
+
+
+
+
+## [0.7.1](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.0...reakit-utils@0.7.1) (2019-11-14)
+
+**Note:** Version bump only for package reakit-utils
+
+
+
+
+
 # [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.6.7...reakit-utils@0.7.0) (2019-11-08)
 
 **Note:** Version bump only for package reakit-utils

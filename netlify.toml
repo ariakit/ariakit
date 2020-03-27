@@ -2,6 +2,10 @@
   command = "yarn build:fast && yarn website:build"
   publish = "packages/website/public"
 
+[build.environment]
+  RUBY_VERSION = "2.6.2"
+  YARN_VERSION = "1.17.3"
+
 [[redirects]]
   from = "https://reakit.netlify.com/*"
   to = "https://reakit.io/:splat"

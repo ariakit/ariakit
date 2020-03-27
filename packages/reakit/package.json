@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0-beta.16",
   "description": "Toolkit for building accessible rich web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -14,6 +14,10 @@
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/reakit"
+  },
   "scripts": {
     "test": "jest",
     "coverage": "yarn test --coverage",
@@ -22,7 +26,7 @@
     "clean": "../../scripts/build/clean.js",
     "build": "../../scripts/build/build.js",
     "docs": "../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn build",
+    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [
@@ -34,10 +38,10 @@
     "components"
   ],
   "dependencies": {
+    "@popperjs/core": "^2.1.0",
     "body-scroll-lock": "^2.6.4",
-    "popper.js": "^1.15.0",
-    "reakit-system": "^0.6.8",
-    "reakit-utils": "^0.7.0"
+    "reakit-system": "^0.9.0",
+    "reakit-utils": "^0.9.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",

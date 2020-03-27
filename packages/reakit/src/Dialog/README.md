@@ -64,12 +64,11 @@ function Example() {
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-      <Portal>
-        <DialogBackdrop {...dialog} />
-      </Portal>
-      <Dialog {...dialog} aria-label="Welcome">
-        Welcome to Reakit!
-      </Dialog>
+      <DialogBackdrop {...dialog}>
+        <Dialog {...dialog} aria-label="Welcome">
+          Welcome to Reakit!
+        </Dialog>
+      </DialogBackdrop>
     </>
   );
 }
@@ -143,14 +142,13 @@ There's a few use cases for these conditions, like [Popover](/docs/popover/) and
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
 
 function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: false });
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <Dialog
         {...dialog}
         aria-label="Welcome"
-        modal={false}
         style={{ position: "static", transform: "none" }}
       >
         Focus is not trapped within me.
@@ -170,7 +168,7 @@ import { Button } from "reakit/Button";
 import { Portal } from "reakit/Portal";
 
 function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: false });
   return (
     <>
       <DialogDisclosure {...dialog}>Open chat</DialogDisclosure>
@@ -178,7 +176,6 @@ function Example() {
         <Dialog
           {...dialog}
           aria-label="Welcome"
-          modal={false}
           hideOnClickOutside={false}
           style={{
             transform: "none",
@@ -279,10 +276,8 @@ function Dialog({ disclosure, ...props }) {
   const dialog = useDialogState();
   return (
     <>
-      <DialogDisclosure {...dialog}>
-        {disclosureProps =>
-          React.cloneElement(React.Children.only(disclosure), disclosureProps)
-        }
+      <DialogDisclosure {...dialog} {...disclosure.props}>
+        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
       </DialogDisclosure>
       <BaseDialog {...dialog} {...props} />
     </>
@@ -308,15 +303,15 @@ function Example() {
 - Clicking outside the `Dialog` closes it unless `hideOnClickOutside` is set to `false`.
 - Focusing outside the non-modal `Dialog` closes it unless `hideOnClickOutside` is set to `false`.
 - When `Dialog` closes, focus returns to its disclosure unless the closing action has been triggered by a click/focus on a tabbable element outside the `Dialog`. In this case, `Dialog` closes and this element remains with focus.
-- `DialogDisclosure` extends the accessibility features of [HiddenDisclosure](/docs/hidden/#accessibility).
+- `DialogDisclosure` extends the accessibility features of [Disclosure](/docs/disclosure/#accessibility).
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Dialog` uses [Hidden](/docs/hidden/), and is used by [Popover](/docs/popover/) and its derivatives.
-- `DialogDisclosure` uses [HiddenDisclosure](/docs/hidden/), and is used by [PopoverDisclosure](/docs/popover/) and its derivatives.
-- `DialogBackdrop` uses [Hidden](/docs/hidden/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
+- `Dialog` uses [DisclosureRegion](/docs/disclosure/), and is used by [Popover](/docs/popover/) and its derivatives.
+- `DialogDisclosure` uses [Disclosure](/docs/disclosure/), and is used by [PopoverDisclosure](/docs/popover/) and its derivatives.
+- `DialogBackdrop` uses [DisclosureRegion](/docs/disclosure/), and is used by [PopoverBackdrop](/docs/popover/) and its derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -325,6 +320,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 <!-- Automatically generated -->
 
 ### `useDialogState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -339,16 +339,21 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
-### `Dialog`
-
 - **`modal`**
-  <code>boolean | undefined</code>
+  <code>boolean</code>
 
   Toggles Dialog's `modal` state.
   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
   - Modal: `preventBodyScroll` is automatically enabled, focus is
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
+
+### `Dialog`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
 
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
@@ -378,12 +383,6 @@ When not set, the first tabbable element within the dialog will be used.
   The element that will be focused when the dialog hides.
 When not set, the disclosure component will be used.
 
-- **`unstable_portal`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
-
 - **`unstable_orphan`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -392,9 +391,14 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>4 state props</summary>
+<details><summary>7 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -414,6 +418,20 @@ given milliseconds.
 
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
+- **`setModal`**
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `modal`.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -424,9 +442,19 @@ It's called after given milliseconds if `animated` is a number.
 
 ### `DialogBackdrop`
 
-<details><summary>3 state props</summary>
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>5 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -446,6 +474,15 @@ given milliseconds.
 
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
 
 </details>
 
@@ -463,7 +500,7 @@ It's called after given milliseconds if `animated` is a number.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>2 state props</summary>
+<details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -471,6 +508,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`toggle`**
   <code>() =&#62; void</code>

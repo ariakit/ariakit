@@ -12,7 +12,7 @@ import * as styled from "styled-components";
 import * as spring from "react-spring";
 import * as yup from "yup";
 import set from "lodash/set";
-import createUseContext from "constate";
+import constate from "constate";
 import { FaUniversalAccess } from "react-icons/fa";
 import CarbonAd from "../components/CarbonAd";
 import Anchor from "../components/Anchor";
@@ -86,7 +86,12 @@ const { Compiler: renderAst } = new RehypeReact({
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
-        const { static: isStatic, maxHeight, className } = codeElement.props;
+        const {
+          static: isStatic,
+          unstyled,
+          maxHeight,
+          className
+        } = codeElement.props;
         let [, mode] = className.match(/language-(.+)/) || ([] as any[]);
 
         const modeMap = {
@@ -111,12 +116,13 @@ const { Compiler: renderAst } = new RehypeReact({
           return (
             <div>
               <PlaygroundPreview
+                unstyled={unstyled}
                 modules={{
                   emotion,
                   yup,
+                  constate,
                   "lodash/set": set,
                   "styled-components": styled,
-                  constate: createUseContext,
                   "react-spring": spring,
                   "./UniversalAccess": FaUniversalAccess
                 }}

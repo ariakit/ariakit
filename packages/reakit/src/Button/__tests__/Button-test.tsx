@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { Button } from "../Button";
 
 test("render", () => {
@@ -25,11 +25,12 @@ test("render anchor", () => {
 test("render div", () => {
   const { getByText } = render(<Button as="div">button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
-    <div
-      role="button"
-      tabindex="0"
-    >
-      button
-    </div>
-  `);
+<div
+  data-tabbable="true"
+  role="button"
+  tabindex="0"
+>
+  button
+</div>
+`);
 });

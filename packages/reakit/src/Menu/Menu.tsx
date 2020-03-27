@@ -1,6 +1,5 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
-import { Omit } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
@@ -37,7 +36,9 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       unstable_autoFocusOnShow: !parent,
       unstable_autoFocusOnHide: !parentIsMenuBar,
       modal: false,
-      ...options
+      ...options,
+      // will be handled differently from usePopover/useDialog
+      hideOnEsc: false
     };
   },
 
@@ -121,13 +122,6 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       onKeyDown: useAllCallbacks(rovingBindings, parentBindings, htmlOnKeyDown),
       ...htmlProps
     };
-  },
-
-  // Need to useCompose instead of useProps to overwrite `hideOnEsc`
-  // because Menu prop types don't include `hideOnEsc`
-  useCompose(options, htmlProps) {
-    htmlProps = useMenuBar(options, htmlProps);
-    return usePopover({ ...options, hideOnEsc: false }, htmlProps);
   }
 });
 

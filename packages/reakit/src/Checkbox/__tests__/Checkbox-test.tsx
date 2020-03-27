@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, click, press } from "reakit-test-utils";
 import { Checkbox, CheckboxOptions, CheckboxHTMLProps } from "../Checkbox";
 
 test("render", () => {
@@ -21,19 +21,20 @@ test("render", () => {
 test("render disabled", () => {
   const { baseElement } = render(<Checkbox disabled />);
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <input
-          aria-checked="false"
-          aria-disabled="true"
-          disabled=""
-          role="checkbox"
-          type="checkbox"
-          value=""
-        />
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <input
+      aria-checked="false"
+      aria-disabled="true"
+      disabled=""
+      role="checkbox"
+      style="pointer-events: none;"
+      type="checkbox"
+      value=""
+    />
+  </div>
+</body>
+`);
 });
 
 test("render disabled focusable", () => {
@@ -79,7 +80,7 @@ test("click", () => {
   );
   const checkbox = getByLabelText("checkbox");
   expect(fn).toHaveBeenCalledTimes(0);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
@@ -91,7 +92,7 @@ test("click disabled", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -103,7 +104,7 @@ test("click disabled focusable", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -152,7 +153,7 @@ test("non-native checkbox click", () => {
   );
   const checkbox = getByLabelText("checkbox");
   expect(fn).toHaveBeenCalledTimes(0);
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
@@ -164,7 +165,7 @@ test("non-native checkbox click disabled", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -176,7 +177,7 @@ test("non-native checkbox click disabled focusable", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.click(checkbox);
+  click(checkbox);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -224,7 +225,7 @@ test("non-native checkbox space", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.keyDown(checkbox, { key: " " });
+  press.Space(checkbox);
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
@@ -236,7 +237,7 @@ test("non-native checkbox space disabled", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.keyDown(checkbox, { key: " " });
+  press.Space(checkbox);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -248,7 +249,7 @@ test("non-native checkbox space disabled focusable", () => {
     </label>
   );
   const checkbox = getByLabelText("checkbox");
-  fireEvent.keyDown(checkbox, { key: " " });
+  press.Space(checkbox);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 

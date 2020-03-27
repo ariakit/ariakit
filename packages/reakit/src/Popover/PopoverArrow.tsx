@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
@@ -34,29 +34,28 @@ export const usePopoverArrow = createHook<
 
   useProps(options, { ref: htmlRef, style: htmlStyle, ...htmlProps }) {
     const [placement] = options.placement.split("-");
-    const transformMap = {
+    const transformMap: Record<string, string> = {
       top: "rotateZ(180deg)",
       right: "rotateZ(-90deg)",
       bottom: "rotateZ(360deg)",
       left: "rotateZ(90deg)"
     };
     const { unstable_arrowStyles: arrowStyles } = options;
+    const transform = transformMap[placement];
+
     return {
-      ref: mergeRefs(options.unstable_arrowRef, htmlRef),
+      ref: useForkRef(options.unstable_arrowRef, htmlRef),
       style: {
         ...arrowStyles,
-        top: arrowStyles ? arrowStyles.top || undefined : undefined,
-        position: "absolute",
         fontSize: options.size,
         width: "1em",
         height: "1em",
         pointerEvents: "none",
-        transform: transformMap[placement as keyof typeof transformMap],
         [placement]: "100%",
         ...htmlStyle
       },
       children: (
-        <svg viewBox="0 0 30 30">
+        <svg viewBox="0 0 30 30" style={{ transform }}>
           <path
             className="stroke"
             d="M23.7,27.1L17,19.9C16.5,19.3,15.8,19,15,19s-1.6,0.3-2.1,0.9l-6.6,7.2C5.3,28.1,3.4,29,2,29h26

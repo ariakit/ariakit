@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { PopoverBackdrop } from "../PopoverBackdrop";
 
 test("render", () => {
@@ -10,7 +10,6 @@ test("render", () => {
         <div
           class="hidden"
           hidden=""
-          role="presentation"
           style="display: none;"
         />
       </div>
@@ -23,9 +22,7 @@ test("render visible", () => {
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
-        <div
-          role="presentation"
-        />
+        <div />
       </div>
     </body>
   `);

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { unstable_FormRemoveButton as FormRemoveButton } from "../FormRemoveButton";
 
 test("render", () => {

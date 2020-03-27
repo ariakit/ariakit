@@ -1,5 +1,5 @@
 import * as React from "react";
-import { As, PropsWithAs, ArrayValue, Omit } from "reakit-utils/types";
+import { As, PropsWithAs, ArrayValue } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { createHook } from "reakit-system/createHook";
@@ -54,6 +54,15 @@ export const unstable_useFormCheckbox = createHook<
   useState: unstable_useFormState,
   keys: ["name", "value"],
 
+  useOptions(options, htmlProps) {
+    const name = options.name || htmlProps.name;
+    const value =
+      typeof options.value !== "undefined" ? options.value : htmlProps.value;
+    const state = unstable_getIn(options.values, name);
+    const setState = (val: any) => options.update(name, val);
+    return { ...options, state, setState, name, value };
+  },
+
   useProps(options, { onBlur: htmlOnBlur, ...htmlProps }) {
     const isBoolean = typeof options.value === "undefined";
 
@@ -74,12 +83,6 @@ export const unstable_useFormCheckbox = createHook<
         : {}),
       ...htmlProps
     };
-  },
-
-  useCompose(options, htmlProps) {
-    const state = unstable_getIn(options.values, options.name);
-    const setState = (value: any) => options.update(options.name, value);
-    return useCheckbox({ ...options, state, setState }, htmlProps);
   }
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormCheckboxOptions<V, P>,

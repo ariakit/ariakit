@@ -20,7 +20,11 @@ export const usePopoverBackdrop = createHook<
 >({
   name: "PopoverBackdrop",
   compose: useDialogBackdrop,
-  useState: usePopoverState
+  useState: usePopoverState,
+
+  useOptions({ modal = false, ...options }) {
+    return { modal, ...options };
+  }
 });
 
 export const PopoverBackdrop = createComponent({

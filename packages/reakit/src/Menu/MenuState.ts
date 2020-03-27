@@ -7,13 +7,15 @@ import {
   PopoverState,
   PopoverActions,
   PopoverInitialState,
-  usePopoverState
+  usePopoverState,
+  PopoverStateReturn
 } from "../Popover/PopoverState";
 import {
   MenuBarState,
   MenuBarActions,
   MenuBarInitialState,
-  useMenuBarState
+  useMenuBarState,
+  MenuBarStateReturn
 } from "./MenuBarState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -23,7 +25,10 @@ export type MenuActions = MenuBarActions & PopoverActions;
 
 export type MenuInitialState = MenuBarInitialState & PopoverInitialState;
 
-export type MenuStateReturn = MenuState & MenuActions;
+export type MenuStateReturn = MenuBarStateReturn &
+  PopoverStateReturn &
+  MenuState &
+  MenuActions;
 
 export function useMenuState(
   initialState: SealedInitialState<MenuInitialState> = {}

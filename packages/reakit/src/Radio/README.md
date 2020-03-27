@@ -39,6 +39,31 @@ function Example() {
 }
 ```
 
+### Default value
+
+To set a default value, you can pass the `value` of the current checked radio to the `state` property on `useRadioState`.
+
+```jsx
+import { useRadioState, Radio, RadioGroup } from "reakit/Radio";
+
+function Example() {
+  const radio = useRadioState({ state: "orange" });
+  return (
+    <RadioGroup {...radio} aria-label="fruits">
+      <label>
+        <Radio {...radio} value="apple" /> apple
+      </label>
+      <label>
+        <Radio {...radio} value="orange" /> orange
+      </label>
+      <label>
+        <Radio {...radio} value="watermelon" /> watermelon
+      </label>
+    </RadioGroup>
+  );
+}
+```
+
 ## Accessibility
 
 - `Radio` has role `radio`.
@@ -59,6 +84,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 <!-- Automatically generated -->
 
 ### `useRadioState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -96,6 +126,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
@@ -111,9 +146,14 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the `checked` attribute.
 
-<details><summary>13 state props</summary>
+<details><summary>14 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -185,4 +225,18 @@ similarly to `readOnly` on form elements. In this case, only
 
 ### `RadioGroup`
 
-No props to show
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+</details>

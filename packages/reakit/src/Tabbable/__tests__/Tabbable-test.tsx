@@ -1,6 +1,6 @@
 import * as React from "react";
-import { render, fireEvent } from "@testing-library/react";
-import { Tabbable } from "../Tabbable";
+import { render, click, focus, press } from "reakit-test-utils";
+import { Tabbable, TabbableProps } from "../Tabbable";
 
 test("render", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
@@ -14,13 +14,14 @@ test("render", () => {
 test("render disabled", () => {
   const { getByText } = render(<Tabbable disabled>tabbable</Tabbable>);
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-    <button
-      aria-disabled="true"
-      disabled=""
-    >
-      tabbable
-    </button>
-  `);
+<button
+  aria-disabled="true"
+  disabled=""
+  style="pointer-events: none;"
+>
+  tabbable
+</button>
+`);
 });
 
 test("render disabled focusable", () => {
@@ -43,7 +44,7 @@ test("click", () => {
   const { getByText } = render(<Tabbable onClick={fn}>tabbable</Tabbable>);
   const tabbable = getByText("tabbable");
   expect(fn).toHaveBeenCalledTimes(0);
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
@@ -55,7 +56,7 @@ test("click disabled", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -68,7 +69,7 @@ test("click enabled after disabled", () => {
   );
   const tabbable = getByText("tabbable");
   rerender(<Tabbable onClick={fn}>tabbable</Tabbable>);
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
@@ -80,7 +81,7 @@ test("click disabled focusable", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -88,7 +89,7 @@ test("focus", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
-  tabbable.focus();
+  focus(tabbable);
   expect(tabbable).toHaveFocus();
 });
 
@@ -96,7 +97,7 @@ test("focus disabled", () => {
   const { getByText } = render(<Tabbable disabled>tabbable</Tabbable>);
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
-  tabbable.focus();
+  focus(tabbable);
   expect(tabbable).not.toHaveFocus();
 });
 
@@ -108,7 +109,7 @@ test("focus disabled focusable", () => {
   );
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
-  tabbable.focus();
+  focus(tabbable);
   expect(tabbable).toHaveFocus();
 });
 
@@ -121,7 +122,7 @@ test("non-native button click", () => {
   );
   const tabbable = getByText("tabbable");
   expect(fn).toHaveBeenCalledTimes(0);
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
@@ -133,7 +134,7 @@ test("non-native button click disabled", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -145,7 +146,7 @@ test("non-native button click disabled focusable", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.click(tabbable);
+  click(tabbable);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -153,7 +154,7 @@ test("non-native button focus", () => {
   const { getByText } = render(<Tabbable as="div">tabbable</Tabbable>);
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
-  tabbable.focus();
+  focus(tabbable);
   expect(tabbable).toHaveFocus();
 });
 
@@ -165,7 +166,7 @@ test("non-native button focus disabled", () => {
   );
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
-  tabbable.focus();
+  focus(tabbable);
   expect(tabbable).not.toHaveFocus();
 });
 
@@ -177,7 +178,7 @@ test("non-native button focus disabled focusable", () => {
   );
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
-  tabbable.focus();
+  focus(tabbable);
   expect(tabbable).toHaveFocus();
 });
 
@@ -189,9 +190,9 @@ test("non-native button space/enter", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.keyDown(tabbable, { key: "Enter" });
+  press.Enter(tabbable);
   expect(fn).toHaveBeenCalledTimes(1);
-  fireEvent.keyDown(tabbable, { key: " " });
+  press.Space(tabbable);
   expect(fn).toHaveBeenCalledTimes(2);
 });
 
@@ -203,8 +204,21 @@ test("non-native button space/enter disabled", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.keyDown(tabbable, { key: "Enter" });
-  fireEvent.keyDown(tabbable, { key: " " });
+  press.Enter(tabbable);
+  press.Space(tabbable);
+  expect(fn).toHaveBeenCalledTimes(0);
+});
+
+test("non-native button space/enter metaKey", () => {
+  const fn = jest.fn();
+  const { getByText } = render(
+    <Tabbable as="div" onClick={fn}>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  press.Enter(tabbable, { metaKey: true });
+  press.Space(tabbable, { metaKey: true });
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -216,8 +230,8 @@ test("non-native button space/enter disabled focusable", () => {
     </Tabbable>
   );
   const tabbable = getByText("tabbable");
-  fireEvent.keyDown(tabbable, { key: "Enter" });
-  fireEvent.keyDown(tabbable, { key: " " });
+  press.Enter(tabbable);
+  press.Space(tabbable);
   expect(fn).toHaveBeenCalledTimes(0);
 });
 
@@ -229,7 +243,21 @@ test("focus nested native tabbables", () => {
   );
   const button = getByText("button");
   expect(button).not.toHaveFocus();
-  button.focus();
-  fireEvent.mouseDown(button);
+  focus(button);
   expect(button).toHaveFocus();
+});
+
+test("press enter on Tabbable as another non-native Tabbable", () => {
+  const onClick = jest.fn();
+  const NonNativeTabbable = React.forwardRef<HTMLDivElement, TabbableProps>(
+    (props, ref) => <Tabbable as="div" ref={ref} {...props} />
+  );
+  const { getByText } = render(
+    <Tabbable as={NonNativeTabbable} onClick={onClick}>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  press.Enter(tabbable);
+  expect(onClick).toHaveBeenCalledTimes(1);
 });

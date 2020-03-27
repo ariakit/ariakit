@@ -1,9 +1,10 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { isButton } from "reakit-utils/isButton";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type TabbableOptions = BoxOptions & {
@@ -35,36 +36,26 @@ export type TabbableHTMLProps = BoxHTMLProps & {
 
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
-function isNativeTabbable(element: EventTarget) {
+function isNativeTabbable(element: Element) {
   return (
-    element instanceof HTMLButtonElement ||
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLSelectElement ||
-    element instanceof HTMLTextAreaElement ||
-    element instanceof HTMLAnchorElement ||
-    element instanceof HTMLAudioElement ||
-    element instanceof HTMLVideoElement
-  );
-}
-
-function isInput(element: EventTarget) {
-  return (
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLTextAreaElement ||
-    element instanceof HTMLSelectElement
+    element.tagName === "BUTTON" ||
+    element.tagName === "INPUT" ||
+    element.tagName === "SELECT" ||
+    element.tagName === "TEXTAREA" ||
+    element.tagName === "A" ||
+    element.tagName === "AUDIO" ||
+    element.tagName === "VIDEO"
   );
 }
 
 // https://twitter.com/diegohaz/status/1176998102139572225
-function receivesFocusOnMouseDown(element: EventTarget) {
-  const { userAgent } = navigator;
-  const is = (string: string) => userAgent.indexOf(string) !== -1;
-  const isLikeMac = is("Mac") || is("like Mac");
-  const isSafariOrFirefox = is("Safari") || is("Firefox");
-  return (
-    !isLikeMac || !isSafariOrFirefox || !(element instanceof HTMLButtonElement)
-  );
+function isUserAgent(string: string) {
+  if (typeof window === "undefined") return false;
+  return window.navigator.userAgent.indexOf(string) !== -1;
 }
+
+const isSafariOrFirefoxOnMac =
+  isUserAgent("Mac") && (isUserAgent("Safari") || isUserAgent("Firefox"));
 
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
@@ -78,10 +69,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
 
   useOptions(
     { unstable_clickOnEnter = true, unstable_clickOnSpace = true, ...options },
-    htmlProps
+    { disabled }
   ) {
     return {
-      disabled: htmlProps.disabled,
+      disabled,
       unstable_clickOnEnter,
       unstable_clickOnSpace,
       ...options
@@ -97,20 +88,21 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown: htmlOnMouseDown,
       onKeyDown: htmlOnKeyDown,
       style: htmlStyle,
+      "data-tabbable": dataTabbable,
       ...htmlProps
-    }
+    }: TabbableHTMLProps & { "data-tabbable"?: boolean }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
-    const style =
-      options.disabled && !nativeTabbable
-        ? { pointerEvents: "none" as const, ...htmlStyle }
-        : htmlStyle;
+    const style = trulyDisabled
+      ? { pointerEvents: "none" as const, ...htmlStyle }
+      : htmlStyle;
 
     React.useEffect(() => {
-      if (ref.current && !isNativeTabbable(ref.current)) {
+      const tabbable = ref.current;
+      if (tabbable && !isNativeTabbable(tabbable)) {
         setNativeTabbable(false);
       }
     }, []);
@@ -135,24 +127,24 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           return;
         }
 
+        if (htmlOnMouseDown) {
+          htmlOnMouseDown(event);
+        }
+
+        if (event.defaultPrevented) {
+          return;
+        }
+
         const self = event.currentTarget as HTMLElement;
         const target = event.target as HTMLElement;
 
-        if (
-          self.contains(target) &&
-          !isInput(target) &&
-          !receivesFocusOnMouseDown(self)
-        ) {
+        if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
           event.preventDefault();
           const isFocusControl =
             isFocusable(target) || target instanceof HTMLLabelElement;
           if (!hasFocusWithin(self) || self === target || !isFocusControl) {
             self.focus();
           }
-        }
-
-        if (htmlOnMouseDown) {
-          htmlOnMouseDown(event);
         }
       },
       [options.disabled, htmlOnMouseDown]
@@ -164,7 +156,17 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           htmlOnKeyDown(event);
         }
 
-        if (options.disabled || isNativeTabbable(event.currentTarget)) return;
+        if (
+          options.disabled ||
+          isNativeTabbable(event.currentTarget) ||
+          // Native interactive elements don't get clicked on cmd+Enter/Space
+          event.metaKey ||
+          // This will be true if `useTabbable` has already been used.
+          // In this case, we don't want to .click() twice.
+          dataTabbable
+        ) {
+          return;
+        }
 
         // Per the spec, space only triggers button click on key up.
         // On key down, it triggers the :active state.
@@ -174,16 +176,11 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           (options.unstable_clickOnSpace && event.key === " ")
         ) {
           event.preventDefault();
-          event.target.dispatchEvent(
-            new MouseEvent("click", {
-              view: window,
-              bubbles: true,
-              cancelable: false
-            })
-          );
+          (event.target as HTMLElement).click();
         }
       },
       [
+        dataTabbable,
         options.disabled,
         options.unstable_clickOnEnter,
         options.unstable_clickOnSpace,
@@ -192,7 +189,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       disabled: trulyDisabled,
       tabIndex: trulyDisabled ? undefined : tabIndex,
       "aria-disabled": options.disabled,
@@ -200,6 +197,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onMouseDown,
       onKeyDown,
       style,
+      "data-tabbable": nativeTabbable ? undefined : true,
       ...htmlProps
     };
   }

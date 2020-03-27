@@ -4,7 +4,7 @@ path: /docs/menu/
 
 # Menu
 
-Accessible `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuDisclosure` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
+Accessible `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuButton` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
 
 <carbon-ad></carbon-ad>
 
@@ -23,7 +23,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -31,7 +31,7 @@ function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <MenuButton {...menu}>Preferences</MenuButton>
       <Menu {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} disabled>
@@ -56,7 +56,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -65,7 +65,7 @@ function Example() {
 
   return (
     <>
-      <MenuDisclosure {...menu}>Menu</MenuDisclosure>
+      <MenuButton {...menu}>Menu</MenuButton>
       <Menu {...menu} aria-label="Example">
         <MenuItem
           {...menu}
@@ -90,13 +90,13 @@ function Example() {
 When opening `Menu`, focus is usually set on the first `MenuItem`. You can set the initial focus to be the menu container itself by just passing `tabIndex={0}` to it. This will be ignored if the menu is opened by using arrow keys.
 
 ```jsx
-import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+import { useMenuState, Menu, MenuItem, MenuButton } from "reakit/Menu";
 
 function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <MenuButton {...menu}>Preferences</MenuButton>
       <Menu {...menu} tabIndex={0} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu}>Extensions</MenuItem>
@@ -112,7 +112,7 @@ Alternatively, you can define another element to get the initial focus with Reac
 ```jsx
 import React from "react";
 import { Button } from "reakit/Button";
-import { useMenuState, Menu, MenuItem, MenuDisclosure } from "reakit/Menu";
+import { useMenuState, Menu, MenuItem, MenuButton } from "reakit/Menu";
 
 function Example() {
   const menu = useMenuState();
@@ -126,7 +126,7 @@ function Example() {
 
   return (
     <>
-      <MenuDisclosure {...menu}>Preferences</MenuDisclosure>
+      <MenuButton {...menu}>Preferences</MenuButton>
       <Menu {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} ref={ref}>
@@ -149,7 +149,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -157,9 +157,9 @@ const PreferencesMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         Preferences
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="Preferences">
         <MenuItem {...menu}>Settings</MenuItem>
         <MenuItem {...menu} disabled>
@@ -176,7 +176,7 @@ function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Code</MenuDisclosure>
+      <MenuButton {...menu}>Code</MenuButton>
       <Menu {...menu} aria-label="Code">
         <MenuItem {...menu}>About Visual Studio Code</MenuItem>
         <MenuItem {...menu}>Check for Updates...</MenuItem>
@@ -205,7 +205,7 @@ import {
   useMenuState,
   Menu,
   MenuItem,
-  MenuDisclosure,
+  MenuButton,
   MenuSeparator
 } from "reakit/Menu";
 
@@ -228,7 +228,7 @@ function Example() {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>Code</MenuDisclosure>
+      <MenuButton {...menu}>Code</MenuButton>
       <Menu {...menu} aria-label="Code">
         <MenuItem {...menu}>About Visual Studio Code</MenuItem>
         <MenuItem {...menu} as={UpdatesDialog} />
@@ -250,7 +250,7 @@ import {
   useMenuState,
   useMenuBarState,
   Menu,
-  MenuDisclosure,
+  MenuButton,
   MenuItem,
   MenuSeparator,
   MenuBar,
@@ -264,9 +264,9 @@ const OpenRecentMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         Open Recent
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="Open Recent">
         <MenuItem {...menu}>Reopen Closed Editor</MenuItem>
         <MenuSeparator {...menu} />
@@ -283,9 +283,9 @@ const FileMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         File
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="File">
         <MenuItem {...menu}>New File</MenuItem>
         <MenuItem {...menu}>New Window</MenuItem>
@@ -303,9 +303,9 @@ const EditMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         Edit
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="Edit">
         <MenuItem {...menu}>Undo</MenuItem>
         <MenuItem {...menu}>Redo</MenuItem>
@@ -323,9 +323,9 @@ const ViewMenu = React.forwardRef((props, ref) => {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure ref={ref} {...menu} {...props}>
+      <MenuButton ref={ref} {...menu} {...props}>
         View
-      </MenuDisclosure>
+      </MenuButton>
       <Menu {...menu} aria-label="View">
         <MenuGroup {...menu}>
           <MenuItemRadio {...menu} name="windows" value="explorer">
@@ -378,24 +378,20 @@ import {
   useMenuState,
   Menu as BaseMenu,
   MenuItem,
-  MenuDisclosure
+  MenuButton
 } from "reakit/Menu";
 
 function Menu({ disclosure, items, ...props }) {
   const menu = useMenuState();
   return (
     <>
-      <MenuDisclosure {...menu}>
-        {disclosureProps =>
-          React.cloneElement(React.Children.only(disclosure), disclosureProps)
-        }
-      </MenuDisclosure>
+      <MenuButton {...menu} {...disclosure.props}>
+        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
+      </MenuButton>
       <BaseMenu {...menu} {...props}>
         {items.map((item, i) => (
-          <MenuItem {...menu} key={i}>
-            {itemProps =>
-              React.cloneElement(React.Children.only(item), itemProps)
-            }
+          <MenuItem {...menu} {...item.props} key={i}>
+            {itemProps => React.cloneElement(item, itemProps)}
           </MenuItem>
         ))}
       </BaseMenu>
@@ -421,12 +417,12 @@ function Example() {
 ## Accessibility
 
 - `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
-- `MenuDisclosure` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
+- `MenuButton` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
 - `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 - `MenuItemCheckbox` has role `menuitemcheckbox`.
 - `MenuItemRadio` has role `menuitemradio`.
-- Pressing <kbd>Enter</kbd> on `MenuDisclosure` opens its menu (or submenu) and places focus on its first item.
+- Pressing <kbd>Enter</kbd> on `MenuButton` opens its menu (or submenu) and places focus on its first item.
 - Pressing <kbd>Space</kbd> on `MenuItemCheckbox` changes the state without closing `Menu`.
 - Pressing <kbd>Space</kbd> on a `MenuItemRadio` that is not checked, without closing `Menu`, checks the focused `MenuItemRadio` and unchecks any other checked `MenuItemRadio` in the same group.
 - Pressing any key that corresponds to a printable character moves focus to the next `MenuItem` in the current `Menu` or `MenuBar` whose label begins with that printable character.
@@ -436,7 +432,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 ## Composition
 
 - `Menu` uses `MenuBar` and [Popover](/docs/popover/).
-- `MenuDisclosure` uses [PopoverDisclosure](/docs/popover/).
+- `MenuButton` uses [PopoverDisclosure](/docs/popover/).
 - `MenuGroup` uses [Box](/docs/box/).
 - `MenuItem` uses [Rover](/docs/rover/).
 - `MenuItemCheckbox` uses [Checkbox](/docs/checkbox/).
@@ -451,6 +447,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 <!-- Automatically generated -->
 
 ### `useMenuBarState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -476,6 +477,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useMenuState`
 
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -511,6 +517,15 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
 
@@ -527,36 +542,27 @@ given milliseconds.
   Flip the popover's placement when it starts to overlap its reference
 element.
 
-- **`unstable_shift`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+- **`unstable_offset`** <span title="Experimental">⚠️</span>
+  <code>[string | number, string | number] | undefined</code>
 
-  Shift popover on the start or end of its reference element.
+  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 
 - **`gutter`**
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.
+  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
 
 - **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
   Prevents popover from being positioned outside the boundary.
 
-- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
-  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
-
-  Boundaries element used by `preventOverflow`.
-
 ### `Menu`
 
-- **`modal`**
-  <code>boolean | undefined</code>
+- **`id`**
+  <code>string | undefined</code>
 
-  Toggles Dialog's `modal` state.
-  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-  - Modal: `preventBodyScroll` is automatically enabled, focus is
-trapped within the dialog and the dialog is rendered within a `Portal`
-by default.
+  Same as the HTML attribute.
 
 - **`hideOnClickOutside`**
   <code>boolean | undefined</code>
@@ -581,12 +587,6 @@ When not set, the first tabbable element within the dialog will be used.
   The element that will be focused when the dialog hides.
 When not set, the disclosure component will be used.
 
-- **`unstable_portal`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
-
 - **`unstable_orphan`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -595,9 +595,14 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>12 state props</summary>
+<details><summary>15 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -612,11 +617,25 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
 - **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
 It's called after given milliseconds if `animated` is a number.
+
+- **`setModal`**
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `modal`.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -716,6 +735,71 @@ It's called after given milliseconds if `animated` is a number.
 
 </details>
 
+### `MenuButton`
+
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+<details><summary>9 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`toggle`**
+  <code>() =&#62; void</code>
+
+  Toggles the `visible` state
+
+- **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement | null&#62;</code>
+
+  The reference element.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first element.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last element.
+
+- **`show`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `true`
+
+</details>
+
 ### `MenuDisclosure`
 
 - **`disabled`**
@@ -730,7 +814,7 @@ It's called after given milliseconds if `animated` is a number.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>8 state props</summary>
+<details><summary>9 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -738,6 +822,11 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`toggle`**
   <code>() =&#62; void</code>
@@ -794,14 +883,24 @@ No props to show
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
   Element ID.
 
-<details><summary>14 state props</summary>
+<details><summary>15 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -902,6 +1001,11 @@ array.
 
   Checkbox's checked state. If present, it's used instead of `state`.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
@@ -912,7 +1016,7 @@ array.
 
   MenuItemCheckbox's name as in `menu.values`.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -927,6 +1031,11 @@ going to be an array.
   <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
 
   Sets `state`.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -1025,6 +1134,11 @@ going to be an array.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
@@ -1045,9 +1159,14 @@ similarly to `readOnly` on form elements. In this case, only
 
   MenuItemRadio's name as in `menu.values`.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>

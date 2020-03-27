@@ -10,6 +10,7 @@
 /useLiveRef
 /useIsomorphicEffect
 /useId
+/useForkRef
 /useAllCallbacks
 /types
 /toArray
@@ -19,13 +20,16 @@
 /removeIndexFromArray
 /pick
 /omit
-/mergeRefs
-/jestSerializerStripFunctions
+/matches
 /isPromise
+/isPlainObject
 /isObject
 /isInteger
 /isEmpty
+/isButton
 /hasFocusWithin
+/getDocument
+/getActiveElement
 /cx
 /createOnKeyDown
 /closest

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
+import { isButton } from "reakit-utils/isButton";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -22,26 +23,23 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   useProps(_, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const [role, setRole] = React.useState<"button" | undefined>(undefined);
-    const [type, setType] = React.useState<"button" | undefined>(undefined);
+    const [type, setType] = React.useState<"button" | undefined>("button");
 
     React.useEffect(() => {
-      if (ref.current && ref.current instanceof HTMLAnchorElement) {
-        return;
-      }
+      const self = ref.current;
 
-      if (
-        ref.current &&
-        (ref.current instanceof HTMLButtonElement ||
-          ref.current instanceof HTMLInputElement)
-      ) {
-        setType("button");
-      } else {
-        setRole("button");
+      if (!self) return;
+
+      if (!isButton(self)) {
+        if (self.tagName !== "A") {
+          setRole("button");
+        }
+        setType(undefined);
       }
     }, []);
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       role,
       type,
       ...htmlProps

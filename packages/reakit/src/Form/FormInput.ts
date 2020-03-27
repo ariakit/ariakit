@@ -1,5 +1,5 @@
 import * as React from "react";
-import { As, PropsWithAs, Omit } from "reakit-utils/types";
+import { As, PropsWithAs } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
@@ -48,6 +48,15 @@ export const unstable_useFormInput = createHook<
   useState: unstable_useFormState,
   keys: ["name"],
 
+  useOptions(options, { name }) {
+    return {
+      name,
+      ...options,
+      unstable_clickOnEnter: false,
+      unstable_clickOnSpace: false
+    };
+  },
+
   useProps(
     options,
     { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
@@ -74,17 +83,6 @@ export const unstable_useFormInput = createHook<
       "aria-invalid": shouldShowError(options, options.name),
       ...htmlProps
     };
-  },
-
-  useCompose(options, htmlProps) {
-    return useTabbable(
-      {
-        ...options,
-        unstable_clickOnEnter: false,
-        unstable_clickOnSpace: false
-      },
-      htmlProps
-    );
   }
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,

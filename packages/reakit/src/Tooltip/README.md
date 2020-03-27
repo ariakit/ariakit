@@ -101,10 +101,8 @@ function Tooltip({ children, title, ...props }) {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipReference {...tooltip}>
-        {referenceProps =>
-          React.cloneElement(React.Children.only(children), referenceProps)
-        }
+      <TooltipReference {...tooltip} {...children.props}>
+        {referenceProps => React.cloneElement(children, referenceProps)}
       </TooltipReference>
       <ReakitTooltip {...tooltip} {...props}>
         {title}
@@ -131,7 +129,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tooltip` uses [Hidden](/docs/hidden/).
+- `Tooltip` uses [DisclosureRegion](/docs/disclosure/).
 - `TooltipArrow` uses [PopoverArrow](/docs/popover/).
 - `TooltipReference` uses [Box](/docs/box/).
 
@@ -142,6 +140,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 <!-- Automatically generated -->
 
 ### `useTooltipState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -172,27 +175,27 @@ given milliseconds.
   Flip the popover's placement when it starts to overlap its reference
 element.
 
-- **`unstable_shift`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+- **`unstable_offset`** <span title="Experimental">⚠️</span>
+  <code>[string | number, string | number] | undefined</code>
 
-  Shift popover on the start or end of its reference element.
+  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 
 - **`gutter`**
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.
+  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
 
 - **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
   Prevents popover from being positioned outside the boundary.
 
-- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
-  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
-
-  Boundaries element used by `preventOverflow`.
-
 ### `Tooltip`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
 
 - **`unstable_portal`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
@@ -200,9 +203,14 @@ element.
   Whether or not the dialog should be rendered within `Portal`.
 It's `true` by default if `modal` is `true`.
 
-<details><summary>3 state props</summary>
+<details><summary>4 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`visible`**
   <code>boolean</code>
@@ -245,9 +253,14 @@ It's called after given milliseconds if `animated` is a number.
 
 ### `TooltipReference`
 
-<details><summary>3 state props</summary>
+<details><summary>4 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>

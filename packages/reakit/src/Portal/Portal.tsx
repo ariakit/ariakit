@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 
 export type PortalProps = {
   /**
@@ -8,15 +9,20 @@ export type PortalProps = {
   children: React.ReactNode;
 };
 
+function getBodyElement() {
+  return typeof document !== "undefined" ? document.body : null;
+}
+
 export const PortalContext = React.createContext<HTMLElement | null>(
-  typeof document !== "undefined" ? document.body : null
+  getBodyElement()
 );
 
 export function Portal({ children }: PortalProps) {
   // if it's a nested portal, context is the parent portal
   // otherwise it's document.body
-  const context = React.useContext(PortalContext);
-  const [portal] = React.useState(() => {
+  // https://github.com/reakit/reakit/issues/513
+  const context = React.useContext(PortalContext) || getBodyElement();
+  const [hostNode] = React.useState(() => {
     if (typeof document !== "undefined") {
       const element = document.createElement("div");
       element.className = Portal.__className;
@@ -26,20 +32,20 @@ export function Portal({ children }: PortalProps) {
     return null;
   });
 
-  React.useEffect(() => {
-    if (!portal || !context) return undefined;
-    context.appendChild(portal);
+  useIsomorphicEffect(() => {
+    if (!hostNode || !context) return undefined;
+    context.appendChild(hostNode);
     return () => {
-      context.removeChild(portal);
+      context.removeChild(hostNode);
     };
-  }, [portal, context]);
+  }, [hostNode, context]);
 
-  if (portal) {
+  if (hostNode) {
     return ReactDOM.createPortal(
-      <PortalContext.Provider value={portal}>
+      <PortalContext.Provider value={hostNode}>
         {children}
       </PortalContext.Provider>,
-      portal
+      hostNode
     );
   }
 

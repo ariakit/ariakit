@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { TabPanel } from "../TabPanel";
 
 const props: Parameters<typeof TabPanel>[0] = {
-  unstable_baseId: "base",
+  baseId: "base",
   stopId: "tab",
   selectedId: null
 };
@@ -63,6 +63,41 @@ test("render selected", () => {
         <div
           aria-labelledby="base-tab"
           id="base-tab-panel"
+          role="tabpanel"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
+});
+
+test("render without state props", () => {
+  // @ts-ignore
+  const { baseElement } = render(<TabPanel>tabpanel</TabPanel>);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          role="tabpanel"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
+});
+
+test("render without state props with id", () => {
+  // @ts-ignore
+  const { baseElement } = render(<TabPanel id="test">tabpanel</TabPanel>);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <div
+          id="test"
           role="tabpanel"
           tabindex="0"
         >

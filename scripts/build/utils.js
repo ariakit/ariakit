@@ -404,7 +404,7 @@ function getJsDocs(symbol) {
 function getComment(symbol) {
   const jsDocs = getJsDocs(symbol);
   if (!jsDocs) return "";
-  return jsDocs.getComment();
+  return jsDocs.getDescription().trim();
 }
 
 /**
@@ -414,7 +414,8 @@ function getComment(symbol) {
 function getTagNames(prop) {
   const jsDocs = getJsDocs(prop);
   if (!jsDocs) return [];
-  return jsDocs.getTags().map(tag => tag.getTagName());
+  // Object.getOwnPropertyNames(Object.getPrototypeOf(jsDocs));
+  return jsDocs.getTags().map(tag => tag.getKindName());
 }
 
 /**
@@ -424,7 +425,7 @@ function getProps(node) {
   return node
     .getType()
     .getProperties()
-    .filter(prop => !getTagNames(prop).includes("private"));
+    .filter(prop => !getTagNames(prop).includes("JSDocPrivateTag"));
 }
 
 /**
@@ -568,7 +569,7 @@ function injectPropTypes(rootPath) {
       const dir = dirname(readmePath);
       const tree = ast.parse(mdContents);
       const publicPaths = Object.values(getPublicFiles(dir));
-      const sourceFiles = project.addExistingSourceFiles(publicPaths);
+      const sourceFiles = project.addSourceFilesAtPaths(publicPaths);
       project.resolveSourceFileDependencies();
       const types = {};
 

@@ -1,3 +1,4 @@
+import "reakit-test-utils/mockClientRects";
 import { ComponentProps } from "react";
 import { isFocusable, isTabbable } from "../tabbable";
 

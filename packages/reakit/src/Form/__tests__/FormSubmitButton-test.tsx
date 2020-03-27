@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { unstable_FormSubmitButton as FormSubmitButton } from "../FormSubmitButton";
 
 test("render", () => {
@@ -22,14 +22,15 @@ test("disabled", () => {
     <FormSubmitButton baseId="base" submit={jest.fn()} disabled />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-disabled="true"
-          disabled=""
-          type="submit"
-        />
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <button
+      aria-disabled="true"
+      disabled=""
+      style="pointer-events: none;"
+      type="submit"
+    />
+  </div>
+</body>
+`);
 });

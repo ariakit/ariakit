@@ -2,7 +2,7 @@ import { warning } from "reakit-utils/warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { DialogOptions, DialogHTMLProps, useDialog } from "../Dialog/Dialog";
 import { PopoverStateReturn, usePopoverState } from "./PopoverState";
 
@@ -27,7 +27,7 @@ export const usePopover = createHook<PopoverOptions, PopoverHTMLProps>({
 
   useProps(options, { ref: htmlRef, style: htmlStyle, ...htmlProps }) {
     return {
-      ref: mergeRefs(options.unstable_popoverRef, htmlRef),
+      ref: useForkRef(options.unstable_popoverRef, htmlRef),
       style: { ...options.unstable_popoverStyles, ...htmlStyle },
       ...htmlProps
     };

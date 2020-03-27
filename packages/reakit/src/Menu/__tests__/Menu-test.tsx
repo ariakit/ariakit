@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { Menu } from "../Menu";
 
 function createRef(id: string) {
@@ -10,8 +10,11 @@ function createRef(id: string) {
 }
 
 const props: Parameters<typeof Menu>[0] = {
-  unstable_hiddenId: "hidden",
-  stops: [{ id: "a", ref: createRef("a") }, { id: "b", ref: createRef("b") }],
+  baseId: "base",
+  stops: [
+    { id: "a", ref: createRef("a") },
+    { id: "b", ref: createRef("b") }
+  ],
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
@@ -29,7 +32,7 @@ test("render", () => {
           class="hidden"
           data-dialog="true"
           hidden=""
-          id="hidden"
+          id="base"
           role="menu"
           style="display: none;"
           tabindex="-1"
@@ -41,14 +44,16 @@ test("render", () => {
 
 test("render without state props", () => {
   // @ts-ignore
-  const { baseElement } = render(<Menu />);
+  const { baseElement } = render(<Menu id="base" aria-label="menu" />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
         <div
+          aria-label="menu"
           class="hidden"
           data-dialog="true"
           hidden=""
+          id="base"
           role="menu"
           style="display: none;"
           tabindex="-1"

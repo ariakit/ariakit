@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, wait } from "@testing-library/react";
+import { render, wait, click } from "reakit-test-utils";
 import {
   Popover,
   PopoverArrow,
@@ -26,7 +26,7 @@ test("show", async () => {
   const disclosure = getByText("disclosure");
   const popover = getByText("popover");
   expect(popover).not.toBeVisible();
-  fireEvent.click(disclosure);
+  click(disclosure);
   await wait(expect(popover).toBeVisible);
 });
 
@@ -35,6 +35,6 @@ test("hide", async () => {
   const disclosure = getByText("disclosure");
   const popover = getByText("popover");
   expect(popover).toBeVisible();
-  fireEvent.click(disclosure);
+  click(disclosure);
   await wait(expect(popover).not.toBeVisible);
 });

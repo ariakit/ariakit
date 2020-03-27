@@ -3,6 +3,122 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.16](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.15...reakit@1.0.0-beta.16) (2020-02-10)
+
+
+### Bug Fixes
+
+* Check for classList existence before use ([#540](https://github.com/reakit/reakit/issues/540)) ([92a5fa1](https://github.com/reakit/reakit/commit/92a5fa1fd30e876eb8c25f3bbed48fbd7b8e15fb)), closes [#537](https://github.com/reakit/reakit/issues/537)
+* Fix `transitionEnd` capturing children transitions ([#548](https://github.com/reakit/reakit/issues/548)) ([4cf1eaa](https://github.com/reakit/reakit/commit/4cf1eaad204a787be70f9db31b25e18972723ea2)), closes [#531](https://github.com/reakit/reakit/issues/531)
+* Fix inconsistent `Tooltip` behavior on disabled `Tabbable` ([#552](https://github.com/reakit/reakit/issues/552)) ([d507772](https://github.com/reakit/reakit/commit/d507772ed470770f5db322ab68eced3b3259d8f0)), closes [#471](https://github.com/reakit/reakit/issues/471)
+* Fix portaled components without dimensions in the first render ([#547](https://github.com/reakit/reakit/issues/547)) ([8783aec](https://github.com/reakit/reakit/commit/8783aec08f68be6e432bc39be85f2824ef8ca64e)), closes [#532](https://github.com/reakit/reakit/issues/532)
+* Remove confusing `rover.unregister()` warning ([#549](https://github.com/reakit/reakit/issues/549)) ([2a72e35](https://github.com/reakit/reakit/commit/2a72e350c4134a55c77b0f2a19fea8a15af4e3bd)), closes [#488](https://github.com/reakit/reakit/issues/488)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/issues/541)) ([4397ab0](https://github.com/reakit/reakit/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/issues/544)) ([f5fa914](https://github.com/reakit/reakit/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* Upgrade to popper.js v2 ([#545](https://github.com/reakit/reakit/issues/545)) ([55f7c21](https://github.com/reakit/reakit/commit/55f7c21b6651efc7ee18e45c17bf7be3ef5d39d2))
+
+
+### BREAKING CHANGES
+
+* The internal `popper.js` dependency has been upgraded to `v2`. The stable `Popover` API remains the same. But, while this change has been tested with the most common use cases, there may be some edge cases where `Popover` and `Menu` (which uses `Popover` underneath) may behave differently.
+
+
+
+
+
+# [1.0.0-beta.15](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.14...reakit@1.0.0-beta.15) (2020-02-05)
+
+
+### Bug Fixes
+
+* Fix parent `Dialog` closing when clicking on nested `DialogBackdrop` ([#530](https://github.com/reakit/reakit/issues/530)) ([e8bc3be](https://github.com/reakit/reakit/commit/e8bc3be)), closes [#529](https://github.com/reakit/reakit/issues/529)
+* Fix warning on deprecated `Provider` import ([1cd9421](https://github.com/reakit/reakit/commit/1cd9421))
+* Prevent clicks when pressing Enter/Space with meta key on non-native `Tabbable` ([#534](https://github.com/reakit/reakit/issues/534)) ([7f0c8cf](https://github.com/reakit/reakit/commit/7f0c8cf))
+* Stop converting `File` objects into plain objects when submitting `Form` ([5899d8d](https://github.com/reakit/reakit/commit/5899d8d)), closes [#415](https://github.com/reakit/reakit/issues/415)
+
+
+### Features
+
+* Add `modal` state to `useDialogState` ([#535](https://github.com/reakit/reakit/issues/535)) ([f3953ad](https://github.com/reakit/reakit/commit/f3953ad)), closes [#404](https://github.com/reakit/reakit/issues/404)
+* Add `unstable_offset` option to `usePopoverState` ([#527](https://github.com/reakit/reakit/issues/527)) ([301fbca](https://github.com/reakit/reakit/commit/301fbca)), closes [#511](https://github.com/reakit/reakit/issues/511)
+* Render nested `Dialog` on a portal outside of its parent `Dialog` ([#533](https://github.com/reakit/reakit/issues/533)) ([9f0a5cc](https://github.com/reakit/reakit/commit/9f0a5cc))
+* Replace `unstable_wrap` by `wrapElement` ([#538](https://github.com/reakit/reakit/issues/538)) ([17a12fb](https://github.com/reakit/reakit/commit/17a12fb))
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/commit/a252fcd))
+
+
+### BREAKING CHANGES
+
+* This should affect a very small number of people: the way nested modal `Dialog`s are rendered has been changed. To avoid styling issues, nested dialogs are rendered outside of the parent `Dialog` (but still inside the parent `Portal`).
+
+
+
+
+
+# [1.0.0-beta.14](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.13...reakit@1.0.0-beta.14) (2019-12-18)
+
+
+### Bug Fixes
+
+* Fix `Dialog` closing when clicking inside it and dragging outside ([#510](https://github.com/reakit/reakit/issues/510)) ([7d580e6](https://github.com/reakit/reakit/commit/7d580e6)), closes [#506](https://github.com/reakit/reakit/issues/506)
+* Fix `Portal` with `null` context on client ([#514](https://github.com/reakit/reakit/issues/514)) ([619adfd](https://github.com/reakit/reakit/commit/619adfd)), closes [#513](https://github.com/reakit/reakit/issues/513)
+* Fix components not rendering `id` prop ([#520](https://github.com/reakit/reakit/issues/520)) ([866db9d](https://github.com/reakit/reakit/commit/866db9d)), closes [#518](https://github.com/reakit/reakit/issues/518)
+
+
+### Features
+
+* Add `unstable_inner` option to `usePopoverState` ([#517](https://github.com/reakit/reakit/issues/517)) ([d5e1e8f](https://github.com/reakit/reakit/commit/d5e1e8f)), closes [#516](https://github.com/reakit/reakit/issues/516)
+
+
+
+
+
+# [1.0.0-beta.13](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.12...reakit@1.0.0-beta.13) (2019-11-22)
+
+
+### Bug Fixes
+
+* Fix `form.reset()` not reverting array fields to initial state ([#503](https://github.com/reakit/reakit/issues/503)) ([43ca6a8](https://github.com/reakit/reakit/commit/43ca6a8)), closes [#502](https://github.com/reakit/reakit/issues/502)
+* Prevent an unnecessary re-render on `Button` ([e39842d](https://github.com/reakit/reakit/commit/e39842d))
+* Standardize precedence when `options` and `htmlProps` conflict ([#501](https://github.com/reakit/reakit/issues/501)) ([5b8e02f](https://github.com/reakit/reakit/commit/5b8e02f))
+* Stop ignoring `checked` and `value` props passed as html props to `useCheckbox` ([#500](https://github.com/reakit/reakit/issues/500)) ([c8cb0bb](https://github.com/reakit/reakit/commit/c8cb0bb)), closes [#465](https://github.com/reakit/reakit/issues/465)
+* Stop persisting `onChange` event on `Checkbox` ([#499](https://github.com/reakit/reakit/issues/499)) ([fd4a694](https://github.com/reakit/reakit/commit/fd4a694)), closes [#498](https://github.com/reakit/reakit/issues/498)
+
+
+### BREAKING CHANGES
+
+* When passing a custom `onChange` prop to `Checkbox`, `event.target.checked` will no longer return a different value than when using the native `<input type="checkbox">` element.
+
+  **Before:**
+  ```jsx
+  <Checkbox onChange={event => setChecked(!event.target.checked)} />;
+  ```
+  **After:**
+  ```jsx
+  <Checkbox onChange={event => setChecked(event.target.checked)} />;
+  ```
+
+
+
+
+
+# [1.0.0-beta.12](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.11...reakit@1.0.0-beta.12) (2019-11-14)
+
+
+### Features
+
+* **reakit-system:** Replace `useCompose` by `useComposeOptions` on `createHook` ([#493](https://github.com/reakit/reakit/issues/493)) ([50fd7df](https://github.com/reakit/reakit/commit/50fd7df))
+* Add `baseId` option to `useHiddenState` and derivative hooks ([837aa58](https://github.com/reakit/reakit/commit/837aa58))
+* Add `baseId` option to `useRoverState` and derivative hooks ([#494](https://github.com/reakit/reakit/issues/494)) ([42e9dd0](https://github.com/reakit/reakit/commit/42e9dd0))
+* Add experimental `Id` module ([#492](https://github.com/reakit/reakit/issues/492)) ([5d87e99](https://github.com/reakit/reakit/commit/5d87e99))
+
+
+
+
+
 # [1.0.0-beta.11](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.10...reakit@1.0.0-beta.11) (2019-11-08)
 
 

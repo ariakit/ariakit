@@ -57,14 +57,14 @@ You can render [Menu](/docs/menu/) within a `Toolbar` using the same techinique 
 ```jsx
 import React from "react";
 import { useToolbarState, Toolbar, ToolbarItem } from "reakit/Toolbar";
-import { useMenuState, MenuDisclosure, Menu, MenuItem } from "reakit/Menu";
+import { useMenuState, MenuButton, Menu, MenuItem } from "reakit/Menu";
 import { Button } from "reakit/Button";
 
 const MoreItems = React.forwardRef((props, ref) => {
   const menu = useMenuState({ placement: "bottom-end" });
   return (
     <>
-      <MenuDisclosure {...menu} {...props} ref={ref} aria-label="More items" />
+      <MenuButton {...menu} {...props} ref={ref} aria-label="More items" />
       <Menu {...menu} aria-label="More items">
         <MenuItem {...menu}>Item 3</MenuItem>
         <MenuItem {...menu}>Item 4</MenuItem>
@@ -111,6 +111,11 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `useToolbarState`
 
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
@@ -130,9 +135,19 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 ### `Toolbar`
 
-<details><summary>1 state props</summary>
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>2 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -155,14 +170,24 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
 - **`stopId`**
   <code>string | undefined</code>
 
   Element ID.
 
-<details><summary>11 state props</summary>
+<details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>

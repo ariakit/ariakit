@@ -1,9 +1,6 @@
 import * as React from "react";
-import { render, fireEvent, act } from "@testing-library/react";
+import { render, act, click, focus, press } from "reakit-test-utils";
 import { Rover, useRoverState } from "..";
-
-const keyDown = (key: string) =>
-  fireEvent.keyDown(document.activeElement!, { key });
 
 test("first rover is active", () => {
   const Test = () => {
@@ -36,30 +33,30 @@ test("move focus with keys", () => {
   const rover1 = getByText("rover1");
   const rover2 = getByText("rover2");
   const rover3 = getByText("rover3");
-  act(() => rover1.focus());
+  focus(rover1);
   expect(rover1).toHaveFocus();
 
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover3).toHaveFocus();
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover3).toHaveFocus();
 
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover1).toHaveFocus();
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover1).toHaveFocus();
 
-  keyDown("End");
+  press.End();
   expect(rover3).toHaveFocus();
-  keyDown("Home");
+  press.Home();
   expect(rover1).toHaveFocus();
-  keyDown("PageDown");
+  press.PageDown();
   expect(rover3).toHaveFocus();
-  keyDown("PageUp");
+  press.PageUp();
   expect(rover1).toHaveFocus();
 });
 
@@ -86,30 +83,30 @@ test("move focus with keys disabled", () => {
   const rover1 = getByText("rover1");
   const rover2 = getByText("rover2");
   const rover4 = getByText("rover4");
-  act(() => rover1.focus());
+  focus(rover1);
   expect(rover1).toHaveFocus();
 
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover4).toHaveFocus();
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover4).toHaveFocus();
 
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover1).toHaveFocus();
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover1).toHaveFocus();
 
-  keyDown("End");
+  press.End();
   expect(rover4).toHaveFocus();
-  keyDown("Home");
+  press.Home();
   expect(rover1).toHaveFocus();
-  keyDown("PageDown");
+  press.PageDown();
   expect(rover4).toHaveFocus();
-  keyDown("PageUp");
+  press.PageUp();
   expect(rover1).toHaveFocus();
 });
 
@@ -128,21 +125,21 @@ test("move focus with keys and horizontal orientation", () => {
   const rover1 = getByText("rover1");
   const rover2 = getByText("rover2");
   const rover3 = getByText("rover3");
-  act(() => rover1.focus());
+  focus(rover1);
   expect(rover1).toHaveFocus();
 
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover3).toHaveFocus();
 
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover1).toHaveFocus();
 });
 
@@ -161,21 +158,21 @@ test("move focus with keys and vertical orientation", () => {
   const rover1 = getByText("rover1");
   const rover2 = getByText("rover2");
   const rover3 = getByText("rover3");
-  act(() => rover1.focus());
+  focus(rover1);
   expect(rover1).toHaveFocus();
 
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover3).toHaveFocus();
 
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover2).toHaveFocus();
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover1).toHaveFocus();
 });
 
@@ -194,16 +191,16 @@ test("move focus by calling state callbacks", () => {
   const { getByText } = render(<Test />);
   const first = getByText("first");
   const rover1 = getByText("rover1");
-  act(() => first.focus());
+  focus(first);
   expect(first).toHaveFocus();
 
-  fireEvent.click(first);
+  click(first);
   expect(rover1).toHaveFocus();
 
-  act(() => first.focus());
+  focus(first);
   expect(first).toHaveFocus();
 
-  fireEvent.click(first);
+  click(first);
   expect(rover1).toHaveFocus();
 });
 
@@ -231,27 +228,27 @@ test("move focus in nested rover", () => {
   const rover21 = getByText("rover21");
   const rover22 = getByText("rover22");
   const rover23 = getByText("rover23");
-  act(() => rover11.focus());
+  focus(rover11);
   expect(rover11).toHaveFocus();
 
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover12).toHaveFocus();
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover13).toHaveFocus();
 
-  act(() => rover22.focus());
+  focus(rover22);
   expect(rover22).toHaveFocus();
 
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover23).toHaveFocus();
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover22).toHaveFocus();
-  keyDown("ArrowUp");
+  press.ArrowUp();
   expect(rover21).toHaveFocus();
-  keyDown("ArrowDown");
+  press.ArrowDown();
   expect(rover22).toHaveFocus();
 
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover11).toHaveFocus();
 });
 
@@ -269,10 +266,10 @@ test("keep rover DOM order", () => {
   const { getByText, rerender } = render(<Test />);
   const rover1 = getByText("rover1");
   const rover3 = getByText("rover3");
-  act(() => rover1.focus());
+  focus(rover1);
   expect(rover1).toHaveFocus();
 
-  keyDown("ArrowRight");
+  press.ArrowRight();
   expect(rover3).toHaveFocus();
 
   rerender(<Test renderRover2 />);
@@ -280,7 +277,7 @@ test("keep rover DOM order", () => {
 
   const rover2 = getByText("rover2");
 
-  keyDown("ArrowLeft");
+  press.ArrowLeft();
   expect(rover2).toHaveFocus();
 });
 

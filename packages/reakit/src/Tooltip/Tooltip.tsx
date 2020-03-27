@@ -1,13 +1,17 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { usePipe } from "reakit-utils/usePipe";
-import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
+import {
+  DisclosureRegionOptions,
+  DisclosureRegionHTMLProps,
+  useDisclosureRegion
+} from "../Disclosure/DisclosureRegion";
 import { Portal } from "../Portal/Portal";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
 
-export type TooltipOptions = HiddenOptions &
+export type TooltipOptions = DisclosureRegionOptions &
   Pick<
     Partial<TooltipStateReturn>,
     "unstable_popoverRef" | "unstable_popoverStyles"
@@ -19,13 +23,13 @@ export type TooltipOptions = HiddenOptions &
     unstable_portal?: boolean;
   };
 
-export type TooltipHTMLProps = HiddenHTMLProps;
+export type TooltipHTMLProps = DisclosureRegionHTMLProps;
 
 export type TooltipProps = TooltipOptions & TooltipHTMLProps;
 
 export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   name: "Tooltip",
-  compose: useHidden,
+  compose: useDisclosureRegion,
   useState: useTooltipState,
   keys: ["unstable_portal"],
 
@@ -38,27 +42,32 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
 
   useProps(
     options,
-    { ref: htmlRef, style: htmlStyle, unstable_wrap: htmlWrap, ...htmlProps }
+    {
+      ref: htmlRef,
+      style: htmlStyle,
+      wrapElement: htmlWrapElement,
+      ...htmlProps
+    }
   ) {
-    const wrap = React.useCallback(
-      (children: React.ReactNode) => {
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => {
         if (options.unstable_portal) {
-          return <Portal>{children}</Portal>;
+          return <Portal>{element}</Portal>;
         }
-        return children;
+        return element;
       },
       [options.unstable_portal]
     );
 
     return {
-      ref: mergeRefs(options.unstable_popoverRef, htmlRef),
+      ref: useForkRef(options.unstable_popoverRef, htmlRef),
       role: "tooltip",
       style: {
         ...options.unstable_popoverStyles,
         pointerEvents: "none",
         ...htmlStyle
       },
-      unstable_wrap: usePipe(wrap, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       ...htmlProps
     };
   }

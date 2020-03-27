@@ -17,6 +17,11 @@ type Options = {
   shouldKeyDown?: (event: React.KeyboardEvent) => boolean;
 };
 
+/**
+ * Returns an `onKeyDown` handler to be passed to a component.
+ *
+ * @param options
+ */
 export function createOnKeyDown({
   keyMap,
   onKey,
@@ -24,8 +29,8 @@ export function createOnKeyDown({
   onKeyDown,
   shouldKeyDown = () => true,
   preventDefault = true
-}: Options = {}) {
-  return (event: React.KeyboardEvent) => {
+}: Options = {}): React.KeyboardEventHandler {
+  return event => {
     if (!keyMap) return;
 
     const finalKeyMap = typeof keyMap === "function" ? keyMap(event) : keyMap;

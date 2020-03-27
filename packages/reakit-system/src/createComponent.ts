@@ -8,7 +8,7 @@ import { useCreateElement as defaultUseCreateElement } from "./useCreateElement"
 
 type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
-    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+    wrapElement?: (element: React.ReactNode) => React.ReactNode;
   };
 
 type Hook<O> = {
@@ -25,7 +25,7 @@ type Options<T extends As, O> = {
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
-export interface Component<T extends As, O> {
+export type Component<T extends As, O> = {
   // This is the desired type
   // <TT extends As = T>(props: PropsWithAs<O, TT>): JSX.Element;
   // Unfortunately, TypeScript doesn't like it. It works for string elements
@@ -34,8 +34,18 @@ export interface Component<T extends As, O> {
   // The following two types are a workaround.
   <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
   (props: PropsWithAs<O, T>): JSX.Element;
-}
+};
 
+/**
+ * Creates a React component.
+ *
+ * @example
+ * import { createComponent } from "reakit-system";
+ *
+ * const A = createComponent({ as: "a" });
+ *
+ * @param options
+ */
 export function createComponent<T extends As, O>({
   as: type,
   useHook,
@@ -49,7 +59,7 @@ export function createComponent<T extends As, O>({
   ) => {
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
-      const { unstable_wrap, ...elementProps } = useHook(options, {
+      const { wrapElement, ...elementProps } = useHook(options, {
         ref,
         ...htmlProps
       });
@@ -57,8 +67,8 @@ export function createComponent<T extends As, O>({
       const asKeys = as.render ? as.render.__keys : as.__keys;
       const asOptions = asKeys ? splitProps(props, asKeys)[0] : {};
       const element = useCreateElement(as, { ...elementProps, ...asOptions });
-      if (unstable_wrap) {
-        return unstable_wrap(element);
+      if (wrapElement) {
+        return wrapElement(element);
       }
       return element;
     }

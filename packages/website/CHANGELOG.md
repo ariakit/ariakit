@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.16](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.15...website@1.0.0-beta.16) (2020-02-10)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/tree/master/packages/website/issues/541)) ([4397ab0](https://github.com/reakit/reakit/tree/master/packages/website/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/website/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/website/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+
+
+
+
+
+# [1.0.0-beta.15](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.14...website@1.0.0-beta.15) (2020-02-05)
+
+
+### Features
+
+* **website:** Add `Id` to the docs menu ([95f1fd9](https://github.com/reakit/reakit/tree/master/packages/website/commit/95f1fd9))
+
+
+
+
+
+# [1.0.0-beta.14](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.13...website@1.0.0-beta.14) (2019-12-18)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.13](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.12...website@1.0.0-beta.13) (2019-11-22)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-beta.12](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.11...website@1.0.0-beta.12) (2019-11-14)
+
+**Note:** Version bump only for package website
+
+
+
+
+
 # [1.0.0-beta.11](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.10...website@1.0.0-beta.11) (2019-11-08)
 
 **Note:** Version bump only for package website

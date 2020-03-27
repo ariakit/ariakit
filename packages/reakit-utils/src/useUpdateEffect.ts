@@ -1,6 +1,8 @@
-// https://github.com/reach/reach-ui/blob/34e52b029ba8330fa705804e6b71048267c46283/packages/tabs/src/index.js#L267-L276
 import * as React from "react";
 
+/**
+ * A `React.useEffect` that will not run on the first render.
+ */
 export function useUpdateEffect(
   effect: React.EffectCallback,
   deps?: ReadonlyArray<any> | undefined

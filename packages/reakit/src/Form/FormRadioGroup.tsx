@@ -11,6 +11,7 @@ import {
 } from "./FormGroup";
 import { unstable_useFormState } from "./FormState";
 import { DeepPath } from "./__utils/types";
+import { getInputId } from "./__utils/getInputId";
 
 export type unstable_FormRadioGroupOptions<
   V,
@@ -43,18 +44,23 @@ export const unstable_useFormRadioGroup = createHook<
   useState: unstable_useFormState,
   keys: ["name"],
 
-  useProps(_, { unstable_wrap: htmlWrap, ...htmlProps }) {
-    const rover = useRoverState({ loop: true });
+  useOptions(options, { name }) {
+    return { name, ...options };
+  },
+
+  useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
+    const id = getInputId(options.name, options.baseId);
+    const rover = useRoverState({ baseId: id, loop: true });
     const providerValue = React.useMemo(() => rover, [
       rover.stops,
       rover.currentId,
       rover.unstable_pastId
     ]);
 
-    const wrap = React.useCallback(
-      (children: React.ReactNode) => (
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => (
         <FormRadioGroupContext.Provider value={providerValue}>
-          {children}
+          {element}
         </FormRadioGroupContext.Provider>
       ),
       [providerValue]
@@ -62,7 +68,7 @@ export const unstable_useFormRadioGroup = createHook<
 
     return {
       role: "radiogroup",
-      unstable_wrap: usePipe(wrap, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       ...htmlProps
     };
   }

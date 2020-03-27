@@ -13,6 +13,7 @@
     - /docs/button/
     - /docs/checkbox/
     - /docs/dialog/
+    - /docs/disclosure/
     - /docs/form/
     - /docs/group/
     - /docs/menu/
@@ -26,7 +27,7 @@
 - section: Abstract components
   paths:
     - /docs/box/
-    - /docs/hidden/
+    - /docs/id/
     - /docs/portal/
     - /docs/rover/
     - /docs/tabbable/

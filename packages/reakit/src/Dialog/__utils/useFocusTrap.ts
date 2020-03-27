@@ -24,7 +24,7 @@ function hasNestedOpenModals(
 const focusTrapClassName = "__reakit-focus-trap";
 
 export function isFocusTrap(element: Element) {
-  return element.classList.contains(focusTrapClassName);
+  return element.classList?.contains(focusTrapClassName);
 }
 
 export function useFocusTrap(

@@ -32,7 +32,6 @@ export function useCheckboxState(
 ): CheckboxStateReturn {
   const { state: initialValue = false } = useSealedState(initialState);
   const [state, setState] = React.useState(initialValue);
-
   return {
     state,
     setState

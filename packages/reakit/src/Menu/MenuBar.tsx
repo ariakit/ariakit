@@ -4,7 +4,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuContext } from "./__utils/MenuContext";
@@ -25,18 +25,23 @@ export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
 
   useProps(
     options,
-    { ref: htmlRef, unstable_wrap: htmlWrap, role = "menubar", ...htmlProps }
+    {
+      ref: htmlRef,
+      wrapElement: htmlWrapElement,
+      role = "menubar",
+      ...htmlProps
+    }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const wrap = useMenuContext(ref, role, options);
+    const wrapElement = useMenuContext(ref, role, options);
 
     useShortcuts(ref, options);
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       role,
       "aria-orientation": options.orientation,
-      unstable_wrap: usePipe(wrap, htmlWrap),
+      wrapElement: usePipe(wrapElement, htmlWrapElement),
       ...htmlProps
     };
   }

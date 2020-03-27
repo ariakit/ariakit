@@ -1,12 +1,12 @@
 import * as React from "react";
-import { renderHook, act } from "@testing-library/react-hooks";
-import { jestSerializerStripFunctions } from "reakit-utils/jestSerializerStripFunctions";
-import { useRoverState } from "../RoverState";
+import { renderHook, act } from "reakit-test-utils/hooks";
+import { jestSerializerStripFunctions } from "reakit-test-utils/jestSerializerStripFunctions";
+import { useRoverState, RoverInitialState } from "../RoverState";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 
-function render(...args: Parameters<typeof useRoverState>) {
-  return renderHook(() => useRoverState(...args)).result;
+function render({ baseId = "base", ...initialState }: RoverInitialState = {}) {
+  return renderHook(() => useRoverState({ baseId, ...initialState })).result;
 }
 
 function createRef(id: string) {
@@ -20,10 +20,14 @@ test("initial state", () => {
   const result = render();
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
       "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -36,10 +40,14 @@ test("initial state activeRef", () => {
     { currentId: "a" },
     `
     Object {
+      "baseId": "base",
       "currentId": "a",
       "loop": false,
       "orientation": undefined,
       "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -53,10 +61,14 @@ test("initial state loop", () => {
     { loop: true },
     `
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": true,
       "orientation": undefined,
       "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -69,15 +81,19 @@ test("initial state orientation", () => {
   expect(result.current).toMatchInlineSnapshot(
     { orientation: "vertical" },
     `
-            Object {
-              "currentId": null,
-              "loop": false,
-              "orientation": "vertical",
-              "stops": Array [],
-              "unstable_moves": 0,
-              "unstable_pastId": null,
-            }
-      `
+    Object {
+      "baseId": "base",
+      "currentId": null,
+      "loop": false,
+      "orientation": "vertical",
+      "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
+      "unstable_moves": 0,
+      "unstable_pastId": null,
+    }
+  `
   );
 });
 
@@ -86,6 +102,7 @@ test("register", () => {
   act(() => result.current.register("a", createRef("a")));
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
@@ -99,6 +116,9 @@ test("register", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -112,6 +132,7 @@ test("register already registered", () => {
   act(() => result.current.register("a", ref));
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
@@ -125,6 +146,9 @@ test("register already registered", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -136,6 +160,7 @@ test("register currentId", () => {
   act(() => result.current.register("a", createRef("a")));
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "currentId": "a",
       "loop": false,
       "orientation": undefined,
@@ -149,6 +174,9 @@ test("register currentId", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -161,10 +189,14 @@ test("unregister", () => {
   act(() => result.current.unregister("a"));
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
       "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -176,10 +208,14 @@ test("unregister inexistent", () => {
   act(() => result.current.unregister("a"));
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
       "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -197,10 +233,14 @@ test("unregister currentId", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
       "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 0,
       "unstable_pastId": null,
     }
@@ -221,6 +261,7 @@ test("unregister pastId", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "b",
       "loop": false,
       "orientation": undefined,
@@ -234,6 +275,9 @@ test("unregister pastId", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 1,
       "unstable_pastId": null,
     }
@@ -251,6 +295,7 @@ test("move", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "a",
       "loop": false,
       "orientation": undefined,
@@ -264,6 +309,9 @@ test("move", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 1,
       "unstable_pastId": null,
     }
@@ -284,6 +332,7 @@ test("move twice", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "b",
       "loop": false,
       "orientation": undefined,
@@ -305,6 +354,9 @@ test("move twice", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 2,
       "unstable_pastId": "a",
     }
@@ -325,6 +377,7 @@ test("move to the same ref", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "b",
       "loop": false,
       "orientation": undefined,
@@ -346,6 +399,9 @@ test("move to the same ref", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 2,
       "unstable_pastId": null,
     }
@@ -366,6 +422,7 @@ test("move to null", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": null,
       "loop": false,
       "orientation": undefined,
@@ -387,6 +444,9 @@ test("move to null", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 2,
       "unstable_pastId": "b",
     }
@@ -406,6 +466,7 @@ test("move silently", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "b",
       "loop": false,
       "orientation": undefined,
@@ -427,6 +488,9 @@ test("move silently", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 1,
       "unstable_pastId": null,
     }
@@ -448,6 +512,7 @@ test("next", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "b",
       "loop": false,
       "orientation": undefined,
@@ -477,6 +542,9 @@ test("next", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 2,
       "unstable_pastId": "a",
     }
@@ -500,6 +568,7 @@ test("next thrice", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "c",
       "loop": false,
       "orientation": undefined,
@@ -529,6 +598,9 @@ test("next thrice", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 3,
       "unstable_pastId": "b",
     }
@@ -552,6 +624,7 @@ test("next thrice loop", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "a",
       "loop": true,
       "orientation": undefined,
@@ -581,6 +654,9 @@ test("next thrice loop", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 4,
       "unstable_pastId": "c",
     }
@@ -602,6 +678,7 @@ test("previous", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "a",
       "loop": false,
       "orientation": undefined,
@@ -631,6 +708,9 @@ test("previous", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 2,
       "unstable_pastId": "b",
     }
@@ -652,6 +732,7 @@ test("previous loop", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "c",
       "loop": true,
       "orientation": undefined,
@@ -681,6 +762,9 @@ test("previous loop", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 2,
       "unstable_pastId": "a",
     }
@@ -700,6 +784,7 @@ test("first", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "a",
       "loop": false,
       "orientation": undefined,
@@ -721,6 +806,9 @@ test("first", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 1,
       "unstable_pastId": null,
     }
@@ -740,6 +828,7 @@ test("last", () => {
     },
     `
     Object {
+      "baseId": "base",
       "currentId": "b",
       "loop": false,
       "orientation": undefined,
@@ -761,6 +850,9 @@ test("last", () => {
           },
         },
       ],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
       "unstable_moves": 1,
       "unstable_pastId": null,
     }
@@ -776,14 +868,18 @@ test("orientate", () => {
       orientation: "horizontal"
     },
     `
-            Object {
-              "currentId": null,
-              "loop": false,
-              "orientation": "horizontal",
-              "stops": Array [],
-              "unstable_moves": 0,
-              "unstable_pastId": null,
-            }
-      `
+    Object {
+      "baseId": "base",
+      "currentId": null,
+      "loop": false,
+      "orientation": "horizontal",
+      "stops": Array [],
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
+      "unstable_moves": 0,
+      "unstable_pastId": null,
+    }
+  `
   );
 });

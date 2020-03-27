@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render } from "reakit-test-utils";
 import { DialogDisclosure } from "../DialogDisclosure";
 
 const props: Parameters<typeof DialogDisclosure>[0] = {
-  unstable_hiddenId: "dialog",
+  baseId: "base",
   toggle: jest.fn
 };
 
@@ -15,7 +15,7 @@ test("render", () => {
     <body>
       <div>
         <button
-          aria-controls="dialog"
+          aria-controls="base"
           aria-expanded="false"
           aria-haspopup="dialog"
           type="button"
@@ -37,7 +37,7 @@ test("render visible", () => {
     <body>
       <div>
         <button
-          aria-controls="dialog"
+          aria-controls="base"
           aria-expanded="true"
           aria-haspopup="dialog"
           type="button"

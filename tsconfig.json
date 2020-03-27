@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "incremental": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
@@ -20,21 +19,24 @@
     "paths": {
       "reakit": ["./node_modules/reakit/src"],
       "reakit/*": ["./node_modules/reakit/src/*"],
-
-      "reakit-utils": ["./node_modules/reakit-utils/src"],
-      "reakit-utils/*": ["./node_modules/reakit-utils/src/*"],
+      
+      "reakit-playground": ["./node_modules/reakit-playground/src"],
+      "reakit-playground/*": ["./node_modules/reakit-playground/src/*"],
 
       "reakit-system": ["./node_modules/reakit-system/src"],
       "reakit-system/*": ["./node_modules/reakit-system/src/*"],
-
+      
       "reakit-system-palette": ["./node_modules/reakit-system-palette/src"],
       "reakit-system-palette/*": ["./node_modules/reakit-system-palette/src/*"],
 
       "reakit-system-bootstrap": ["./node_modules/reakit-system-bootstrap/src"],
       "reakit-system-bootstrap/*": ["./node_modules/reakit-system-bootstrap/src/*"],
-      
-      "reakit-playground": ["./node_modules/reakit-playground/src"],
-      "reakit-playground/*": ["./node_modules/reakit-playground/src/*"]
+
+      "reakit-test-utils": ["./node_modules/reakit-test-utils/src"],
+      "reakit-test-utils/*": ["./node_modules/reakit-test-utils/src/*"],
+
+      "reakit-utils": ["./node_modules/reakit-utils/src"],
+      "reakit-utils/*": ["./node_modules/reakit-utils/src/*"],
     }
   }
 }
