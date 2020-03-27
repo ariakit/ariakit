@@ -1,0 +1,48 @@
+name: react-next
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v1
+
+    - name: Setup Node v10.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Yarn cache directory
+      id: yarn-cache-dir
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+      
+    - name: Yarn cache
+      uses: actions/cache@v1
+      with:
+        path: ${{ steps.yarn-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: ${{ runner.os }}-yarn-
+        
+    - name: Install dependencies
+      run: yarn
+          
+    - name: Upgrade to react@next
+      run: yarn upgrade react@next react-dom@next
+
+    - name: Test
+      run: yarn test --coverage
+
+    - name: Upload coverage to Codecov
+      env: 
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: bash <(curl -s https://codecov.io/bash)
+
+    - name: Build
+      run: yarn build
