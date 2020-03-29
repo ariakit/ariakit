@@ -200,7 +200,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the `checked` attribute.
 
-<details><summary>18 state props</summary>
+<details><summary>17 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -268,11 +268,6 @@ and `groupId` if any. This state is automatically updated when
   <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
 
   Sets `currentId`.
-
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given item ID.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
@@ -413,11 +408,6 @@ and `groupId` if any. This state is automatically updated when
 
   Sets `currentId`.
 
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given item ID.
-
 - **`first`**
   <code>() =&#62; void</code>
 
@@ -427,5 +417,10 @@ and `groupId` if any. This state is automatically updated when
   <code>() =&#62; void</code>
 
   Moves focus to the last item.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 </details>

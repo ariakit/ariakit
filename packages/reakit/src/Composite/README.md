@@ -442,7 +442,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-<details><summary>16 state props</summary>
+<details><summary>15 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -510,11 +510,6 @@ and `groupId` if any. This state is automatically updated when
   <code>() =&#62; void</code>
 
   Moves focus to the last item.
-
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given item ID.
 
 - **`registerItem`**
   <code>(item: Item) =&#62; void</code>

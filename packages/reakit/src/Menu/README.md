@@ -783,16 +783,6 @@ It's called after given milliseconds if `animated` is a number.
 
   Actual `placement`.
 
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
 - **`virtual`**
   <code>boolean</code>
 
@@ -861,6 +851,16 @@ and `groupId` if any. This state is automatically updated when
   <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
 
   Sets `currentId`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 - **`move`**
   <code>(id: string | null) =&#62; void</code>
@@ -982,16 +982,6 @@ column and vice-versa.
 is automatically updated when `registerGroup` and `unregisterGroup` are
 called.
 
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
 - **`items`**
   <code>Item[]</code>
 
@@ -1003,6 +993,16 @@ and `groupId` if any. This state is automatically updated when
   <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
 
   Sets `currentId`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 - **`move`**
   <code>(id: string | null) =&#62; void</code>
@@ -1221,16 +1221,6 @@ navigate out of it using arrow keys.
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
 - **`items`**
   <code>Item[]</code>
 
@@ -1243,10 +1233,15 @@ and `groupId` if any. This state is automatically updated when
 
   Sets `currentId`.
 
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
+- **`first`**
+  <code>() =&#62; void</code>
 
-  Moves focus to a given item ID.
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
@@ -1292,6 +1287,11 @@ and `groupId` if any. This state is automatically updated when
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 </details>
 
@@ -1390,16 +1390,6 @@ navigate out of it using arrow keys.
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
 - **`items`**
   <code>Item[]</code>
 
@@ -1412,10 +1402,15 @@ and `groupId` if any. This state is automatically updated when
 
   Sets `currentId`.
 
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
+- **`first`**
+  <code>() =&#62; void</code>
 
-  Moves focus to a given item ID.
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
@@ -1461,6 +1456,11 @@ and `groupId` if any. This state is automatically updated when
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`unstable_values`** <span title="Experimental">⚠️</span>
   <code>{ [x: string]: any; }</code>
@@ -1555,16 +1555,6 @@ navigate out of it using arrow keys.
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
 - **`items`**
   <code>Item[]</code>
 
@@ -1577,10 +1567,15 @@ and `groupId` if any. This state is automatically updated when
 
   Sets `currentId`.
 
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
+- **`first`**
+  <code>() =&#62; void</code>
 
-  Moves focus to a given item ID.
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
@@ -1636,6 +1631,11 @@ and `groupId` if any. This state is automatically updated when
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`unstable_values`** <span title="Experimental">⚠️</span>
   <code>{ [x: string]: any; }</code>

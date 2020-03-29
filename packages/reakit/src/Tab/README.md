@@ -338,7 +338,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-<details><summary>20 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -391,11 +391,6 @@ arrow keys.
   Lists all the composite items with their `id`, DOM `ref`, `disabled` state
 and `groupId` if any. This state is automatically updated when
 `registerItem` and `unregisterItem` are called.
-
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given item ID.
 
 - **`setCurrentId`**
   <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
