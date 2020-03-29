@@ -2,6 +2,7 @@ import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-utils/warning";
 import { getFirstTabbableIn, ensureFocus } from "reakit-utils/tabbable";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { DialogOptions } from "../Dialog";
 
 export function useFocusOnShow(
@@ -37,7 +38,7 @@ export function useFocusOnShow(
       initialFocusRef.current.focus({ preventScroll: true });
     } else {
       const tabbable = getFirstTabbableIn(dialog, true);
-      const isActive = () => dialog.contains(document.activeElement);
+      const isActive = () => hasFocusWithin(dialog);
       if (tabbable) {
         ensureFocus(tabbable, { preventScroll: true, isActive });
       } else {

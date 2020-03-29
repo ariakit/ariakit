@@ -15,7 +15,6 @@ export type MenuContextType = Pick<
   children: Array<Ref>;
   addChild: (ref: Ref) => void;
   removeChild: (ref: Ref) => void;
-  currentId?: string | null;
 };
 
 export const MenuContext = React.createContext<MenuContextType | null>(null);
@@ -57,7 +56,6 @@ export function useMenuContext(
       next: options.next,
       previous: options.previous,
       ref: menuRef,
-      currentId: options.currentId,
       role,
       parent,
       children,
@@ -69,7 +67,6 @@ export function useMenuContext(
       options.next,
       options.previous,
       menuRef,
-      options.currentId,
       role,
       parent,
       children,

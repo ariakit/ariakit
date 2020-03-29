@@ -1,6 +1,8 @@
 import * as React from "react";
 import { warning } from "reakit-utils/warning";
 import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { getDocument } from "reakit-utils/getDocument";
 import { DialogOptions } from "../Dialog";
 import { usePortalRef } from "./usePortalRef";
 
@@ -113,13 +115,15 @@ export function useFocusTrap(
   React.useEffect(() => {
     if (!shouldTrap) return undefined;
 
+    const document = getDocument(dialogRef.current);
+
     const handleClick = () => {
       const dialog = dialogRef.current;
       const portal = portalRef.current;
 
       if (!dialog || !portal || hasNestedOpenModals(nestedDialogs)) return;
 
-      if (!portal.contains(document.activeElement)) {
+      if (!hasFocusWithin(portal)) {
         dialog.focus();
       }
     };

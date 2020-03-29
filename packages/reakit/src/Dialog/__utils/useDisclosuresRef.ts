@@ -13,7 +13,8 @@ function useActiveElementRef(
     if (options.visible) return undefined;
     const document = getDocument(dialogRef.current);
     const onFocus = (event: FocusEvent) => {
-      activeElementRef.current = event.target as Element;
+      const target = event.target as Element;
+      activeElementRef.current = target;
     };
     document.addEventListener("focus", onFocus, true);
     return () => document.removeEventListener("focus", onFocus, true);

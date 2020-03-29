@@ -105,7 +105,7 @@ test("onChange non-native radio", () => {
       const { getByLabelText } = render(<Test />);
       press.Tab();
       expect(getByLabelText("a")).toHaveFocus();
-      expect(getByLabelText("a")).toBeChecked();
+      expect(getByLabelText("a")).not.toBeChecked();
       press.ArrowLeft();
       expect(getByLabelText("c")).toHaveFocus();
       expect(getByLabelText("c")).toBeChecked();

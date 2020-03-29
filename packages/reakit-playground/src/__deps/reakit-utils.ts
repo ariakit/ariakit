@@ -29,6 +29,7 @@ export default {
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),
   "reakit-utils/isButton": require("reakit-utils/isButton"),
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
+  "reakit-utils/hasFocus": require("reakit-utils/hasFocus"),
   "reakit-utils/getDocument": require("reakit-utils/getDocument"),
   "reakit-utils/getActiveElement": require("reakit-utils/getActiveElement"),
   "reakit-utils/cx": require("reakit-utils/cx"),

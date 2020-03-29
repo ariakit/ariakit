@@ -520,7 +520,7 @@ test("arrow keys control radio buttons", async () => {
 
   focus(b);
   expect(b).toHaveFocus();
-  expect(b.checked).toBe(true);
+  expect(b.checked).toBe(false);
 
   press.ArrowDown();
   expect(c).toHaveFocus();

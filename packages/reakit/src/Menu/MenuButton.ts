@@ -4,6 +4,7 @@ import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,
@@ -90,9 +91,9 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
           if (parentIsMenuBar) {
             // if MenuButton is an item inside a MenuBar, it'll only open
             // if there's already another sibling expanded MenuButton
-            const subjacentOpenMenu =
-              parent.ref.current &&
-              parent.ref.current.querySelector("[aria-expanded='true']");
+            const subjacentOpenMenu = parent.ref.current?.querySelector(
+              "[aria-expanded='true']"
+            );
             if (subjacentOpenMenu) {
               self.focus();
             }
@@ -100,16 +101,8 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             // If it's in a Menu, open after a short delay
             // TODO: Make the delay a prop?
             setTimeout(() => {
-              if (
-                self.contains(document.activeElement) ||
-                parent.ref.current?.getAttribute("aria-activedescendant") ===
-                  self.id
-              ) {
+              if (hasFocusWithin(self)) {
                 options.show?.();
-                // TODO
-                if (document.activeElement !== self) {
-                  // self.focus();
-                }
               }
             }, 200);
           }
@@ -117,41 +110,39 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         [parent, parentIsMenuBar, options.show]
       );
 
+      const onMouseDown = React.useCallback(() => {
+        // When in menu bar, the menu button can be activated either by focus
+        // or click, but we don't want both to trigger sequentially.
+        // Otherwise, onClick would toggle (hide) the menu right after it got
+        // shown on focus.
+        hasPressedMouse.current = true;
+      }, []);
+
+      const onFocus = React.useCallback(() => {
+        if (parentIsMenuBar && !hasPressedMouse.current) {
+          options.show?.();
+        }
+      }, [parentIsMenuBar, options.show]);
+
       // If disclosure is rendered as a menu bar item, it's toggable
       // That is, you can click on the expanded disclosure to close its menu.
       const onClick = React.useCallback(() => {
         if (hasParent && !parentIsMenuBar) {
-          options.show && options.show();
+          options.show?.();
         } else {
-          options.toggle && options.toggle();
+          options.toggle?.();
         }
         hasPressedMouse.current = false;
       }, [hasParent, parentIsMenuBar, options.show, options.toggle]);
-
-      const onFocus = React.useCallback(() => {
-        if (parentIsMenuBar && !hasPressedMouse.current) {
-          options.show && options.show();
-        }
-      }, [parentIsMenuBar, options.show]);
-
-      const onMouseDown = React.useCallback(() => {
-        if (parentIsMenuBar) {
-          // When in menu bar, the menu button can be activated either by focus
-          // or click, but we don't want both to trigger sequentially.
-          // Otherwise, onClick would toggle (hide) the menu right after it got
-          // shown on focus.
-          hasPressedMouse.current = true;
-        }
-      }, []);
 
       return {
         ref: useForkRef(ref, htmlRef),
         "aria-haspopup": "menu",
         onKeyDown,
         onMouseEnter: useAllCallbacks(onMouseEnter, htmlOnMouseEnter),
-        onClick: useAllCallbacks(onClick, htmlOnClick),
-        onFocus: useAllCallbacks(onFocus, htmlOnFocus),
         onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
+        onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+        onClick: useAllCallbacks(onClick, htmlOnClick),
         ...htmlProps
       };
     },

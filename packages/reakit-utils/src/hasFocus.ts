@@ -4,18 +4,15 @@ import { getActiveElement } from "./getActiveElement";
  * Checks if `element` has focus.
  *
  * @example
- * import { hasFocusWithin } from "reakit-utils";
+ * import { hasFocus } from "reakit-utils";
  *
- * hasFocusWithin(document.getElementById("id"));
+ * hasFocus(document.getElementById("id"));
  */
-export function hasFocusWithin(element: Element): boolean {
+export function hasFocus(element: Element): boolean {
   const activeElement = getActiveElement(element);
   if (!activeElement) return false;
-  if (element.contains(activeElement)) return true;
+  if (element === activeElement) return true;
   const activeDescendant = activeElement.getAttribute("aria-activedescendant");
   if (!activeDescendant) return false;
-  return (
-    activeDescendant === element.id ||
-    !!element.querySelector(`#${activeDescendant}`)
-  );
+  return activeDescendant === element.id;
 }

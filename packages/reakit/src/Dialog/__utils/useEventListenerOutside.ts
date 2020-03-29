@@ -30,12 +30,10 @@ function isDisclosure(target: Element) {
     if (disclosure.contains(target)) {
       return true;
     }
-    if (disclosure.id && disclosure.getAttribute("aria-selected") === "true") {
-      const selector = `[aria-activedescendant="${disclosure.id}"]`;
-      const composite = getDocument(target).querySelector(selector);
-      return composite === target;
-    }
-    return false;
+    return (
+      disclosure.id &&
+      disclosure.id === target.getAttribute("aria-activedescendant")
+    );
   };
 }
 

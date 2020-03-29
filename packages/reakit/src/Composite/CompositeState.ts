@@ -352,9 +352,6 @@ function reducer(
           ...nextState,
           currentId: nextPastIds[0]
         });
-        if (moves) {
-          return reducer(nextState, { type: "move", id: nextId });
-        }
         return { ...nextState, currentId: nextId };
       }
       return nextState;

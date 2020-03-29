@@ -40,7 +40,6 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "registerItem"
     | "unregisterItem"
     | "setCurrentId"
-    | "move"
     | "next"
     | "previous"
     | "up"
@@ -87,6 +86,8 @@ export const unstable_useCompositeItem = createHook<
   useOptions(options) {
     return {
       ...options,
+      id: options.stopId || options.id,
+      currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
         : options.unstable_clickOnSpace
@@ -105,9 +106,9 @@ export const unstable_useCompositeItem = createHook<
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = options.stopId || options.id;
+    const { id } = options;
     const trulyDisabled = options.disabled && !options.focusable;
-    const isCurrentItem = getCurrentId(options) === id;
+    const isCurrentItem = options.currentId === id;
     const isCurrentItemRef = useLiveRef(isCurrentItem);
     const item = options.items?.find(i => i.id === id);
     const shouldTabIndex =
@@ -126,7 +127,7 @@ export const unstable_useCompositeItem = createHook<
 
     React.useEffect(() => {
       if (!id) return undefined;
-      options.registerItem?.({ id, ref, disabled: Boolean(trulyDisabled) });
+      options.registerItem?.({ id, ref, disabled: !!trulyDisabled });
       return () => {
         options.unregisterItem?.(id);
       };
@@ -147,7 +148,7 @@ export const unstable_useCompositeItem = createHook<
       // last or move have been called. This means that the composite item will
       // be focused whenever some of these functions are called. Unless it has
       // already focus, in which case we don't want to focus it again.
-      if (options.moves && isCurrentItemRef.current && !hasFocusWithin(self)) {
+      if (options.moves && isCurrentItemRef.current) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
       }
@@ -157,12 +158,7 @@ export const unstable_useCompositeItem = createHook<
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        if (options.moves || options.virtual) {
-          options.setCurrentId?.(id);
-        } else {
-          // In case this hasn't been moved yet.
-          options.move?.(id);
-        }
+        options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
@@ -172,14 +168,7 @@ export const unstable_useCompositeItem = createHook<
           composite?.focus();
         }
       },
-      [
-        id,
-        options.moves,
-        options.virtual,
-        options.setCurrentId,
-        options.move,
-        options.baseId
-      ]
+      [id, options.setCurrentId, options.baseId]
     );
 
     const onKeyDown = React.useMemo(

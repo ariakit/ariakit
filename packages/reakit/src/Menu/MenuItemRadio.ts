@@ -44,12 +44,6 @@ export const useMenuItemRadio = createHook<
   useProps(_, htmlProps) {
     return { role: "menuitemradio", ...htmlProps };
   }
-
-  // useComposeProps(options, htmlProps) {
-  //   htmlProps = useMenuItem(options, htmlProps, true);
-  //   const radioHTMLProps = useRadio(options, htmlProps, true);
-  //   return { ...radioHTMLProps, tabIndex: htmlProps.tabIndex };
-  // }
 });
 
 export const MenuItemRadio = createComponent({

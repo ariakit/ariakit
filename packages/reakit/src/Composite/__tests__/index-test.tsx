@@ -475,113 +475,133 @@ function template(value: string) {
 
     ["disabled", "unmounted"].forEach(state => {
       test(`move to the past item when the current active item is ${state}`, () => {
-        const Test = ({ disabled = false }) => {
+        const Test = () => {
+          const [disabled, setDisabled] = React.useState(false);
           const composite = useCompositeState({ virtual });
           return (
-            <Composite {...composite} role="toolbar" aria-label="composite">
-              <CompositeItem {...composite}>item1</CompositeItem>
-              {(!disabled || state !== "unmounted") && (
-                <CompositeItem {...composite} disabled={disabled}>
-                  item2
+            <>
+              <button onClick={() => setDisabled(!disabled)}>toggle</button>
+              <Composite {...composite} role="toolbar" aria-label="composite">
+                <CompositeItem {...composite}>item1</CompositeItem>
+                {(!disabled || state !== "unmounted") && (
+                  <CompositeItem {...composite} disabled={disabled}>
+                    item2
+                  </CompositeItem>
+                )}
+                <CompositeItem {...composite} disabled>
+                  item3
                 </CompositeItem>
-              )}
-              <CompositeItem {...composite} disabled>
-                item3
-              </CompositeItem>
-              <CompositeItem {...composite}>item4</CompositeItem>
-            </Composite>
+                <CompositeItem {...composite}>item4</CompositeItem>
+              </Composite>
+            </>
           );
         };
-        const { getByText: $, rerender } = render(<Test />);
+        const { getByText: $ } = render(<Test />);
         focus($("item2"));
         expect($("item2")).toHaveFocus();
-        rerender(<Test disabled />);
+        click($("toggle"));
+        press.Tab();
         expect($("item1")).toHaveFocus();
-        rerender(<Test />);
+        click($("toggle"));
+        press.Tab();
         press.ArrowRight();
         expect($("item2")).toHaveFocus();
         press.ArrowRight();
         expect($("item4")).toHaveFocus();
         press.ArrowLeft();
         expect($("item2")).toHaveFocus();
-        rerender(<Test disabled />);
+        click($("toggle"));
+        press.Tab();
         expect($("item4")).toHaveFocus();
       });
 
       test(`move to the past item when the current active item is ${state} and currentId is set`, () => {
-        const Test = ({ disabled = false }) => {
+        const Test = () => {
+          const [disabled, setDisabled] = React.useState(false);
           const composite = useCompositeState({
             virtual,
             currentId: "item2"
           });
           return (
-            <Composite {...composite} role="toolbar" aria-label="composite">
-              <CompositeItem {...composite}>item1</CompositeItem>
-              {(!disabled || state !== "unmounted") && (
-                <CompositeItem {...composite} disabled={disabled} id="item2">
-                  item2
+            <>
+              <button onClick={() => setDisabled(!disabled)}>toggle</button>
+              <Composite {...composite} role="toolbar" aria-label="composite">
+                <CompositeItem {...composite}>item1</CompositeItem>
+                {(!disabled || state !== "unmounted") && (
+                  <CompositeItem {...composite} disabled={disabled} id="item2">
+                    item2
+                  </CompositeItem>
+                )}
+                <CompositeItem {...composite} disabled>
+                  item3
                 </CompositeItem>
-              )}
-              <CompositeItem {...composite} disabled>
-                item3
-              </CompositeItem>
-              <CompositeItem {...composite}>item4</CompositeItem>
-            </Composite>
+                <CompositeItem {...composite}>item4</CompositeItem>
+              </Composite>
+            </>
           );
         };
-        const { getByText: $, rerender } = render(<Test />);
+        const { getByText: $ } = render(<Test />);
         expect($("item2")).not.toHaveFocus();
-        rerender(<Test disabled />);
+        click($("toggle"));
         expect($("item1")).not.toHaveFocus();
         press.Tab();
         expect($("item1")).toHaveFocus();
-        rerender(<Test />);
+        click($("toggle"));
+        press.Tab();
         press.ArrowRight();
         expect($("item2")).toHaveFocus();
         press.ArrowRight();
         expect($("item4")).toHaveFocus();
         press.ArrowLeft();
         expect($("item2")).toHaveFocus();
-        rerender(<Test disabled />);
+        click($("toggle"));
+        press.Tab();
         expect($("item4")).toHaveFocus();
       });
 
       test(`move to the past item when the current active item is ${state} and id is set`, () => {
-        const Test = ({ disabled = false }) => {
+        const Test = () => {
+          const [disabled, setDisabled] = React.useState(false);
           const composite = useCompositeState({ virtual });
           return (
-            <Composite
-              {...composite}
-              id="toolbar"
-              role="toolbar"
-              aria-label="composite"
-            >
-              <CompositeItem {...composite}>item1</CompositeItem>
-              {(!disabled || state !== "unmounted") && (
-                <CompositeItem {...composite} disabled={disabled}>
-                  item2
+            <>
+              <button onClick={() => setDisabled(!disabled)}>toggle</button>
+              <Composite
+                {...composite}
+                id="toolbar"
+                role="toolbar"
+                aria-label="composite"
+              >
+                <CompositeItem {...composite}>item1</CompositeItem>
+                {(!disabled || state !== "unmounted") && (
+                  <CompositeItem {...composite} disabled={disabled}>
+                    item2
+                  </CompositeItem>
+                )}
+                <CompositeItem {...composite} disabled>
+                  item3
                 </CompositeItem>
-              )}
-              <CompositeItem {...composite} disabled>
-                item3
-              </CompositeItem>
-              <CompositeItem {...composite}>item4</CompositeItem>
-            </Composite>
+                <CompositeItem {...composite}>item4</CompositeItem>
+              </Composite>
+            </>
           );
         };
-        const { getByText: $, rerender } = render(<Test />);
+        const { getByText: $ } = render(<Test />);
         focus($("item2"));
         expect($("item2")).toHaveFocus();
-        rerender(<Test disabled />);
+        click($("toggle"));
+        press.Tab();
         expect($("item1")).toHaveFocus();
-        rerender(<Test />);
+        click($("toggle"));
+        press.Tab();
         press.ArrowRight();
         expect($("item2")).toHaveFocus();
         press.ArrowRight();
         expect($("item4")).toHaveFocus();
         press.ArrowLeft();
         expect($("item2")).toHaveFocus();
-        rerender(<Test disabled />);
+        click($("toggle"));
+        press.Tab();
         expect($("item4")).toHaveFocus();
       });
     });
@@ -2046,7 +2066,9 @@ function template(value: string) {
     });
 
     test("move to the past item when the current group is unmounted", () => {
-      const Test = ({ disableGroup = false, disableItems = false }) => {
+      const Test = () => {
+        const [disableGroup, setDisableGroup] = React.useState(false);
+        const [disableItems, setDisableItems] = React.useState(false);
         const composite = useCompositeState({
           virtual
         });
@@ -2068,35 +2090,50 @@ function template(value: string) {
         }, [disableGroup]);
 
         return (
-          <Composite {...composite} role="grid" aria-label="composite">
-            {groups.map((items, i) => (
-              <CompositeGroup {...composite} key={items.join("")}>
-                {items.map(item => (
-                  <CompositeItem
-                    {...composite}
-                    key={item}
-                    disabled={disableItems && i === 1}
-                    aria-label={item}
-                  />
-                ))}
-              </CompositeGroup>
-            ))}
-          </Composite>
+          <>
+            <button onClick={() => setDisableGroup(!disableGroup)}>
+              toggle group
+            </button>
+            <button onClick={() => setDisableItems(!disableItems)}>
+              toggle items
+            </button>
+            <Composite {...composite} role="grid" aria-label="composite">
+              {groups.map((items, i) => (
+                <CompositeGroup {...composite} key={items.join("")}>
+                  {items.map(item => (
+                    <CompositeItem
+                      {...composite}
+                      key={item}
+                      disabled={disableItems && i === 1}
+                      aria-label={item}
+                    />
+                  ))}
+                </CompositeGroup>
+              ))}
+            </Composite>
+          </>
         );
       };
-      const { getByLabelText, rerender } = render(<Test />);
+      const { getByLabelText, getByText } = render(<Test />);
+      press.Tab();
+      press.Tab();
       press.Tab();
       expect(getByLabelText("1-1")).toHaveFocus();
       press.ArrowDown();
       press.ArrowRight();
       expect(getByLabelText("2-2")).toHaveFocus();
-      rerender(<Test disableGroup />);
+      click(getByText("toggle group"));
+      press.Tab();
+      press.Tab();
       expect(getByLabelText("1-1")).toHaveFocus();
-      rerender(<Test />);
+      click(getByText("toggle group"));
+      press.Tab();
+      press.Tab();
       expect(getByLabelText("1-1")).toHaveFocus();
       press.ArrowDown();
       expect(getByLabelText("2-1")).toHaveFocus();
-      rerender(<Test disableItems />);
+      click(getByText("toggle items"));
+      press.Tab();
       expect(getByLabelText("1-1")).toHaveFocus();
     });
 

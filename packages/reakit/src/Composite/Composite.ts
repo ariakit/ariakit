@@ -143,7 +143,7 @@ export const unstable_useComposite = createHook<
       (event: React.FocusEvent) => {
         if (event.target !== event.currentTarget) return;
         if (options.virtual) {
-          if (!currentId || !options.items) return;
+          if (!currentItem || !options.items) return;
           const hasItemWithFocus = options.items.some(
             item => item.ref.current === event.relatedTarget
           );
@@ -156,7 +156,7 @@ export const unstable_useComposite = createHook<
           // the composite element, in which case event.target will be
           // different from event.currentTarget.
           if (!hasItemWithFocus) {
-            options.move?.(currentId);
+            currentItem.ref.current?.focus();
           }
         } else {
           // When the roving tabindex composite gets intentionally focused (for
@@ -166,13 +166,7 @@ export const unstable_useComposite = createHook<
           options.setCurrentId?.(null);
         }
       },
-      [
-        options.virtual,
-        options.items,
-        currentId,
-        options.move,
-        options.setCurrentId
-      ]
+      [options.virtual, options.items, currentItem, options.setCurrentId]
     );
 
     const onMove = React.useMemo(
