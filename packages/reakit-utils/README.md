@@ -30,7 +30,6 @@ yarn add reakit-utils
 -   [cx](#cx)
 -   [getActiveElement](#getactiveelement)
 -   [getDocument](#getdocument)
--   [hasFocus](#hasfocus)
 -   [hasFocusWithin](#hasfocuswithin)
 -   [isButton](#isbutton)
 -   [isEmpty](#isempty)
@@ -147,24 +146,6 @@ Returns `element.ownerDocument || window.document`.
 -   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
 
 Returns **[Document](https://developer.mozilla.org/docs/Web/API/Document)** 
-
-### hasFocus
-
-Checks if `element` has focus.
-
-#### Parameters
-
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
-
-#### Examples
-
-```javascript
-import { hasFocus } from "reakit-utils";
-
-hasFocus(document.getElementById("id"));
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### hasFocusWithin
 

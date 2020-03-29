@@ -30,7 +30,6 @@
 /isEmpty
 /isButton
 /hasFocusWithin
-/hasFocus
 /getDocument
 /getActiveElement
 /cx

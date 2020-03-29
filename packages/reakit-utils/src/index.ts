@@ -4,7 +4,6 @@ export * from "./createOnKeyDown";
 export * from "./cx";
 export * from "./getActiveElement";
 export * from "./getDocument";
-export * from "./hasFocus";
 export * from "./hasFocusWithin";
 export * from "./isButton";
 export * from "./isEmpty";
