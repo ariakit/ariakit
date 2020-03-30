@@ -10,7 +10,6 @@ const props: RadioProps = {
   registerItem: jest.fn(),
   unregisterItem: jest.fn(),
   setCurrentId: jest.fn(),
-  move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
