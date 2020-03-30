@@ -56,7 +56,6 @@ yarn add reakit-utils
 -   [usePipe](#usepipe)
 -   [useSealedState](#usesealedstate)
 -   [useUpdateEffect](#useupdateeffect)
--   [warning](#warning)
 
 ### applyState
 
@@ -765,24 +764,6 @@ A `React.useEffect` that will not run on the first render.
 
 -   `effect` **React.EffectCallback** 
 -   `deps` **(ReadonlyArray&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))?** 
-
-### warning
-
-Logs `messages` to the console using `console.warn` based on a `condition`.
-
-#### Parameters
-
--   `condition` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
--   `messages` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
-
-#### Examples
-
-```javascript
-import { warning } from "reakit-utils";
-
-warning(true, "a", "b"); // console.warn("a\nb")
-warning(false, "a", "b"); // does nothing
-```
 
 ## License
 

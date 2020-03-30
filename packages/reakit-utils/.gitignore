@@ -3,7 +3,6 @@
 /dist
 /es
 /ts
-/warning
 /useUpdateEffect
 /useSealedState
 /usePipe
