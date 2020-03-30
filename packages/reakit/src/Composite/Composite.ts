@@ -99,6 +99,13 @@ export const unstable_useComposite = createHook<
   compose: [unstable_useIdGroup, useTabbable],
   useState: unstable_useCompositeState,
 
+  useOptions(options) {
+    return {
+      ...options,
+      currentId: getCurrentId(options)
+    };
+  },
+
   useProps(
     options,
     {
@@ -110,13 +117,16 @@ export const unstable_useComposite = createHook<
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const currentId = getCurrentId(options);
-    const currentItem = options.items?.find(item => item.id === currentId);
+    const currentItem = options.items?.find(
+      item => item.id === options.currentId
+    );
+
     const onKeyDown = useKeyboardEventProxy(
       options.virtual,
       currentItem,
       htmlOnKeyDown
     );
+
     const onKeyUp = useKeyboardEventProxy(
       options.virtual,
       currentItem,
