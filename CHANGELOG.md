@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.16...reakit@1.0.0-rc.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` dispatching `click` twice when it's composed by another `Tabbable` ([#553](https://github.com/reakit/reakit/issues/553)) ([d231120](https://github.com/reakit/reakit/commit/d23112071b983b35e9262dded9df5dd6e84cb6ce))
+
+
+### Features
+
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+* Add `DisclosureContent` component ([#554](https://github.com/reakit/reakit/issues/554)) ([fd93b08](https://github.com/reakit/reakit/commit/fd93b08046ac89c5995e926a09f9e60464c83ce7))
+* Automatically check `Radio` on focus ([#599](https://github.com/reakit/reakit/issues/599)) ([6edc689](https://github.com/reakit/reakit/commit/6edc68980de142686bdbdceecc8769e2a6265001))
+* Remove `Provider` from `reakit/utils/Provider` ([134f7eb](https://github.com/reakit/reakit/commit/134f7ebc55838882f5e8dbd19473fb7417135116))
+* Select the first `Tab` by default and don't require `stopId` prop ([#597](https://github.com/reakit/reakit/issues/597)) ([528b016](https://github.com/reakit/reakit/commit/528b016304f381b171cdc96598201deb54fb53c8))
+* Support `rtl` on `Toolbar` ([#601](https://github.com/reakit/reakit/issues/601)) ([2811071](https://github.com/reakit/reakit/commit/281107130fac84bf37489f51e77f7c68e0e1b4f2))
+
+
+### BREAKING CHANGES
+
+* The first `Tab` is now selected by default. There's no need to pass `selectedId` to `useTabState` anymore.
+
+  If you're already using `selectedId` to select a tab in the initial render, you don't need to change anything as this still works. But, if you want to render tabs with none selected, you should now pass `null` to `selectedId`:
+
+  ```js
+  // if you're already using selectedId, there's no need to change anything
+  const tab = useTabState({ selectedId: "tab-1" });
+  ```
+
+  ```diff
+  // when there's no tab selected by default, you now need to explicitly specify it
+  - const tab = useTabState();
+  + const tab = useTabState({ selectedId: null });
+  ```
+* **Most users will not be affected by this**, but `stops`, `register` and `unregister` on the returned object of state hooks have been renamed to `items`, `registerItem` and `unregisterItem`, respectively.
+
+  ```diff
+  const tab = useTabState();
+  - tab.stops.map(...);
+  + tab.items.map(...);
+  - tab.register(...);
+  + tab.registerItem(...);
+  - tab.unregister(...);
+  + tab.unregisterItem(...);
+  ```
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+* Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
+* `DisclosureRegion` has been renamed to `DisclosureContent`.
+
+
+
+
+
 # [1.0.0-beta.16](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.15...reakit@1.0.0-beta.16) (2020-02-10)
 
 

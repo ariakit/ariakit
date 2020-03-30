@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.9.0...reakit-utils@0.10.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* Add ie11 ponyfill for Element.matches ([#555](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/555)) ([07488aa](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/07488aa1142ffba652c4582890f52bda9953966a)), closes [#556](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/556)
+
+
+### Features
+
+* **reakit-utils:** Add `flatten` util ([57ac450](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/57ac4503da4604bae5a18dc6d7e6644ec152daad))
+* **reakit-utils:** Remove `warning` util ([ff98d43](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/ff98d43568790cc191fde1ee9b56a35311a3a10f))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `warning` has been removed from `reakit-utils`. Use the `reakit-warning` package instead.
+
+
+
+
+
 # [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.8.0...reakit-utils@0.9.0) (2020-02-10)
 
 

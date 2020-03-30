@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.8.0...reakit-playground@0.9.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* Add ie11 ponyfill for Element.matches ([#555](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/555)) ([07488aa](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/07488aa1142ffba652c4582890f52bda9953966a)), closes [#556](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/556)
+
+
+### Features
+
+* **reakit-utils:** Remove `warning` util ([ff98d43](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/ff98d43568790cc191fde1ee9b56a35311a3a10f))
+* **reakit-warning:** Add `reakit-warning` package ([82e17ee](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/82e17ee089cf97974438fe08b18cdadf2b9a1a2c))
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+* Add `DisclosureContent` component ([#554](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/554)) ([fd93b08](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/fd93b08046ac89c5995e926a09f9e60464c83ce7))
+* Remove `Provider` from `reakit/utils/Provider` ([134f7eb](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/134f7ebc55838882f5e8dbd19473fb7417135116))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `warning` has been removed from `reakit-utils`. Use the `reakit-warning` package instead.
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+* Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
+* `DisclosureRegion` has been renamed to `DisclosureContent`.
+
+
+
+
+
 # [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.7.0...reakit-playground@0.8.0) (2020-02-10)
 
 

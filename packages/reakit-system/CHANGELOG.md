@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.9.0...reakit-system@0.10.0) (2020-03-30)
+
+
+### Features
+
+* Automatically check `Radio` on focus ([#599](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/599)) ([6edc689](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/6edc68980de142686bdbdceecc8769e2a6265001))
+* Select the first `Tab` by default and don't require `stopId` prop ([#597](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/597)) ([528b016](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/528b016304f381b171cdc96598201deb54fb53c8))
+
+
+### BREAKING CHANGES
+
+* The first `Tab` is now selected by default. There's no need to pass `selectedId` to `useTabState` anymore.
+
+  If you're already using `selectedId` to select a tab in the initial render, you don't need to change anything as this still works. But, if you want to render tabs with none selected, you should now pass `null` to `selectedId`:
+
+  ```js
+  // if you're already using selectedId, there's no need to change anything
+  const tab = useTabState({ selectedId: "tab-1" });
+  ```
+
+  ```diff
+  // when there's no tab selected by default, you now need to explicitly specify it
+  - const tab = useTabState();
+  + const tab = useTabState({ selectedId: null });
+  ```
+* **Most users will not be affected by this**, but `stops`, `register` and `unregister` on the returned object of state hooks have been renamed to `items`, `registerItem` and `unregisterItem`, respectively.
+
+  ```diff
+  const tab = useTabState();
+  - tab.stops.map(...);
+  + tab.items.map(...);
+  - tab.register(...);
+  + tab.registerItem(...);
+  - tab.unregister(...);
+  + tab.unregisterItem(...);
+  ```
+
+
+
+
+
 # [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.8.0...reakit-system@0.9.0) (2020-02-10)
 
 

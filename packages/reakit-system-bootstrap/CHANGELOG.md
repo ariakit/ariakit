@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.8.0...reakit-system-bootstrap@0.9.0) (2020-03-30)
+
+
+### Features
+
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+
+
+### BREAKING CHANGES
+
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+
+
+
+
+
 # [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.7.0...reakit-system-bootstrap@0.8.0) (2020-02-10)
 
 
