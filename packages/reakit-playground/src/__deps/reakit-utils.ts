@@ -31,6 +31,7 @@ export default {
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/getDocument": require("reakit-utils/getDocument"),
   "reakit-utils/getActiveElement": require("reakit-utils/getActiveElement"),
+  "reakit-utils/flatten": require("reakit-utils/flatten"),
   "reakit-utils/cx": require("reakit-utils/cx"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
   "reakit-utils/closest": require("reakit-utils/closest"),
