@@ -1,16 +1,4 @@
-import { Visitor, types } from "@babel/core";
-
-type PluginParameter = {
-  types: typeof types;
-};
-
-type PluginReturn = {
-  visitor: Visitor;
-};
-
-export default function babelPlugin({
-  types: t
-}: PluginParameter): PluginReturn {
+function babelPlugin({ types: t }) {
   const seen = Symbol("seen");
 
   const binaryExpression = t.binaryExpression(
@@ -26,7 +14,7 @@ export default function babelPlugin({
   return {
     visitor: {
       CallExpression(path) {
-        const node = path.node as types.CallExpression & { [seen]: boolean };
+        const { node } = path;
 
         // Ignore if it's already been processed
         if (node[seen]) {

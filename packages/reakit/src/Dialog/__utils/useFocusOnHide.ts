@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { isTabbable, ensureFocus } from "reakit-utils/tabbable";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { DialogOptions } from "../Dialog";
@@ -46,9 +46,9 @@ export function useFocusOnHide(
     } else {
       warning(
         true,
-        "[reakit/Dialog]",
         "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
-        "See https://reakit.io/docs/dialog"
+        "See https://reakit.io/docs/dialog",
+        dialogRef.current
       );
     }
   }, [dialogRef, disclosuresRef, shouldFocus]);

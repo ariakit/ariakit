@@ -1,5 +1,5 @@
 import * as React from "react";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { CheckboxOptions } from "../Checkbox";
 
 export function useIndeterminateState(
@@ -10,7 +10,6 @@ export function useIndeterminateState(
     if (!checkboxRef.current) {
       warning(
         options.state === "indeterminate",
-        "[reakit/Checkbox]",
         "Can't set indeterminate state because `ref` wasn't passed to component.",
         "See https://reakit.io/docs/checkbox/#indeterminate-state"
       );

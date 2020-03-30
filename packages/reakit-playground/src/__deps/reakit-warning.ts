@@ -3,6 +3,5 @@
 export default {
   "reakit-warning": require("reakit-warning"),
   "reakit-warning/warning": require("reakit-warning/warning"),
-  "reakit-warning/useWarning": require("reakit-warning/useWarning"),
-  "reakit-warning/babel": require("reakit-warning/babel")
+  "reakit-warning/useWarning": require("reakit-warning/useWarning")
 };

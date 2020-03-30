@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { warning } from "reakit-utils/warning";
+import { warning, useWarning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
@@ -88,11 +88,6 @@ export const unstable_useCompositeItem = createHook<
   keys: ["stopId"],
 
   useOptions(options) {
-    warning(
-      !!options.stopId,
-      "[reakit]",
-      "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
-    );
     return {
       ...options,
       id: options.stopId || options.id,
@@ -128,6 +123,12 @@ export const unstable_useCompositeItem = createHook<
       // standalone component, without state props.
       !options.items;
 
+    useWarning(
+      !!options.stopId,
+      "The `stopId` prop has been deprecated. Please, use the `id` prop instead.",
+      ref
+    );
+
     React.useEffect(() => {
       if (!id) return undefined;
       options.registerItem?.({ id, ref, disabled: !!trulyDisabled });
@@ -141,7 +142,6 @@ export const unstable_useCompositeItem = createHook<
       if (!self) {
         warning(
           true,
-          "[reakit/CompositeItem]",
           "Can't focus composite item component because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/composite"
         );

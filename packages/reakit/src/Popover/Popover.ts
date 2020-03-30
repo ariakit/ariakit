@@ -1,4 +1,4 @@
-import { warning } from "reakit-utils/warning";
+import { useWarning } from "reakit-warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
@@ -38,9 +38,8 @@ export const Popover = createComponent({
   as: "div",
   useHook: usePopover,
   useCreateElement: (type, props, children) => {
-    warning(
+    useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "[reakit/Popover]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/popover"
     );

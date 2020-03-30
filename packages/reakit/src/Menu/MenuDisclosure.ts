@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { warning } from "reakit-utils/warning";
+import { useWarning } from "reakit-warning";
 import {
   useMenuButton,
   MenuButtonOptions,
@@ -22,9 +22,8 @@ export const useMenuDisclosure = createHook<
   compose: useMenuButton,
 
   useProps(_, htmlProps) {
-    warning(
+    useWarning(
       true,
-      "[reakit/MenuDisclosure]",
       "`MenuDisclosure` has been renamed to `MenuButton`. Using `<MenuDisclosure />` will no longer work in future versions.",
       "See https://reakit.io/docs/menu"
     );

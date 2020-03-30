@@ -4,7 +4,7 @@ import {
   SealedInitialState
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -110,7 +110,6 @@ export function useDisclosureState(
   const show = React.useCallback(() => {
     warning(
       !isMounted,
-      "[reakit/Disclosure]",
       "You're trying to show a `DisclosureContent` component that hasn't been mounted yet.",
       "You shouldn't conditionally render a `DisclosureContent` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",
@@ -124,7 +123,6 @@ export function useDisclosureState(
   const toggle = React.useCallback(() => {
     warning(
       !isMounted,
-      "[reakit/Disclosure]",
       "You're trying to toggle a `DisclosureContent` element that hasn't been mounted yet.",
       "You shouldn't conditionally render a `DisclosureContent` component (or any of its derivatives) as this will make some features not work.",
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",

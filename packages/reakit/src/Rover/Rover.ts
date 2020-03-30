@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
@@ -79,7 +79,6 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       if (!rover) {
         warning(
           true,
-          "[reakit/Rover]",
           "Can't focus rover component because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/rover"
         );

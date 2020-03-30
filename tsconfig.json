@@ -39,7 +39,7 @@
       "reakit-utils/*": ["./node_modules/reakit-utils/src/*"],
 
       "reakit-warning": ["./node_modules/reakit-warning/src"],
-      "reakit-warning/*": ["./node_modules/reakit-warning/src/*"],
+      "reakit-warning/*": ["./node_modules/reakit-warning/src/*"]
     }
   }
 }

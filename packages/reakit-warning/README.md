@@ -24,7 +24,7 @@ Literal strings aren't minified. Keeping them in your production bundle may incr
 
 To prevent that, you should:
 
-1.  Put `reakit-warning/babel` into your [babel config](https://babeljs.io/docs/en/plugins#plugin-options).
+1.  Put `reakit-warning/babel-plugin` into your [babel config](https://babeljs.io/docs/en/plugins#plugin-options).
 
     This will make sure your `warning` and `useWarning` calls are wrapped within a condition that checks if `process.env.NODE_ENV !== 'production'`.
 

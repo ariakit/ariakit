@@ -5,7 +5,7 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type TabbableOptions = BoxOptions & {
@@ -81,7 +81,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       if (!tabbable) {
         warning(
           true,
-          "[reakit]",
           "Can't determine if the element is a native tabbable element because `ref` wasn't passed to the component.",
           "See https://reakit.io/docs/tabbable"
         );

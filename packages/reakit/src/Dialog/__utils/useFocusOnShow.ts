@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { getFirstTabbableIn, ensureFocus } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { DialogOptions } from "../Dialog";
@@ -45,10 +45,10 @@ export function useFocusOnShow(
         ensureFocus(dialog, { preventScroll: true, isActive });
         warning(
           dialog.tabIndex === undefined || dialog.tabIndex < 0,
-          "[reakit/Dialog]",
           "It's recommended to have at least one tabbable element inside dialog. The dialog element has been automatically focused.",
           "If this is the intended behavior, pass `tabIndex={0}` to the dialog element to disable this warning.",
-          "See https://reakit.io/docs/dialog/#initial-focus"
+          "See https://reakit.io/docs/dialog/#initial-focus",
+          dialog
         );
       }
     }

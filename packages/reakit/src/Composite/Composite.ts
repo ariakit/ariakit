@@ -4,7 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { warning } from "reakit-utils/warning";
+import { warning, useWarning } from "reakit-warning";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import {
   unstable_useIdGroup,
@@ -143,7 +143,6 @@ export const unstable_useComposite = createHook<
       if (!self) {
         warning(
           true,
-          "[reakit/Composite]",
           "Can't focus composite component because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/composite"
         );
@@ -262,16 +261,14 @@ export const unstable_Composite = createComponent({
   as: "div",
   useHook: unstable_useComposite,
   useCreateElement: (type, props, children) => {
-    warning(
+    useWarning(
       validCompositeRoles.indexOf(props.role) === -1,
-      `[reakit/Composite]`,
       "You should provide a valid `role` attribute to composite components.",
       "See https://reakit.io/docs/composite"
     );
 
-    warning(
+    useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
-      `[reakit/Composite]`,
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/composite"
     );

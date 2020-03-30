@@ -1,5 +1,5 @@
 import * as React from "react";
-import { warning } from "reakit-utils/warning";
+import { warning, useWarning } from "reakit-warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
@@ -106,7 +106,6 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       if (setModal && unstable_modal !== modal) {
         warning(
           true,
-          "[reakit/Dialog]",
           "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
           "See https://github.com/reakit/reakit/pull/535"
         );
@@ -153,9 +152,9 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
           if (!options.hide) {
             warning(
               true,
-              "[reakit/Dialog]",
               "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided.",
-              "See https://reakit.io/docs/dialog"
+              "See https://reakit.io/docs/dialog",
+              dialog.current
             );
             return;
           }
@@ -193,9 +192,8 @@ export const Dialog = createComponent({
   as: "div",
   useHook: useDialog,
   useCreateElement: (type, props, children) => {
-    warning(
+    useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "[reakit/Dialog]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/dialog"
     );

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { warning } from "reakit-utils/warning";
+import { useWarning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import {
   DisclosureContentOptions,
@@ -92,16 +92,16 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   },
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
-    warning(
-      Boolean(options.stopId),
-      "[reakit/TabPanel]",
-      "`TabPanel`'s `stopId` prop is deprecated. Use `tabId` instead.",
-      "See https://reakit.io/docs/tab"
-    );
-
     const ref = React.useRef<HTMLElement>(null);
     const tabId = getTabId(options);
     const { id, registerPanel, unregisterPanel } = options;
+
+    useWarning(
+      Boolean(options.stopId),
+      "`TabPanel`'s `stopId` prop is deprecated. Use `tabId` instead.",
+      "See https://reakit.io/docs/tab",
+      ref
+    );
 
     React.useEffect(() => {
       if (!id) return undefined;

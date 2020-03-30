@@ -1,5 +1,6 @@
 import { transform } from "@babel/core";
-import babelPlugin from "../babel";
+// @ts-ignore
+import babelPlugin from "../babel-plugin";
 
 function join(...strings: string[]) {
   return strings.join("\n");

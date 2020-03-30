@@ -1,4 +1,4 @@
-import { warning } from "reakit-utils/warning";
+import { useWarning } from "reakit-warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
@@ -34,9 +34,8 @@ export const Toolbar = createComponent({
   as: "div",
   useHook: useToolbar,
   useCreateElement: (type, props, children) => {
-    warning(
+    useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "[reakit/Toolbar]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/toolbar"
     );

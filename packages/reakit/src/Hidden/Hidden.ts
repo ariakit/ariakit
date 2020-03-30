@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -22,7 +22,6 @@ export const useHidden = createHook<HiddenOptions, HiddenHTMLProps>({
   useProps(_, htmlProps) {
     warning(
       true,
-      "[reakit/Hidden]",
       "`Hidden` has been renamed to `DisclosureContent`. Using `<Hidden />` will no longer work in future versions.",
       "See https://reakit.io/docs/disclosure"
     );

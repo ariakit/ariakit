@@ -1,5 +1,5 @@
 import { SealedInitialState } from "reakit-utils/useSealedState";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import {
   DisclosureState,
   DisclosureActions,
@@ -23,7 +23,6 @@ export function useHiddenState(
 ): HiddenStateReturn {
   warning(
     true,
-    "[reakit/useHiddenState]",
     "`useHiddenState` has been renamed to `useDisclosureState`. `useHiddenState` will no longer work in future versions.",
     "See https://reakit.io/docs/disclosure"
   );

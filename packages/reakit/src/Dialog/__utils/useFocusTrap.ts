@@ -1,5 +1,5 @@
 import * as React from "react";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { getDocument } from "reakit-utils/getDocument";
@@ -48,7 +48,6 @@ export function useFocusTrap(
     if (!portal) {
       warning(
         true,
-        "[reakit/Dialog]",
         "Can't trap focus within modal dialog because either `ref` wasn't passed to component or the component wasn't rendered within a portal",
         "See https://reakit.io/docs/dialog"
       );
