@@ -41,7 +41,6 @@ export function useRadioState(
     ...composite,
     state,
     setState
-    // moves: 0
   };
 }
 

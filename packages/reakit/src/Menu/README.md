@@ -28,9 +28,7 @@ import {
 } from "reakit/Menu";
 
 function Example() {
-  const menu = useMenuState({
-    virtual: true
-  });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton {...menu}>Preferences</MenuButton>
@@ -156,9 +154,7 @@ import {
 } from "reakit/Menu";
 
 const PreferencesMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState({
-    virtual: true
-  });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -177,9 +173,7 @@ const PreferencesMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuState({
-    virtual: true
-  });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton {...menu}>Code</MenuButton>
@@ -267,7 +261,7 @@ import {
 
 // OPEN RECENT
 const OpenRecentMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState({ virtual: true });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -286,7 +280,7 @@ const OpenRecentMenu = React.forwardRef((props, ref) => {
 
 // FILE
 const FileMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState({ virtual: true });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -306,7 +300,7 @@ const FileMenu = React.forwardRef((props, ref) => {
 
 // EDIT
 const EditMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState({ virtual: true });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -326,7 +320,7 @@ const EditMenu = React.forwardRef((props, ref) => {
 
 // VIEW
 const ViewMenu = React.forwardRef((props, ref) => {
-  const menu = useMenuState({ virtual: true });
+  const menu = useMenuState();
   return (
     <>
       <MenuButton ref={ref} {...menu} {...props}>
@@ -363,7 +357,7 @@ const ViewMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuBarState({ virtual: true, orientation: "horizontal" });
+  const menu = useMenuBarState();
   return (
     <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />
