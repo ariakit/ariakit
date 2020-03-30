@@ -432,13 +432,14 @@ Learn more in [Accessibility](/docs/accessibility/).
 ## Composition
 
 - `Menu` uses `MenuBar` and [Popover](/docs/popover/).
+- `MenuArrow` uses [PopoverArrow](/docs/popover/).
 - `MenuButton` uses [PopoverDisclosure](/docs/popover/).
 - `MenuGroup` uses [Box](/docs/box/).
-- `MenuItem` uses [Rover](/docs/rover/).
-- `MenuItemCheckbox` uses [Checkbox](/docs/checkbox/).
-- `MenuItemRadio` uses [Radio](/docs/radio/).
+- `MenuItem` uses [CompositeItem](/docs/composite/).
+- `MenuItemCheckbox` uses `MenuItem` and [Checkbox](/docs/checkbox/).
+- `MenuItemRadio` uses `MenuItem` and [Radio](/docs/radio/).
 - `MenuSeparator` uses [Separator](/docs/separator/).
-- `MenuBar` uses [Box](/docs/box/).
+- `MenuBar` uses [Composite](/docs/composite/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
