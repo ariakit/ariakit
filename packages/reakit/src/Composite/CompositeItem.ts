@@ -84,6 +84,11 @@ export const unstable_useCompositeItem = createHook<
   keys: ["stopId"],
 
   useOptions(options) {
+    warning(
+      !!options.stopId,
+      "[reakit]",
+      "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
+    );
     return {
       ...options,
       id: options.stopId || options.id,
@@ -119,12 +124,6 @@ export const unstable_useCompositeItem = createHook<
       // standalone component, without state props.
       !options.items;
 
-    warning(
-      !!options.stopId,
-      "[reakit]",
-      "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
-    );
-
     React.useEffect(() => {
       if (!id) return undefined;
       options.registerItem?.({ id, ref, disabled: !!trulyDisabled });
@@ -146,8 +145,9 @@ export const unstable_useCompositeItem = createHook<
       }
       // `moves` will be incremented whenever next, previous, up, down, first,
       // last or move have been called. This means that the composite item will
-      // be focused whenever some of these functions are called. Unless it has
-      // already focus, in which case we don't want to focus it again.
+      // be focused whenever some of these functions are called. We're using
+      // isCurrentItemRef instead of isCurrentItem because we don't want to
+      // focus the item if isCurrentItem changes (and options.moves doesn't).
       if (options.moves && isCurrentItemRef.current) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
@@ -168,7 +168,7 @@ export const unstable_useCompositeItem = createHook<
           composite?.focus();
         }
       },
-      [id, options.setCurrentId, options.baseId]
+      [id, options.setCurrentId, options.virtual, options.baseId]
     );
 
     const onKeyDown = React.useMemo(
