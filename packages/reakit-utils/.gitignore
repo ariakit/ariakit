@@ -32,6 +32,7 @@
 /hasFocusWithin
 /getDocument
 /getActiveElement
+/flatten
 /cx
 /createOnKeyDown
 /closest

@@ -2,6 +2,7 @@ export * from "./applyState";
 export * from "./closest";
 export * from "./createOnKeyDown";
 export * from "./cx";
+export * from "./flatten";
 export * from "./getActiveElement";
 export * from "./getDocument";
 export * from "./hasFocusWithin";

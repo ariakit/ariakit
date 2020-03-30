@@ -28,6 +28,7 @@ yarn add reakit-utils
 -   [closest](#closest)
 -   [createOnKeyDown](#createonkeydown)
 -   [cx](#cx)
+-   [flatten](#flatten)
 -   [getActiveElement](#getactiveelement)
 -   [getDocument](#getdocument)
 -   [hasFocusWithin](#hasfocuswithin)
@@ -128,6 +129,23 @@ const className = cx("a", "b", false, true && "c");
 ```
 
 Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
+
+### flatten
+
+Transforms an array with multiple levels into a flattened one.
+
+#### Parameters
+
+-   `array` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;T>** 
+
+#### Examples
+
+```javascript
+import { flatten } from "reakit-utils";
+
+flatten([0, 1, [2, [3, 4], 5], 6]);
+// => [0, 1, 2, 3, 4, 5, 6]
+```
 
 ### getActiveElement
 
