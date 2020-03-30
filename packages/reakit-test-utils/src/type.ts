@@ -1,4 +1,5 @@
-import { isFocusable, isTextField, warning } from "reakit-utils";
+import { isFocusable, isTextField } from "reakit-utils";
+import { warning } from "reakit-warning";
 import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";

@@ -1,9 +1,5 @@
-import {
-  isFocusable,
-  getClosestFocusable,
-  closest,
-  warning
-} from "reakit-utils";
+import { isFocusable, getClosestFocusable, closest } from "reakit-utils";
+import { warning } from "reakit-warning";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
 import { hover } from "./hover";

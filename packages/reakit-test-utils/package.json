@@ -29,7 +29,8 @@
     "system"
   ],
   "dependencies": {
-    "reakit-utils": "^0.9.0"
+    "reakit-utils": "^0.9.0",
+    "reakit-warning": "^0.0.1"
   },
   "peerDependencies": {
     "@testing-library/dom": "^6.0.0",
