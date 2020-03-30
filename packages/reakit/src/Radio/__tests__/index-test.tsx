@@ -84,7 +84,7 @@ test("onChange non-native radio", () => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("arrow keys", () => {
       const Test = () => {
-        const radio = useRadioState({ virtual });
+        const radio = useRadioState({ unstable_virtual: virtual });
         return (
           <>
             <RadioGroup {...radio} aria-label="radiogroup">
@@ -123,7 +123,7 @@ test("onChange non-native radio", () => {
 
     test("initial checked radio gets initial focus", () => {
       const Test = () => {
-        const radio = useRadioState({ virtual, state: "b" });
+        const radio = useRadioState({ unstable_virtual: virtual, state: "b" });
         return (
           <RadioGroup {...radio} aria-label="radiogroup">
             <label>

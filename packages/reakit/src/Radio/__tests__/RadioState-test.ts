@@ -13,7 +13,6 @@ test("initial state", () => {
       "groups": Array [],
       "items": Array [],
       "loop": true,
-      "moves": 0,
       "orientation": undefined,
       "rtl": false,
       "state": undefined,
@@ -21,7 +20,8 @@ test("initial state", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "virtual": false,
+      "unstable_moves": 0,
+      "unstable_virtual": false,
       "wrap": false,
     }
   `);

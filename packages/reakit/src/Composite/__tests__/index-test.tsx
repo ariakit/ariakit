@@ -46,7 +46,7 @@ function template(value: string) {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("warning when there's no composite role", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <Composite {...composite} role="button" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -61,7 +61,7 @@ function template(value: string) {
 
     test("warning when there's no label", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <Composite {...composite} role="toolbar">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -76,7 +76,7 @@ function template(value: string) {
 
     test("first list item is active", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -95,7 +95,7 @@ function template(value: string) {
     test("list item is active when currentId is set", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           currentId: "item2"
         });
         return (
@@ -118,7 +118,7 @@ function template(value: string) {
     test("composite becomes the first item when currentId is null", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           currentId: null
         });
         return (
@@ -174,7 +174,7 @@ function template(value: string) {
     test("composite becomes the first item when currentId is null and loop is true", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           currentId: null,
           loop: true
         });
@@ -226,7 +226,7 @@ function template(value: string) {
     test("click item", () => {
       const onClick = jest.fn();
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -252,7 +252,7 @@ function template(value: string) {
 
     test("composite is a single tab stop", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <>
             <button>button1</button>
@@ -280,7 +280,7 @@ function template(value: string) {
 
     test("remember the last focused item", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <>
             <Composite {...composite} role="toolbar" aria-label="composite">
@@ -304,7 +304,7 @@ function template(value: string) {
 
     test("move focus with arrow keys", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite} data-item />
@@ -331,7 +331,7 @@ function template(value: string) {
     test("move focus with arrow keys rtl", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           rtl: true
         });
         return (
@@ -360,7 +360,7 @@ function template(value: string) {
     test("move focus with arrow keys loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           loop: true
         });
         return (
@@ -390,7 +390,7 @@ function template(value: string) {
     test("move focus with arrow keys horizontal", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           orientation: "horizontal"
         });
         return (
@@ -421,7 +421,7 @@ function template(value: string) {
     test("move focus with arrow keys vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           orientation: "vertical"
         });
         return (
@@ -451,7 +451,7 @@ function template(value: string) {
 
     test("keep DOM order", () => {
       const Test = ({ renderItem2 = false }) => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
@@ -477,7 +477,7 @@ function template(value: string) {
       test(`move to the past item when the current active item is ${state}`, () => {
         const Test = () => {
           const [disabled, setDisabled] = React.useState(false);
-          const composite = useCompositeState({ virtual });
+          const composite = useCompositeState({ unstable_virtual: virtual });
           return (
             <>
               <button onClick={() => setDisabled(!disabled)}>toggle</button>
@@ -519,7 +519,7 @@ function template(value: string) {
         const Test = () => {
           const [disabled, setDisabled] = React.useState(false);
           const composite = useCompositeState({
-            virtual,
+            unstable_virtual: virtual,
             currentId: "item2"
           });
           return (
@@ -562,7 +562,7 @@ function template(value: string) {
       test(`move to the past item when the current active item is ${state} and id is set`, () => {
         const Test = () => {
           const [disabled, setDisabled] = React.useState(false);
-          const composite = useCompositeState({ virtual });
+          const composite = useCompositeState({ unstable_virtual: virtual });
           return (
             <>
               <button onClick={() => setDisabled(!disabled)}>toggle</button>
@@ -608,7 +608,7 @@ function template(value: string) {
 
     test("list item with tabbable content inside", async () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         return (
           <>
             <Composite {...composite} role="toolbar" aria-label="composite">
@@ -710,7 +710,7 @@ function template(value: string) {
 
     test("move grid focus with arrow keys", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 2, 1, 2],
@@ -869,7 +869,7 @@ function template(value: string) {
     test("move grid focus with arrow keys rtl", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           rtl: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -967,7 +967,7 @@ function template(value: string) {
     test("move grid focus with arrow keys wrap", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1044,7 +1044,7 @@ function template(value: string) {
     test("move grid focus with arrow keys wrap horizontal", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: "horizontal"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1114,7 +1114,7 @@ function template(value: string) {
     test("move grid focus with arrow keys wrap vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: "vertical"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1184,7 +1184,7 @@ function template(value: string) {
     test("move grid focus with arrow keys loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           loop: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1304,7 +1304,7 @@ function template(value: string) {
     test("move grid focus with arrow keys loop horizontal", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           loop: "horizontal"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1374,7 +1374,7 @@ function template(value: string) {
     test("move grid focus with arrow keys loop vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           loop: "vertical"
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -1451,7 +1451,7 @@ function template(value: string) {
     test("move grid focus with arrow keys wrap loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: true,
           loop: true
         });
@@ -1558,7 +1558,7 @@ function template(value: string) {
     test("move grid focus with arrow keys wrap horizontal loop vertical", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: "horizontal",
           loop: "vertical"
         });
@@ -1643,7 +1643,7 @@ function template(value: string) {
     test("move grid focus with arrow keys rtl wrap loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           rtl: true,
           wrap: true,
           loop: true
@@ -1743,7 +1743,7 @@ function template(value: string) {
 
     test("move grid focus with arrow keys different number of cells", () => {
       const Test = () => {
-        const composite = useCompositeState({ virtual });
+        const composite = useCompositeState({ unstable_virtual: virtual });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 0, 1],
@@ -1905,7 +1905,7 @@ function template(value: string) {
     test("move grid focus with arrow keys different number of cells wrap", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: true
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -2005,7 +2005,7 @@ function template(value: string) {
     test("grid item with tabbable content inside", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           orientation: "vertical",
           wrap: true
         });
@@ -2070,7 +2070,7 @@ function template(value: string) {
         const [disableGroup, setDisableGroup] = React.useState(false);
         const [disableItems, setDisableItems] = React.useState(false);
         const composite = useCompositeState({
-          virtual
+          unstable_virtual: virtual
         });
         const [groups, setGroups] = React.useState<string[][]>([[]]);
 
@@ -2140,7 +2140,7 @@ function template(value: string) {
     test("composite grid becomes the first item when currentId is null", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           currentId: null
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
@@ -2366,7 +2366,7 @@ function template(value: string) {
     test("composite grid becomes the first item when currentId is null and wrap", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: true,
           currentId: null
         });
@@ -2445,7 +2445,7 @@ function template(value: string) {
     test("composite grid becomes the first item when currentId is null, wrap and loop", () => {
       const Test = () => {
         const composite = useCompositeState({
-          virtual,
+          unstable_virtual: virtual,
           wrap: true,
           loop: true,
           currentId: null

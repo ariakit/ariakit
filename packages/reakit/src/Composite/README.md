@@ -68,7 +68,7 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({ virtual: true });
+  const composite = useCompositeState({ unstable_virtual: true });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
       <CompositeItem {...composite} onClick={() => alert("clicked")}>
@@ -205,7 +205,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   ID that will serve as a base for all the items IDs.
 
-- **`virtual`**
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
   <code>boolean</code>
 
   If enabled, the composite element will act as an
@@ -309,7 +309,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
-- **`virtual`**
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
   <code>boolean</code>
 
   If enabled, the composite element will act as an
@@ -353,7 +353,7 @@ will focus the first item in the next row or column and vice-versa.
 item in the last row or column and the first item in the first row or
 column and vice-versa.
 
-- **`moves`**
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
 
   Stores the number of moves that have been performed by calling `move`,
@@ -451,7 +451,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
-- **`virtual`**
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
   <code>boolean</code>
 
   If enabled, the composite element will act as an
@@ -472,7 +472,7 @@ which arrow keys can be used to move focus:
 
   It doesn't have any effect on two-dimensional composites.
 
-- **`moves`**
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
 
   Stores the number of moves that have been performed by calling `move`,

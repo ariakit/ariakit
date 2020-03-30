@@ -32,7 +32,7 @@ test("render", () => {
 });
 
 test("render aria-activedescendant", () => {
-  const { container } = render(<Composite {...props} virtual />);
+  const { container } = render(<Composite {...props} unstable_virtual />);
   expect(console).toHaveWarned();
   expect(container).toMatchInlineSnapshot(`
 <div>

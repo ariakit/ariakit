@@ -31,7 +31,11 @@ export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
-    "virtual" | "baseId" | "orientation" | "moves" | "unstable_hasActiveWidget"
+    | "unstable_virtual"
+    | "baseId"
+    | "orientation"
+    | "unstable_moves"
+    | "unstable_hasActiveWidget"
   > &
   Pick<
     unstable_CompositeStateReturn,
@@ -117,7 +121,7 @@ export const unstable_useCompositeItem = createHook<
     const isCurrentItemRef = useLiveRef(isCurrentItem);
     const item = options.items?.find(i => i.id === id);
     const shouldTabIndex =
-      (!options.virtual &&
+      (!options.unstable_virtual &&
         !options.unstable_hasActiveWidget &&
         isCurrentItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
@@ -148,11 +152,11 @@ export const unstable_useCompositeItem = createHook<
       // be focused whenever some of these functions are called. We're using
       // isCurrentItemRef instead of isCurrentItem because we don't want to
       // focus the item if isCurrentItem changes (and options.moves doesn't).
-      if (options.moves && isCurrentItemRef.current) {
+      if (options.unstable_moves && isCurrentItemRef.current) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
       }
-    }, [options.moves]);
+    }, [options.unstable_moves]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
@@ -163,12 +167,16 @@ export const unstable_useCompositeItem = createHook<
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (options.virtual && currentTarget === target && options.baseId) {
+        if (
+          options.unstable_virtual &&
+          currentTarget === target &&
+          options.baseId
+        ) {
           const composite = getDocument(target).getElementById(options.baseId);
           composite?.focus();
         }
       },
-      [id, options.setCurrentId, options.virtual, options.baseId]
+      [id, options.setCurrentId, options.unstable_virtual, options.baseId]
     );
 
     const onKeyDown = React.useMemo(
@@ -279,7 +287,8 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id,
-      "aria-selected": options.virtual && isCurrentItem ? true : undefined,
+      "aria-selected":
+        options.unstable_virtual && isCurrentItem ? true : undefined,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),

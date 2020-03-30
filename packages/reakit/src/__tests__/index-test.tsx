@@ -15,7 +15,7 @@ import {
 
   test(`${strategy} composite with menu button controlling arrow keys`, async () => {
     const Test = () => {
-      const composite = useCompositeState({ virtual });
+      const composite = useCompositeState({ unstable_virtual: virtual });
       const menu = useMenuState({ placement: "right-start" });
       return (
         <Composite {...composite} role="toolbar" aria-label="composite">
@@ -59,7 +59,7 @@ import {
 
   test(`${strategy} composite with menu button not controlling arrow keys`, async () => {
     const Test = () => {
-      const composite = useCompositeState({ virtual });
+      const composite = useCompositeState({ unstable_virtual: virtual });
       const menu = useMenuState({ placement: "right-start" });
       return (
         <Composite {...composite} role="toolbar" aria-label="composite">

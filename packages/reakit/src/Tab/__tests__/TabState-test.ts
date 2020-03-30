@@ -18,7 +18,6 @@ test("initial state", () => {
       "items": Array [],
       "loop": true,
       "manual": false,
-      "moves": 0,
       "orientation": undefined,
       "panels": Array [],
       "rtl": false,
@@ -27,7 +26,8 @@ test("initial state", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
-      "virtual": false,
+      "unstable_moves": 0,
+      "unstable_virtual": false,
       "wrap": false,
     }
   `);

@@ -34,7 +34,7 @@ export type unstable_CompositeState = unstable_IdState & {
    * [roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
    * DOM focus will remain on the composite while its items receive virtual focus.
    */
-  virtual: boolean;
+  unstable_virtual: boolean;
   /**
    * Determines how `next` and `previous` functions will behave. If `rtl` is
    * set to `true`, they will be inverted. You still need to set `dir="rtl"` on
@@ -113,7 +113,7 @@ export type unstable_CompositeState = unstable_IdState & {
    * Stores the number of moves that have been performed by calling `move`,
    * `next`, `previous`, `up`, `down`, `first` or `last`.
    */
-  moves: number;
+  unstable_moves: number;
   /**
    * @private
    */
@@ -168,8 +168,8 @@ export type unstable_CompositeActions = unstable_IdActions & {
   /**
    * Sets `virtual`.
    */
-  setVirtual: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["virtual"]>
+  unstable_setVirtual: React.Dispatch<
+    React.SetStateAction<unstable_CompositeState["unstable_virtual"]>
   >;
   /**
    * Sets `rtl`.
@@ -216,7 +216,7 @@ export type unstable_CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
       unstable_CompositeState,
-      "virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
+      "unstable_virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
     >
   >;
 
@@ -238,7 +238,9 @@ type CompositeReducerAction =
   | { type: "last" }
   | {
       type: "setVirtual";
-      virtual: React.SetStateAction<unstable_CompositeState["virtual"]>;
+      virtual: React.SetStateAction<
+        unstable_CompositeState["unstable_virtual"]
+      >;
     }
   | {
       type: "setRTL";
@@ -269,7 +271,7 @@ type CompositeReducerState = Omit<
   "unstable_hasActiveWidget" | keyof unstable_IdState
 > & {
   pastIds: string[];
-  initialVirtual: unstable_CompositeState["virtual"];
+  initialVirtual: unstable_CompositeState["unstable_virtual"];
   initialRTL: unstable_CompositeState["rtl"];
   initialOrientation: unstable_CompositeState["orientation"];
   initialCurrentId: unstable_CompositeState["currentId"];
@@ -290,7 +292,7 @@ function reducer(
     loop,
     wrap,
     pastIds,
-    moves,
+    unstable_moves: moves,
     initialVirtual,
     initialRTL,
     initialOrientation,
@@ -377,7 +379,7 @@ function reducer(
         return {
           ...state,
           pastIds: nextPastIds,
-          moves: moves + 1,
+          unstable_moves: moves + 1,
           currentId: getCurrentId(state, id)
         };
       }
@@ -385,7 +387,7 @@ function reducer(
       return {
         ...state,
         pastIds: nextPastIds,
-        moves: item ? moves + 1 : moves,
+        unstable_moves: item ? moves + 1 : moves,
         currentId: getCurrentId(state, item?.id)
       };
     }
@@ -541,13 +543,13 @@ function reducer(
     case "reset":
       return {
         ...state,
-        virtual: initialVirtual,
+        unstable_virtual: initialVirtual,
         rtl: initialRTL,
         orientation: initialOrientation,
         currentId: initialCurrentId,
         loop: initialLoop,
         wrap: initialWrap,
-        moves: 0,
+        unstable_moves: 0,
         pastIds: []
       };
     default:
@@ -563,7 +565,7 @@ export function unstable_useCompositeState(
   initialState: SealedInitialState<unstable_CompositeInitialState> = {}
 ): unstable_CompositeStateReturn {
   const {
-    virtual = false,
+    unstable_virtual: virtual = false,
     rtl = false,
     orientation,
     currentId,
@@ -584,7 +586,7 @@ export function unstable_useCompositeState(
     },
     dispatch
   ] = React.useReducer(reducer, {
-    virtual,
+    unstable_virtual: virtual,
     rtl,
     orientation,
     items: [],
@@ -592,7 +594,7 @@ export function unstable_useCompositeState(
     currentId,
     loop,
     wrap,
-    moves: 0,
+    unstable_moves: 0,
     pastIds: [],
     initialVirtual: virtual,
     initialRTL: rtl,
@@ -622,7 +624,7 @@ export function unstable_useCompositeState(
     down: useAction(allTheWay => dispatch({ type: "down", allTheWay })),
     first: useAction(() => dispatch({ type: "first" })),
     last: useAction(() => dispatch({ type: "last" })),
-    setVirtual: useAction(value =>
+    unstable_setVirtual: useAction(value =>
       dispatch({ type: "setVirtual", virtual: value })
     ),
     setRTL: useAction(value => dispatch({ type: "setRTL", rtl: value })),
@@ -640,7 +642,7 @@ export function unstable_useCompositeState(
 
 const keys: Array<keyof unstable_CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
-  "virtual",
+  "unstable_virtual",
   "rtl",
   "orientation",
   "items",
@@ -648,7 +650,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "currentId",
   "loop",
   "wrap",
-  "moves",
+  "unstable_moves",
   "unstable_hasActiveWidget",
   "registerItem",
   "unregisterItem",
@@ -661,7 +663,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "down",
   "first",
   "last",
-  "setVirtual",
+  "unstable_setVirtual",
   "setRTL",
   "setOrientation",
   "setCurrentId",

@@ -47,7 +47,7 @@ test("markup", () => {
 
 test("markup virtual", () => {
   const Test = () => {
-    const toolbar = useToolbarState({ virtual: true });
+    const toolbar = useToolbarState({ unstable_virtual: true });
     return (
       <Toolbar {...toolbar} id="base" aria-label="toolbar">
         <ToolbarItem {...toolbar}>Item 1</ToolbarItem>

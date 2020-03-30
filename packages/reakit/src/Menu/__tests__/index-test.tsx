@@ -24,7 +24,7 @@ import {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("menu bar is always visible", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return <MenuBar {...menu} aria-label="menu" />;
       };
       const { getByLabelText } = render(<Test />);
@@ -34,7 +34,7 @@ import {
 
     test("clicking on disclosure opens menu and focus the first menu item", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -58,7 +58,7 @@ import {
 
     test("hovering menu item moves focus to it", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -81,7 +81,7 @@ import {
     test("clicking on menu item disclosure opens submenu without moving focus", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -97,7 +97,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -119,7 +119,7 @@ import {
     test("focusing menu item disclosure does not open submenu", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -135,7 +135,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -155,7 +155,7 @@ import {
     test("pressing enter on menu item disclosure opens submenu and focus the first item", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -171,7 +171,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -195,7 +195,7 @@ import {
     test("pressing space on menu item disclosure opens submenu and focus the first item", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -211,7 +211,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -235,7 +235,7 @@ import {
     test("hovering menu item disclosure moves focus into it and opens submenu after a short delay without moving focus", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -251,7 +251,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -279,7 +279,7 @@ import {
 
     test("pressing esc on menu item closes the menu and focus disclosure", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -305,7 +305,10 @@ import {
 
     test("arrow down on disclosure opens bottom menu and focus first item", async () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, placement: "bottom-end" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          placement: "bottom-end"
+        });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -333,7 +336,10 @@ import {
 
     test("arrow down on disclosure opens top menu and focus first item", async () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, placement: "top" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          placement: "top"
+        });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -361,7 +367,10 @@ import {
 
     test("arrow up on disclosure opens bottom menu and focus last item", async () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, placement: "bottom" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          placement: "bottom"
+        });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -389,7 +398,10 @@ import {
 
     test("arrow up on disclosure opens top menu and focus last item", async () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, placement: "top-start" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          placement: "top-start"
+        });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -417,7 +429,10 @@ import {
 
     test("arrow right on disclosure opens right menu and focus first item", async () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, placement: "right" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          placement: "right"
+        });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -445,7 +460,10 @@ import {
 
     test("arrow left on disclosure opens left menu and focus first item", async () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, placement: "left" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          placement: "left"
+        });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -474,7 +492,7 @@ import {
     test("arrow right on menu item disclosure opens right submenu and focus first item", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -490,7 +508,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -523,7 +541,10 @@ import {
     test("arrow left on menu item disclosure opens left submenu and focus first item", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual, placement: "left" });
+          const menu = useMenuState({
+            unstable_virtual: virtual,
+            placement: "left"
+          });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -539,7 +560,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -564,7 +585,11 @@ import {
 
     test("arrow up on menu focus last item", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, currentId: null, visible: true });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          currentId: null,
+          visible: true
+        });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -588,7 +613,11 @@ import {
 
     test("arrow down on menu focus first item", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, currentId: null, visible: true });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          currentId: null,
+          visible: true
+        });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -613,7 +642,7 @@ import {
     test("focusing menubar item disclosure opens the submenu without moving focus", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -629,7 +658,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -650,7 +682,7 @@ import {
     test("clicking on menubar item disclosure opens the submenu without moving focus", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -666,7 +698,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -688,7 +723,7 @@ import {
     test("hovering menubar item disclosure does not move focus into it", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -704,7 +739,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -727,7 +765,7 @@ import {
           { index, ...props }: { index: number } & MenuButtonHTMLProps,
           ref: React.RefObject<any>
         ) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -743,7 +781,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>
@@ -772,7 +813,7 @@ import {
     test("pressing enter on menubar item disclosure focus submenu first item", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -788,7 +829,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -812,7 +856,7 @@ import {
     test("pressing space on menubar item disclosure focus submenu first item", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -828,7 +872,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -851,7 +898,7 @@ import {
 
     test("move focus within menu with arrow keys", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
@@ -898,7 +945,7 @@ import {
     test("move focus within submenu with arrow keys", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -914,7 +961,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -959,7 +1006,7 @@ import {
 
     test("move focus within menu with ascii keys", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>Abc</MenuItem>
@@ -1004,8 +1051,14 @@ import {
 
     test("move focus within submenu with ascii keys", () => {
       const Test = () => {
-        const menu1 = useMenuState({ virtual, visible: true });
-        const menu2 = useMenuState({ virtual, visible: true });
+        const menu1 = useMenuState({
+          unstable_virtual: virtual,
+          visible: true
+        });
+        const menu2 = useMenuState({
+          unstable_virtual: virtual,
+          visible: true
+        });
         return (
           <Menu aria-label="menu1" {...menu1}>
             <MenuItem {...menu1}>Abc</MenuItem>
@@ -1042,7 +1095,7 @@ import {
     test("move focus within menubar with arrow keys", () => {
       const Test = () => {
         const menu = useMenuState({
-          virtual,
+          unstable_virtual: virtual,
           orientation: "horizontal",
           loop: true
         });
@@ -1069,7 +1122,10 @@ import {
 
     test("move focus within menubar with ascii keys", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>abc</MenuItem>
@@ -1092,7 +1148,7 @@ import {
           { index, ...props }: { index: number } & MenuButtonHTMLProps,
           ref: React.RefObject<any>
         ) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -1108,7 +1164,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>
@@ -1157,7 +1216,7 @@ import {
           { index, ...props }: { index: number } & MenuButtonHTMLProps,
           ref: React.RefObject<any>
         ) => {
-          const menu = useMenuState({ virtual });
+          const menu = useMenuState({ unstable_virtual: virtual });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -1177,7 +1236,10 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, orientation: "horizontal" });
+        const menu = useMenuState({
+          unstable_virtual: virtual,
+          orientation: "horizontal"
+        });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>
@@ -1220,7 +1282,7 @@ import {
 
     test("clicking on menu disclorure closes the menu", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -1244,7 +1306,10 @@ import {
     test("clicking outside menu closes it", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual, visible: true });
+          const menu = useMenuState({
+            unstable_virtual: virtual,
+            visible: true
+          });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -1260,7 +1325,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -1285,7 +1350,10 @@ import {
     test("focusing outside menu closes it", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual, visible: true });
+          const menu = useMenuState({
+            unstable_virtual: virtual,
+            visible: true
+          });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -1301,7 +1369,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <>
             <button>button</button>
@@ -1329,7 +1397,10 @@ import {
     test("focusing outside submenu closes it", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual, visible: true });
+          const menu = useMenuState({
+            unstable_virtual: virtual,
+            visible: true
+          });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -1345,7 +1416,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -1371,7 +1442,10 @@ import {
     test("pressing esc closes all menus", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
-          const menu = useMenuState({ virtual, visible: true });
+          const menu = useMenuState({
+            unstable_virtual: virtual,
+            visible: true
+          });
           return (
             <>
               <MenuButton {...menu} {...props} ref={ref}>
@@ -1387,7 +1461,7 @@ import {
         }
       );
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -1415,7 +1489,7 @@ import {
 
     test("pressing esc on disclosure closes the menu", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual, visible: true });
+        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
         return (
           <>
             <MenuButton {...menu}>disclosure</MenuButton>
@@ -1440,7 +1514,7 @@ import {
 
     test("clicking on menu item checkbox/radio checks it", () => {
       const Test = () => {
-        const menu = useMenuState({ virtual });
+        const menu = useMenuState({ unstable_virtual: virtual });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItemCheckbox {...menu} name="accept">

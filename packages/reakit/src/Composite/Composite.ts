@@ -27,7 +27,12 @@ export type unstable_CompositeOptions = TabbableOptions &
   unstable_IdGroupOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
-    "virtual" | "currentId" | "orientation" | "moves" | "wrap" | "groups"
+    | "unstable_virtual"
+    | "currentId"
+    | "orientation"
+    | "unstable_moves"
+    | "wrap"
+    | "groups"
   > &
   Pick<
     unstable_CompositeStateReturn,
@@ -122,13 +127,13 @@ export const unstable_useComposite = createHook<
     );
 
     const onKeyDown = useKeyboardEventProxy(
-      options.virtual,
+      options.unstable_virtual,
       currentItem,
       htmlOnKeyDown
     );
 
     const onKeyUp = useKeyboardEventProxy(
-      options.virtual,
+      options.unstable_virtual,
       currentItem,
       htmlOnKeyUp
     );
@@ -144,15 +149,15 @@ export const unstable_useComposite = createHook<
         );
         return;
       }
-      if (options.moves && !currentItem) {
+      if (options.unstable_moves && !currentItem) {
         self.focus();
       }
-    }, [options.moves, currentItem]);
+    }, [options.unstable_moves, currentItem]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         if (event.target !== event.currentTarget) return;
-        if (options.virtual) {
+        if (options.unstable_virtual) {
           if (!currentItem || !options.items) return;
           const hasItemWithFocus = options.items.some(
             item => item.ref.current === event.relatedTarget
@@ -176,7 +181,12 @@ export const unstable_useComposite = createHook<
           options.setCurrentId?.(null);
         }
       },
-      [options.virtual, options.items, currentItem, options.setCurrentId]
+      [
+        options.unstable_virtual,
+        options.items,
+        currentItem,
+        options.setCurrentId
+      ]
     );
 
     const onMove = React.useMemo(
@@ -228,7 +238,7 @@ export const unstable_useComposite = createHook<
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown: useAllCallbacks(onMove, onKeyDown),
       onKeyUp,
-      "aria-activedescendant": options.virtual
+      "aria-activedescendant": options.unstable_virtual
         ? currentItem?.id || undefined
         : undefined,
       ...htmlProps
@@ -238,7 +248,7 @@ export const unstable_useComposite = createHook<
   useComposeProps(options, htmlProps) {
     htmlProps = unstable_useIdGroup(options, htmlProps, true);
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
-    if (options.virtual || options.currentId === null) {
+    if (options.unstable_virtual || options.currentId === null) {
       // Composite will only be tabbable by default if the focus is managed
       // using aria-activedescendant, which requires DOM focus on the container
       // element (the composite)

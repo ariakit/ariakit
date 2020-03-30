@@ -121,13 +121,13 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       const self = ref.current;
       if (!self) return;
       if (
-        options.moves &&
+        options.unstable_moves &&
         isCurrentItemRef.current &&
         options.unstable_checkOnFocus
       ) {
         dispatchChange(self, onChange);
       }
-    }, [options.moves, options.unstable_checkOnFocus, onChange]);
+    }, [options.unstable_moves, options.unstable_checkOnFocus, onChange]);
 
     return {
       ref: useForkRef(ref, htmlRef),
