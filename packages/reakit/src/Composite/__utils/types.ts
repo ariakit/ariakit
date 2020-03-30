@@ -4,8 +4,10 @@ export type Group = {
 };
 
 export type Item = {
-  id: string;
+  id: string | null;
   ref: React.RefObject<HTMLElement>;
   groupId?: Group["id"];
   disabled?: boolean;
 };
+
+export type Orientation = "horizontal" | "vertical";

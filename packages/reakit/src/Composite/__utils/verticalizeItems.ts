@@ -15,7 +15,12 @@ export function verticalizeItems(items: Item[]) {
       if (group[i]) {
         verticalized.push({
           ...group[i],
-          groupId: `${i}`
+          // If there's no groupId, it means that it's not a grid composite,
+          // but a single row instead. So, instead of verticalizing it, that
+          // is, assigning a different groupId based on the column index, we
+          // keep it undefined so they will be part of the same group.
+          // It's useful when using up/down on one-dimensional composites.
+          groupId: group[i].groupId ? `${i}` : undefined
         });
       }
     }

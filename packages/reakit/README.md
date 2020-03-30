@@ -14,11 +14,6 @@
   <a href="https://reakit.io"><strong>Explore website »</strong></a>
 </p>
 
-<a href="https://reakit.io">
-  <img src="https://user-images.githubusercontent.com/3068563/57511686-36d9e080-72e0-11e9-912b-8b67ddd135e2.png" alt="Reakit thumbnail" width="100%" />
-</a>
-
-<br>
 <br>
 
 <p align="center">
@@ -82,6 +77,19 @@ By donating $5 or more you [become a backer](https://opencollective.com/reakit) 
   <a href="https://opencollective.com/reakit/backer/23/website"><img src="https://opencollective.com/reakit/backer/23/avatar.svg"></a>
   <a href="https://opencollective.com/reakit/backer/24/website"><img src="https://opencollective.com/reakit/backer/24/avatar.svg"></a>
   <a href="https://opencollective.com/reakit/backer/25/website"><img src="https://opencollective.com/reakit/backer/25/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/26/website"><img src="https://opencollective.com/reakit/backer/26/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/27/website"><img src="https://opencollective.com/reakit/backer/27/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/28/website"><img src="https://opencollective.com/reakit/backer/28/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/29/website"><img src="https://opencollective.com/reakit/backer/29/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/30/website"><img src="https://opencollective.com/reakit/backer/30/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/31/website"><img src="https://opencollective.com/reakit/backer/31/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/32/website"><img src="https://opencollective.com/reakit/backer/32/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/33/website"><img src="https://opencollective.com/reakit/backer/33/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/34/website"><img src="https://opencollective.com/reakit/backer/34/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/35/website"><img src="https://opencollective.com/reakit/backer/35/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/36/website"><img src="https://opencollective.com/reakit/backer/36/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/37/website"><img src="https://opencollective.com/reakit/backer/37/avatar.svg"></a>
+  <a href="https://opencollective.com/reakit/backer/38/website"><img src="https://opencollective.com/reakit/backer/38/avatar.svg"></a>
 </p>
 
 
@@ -129,9 +137,9 @@ Play with this on [CodeSandbox](https://codesandbox.io/s/m4n32vjkoj) and read th
 
 ## Contributors
 
-This project exists thanks to all the people who contribute.
+This project exists thanks to all the people who contribute. Learn more on the [contributing guide](https://github.com/reakit/reakit/blob/master/CONTRIBUTING.md).
 
-<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1023&button=false" /></a>
+<a href="https://github.com/reakit/reakit/graphs/contributors"><img src="https://opencollective.com/reakit/contributors.svg?width=1227&button=false" /></a>
 
 <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
 

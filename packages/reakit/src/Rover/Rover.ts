@@ -60,19 +60,19 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const stopId = options.stopId || options.id || htmlProps.id;
+    const id = options.stopId || options.id;
 
     const trulyDisabled = options.disabled && !options.focusable;
     const noFocused = options.currentId == null;
-    const focused = options.currentId === stopId;
-    const isFirst = (options.stops || [])[0] && options.stops[0].id === stopId;
+    const focused = options.currentId === id;
+    const isFirst = (options.stops || [])[0] && options.stops[0].id === id;
     const shouldTabIndex = focused || (isFirst && noFocused);
 
     React.useEffect(() => {
-      if (trulyDisabled || !stopId) return undefined;
-      options.register && options.register(stopId, ref);
-      return () => options.unregister && options.unregister(stopId);
-    }, [stopId, trulyDisabled, options.register, options.unregister]);
+      if (trulyDisabled || !id) return undefined;
+      options.register && options.register(id, ref);
+      return () => options.unregister && options.unregister(id);
+    }, [id, trulyDisabled, options.register, options.unregister]);
 
     React.useEffect(() => {
       const rover = ref.current;
@@ -92,11 +92,11 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
-        if (!stopId || !event.currentTarget.contains(event.target)) return;
+        if (!id || !event.currentTarget.contains(event.target)) return;
         // this is already focused, so we move silently
-        options.move(stopId, true);
+        options.move(id, true);
       },
-      [options.move, stopId]
+      [options.move, id]
     );
 
     const onKeyDown = React.useMemo(
@@ -130,8 +130,8 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     );
 
     return {
+      id,
       ref: useForkRef(ref, htmlRef),
-      id: stopId,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown,

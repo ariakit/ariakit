@@ -1,4 +1,4 @@
-import { getDocument } from "./getDocument";
+import { getActiveElement } from "./getActiveElement";
 
 /**
  * Checks if `element` has focus.
@@ -9,7 +9,13 @@ import { getDocument } from "./getDocument";
  * hasFocusWithin(document.getElementById("id"));
  */
 export function hasFocusWithin(element: Element): boolean {
-  const document = getDocument(element);
-  if (!document.activeElement) return false;
-  return element.contains(document.activeElement);
+  const activeElement = getActiveElement(element);
+  if (!activeElement) return false;
+  if (element.contains(activeElement)) return true;
+  const activeDescendant = activeElement.getAttribute("aria-activedescendant");
+  if (!activeDescendant) return false;
+  return (
+    activeDescendant === element.id ||
+    !!element.querySelector(`#${activeDescendant}`)
+  );
 }

@@ -85,7 +85,6 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     if (options.name) {
       htmlProps = useProps(options.name, hookOptions, htmlProps) as P;
     }
-
     if (options.compose) {
       if (options.useComposeOptions) {
         hookOptions = options.useComposeOptions(hookOptions, htmlProps);
@@ -137,6 +136,11 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
         if (hookResult != null) {
           return hookResult;
         }
+      }
+
+      // @ts-ignore
+      if (prev.children !== next.children) {
+        return false;
       }
 
       return deepEqual(prev, next);

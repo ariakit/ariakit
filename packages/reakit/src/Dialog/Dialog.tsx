@@ -137,7 +137,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   ) {
     const dialog = React.useRef<HTMLElement>(null);
     const backdrop = React.useContext(DialogBackdropContext);
-    const disclosures = useDisclosuresRef(options);
+    const disclosures = useDisclosuresRef(dialog, options);
     const { dialogs, wrap } = useNestedDialogs(dialog, options);
 
     usePreventBodyScroll(dialog, options);

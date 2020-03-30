@@ -29,6 +29,7 @@ export function useMenuBarProps(
   const isHorizontal = options.orientation === "horizontal";
 
   const menuBar = css`
+    position: relative;
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
     white-space: nowrap;

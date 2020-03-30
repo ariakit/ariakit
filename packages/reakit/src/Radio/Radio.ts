@@ -2,6 +2,8 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useForkRef } from "reakit-utils/useForkRef";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
@@ -49,6 +51,25 @@ function useInitialChecked(options: RadioOptions) {
   }, [initialChecked, id, setCurrentId, initialCurrentId]);
 }
 
+function dispatchChange(
+  element: HTMLElement,
+  onChange?: React.ChangeEventHandler,
+  originalEvent?: React.SyntheticEvent
+) {
+  const event =
+    originalEvent ||
+    new Event("change", {
+      bubbles: true,
+      cancelable: false
+    });
+  Object.defineProperties(event, {
+    type: { value: "change" },
+    target: { value: element },
+    currentTarget: { value: element }
+  });
+  onChange?.(event as any);
+}
+
 export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useCompositeItem,
@@ -70,21 +91,18 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
 
   useProps(
     options,
-    {
-      onChange: htmlOnChange,
-      onClick: htmlOnClick,
-      onFocus: htmlOnFocus,
-      ...htmlProps
-    }
+    { ref: htmlRef, onChange: htmlOnChange, onClick: htmlOnClick, ...htmlProps }
   ) {
+    const ref = React.useRef<HTMLElement>(null);
     const checked = getChecked(options);
+    const isCurrentItemRef = useLiveRef(options.currentId === options.id);
 
     useInitialChecked(options);
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent) => {
         htmlOnChange?.(event);
-        if (options.disabled) return;
+        if (options.disabled || event.defaultPrevented) return;
         options.setState?.(options.value);
       },
       [htmlOnChange, options.disabled, options.setState, options.value]
@@ -93,22 +111,26 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
     const onClick = React.useCallback(
       (event: React.MouseEvent) => {
         const self = event.currentTarget as HTMLElement;
-        if (self.tagName === "INPUT" || options.unstable_checkOnFocus) return;
-        onChange(event as any);
+        if (self.tagName === "INPUT") return;
+        dispatchChange(self, onChange);
       },
       [options.unstable_checkOnFocus, onChange]
     );
 
-    const onFocus = React.useCallback(
-      (event: React.FocusEvent) => {
-        if (options.unstable_checkOnFocus) {
-          onChange(event);
-        }
-      },
-      [options.unstable_checkOnFocus, onChange]
-    );
+    React.useEffect(() => {
+      const self = ref.current;
+      if (!self) return;
+      if (
+        options.unstable_moves &&
+        isCurrentItemRef.current &&
+        options.unstable_checkOnFocus
+      ) {
+        dispatchChange(self, onChange);
+      }
+    }, [options.unstable_moves, options.unstable_checkOnFocus, onChange]);
 
     return {
+      ref: useForkRef(ref, htmlRef),
       checked,
       "aria-checked": checked,
       value: options.value,
@@ -116,7 +138,6 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       type: "radio",
       onChange,
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       ...htmlProps
     };
   }

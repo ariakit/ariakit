@@ -6,7 +6,11 @@ const props: ToolbarProps = {
   "aria-label": "toolbar",
   baseId: "toolbar",
   currentId: null,
-  items: []
+  items: [],
+  setCurrentId: jest.fn(),
+  move: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn()
 };
 
 test("render", () => {
@@ -18,6 +22,7 @@ test("render", () => {
           aria-label="toolbar"
           id="toolbar"
           role="toolbar"
+          tabindex="0"
         >
           toolbar
         </div>
@@ -33,19 +38,20 @@ test("render orientation", () => {
     </Toolbar>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          aria-label="toolbar"
-          aria-orientation="horizontal"
-          id="toolbar"
-          role="toolbar"
-        >
-          toolbar
-        </div>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <div
+      aria-label="toolbar"
+      aria-orientation="horizontal"
+      id="toolbar"
+      role="toolbar"
+      tabindex="0"
+    >
+      toolbar
+    </div>
+  </div>
+</body>
+`);
 });
 
 test("render without state props", () => {

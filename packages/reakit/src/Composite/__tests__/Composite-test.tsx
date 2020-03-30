@@ -12,7 +12,11 @@ const props: unstable_CompositeProps = {
     { id: "2", ref: { current: null } },
     { id: "3", ref: { current: null } }
   ],
-  currentId: "2"
+  currentId: "2",
+  setCurrentId: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn(),
+  move: jest.fn()
 };
 
 test("render", () => {
@@ -28,9 +32,7 @@ test("render", () => {
 });
 
 test("render aria-activedescendant", () => {
-  const { container } = render(
-    <Composite {...props} unstable_focusStrategy="aria-activedescendant" />
-  );
+  const { container } = render(<Composite {...props} unstable_virtual />);
   expect(console).toHaveWarned();
   expect(container).toMatchInlineSnapshot(`
 <div>

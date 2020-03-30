@@ -10,12 +10,12 @@ import {
   MenuItem
 } from "..";
 
-const focusStrategies = ["roving-tabindex", "aria-activedescendant"] as const;
+[true, false].forEach(virtual => {
+  const strategy = virtual ? "aria-activedescendant" : "roving-tabindex";
 
-focusStrategies.forEach(unstable_focusStrategy => {
-  test(`${unstable_focusStrategy} composite with menu button controlling arrow keys`, async () => {
+  test(`${strategy} composite with menu button controlling arrow keys`, async () => {
     const Test = () => {
-      const composite = useCompositeState({ unstable_focusStrategy });
+      const composite = useCompositeState({ unstable_virtual: virtual });
       const menu = useMenuState({ placement: "right-start" });
       return (
         <Composite {...composite} role="toolbar" aria-label="composite">
@@ -57,9 +57,9 @@ focusStrategies.forEach(unstable_focusStrategy => {
     expect(get("menuitem1")).toHaveFocus();
   });
 
-  test(`${unstable_focusStrategy} composite with menu button not controlling arrow keys`, async () => {
+  test(`${strategy} composite with menu button not controlling arrow keys`, async () => {
     const Test = () => {
-      const composite = useCompositeState({ unstable_focusStrategy });
+      const composite = useCompositeState({ unstable_virtual: virtual });
       const menu = useMenuState({ placement: "right-start" });
       return (
         <Composite {...composite} role="toolbar" aria-label="composite">

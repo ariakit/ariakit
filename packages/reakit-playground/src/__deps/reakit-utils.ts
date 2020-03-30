@@ -33,5 +33,6 @@ export default {
   "reakit-utils/getActiveElement": require("reakit-utils/getActiveElement"),
   "reakit-utils/cx": require("reakit-utils/cx"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
-  "reakit-utils/closest": require("reakit-utils/closest")
+  "reakit-utils/closest": require("reakit-utils/closest"),
+  "reakit-utils/applyState": require("reakit-utils/applyState")
 };

@@ -3,14 +3,17 @@ import { render } from "reakit-test-utils";
 import { MenuItem } from "../MenuItem";
 
 const props: Parameters<typeof MenuItem>[0] = {
-  stopId: "item",
-  stops: [],
+  id: "item",
+  items: [],
   currentId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
+  registerItem: jest.fn(),
+  unregisterItem: jest.fn(),
+  setCurrentId: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
+  up: jest.fn(),
+  down: jest.fn(),
   first: jest.fn(),
   last: jest.fn()
 };

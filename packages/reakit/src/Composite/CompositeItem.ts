@@ -9,6 +9,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { getDocument } from "reakit-utils/getDocument";
 import { isTextField } from "reakit-utils/isTextField";
 import { scrollIntoViewIfNeeded } from "reakit-utils/scrollIntoViewIfNeeded";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -24,15 +25,16 @@ import {
   unstable_useCompositeState
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
+import { getCurrentId } from "./__utils/getCurrentId";
 
 export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
+    | "unstable_virtual"
     | "baseId"
     | "orientation"
     | "unstable_moves"
-    | "unstable_focusStrategy"
     | "unstable_hasActiveWidget"
   > &
   Pick<
@@ -42,7 +44,6 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "registerItem"
     | "unregisterItem"
     | "setCurrentId"
-    | "move"
     | "next"
     | "previous"
     | "up"
@@ -87,8 +88,15 @@ export const unstable_useCompositeItem = createHook<
   keys: ["stopId"],
 
   useOptions(options) {
+    warning(
+      !!options.stopId,
+      "[reakit]",
+      "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
+    );
     return {
       ...options,
+      id: options.stopId || options.id,
+      currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
         : options.unstable_clickOnSpace
@@ -107,27 +115,22 @@ export const unstable_useCompositeItem = createHook<
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = options.stopId || options.id || htmlProps.id;
+    const { id } = options;
     const trulyDisabled = options.disabled && !options.focusable;
     const isCurrentItem = options.currentId === id;
+    const isCurrentItemRef = useLiveRef(isCurrentItem);
     const item = options.items?.find(i => i.id === id);
-    const isVirtualFocus =
-      options.unstable_focusStrategy === "aria-activedescendant";
     const shouldTabIndex =
-      (!isVirtualFocus && !options.unstable_hasActiveWidget && isCurrentItem) ||
+      (!options.unstable_virtual &&
+        !options.unstable_hasActiveWidget &&
+        isCurrentItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
       !options.items;
 
-    warning(
-      !!options.stopId,
-      "[reakit]",
-      "The `stopId` prop has been deprecated. Please, use the `id` prop instead."
-    );
-
     React.useEffect(() => {
       if (!id) return undefined;
-      options.registerItem?.({ id, ref, disabled: Boolean(trulyDisabled) });
+      options.registerItem?.({ id, ref, disabled: !!trulyDisabled });
       return () => {
         options.unregisterItem?.(id);
       };
@@ -146,33 +149,34 @@ export const unstable_useCompositeItem = createHook<
       }
       // `moves` will be incremented whenever next, previous, up, down, first,
       // last or move have been called. This means that the composite item will
-      // be focused whenever some of these functions are called. Unless it has
-      // already focus, in which case we don't want to focus it again.
-      if (options.unstable_moves && isCurrentItem && !hasFocusWithin(self)) {
+      // be focused whenever some of these functions are called. We're using
+      // isCurrentItemRef instead of isCurrentItem because we don't want to
+      // focus the item if isCurrentItem changes (and options.moves doesn't).
+      if (options.unstable_moves && isCurrentItemRef.current) {
         self.focus({ preventScroll: true });
         scrollIntoViewIfNeeded(self);
       }
-    }, [options.unstable_moves, isCurrentItem]);
+    }, [options.unstable_moves]);
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         const { target, currentTarget } = event;
         if (!id || !currentTarget.contains(target)) return;
-        if (isVirtualFocus) {
-          options.setCurrentId?.(id);
-        } else {
-          options.move?.(id);
-        }
+        options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (isVirtualFocus && currentTarget === target && options.baseId) {
+        if (
+          options.unstable_virtual &&
+          currentTarget === target &&
+          options.baseId
+        ) {
           const composite = getDocument(target).getElementById(options.baseId);
           composite?.focus();
         }
       },
-      [id, isVirtualFocus, options.setCurrentId, options.move, options.baseId]
+      [id, options.setCurrentId, options.unstable_virtual, options.baseId]
     );
 
     const onKeyDown = React.useMemo(
@@ -188,36 +192,21 @@ export const unstable_useCompositeItem = createHook<
             // both `isVertical` and `isHorizontal` will be `true`.
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
-            const isGrid = Boolean(item?.groupId);
-
-            const ArrowUp =
-              (isGrid || isVertical) &&
-              (() => (isGrid ? options.up?.() : options.previous?.()));
-
-            const ArrowRight =
-              (isGrid || isHorizontal) && (() => options.next?.());
-
-            const ArrowDown =
-              (isGrid || isVertical) &&
-              (() => (isGrid ? options.down?.() : options.next?.()));
-
-            const ArrowLeft =
-              (isGrid || isHorizontal) && (() => options.previous?.());
-
+            const isGrid = !!item?.groupId;
             const Delete = (event: React.KeyboardEvent) => {
               const widget = getWidget(event.currentTarget);
               if (widget && isTextField(widget)) {
                 setTextFieldValue(widget, "");
               }
             };
-
             return {
               Delete,
               Backspace: Delete,
-              ArrowUp,
-              ArrowRight,
-              ArrowDown,
-              ArrowLeft,
+              ArrowUp: (isGrid || isVertical) && (() => options.up?.()),
+              ArrowRight: (isGrid || isHorizontal) && (() => options.next?.()),
+              ArrowDown: (isGrid || isVertical) && (() => options.down?.()),
+              ArrowLeft:
+                (isGrid || isHorizontal) && (() => options.previous?.()),
               Home: event => {
                 if (!isGrid || event.ctrlKey) {
                   options.first?.();
@@ -298,7 +287,8 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id,
-      "aria-selected": isVirtualFocus && isCurrentItem ? true : undefined,
+      "aria-selected":
+        options.unstable_virtual && isCurrentItem ? true : undefined,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),

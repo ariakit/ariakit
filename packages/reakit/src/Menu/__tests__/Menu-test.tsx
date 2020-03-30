@@ -11,13 +11,16 @@ function createRef(id: string) {
 
 const props: Parameters<typeof Menu>[0] = {
   baseId: "base",
-  stops: [
+  items: [
     { id: "a", ref: createRef("a") },
     { id: "b", ref: createRef("b") }
   ],
+  setCurrentId: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn(),
   placement: "bottom-start",
   "aria-label": "menu"
 };

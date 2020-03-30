@@ -27,19 +27,19 @@ test("initial state", () => {
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "baseId": "base",
-      "currentId": null,
-      "focusWrap": false,
+      "currentId": undefined,
       "groups": Array [],
       "items": Array [],
       "loop": false,
       "orientation": undefined,
       "rtl": false,
-      "unstable_focusStrategy": "roving-tabindex",
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
       "unstable_moves": 0,
+      "unstable_virtual": false,
+      "wrap": false,
     }
   `);
 });
@@ -73,40 +73,40 @@ test("setLoop", () => {
 
 test("setWrap", () => {
   const result = render();
-  expect(result.current.focusWrap).not.toBe(true);
-  act(() => result.current.setFocusWrap(true));
-  expect(result.current.focusWrap).toBe(true);
+  expect(result.current.wrap).not.toBe(true);
+  act(() => result.current.setWrap(true));
+  expect(result.current.wrap).toBe(true);
 });
 
 test("registerItem", () => {
   const result = render();
   act(() => result.current.registerItem({ id: "1", ref: createRef() }));
   expect(result.current).toMatchInlineSnapshot(`
+Object {
+  "baseId": "base",
+  "currentId": "1",
+  "groups": Array [],
+  "items": Array [
     Object {
-      "baseId": "base",
-      "currentId": "1",
-      "focusWrap": false,
-      "groups": Array [],
-      "items": Array [
-        Object {
-          "groupId": undefined,
-          "id": "1",
-          "ref": Object {
-            "current": <div />,
-          },
-        },
-      ],
-      "loop": false,
-      "orientation": undefined,
-      "rtl": false,
-      "unstable_focusStrategy": "roving-tabindex",
-      "unstable_hasActiveWidget": false,
-      "unstable_idCountRef": Object {
-        "current": 0,
+      "groupId": undefined,
+      "id": "1",
+      "ref": Object {
+        "current": <div />,
       },
-      "unstable_moves": 0,
-    }
-  `);
+    },
+  ],
+  "loop": false,
+  "orientation": undefined,
+  "rtl": false,
+  "unstable_hasActiveWidget": false,
+  "unstable_idCountRef": Object {
+    "current": 0,
+  },
+  "unstable_moves": 0,
+  "unstable_virtual": false,
+  "wrap": false,
+}
+`);
 });
 
 test("unregisterItem", () => {
@@ -115,29 +115,29 @@ test("unregisterItem", () => {
   act(() => result.current.registerItem({ id: "2", ref: createRef() }));
   act(() => result.current.unregisterItem("1"));
   expect(result.current).toMatchInlineSnapshot(`
+Object {
+  "baseId": "base",
+  "currentId": "2",
+  "groups": Array [],
+  "items": Array [
     Object {
-      "baseId": "base",
-      "currentId": "2",
-      "focusWrap": false,
-      "groups": Array [],
-      "items": Array [
-        Object {
-          "groupId": undefined,
-          "id": "2",
-          "ref": Object {
-            "current": <div />,
-          },
-        },
-      ],
-      "loop": false,
-      "orientation": undefined,
-      "rtl": false,
-      "unstable_focusStrategy": "roving-tabindex",
-      "unstable_hasActiveWidget": false,
-      "unstable_idCountRef": Object {
-        "current": 0,
+      "groupId": undefined,
+      "id": "2",
+      "ref": Object {
+        "current": <div />,
       },
-      "unstable_moves": 0,
-    }
-  `);
+    },
+  ],
+  "loop": false,
+  "orientation": undefined,
+  "rtl": false,
+  "unstable_hasActiveWidget": false,
+  "unstable_idCountRef": Object {
+    "current": 0,
+  },
+  "unstable_moves": 0,
+  "unstable_virtual": false,
+  "wrap": false,
+}
+`);
 });

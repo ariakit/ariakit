@@ -117,54 +117,81 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   ID that will serve as a base for all the items IDs.
 
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
 - **`rtl`**
   <code>boolean</code>
 
-  Determines how `next` and `previous` will behave. If `rtl` is set to `true`,
-then `next` will move focus to the previous item in the DOM.
+  Determines how `next` and `previous` functions will behave. If `rtl` is
+set to `true`, they will be inverted. You still need to set `dir="rtl"` on
+HTML/CSS.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the composite widget.
-
-  When the composite widget has multiple groups (two-dimensional) and `wrap`
-is `true`, the navigation will wrap based on the value of `orientation`:
-  - `undefined`: wraps in both directions.
-  - `horizontal`: wraps horizontally only.
-  - `vertical`: wraps vertically only.
-
-  If the composite widget has a single row or column (one-dimensional), the
-`orientation` value determines which arrow keys can be used to move focus:
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
   - `undefined`: all arrow keys work.
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-- **`currentId`**
-  <code>string | null</code>
+  It doesn't have any effect on two-dimensional composites.
 
-  The current focused item ID.
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
 
 - **`loop`**
-  <code>boolean</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
 
-  If enabled, moving to the next item from the last one will focus the first
-item and vice-versa. It doesn't work if the composite widget has multiple
-groups (two-dimensional).
+  On one-dimensional composites:
+  - `true` loops from the last item to the first item and vice-versa.
+  - `horizontal` loops only if `orientation` is `horizontal` or not set.
+  - `vertical` loops only if `orientation` is `vertical` or not set.
+  - If `currentId` is initially set to `null`, the composite element will
+be focused in between the last and first items.
 
-- **`focusWrap`**
-  <code>boolean</code>
+  On two-dimensional composites:
+  - `true` loops from the last row/column item to the first item in the
+same row/column and vice-versa. If it's the last item in the last row, it
+moves to the first item in the first row and vice-versa.
+  - `horizontal` loops only from the last row item to the first item in
+the same row.
+  - `vertical` loops only from the last column item to the first item in
+the column row.
+  - If `currentId` is initially set to `null`, vertical loop will have no
+effect as moving down from the last row or up from the first row will
+focus the composite element.
+  - If `wrap` matches the value of `loop`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`wrap`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
 
   If enabled, moving to the next item from the last one in a row or column
 will focus the first item in the next row or column and vice-versa.
-Depending on the value of the `orientation` state, it'll wrap in only one
-direction:
-  - If `orientation` is `undefined`, it wraps in both directions.
-  - If `orientation` is `horizontal`, it wraps horizontally only.
-  - If `orientation` is `vertical`, it wraps vertically only.
-
-  `focusWrap` only works if the composite widget has multiple groups
-(two-dimensional).
+  - `true` wraps between rows and columns.
+  - `horizontal` wraps only between rows.
+  - `vertical` wraps only between columns.
+  - If `loop` matches the value of `wrap`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
 
 ### `Toolbar`
 
@@ -185,7 +212,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-<details><summary>4 state props</summary>
+<details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -194,32 +221,89 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
-- **`currentId`**
-  <code>string | null</code>
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
 
-  The current focused item ID.
-
-- **`items`**
-  <code>Item[]</code>
-
-  Lists all the composite items.
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the composite widget.
-
-  When the composite widget has multiple groups (two-dimensional) and `wrap`
-is `true`, the navigation will wrap based on the value of `orientation`:
-  - `undefined`: wraps in both directions.
-  - `horizontal`: wraps horizontally only.
-  - `vertical`: wraps vertically only.
-
-  If the composite widget has a single row or column (one-dimensional), the
-`orientation` value determines which arrow keys can be used to move focus:
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
   - `undefined`: all arrow keys work.
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`wrap`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+
+  If enabled, moving to the next item from the last one in a row or column
+will focus the first item in the next row or column and vice-versa.
+  - `true` wraps between rows and columns.
+  - `horizontal` wraps only between rows.
+  - `vertical` wraps only between columns.
+  - If `loop` matches the value of `wrap`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`groups`**
+  <code>Group[]</code>
+
+  Lists all the composite groups with their `id` and DOM `ref`. This state
+is automatically updated when `registerGroup` and `unregisterGroup` are
+called.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 </details>
 
@@ -242,7 +326,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-<details><summary>14 state props</summary>
+<details><summary>15 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -251,32 +335,65 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the composite widget.
-
-  When the composite widget has multiple groups (two-dimensional) and `wrap`
-is `true`, the navigation will wrap based on the value of `orientation`:
-  - `undefined`: wraps in both directions.
-  - `horizontal`: wraps horizontally only.
-  - `vertical`: wraps vertically only.
-
-  If the composite widget has a single row or column (one-dimensional), the
-`orientation` value determines which arrow keys can be used to move focus:
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
   - `undefined`: all arrow keys work.
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-- **`currentId`**
-  <code>string | null</code>
+  It doesn't have any effect on two-dimensional composites.
 
-  The current focused item ID.
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
 
 - **`items`**
   <code>Item[]</code>
 
-  Lists all the composite items.
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 - **`registerItem`**
   <code>(item: Item) =&#62; void</code>
@@ -287,11 +404,6 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   <code>(id: string) =&#62; void</code>
 
   Unregisters a composite item.
-
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
-
-  Moves focus to a given item ID.
 
 - **`next`**
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
@@ -312,21 +424,6 @@ is `true`, the navigation will wrap based on the value of `orientation`:
   <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
   Moves focus to the item below.
-
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
-- **`setCurrentId`**
-  <code>(value: SetStateAction&#60;string | null&#62;) =&#62; void</code>
-
-  Sets `currentId`.
 
 </details>
 

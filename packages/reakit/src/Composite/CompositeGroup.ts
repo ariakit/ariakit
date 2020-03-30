@@ -34,7 +34,7 @@ export const unstable_useCompositeGroup = createHook<
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
-    const id = options.id || htmlProps.id;
+    const { id } = options;
 
     // We need this to be called before CompositeItems' register
     useIsomorphicEffect(() => {

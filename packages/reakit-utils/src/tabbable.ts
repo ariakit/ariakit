@@ -18,7 +18,7 @@ function isVisible(element: Element) {
 }
 
 function hasNegativeTabIndex(element: Element) {
-  const tabIndex = parseInt(element.getAttribute("tabIndex") || "0", 10);
+  const tabIndex = parseInt(element.getAttribute("tabindex") || "0", 10);
   return tabIndex < 0;
 }
 

@@ -12,20 +12,18 @@ import {
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 
 export type unstable_CompositeItemWidgetOptions = BoxOptions &
+  Pick<Partial<unstable_CompositeStateReturn>, "wrap"> &
   Pick<
     unstable_CompositeStateReturn,
     "unstable_hasActiveWidget" | "unstable_setHasActiveWidget" | "currentId"
   >;
 
-export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps & {
-  wrap?: unknown;
-  rows?: unknown;
-};
+export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps;
 
 export type unstable_CompositeItemWidgetProps = unstable_CompositeItemWidgetOptions &
   unstable_CompositeItemWidgetHTMLProps;
 
-function focusCurrentItem(widget: Element, currentId: string | null) {
+function focusCurrentItem(widget: Element, currentId?: string | null) {
   if (currentId) {
     getDocument(widget)
       .getElementById(currentId)

@@ -43,7 +43,7 @@ function getTabsWithoutPanel(
   panels: TabPanelOptions["panels"]
 ) {
   const panelsTabIds = panels.map(panel => panel.groupId).filter(Boolean);
-  return tabs.filter(item => panelsTabIds.indexOf(item.id) === -1);
+  return tabs.filter(item => panelsTabIds.indexOf(item.id || undefined) === -1);
 }
 
 function getPanelIndex(
@@ -78,7 +78,7 @@ function getTabId(options: TabPanelOptions) {
   }
   const panelIndex = getPanelIndex(options.panels, panel);
   const tabsWithoutPanel = getTabsWithoutPanel(options.items, options.panels);
-  return tabsWithoutPanel[panelIndex].id;
+  return tabsWithoutPanel[panelIndex].id || undefined;
 }
 
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({

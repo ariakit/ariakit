@@ -25,6 +25,18 @@ function dialogContains(target: Element) {
   };
 }
 
+function isDisclosure(target: Element) {
+  return (disclosure: HTMLElement) => {
+    if (disclosure.contains(target)) {
+      return true;
+    }
+    return (
+      disclosure.id &&
+      disclosure.id === target.getAttribute("aria-activedescendant")
+    );
+  };
+}
+
 export function useEventListenerOutside(
   containerRef: React.RefObject<HTMLElement>,
   disclosuresRef: React.RefObject<HTMLElement[]>,
@@ -59,10 +71,7 @@ export function useEventListenerOutside(
       if (container.contains(target)) return;
 
       // Click on disclosure
-      if (
-        disclosures.length &&
-        disclosures.some(disclosure => disclosure.contains(target))
-      ) {
+      if (disclosures.length && disclosures.some(isDisclosure(target))) {
         return;
       }
 
@@ -74,8 +83,8 @@ export function useEventListenerOutside(
       listenerRef.current(event);
     };
 
+    const document = getDocument(containerRef.current);
     document.addEventListener(eventType, handleEvent, true);
-
     return () => {
       document.removeEventListener(eventType, handleEvent, true);
     };

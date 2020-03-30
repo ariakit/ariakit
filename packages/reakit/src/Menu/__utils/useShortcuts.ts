@@ -4,7 +4,7 @@ import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(
   menuRef: React.RefObject<HTMLElement>,
-  { stops, move }: Pick<MenuStateReturn, "stops" | "move">,
+  { items, move }: Pick<MenuStateReturn, "items" | "move">,
   timeout = 500
 ) {
   const [keys, setKeys] = React.useState("");
@@ -14,7 +14,7 @@ export function useShortcuts(
 
     const timeoutId = setTimeout(() => setKeys(""), timeout);
 
-    const stop = stops.find(s =>
+    const stop = items.find(s =>
       Boolean(
         s.ref.current &&
           s.ref.current.textContent &&
@@ -27,7 +27,7 @@ export function useShortcuts(
     }
 
     return () => clearTimeout(timeoutId);
-  }, [keys, stops, move, timeout]);
+  }, [keys, items, move, timeout]);
 
   React.useEffect(() => {
     const menu = menuRef.current;
