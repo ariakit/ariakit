@@ -17,7 +17,7 @@ export function useFocusOnShow(
     const dialog = dialogRef.current;
 
     warning(
-      Boolean(shouldFocus && !dialog),
+      !!shouldFocus && !dialog,
       "[reakit/Dialog]",
       "Can't set initial focus on dialog because `ref` wasn't passed to component.",
       "See https://reakit.io/docs/dialog"
@@ -27,14 +27,12 @@ export function useFocusOnShow(
     if (
       !shouldFocus ||
       !dialog ||
-      nestedDialogs.find(child =>
-        Boolean(child.current && !child.current.hidden)
-      )
+      nestedDialogs.some(child => !child.current?.hidden)
     ) {
       return;
     }
 
-    if (initialFocusRef && initialFocusRef.current) {
+    if (initialFocusRef?.current) {
       initialFocusRef.current.focus({ preventScroll: true });
     } else {
       const tabbable = getFirstTabbableIn(dialog, true);

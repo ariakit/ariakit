@@ -37,9 +37,7 @@ export function useFocusOnHide(
     }
 
     const finalFocusEl =
-      (options.unstable_finalFocusRef &&
-        options.unstable_finalFocusRef.current) ||
-      (disclosuresRef.current && disclosuresRef.current[0]);
+      options.unstable_finalFocusRef?.current || disclosuresRef.current?.[0];
 
     if (finalFocusEl) {
       ensureFocus(finalFocusEl);

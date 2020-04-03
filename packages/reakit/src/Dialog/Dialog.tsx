@@ -137,10 +137,14 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const dialog = React.useRef<HTMLElement>(null);
     const backdrop = React.useContext(DialogBackdropContext);
     const disclosures = useDisclosuresRef(dialog, options);
-    const { dialogs, wrap } = useNestedDialogs(dialog, options);
+    const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
+    // VoiceOver/Safari accepts only one `aria-modal` container, so if there
+    // are visible child modals, then we don't want to set aria-modal on the
+    // parent modal (this component).
+    const modal = options.modal && !visibleModals.length ? true : undefined;
 
     usePreventBodyScroll(dialog, options);
-    useFocusTrap(dialog, dialogs, options);
+    useFocusTrap(dialog, visibleModals, options);
     useFocusOnShow(dialog, dialogs, options);
     useFocusOnHide(dialog, disclosures, options);
     useHideOnClickOutside(dialog, disclosures, dialogs, options);
@@ -181,7 +185,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       tabIndex: -1,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       wrapElement: usePipe(wrapElement, htmlWrapElement),
-      "aria-modal": options.modal ? true : undefined,
+      "aria-modal": modal,
       "data-dialog": true,
       ...htmlProps
     };
