@@ -449,6 +449,113 @@ function template(value: string) {
       expect(key("^^")).toBe(template("0--"));
     });
 
+    test("block intermediate focus/blur events", () => {
+      const stack: string[] = [];
+      const returnTarget = (event: React.SyntheticEvent) => {
+        const target = event.target as HTMLElement;
+        const currentTarget = event.currentTarget as HTMLElement;
+        stack.push(
+          `${event.type} ${currentTarget.getAttribute(
+            "aria-label"
+          )} ${target.getAttribute("aria-label")}`
+        );
+      };
+      const onCompositeFocus = jest.fn(returnTarget);
+      const onCompositeBlur = jest.fn(returnTarget);
+      const onItemFocus = jest.fn(returnTarget);
+      const onItemBlur = jest.fn(returnTarget);
+      const Test = () => {
+        const composite = useCompositeState({
+          currentId: null,
+          unstable_virtual: virtual
+        });
+        return (
+          <Composite
+            {...composite}
+            role="toolbar"
+            aria-label="composite"
+            onFocus={onCompositeFocus}
+            onBlur={onCompositeBlur}
+          >
+            <CompositeItem
+              {...composite}
+              aria-label="item1"
+              onFocus={onItemFocus}
+              onBlur={onItemBlur}
+            />
+            <CompositeItem
+              {...composite}
+              aria-label="item2"
+              onFocus={onItemFocus}
+              onBlur={onItemBlur}
+            />
+            <CompositeItem
+              {...composite}
+              aria-label="item3"
+              onFocus={onItemFocus}
+              onBlur={onItemBlur}
+            />
+          </Composite>
+        );
+      };
+      const { getByLabelText: $, baseElement } = render(<Test />);
+      press.Tab();
+      expect(stack.splice(0)).toEqual(["focus composite composite"]);
+      press.ArrowDown();
+      if (virtual) {
+        expect(stack.splice(0)).toEqual([
+          "focus item1 item1",
+          "focus composite item1"
+        ]);
+      } else {
+        expect(stack.splice(0)).toEqual([
+          "blur composite composite",
+          "focus item1 item1",
+          "focus composite item1"
+        ]);
+      }
+      press.ArrowDown();
+      expect(stack.splice(0)).toEqual([
+        "blur item1 item1",
+        "blur composite item1",
+        "focus item2 item2",
+        "focus composite item2"
+      ]);
+      click($("item3"));
+      expect(stack.splice(0)).toEqual([
+        "blur item2 item2",
+        "blur composite item2",
+        "focus item3 item3",
+        "focus composite item3"
+      ]);
+      click(baseElement);
+      if (virtual) {
+        expect(stack.splice(0)).toEqual([
+          "blur item3 item3",
+          "blur composite item3",
+          "blur composite composite"
+        ]);
+      } else {
+        expect(stack.splice(0)).toEqual([
+          "blur item3 item3",
+          "blur composite item3"
+        ]);
+      }
+      press.Tab();
+      if (virtual) {
+        expect(stack.splice(0)).toEqual([
+          "focus composite composite",
+          "focus item3 item3",
+          "focus composite item3"
+        ]);
+      } else {
+        expect(stack.splice(0)).toEqual([
+          "focus item3 item3",
+          "focus composite item3"
+        ]);
+      }
+    });
+
     test("keep DOM order", () => {
       const Test = ({ renderItem2 = false }) => {
         const composite = useCompositeState({ unstable_virtual: virtual });
@@ -2530,4 +2637,75 @@ function template(value: string) {
       expect($("composite")).toHaveFocus();
     });
   });
+});
+
+test("block intermediate focus/blur events when composite container is not the parent", () => {
+  const stack: string[] = [];
+  const returnTarget = (event: React.SyntheticEvent) => {
+    const target = event.target as HTMLElement;
+    const currentTarget = event.currentTarget as HTMLElement;
+    stack.push(
+      `${event.type} ${currentTarget.getAttribute(
+        "aria-label"
+      )} ${target.getAttribute("aria-label")}`
+    );
+  };
+  const onCompositeFocus = jest.fn(returnTarget);
+  const onCompositeBlur = jest.fn(returnTarget);
+  const onItemFocus = jest.fn(returnTarget);
+  const onItemBlur = jest.fn(returnTarget);
+  const Test = () => {
+    const composite = useCompositeState({ unstable_virtual: true });
+    return (
+      <>
+        <Composite
+          {...composite}
+          role="combobox"
+          aria-label="composite"
+          onFocus={onCompositeFocus}
+          onBlur={onCompositeBlur}
+        />
+        <>
+          <CompositeItem
+            {...composite}
+            aria-label="item1"
+            onFocus={onItemFocus}
+            onBlur={onItemBlur}
+          />
+          <CompositeItem
+            {...composite}
+            aria-label="item2"
+            onFocus={onItemFocus}
+            onBlur={onItemBlur}
+          />
+          <CompositeItem
+            {...composite}
+            aria-label="item3"
+            onFocus={onItemFocus}
+            onBlur={onItemBlur}
+          />
+        </>
+      </>
+    );
+  };
+  const { getByLabelText: $, baseElement } = render(<Test />);
+  press.Tab();
+  expect(stack.splice(0)).toEqual([
+    "focus composite composite",
+    "focus item1 item1"
+  ]);
+  press.ArrowDown();
+  expect(stack.splice(0)).toEqual(["blur item1 item1", "focus item2 item2"]);
+  click($("item3"));
+  expect(stack.splice(0)).toEqual(["blur item2 item2", "focus item3 item3"]);
+  click(baseElement);
+  expect(stack.splice(0)).toEqual([
+    "blur item3 item3",
+    "blur composite composite"
+  ]);
+  press.Tab();
+  expect(stack.splice(0)).toEqual([
+    "focus composite composite",
+    "focus item3 item3"
+  ]);
 });

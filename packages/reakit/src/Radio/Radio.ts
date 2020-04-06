@@ -4,6 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useForkRef } from "reakit-utils/useForkRef";
+import { createEvent } from "reakit-utils/createEvent";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
@@ -51,17 +52,8 @@ function useInitialChecked(options: RadioOptions) {
   }, [initialChecked, id, setCurrentId, initialCurrentId]);
 }
 
-function dispatchChange(
-  element: HTMLElement,
-  onChange?: React.ChangeEventHandler,
-  originalEvent?: React.SyntheticEvent
-) {
-  const event =
-    originalEvent ||
-    new Event("change", {
-      bubbles: true,
-      cancelable: false
-    });
+function fireChange(element: HTMLElement, onChange?: React.ChangeEventHandler) {
+  const event = createEvent(element, "change");
   Object.defineProperties(event, {
     type: { value: "change" },
     target: { value: element },
@@ -112,7 +104,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       (event: React.MouseEvent) => {
         const self = event.currentTarget as HTMLElement;
         if (self.tagName === "INPUT") return;
-        dispatchChange(self, onChange);
+        fireChange(self, onChange);
       },
       [options.unstable_checkOnFocus, onChange]
     );
@@ -125,7 +117,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
         isCurrentItemRef.current &&
         options.unstable_checkOnFocus
       ) {
-        dispatchChange(self, onChange);
+        fireChange(self, onChange);
       }
     }, [options.unstable_moves, options.unstable_checkOnFocus, onChange]);
 

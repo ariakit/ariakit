@@ -15,7 +15,6 @@
 /toArray
 /tabbable
 /splitProps
-/scrollIntoViewIfNeeded
 /removeItemFromArray
 /removeIndexFromArray
 /pick
@@ -30,9 +29,14 @@
 /isButton
 /hasFocusWithin
 /getDocument
+/getDefaultView
 /getActiveElement
 /flatten
+/fireKeyboardEvent
+/fireEvent
 /cx
 /createOnKeyDown
+/createKeyboardEvent
+/createEvent
 /closest
 /applyState
