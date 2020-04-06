@@ -95,9 +95,6 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
         for (const hook of composedHooks) {
           htmlProps = hook(hookOptions, htmlProps, true);
         }
-        // composedHooks.forEach(hook => {
-        //   htmlProps = hook(hookOptions, htmlProps, true);
-        // });
       }
     }
     return htmlProps || ({} as P);
