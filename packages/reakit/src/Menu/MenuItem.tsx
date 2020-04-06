@@ -27,36 +27,39 @@ function isExpandedDisclosure(element: HTMLElement) {
   );
 }
 
-function getRelatedElement(event: React.MouseEvent) {
+function getMouseDestination(event: React.MouseEvent) {
   if (event.relatedTarget instanceof Element) {
     return event.relatedTarget;
+  }
+  if ("toElement" in event) {
+    return (event as any).toElement;
   }
   return null;
 }
 
 function hoveringInside(event: React.MouseEvent) {
   const self = event.currentTarget as HTMLElement;
-  const relatedElement = getRelatedElement(event);
-  if (!relatedElement) return false;
-  return self.contains(relatedElement);
+  const nextElement = getMouseDestination(event);
+  if (!nextElement) return false;
+  return self.contains(nextElement);
 }
 
 function hoveringExpandedMenu(event: React.MouseEvent) {
   const self = event.currentTarget as HTMLElement;
-  const relatedElement = getRelatedElement(event);
-  if (!relatedElement) return false;
+  const nextElement = getMouseDestination(event);
+  if (!nextElement) return false;
   const document = getDocument(self);
   if (!isExpandedDisclosure(self)) return false;
   const menuId = self.getAttribute("aria-controls");
   const menu = document.getElementById(menuId!);
-  return menu?.contains(relatedElement);
+  return menu?.contains(nextElement);
 }
 
 function hoveringAnotherMenuItem(
   event: React.MouseEvent,
   items: MenuItemOptions["items"]
 ) {
-  return items?.some(item => item.ref.current === event.relatedTarget);
+  return items?.some(item => item.ref.current === getMouseDestination(event));
 }
 
 export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
@@ -94,9 +97,6 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
         if (hoveringExpandedMenu(event)) return;
         // On menu bars, hovering out of disclosure doesn't blur it.
         if (isExpandedDisclosure(self) && menuRole === "menubar") return;
-
-        // Blur items on mouse out
-        self.blur();
 
         // Move focus to menu after blurring
         if (

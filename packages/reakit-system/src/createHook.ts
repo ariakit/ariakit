@@ -92,12 +92,15 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       if (options.useComposeProps) {
         htmlProps = options.useComposeProps(hookOptions, htmlProps);
       } else {
-        composedHooks.forEach(hook => {
+        for (const hook of composedHooks) {
           htmlProps = hook(hookOptions, htmlProps, true);
-        });
+        }
+        // composedHooks.forEach(hook => {
+        //   htmlProps = hook(hookOptions, htmlProps, true);
+        // });
       }
     }
-    return htmlProps;
+    return htmlProps || ({} as P);
   };
 
   if (process.env.NODE_ENV !== "production" && options.name) {
@@ -118,10 +121,9 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     ...(options.keys || [])
   ];
 
-  const hasPropsAreEqual = Boolean(
-    options.propsAreEqual ||
-      composedHooks.find(hook => Boolean(hook.__propsAreEqual))
-  );
+  const hasPropsAreEqual =
+    !!options.propsAreEqual ||
+    composedHooks.some(hook => !!hook.__propsAreEqual);
 
   if (hasPropsAreEqual) {
     useHook.__propsAreEqual = (prev, next) => {

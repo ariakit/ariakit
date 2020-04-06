@@ -139,6 +139,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       onClick,
       onMouseDown,
       style,
+      // TODO: Get rid of most code like this, with many "..."
       ...(trulyDisabled && nativeTabbable ? { disabled: true } : {}),
       ...(options.disabled ? { "aria-disabled": true } : {}),
       ...(trulyDisabled ? {} : { tabIndex }),

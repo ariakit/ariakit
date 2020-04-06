@@ -26,10 +26,15 @@ yarn add reakit-utils
 
 -   [applyState](#applystate)
 -   [closest](#closest)
+-   [createEvent](#createevent)
+-   [createKeyboardEvent](#createkeyboardevent)
 -   [createOnKeyDown](#createonkeydown)
 -   [cx](#cx)
+-   [fireEvent](#fireevent)
+-   [fireKeyboardEvent](#firekeyboardevent)
 -   [flatten](#flatten)
 -   [getActiveElement](#getactiveelement)
+-   [getDefaultView](#getdefaultview)
 -   [getDocument](#getdocument)
 -   [hasFocusWithin](#hasfocuswithin)
 -   [isButton](#isbutton)
@@ -44,7 +49,6 @@ yarn add reakit-utils
 -   [pick](#pick)
 -   [removeIndexFromArray](#removeindexfromarray)
 -   [removeItemFromArray](#removeitemfromarray)
--   [scrollIntoViewIfNeeded](#scrollintoviewifneeded)
 -   [splitProps](#splitprops)
 -   [tabbable](#tabbable)
 -   [toArray](#toarray)
@@ -95,6 +99,48 @@ closest(document.getElementById("id"), "div");
 document.getElementById("id").closest("div");
 ```
 
+### createEvent
+
+Creates an `Event` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **EventInit**  (optional, default `{}`)
+
+#### Examples
+
+```javascript
+import { createEvent } from "reakit-utils";
+
+const el = document.getElementById("id");
+el.dispatchEvent(createEvent(el, "blur", { bubbles: false }));
+```
+
+Returns **[Event](https://developer.mozilla.org/docs/Web/API/Event)** 
+
+### createKeyboardEvent
+
+Creates a `KeyboardEvent` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **KeyboardEventInit**  (optional, default `{}`)
+
+#### Examples
+
+```javascript
+import { createKeyboardEvent } from "reakit-utils";
+
+const el = document.getElementById("id");
+el.dispatchEvent(createKeyboardEvent(el, "keydown", { key: "ArrowDown" }));
+```
+
+Returns **[KeyboardEvent](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)** 
+
 ### createOnKeyDown
 
 Returns an `onKeyDown` handler to be passed to a component.
@@ -129,6 +175,50 @@ const className = cx("a", "b", false, true && "c");
 
 Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
 
+### fireEvent
+
+Creates and dispatches `Event` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **EventInit** 
+
+#### Examples
+
+```javascript
+import { fireEvent } from "reakit-utils";
+
+fireEvent(
+  document.getElementById("id"),
+  "blur",
+  { bubbles: true, cancelable: true }
+);
+```
+
+### fireKeyboardEvent
+
+Creates and dispatches `KeyboardEvent` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **KeyboardEventInit** 
+
+#### Examples
+
+```javascript
+import { fireKeyboardEvent } from "reakit-utils";
+
+fireKeyboardEvent(
+  document.getElementById("id"),
+  "keydown",
+  { key: "ArrowDown", shiftKey: true }
+);
+```
+
 ### flatten
 
 Transforms an array with multiple levels into a flattened one.
@@ -153,6 +243,16 @@ Returns `element.ownerDocument.activeElement`.
 #### Parameters
 
 -   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
+
+### getDefaultView
+
+Returns `element.ownerDocument.defaultView || window`.
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)?** 
+
+Returns **[Window](https://developer.mozilla.org/docs/Web/API/Window)** 
 
 ### getDocument
 
@@ -381,25 +481,6 @@ removeItemFromArray([obj], obj); // []
 ```
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** A new array without the passed item.
-
-### scrollIntoViewIfNeeded
-
-Ponyfill for `Element.prototype.scrollIntoViewIfNeeded`
-
-#### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
--   `center` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** 
-
-#### Examples
-
-```javascript
-import { scrollIntoViewIfNeeded } from "reakit-utils";
-
-scrollIntoViewIfNeeded(document.getElementById("id"), true);
-// same as
-document.getElementById("id").scrollIntoViewIfNeeded(true);
-```
 
 ### splitProps
 

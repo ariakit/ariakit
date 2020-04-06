@@ -30,8 +30,8 @@ test("focus", async () => {
     Array [
       "focus button1",
       "focusin button1",
-      "blur button1",
       "focusout button1",
+      "blur button1",
       "focus button2",
       "focusin button2",
     ]

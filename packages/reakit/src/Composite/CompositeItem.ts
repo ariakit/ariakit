@@ -8,7 +8,6 @@ import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { getDocument } from "reakit-utils/getDocument";
 import { isTextField } from "reakit-utils/isTextField";
-import { scrollIntoViewIfNeeded } from "reakit-utils/scrollIntoViewIfNeeded";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   ClickableOptions,
@@ -104,6 +103,7 @@ export const unstable_useCompositeItem = createHook<
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
       onFocus: htmlOnFocus,
+      onBlur: htmlOnBlur,
       onKeyDown: htmlOnKeyDown,
       onClick: htmlOnClick,
       ...htmlProps
@@ -114,6 +114,7 @@ export const unstable_useCompositeItem = createHook<
     const trulyDisabled = options.disabled && !options.focusable;
     const isCurrentItem = options.currentId === id;
     const isCurrentItemRef = useLiveRef(isCurrentItem);
+    const hasFocusedComposite = React.useRef(false);
     const item = options.items?.find(i => i.id === id);
     const shouldTabIndex =
       (!options.unstable_virtual &&
@@ -153,8 +154,7 @@ export const unstable_useCompositeItem = createHook<
       // isCurrentItemRef instead of isCurrentItem because we don't want to
       // focus the item if isCurrentItem changes (and options.moves doesn't).
       if (options.unstable_moves && isCurrentItemRef.current) {
-        self.focus({ preventScroll: true });
-        scrollIntoViewIfNeeded(self);
+        self.focus();
       }
     }, [options.unstable_moves]);
 
@@ -167,16 +167,33 @@ export const unstable_useCompositeItem = createHook<
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (
-          options.unstable_virtual &&
-          currentTarget === target &&
-          options.baseId
-        ) {
+        const targetIsSelf = currentTarget === target;
+        if (targetIsSelf && options.unstable_virtual && options.baseId) {
           const composite = getDocument(target).getElementById(options.baseId);
-          composite?.focus();
+          if (composite) {
+            hasFocusedComposite.current = true;
+            composite.focus();
+          }
         }
       },
       [id, options.setCurrentId, options.unstable_virtual, options.baseId]
+    );
+
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        if (options.unstable_virtual) {
+          if (hasFocusedComposite.current) {
+            // When hasFocusedComposite is true, composite has been focused
+            // right after focusing this item. This is an intermediate blur
+            // event, so we ignore it.
+            hasFocusedComposite.current = false;
+            event.stopPropagation();
+            return;
+          }
+        }
+        htmlOnBlur?.(event);
+      },
+      [options.unstable_virtual, htmlOnBlur]
     );
 
     const onKeyDown = React.useMemo(
@@ -291,6 +308,7 @@ export const unstable_useCompositeItem = createHook<
         options.unstable_virtual && isCurrentItem ? true : undefined,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      onBlur,
       onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),
       onClick: useAllCallbacks(onClick, htmlOnClick),
       ...htmlProps

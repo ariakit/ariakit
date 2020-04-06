@@ -14,7 +14,6 @@ export default {
   "reakit-utils/toArray": require("reakit-utils/toArray"),
   "reakit-utils/tabbable": require("reakit-utils/tabbable"),
   "reakit-utils/splitProps": require("reakit-utils/splitProps"),
-  "reakit-utils/scrollIntoViewIfNeeded": require("reakit-utils/scrollIntoViewIfNeeded"),
   "reakit-utils/removeItemFromArray": require("reakit-utils/removeItemFromArray"),
   "reakit-utils/removeIndexFromArray": require("reakit-utils/removeIndexFromArray"),
   "reakit-utils/pick": require("reakit-utils/pick"),
@@ -29,10 +28,15 @@ export default {
   "reakit-utils/isButton": require("reakit-utils/isButton"),
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/getDocument": require("reakit-utils/getDocument"),
+  "reakit-utils/getDefaultView": require("reakit-utils/getDefaultView"),
   "reakit-utils/getActiveElement": require("reakit-utils/getActiveElement"),
   "reakit-utils/flatten": require("reakit-utils/flatten"),
+  "reakit-utils/fireKeyboardEvent": require("reakit-utils/fireKeyboardEvent"),
+  "reakit-utils/fireEvent": require("reakit-utils/fireEvent"),
   "reakit-utils/cx": require("reakit-utils/cx"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
+  "reakit-utils/createKeyboardEvent": require("reakit-utils/createKeyboardEvent"),
+  "reakit-utils/createEvent": require("reakit-utils/createEvent"),
   "reakit-utils/closest": require("reakit-utils/closest"),
   "reakit-utils/applyState": require("reakit-utils/applyState")
 };
