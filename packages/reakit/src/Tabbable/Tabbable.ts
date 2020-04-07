@@ -96,9 +96,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         if (options.disabled) {
           event.stopPropagation();
           event.preventDefault();
-        } else if (htmlOnClick) {
-          htmlOnClick(event);
+          return;
         }
+        htmlOnClick?.(event);
       },
       [options.disabled, htmlOnClick]
     );
@@ -111,13 +111,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           return;
         }
 
-        if (htmlOnMouseDown) {
-          htmlOnMouseDown(event);
-        }
-
-        if (event.defaultPrevented) {
-          return;
-        }
+        htmlOnMouseDown?.(event);
+        if (event.defaultPrevented) return;
 
         const self = event.currentTarget as HTMLElement;
         const target = event.target as HTMLElement;
@@ -125,7 +120,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
           event.preventDefault();
           const isFocusControl =
-            isFocusable(target) || target instanceof HTMLLabelElement;
+            isFocusable(target) || target.tagName === "LABEL";
           if (!hasFocusWithin(self) || self === target || !isFocusControl) {
             self.focus();
           }
@@ -136,13 +131,12 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
 
     return {
       ref: useForkRef(ref, htmlRef),
+      style,
       onClick,
       onMouseDown,
-      style,
-      // TODO: Get rid of most code like this, with many "..."
-      ...(trulyDisabled && nativeTabbable ? { disabled: true } : {}),
-      ...(options.disabled ? { "aria-disabled": true } : {}),
-      ...(trulyDisabled ? {} : { tabIndex }),
+      "aria-disabled": options.disabled ? true : undefined,
+      disabled: trulyDisabled && nativeTabbable ? true : undefined,
+      tabIndex: !trulyDisabled ? tabIndex : undefined,
       ...htmlProps,
     };
   },

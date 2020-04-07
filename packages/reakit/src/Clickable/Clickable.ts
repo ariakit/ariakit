@@ -56,9 +56,7 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
-        if (htmlOnKeyDown) {
-          htmlOnKeyDown(event);
-        }
+        htmlOnKeyDown?.(event);
 
         if (options.disabled || event.defaultPrevented || event.metaKey) {
           return;
@@ -87,9 +85,7 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
 
     const onKeyUp = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
-        if (htmlOnKeyUp) {
-          htmlOnKeyUp(event);
-        }
+        htmlOnKeyUp?.(event);
 
         if (options.disabled || event.defaultPrevented || event.metaKey) {
           return;
@@ -108,7 +104,7 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
     return {
       onKeyDown,
       onKeyUp,
-      ...(active ? { "data-active": active } : {}),
+      "data-active": active || undefined,
       ...htmlProps,
     };
   },
