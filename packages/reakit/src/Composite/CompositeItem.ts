@@ -68,15 +68,6 @@ function getWidget(item: Element) {
   return item.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
 
-function moveCaretToEnd(contentEditableElement: HTMLElement) {
-  const range = getDocument(contentEditableElement).createRange();
-  range.selectNodeContents(contentEditableElement);
-  range.collapse(false);
-  const selection = getSelection();
-  selection?.removeAllRanges();
-  selection?.addRange(range);
-}
-
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
@@ -280,9 +271,6 @@ export const unstable_useCompositeItem = createHook<
             // to the input when using roving tabindex
             window.requestAnimationFrame(() => {
               setTextFieldValue(widget, key);
-              if (widget.isContentEditable) {
-                moveCaretToEnd(widget);
-              }
             });
           }
         }
@@ -290,16 +278,23 @@ export const unstable_useCompositeItem = createHook<
       []
     );
 
-    // Make sure the widget is focused on enter, space or click
-    const onClick = React.useCallback((event: React.MouseEvent) => {
-      const widget = getWidget(event.currentTarget);
-      if (widget && !hasFocusWithin(widget)) {
-        widget.focus();
-        if (widget.isContentEditable) {
-          moveCaretToEnd(widget);
+    const onClick = React.useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        const self = event.currentTarget;
+        const selfIsTarget = self === event.target;
+        const widget = getWidget(self);
+        if (widget && !hasFocusWithin(widget)) {
+          // If there's a widget inside the composite item, we make sure it's
+          // focused when pressing enter, space or clicking on the composite item.
+          widget.focus();
+        } else if (selfIsTarget && !hasFocusWithin(self)) {
+          // VoiceOver doesn't automatically focus the composite item when it's not
+          // a button, so we force focus here.
+          self.focus();
         }
-      }
-    }, []);
+      },
+      []
+    );
 
     return {
       ref: useForkRef(ref, htmlRef),

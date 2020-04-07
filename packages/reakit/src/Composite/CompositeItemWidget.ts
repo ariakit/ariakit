@@ -30,9 +30,6 @@ function focusCurrentItem(widget: Element, currentId?: string | null) {
 }
 
 function getTextFieldValue(element: HTMLElement) {
-  if (element.isContentEditable) {
-    return element.innerHTML;
-  }
   return (element as HTMLInputElement).value;
 }
 
@@ -78,8 +75,7 @@ export const unstable_useCompositeItemWidget = createHook<
 
         if (event.key === "Enter") {
           if (isTextField(self)) {
-            const isMultilineTextField =
-              self.tagName === "TEXTAREA" || self.isContentEditable;
+            const isMultilineTextField = self.tagName === "TEXTAREA";
             // Make sure we can create new lines using Shift+Enter
             if (isMultilineTextField && event.shiftKey) return;
             // Make sure it'll not trigger a click on the parent button

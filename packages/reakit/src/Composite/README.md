@@ -94,32 +94,44 @@ import {
   unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
+function Grid(props) {
+  return <Composite role="grid" {...props} />;
+}
+
+function GridRow(props) {
+  return <CompositeGroup role="row" {...props} />;
+}
+
+function GridCell(props) {
+  return <CompositeItem as="div" role="gridcell" {...props} />;
+}
+
 function Example() {
   const composite = useCompositeState({ wrap: true });
   return (
-    <Composite {...composite} role="grid" aria-label="My grid">
-      <CompositeGroup {...composite}>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-      </CompositeGroup>
-      <CompositeGroup {...composite}>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-      </CompositeGroup>
-      <CompositeGroup {...composite}>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-        <CompositeItem {...composite}>Item</CompositeItem>
-      </CompositeGroup>
-    </Composite>
+    <Grid {...composite} aria-label="My grid">
+      <GridRow {...composite}>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+      </GridRow>
+      <GridRow {...composite}>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+      </GridRow>
+      <GridRow {...composite}>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+      </GridRow>
+    </Grid>
   );
 }
 ```
