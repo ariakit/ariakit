@@ -11,7 +11,7 @@ const props: Parameters<typeof MenuBar>[0] = {
   last: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
-  "aria-label": "menu"
+  "aria-label": "menu",
 };
 
 test("render", () => {

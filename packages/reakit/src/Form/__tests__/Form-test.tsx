@@ -3,7 +3,7 @@ import { render, fireEvent } from "reakit-test-utils";
 import { unstable_Form as Form } from "../Form";
 
 const props: Parameters<typeof Form>[0] = {
-  submit: jest.fn()
+  submit: jest.fn(),
 };
 
 test("render", () => {

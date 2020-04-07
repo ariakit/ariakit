@@ -7,7 +7,7 @@ import { focus } from "./focus";
 import "./mockClientRects";
 
 const charMap: Record<string, string> = {
-  "\b": "Backspace"
+  "\b": "Backspace",
 };
 
 const keyMap: Record<
@@ -22,7 +22,7 @@ const keyMap: Record<
       return element.value.substr(0, element.value.length - 1);
     }
     return "";
-  }
+  },
 };
 
 export function type(

@@ -8,7 +8,7 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import {
   unstable_CompositeOptions as CompositeOptions,
   unstable_CompositeHTMLProps as CompositeHTMLProps,
-  unstable_useComposite as useComposite
+  unstable_useComposite as useComposite,
 } from "../Composite/Composite";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuContext } from "./__utils/MenuContext";
@@ -46,9 +46,9 @@ export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
       role,
       "aria-orientation": options.orientation,
       wrapElement: usePipe(wrapElement, htmlWrapElement),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const MenuBar = createComponent({
@@ -64,5 +64,5 @@ export const MenuBar = createComponent({
     );
 
     return useCreateElement(type, props, children);
-  }
+  },
 });

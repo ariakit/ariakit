@@ -9,8 +9,8 @@ const system = mergeSystem(bootstrapSystem, playgroundSystem, {
     ...bootstrapSystem.palette,
     primary: "#6a50ee",
     link: "#006DFF",
-    secondary: "#504984"
-  }
+    secondary: "#504984",
+  },
 });
 
 function Provider(props: { children: React.ReactNode }) {

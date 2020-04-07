@@ -93,6 +93,6 @@ export function useEventListenerOutside(
     nestedDialogs,
     eventType,
     shouldListen,
-    listenerRef
+    listenerRef,
   ]);
 }

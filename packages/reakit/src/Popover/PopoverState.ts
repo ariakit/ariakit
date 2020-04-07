@@ -2,7 +2,7 @@ import * as React from "react";
 import { createPopper, Instance } from "@popperjs/core";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import {
@@ -10,7 +10,7 @@ import {
   DialogActions,
   DialogInitialState,
   useDialogState,
-  DialogStateReturn
+  DialogStateReturn,
 } from "../Dialog/DialogState";
 
 type Placement =
@@ -153,44 +153,44 @@ export function usePopoverState(
           {
             // https://popper.js.org/docs/v2/modifiers/event-listeners/
             name: "eventListeners",
-            enabled: dialog.visible
+            enabled: dialog.visible,
           },
           {
             // https://popper.js.org/docs/v2/modifiers/compute-styles/
             name: "computeStyles",
             options: {
-              adaptive: !sealed.unstable_animated
-            }
+              adaptive: !sealed.unstable_animated,
+            },
           },
           {
             // https://popper.js.org/docs/v2/modifiers/apply-styles/
             name: "applyStyles",
-            enabled: false
+            enabled: false,
           },
           {
             // https://popper.js.org/docs/v2/modifiers/flip/
             name: "flip",
             enabled: flip,
-            options: { padding: 8 }
+            options: { padding: 8 },
           },
           {
             // https://popper.js.org/docs/v2/modifiers/offset/
             name: "offset",
-            options: { offset }
+            options: { offset },
           },
           {
             // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
             name: "preventOverflow",
             enabled: preventOverflow,
             options: {
-              tetherOffset: () => arrowRef.current?.clientWidth || 0
-            }
+              tetherOffset: () => arrowRef.current?.clientWidth || 0,
+            },
           },
           {
             // https://popper.js.org/docs/v2/modifiers/arrow/
             name: "arrow",
             enabled: Boolean(arrowRef.current),
-            options: { element: arrowRef.current }
+            options: { element: arrowRef.current },
           },
           {
             // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
@@ -201,9 +201,9 @@ export function usePopoverState(
               setPlacement(state.placement);
               setPopoverStyles(state.styles.popper as React.CSSProperties);
               setArrowStyles(state.styles.arrow as React.CSSProperties);
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
     }
     return () => {
@@ -219,7 +219,7 @@ export function usePopoverState(
     sealed.unstable_animated,
     flip,
     offset,
-    preventOverflow
+    preventOverflow,
   ]);
 
   // Ensure that the popover will be correctly positioned with an additional
@@ -240,7 +240,7 @@ export function usePopoverState(
     unstable_update: update,
     unstable_originalPlacement: originalPlacement,
     placement,
-    place
+    place,
   };
 }
 
@@ -254,7 +254,7 @@ const keys: Array<keyof PopoverStateReturn> = [
   "unstable_update",
   "unstable_originalPlacement",
   "placement",
-  "place"
+  "place",
 ];
 
 usePopoverState.__keys = keys;

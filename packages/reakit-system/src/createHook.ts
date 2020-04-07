@@ -60,7 +60,7 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     }
     // Run composed hooks useOptions
     if (options.compose) {
-      composedHooks.forEach(hook => {
+      composedHooks.forEach((hook) => {
         hookOptions = hook.__useOptions(hookOptions, htmlProps);
       });
     }
@@ -102,7 +102,7 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
 
   if (process.env.NODE_ENV !== "production" && options.name) {
     Object.defineProperty(useHook, "name", {
-      value: `use${options.name}`
+      value: `use${options.name}`,
     });
   }
 
@@ -115,12 +115,12 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
       return allKeys;
     }, [] as string[]),
     ...(options.useState ? options.useState.__keys : []),
-    ...(options.keys || [])
+    ...(options.keys || []),
   ];
 
   const hasPropsAreEqual =
     !!options.propsAreEqual ||
-    composedHooks.some(hook => !!hook.__propsAreEqual);
+    composedHooks.some((hook) => !!hook.__propsAreEqual);
 
   if (hasPropsAreEqual) {
     useHook.__propsAreEqual = (prev, next) => {

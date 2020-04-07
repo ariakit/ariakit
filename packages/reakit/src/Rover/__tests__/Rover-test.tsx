@@ -12,7 +12,7 @@ const props: Parameters<typeof Rover>[0] = {
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
 };
 
 test("render", () => {

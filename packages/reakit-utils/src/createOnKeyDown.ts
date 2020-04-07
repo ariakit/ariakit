@@ -28,9 +28,9 @@ export function createOnKeyDown({
   stopPropagation,
   onKeyDown,
   shouldKeyDown = () => true,
-  preventDefault = true
+  preventDefault = true,
 }: Options = {}): React.KeyboardEventHandler {
-  return event => {
+  return (event) => {
     if (!keyMap) return;
 
     const finalKeyMap = typeof keyMap === "function" ? keyMap(event) : keyMap;

@@ -42,7 +42,7 @@ export function useHideOnClickOutside(
     disclosuresRef,
     nestedDialogs,
     "click",
-    event => {
+    (event) => {
       // Make sure the element that has been clicked is the same that last
       // triggered the mousedown event. This prevents the dialog from closing
       // by dragging the cursor (for example, selecting some text inside the

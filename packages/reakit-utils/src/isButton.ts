@@ -4,7 +4,7 @@ const buttonInputTypes = [
   "file",
   "image",
   "reset",
-  "submit"
+  "submit",
 ];
 
 /**

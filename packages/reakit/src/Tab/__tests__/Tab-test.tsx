@@ -18,7 +18,7 @@ const props: TabProps = {
   first: jest.fn(),
   last: jest.fn(),
   up: jest.fn(),
-  down: jest.fn()
+  down: jest.fn(),
 };
 
 test("render", () => {

@@ -13,7 +13,7 @@ import {
   TooltipArrow,
   TooltipReference,
   useTooltipState,
-  Provider
+  Provider,
 } from "reakit";
 import * as system from "reakit-system-bootstrap";
 import { css } from "emotion";
@@ -26,7 +26,7 @@ storiesOf("Dialog", module).add("Conditionally rendering", () => {
       <>
         <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
         <Dialog {...dialog} aria-label="Welcome">
-          {dialogProps =>
+          {(dialogProps) =>
             dialog.visible && <div {...dialogProps}>Welcome to Reakit!</div>
           }
         </Dialog>
@@ -72,10 +72,10 @@ storiesOf("Menu", module)
         opacity: menu.visible ? 1 : 0,
         scale: menu.visible ? 1 : 0,
         onRest: menu.unstable_stopAnimation,
-        config: name => ({
+        config: (name) => ({
           tension: name === "opacity" ? 250 : 300,
-          friction: 25
-        })
+          friction: 25,
+        }),
       });
 
       return (
@@ -89,8 +89,8 @@ storiesOf("Menu", module)
               opacity,
               transformOrigin: "top center",
               transform: scale.interpolate(
-                s => `${menu.unstable_popoverStyles.transform} scaleY(${s})`
-              )
+                (s) => `${menu.unstable_popoverStyles.transform} scaleY(${s})`
+              ),
             }}
           >
             <MenuItem {...menu}>Item 1</MenuItem>
@@ -116,7 +116,7 @@ storiesOf("Menu", module)
               <input
                 type="text"
                 value={value}
-                onChange={event => setValue(event.target.value)}
+                onChange={(event) => setValue(event.target.value)}
               />
             </Dialog>
           </>

@@ -38,7 +38,7 @@ export const usePopoverArrow = createHook<
       top: "rotateZ(180deg)",
       right: "rotateZ(-90deg)",
       bottom: "rotateZ(360deg)",
-      left: "rotateZ(90deg)"
+      left: "rotateZ(90deg)",
     };
     const { unstable_arrowStyles: arrowStyles } = options;
     const transform = transformMap[placement];
@@ -52,7 +52,7 @@ export const usePopoverArrow = createHook<
         height: "1em",
         pointerEvents: "none",
         [placement]: "100%",
-        ...htmlStyle
+        ...htmlStyle,
       },
       children: (
         <svg viewBox="0 0 30 30" style={{ transform }}>
@@ -67,12 +67,12 @@ export const usePopoverArrow = createHook<
           />
         </svg>
       ),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const PopoverArrow = createComponent({
   as: "div",
-  useHook: usePopoverArrow
+  useHook: usePopoverArrow,
 });

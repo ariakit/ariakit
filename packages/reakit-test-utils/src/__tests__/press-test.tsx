@@ -30,7 +30,7 @@ test("press enter on button preventDefault", async () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onKeyDown={event => event.preventDefault()}>
+      <button ref={ref} onKeyDown={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -178,7 +178,7 @@ test("press space on button preventDefault", async () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onKeyUp={event => event.preventDefault()}>
+      <button ref={ref} onKeyUp={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -263,7 +263,7 @@ test("press tab preventDefault", async () => {
       <>
         <button
           ref={ref1}
-          onKeyDown={event => {
+          onKeyDown={(event) => {
             if (event.key === "Tab" && !event.shiftKey) {
               event.preventDefault();
             }

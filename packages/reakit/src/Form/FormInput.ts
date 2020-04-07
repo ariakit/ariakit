@@ -6,7 +6,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   TabbableOptions,
   TabbableHTMLProps,
-  useTabbable
+  useTabbable,
 } from "../Tabbable/Tabbable";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
@@ -76,9 +76,9 @@ export const unstable_useFormInput = createHook<
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormInputOptions<V, P>,
   htmlProps?: unstable_FormInputHTMLProps
@@ -86,7 +86,7 @@ export const unstable_useFormInput = createHook<
 
 export const unstable_FormInput = (createComponent({
   as: "input",
-  useHook: unstable_useFormInput
+  useHook: unstable_useFormInput,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormInputOptions<V, P>, T>
 ) => JSX.Element;

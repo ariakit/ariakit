@@ -13,7 +13,7 @@ export function warning(condition: boolean, ...messages: any[]) {
   if (process.env.NODE_ENV !== "production") {
     if (!condition) return;
 
-    const warns = flatten(messages.map(message => [message, "\n"]));
+    const warns = flatten(messages.map((message) => [message, "\n"]));
 
     // eslint-disable-next-line no-console
     console.warn(...warns.slice(0, -1));

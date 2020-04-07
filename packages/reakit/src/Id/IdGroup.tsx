@@ -49,10 +49,10 @@ export const unstable_useIdGroup = createHook<
 
   useProps(options, htmlProps) {
     return { id: options.id, ...htmlProps };
-  }
+  },
 });
 
 export const unstable_IdGroup = createComponent({
   as: "div",
-  useHook: unstable_useIdGroup
+  useHook: unstable_useIdGroup,
 });

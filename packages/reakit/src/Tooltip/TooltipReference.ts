@@ -41,12 +41,12 @@ export const useTooltipReference = createHook<
       onMouseEnter: useAllCallbacks(options.show, htmlOnMouseEnter),
       onMouseLeave: useAllCallbacks(options.hide, htmlOnMouseLeave),
       "aria-describedby": options.baseId,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const TooltipReference = createComponent({
   as: "div",
-  useHook: useTooltipReference
+  useHook: useTooltipReference,
 });

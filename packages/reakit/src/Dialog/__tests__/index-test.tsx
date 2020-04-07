@@ -217,7 +217,7 @@ test("focus a given element when dialog opens and initial focus has been manuall
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog">
-          {props =>
+          {(props) =>
             dialog.visible && (
               <div {...props}>
                 <button>button1</button>

@@ -25,7 +25,7 @@ test("as string", () => {
 test("as component", () => {
   const useA = ({ a }: { a: string }, htmlProps: any) => ({
     children: a,
-    ...htmlProps
+    ...htmlProps,
   });
   useA.__keys = ["a"] as const;
   const A = createComponent({ as: "div", useHook: useA });
@@ -43,7 +43,7 @@ test("as component", () => {
 test("as generic component", () => {
   const useA = ({ a }: { a: string }, htmlProps: any) => ({
     children: a,
-    ...htmlProps
+    ...htmlProps,
   });
   useA.__keys = ["a"] as const;
   const A = createComponent({ as: "div", useHook: useA });
@@ -84,7 +84,7 @@ test("wrap", () => {
     wrapElement: (element: React.ReactNode) => (
       <div id="wrapper">{element}</div>
     ),
-    ...h
+    ...h,
   });
   const A = createComponent({ as: "span", useHook: useA });
   const { baseElement } = render(<A id="a">a</A>);

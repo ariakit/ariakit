@@ -5,12 +5,12 @@ import { createHook } from "reakit-system/createHook";
 import { usePipe } from "reakit-utils/usePipe";
 import {
   unstable_CompositeStateReturn as CompositeStateReturn,
-  unstable_useCompositeState as useCompositeState
+  unstable_useCompositeState as useCompositeState,
 } from "../Composite/CompositeState";
 import {
   unstable_FormGroupOptions,
   unstable_FormGroupHTMLProps,
-  unstable_useFormGroup
+  unstable_useFormGroup,
 } from "./FormGroup";
 import { unstable_useFormState } from "./FormState";
 import { DeepPath } from "./__utils/types";
@@ -71,9 +71,9 @@ export const unstable_useFormRadioGroup = createHook<
     return {
       role: "radiogroup",
       wrapElement: usePipe(wrapElement, htmlWrapElement),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioGroupOptions<V, P>,
   htmlProps?: unstable_FormRadioGroupHTMLProps
@@ -81,7 +81,7 @@ export const unstable_useFormRadioGroup = createHook<
 
 export const unstable_FormRadioGroup = (createComponent({
   as: "fieldset",
-  useHook: unstable_useFormRadioGroup
+  useHook: unstable_useFormRadioGroup,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(
   props: PropsWithAs<unstable_FormRadioGroupOptions<V, P>, T>
 ) => JSX.Element;

@@ -4,7 +4,7 @@ import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { isPromise } from "reakit-utils/isPromise";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import { isEmpty } from "reakit-utils/isEmpty";
 import { useLiveRef } from "reakit-utils/useLiveRef";
@@ -12,7 +12,7 @@ import {
   unstable_IdState,
   unstable_IdActions,
   unstable_IdInitialState,
-  unstable_useIdState
+  unstable_useIdState,
 } from "../Id/IdState";
 import { DeepPartial, DeepMap, DeepPath, DeepPathValue } from "./__utils/types";
 import { filterAllEmpty } from "./__utils/filterAllEmpty";
@@ -194,13 +194,13 @@ function reducer<V>(
         validating: false,
         submitting: false,
         submitFailed: 0,
-        submitSucceed: 0
+        submitSucceed: 0,
       };
     }
     case "startValidate": {
       return {
         ...state,
-        validating: true
+        validating: true,
       };
     }
     case "endValidate": {
@@ -209,7 +209,7 @@ function reducer<V>(
         validating: false,
         errors: getMessages(state.errors, action.errors),
         messages: getMessages(state.messages, action.messages),
-        valid: !hasMessages(action.errors)
+        valid: !hasMessages(action.errors),
       };
     }
     case "startSubmit": {
@@ -217,7 +217,7 @@ function reducer<V>(
         ...state,
         // @ts-ignore TS bug
         touched: unstable_setAllIn(state.values, true),
-        submitting: true
+        submitting: true,
       };
     }
     case "endSubmit": {
@@ -229,7 +229,7 @@ function reducer<V>(
         errors: getMessages(state.errors, action.errors),
         messages: getMessages(state.messages, action.messages),
         submitSucceed: valid ? state.submitSucceed + 1 : state.submitSucceed,
-        submitFailed: valid ? state.submitFailed : state.submitFailed + 1
+        submitFailed: valid ? state.submitFailed : state.submitFailed + 1,
       };
     }
     case "update": {
@@ -244,13 +244,13 @@ function reducer<V>(
           state.values,
           name,
           nextValue != null ? nextValue : ""
-        )
+        ),
       };
     }
     case "blur": {
       return {
         ...state,
-        touched: unstable_setIn(state.touched, action.name, true)
+        touched: unstable_setIn(state.touched, action.name, true),
       };
     }
     case "push": {
@@ -259,8 +259,8 @@ function reducer<V>(
         ...state,
         values: unstable_setIn(state.values, action.name, [
           ...array,
-          action.value
-        ])
+          action.value,
+        ]),
       };
     }
     case "remove": {
@@ -268,7 +268,7 @@ function reducer<V>(
       delete array[action.index];
       return {
         ...state,
-        values: unstable_setIn(state.values, action.name, array)
+        values: unstable_setIn(state.values, action.name, array),
       };
     }
     default: {
@@ -309,12 +309,12 @@ export function unstable_useFormState<V = Record<any, any>>(
     validating: false,
     submitting: false,
     submitFailed: 0,
-    submitSucceed: 0
+    submitSucceed: 0,
   });
 
   const validate = React.useCallback(
     (vals = state.values) =>
-      new Promise<any>(resolve => {
+      new Promise<any>((resolve) => {
         if (onValidateRef.current) {
           const response = onValidateRef.current(vals);
           if (isPromise(response)) {
@@ -322,7 +322,7 @@ export function unstable_useFormState<V = Record<any, any>>(
           }
 
           resolve(
-            Promise.resolve(response).then(messages => {
+            Promise.resolve(response).then((messages) => {
               dispatch({ type: "endValidate", messages });
               return messages;
             })
@@ -330,7 +330,7 @@ export function unstable_useFormState<V = Record<any, any>>(
         } else {
           resolve(undefined);
         }
-      }).catch(errors => {
+      }).catch((errors) => {
         dispatch({ type: "endValidate", errors });
         throw errors;
       }),
@@ -361,11 +361,11 @@ export function unstable_useFormState<V = Record<any, any>>(
     submit: React.useCallback(() => {
       dispatch({ type: "startSubmit" });
       return validate()
-        .then(validateMessages => {
+        .then((validateMessages) => {
           if (onSubmitRef.current) {
             return Promise.resolve(
               onSubmitRef.current(filterAllEmpty(state.values as V))
-            ).then(submitMessages => {
+            ).then((submitMessages) => {
               const messages = { ...validateMessages, ...submitMessages };
               dispatch({ type: "endSubmit", messages });
             });
@@ -377,7 +377,7 @@ export function unstable_useFormState<V = Record<any, any>>(
             dispatch({ type: "reset" });
           }
         })
-        .catch(errors => {
+        .catch((errors) => {
           dispatch({ type: "endSubmit", errors });
         });
     }, [validate]),
@@ -386,7 +386,7 @@ export function unstable_useFormState<V = Record<any, any>>(
       []
     ),
     blur: React.useCallback(
-      name => {
+      (name) => {
         dispatch({ type: "blur", name });
         if (validateOnBlur) {
           validate().catch(() => {});
@@ -401,7 +401,7 @@ export function unstable_useFormState<V = Record<any, any>>(
     remove: React.useCallback(
       (name, index) => dispatch({ type: "remove", name, index }),
       []
-    )
+    ),
   };
 }
 
@@ -422,7 +422,7 @@ const keys: Array<keyof unstable_FormStateReturn<any>> = [
   "update",
   "blur",
   "push",
-  "remove"
+  "remove",
 ];
 
 unstable_useFormState.__keys = keys;

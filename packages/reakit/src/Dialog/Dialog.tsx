@@ -9,7 +9,7 @@ import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
-  useDisclosureContent
+  useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
@@ -87,7 +87,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     "unstable_finalFocusRef",
     "unstable_orphan",
     "unstable_autoFocusOnShow",
-    "unstable_autoFocusOnHide"
+    "unstable_autoFocusOnHide",
   ],
 
   useOptions({
@@ -121,7 +121,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       unstable_autoFocusOnShow,
       unstable_autoFocusOnHide,
       unstable_orphan: modal && unstable_orphan,
-      ...options
+      ...options,
     };
   },
 
@@ -187,9 +187,9 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       wrapElement: usePipe(wrapElement, htmlWrapElement),
       "aria-modal": modal,
       "data-dialog": true,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Dialog = createComponent({
@@ -202,5 +202,5 @@ export const Dialog = createComponent({
       "See https://reakit.io/docs/dialog"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

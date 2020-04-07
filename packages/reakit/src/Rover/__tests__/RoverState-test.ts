@@ -229,7 +229,7 @@ test("unregister currentId", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: null,
-      stops: []
+      stops: [],
     },
     `
     Object {
@@ -257,7 +257,7 @@ test("unregister pastId", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
-      unstable_pastId: null
+      unstable_pastId: null,
     },
     `
     Object {
@@ -291,7 +291,7 @@ test("move", () => {
   act(() => result.current.move("a"));
   expect(result.current).toMatchInlineSnapshot(
     {
-      currentId: "a"
+      currentId: "a",
     },
     `
     Object {
@@ -328,7 +328,7 @@ test("move twice", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
-      unstable_pastId: "a"
+      unstable_pastId: "a",
     },
     `
     Object {
@@ -373,7 +373,7 @@ test("move to the same ref", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
-      unstable_pastId: null
+      unstable_pastId: null,
     },
     `
     Object {
@@ -418,7 +418,7 @@ test("move to null", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: null,
-      unstable_pastId: "b"
+      unstable_pastId: "b",
     },
     `
     Object {
@@ -462,7 +462,7 @@ test("move silently", () => {
   act(() => result.current.move("b", true));
   expect(result.current).toMatchInlineSnapshot(
     {
-      unstable_moves: 1
+      unstable_moves: 1,
     },
     `
     Object {
@@ -508,7 +508,7 @@ test("next", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
-      unstable_pastId: "a"
+      unstable_pastId: "a",
     },
     `
     Object {
@@ -564,7 +564,7 @@ test("next thrice", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "c",
-      unstable_pastId: "b"
+      unstable_pastId: "b",
     },
     `
     Object {
@@ -620,7 +620,7 @@ test("next thrice loop", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
-      unstable_pastId: "c"
+      unstable_pastId: "c",
     },
     `
     Object {
@@ -674,7 +674,7 @@ test("previous", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
-      unstable_pastId: "b"
+      unstable_pastId: "b",
     },
     `
     Object {
@@ -728,7 +728,7 @@ test("previous loop", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "c",
-      unstable_pastId: "a"
+      unstable_pastId: "a",
     },
     `
     Object {
@@ -780,7 +780,7 @@ test("first", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "a",
-      unstable_pastId: null
+      unstable_pastId: null,
     },
     `
     Object {
@@ -824,7 +824,7 @@ test("last", () => {
   expect(result.current).toMatchInlineSnapshot(
     {
       currentId: "b",
-      unstable_pastId: null
+      unstable_pastId: null,
     },
     `
     Object {
@@ -865,7 +865,7 @@ test("orientate", () => {
   act(() => result.current.unstable_orientate("horizontal"));
   expect(result.current).toMatchInlineSnapshot(
     {
-      orientation: "horizontal"
+      orientation: "horizontal",
     },
     `
     Object {

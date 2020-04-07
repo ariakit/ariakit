@@ -9,7 +9,7 @@ import {
   useDialogState,
   Dialog,
   DialogBackdrop,
-  Portal
+  Portal,
 } from "reakit";
 import { FaGithub } from "react-icons/fa";
 import { MdMenu } from "react-icons/md";
@@ -68,11 +68,11 @@ export default function Header({ transparent }: HeaderProps) {
           transition: transform 250ms ease-in-out;
           ${!transparent && `box-shadow: 0 1px 2px ${boxShadowColor}`};
           ${transparent &&
-            css`
-              background: transparent;
-              color: white;
-              transform: translateY(32px);
-            `};
+          css`
+            background: transparent;
+            color: white;
+            transform: translateY(32px);
+          `};
 
           & > *:not(:last-child) {
             margin-right: 16px;
@@ -118,8 +118,8 @@ export default function Header({ transparent }: HeaderProps) {
         <Global
           styles={{
             ":root": {
-              "--header-height": "60px"
-            }
+              "--header-height": "60px",
+            },
           }}
         />
         <SkipToContent />
@@ -172,7 +172,7 @@ export default function Header({ transparent }: HeaderProps) {
         </Anchor>
         <div style={{ flex: 1 }} />
         <HiddenMediaQuery query="max-width: 768px">
-          {props => (
+          {(props) => (
             <>
               <Anchor
                 as={Link}

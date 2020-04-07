@@ -4,7 +4,7 @@ import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
   baseId: "base",
-  "aria-label": "dialog"
+  "aria-label": "dialog",
 };
 
 test("render", () => {

@@ -14,7 +14,7 @@ export function useShortcuts(
 
     const timeoutId = setTimeout(() => setKeys(""), timeout);
 
-    const stop = items.find(s =>
+    const stop = items.find((s) =>
       Boolean(
         s.ref.current &&
           s.ref.current.textContent &&
@@ -50,7 +50,7 @@ export function useShortcuts(
       if (/^[a-z0-9_-]$/i.test(event.key)) {
         event.stopPropagation();
         event.preventDefault();
-        setKeys(k => `${k}${event.key}`);
+        setKeys((k) => `${k}${event.key}`);
       }
     };
 

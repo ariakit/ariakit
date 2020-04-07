@@ -6,12 +6,12 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
-  useDisclosureContent
+  useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import {
   unstable_useId,
   unstable_IdOptions,
-  unstable_IdHTMLProps
+  unstable_IdHTMLProps,
 } from "../Id/Id";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -42,15 +42,17 @@ function getTabsWithoutPanel(
   tabs: TabPanelOptions["items"],
   panels: TabPanelOptions["panels"]
 ) {
-  const panelsTabIds = panels.map(panel => panel.groupId).filter(Boolean);
-  return tabs.filter(item => panelsTabIds.indexOf(item.id || undefined) === -1);
+  const panelsTabIds = panels.map((panel) => panel.groupId).filter(Boolean);
+  return tabs.filter(
+    (item) => panelsTabIds.indexOf(item.id || undefined) === -1
+  );
 }
 
 function getPanelIndex(
   panels: TabPanelOptions["panels"],
   panel: typeof panels[number]
 ) {
-  const panelsWithoutTabId = panels.filter(p => !p.groupId);
+  const panelsWithoutTabId = panels.filter((p) => !p.groupId);
   return panelsWithoutTabId.indexOf(panel);
 }
 
@@ -71,7 +73,7 @@ function getPanelIndex(
  * return it. registerPanel is not called.
  */
 function getTabId(options: TabPanelOptions) {
-  const panel = options.panels?.find(p => p.id === options.id);
+  const panel = options.panels?.find((p) => p.id === options.id);
   const tabId = options.tabId || options.stopId || panel?.groupId;
   if (tabId || !panel || !options.panels || !options.items) {
     return tabId;
@@ -116,7 +118,7 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
       role: "tabpanel",
       tabIndex: 0,
       "aria-labelledby": tabId,
-      ...htmlProps
+      ...htmlProps,
     };
   },
 
@@ -124,12 +126,12 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
     const tabId = getTabId(options);
     return {
       visible: tabId ? options.selectedId === tabId : false,
-      ...options
+      ...options,
     };
-  }
+  },
 });
 
 export const TabPanel = createComponent({
   as: "div",
-  useHook: useTabPanel
+  useHook: useTabPanel,
 });

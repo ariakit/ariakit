@@ -4,7 +4,7 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import {
   DialogDisclosureOptions,
   DialogDisclosureHTMLProps,
-  useDialogDisclosure
+  useDialogDisclosure,
 } from "../Dialog/DialogDisclosure";
 import { usePopoverState, PopoverStateReturn } from "./PopoverState";
 
@@ -27,12 +27,12 @@ export const usePopoverDisclosure = createHook<
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     return {
       ref: useForkRef(options.unstable_referenceRef, htmlRef),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const PopoverDisclosure = createComponent({
   as: "button",
-  useHook: usePopoverDisclosure
+  useHook: usePopoverDisclosure,
 });

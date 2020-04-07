@@ -18,7 +18,7 @@ export default function SEO({
   lang = "en",
   meta = [],
   keywords = [],
-  title
+  title,
 }: SEOProps) {
   const data = useStaticQuery(detailsQuery);
   const metaDescription = description || data.site.siteMetadata.description;
@@ -32,52 +32,52 @@ export default function SEO({
       meta={[
         {
           name: "description",
-          content: metaDescription
+          content: metaDescription,
         },
         {
           property: "og:title",
-          content: metaTitle
+          content: metaTitle,
         },
         {
           property: "og:url",
-          content: url
+          content: url,
         },
         {
           property: "og:description",
-          content: metaDescription
+          content: metaDescription,
         },
         {
           property: "og:type",
-          content: "website"
+          content: "website",
         },
         {
           property: "og:image",
-          content: image
+          content: image,
         },
         {
           name: "twitter:card",
-          content: "summary_large_image"
+          content: "summary_large_image",
         },
         {
           name: "twitter:image:src",
-          content: image
+          content: image,
         },
         {
           name: "twitter:creator",
-          content: data.site.siteMetadata.author
+          content: data.site.siteMetadata.author,
         },
         {
           name: "twitter:title",
-          content: metaTitle
+          content: metaTitle,
         },
         {
           name: "twitter:description",
-          content: metaDescription
+          content: metaDescription,
         },
         {
           name: "keywords",
-          content: defaultKeywords.concat(keywords).join(", ")
-        }
+          content: defaultKeywords.concat(keywords).join(", "),
+        },
       ].concat(meta)}
     />
   );

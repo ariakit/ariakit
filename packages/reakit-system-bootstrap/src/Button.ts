@@ -19,7 +19,7 @@ export function useButtonProps(
   htmlProps: ButtonHTMLProps = {}
 ): ButtonHTMLProps {
   const {
-    style: { color, backgroundColor, borderColor = "transparent" }
+    style: { color, backgroundColor, borderColor = "transparent" },
   } = usePaletteBoxProps({ unstable_system });
 
   const hoverBackgroundColor = useDarken(

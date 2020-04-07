@@ -16,10 +16,10 @@ export const useMenuGroup = createHook<MenuGroupOptions, MenuGroupHTMLProps>({
 
   useProps(_, htmlProps) {
     return { role: "group", ...htmlProps };
-  }
+  },
 });
 
 export const MenuGroup = createComponent({
   as: "div",
-  useHook: useMenuGroup
+  useHook: useMenuGroup,
 });

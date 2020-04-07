@@ -29,7 +29,7 @@ export type SystemProviderProps = {
  */
 export function SystemProvider({
   children,
-  unstable_system: system
+  unstable_system: system,
 }: SystemProviderProps) {
   return (
     <SystemContext.Provider value={system}>{children}</SystemContext.Provider>

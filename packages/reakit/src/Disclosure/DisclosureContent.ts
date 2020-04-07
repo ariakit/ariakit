@@ -6,7 +6,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps,
-  unstable_useIdGroup
+  unstable_useIdGroup,
 } from "../Id/IdGroup";
 import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
 import { useWarningIfMultiple } from "./__utils/useWarningIfMultiple";
@@ -79,12 +79,12 @@ export const useDisclosureContent = createHook<
         : htmlStyle
         ? { style: htmlStyle }
         : {}),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const DisclosureContent = createComponent({
   as: "div",
-  useHook: useDisclosureContent
+  useHook: useDisclosureContent,
 });

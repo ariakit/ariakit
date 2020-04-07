@@ -74,9 +74,9 @@ export const unstable_useFormRadio = createHook<
       name: formatInputName(options.name),
       onChange: useAllCallbacks(onChange, htmlOnChange),
       onBlur: useAllCallbacks(onBlur, htmlOnBlur),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormRadioOptions<V, P>,
   htmlProps?: unstable_FormRadioHTMLProps
@@ -84,7 +84,7 @@ export const unstable_useFormRadio = createHook<
 
 export const unstable_FormRadio = (createComponent({
   as: "input",
-  useHook: unstable_useFormRadio
+  useHook: unstable_useFormRadio,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormRadioOptions<V, P>, T>
 ) => JSX.Element;

@@ -11,7 +11,7 @@ export function compileComponent(
 ): React.ComponentType {
   const defaultDeps = {
     react: React,
-    "react-dom": ReactDOM
+    "react-dom": ReactDOM,
   };
   const fullCode = `{
 ${importToRequire(code)}
@@ -33,9 +33,9 @@ if (typeof ${componentName} !== "undefined") {
   };
   const { code: compiledCode } = transform(fullCode, {
     transforms: {
-      dangerousTaggedTemplateString: true
+      dangerousTaggedTemplateString: true,
     },
-    objectAssign: true
+    objectAssign: true,
   });
   // eslint-disable-next-line no-new-func
   const fn = new Function("require", "React", compiledCode);

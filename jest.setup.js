@@ -1,7 +1,7 @@
 const {
   matcherHint,
   printReceived,
-  printExpected
+  printExpected,
 } = require("jest-matcher-utils");
 const matchers = require("@testing-library/jest-dom/matchers");
 
@@ -22,11 +22,11 @@ function toHaveFocus(element) {
           "Expected",
           `  ${printExpected(element)}`,
           "Received:",
-          `  ${printReceived(element.ownerDocument.getElementById(activeId))}`
+          `  ${printReceived(element.ownerDocument.getElementById(activeId))}`,
         ].join("\n");
       }
       return result.message();
-    }
+    },
   };
 }
 

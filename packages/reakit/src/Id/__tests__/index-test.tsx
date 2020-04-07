@@ -6,14 +6,14 @@ import {
   unstable_useIdState as useIdState,
   unstable_useId as useId,
   unstable_Id as Id,
-  unstable_IdGroup as IdGroup
+  unstable_IdGroup as IdGroup,
 } from "..";
 
 // Basically puts the id prop into the aria-label prop
 function TestId(props: IdProps) {
   return (
     <Id {...props}>
-      {htmlProps => (
+      {(htmlProps) => (
         <div {...htmlProps} aria-label={htmlProps.id}>
           {props.children}
         </div>
@@ -32,11 +32,11 @@ test("Id", () => {
     );
   };
   const { getAllByLabelText, rerender } = render(<Test />);
-  const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map((el) => el.id);
   expect(ids).toHaveLength(2);
   // shouldn't change ids
   rerender(<Test />);
-  const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map((el) => el.id);
   expect(ids).toEqual(nextIds);
 });
 
@@ -50,11 +50,11 @@ test("Id with baseId", () => {
     );
   };
   const { getAllByLabelText, rerender } = render(<Test />);
-  const ids = getAllByLabelText(/a-[a-z\d]{2,}$/).map(el => el.id);
+  const ids = getAllByLabelText(/a-[a-z\d]{2,}$/).map((el) => el.id);
   expect(ids).toHaveLength(2);
   // shouldn't change ids
   rerender(<Test />);
-  const nextIds = getAllByLabelText(/a-[a-z\d]{2,}$/).map(el => el.id);
+  const nextIds = getAllByLabelText(/a-[a-z\d]{2,}$/).map((el) => el.id);
   expect(ids).toEqual(nextIds);
 });
 
@@ -68,11 +68,11 @@ test("Id within IdGroup", () => {
     );
   };
   const { getAllByLabelText, rerender } = render(<Test />);
-  const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  const ids = getAllByLabelText(/id-[a-z\d]{2,}$/).map((el) => el.id);
   expect(ids).toHaveLength(2);
   // shouldn't change ids
   rerender(<Test />);
-  const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map(el => el.id);
+  const nextIds = getAllByLabelText(/id-[a-z\d]{2,}$/).map((el) => el.id);
   expect(ids).toEqual(nextIds);
 });
 

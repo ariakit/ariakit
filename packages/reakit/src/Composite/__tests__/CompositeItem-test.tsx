@@ -2,14 +2,14 @@ import * as React from "react";
 import { render, focus, press, click } from "reakit-test-utils";
 import {
   unstable_CompositeItemProps,
-  unstable_CompositeItem as CompositeItem
+  unstable_CompositeItem as CompositeItem,
 } from "../CompositeItem";
 
 const props: unstable_CompositeItemProps = {
   items: [
     { id: "1", ref: { current: null } },
     { id: "2", ref: { current: null } },
-    { id: "3", ref: { current: null } }
+    { id: "3", ref: { current: null } },
   ],
   currentId: "2",
   setCurrentId: jest.fn(),
@@ -20,7 +20,7 @@ const props: unstable_CompositeItemProps = {
   up: jest.fn(),
   down: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
 };
 
 test("render", () => {

@@ -12,9 +12,9 @@ test("useProps", () => {
     useProps(options, htmlProps) {
       return {
         ...htmlProps,
-        "data-a": options.a
+        "data-a": options.a,
       };
-    }
+    },
   });
   expect(useHook({ a: "a" }, { id: "a" })).toMatchInlineSnapshot(`
     Object {
@@ -29,9 +29,9 @@ test("compose useProps", () => {
     useProps(options, htmlProps) {
       return {
         ...htmlProps,
-        "data-a": options.a
+        "data-a": options.a,
       };
-    }
+    },
   });
   type Options2 = Options & {
     b: string;
@@ -41,9 +41,9 @@ test("compose useProps", () => {
     useProps(options, htmlProps) {
       return {
         ...htmlProps,
-        "data-b": options.b
+        "data-b": options.b,
       };
-    }
+    },
   });
   expect(useHook2({ a: "a", b: "b" }, { id: "a" })).toMatchInlineSnapshot(`
     Object {
@@ -59,15 +59,15 @@ test("useOptions", () => {
     useOptions(options) {
       return {
         ...options,
-        a: "a"
+        a: "a",
       };
     },
     useProps(options, htmlProps) {
       return {
         ...htmlProps,
-        id: options.a
+        id: options.a,
       };
-    }
+    },
   });
   expect(useHook()).toEqual({ id: "a" });
 });
@@ -77,24 +77,24 @@ test("compose useOptions", () => {
     useOptions(options) {
       return {
         ...options,
-        a: `${options.a}b`
+        a: `${options.a}b`,
       };
-    }
+    },
   });
   const useHook2 = createHook<Options, React.HTMLAttributes<any>>({
     compose: [useHook],
     useOptions(options) {
       return {
         ...options,
-        a: "a"
+        a: "a",
       };
     },
     useProps(options, htmlProps) {
       return {
         ...htmlProps,
-        id: options.a
+        id: options.a,
       };
-    }
+    },
   });
   expect(useHook2()).toEqual({ id: "ab" });
 });
@@ -104,15 +104,15 @@ test("useComposeOptions", () => {
     useProps(options, htmlProps) {
       return {
         ...htmlProps,
-        id: `${options.a}b`
+        id: `${options.a}b`,
       };
-    }
+    },
   });
   const useHook2 = createHook<Options, React.HTMLAttributes<any>>({
     compose: [useHook],
     useComposeOptions(options) {
       return { ...options, a: "a" };
-    }
+    },
   });
   expect(useHook2()).toEqual({ id: "ab" });
 });
@@ -130,8 +130,8 @@ test("name and context", () => {
   const system = {
     useAProps: (_: Options, htmlProps: React.HTMLAttributes<any>) => ({
       ...htmlProps,
-      id: "a"
-    })
+      id: "a",
+    }),
   };
   const { baseElement } = render(
     <SystemProvider unstable_system={system}>
@@ -154,7 +154,7 @@ test("name and context with useProps", () => {
     name: "A",
     useProps(_, htmlProps) {
       return { className: "a", ...htmlProps };
-    }
+    },
   });
   const Test = () => {
     return <div {...useHook()} />;
@@ -162,8 +162,8 @@ test("name and context with useProps", () => {
   const system = {
     useAProps: (_: Options, htmlProps: React.HTMLAttributes<any>) => ({
       ...htmlProps,
-      id: "a"
-    })
+      id: "a",
+    }),
   };
   const { baseElement } = render(
     <SystemProvider unstable_system={system}>
@@ -188,9 +188,9 @@ test("name and context with useOptions", () => {
     useOptions(options) {
       return {
         ...options,
-        a: "a"
+        a: "a",
       };
-    }
+    },
   });
   const Test = () => {
     return <div {...useHook()} />;
@@ -198,8 +198,8 @@ test("name and context with useOptions", () => {
   const system = {
     useAProps: (options: Options, htmlProps: React.HTMLAttributes<any>) => ({
       ...htmlProps,
-      id: options.a
-    })
+      id: options.a,
+    }),
   };
   const { baseElement } = render(
     <SystemProvider unstable_system={system}>

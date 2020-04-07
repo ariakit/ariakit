@@ -3,7 +3,7 @@ import { renderHook, act } from "reakit-test-utils/hooks";
 import { jestSerializerStripFunctions } from "reakit-test-utils/jestSerializerStripFunctions";
 import {
   unstable_useCompositeState as useCompositeState,
-  unstable_CompositeInitialState as CompositeInitialState
+  unstable_CompositeInitialState as CompositeInitialState,
 } from "../CompositeState";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);

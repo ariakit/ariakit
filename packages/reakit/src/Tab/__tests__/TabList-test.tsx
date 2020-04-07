@@ -10,7 +10,7 @@ const props: TabListProps = {
   move: jest.fn(),
   first: jest.fn(),
   last: jest.fn(),
-  setCurrentId: jest.fn()
+  setCurrentId: jest.fn(),
 };
 
 test("render", () => {

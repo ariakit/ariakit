@@ -5,7 +5,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   unstable_CompositeOptions,
   unstable_CompositeHTMLProps,
-  unstable_useComposite
+  unstable_useComposite,
 } from "../Composite/Composite";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -25,9 +25,9 @@ export const useTabList = createHook<TabListOptions, TabListHTMLProps>({
     return {
       role: "tablist",
       "aria-orientation": options.orientation,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const TabList = createComponent({
@@ -40,5 +40,5 @@ export const TabList = createComponent({
       "See https://reakit.io/docs/tab"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

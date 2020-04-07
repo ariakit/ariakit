@@ -13,7 +13,7 @@ const props: Parameters<typeof Menu>[0] = {
   baseId: "base",
   items: [
     { id: "a", ref: createRef("a") },
-    { id: "b", ref: createRef("b") }
+    { id: "b", ref: createRef("b") },
   ],
   setCurrentId: jest.fn(),
   move: jest.fn(),
@@ -22,7 +22,7 @@ const props: Parameters<typeof Menu>[0] = {
   first: jest.fn(),
   last: jest.fn(),
   placement: "bottom-start",
-  "aria-label": "menu"
+  "aria-label": "menu",
 };
 
 test("render", () => {

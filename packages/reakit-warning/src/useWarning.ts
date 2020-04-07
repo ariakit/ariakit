@@ -15,7 +15,7 @@ export function useWarning(condition: boolean, ...messages: any[]) {
     React.useEffect(() => {
       warning(
         condition,
-        ...messages.map(message =>
+        ...messages.map((message) =>
           isRefObject(message) ? message.current : message
         )
       );

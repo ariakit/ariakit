@@ -5,7 +5,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem
+  unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useTabState, TabStateReturn } from "./TabState";
 
@@ -19,7 +19,8 @@ export type TabProps = TabOptions & TabHTMLProps;
 
 function getTabPanelId(options: TabOptions) {
   return (
-    options.panels?.find(panel => panel.groupId === options.id)?.id || undefined
+    options.panels?.find((panel) => panel.groupId === options.id)?.id ||
+    undefined
   );
 }
 
@@ -53,7 +54,7 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
       options.disabled,
       options.manual,
       selected,
-      options.select
+      options.select,
     ]);
 
     return {
@@ -62,9 +63,9 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
       "aria-controls": getTabPanelId(options),
       onClick: useAllCallbacks(onClick, htmlOnClick),
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Tab = createComponent({ as: "button", useHook: useTab });

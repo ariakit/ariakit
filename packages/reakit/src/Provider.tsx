@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   SystemProviderProps,
-  SystemProvider
+  SystemProvider,
 } from "reakit-system/SystemProvider";
 import { unstable_IdProvider as IdProvider } from "./Id/IdProvider";
 
@@ -12,7 +12,7 @@ export type ProviderProps = Partial<SystemProviderProps> & {
 export function Provider({
   unstable_prefix: prefix,
   unstable_system: system = {},
-  children
+  children,
 }: ProviderProps) {
   return (
     <IdProvider prefix={prefix}>

@@ -11,7 +11,7 @@ function render(
   return renderHook(() => useToken(...args), {
     wrapper: (props: SystemProviderProps) => (
       <SystemProvider unstable_system={system} {...props} />
-    )
+    ),
   }).result;
 }
 

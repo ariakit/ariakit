@@ -5,7 +5,7 @@ import {
   unstable_Composite as Composite,
   unstable_CompositeGroup as CompositeGroup,
   unstable_CompositeItem as CompositeItem,
-  unstable_CompositeItemWidget as CompositeItemWidget
+  unstable_CompositeItemWidget as CompositeItemWidget,
 } from "..";
 
 const emojiMap = {
@@ -18,7 +18,7 @@ const emojiMap = {
   "<<": ["Home"],
   ">>": ["End"],
   "<<<": ["Home", { ctrlKey: true }],
-  ">>>": ["End", { ctrlKey: true }]
+  ">>>": ["End", { ctrlKey: true }],
 } as const;
 
 function active() {
@@ -42,7 +42,7 @@ function template(value: string) {
   return items[withoutSpaces.indexOf("0")];
 }
 
-[true, false].forEach(virtual => {
+[true, false].forEach((virtual) => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("warning when there's no composite role", () => {
       const Test = () => {
@@ -96,7 +96,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          currentId: "item2"
+          currentId: "item2",
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -119,7 +119,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          currentId: null
+          currentId: null,
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -176,7 +176,7 @@ function template(value: string) {
         const composite = useCompositeState({
           unstable_virtual: virtual,
           currentId: null,
-          loop: true
+          loop: true,
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -332,7 +332,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          rtl: true
+          rtl: true,
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -361,7 +361,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          loop: true
+          loop: true,
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -391,7 +391,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -422,7 +422,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          orientation: "vertical"
+          orientation: "vertical",
         });
         return (
           <Composite {...composite} role="toolbar" aria-label="composite">
@@ -467,7 +467,7 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           currentId: null,
-          unstable_virtual: virtual
+          unstable_virtual: virtual,
         });
         return (
           <Composite
@@ -505,13 +505,13 @@ function template(value: string) {
       if (virtual) {
         expect(stack.splice(0)).toEqual([
           "focus item1 item1",
-          "focus composite item1"
+          "focus composite item1",
         ]);
       } else {
         expect(stack.splice(0)).toEqual([
           "blur composite composite",
           "focus item1 item1",
-          "focus composite item1"
+          "focus composite item1",
         ]);
       }
       press.ArrowDown();
@@ -519,26 +519,26 @@ function template(value: string) {
         "blur item1 item1",
         "blur composite item1",
         "focus item2 item2",
-        "focus composite item2"
+        "focus composite item2",
       ]);
       click($("item3"));
       expect(stack.splice(0)).toEqual([
         "blur item2 item2",
         "blur composite item2",
         "focus item3 item3",
-        "focus composite item3"
+        "focus composite item3",
       ]);
       click(baseElement);
       if (virtual) {
         expect(stack.splice(0)).toEqual([
           "blur item3 item3",
           "blur composite item3",
-          "blur composite composite"
+          "blur composite composite",
         ]);
       } else {
         expect(stack.splice(0)).toEqual([
           "blur item3 item3",
-          "blur composite item3"
+          "blur composite item3",
         ]);
       }
       press.Tab();
@@ -546,12 +546,12 @@ function template(value: string) {
         expect(stack.splice(0)).toEqual([
           "focus composite composite",
           "focus item3 item3",
-          "focus composite item3"
+          "focus composite item3",
         ]);
       } else {
         expect(stack.splice(0)).toEqual([
           "focus item3 item3",
-          "focus composite item3"
+          "focus composite item3",
         ]);
       }
     });
@@ -580,7 +580,7 @@ function template(value: string) {
       expect(getByText("item2")).toHaveFocus();
     });
 
-    ["disabled", "unmounted"].forEach(state => {
+    ["disabled", "unmounted"].forEach((state) => {
       test(`move to the past item when the current active item is ${state}`, () => {
         const Test = () => {
           const [disabled, setDisabled] = React.useState(false);
@@ -627,7 +627,7 @@ function template(value: string) {
           const [disabled, setDisabled] = React.useState(false);
           const composite = useCompositeState({
             unstable_virtual: virtual,
-            currentId: "item2"
+            currentId: "item2",
           });
           return (
             <>
@@ -822,7 +822,7 @@ function template(value: string) {
         const rows = [
           [2, 2, 1, 2],
           [2, 0, 0, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -977,13 +977,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          rtl: true
+          rtl: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1075,13 +1075,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          wrap: true
+          wrap: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1152,13 +1152,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          wrap: "horizontal"
+          wrap: "horizontal",
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1222,13 +1222,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          wrap: "vertical"
+          wrap: "vertical",
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1292,13 +1292,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          loop: true
+          loop: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1412,13 +1412,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          loop: "horizontal"
+          loop: "horizontal",
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1482,13 +1482,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          loop: "vertical"
+          loop: "vertical",
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1560,13 +1560,13 @@ function template(value: string) {
         const composite = useCompositeState({
           unstable_virtual: virtual,
           wrap: true,
-          loop: true
+          loop: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1667,13 +1667,13 @@ function template(value: string) {
         const composite = useCompositeState({
           unstable_virtual: virtual,
           wrap: "horizontal",
-          loop: "vertical"
+          loop: "vertical",
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1753,13 +1753,13 @@ function template(value: string) {
           unstable_virtual: virtual,
           rtl: true,
           wrap: true,
-          loop: true
+          loop: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -1856,7 +1856,7 @@ function template(value: string) {
           [2, 0, 0, 0, 1],
           [2, 2, 0],
           [2, 2, 2, 2, 1],
-          [2, 2, 2]
+          [2, 2, 2],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -2013,14 +2013,14 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          wrap: true
+          wrap: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 0, 1],
           [2, 2, 0],
           [2, 2, 2, 2, 1],
-          [2, 2, 2]
+          [2, 2, 2],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -2114,13 +2114,13 @@ function template(value: string) {
         const composite = useCompositeState({
           unstable_virtual: virtual,
           orientation: "vertical",
-          wrap: true
+          wrap: true,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled, .5 - has widget
         const rows = [
           [2, 0.5, 0, 2],
           [2, 2.5, 1, 2],
-          [2, 2, 1.5, 0.5]
+          [2, 2, 1.5, 0.5],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -2177,7 +2177,7 @@ function template(value: string) {
         const [disableGroup, setDisableGroup] = React.useState(false);
         const [disableItems, setDisableItems] = React.useState(false);
         const composite = useCompositeState({
-          unstable_virtual: virtual
+          unstable_virtual: virtual,
         });
         const [groups, setGroups] = React.useState<string[][]>([[]]);
 
@@ -2185,13 +2185,13 @@ function template(value: string) {
           if (disableGroup) {
             setGroups([
               ["1-1", "1-2", "1-3"],
-              ["3-1", "3-2", "3-3"]
+              ["3-1", "3-2", "3-3"],
             ]);
           } else {
             setGroups([
               ["1-1", "1-2", "1-3"],
               ["2-1", "2-2", "2-3"],
-              ["3-1", "3-2", "3-3"]
+              ["3-1", "3-2", "3-3"],
             ]);
           }
         }, [disableGroup]);
@@ -2207,7 +2207,7 @@ function template(value: string) {
             <Composite {...composite} role="grid" aria-label="composite">
               {groups.map((items, i) => (
                 <CompositeGroup {...composite} key={items.join("")}>
-                  {items.map(item => (
+                  {items.map((item) => (
                     <CompositeItem
                       {...composite}
                       key={item}
@@ -2248,13 +2248,13 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({
           unstable_virtual: virtual,
-          currentId: null
+          currentId: null,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -2475,13 +2475,13 @@ function template(value: string) {
         const composite = useCompositeState({
           unstable_virtual: virtual,
           wrap: true,
-          currentId: null
+          currentId: null,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -2555,13 +2555,13 @@ function template(value: string) {
           unstable_virtual: virtual,
           wrap: true,
           loop: true,
-          currentId: null
+          currentId: null,
         });
         // 2 - enabled, 1 - disabled focusable, 0 - disabled
         const rows = [
           [2, 0, 0, 2],
           [2, 2, 1, 2],
-          [2, 2, 2, 0]
+          [2, 2, 2, 0],
         ];
         return (
           <Composite {...composite} role="grid" aria-label="composite">
@@ -2692,7 +2692,7 @@ test("block intermediate focus/blur events when composite container is not the p
   press.Tab();
   expect(stack.splice(0)).toEqual([
     "focus composite composite",
-    "focus item1 item1"
+    "focus item1 item1",
   ]);
   press.ArrowDown();
   expect(stack.splice(0)).toEqual(["blur item1 item1", "focus item2 item2"]);
@@ -2701,11 +2701,11 @@ test("block intermediate focus/blur events when composite container is not the p
   click(baseElement);
   expect(stack.splice(0)).toEqual([
     "blur item3 item3",
-    "blur composite composite"
+    "blur composite composite",
   ]);
   press.Tab();
   expect(stack.splice(0)).toEqual([
     "focus composite composite",
-    "focus item3 item3"
+    "focus item3 item3",
   ]);
 });

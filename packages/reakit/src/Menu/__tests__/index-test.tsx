@@ -6,7 +6,7 @@ import {
   focus,
   act,
   wait,
-  press
+  press,
 } from "reakit-test-utils";
 import {
   useMenuState,
@@ -17,10 +17,10 @@ import {
   MenuBar,
   MenuItemRadio,
   MenuItemCheckbox,
-  MenuButtonHTMLProps
+  MenuButtonHTMLProps,
 } from "..";
 
-[true, false].forEach(virtual => {
+[true, false].forEach((virtual) => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("menu bar is always visible", () => {
       const Test = () => {
@@ -139,7 +139,7 @@ import {
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </Menu>
         );
@@ -175,7 +175,7 @@ import {
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </Menu>
         );
@@ -215,7 +215,7 @@ import {
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </Menu>
         );
@@ -257,7 +257,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>
@@ -307,7 +307,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          placement: "bottom-end"
+          placement: "bottom-end",
         });
         return (
           <>
@@ -338,7 +338,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          placement: "top"
+          placement: "top",
         });
         return (
           <>
@@ -369,7 +369,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          placement: "bottom"
+          placement: "bottom",
         });
         return (
           <>
@@ -400,7 +400,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          placement: "top-start"
+          placement: "top-start",
         });
         return (
           <>
@@ -431,7 +431,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          placement: "right"
+          placement: "right",
         });
         return (
           <>
@@ -462,7 +462,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          placement: "left"
+          placement: "left",
         });
         return (
           <>
@@ -514,7 +514,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>
@@ -543,7 +543,7 @@ import {
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
           const menu = useMenuState({
             unstable_virtual: virtual,
-            placement: "left"
+            placement: "left",
           });
           return (
             <>
@@ -564,7 +564,7 @@ import {
         return (
           <Menu {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </Menu>
         );
@@ -588,7 +588,7 @@ import {
         const menu = useMenuState({
           unstable_virtual: virtual,
           currentId: null,
-          visible: true
+          visible: true,
         });
         return (
           <Menu {...menu} aria-label="menu">
@@ -616,7 +616,7 @@ import {
         const menu = useMenuState({
           unstable_virtual: virtual,
           currentId: null,
-          visible: true
+          visible: true,
         });
         return (
           <Menu {...menu} aria-label="menu">
@@ -660,12 +660,12 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </MenuBar>
         );
@@ -700,12 +700,12 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </MenuBar>
         );
@@ -741,12 +741,12 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </MenuBar>
         );
@@ -783,15 +783,15 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={1} />}
+              {(props) => <Submenu {...props} index={1} />}
             </MenuItem>
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={2} />}
+              {(props) => <Submenu {...props} index={2} />}
             </MenuItem>
           </MenuBar>
         );
@@ -831,12 +831,12 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </MenuBar>
         );
@@ -874,12 +874,12 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+            <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
             <MenuItem {...menu}>item3</MenuItem>
           </MenuBar>
         );
@@ -967,7 +967,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>
@@ -1053,18 +1053,18 @@ import {
       const Test = () => {
         const menu1 = useMenuState({
           unstable_virtual: virtual,
-          visible: true
+          visible: true,
         });
         const menu2 = useMenuState({
           unstable_virtual: virtual,
-          visible: true
+          visible: true,
         });
         return (
           <Menu aria-label="menu1" {...menu1}>
             <MenuItem {...menu1}>Abc</MenuItem>
             <MenuItem {...menu1}>Def</MenuItem>
             <MenuItem {...menu1}>
-              {props => (
+              {(props) => (
                 <MenuButton {...props} {...menu2}>
                   Ghi
                 </MenuButton>
@@ -1097,7 +1097,7 @@ import {
         const menu = useMenuState({
           unstable_virtual: virtual,
           orientation: "horizontal",
-          loop: true
+          loop: true,
         });
         return (
           <MenuBar {...menu} aria-label="menu">
@@ -1124,7 +1124,7 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
@@ -1166,15 +1166,15 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={1} />}
+              {(props) => <Submenu {...props} index={1} />}
             </MenuItem>
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={2} />}
+              {(props) => <Submenu {...props} index={2} />}
             </MenuItem>
           </MenuBar>
         );
@@ -1238,18 +1238,18 @@ import {
       const Test = () => {
         const menu = useMenuState({
           unstable_virtual: virtual,
-          orientation: "horizontal"
+          orientation: "horizontal",
         });
         return (
           <MenuBar {...menu} aria-label="menu">
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={1} />}
+              {(props) => <Submenu {...props} index={1} />}
             </MenuItem>
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={2} />}
+              {(props) => <Submenu {...props} index={2} />}
             </MenuItem>
             <MenuItem {...menu}>
-              {props => <Submenu {...props} index={3} />}
+              {(props) => <Submenu {...props} index={3} />}
             </MenuItem>
           </MenuBar>
         );
@@ -1308,7 +1308,7 @@ import {
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
           const menu = useMenuState({
             unstable_virtual: virtual,
-            visible: true
+            visible: true,
           });
           return (
             <>
@@ -1331,7 +1331,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>
@@ -1352,7 +1352,7 @@ import {
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
           const menu = useMenuState({
             unstable_virtual: virtual,
-            visible: true
+            visible: true,
           });
           return (
             <>
@@ -1376,7 +1376,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>
@@ -1399,7 +1399,7 @@ import {
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
           const menu = useMenuState({
             unstable_virtual: virtual,
-            visible: true
+            visible: true,
           });
           return (
             <>
@@ -1422,7 +1422,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>
@@ -1444,7 +1444,7 @@ import {
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
           const menu = useMenuState({
             unstable_virtual: virtual,
-            visible: true
+            visible: true,
           });
           return (
             <>
@@ -1467,7 +1467,7 @@ import {
             <MenuButton {...menu}>disclosure</MenuButton>
             <Menu {...menu} aria-label="menu">
               <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>{props => <Submenu {...props} />}</MenuItem>
+              <MenuItem {...menu}>{(props) => <Submenu {...props} />}</MenuItem>
               <MenuItem {...menu}>item3</MenuItem>
             </Menu>
           </>

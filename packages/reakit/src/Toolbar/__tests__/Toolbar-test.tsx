@@ -10,7 +10,7 @@ const props: ToolbarProps = {
   setCurrentId: jest.fn(),
   move: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
 };
 
 test("render", () => {

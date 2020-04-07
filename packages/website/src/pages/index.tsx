@@ -24,8 +24,8 @@ function useGitHubStars() {
   const [stars, setStars] = React.useState<number | null>(null);
   React.useEffect(() => {
     fetch("https://api.github.com/repos/reakit/reakit")
-      .then(result => result.json())
-      .then(response => setStars(response.stargazers_count));
+      .then((result) => result.json())
+      .then((response) => setStars(response.stargazers_count));
   }, []);
   return stars;
 }

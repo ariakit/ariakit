@@ -15,7 +15,7 @@ export function fillGroups(groups: Item[][]) {
             id: "__EMPTY_ITEM__",
             disabled: true,
             ref: { current: null },
-            groupId: group[i - 1].groupId
+            groupId: group[i - 1].groupId,
           };
         }
       }

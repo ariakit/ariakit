@@ -6,7 +6,7 @@ import { getDocument } from "reakit-utils/getDocument";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem
+  unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
 import { isTouchDevice } from "./__utils/isTouchDevice";
 import { useMenuState, MenuStateReturn } from "./MenuState";
@@ -59,7 +59,7 @@ function hoveringAnotherMenuItem(
   event: React.MouseEvent,
   items: MenuItemOptions["items"]
 ) {
-  return items?.some(item => item.ref.current === getMouseDestination(event));
+  return items?.some((item) => item.ref.current === getMouseDestination(event));
 }
 
 export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
@@ -113,12 +113,12 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       role: "menuitem",
       onMouseEnter: useAllCallbacks(onMouseEnter, htmlOnMouseEnter),
       onMouseLeave: useAllCallbacks(onMouseLeave, htmlOnMouseLeave),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const MenuItem = createComponent({
   as: "button",
-  useHook: useMenuItem
+  useHook: useMenuItem,
 });

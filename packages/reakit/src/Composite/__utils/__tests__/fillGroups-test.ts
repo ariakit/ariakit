@@ -5,10 +5,10 @@ test("fillRows", () => {
   const groups: Item[][] = [
     [
       { id: "0", ref: { current: null }, groupId: "0" },
-      { id: "1", ref: { current: null }, groupId: "0" }
+      { id: "1", ref: { current: null }, groupId: "0" },
     ],
     [{ id: "0", ref: { current: null }, groupId: "1" }],
-    [{ id: "0", ref: { current: null }, groupId: "2" }]
+    [{ id: "0", ref: { current: null }, groupId: "2" }],
   ];
   expect(fillGroups(groups)).toEqual([
     [groups[0][0], groups[0][1]],
@@ -18,8 +18,8 @@ test("fillRows", () => {
         id: "__EMPTY_ITEM__",
         ref: { current: null },
         disabled: true,
-        groupId: "1"
-      }
+        groupId: "1",
+      },
     ],
     [
       groups[2][0],
@@ -27,8 +27,8 @@ test("fillRows", () => {
         id: "__EMPTY_ITEM__",
         ref: { current: null },
         disabled: true,
-        groupId: "2"
-      }
-    ]
+        groupId: "2",
+      },
+    ],
   ]);
 });

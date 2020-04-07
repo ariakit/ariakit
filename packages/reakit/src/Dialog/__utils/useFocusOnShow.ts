@@ -27,7 +27,7 @@ export function useFocusOnShow(
     if (
       !shouldFocus ||
       !dialog ||
-      nestedDialogs.some(child => !child.current?.hidden)
+      nestedDialogs.some((child) => !child.current?.hidden)
     ) {
       return;
     }

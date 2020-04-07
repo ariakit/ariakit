@@ -102,7 +102,7 @@ export function PlaygroundPreview({
     options.componentName,
     renderChildren,
     handleError,
-    unmount
+    unmount,
   ]);
 
   React.useEffect(() => {

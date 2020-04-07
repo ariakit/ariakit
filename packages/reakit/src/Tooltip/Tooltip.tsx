@@ -6,7 +6,7 @@ import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
-  useDisclosureContent
+  useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
@@ -36,7 +36,7 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   useOptions({ unstable_portal = true, ...options }) {
     return {
       unstable_portal,
-      ...options
+      ...options,
     };
   },
 
@@ -65,15 +65,15 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
       style: {
         ...options.unstable_popoverStyles,
         pointerEvents: "none",
-        ...htmlStyle
+        ...htmlStyle,
       },
       wrapElement: usePipe(wrapElement, htmlWrapElement),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Tooltip = createComponent({
   as: "div",
-  useHook: useTooltip
+  useHook: useTooltip,
 });

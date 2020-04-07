@@ -38,8 +38,8 @@ function babelPlugin({ types: t }) {
             )
           );
         }
-      }
-    }
+      },
+    },
   };
 }
 

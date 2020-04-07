@@ -1,13 +1,13 @@
 import * as React from "react";
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 import {
   unstable_CompositeState as CompositeState,
   unstable_CompositeActions as CompositeActions,
   unstable_CompositeInitialState as CompositeInitialState,
-  unstable_useCompositeState as useCompositeState
+  unstable_useCompositeState as useCompositeState,
 } from "../Composite";
 
 export type RadioState = CompositeState & {
@@ -40,14 +40,14 @@ export function useRadioState(
   return {
     ...composite,
     state,
-    setState
+    setState,
   };
 }
 
 const keys: Array<keyof RadioStateReturn> = [
   ...useCompositeState.__keys,
   "state",
-  "setState"
+  "setState",
 ];
 
 useRadioState.__keys = keys;

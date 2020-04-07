@@ -68,15 +68,15 @@ export const unstable_useFormPushButton = createHook<
       options.name,
       options.value,
       options.values,
-      options.baseId
+      options.baseId,
     ]);
 
     return {
       id: getPushButtonId(options.name, options.baseId),
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormPushButtonOptions<V, P>,
   htmlProps?: unstable_FormPushButtonHTMLProps
@@ -84,7 +84,7 @@ export const unstable_useFormPushButton = createHook<
 
 export const unstable_FormPushButton = (createComponent({
   as: "button",
-  useHook: unstable_useFormPushButton
+  useHook: unstable_useFormPushButton,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "button">(
   props: PropsWithAs<unstable_FormPushButtonOptions<V, P>, T>
 ) => JSX.Element;

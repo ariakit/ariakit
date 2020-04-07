@@ -19,9 +19,9 @@ export function useNestedDialogs(dialogRef: DialogRef, options: DialogOptions) {
   const addDialog = React.useCallback(
     (ref: DialogRef, visible?: boolean) => {
       context.addDialog?.(ref);
-      setDialogs(prevDialogs => [...prevDialogs, ref]);
+      setDialogs((prevDialogs) => [...prevDialogs, ref]);
       if (visible) {
-        setVisibleModals(prevDialogs => [...prevDialogs, ref]);
+        setVisibleModals((prevDialogs) => [...prevDialogs, ref]);
       }
     },
     [context.addDialog]
@@ -30,8 +30,8 @@ export function useNestedDialogs(dialogRef: DialogRef, options: DialogOptions) {
   const removeDialog = React.useCallback(
     (ref: DialogRef) => {
       context.removeDialog?.(ref);
-      setDialogs(prevDialogs => removeItemFromArray(prevDialogs, ref));
-      setVisibleModals(prevDialogs => removeItemFromArray(prevDialogs, ref));
+      setDialogs((prevDialogs) => removeItemFromArray(prevDialogs, ref));
+      setVisibleModals((prevDialogs) => removeItemFromArray(prevDialogs, ref));
     },
     [context.removeDialog]
   );
@@ -49,7 +49,7 @@ export function useNestedDialogs(dialogRef: DialogRef, options: DialogOptions) {
     dialogRef,
     options.modal,
     options.visible,
-    context.removeDialog
+    context.removeDialog,
   ]);
 
   // Close all nested dialogs when parent dialog closes
@@ -68,7 +68,7 @@ export function useNestedDialogs(dialogRef: DialogRef, options: DialogOptions) {
     () => ({
       visible: options.visible,
       addDialog,
-      removeDialog
+      removeDialog,
     }),
     [options.visible, addDialog, removeDialog]
   );

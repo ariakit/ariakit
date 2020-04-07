@@ -2,7 +2,7 @@ import { Orientation } from "./types";
 
 const map = {
   horizontal: "vertical",
-  vertical: "horizontal"
+  vertical: "horizontal",
 } as const;
 
 export function getOppositeOrientation(orientation?: Orientation) {

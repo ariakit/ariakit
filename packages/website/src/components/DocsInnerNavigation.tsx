@@ -20,10 +20,10 @@ type Props = {
 function useCollection() {
   const [items, setItems] = React.useState<string[]>([]);
   const add = React.useCallback((item: string) => {
-    setItems(prevItems => [...prevItems, item]);
+    setItems((prevItems) => [...prevItems, item]);
   }, []);
   const remove = React.useCallback((item: string) => {
-    setItems(prevItems => {
+    setItems((prevItems) => {
       const idx = prevItems.indexOf(item);
       return [...prevItems.slice(0, idx), ...prevItems.slice(idx + 1)];
     });
@@ -31,7 +31,7 @@ function useCollection() {
   return {
     items,
     add,
-    remove
+    remove,
   };
 }
 
@@ -51,12 +51,12 @@ function useScrollSpy() {
     if (!items.length) return undefined;
 
     const elements = document.querySelectorAll<HTMLElement>(
-      items.map(item => `[id="${item}"]`).join(",")
+      items.map((item) => `[id="${item}"]`).join(",")
     );
     const elementsArray = Array.from(elements);
 
     const handleScroll = () => {
-      elementsArray.forEach(element => {
+      elementsArray.forEach((element) => {
         if (element.offsetTop <= window.scrollY + 100) {
           setCurrentId(element.id);
         }
@@ -148,15 +148,15 @@ const { Compiler: renderAst } = new RehypeReact({
         );
       }
       return <a {...props}>{props.children}</a>;
-    }
-  }
+    },
+  },
 });
 
 export default function DocsInnerNavigation({
   sourceUrl,
   readmeUrl,
   title,
-  tableOfContentsAst
+  tableOfContentsAst,
 }: Props) {
   const { id } = useId();
   const className = useDocsInnerNavigationCSS();

@@ -1,13 +1,13 @@
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 import {
   PopoverState,
   PopoverActions,
   PopoverInitialState,
   usePopoverState,
-  PopoverStateReturn
+  PopoverStateReturn,
 } from "../Popover/PopoverState";
 
 export type TooltipState = Omit<PopoverState, "modal">;
@@ -31,7 +31,7 @@ export function useTooltipState(
 }
 
 const keys: Array<keyof PopoverStateReturn | keyof TooltipStateReturn> = [
-  ...usePopoverState.__keys
+  ...usePopoverState.__keys,
 ];
 
 useTooltipState.__keys = keys;

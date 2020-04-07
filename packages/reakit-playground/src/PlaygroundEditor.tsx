@@ -64,7 +64,7 @@ export function PlaygroundEditor({
       tabSize,
       mode,
       autoRefresh,
-      maxHeight
+      maxHeight,
     },
     htmlProps
   );
@@ -83,7 +83,7 @@ export function PlaygroundEditor({
 
   const className = [
     htmlProps.className,
-    !enabled && !options.readOnly && "disabled"
+    !enabled && !options.readOnly && "disabled",
   ]
     .filter(Boolean)
     .join(" ");
@@ -142,8 +142,8 @@ export function PlaygroundEditor({
           ? {}
           : {
               Tab: false,
-              "Shift-Tab": false
-            }
+              "Shift-Tab": false,
+            },
       }}
     />
   );

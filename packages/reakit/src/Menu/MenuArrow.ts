@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   PopoverArrowOptions,
   PopoverArrowHTMLProps,
-  usePopoverArrow
+  usePopoverArrow,
 } from "../Popover/PopoverArrow";
 import { useMenuState } from "./MenuState";
 
@@ -16,10 +16,10 @@ export type MenuArrowProps = MenuArrowOptions & MenuArrowHTMLProps;
 export const useMenuArrow = createHook<MenuArrowOptions, MenuArrowHTMLProps>({
   name: "MenuArrow",
   compose: usePopoverArrow,
-  useState: useMenuState
+  useState: useMenuState,
 });
 
 export const MenuArrow = createComponent({
   as: "div",
-  useHook: useMenuArrow
+  useHook: useMenuArrow,
 });

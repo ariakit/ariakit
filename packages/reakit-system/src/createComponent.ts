@@ -51,7 +51,7 @@ export function createComponent<T extends As, O>({
   useHook,
   keys = (useHook && useHook.__keys) || [],
   propsAreEqual = useHook && useHook.__propsAreEqual,
-  useCreateElement = defaultUseCreateElement
+  useCreateElement = defaultUseCreateElement,
 }: Options<T, O>) {
   const Comp = (
     { as = type, ...props }: PropsWithAs<O, T>,
@@ -61,7 +61,7 @@ export function createComponent<T extends As, O>({
       const [options, htmlProps] = splitProps(props, keys);
       const { wrapElement, ...elementProps } = useHook(options, {
         ref,
-        ...htmlProps
+        ...htmlProps,
       });
       // @ts-ignore
       const asKeys = as.render ? as.render.__keys : as.__keys;

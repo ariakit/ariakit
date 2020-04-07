@@ -57,7 +57,7 @@ test("checkbox onChange checked value", async () => {
       <label>
         <Checkbox
           {...checkbox}
-          onChange={event => onChange(event.target.checked)}
+          onChange={(event) => onChange(event.target.checked)}
         />
         checkbox
       </label>
@@ -108,7 +108,7 @@ test("checkbox onChange checked value without useCheckboxState", async () => {
       <label>
         <Checkbox
           checked={checked}
-          onChange={event => {
+          onChange={(event) => {
             setChecked(event.target.checked);
             onChange(event.target.checked);
           }}
@@ -165,7 +165,7 @@ test("useCheckbox", () => {
       {
         checked,
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          setChecked(event.target.checked)
+          setChecked(event.target.checked),
       }
     );
     return (

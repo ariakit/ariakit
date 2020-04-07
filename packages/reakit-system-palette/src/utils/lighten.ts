@@ -23,6 +23,6 @@ export function useLighten(color?: string, ratio?: number) {
   React.useDebugValue(`${color}*${ratio}`);
   return React.useMemo(() => lighten(color, ratio) as string | undefined, [
     color,
-    ratio
+    ratio,
   ]);
 }

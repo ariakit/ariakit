@@ -13,7 +13,7 @@ export function useDisableHoverOutside(
       { current: null },
       nestedDialogs,
       eventType,
-      event => {
+      (event) => {
         event.stopPropagation();
         event.preventDefault();
       },

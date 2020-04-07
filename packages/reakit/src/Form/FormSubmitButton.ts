@@ -43,12 +43,12 @@ export const unstable_useFormSubmitButton = createHook<
     return {
       type: "submit",
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const unstable_FormSubmitButton = createComponent({
   as: "button",
-  useHook: unstable_useFormSubmitButton
+  useHook: unstable_useFormSubmitButton,
 });

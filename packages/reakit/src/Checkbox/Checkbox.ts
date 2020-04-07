@@ -7,7 +7,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   ClickableOptions,
   ClickableHTMLProps,
-  useClickable
+  useClickable,
 } from "../Clickable/Clickable";
 import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
 import { useIndeterminateState } from "./__utils/useIndeterminateState";
@@ -57,7 +57,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
       unstable_clickOnEnter,
       value,
       checked,
-      ...options
+      ...options,
     };
   },
 
@@ -109,7 +109,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
         options.disabled,
         options.setState,
         options.state,
-        options.value
+        options.value,
       ]
     );
 
@@ -131,12 +131,12 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
       type: "checkbox",
       onChange,
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Checkbox = createComponent({
   as: "input",
-  useHook: useCheckbox
+  useHook: useCheckbox,
 });

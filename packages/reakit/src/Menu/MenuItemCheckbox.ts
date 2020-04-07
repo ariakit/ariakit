@@ -4,7 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   CheckboxOptions,
   useCheckbox,
-  CheckboxHTMLProps
+  CheckboxHTMLProps,
 } from "../Checkbox/Checkbox";
 import { MenuItemOptions, MenuItemHTMLProps, useMenuItem } from "./MenuItem";
 import { MenuStateReturn, useMenuState } from "./MenuState";
@@ -34,14 +34,14 @@ export const useMenuItemCheckbox = createHook<
 
   useOptions(options) {
     const setState = React.useCallback(
-      value => options.unstable_setValue(options.name, value),
+      (value) => options.unstable_setValue(options.name, value),
       [options.unstable_setValue, options.name]
     );
 
     return {
       ...options,
       state: options.unstable_values[options.name],
-      setState
+      setState,
     };
   },
 
@@ -49,12 +49,12 @@ export const useMenuItemCheckbox = createHook<
     return {
       role: "menuitemcheckbox",
       name: options.name,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const MenuItemCheckbox = createComponent({
   as: "button",
-  useHook: useMenuItemCheckbox
+  useHook: useMenuItemCheckbox,
 });

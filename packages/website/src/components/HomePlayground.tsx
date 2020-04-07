@@ -6,14 +6,14 @@ import {
   Tab,
   TabPanel,
   TabPanelOptions,
-  TabPanelProps
+  TabPanelProps,
 } from "reakit";
 import {
   usePlaygroundState,
   PlaygroundPreview,
   PlaygroundEditor,
   PlaygroundPreviewOptions,
-  PlaygroundStateReturn
+  PlaygroundStateReturn,
 } from "reakit-playground";
 import { css } from "emotion";
 import { compileComponent } from "../../../reakit-playground/src/__utils/compileComponent";
@@ -219,7 +219,7 @@ export default function HomePlayground() {
     tabPlayground.code,
     dialogPlayground.code,
     menuPlayground.code,
-    submenuPlayground.code
+    submenuPlayground.code,
   ]);
 
   return clientRendered ? (

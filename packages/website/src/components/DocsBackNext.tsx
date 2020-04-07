@@ -65,12 +65,14 @@ function useDocsBackNextCSS() {
 
 export default function DocsBackNext({
   nextPath,
-  prevPath
+  prevPath,
 }: DocsBackNextProps) {
   const data: Data = useStaticQuery(query);
   const className = useDocsBackNextCSS();
   const findMeta = (path: string) =>
-    data.allMarkdownRemark.nodes.find(node => node.frontmatter.path === path)!;
+    data.allMarkdownRemark.nodes.find(
+      (node) => node.frontmatter.path === path
+    )!;
   const getTitle = (path: string) => findMeta(path).title;
   return (
     <div className={className}>

@@ -45,9 +45,9 @@ export const unstable_useFormGroup = createHook<
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormGroupOptions<V, P>,
   htmlProps?: unstable_FormGroupHTMLProps
@@ -55,7 +55,7 @@ export const unstable_useFormGroup = createHook<
 
 export const unstable_FormGroup = (createComponent({
   as: "fieldset",
-  useHook: unstable_useFormGroup
+  useHook: unstable_useFormGroup,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "fieldset">(
   props: PropsWithAs<unstable_FormGroupOptions<V, P>, T>
 ) => JSX.Element;

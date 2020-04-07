@@ -12,16 +12,16 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   ClickableOptions,
   ClickableHTMLProps,
-  useClickable
+  useClickable,
 } from "../Clickable/Clickable";
 import {
   unstable_useId,
   unstable_IdOptions,
-  unstable_IdHTMLProps
+  unstable_IdHTMLProps,
 } from "../Id/Id";
 import {
   unstable_CompositeStateReturn,
-  unstable_useCompositeState
+  unstable_useCompositeState,
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
@@ -93,7 +93,7 @@ export const unstable_useCompositeItem = createHook<
       currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
-        : options.unstable_clickOnSpace
+        : options.unstable_clickOnSpace,
     };
   },
 
@@ -115,7 +115,7 @@ export const unstable_useCompositeItem = createHook<
     const isCurrentItem = options.currentId === id;
     const isCurrentItemRef = useLiveRef(isCurrentItem);
     const hasFocusedComposite = React.useRef(false);
-    const item = options.items?.find(i => i.id === id);
+    const item = options.items?.find((i) => i.id === id);
     const shouldTabIndex =
       (!options.unstable_virtual &&
         !options.unstable_hasActiveWidget &&
@@ -203,7 +203,7 @@ export const unstable_useCompositeItem = createHook<
           stopPropagation: true,
           // We don't want to listen to focusable elements inside the composite
           // item, such as a CompositeItemWidget.
-          shouldKeyDown: event => event.currentTarget === event.target,
+          shouldKeyDown: (event) => event.currentTarget === event.target,
           keyMap: () => {
             // `options.orientation` can also be undefined, which means that
             // both `isVertical` and `isHorizontal` will be `true`.
@@ -224,14 +224,14 @@ export const unstable_useCompositeItem = createHook<
               ArrowDown: (isGrid || isVertical) && (() => options.down?.()),
               ArrowLeft:
                 (isGrid || isHorizontal) && (() => options.previous?.()),
-              Home: event => {
+              Home: (event) => {
                 if (!isGrid || event.ctrlKey) {
                   options.first?.();
                 } else {
                   options.previous?.(true);
                 }
               },
-              End: event => {
+              End: (event) => {
                 if (!isGrid || event.ctrlKey) {
                   options.last?.();
                 } else {
@@ -251,9 +251,9 @@ export const unstable_useCompositeItem = createHook<
                 } else {
                   options.last?.();
                 }
-              }
+              },
             };
-          }
+          },
         }),
       [
         htmlOnKeyDown,
@@ -264,7 +264,7 @@ export const unstable_useCompositeItem = createHook<
         options.up,
         options.down,
         options.first,
-        options.last
+        options.last,
       ]
     );
 
@@ -311,12 +311,12 @@ export const unstable_useCompositeItem = createHook<
       onBlur,
       onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const unstable_CompositeItem = createComponent({
   as: "button",
-  useHook: unstable_useCompositeItem
+  useHook: unstable_useCompositeItem,
 });

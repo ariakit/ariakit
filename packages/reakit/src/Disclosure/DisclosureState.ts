@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { warning } from "reakit-warning";
@@ -9,7 +9,7 @@ import {
   unstable_IdState,
   unstable_IdActions,
   unstable_IdInitialState,
-  unstable_useIdState
+  unstable_useIdState,
 } from "../Id/IdState";
 
 export type DisclosureState = unstable_IdState & {
@@ -128,7 +128,7 @@ export function useDisclosureState(
       "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",
       "See https://reakit.io/docs/disclosure/#conditionally-rendering"
     );
-    setVisible(v => !v);
+    setVisible((v) => !v);
   }, [isMounted]);
 
   const stopAnimation = React.useCallback(() => setAnimating(false), []);
@@ -142,7 +142,7 @@ export function useDisclosureState(
     hide,
     toggle,
     unstable_stopAnimation: stopAnimation,
-    unstable_setIsMounted: setIsMounted
+    unstable_setIsMounted: setIsMounted,
   };
 }
 
@@ -155,7 +155,7 @@ const keys: Array<keyof DisclosureStateReturn> = [
   "hide",
   "toggle",
   "unstable_stopAnimation",
-  "unstable_setIsMounted"
+  "unstable_setIsMounted",
 ];
 
 useDisclosureState.__keys = keys;

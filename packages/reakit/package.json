@@ -39,7 +39,7 @@
   ],
   "dependencies": {
     "@popperjs/core": "^2.2.1",
-    "body-scroll-lock": "^2.6.4",
+    "body-scroll-lock": "^3.0.1",
     "reakit-system": "^0.10.0",
     "reakit-utils": "^0.10.0",
     "reakit-warning": "^0.1.0"

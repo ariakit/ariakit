@@ -4,7 +4,7 @@ import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {
   baseId: "base",
-  "aria-label": "popover"
+  "aria-label": "popover",
 };
 
 test("render", () => {

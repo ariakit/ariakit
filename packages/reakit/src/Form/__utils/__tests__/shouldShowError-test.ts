@@ -6,15 +6,15 @@ test("shouldShowError", () => {
       a: "a",
       b: "b",
       c: {
-        d: ["e", null, "f"]
-      }
+        d: ["e", null, "f"],
+      },
     },
     touched: {
       a: true,
       c: {
-        d: [true, true]
-      }
-    }
+        d: [true, true],
+      },
+    },
   };
   expect(shouldShowError(obj, "a")).toBe(true);
   expect(shouldShowError(obj, "b")).toBe(false);

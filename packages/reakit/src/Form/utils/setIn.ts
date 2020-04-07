@@ -19,7 +19,7 @@ export function unstable_setIn<
       return [
         ...object.slice(0, Number(key)),
         result,
-        ...object.slice(Number(key) + 1)
+        ...object.slice(Number(key) + 1),
       ] as T;
     }
     return [result] as T;
@@ -27,6 +27,6 @@ export function unstable_setIn<
 
   return {
     ...object,
-    [key]: result
+    [key]: result,
   };
 }

@@ -5,7 +5,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   unstable_CompositeOptions,
   unstable_CompositeHTMLProps,
-  unstable_useComposite
+  unstable_useComposite,
 } from "../Composite/Composite";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
@@ -25,9 +25,9 @@ export const useToolbar = createHook<ToolbarOptions, ToolbarHTMLProps>({
     return {
       role: "toolbar",
       "aria-orientation": options.orientation,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Toolbar = createComponent({
@@ -40,5 +40,5 @@ export const Toolbar = createComponent({
       "See https://reakit.io/docs/toolbar"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

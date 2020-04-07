@@ -4,7 +4,7 @@ import { warning } from "reakit-warning";
 import {
   DisclosureOptions,
   DisclosureHTMLProps,
-  useDisclosure
+  useDisclosure,
 } from "../Disclosure/Disclosure";
 import { useHiddenState } from "./HiddenState";
 
@@ -30,10 +30,10 @@ export const useHiddenDisclosure = createHook<
       "See https://reakit.io/docs/disclosure"
     );
     return htmlProps;
-  }
+  },
 });
 
 export const HiddenDisclosure = createComponent({
   as: "button",
-  useHook: useHiddenDisclosure
+  useHook: useHiddenDisclosure,
 });

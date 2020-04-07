@@ -4,7 +4,7 @@ const getFirstHeading = require("./getFirstHeading");
 function plugin({ markdownAST }) {
   const heading = getFirstHeading(markdownAST);
   if (!heading) return;
-  remove(markdownAST, node => node === heading);
+  remove(markdownAST, (node) => node === heading);
 }
 
 module.exports = plugin;

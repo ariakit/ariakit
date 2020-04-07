@@ -9,12 +9,12 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   ClickableOptions,
   ClickableHTMLProps,
-  useClickable
+  useClickable,
 } from "../Clickable/Clickable";
 import {
   unstable_useId,
   unstable_IdOptions,
-  unstable_IdHTMLProps
+  unstable_IdHTMLProps,
 } from "../Id/Id";
 import { RoverStateReturn, useRoverState } from "./RoverState";
 
@@ -103,7 +103,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
           stopPropagation: true,
-          shouldKeyDown: event =>
+          shouldKeyDown: (event) =>
             // Ignore portals
             // https://github.com/facebook/react/issues/11387
             event.currentTarget.contains(event.target as Node),
@@ -115,8 +115,8 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
             Home: options.first,
             End: options.last,
             PageUp: options.first,
-            PageDown: options.last
-          }
+            PageDown: options.last,
+          },
         }),
       [
         htmlOnKeyDown,
@@ -124,7 +124,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         options.previous,
         options.next,
         options.first,
-        options.last
+        options.last,
       ]
     );
 
@@ -134,12 +134,12 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       onKeyDown,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Rover = createComponent({
   as: "button",
-  useHook: useRover
+  useHook: useRover,
 });

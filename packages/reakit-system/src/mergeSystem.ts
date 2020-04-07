@@ -4,7 +4,7 @@ import { reduceObjects } from "./__utils/reduceObjects";
 import { SystemContextType } from "./SystemContext";
 
 function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {
-  const object = reduceObjects(objects, value => typeof value === "function");
+  const object = reduceObjects(objects, (value) => typeof value === "function");
   const keys = Object.keys(object);
   const result: Record<string, any> = {};
 

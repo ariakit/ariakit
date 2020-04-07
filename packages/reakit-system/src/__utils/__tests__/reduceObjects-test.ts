@@ -8,6 +8,6 @@ test("reduceObjects", () => {
       (val, key) => key === "a" && val === "a"
     )
   ).toEqual({
-    a: ["a"]
+    a: ["a"],
   });
 });

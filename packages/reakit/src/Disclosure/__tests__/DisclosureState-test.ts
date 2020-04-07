@@ -27,7 +27,7 @@ test("initial state visible", () => {
   const result = render({ baseId: "base", visible: true });
   expect(result.current).toMatchInlineSnapshot(
     {
-      visible: true
+      visible: true,
     },
     `
     Object {
@@ -47,7 +47,7 @@ test("initial state lazy", () => {
   const result = render(() => ({ baseId: "base", visible: true }));
   expect(result.current).toMatchInlineSnapshot(
     {
-      visible: true
+      visible: true,
     },
     `
     Object {
@@ -66,7 +66,7 @@ test("initial state lazy", () => {
 test("show", () => {
   const result = render({
     baseId: "base",
-    unstable_isMounted: true
+    unstable_isMounted: true,
   });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
@@ -90,7 +90,7 @@ test("show animated", () => {
   const result = render({
     baseId: "base",
     unstable_isMounted: true,
-    unstable_animated: 1000
+    unstable_animated: 1000,
   });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
@@ -151,7 +151,7 @@ test("hide animated", () => {
   const result = render({
     baseId: "base",
     visible: true,
-    unstable_animated: 1000
+    unstable_animated: 1000,
   });
   act(result.current.hide);
   expect(result.current).toMatchInlineSnapshot(
@@ -191,7 +191,7 @@ test("hide animated", () => {
 test("toggle", () => {
   const result = render({
     baseId: "base",
-    unstable_isMounted: true
+    unstable_isMounted: true,
   });
   act(result.current.toggle);
   expect(result.current).toMatchInlineSnapshot(

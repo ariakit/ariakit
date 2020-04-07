@@ -8,7 +8,7 @@ import { createEvent } from "reakit-utils/createEvent";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem
+  unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
@@ -57,7 +57,7 @@ function fireChange(element: HTMLElement, onChange?: React.ChangeEventHandler) {
   Object.defineProperties(event, {
     type: { value: "change" },
     target: { value: element },
-    currentTarget: { value: element }
+    currentTarget: { value: element },
   });
   onChange?.(event as any);
 }
@@ -77,7 +77,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       checked,
       unstable_clickOnEnter,
       unstable_checkOnFocus,
-      ...options
+      ...options,
     };
   },
 
@@ -130,12 +130,12 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       type: "radio",
       onChange,
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Radio = createComponent({
   as: "input",
-  useHook: useRadio
+  useHook: useRadio,
 });

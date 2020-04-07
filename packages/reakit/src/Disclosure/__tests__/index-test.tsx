@@ -45,7 +45,7 @@ test("multiple components", () => {
     return (
       <>
         <Disclosure {...disclosure1}>
-          {props => (
+          {(props) => (
             <Disclosure {...props} {...disclosure2}>
               disclosure
             </Disclosure>

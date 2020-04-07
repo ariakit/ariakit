@@ -6,7 +6,7 @@ import {
   Tooltip,
   TooltipReference,
   TooltipArrow,
-  unstable_useId as useId
+  unstable_useId as useId,
 } from "reakit";
 import kebabCase from "lodash/kebabCase";
 import { css } from "emotion";
@@ -34,7 +34,7 @@ type Data = {
 function ExperimentalLink(props: GatsbyLinkProps<{}>) {
   const { unstable_referenceRef, ...tooltip } = useTooltipState({
     placement: "right",
-    unstable_fixed: true
+    unstable_fixed: true,
   });
   return (
     <>
@@ -117,18 +117,20 @@ export default function DocsNavigation() {
 
   const getId = (section: string) => `${baseId}-${kebabCase(section)}`;
   const findMeta = (path: string) =>
-    data.allMarkdownRemark.nodes.find(node => node.frontmatter.path === path)!;
+    data.allMarkdownRemark.nodes.find(
+      (node) => node.frontmatter.path === path
+    )!;
   const getTitle = (path: string) => findMeta(path).title;
   const getIsExperimental = (path: string) =>
     Boolean(findMeta(path).frontmatter.experimental);
 
   return (
     <div className={className}>
-      {data.allDocsYaml.nodes.map(node => (
+      {data.allDocsYaml.nodes.map((node) => (
         <nav key={node.section} aria-labelledby={getId(node.section)}>
           <h3 id={getId(node.section)}>{node.section}</h3>
           <ul>
-            {node.paths.map(path => (
+            {node.paths.map((path) => (
               <li key={path}>
                 {getIsExperimental(path) ? (
                   <ExperimentalLink to={path}>

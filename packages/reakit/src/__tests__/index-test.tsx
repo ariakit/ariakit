@@ -7,10 +7,10 @@ import {
   useMenuState,
   Menu,
   MenuButton,
-  MenuItem
+  MenuItem,
 } from "..";
 
-[true, false].forEach(virtual => {
+[true, false].forEach((virtual) => {
   const strategy = virtual ? "aria-activedescendant" : "roving-tabindex";
 
   test(`${strategy} composite with menu button controlling arrow keys`, async () => {
@@ -22,7 +22,7 @@ import {
           <CompositeItem {...composite}>item1</CompositeItem>
           <CompositeItem {...composite}>item2</CompositeItem>
           <CompositeItem {...composite}>
-            {props => (
+            {(props) => (
               <>
                 <MenuButton {...menu} {...props}>
                   item3
@@ -66,7 +66,7 @@ import {
           <CompositeItem {...composite}>item1</CompositeItem>
           <CompositeItem {...composite}>item2</CompositeItem>
           <MenuButton {...menu}>
-            {props => (
+            {(props) => (
               <>
                 <CompositeItem {...composite} {...props}>
                   item3

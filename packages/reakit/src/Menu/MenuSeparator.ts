@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   SeparatorOptions,
   SeparatorHTMLProps,
-  useSeparator
+  useSeparator,
 } from "../Separator/Separator";
 import { useMenuState } from "./MenuState";
 
@@ -24,12 +24,12 @@ export const useMenuSeparator = createHook<
   useOptions({ orientation = "vertical", ...options }) {
     return {
       orientation: orientation === "vertical" ? "horizontal" : "vertical",
-      ...options
+      ...options,
     };
-  }
+  },
 });
 
 export const MenuSeparator = createComponent({
   as: "hr",
-  useHook: useMenuSeparator
+  useHook: useMenuSeparator,
 });

@@ -20,7 +20,7 @@ test("importToRequire", () => {
         "import {",
         "  foo as bar,",
         "  baz as qux",
-        "} from 'foo';"
+        "} from 'foo';",
       ].join("\n")
     )
   ).toMatchInlineSnapshot(`

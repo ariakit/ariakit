@@ -19,7 +19,7 @@ const props: Parameters<typeof MenuItemRadio>[0] = {
   up: jest.fn(),
   down: jest.fn(),
   unstable_values: {},
-  unstable_setValue: jest.fn()
+  unstable_setValue: jest.fn(),
 };
 
 test("render", () => {

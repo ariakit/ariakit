@@ -8,16 +8,13 @@ export function fade(color?: Palette[string], ratio?: number): Palette[string] {
   if (typeof color === "function") {
     return (palette: Palette) => fade(color(palette), ratio);
   }
-  return Color(color)
-    .fade(ratio)
-    .rgb()
-    .toString();
+  return Color(color).fade(ratio).rgb().toString();
 }
 
 export function useFade(color?: string, ratio?: number) {
   React.useDebugValue(`${color}*${ratio}`);
   return React.useMemo(() => fade(color, ratio) as string | undefined, [
     color,
-    ratio
+    ratio,
   ]);
 }

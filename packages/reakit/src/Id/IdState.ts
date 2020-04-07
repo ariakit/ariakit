@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 import { unstable_IdContext } from "./IdProvider";
 
@@ -40,14 +40,14 @@ export function unstable_useIdState(
   return {
     baseId,
     unstable_setBaseId: setBaseId,
-    unstable_idCountRef: idCountRef
+    unstable_idCountRef: idCountRef,
   };
 }
 
 const keys: Array<keyof unstable_IdStateReturn> = [
   "baseId",
   "unstable_setBaseId",
-  "unstable_idCountRef"
+  "unstable_idCountRef",
 ];
 
 unstable_useIdState.__keys = keys;

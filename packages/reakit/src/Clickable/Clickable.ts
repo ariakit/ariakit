@@ -5,7 +5,7 @@ import { isButton } from "reakit-utils/isButton";
 import {
   TabbableOptions,
   TabbableHTMLProps,
-  useTabbable
+  useTabbable,
 } from "../Tabbable/Tabbable";
 
 export type ClickableOptions = TabbableOptions & {
@@ -44,7 +44,7 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
     return {
       unstable_clickOnEnter,
       unstable_clickOnSpace,
-      ...options
+      ...options,
     };
   },
 
@@ -81,7 +81,7 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
         options.disabled,
         htmlOnKeyDown,
         options.unstable_clickOnEnter,
-        options.unstable_clickOnSpace
+        options.unstable_clickOnSpace,
       ]
     );
 
@@ -109,12 +109,12 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
       onKeyDown,
       onKeyUp,
       ...(active ? { "data-active": active } : {}),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Clickable = createComponent({
   as: "button",
-  useHook: useClickable
+  useHook: useClickable,
 });

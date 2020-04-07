@@ -5,7 +5,7 @@ import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps,
-  unstable_useIdGroup
+  unstable_useIdGroup,
 } from "../Id/IdGroup";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
@@ -38,12 +38,12 @@ export const unstable_useForm = createHook<
       role: "form",
       noValidate: true,
       onSubmit: useAllCallbacks(onSubmit, htmlOnSubmit),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const unstable_Form = createComponent({
   as: "form",
-  useHook: unstable_useForm
+  useHook: unstable_useForm,
 });

@@ -5,7 +5,7 @@ function useLocation() {
   const [location, setLocation] = React.useState(globalHistory.location);
 
   React.useEffect(
-    () => globalHistory.listen(params => setLocation(params.location)),
+    () => globalHistory.listen((params) => setLocation(params.location)),
     [setLocation]
   );
 

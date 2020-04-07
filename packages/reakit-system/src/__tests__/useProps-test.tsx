@@ -11,14 +11,14 @@ function render(
   return renderHook(() => useProps(...args), {
     wrapper: (props: SystemProviderProps) => (
       <SystemProvider unstable_system={system} {...props} />
-    )
+    ),
   }).result;
 }
 
 test("useProps", () => {
   const result = render(
     {
-      useAProps: (options: { a: string }) => options.a
+      useAProps: (options: { a: string }) => options.a,
     },
     "A",
     { a: "a" }

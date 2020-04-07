@@ -18,7 +18,7 @@ export function useTooltipProps(
   htmlProps: TooltipHTMLProps = {}
 ): TooltipHTMLProps {
   const {
-    style: { backgroundColor }
+    style: { backgroundColor },
   } = usePaletteBoxProps({ unstable_system });
 
   const fadeBackgroundColor = useFade(backgroundColor || "black", 0.1);

@@ -1,20 +1,20 @@
 import { isObject } from "reakit-utils";
 
 export const jestSerializerStripFunctions: jest.SnapshotSerializerPlugin = {
-  test: val =>
+  test: (val) =>
     isObject(val) &&
     !Array.isArray(val) &&
-    Object.values(val).find(v => typeof v === "function"),
+    Object.values(val).find((v) => typeof v === "function"),
   print: (val, serialize) =>
     serialize(
       Object.keys(val)
-        .filter(key => typeof val[key] !== "function")
+        .filter((key) => typeof val[key] !== "function")
         .reduce(
           (acc, curr) => ({
             ...acc,
-            [curr]: val[curr]
+            [curr]: val[curr],
           }),
           {}
         )
-    )
+    ),
 };

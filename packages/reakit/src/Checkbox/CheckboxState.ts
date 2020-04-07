@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 
 export type CheckboxState = {
@@ -34,7 +34,7 @@ export function useCheckboxState(
   const [state, setState] = React.useState(initialValue);
   return {
     state,
-    setState
+    setState,
   };
 }
 

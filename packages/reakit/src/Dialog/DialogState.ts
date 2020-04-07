@@ -1,14 +1,14 @@
 import * as React from "react";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import {
   useDisclosureState,
   DisclosureState,
   DisclosureActions,
   DisclosureInitialState,
-  DisclosureStateReturn
+  DisclosureStateReturn,
 } from "../Disclosure/DisclosureState";
 
 export type DialogState = DisclosureState & {
@@ -55,7 +55,7 @@ export function useDialogState(
     modal,
     setModal,
     unstable_modal: modal,
-    ...hidden
+    ...hidden,
   };
 }
 
@@ -63,7 +63,7 @@ const keys: Array<keyof DialogStateReturn> = [
   ...useDisclosureState.__keys,
   "modal",
   "setModal",
-  "unstable_modal"
+  "unstable_modal",
 ];
 
 useDialogState.__keys = keys;

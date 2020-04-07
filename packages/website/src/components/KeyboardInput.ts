@@ -28,14 +28,14 @@ export const useKeyboardInput = createHook<
     `;
     return {
       ...htmlProps,
-      className: cx(keyboardInput, htmlProps.className)
+      className: cx(keyboardInput, htmlProps.className),
     };
-  }
+  },
 });
 
 const KeyboardInput = createComponent({
   as: "kbd",
-  useHook: useKeyboardInput
+  useHook: useKeyboardInput,
 });
 
 export default KeyboardInput;

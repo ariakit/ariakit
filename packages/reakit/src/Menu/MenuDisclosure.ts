@@ -4,7 +4,7 @@ import { useWarning } from "reakit-warning";
 import {
   useMenuButton,
   MenuButtonOptions,
-  MenuButtonHTMLProps
+  MenuButtonHTMLProps,
 } from "./MenuButton";
 
 export type MenuDisclosureOptions = MenuButtonOptions;
@@ -28,10 +28,10 @@ export const useMenuDisclosure = createHook<
       "See https://reakit.io/docs/menu"
     );
     return htmlProps;
-  }
+  },
 });
 
 export const MenuDisclosure = createComponent({
   as: "button",
-  useHook: useMenuDisclosure
+  useHook: useMenuDisclosure,
 });

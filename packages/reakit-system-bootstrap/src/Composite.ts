@@ -1,7 +1,7 @@
 import { css, cx } from "emotion";
 import {
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_CompositeItemOptions as CompositeItemOptions
+  unstable_CompositeItemOptions as CompositeItemOptions,
 } from "reakit/Composite/CompositeItem";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { BootstrapBoxOptions } from "./Box";
@@ -21,7 +21,7 @@ export function useCompositeItemProps(
   htmlProps: CompositeItemHTMLProps = {}
 ): CompositeItemHTMLProps {
   const {
-    style: { color, backgroundColor }
+    style: { color, backgroundColor },
   } = usePaletteBoxProps({ unstable_system });
 
   const compositeItem = css`
@@ -42,6 +42,6 @@ export function useCompositeItemProps(
 
   return {
     ...htmlProps,
-    className: cx(compositeItem, htmlProps.className)
+    className: cx(compositeItem, htmlProps.className),
   };
 }

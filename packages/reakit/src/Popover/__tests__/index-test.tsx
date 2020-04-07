@@ -5,7 +5,7 @@ import {
   PopoverArrow,
   PopoverDisclosure,
   usePopoverState,
-  PopoverInitialState
+  PopoverInitialState,
 } from "..";
 
 function Test(props: PopoverInitialState) {

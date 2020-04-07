@@ -6,7 +6,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   CheckboxOptions,
   CheckboxHTMLProps,
-  useCheckbox
+  useCheckbox,
 } from "../Checkbox/Checkbox";
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
@@ -78,12 +78,12 @@ export const unstable_useFormCheckbox = createHook<
         ? {
             id: getInputId(options.name, options.baseId),
             "aria-describedby": getMessageId(options.name, options.baseId),
-            "aria-labelledby": getLabelId(options.name, options.baseId)
+            "aria-labelledby": getLabelId(options.name, options.baseId),
           }
         : {}),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormCheckboxOptions<V, P>,
   htmlProps?: unstable_FormCheckboxHTMLProps
@@ -91,7 +91,7 @@ export const unstable_useFormCheckbox = createHook<
 
 export const unstable_FormCheckbox = (createComponent({
   as: "input",
-  useHook: unstable_useFormCheckbox
+  useHook: unstable_useFormCheckbox,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormCheckboxOptions<V, P>, T>
 ) => JSX.Element;

@@ -32,11 +32,11 @@
   ],
   "dependencies": {
     "@types/buble": "0.19.2",
-    "@types/codemirror": "0.0.87",
+    "@types/codemirror": "0.0.90",
     "buble": "0.19.8",
     "codemirror": "5.52.2",
     "emotion": "^10.0.27",
-    "react-codemirror2": "6.0.0",
+    "react-codemirror2": "7.1.0",
     "reakit": "^1.0.0-rc.0",
     "reakit-system": "^0.10.0",
     "reakit-system-bootstrap": "^0.9.0",

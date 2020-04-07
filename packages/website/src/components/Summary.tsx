@@ -26,14 +26,14 @@ export const useSummary = createHook<SummaryOptions, SummaryHTMLProps>({
     return {
       ...htmlProps,
       ...anchor,
-      className: cx(anchor.className, summary, htmlProps.className)
+      className: cx(anchor.className, summary, htmlProps.className),
     };
-  }
+  },
 });
 
 const Summary = createComponent({
   as: "summary",
-  useHook: useSummary
+  useHook: useSummary,
 });
 
 export default Summary;

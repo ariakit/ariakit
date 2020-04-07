@@ -29,9 +29,9 @@ export const usePopover = createHook<PopoverOptions, PopoverHTMLProps>({
     return {
       ref: useForkRef(options.unstable_popoverRef, htmlRef),
       style: { ...options.unstable_popoverStyles, ...htmlStyle },
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Popover = createComponent({
@@ -44,5 +44,5 @@ export const Popover = createComponent({
       "See https://reakit.io/docs/popover"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

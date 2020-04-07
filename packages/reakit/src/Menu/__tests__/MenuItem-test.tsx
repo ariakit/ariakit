@@ -15,7 +15,7 @@ const props: Parameters<typeof MenuItem>[0] = {
   up: jest.fn(),
   down: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
 };
 
 test("render", () => {

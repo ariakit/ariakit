@@ -85,9 +85,9 @@ export const unstable_useFormRemoveButton = createHook<
 
     return {
       onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormRemoveButtonOptions<V, P>,
   htmlProps?: unstable_FormRemoveButtonHTMLProps
@@ -95,7 +95,7 @@ export const unstable_useFormRemoveButton = createHook<
 
 export const unstable_FormRemoveButton = (createComponent({
   as: "button",
-  useHook: unstable_useFormRemoveButton
+  useHook: unstable_useFormRemoveButton,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "button">(
   props: PropsWithAs<unstable_FormRemoveButtonOptions<V, P>, T>
 ) => JSX.Element;

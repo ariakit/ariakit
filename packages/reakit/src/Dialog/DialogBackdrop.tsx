@@ -5,7 +5,7 @@ import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
-  useDisclosureContent
+  useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { useDialogState, DialogStateReturn } from "./DialogState";
@@ -53,12 +53,12 @@ export const useDialogBackdrop = createHook<
       role: undefined,
       wrapElement: usePipe(wrapElement, htmlWrapElement),
       "data-dialog-ref": options.baseId,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const DialogBackdrop = createComponent({
   as: "div",
-  useHook: useDialogBackdrop
+  useHook: useDialogBackdrop,
 });

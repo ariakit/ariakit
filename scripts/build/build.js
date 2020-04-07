@@ -6,7 +6,7 @@ const {
   makeGitignore,
   makePlaygroundDeps,
   cleanBuild,
-  hasTSConfig
+  hasTSConfig,
 } = require("./utils");
 
 process.env.NODE_ENV = "production";
@@ -27,5 +27,5 @@ if (hasTSConfig(cwd)) {
 }
 
 spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
-  stdio: "inherit"
+  stdio: "inherit",
 });

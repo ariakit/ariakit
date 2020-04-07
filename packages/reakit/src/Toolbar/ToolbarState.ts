@@ -1,12 +1,12 @@
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_CompositeState as CompositeState,
   unstable_CompositeActions as CompositeActions,
-  unstable_CompositeInitialState as CompositeInitialState
+  unstable_CompositeInitialState as CompositeInitialState,
 } from "../Composite/CompositeState";
 
 export type ToolbarState = CompositeState;

@@ -31,11 +31,11 @@ export function useMenuContext(
     parent || {};
 
   const addChild = React.useCallback(
-    (ref: Ref) => setChildren(refs => [...refs, ref]),
+    (ref: Ref) => setChildren((refs) => [...refs, ref]),
     []
   );
   const removeChild = React.useCallback(
-    (ref: Ref) => setChildren(refs => removeItemFromArray(refs, ref)),
+    (ref: Ref) => setChildren((refs) => removeItemFromArray(refs, ref)),
     []
   );
 
@@ -60,7 +60,7 @@ export function useMenuContext(
       parent,
       children,
       addChild,
-      removeChild
+      removeChild,
     }),
     [
       options.orientation,
@@ -71,7 +71,7 @@ export function useMenuContext(
       parent,
       children,
       addChild,
-      removeChild
+      removeChild,
     ]
   );
 

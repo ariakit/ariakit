@@ -1,13 +1,13 @@
 import * as React from "react";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_CompositeState as CompositeState,
   unstable_CompositeActions as CompositeActions,
-  unstable_CompositeInitialState as CompositeInitialState
+  unstable_CompositeInitialState as CompositeInitialState,
 } from "../Composite/CompositeState";
 
 export type TabState = CompositeState & {
@@ -62,7 +62,7 @@ export function useTabState(
   const composite = useCompositeState({
     loop,
     currentId: initialSelectedId,
-    ...sealed
+    ...sealed,
   });
   const panels = useCompositeState();
   const [selectedId, setSelectedId] = React.useState(initialSelectedId);
@@ -79,7 +79,7 @@ export function useTabState(
   // no selected tab with useTabState({ selectedId: null });
   React.useEffect(() => {
     if (selectedId === null) return;
-    const selectedItem = composite.items.find(item => item.id === selectedId);
+    const selectedItem = composite.items.find((item) => item.id === selectedId);
     if (selectedItem) return;
     if (composite.currentId) {
       setSelectedId(composite.currentId);
@@ -93,12 +93,12 @@ export function useTabState(
     manual,
     select,
     setSelectedId,
-    registerPanel: React.useCallback(panel => panels.registerItem(panel), [
-      panels.registerItem
+    registerPanel: React.useCallback((panel) => panels.registerItem(panel), [
+      panels.registerItem,
     ]),
-    unregisterPanel: React.useCallback(id => panels.unregisterItem(id), [
-      panels.unregisterItem
-    ])
+    unregisterPanel: React.useCallback((id) => panels.unregisterItem(id), [
+      panels.unregisterItem,
+    ]),
   };
 }
 
@@ -110,7 +110,7 @@ const keys: Array<keyof TabStateReturn> = [
   "select",
   "setSelectedId",
   "registerPanel",
-  "unregisterPanel"
+  "unregisterPanel",
 ];
 
 useTabState.__keys = keys;

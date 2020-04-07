@@ -10,7 +10,7 @@ export function unstable_setAllIn<T, V>(object: T, value: V) {
     const val = typedObject[key];
 
     if (Array.isArray(val)) {
-      result[key] = val.map(v => {
+      result[key] = val.map((v) => {
         if (isObject(v)) {
           return unstable_setAllIn(v, value);
         }

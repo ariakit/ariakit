@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   SeparatorOptions,
   SeparatorHTMLProps,
-  useSeparator
+  useSeparator,
 } from "../Separator/Separator";
 import { useToolbarState } from "./ToolbarState";
 
@@ -25,12 +25,12 @@ export const useToolbarSeparator = createHook<
   useOptions({ orientation = "vertical", ...options }) {
     return {
       orientation: orientation === "vertical" ? "horizontal" : "vertical",
-      ...options
+      ...options,
     };
-  }
+  },
 });
 
 export const ToolbarSeparator = createComponent({
   as: "hr",
-  useHook: useToolbarSeparator
+  useHook: useToolbarSeparator,
 });

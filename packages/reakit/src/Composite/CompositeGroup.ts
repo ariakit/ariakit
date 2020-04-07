@@ -7,11 +7,11 @@ import { GroupOptions, GroupHTMLProps, useGroup } from "../Group/Group";
 import {
   unstable_useId,
   unstable_IdOptions,
-  unstable_IdHTMLProps
+  unstable_IdHTMLProps,
 } from "../Id/Id";
 import {
   unstable_CompositeStateReturn,
-  unstable_useCompositeState
+  unstable_useCompositeState,
 } from "./CompositeState";
 
 export type unstable_CompositeGroupOptions = GroupOptions &
@@ -47,12 +47,12 @@ export const unstable_useCompositeGroup = createHook<
 
     return {
       ref: useForkRef(ref, htmlRef),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const unstable_CompositeGroup = createComponent({
   as: "div",
-  useHook: unstable_useCompositeGroup
+  useHook: unstable_useCompositeGroup,
 });

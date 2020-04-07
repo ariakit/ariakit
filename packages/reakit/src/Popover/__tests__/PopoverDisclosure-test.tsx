@@ -4,7 +4,7 @@ import { PopoverDisclosure } from "../PopoverDisclosure";
 
 const props: Parameters<typeof PopoverDisclosure>[0] = {
   baseId: "base",
-  toggle: jest.fn
+  toggle: jest.fn,
 };
 
 test("render", () => {

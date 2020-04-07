@@ -5,8 +5,8 @@ test("getIn", () => {
     a: {
       b: ["c", "d"],
       e: "f",
-      g: 1
-    }
+      g: 1,
+    },
   };
   expect(unstable_getIn(obj, "a")).toBe(obj.a);
   expect(unstable_getIn(obj, ["a", "b"])).toBe(obj.a.b);

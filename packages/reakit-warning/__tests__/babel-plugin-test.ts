@@ -9,7 +9,7 @@ function join(...strings: string[]) {
 function compare(input: string, output: string) {
   const result = transform(input, {
     configFile: false,
-    plugins: [babelPlugin]
+    plugins: [babelPlugin],
   });
   expect(result?.code).toEqual(output);
 }

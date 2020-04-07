@@ -2,7 +2,7 @@ import { css, cx } from "emotion";
 import { DialogHTMLProps, DialogOptions } from "reakit/Dialog/Dialog";
 import {
   DialogBackdropHTMLProps,
-  DialogBackdropOptions
+  DialogBackdropOptions,
 } from "reakit/Dialog/DialogBackdrop";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
@@ -18,7 +18,7 @@ export function useDialogOptions({
 }: BootstrapDialogOptions): BootstrapDialogOptions {
   return {
     ...options,
-    unstable_system: { palette, fill, ...system }
+    unstable_system: { palette, fill, ...system },
   };
 }
 
@@ -27,7 +27,7 @@ export function useDialogProps(
   htmlProps: DialogHTMLProps = {}
 ): DialogHTMLProps {
   const {
-    style: { color, backgroundColor }
+    style: { color, backgroundColor },
   } = usePaletteBoxProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";

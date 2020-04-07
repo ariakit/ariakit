@@ -143,12 +143,12 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       ...(trulyDisabled && nativeTabbable ? { disabled: true } : {}),
       ...(options.disabled ? { "aria-disabled": true } : {}),
       ...(trulyDisabled ? {} : { tabIndex }),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Tabbable = createComponent({
   as: "div",
-  useHook: useTabbable
+  useHook: useTabbable,
 });

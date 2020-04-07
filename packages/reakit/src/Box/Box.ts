@@ -23,10 +23,10 @@ export type BoxProps = BoxOptions & BoxHTMLProps;
 
 export const useBox = createHook<BoxOptions, BoxHTMLProps>({
   name: "Box",
-  keys: ["unstable_system"]
+  keys: ["unstable_system"],
 });
 
 export const Box = createComponent({
   as: "div",
-  useHook: useBox
+  useHook: useBox,
 });

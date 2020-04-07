@@ -6,7 +6,7 @@ import { useWarning } from "reakit-warning";
 import {
   unstable_CompositeOptions,
   unstable_CompositeHTMLProps,
-  unstable_useComposite
+  unstable_useComposite,
 } from "../Composite/Composite";
 import { useRadioState } from "./RadioState";
 
@@ -24,7 +24,7 @@ const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
 
   useProps(_, htmlProps) {
     return { role: "radiogroup", ...htmlProps };
-  }
+  },
 });
 
 export const RadioGroup = createComponent({
@@ -37,5 +37,5 @@ export const RadioGroup = createComponent({
       "See https://reakit.io/docs/radio"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

@@ -2,7 +2,7 @@ import { css, cx } from "emotion";
 import { PopoverHTMLProps, PopoverOptions } from "reakit/Popover/Popover";
 import {
   PopoverArrowHTMLProps,
-  PopoverArrowOptions
+  PopoverArrowOptions,
 } from "reakit/Popover/PopoverArrow";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
@@ -17,7 +17,7 @@ export function usePopoverOptions({
 }: BootstrapPopoverOptions): BootstrapPopoverOptions {
   return {
     unstable_system: { palette, fill, ...system },
-    ...options
+    ...options,
   };
 }
 
@@ -26,7 +26,7 @@ export function usePopoverProps(
   htmlProps: PopoverHTMLProps = {}
 ): PopoverHTMLProps {
   const {
-    style: { backgroundColor }
+    style: { backgroundColor },
   } = usePaletteBoxProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";

@@ -10,7 +10,7 @@ test("verticalizeItems", () => {
     { id: "4", ref: { current: null }, groupId: "1" },
     { id: "5", ref: { current: null }, groupId: "1" },
     { id: "6", ref: { current: null }, groupId: "2" },
-    { id: "7", ref: { current: null }, groupId: "2" }
+    { id: "7", ref: { current: null }, groupId: "2" },
   ];
   expect(verticalizeItems(items)).toEqual([
     items[0],
@@ -20,6 +20,6 @@ test("verticalizeItems", () => {
     items[1],
     { ...items[3], groupId: "1" },
     { ...items[5], groupId: "1" },
-    { ...items[7], groupId: "1" }
+    { ...items[7], groupId: "1" },
   ]);
 });

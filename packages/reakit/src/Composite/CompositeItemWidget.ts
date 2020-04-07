@@ -7,7 +7,7 @@ import { getDocument } from "reakit-utils/getDocument";
 import { useBox, BoxOptions, BoxHTMLProps } from "../Box/Box";
 import {
   unstable_CompositeStateReturn,
-  unstable_useCompositeState
+  unstable_useCompositeState,
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 
@@ -25,9 +25,7 @@ export type unstable_CompositeItemWidgetProps = unstable_CompositeItemWidgetOpti
 
 function focusCurrentItem(widget: Element, currentId?: string | null) {
   if (currentId) {
-    getDocument(widget)
-      .getElementById(currentId)
-      ?.focus();
+    getDocument(widget).getElementById(currentId)?.focus();
   }
 }
 
@@ -104,12 +102,12 @@ export const unstable_useCompositeItemWidget = createHook<
       onBlur: useAllCallbacks(onBlur, htmlOnBlur),
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       "data-composite-item-widget": true,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const unstable_CompositeItemWidget = createComponent({
   as: "div",
-  useHook: unstable_useCompositeItemWidget
+  useHook: unstable_useCompositeItemWidget,
 });

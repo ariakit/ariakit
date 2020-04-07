@@ -80,14 +80,14 @@ function clickOption(
   if (select.multiple) {
     const options = Array.from(select.options);
     const resetOptions = () =>
-      options.forEach(option => {
+      options.forEach((option) => {
         setSelected(option, false);
       });
     const selectRange = (a: number, b: number) => {
       const from = Math.min(a, b);
       const to = Math.max(a, b) + 1;
       const selectedOptions = options.slice(from, to);
-      selectedOptions.forEach(option => {
+      selectedOptions.forEach((option) => {
         setSelected(option, true);
       });
     };

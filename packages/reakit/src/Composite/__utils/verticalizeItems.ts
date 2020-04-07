@@ -20,7 +20,7 @@ export function verticalizeItems(items: Item[]) {
           // is, assigning a different groupId based on the column index, we
           // keep it undefined so they will be part of the same group.
           // It's useful when using up/down on one-dimensional composites.
-          groupId: group[i].groupId ? `${i}` : undefined
+          groupId: group[i].groupId ? `${i}` : undefined,
         });
       }
     }

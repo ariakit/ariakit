@@ -9,7 +9,7 @@ import {
   unstable_FormMessage as FormMessage,
   unstable_FormLabel as FormLabel,
   unstable_FormInput as FormInput,
-  unstable_FormSubmitButton as FormSubmitButton
+  unstable_FormSubmitButton as FormSubmitButton,
 } from "reakit";
 import { unstable_setIn } from "reakit/Form/utils/setIn";
 import { css } from "emotion";
@@ -20,7 +20,7 @@ const schema = object({
   EMAIL: string()
     .email("Please, provide a valid email address")
     .required("Email is required"),
-  FNAME: string()
+  FNAME: string(),
 });
 
 export default function NewsletterForm() {
@@ -30,9 +30,9 @@ export default function NewsletterForm() {
     values: {
       _: "",
       EMAIL: "",
-      FNAME: ""
+      FNAME: "",
     },
-    onValidate: async values => {
+    onValidate: async (values) => {
       try {
         await schema.validate(values, { abortEarly: false });
       } catch (e) {
@@ -51,18 +51,18 @@ export default function NewsletterForm() {
           { EMAIL, FNAME }
         )}`,
         {
-          jsonpCallback: "c"
+          jsonpCallback: "c",
         }
       );
       const json = await res.json();
       const result = {
-        _: json.msg.replace(/^\d - /, "").replace(/ <a.+$/, "")
+        _: json.msg.replace(/^\d - /, "").replace(/ <a.+$/, ""),
       };
       if (json.result === "error") {
         throw result;
       }
       return result;
-    }
+    },
   });
   return (
     <>

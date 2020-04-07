@@ -1,21 +1,21 @@
 import * as React from "react";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import {
   PopoverState,
   PopoverActions,
   PopoverInitialState,
   usePopoverState,
-  PopoverStateReturn
+  PopoverStateReturn,
 } from "../Popover/PopoverState";
 import {
   MenuBarState,
   MenuBarActions,
   MenuBarInitialState,
   useMenuBarState,
-  MenuBarStateReturn
+  MenuBarStateReturn,
 } from "./MenuBarState";
 import { MenuContext } from "./__utils/MenuContext";
 
@@ -49,7 +49,7 @@ export function useMenuState(
   const popover = usePopoverState({
     ...sealed,
     placement,
-    gutter
+    gutter,
   });
 
   React.useEffect(() => {
@@ -60,13 +60,13 @@ export function useMenuState(
 
   return {
     ...menuBar,
-    ...popover
+    ...popover,
   };
 }
 
 const keys: Array<keyof MenuStateReturn> = [
   ...useMenuBarState.__keys,
-  ...usePopoverState.__keys
+  ...usePopoverState.__keys,
 ];
 
 useMenuState.__keys = keys;

@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   DisclosureOptions,
   DisclosureHTMLProps,
-  useDisclosure
+  useDisclosure,
 } from "../Disclosure/Disclosure";
 import { useDialogState } from "./DialogState";
 
@@ -24,10 +24,10 @@ export const useDialogDisclosure = createHook<
 
   useProps(_, htmlProps) {
     return { "aria-haspopup": "dialog", ...htmlProps };
-  }
+  },
 });
 
 export const DialogDisclosure = createComponent({
   as: "button",
-  useHook: useDialogDisclosure
+  useHook: useDialogDisclosure,
 });

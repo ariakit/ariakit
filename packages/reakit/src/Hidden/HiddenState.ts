@@ -5,7 +5,7 @@ import {
   DisclosureActions,
   DisclosureInitialState,
   useDisclosureState,
-  DisclosureStateReturn
+  DisclosureStateReturn,
 } from "../Disclosure";
 
 export type HiddenState = DisclosureState;

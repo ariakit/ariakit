@@ -21,7 +21,7 @@ export function useBoxProps(
   const style = {
     ...(textColor ? { color: textColor } : {}),
     ...(backgroundColor ? { backgroundColor } : {}),
-    ...(borderColor ? { border: `1px solid ${borderColor}`, borderColor } : {})
+    ...(borderColor ? { border: `1px solid ${borderColor}`, borderColor } : {}),
   };
 
   return { style: { ...style, ...htmlStyle }, ...htmlProps } as BoxHTMLProps & {

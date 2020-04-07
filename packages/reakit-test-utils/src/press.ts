@@ -2,7 +2,7 @@ import {
   getPreviousTabbableIn,
   getNextTabbableIn,
   isFocusable,
-  isTextField
+  isTextField,
 } from "reakit-utils";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
@@ -16,7 +16,7 @@ const clickableInputTypes = [
   "file",
   "image",
   "reset",
-  "submit"
+  "submit",
 ];
 
 function submitFormByPressingEnterOn(
@@ -29,11 +29,11 @@ function submitFormByPressingEnterOn(
   const elements = Array.from(form.elements);
 
   const validInputs = elements.filter(
-    el => el instanceof HTMLInputElement && isTextField(el)
+    (el) => el instanceof HTMLInputElement && isTextField(el)
   );
 
   const submitButton = elements.find(
-    el =>
+    (el) =>
       (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
       el.type === "submit"
   );
@@ -78,7 +78,7 @@ const keyDownMap: Record<
     } else if (isSubmittable) {
       submitFormByPressingEnterOn(element as HTMLInputElement, options);
     }
-  }
+  },
 };
 
 const keyUpMap: Record<
@@ -97,7 +97,7 @@ const keyUpMap: Record<
     if (isSpaceable) {
       fireEvent.click(element, options);
     }
-  }
+  },
 };
 
 export function press(

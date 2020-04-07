@@ -367,7 +367,7 @@ test("click label preventDefault onClick", () => {
         {/* eslint-disable-next-line */}
         <label
           ref={label}
-          onClick={event => event.preventDefault()}
+          onClick={(event) => event.preventDefault()}
           htmlFor="input"
         >
           label
@@ -406,7 +406,7 @@ test("click button preventDefault onMouseDown", () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onMouseDown={event => event.preventDefault()}>
+      <button ref={ref} onMouseDown={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -424,7 +424,7 @@ test("click button preventDefault onPointerDown", () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onPointerDown={event => event.preventDefault()}>
+      <button ref={ref} onPointerDown={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -469,7 +469,7 @@ test("select", async () => {
   expect(Array.from(select.selectedOptions)).toEqual([
     option2,
     option3,
-    option4
+    option4,
   ]);
 
   expect(stack).toMatchInlineSnapshot(`
@@ -525,13 +525,13 @@ test("select", async () => {
   expect(Array.from(select.selectedOptions)).toEqual([
     option1,
     option2,
-    option4
+    option4,
   ]);
 
   click(option3, { shiftKey: true });
   expect(Array.from(select.selectedOptions)).toEqual([
     option1,
     option2,
-    option3
+    option3,
   ]);
 });

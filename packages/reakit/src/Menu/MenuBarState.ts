@@ -1,13 +1,13 @@
 import * as React from "react";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import {
   unstable_CompositeState as CompositeState,
   unstable_CompositeActions as CompositeActions,
   unstable_CompositeInitialState as CompositeInitialState,
-  unstable_useCompositeState as useCompositeState
+  unstable_useCompositeState as useCompositeState,
 } from "../Composite";
 
 export type MenuBarState = CompositeState & {
@@ -45,18 +45,18 @@ export function useMenuBarState(
     ...composite,
     unstable_values: values,
     unstable_setValue: React.useCallback((name, value) => {
-      setValues(vals => ({
+      setValues((vals) => ({
         ...vals,
-        [name]: typeof value === "function" ? value(vals) : value
+        [name]: typeof value === "function" ? value(vals) : value,
       }));
-    }, [])
+    }, []),
   };
 }
 
 const keys: Array<keyof MenuBarStateReturn> = [
   ...useCompositeState.__keys,
   "unstable_values",
-  "unstable_setValue"
+  "unstable_setValue",
 ];
 
 useMenuBarState.__keys = keys;

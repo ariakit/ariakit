@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import { applyState } from "reakit-utils/applyState";
 import {
@@ -9,7 +9,7 @@ import {
   unstable_IdActions,
   unstable_IdInitialState,
   unstable_useIdState,
-  unstable_IdStateReturn
+  unstable_IdStateReturn,
 } from "../Id/IdState";
 import { reverse } from "./__utils/reverse";
 import { Item, Group, Orientation } from "./__utils/types";
@@ -298,7 +298,7 @@ function reducer(
     initialOrientation,
     initialCurrentId,
     initialLoop,
-    initialWrap
+    initialWrap,
   } = state;
 
   switch (action.type) {
@@ -314,7 +314,7 @@ function reducer(
     }
     case "unregisterGroup": {
       const { id } = action;
-      const nextGroups = groups.filter(group => group.id !== id);
+      const nextGroups = groups.filter((group) => group.id !== id);
       // The group isn't registered, so do nothing
       if (nextGroups.length === groups.length) {
         return state;
@@ -324,35 +324,37 @@ function reducer(
     case "registerItem": {
       const { item } = action;
       // Finds the item group based on the DOM hierarchy
-      const group = groups.find(r => r.ref.current?.contains(item.ref.current));
+      const group = groups.find((r) =>
+        r.ref.current?.contains(item.ref.current)
+      );
       // Group will be null if it's a one-dimensional composite
       const nextItem = { groupId: group?.id, ...item };
       const index = findDOMIndex(items, nextItem);
       const nextState = {
         ...state,
-        items: addItemAtIndex(items, nextItem, index)
+        items: addItemAtIndex(items, nextItem, index),
       };
       return { ...nextState, currentId: getCurrentId(nextState) };
     }
     case "unregisterItem": {
       const { id } = action;
-      const nextItems = items.filter(item => item.id !== id);
+      const nextItems = items.filter((item) => item.id !== id);
       // The item isn't registered, so do nothing
       if (nextItems.length === items.length) {
         return state;
       }
       // Filters out the item that is being removed from the pastIds list
-      const nextPastIds = pastIds.filter(pastId => pastId !== id);
+      const nextPastIds = pastIds.filter((pastId) => pastId !== id);
       const nextState = {
         ...state,
         pastIds: nextPastIds,
-        items: nextItems
+        items: nextItems,
       };
       // If the current item is the item that is being removed, focus pastId
       if (currentId && currentId === id) {
         const nextId = getCurrentId({
           ...nextState,
-          currentId: nextPastIds[0]
+          currentId: nextPastIds[0],
         });
         return { ...nextState, currentId: nextId };
       }
@@ -367,7 +369,7 @@ function reducer(
       // Removes the current item and the item that is receiving focus from the
       // pastIds list
       const filteredPastIds = pastIds.filter(
-        pastId => pastId !== currentId && pastId !== id
+        (pastId) => pastId !== currentId && pastId !== id
       );
       // If there's a currentId, add it to the pastIds list so it can be focused
       // if the new item gets removed or disabled
@@ -380,7 +382,7 @@ function reducer(
           ...state,
           pastIds: nextPastIds,
           unstable_moves: moves + 1,
-          currentId: getCurrentId(state, id)
+          currentId: getCurrentId(state, id),
         };
       }
       const item = findEnabledItemById(items, id);
@@ -388,7 +390,7 @@ function reducer(
         ...state,
         pastIds: nextPastIds,
         unstable_moves: item ? moves + 1 : moves,
-        currentId: getCurrentId(state, item?.id)
+        currentId: getCurrentId(state, item?.id),
       };
     }
     case "next": {
@@ -400,7 +402,7 @@ function reducer(
       const isHorizontal = orientation !== "vertical";
       const isRTL = rtl && isHorizontal;
       const allItems = isRTL ? reverse(items) : items;
-      const currentItem = allItems.find(item => item.id === currentId);
+      const currentItem = allItems.find((item) => item.id === currentId);
       // If there's no item focused, we just move the first one
       if (!currentItem) {
         return reducer(state, { ...action, type: "first" });
@@ -527,12 +529,12 @@ function reducer(
     case "setOrientation":
       return {
         ...state,
-        orientation: applyState(action.orientation, orientation)
+        orientation: applyState(action.orientation, orientation),
       };
     case "setCurrentId": {
       const nextCurrentId = getCurrentId({
         ...state,
-        currentId: applyState(action.currentId, currentId)
+        currentId: applyState(action.currentId, currentId),
       });
       return { ...state, currentId: nextCurrentId };
     }
@@ -550,7 +552,7 @@ function reducer(
         loop: initialLoop,
         wrap: initialWrap,
         unstable_moves: 0,
-        pastIds: []
+        pastIds: [],
       };
     default:
       throw new Error();
@@ -584,7 +586,7 @@ export function unstable_useCompositeState(
       initialWrap,
       ...state
     },
-    dispatch
+    dispatch,
   ] = React.useReducer(reducer, {
     unstable_virtual: virtual,
     rtl,
@@ -601,7 +603,7 @@ export function unstable_useCompositeState(
     initialOrientation: orientation,
     initialCurrentId: currentId,
     initialLoop: loop,
-    initialWrap: wrap
+    initialWrap: wrap,
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
@@ -611,32 +613,36 @@ export function unstable_useCompositeState(
     ...state,
     unstable_hasActiveWidget: hasActiveWidget,
     unstable_setHasActiveWidget: setHasActiveWidget,
-    registerItem: useAction(item => dispatch({ type: "registerItem", item })),
-    unregisterItem: useAction(id => dispatch({ type: "unregisterItem", id })),
-    registerGroup: useAction(group =>
+    registerItem: useAction((item) => dispatch({ type: "registerItem", item })),
+    unregisterItem: useAction((id) => dispatch({ type: "unregisterItem", id })),
+    registerGroup: useAction((group) =>
       dispatch({ type: "registerGroup", group })
     ),
-    unregisterGroup: useAction(id => dispatch({ type: "unregisterGroup", id })),
-    move: useAction(id => dispatch({ type: "move", id })),
-    next: useAction(allTheWay => dispatch({ type: "next", allTheWay })),
-    previous: useAction(allTheWay => dispatch({ type: "previous", allTheWay })),
-    up: useAction(allTheWay => dispatch({ type: "up", allTheWay })),
-    down: useAction(allTheWay => dispatch({ type: "down", allTheWay })),
+    unregisterGroup: useAction((id) =>
+      dispatch({ type: "unregisterGroup", id })
+    ),
+    move: useAction((id) => dispatch({ type: "move", id })),
+    next: useAction((allTheWay) => dispatch({ type: "next", allTheWay })),
+    previous: useAction((allTheWay) =>
+      dispatch({ type: "previous", allTheWay })
+    ),
+    up: useAction((allTheWay) => dispatch({ type: "up", allTheWay })),
+    down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
     first: useAction(() => dispatch({ type: "first" })),
     last: useAction(() => dispatch({ type: "last" })),
-    unstable_setVirtual: useAction(value =>
+    unstable_setVirtual: useAction((value) =>
       dispatch({ type: "setVirtual", virtual: value })
     ),
-    setRTL: useAction(value => dispatch({ type: "setRTL", rtl: value })),
-    setOrientation: useAction(value =>
+    setRTL: useAction((value) => dispatch({ type: "setRTL", rtl: value })),
+    setOrientation: useAction((value) =>
       dispatch({ type: "setOrientation", orientation: value })
     ),
-    setCurrentId: useAction(value =>
+    setCurrentId: useAction((value) =>
       dispatch({ type: "setCurrentId", currentId: value })
     ),
-    setLoop: useAction(value => dispatch({ type: "setLoop", loop: value })),
-    setWrap: useAction(value => dispatch({ type: "setWrap", wrap: value })),
-    reset: useAction(() => dispatch({ type: "reset" }))
+    setLoop: useAction((value) => dispatch({ type: "setLoop", loop: value })),
+    setWrap: useAction((value) => dispatch({ type: "setWrap", wrap: value })),
+    reset: useAction(() => dispatch({ type: "reset" })),
   };
 }
 
@@ -670,7 +676,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "setLoop",
   "setWrap",
   "reset",
-  "unstable_setHasActiveWidget"
+  "unstable_setHasActiveWidget",
 ];
 
 unstable_useCompositeState.__keys = keys;

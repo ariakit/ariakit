@@ -6,15 +6,15 @@ test("shouldShowMessage", () => {
       a: "a",
       b: "b",
       c: {
-        d: ["e", null, "f"]
-      }
+        d: ["e", null, "f"],
+      },
     },
     touched: {
       a: true,
       c: {
-        d: [true, true]
-      }
-    }
+        d: [true, true],
+      },
+    },
   };
   expect(shouldShowMessage(obj, "a")).toBe(true);
   expect(shouldShowMessage(obj, "b")).toBe(false);

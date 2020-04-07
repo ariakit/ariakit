@@ -42,11 +42,11 @@ export function useDisclosuresRef(
     if (activeElementRef.current instanceof HTMLElement) {
       if (disclosures.indexOf(activeElementRef.current) !== -1) {
         const withoutActiveElement = disclosures.filter(
-          disclosure => disclosure !== activeElementRef.current
+          (disclosure) => disclosure !== activeElementRef.current
         );
         disclosuresRef.current = [
           activeElementRef.current,
-          ...withoutActiveElement
+          ...withoutActiveElement,
         ];
       } else {
         disclosuresRef.current = [activeElementRef.current, ...disclosures];

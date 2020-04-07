@@ -12,12 +12,12 @@ import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
 import {
   unstable_useIdGroup,
   unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps
+  unstable_IdGroupHTMLProps,
 } from "../Id/IdGroup";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import {
   unstable_CompositeStateReturn,
-  unstable_useCompositeState
+  unstable_useCompositeState,
 } from "./CompositeState";
 import { Item } from "./__utils/types";
 import { groupItems } from "./__utils/groupItems";
@@ -60,7 +60,7 @@ const validCompositeRoles = [
   "toolbar",
   "radiogroup",
   "tree",
-  "treegrid"
+  "treegrid",
 ];
 
 const isIE11 = typeof window !== "undefined" && "msCrypto" in window;
@@ -120,7 +120,7 @@ function findFirstEnabledItemInTheLastRow(items: Item[]) {
 }
 
 function isItem(items: Item[], element?: Element | EventTarget | null) {
-  return items?.some(item => !!element && item.ref.current === element);
+  return items?.some((item) => !!element && item.ref.current === element);
 }
 
 export const unstable_useComposite = createHook<
@@ -232,7 +232,7 @@ export const unstable_useComposite = createHook<
         options.items,
         currentItem,
         options.setCurrentId,
-        htmlOnFocus
+        htmlOnFocus,
       ]
     );
 
@@ -290,7 +290,7 @@ export const unstable_useComposite = createHook<
       () =>
         createOnKeyDown({
           stopPropagation: true,
-          shouldKeyDown: event =>
+          shouldKeyDown: (event) =>
             event.target === event.currentTarget && options.currentId === null,
           keyMap: () => {
             const isVertical = options.orientation !== "horizontal";
@@ -314,9 +314,9 @@ export const unstable_useComposite = createHook<
               Home: options.first,
               End: options.last,
               PageUp: options.first,
-              PageDown: options.last
+              PageDown: options.last,
             };
-          }
+          },
         }),
       [
         options.currentId,
@@ -325,7 +325,7 @@ export const unstable_useComposite = createHook<
         options.items,
         options.last,
         options.first,
-        options.move
+        options.move,
       ]
     );
 
@@ -339,7 +339,7 @@ export const unstable_useComposite = createHook<
       "aria-activedescendant": options.unstable_virtual
         ? currentItem?.id || undefined
         : undefined,
-      ...htmlProps
+      ...htmlProps,
     };
   },
 
@@ -353,7 +353,7 @@ export const unstable_useComposite = createHook<
       return tabbableHTMLProps;
     }
     return { ...htmlProps, ref: tabbableHTMLProps.ref };
-  }
+  },
 });
 
 export const unstable_Composite = createComponent({
@@ -373,5 +373,5 @@ export const unstable_Composite = createComponent({
     );
 
     return useCreateElement(type, props, children);
-  }
+  },
 });

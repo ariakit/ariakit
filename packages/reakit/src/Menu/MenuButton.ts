@@ -8,7 +8,7 @@ import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,
-  usePopoverDisclosure
+  usePopoverDisclosure,
 } from "../Popover/PopoverDisclosure";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
@@ -52,7 +52,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         () =>
           createOnKeyDown({
             onKeyDown: htmlOnKeyDown,
-            stopPropagation: event => event.key !== "Escape",
+            stopPropagation: (event) => event.key !== "Escape",
             onKey: options.show,
             keyMap: () => {
               // prevents scroll jump
@@ -65,9 +65,9 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
                   dir === "top" || dir === "bottom" ? options.last : false,
                 ArrowRight: dir === "right" && first,
                 ArrowDown: dir === "bottom" || dir === "top" ? first : false,
-                ArrowLeft: dir === "left" && first
+                ArrowLeft: dir === "left" && first,
               };
-            }
+            },
           }),
         [
           htmlOnKeyDown,
@@ -76,7 +76,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
           options.show,
           options.hide,
           options.first,
-          options.last
+          options.last,
         ]
       );
 
@@ -143,7 +143,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         onMouseDown: useAllCallbacks(onMouseDown, htmlOnMouseDown),
         onFocus: useAllCallbacks(onFocus, htmlOnFocus),
         onClick: useAllCallbacks(onClick, htmlOnClick),
-        ...htmlProps
+        ...htmlProps,
       };
     },
 
@@ -151,13 +151,13 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       return {
         ...options,
         // Toggling is handled by MenuButton
-        toggle: noop
+        toggle: noop,
       };
-    }
+    },
   }
 );
 
 export const MenuButton = createComponent({
   as: "button",
-  useHook: useMenuButton
+  useHook: useMenuButton,
 });

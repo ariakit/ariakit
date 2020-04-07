@@ -7,7 +7,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   PopoverOptions,
   PopoverHTMLProps,
-  usePopover
+  usePopover,
 } from "../Popover/Popover";
 import { MenuBarOptions, MenuBarHTMLProps, useMenuBar } from "./MenuBar";
 import { useMenuState, MenuStateReturn } from "./MenuState";
@@ -36,7 +36,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       modal: false,
       ...options,
       // will be handled differently from usePopover/useDialog
-      hideOnEsc: false
+      hideOnEsc: false,
     };
   },
 
@@ -57,7 +57,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       () =>
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
-          stopPropagation: event => {
+          stopPropagation: (event) => {
             // On Esc, only stop propagation if there's no parent menu.
             // Otherwise, pressing Esc should close all menus
             return event.key !== "Escape" && hasParent;
@@ -78,13 +78,13 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
               return { Escape, ArrowRight, ArrowLeft };
             }
             return { Escape };
-          }
+          },
         }),
       [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
     );
 
     return { role: "menu", onKeyDown, ...htmlProps };
-  }
+  },
 });
 
 export const Menu = createComponent({
@@ -97,5 +97,5 @@ export const Menu = createComponent({
       "See https://reakit.io/docs/menu"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

@@ -73,7 +73,7 @@ test("onChange non-native radio", () => {
   expect(radio.checked).toBe(true);
 });
 
-[true, false].forEach(virtual => {
+[true, false].forEach((virtual) => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
     test("arrow keys", () => {
       const Test = () => {

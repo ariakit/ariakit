@@ -6,7 +6,7 @@ import { isButton } from "reakit-utils/isButton";
 import {
   ClickableOptions,
   ClickableHTMLProps,
-  useClickable
+  useClickable,
 } from "../Clickable/Clickable";
 
 export type ButtonOptions = ClickableOptions;
@@ -42,12 +42,12 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
       ref: useForkRef(ref, htmlRef),
       role,
       type,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Button = createComponent({
   as: "button",
-  useHook: useButton
+  useHook: useButton,
 });

@@ -4,7 +4,7 @@ import { DialogDisclosure } from "../DialogDisclosure";
 
 const props: Parameters<typeof DialogDisclosure>[0] = {
   baseId: "base",
-  toggle: jest.fn
+  toggle: jest.fn,
 };
 
 test("render", () => {

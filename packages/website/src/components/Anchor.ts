@@ -25,7 +25,7 @@ export const useAnchor = createHook<AnchorOptions, AnchorHTMLProps>({
       }
     `;
     return { ...htmlProps, className: cx(anchor, htmlProps.className) };
-  }
+  },
 });
 
 const Anchor = createComponent({
@@ -37,7 +37,7 @@ const Anchor = createComponent({
       return useCreateElement(Link, { to: href, ...props }, children);
     }
     return useCreateElement(type, { href, ...props }, children);
-  }
+  },
 });
 
 export default Anchor;

@@ -8,7 +8,7 @@ const {
   writeFileSync,
   readFileSync,
   lstatSync,
-  existsSync
+  existsSync,
 } = require("fs-extra");
 const { Project, ts } = require("ts-morph");
 const rimraf = require("rimraf");
@@ -107,7 +107,7 @@ function isSourceModule(rootPath, filename) {
     getModuleDir(rootPath),
     getUnpkgDir(rootPath),
     getTypesDir(rootPath),
-    getMainDir(rootPath)
+    getMainDir(rootPath),
   ];
   return !dists.includes(filename);
 }
@@ -150,14 +150,14 @@ function isPublicModule(rootPath, filename) {
  */
 function getPublicFiles(rootPath, prefix = "") {
   return readdirSync(rootPath)
-    .filter(filename => isPublicModule(rootPath, filename))
+    .filter((filename) => isPublicModule(rootPath, filename))
     .reduce((acc, filename) => {
       const path = join(rootPath, filename);
       const childFiles =
         isDirectory(path) && getPublicFiles(path, join(prefix, filename));
       return {
         ...(childFiles || { [removeExt(join(prefix, filename))]: path }),
-        ...acc
+        ...acc,
       };
     }, {});
 }
@@ -169,8 +169,8 @@ function getPublicFiles(rootPath, prefix = "") {
 function getProxyFolders(rootPath) {
   const publicFiles = getPublicFiles(getSourcePath(rootPath));
   return Object.keys(publicFiles)
-    .map(name => name.replace(/\/index$/, ""))
-    .filter(name => name !== "index");
+    .map((name) => name.replace(/\/index$/, ""))
+    .filter((name) => name !== "index");
 }
 
 /**
@@ -183,7 +183,7 @@ function getBuildFolders(rootPath) {
     getUnpkgDir(rootPath),
     getModuleDir(rootPath),
     getTypesDir(rootPath),
-    ...getProxyFolders(rootPath)
+    ...getProxyFolders(rootPath),
   ].filter(Boolean);
 }
 
@@ -195,7 +195,7 @@ function cleanBuild(rootPath) {
   const cleaned = [];
   getBuildFolders(rootPath)
     .filter(isRootModule)
-    .forEach(name => {
+    .forEach((name) => {
       rimraf.sync(name);
       cleaned.push(chalk.bold(chalk.gray(name)));
     });
@@ -214,7 +214,7 @@ function cleanBuild(rootPath) {
 function getIndexPath(path) {
   return join(
     path,
-    readdirSync(path).find(file => /^index\.(j|t)sx?/.test(file))
+    readdirSync(path).find((file) => /^index\.(j|t)sx?/.test(file))
   );
 }
 
@@ -226,7 +226,7 @@ function makeGitignore(rootPath) {
   const buildFolders = getBuildFolders(rootPath);
   const contents = buildFolders
     .filter(isRootModule)
-    .map(name => `/${name}`)
+    .map((name) => `/${name}`)
     .join("\n");
   writeFileSync(
     join(rootPath, ".gitignore"),
@@ -251,7 +251,7 @@ function makePlaygroundDeps(rootPath) {
   const playDepsPath = join(getSourcePath(playPath), "__deps");
   const buildFolders = getBuildFolders(rootPath);
   const objectContents = buildFolders
-    .filter(filename => isSourceModule(rootPath, filename))
+    .filter((filename) => isSourceModule(rootPath, filename))
     .reduce(
       (acc, folder) =>
         `${acc},\n  "${join(name, folder)}": require("${join(name, folder)}")`,
@@ -288,7 +288,7 @@ function getProxyPackageContents(rootPath, moduleName) {
     sideEffects: false,
     main: join(prefix, mainDir, moduleName),
     ...(moduleDir ? { module: join(prefix, moduleDir, moduleName) } : {}),
-    ...(typesDir ? { types: join(prefix, typesDir, moduleName) } : {})
+    ...(typesDir ? { types: join(prefix, typesDir, moduleName) } : {}),
   };
   return JSON.stringify(json, null, 2);
 }
@@ -299,7 +299,7 @@ function getProxyPackageContents(rootPath, moduleName) {
 function makeProxies(rootPath) {
   const pkg = getPackage(rootPath);
   const created = [];
-  getProxyFolders(rootPath).forEach(name => {
+  getProxyFolders(rootPath).forEach((name) => {
     ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
@@ -312,7 +312,7 @@ function makeProxies(rootPath) {
       [
         "",
         `Created proxies in ${chalk.bold(pkg.name)}:`,
-        `${created.join(", ")}`
+        `${created.join(", ")}`,
       ].join("\n")
     );
   }
@@ -415,7 +415,7 @@ function getTagNames(prop) {
   const jsDocs = getJsDocs(prop);
   if (!jsDocs) return [];
   // Object.getOwnPropertyNames(Object.getPrototypeOf(jsDocs));
-  return jsDocs.getTags().map(tag => tag.getKindName());
+  return jsDocs.getTags().map((tag) => tag.getKindName());
 }
 
 /**
@@ -425,7 +425,7 @@ function getProps(node) {
   return node
     .getType()
     .getProperties()
-    .filter(prop => !getTagNames(prop).includes("JSDocPrivateTag"));
+    .filter((prop) => !getTagNames(prop).includes("JSDocPrivateTag"));
 }
 
 /**
@@ -438,8 +438,8 @@ function getPropType(rootPath, prop) {
     .getType()
     .getText(undefined, ts.TypeFormatFlags.InTypeAlias);
 
-  const encode = text =>
-    text.replace(/[\u00A0-\u9999<>&"]/gim, i => `&#${i.charCodeAt(0)};`);
+  const encode = (text) =>
+    text.replace(/[\u00A0-\u9999<>&"]/gim, (i) => `&#${i.charCodeAt(0)};`);
 
   if (type.length > 50) {
     return `<code title="${encode(type)}">${encode(
@@ -472,7 +472,7 @@ function createPropTypeObject(rootPath, prop) {
   return {
     name: prop.getEscapedName(),
     description: getComment(prop),
-    type: getPropType(rootPath, prop)
+    type: getPropType(rootPath, prop),
   };
 }
 
@@ -481,7 +481,7 @@ function createPropTypeObject(rootPath, prop) {
  * @param {import("ts-morph").Node<Node>} node
  */
 function createPropTypeObjects(rootPath, node) {
-  return getProps(node).map(prop => createPropTypeObject(rootPath, prop));
+  return getProps(node).map((prop) => createPropTypeObject(rootPath, prop));
 }
 
 /**
@@ -519,7 +519,7 @@ function getPropTypesRow(prop) {
  */
 function getPropTypesMarkdown(types) {
   const content = Object.keys(types)
-    .map(title => {
+    .map((title) => {
       const props = types[title];
       const rows = props.map(getPropTypesRow).join("\n");
       const stateProps = props.stateProps || [];
@@ -559,10 +559,10 @@ function injectPropTypes(rootPath) {
 
   const project = new Project({
     tsConfigFilePath: join(rootPath, "tsconfig.json"),
-    addFilesFromTsConfig: false
+    addFilesFromTsConfig: false,
   });
 
-  readmePaths.forEach(readmePath => {
+  readmePaths.forEach((readmePath) => {
     const mdContents = readFileSync(readmePath, { encoding: "utf-8" });
 
     if (/#\s?Props/.test(mdContents)) {
@@ -573,11 +573,11 @@ function injectPropTypes(rootPath) {
       project.resolveSourceFileDependencies();
       const types = {};
 
-      sortSourceFiles(sourceFiles).forEach(sourceFile => {
-        sourceFile.forEachChild(node => {
+      sortSourceFiles(sourceFiles).forEach((sourceFile) => {
+        sourceFile.forEachChild((node) => {
           if (isStateReturnDeclaration(node)) {
             const propTypes = createPropTypeObjects(rootPath, node);
-            stateTypes.push(...propTypes.map(prop => prop.name));
+            stateTypes.push(...propTypes.map((prop) => prop.name));
           }
           if (isPropsDeclaration(node)) {
             const moduleName = getModuleName(node);
@@ -587,9 +587,9 @@ function injectPropTypes(rootPath) {
               types[moduleName] = propTypes;
             } else {
               const propTypesWithoutState = propTypes.filter(
-                prop => !stateTypes.includes(prop.name)
+                (prop) => !stateTypes.includes(prop.name)
               );
-              const propTypesReturnedByState = propTypes.filter(prop =>
+              const propTypesReturnedByState = propTypes.filter((prop) =>
                 stateTypes.includes(prop.name)
               );
               types[moduleName] = propTypesWithoutState;
@@ -616,7 +616,7 @@ function injectPropTypes(rootPath) {
       [
         "",
         `Injected prop types in ${chalk.bold(pkg.name)}:`,
-        `${created.join(", ")}`
+        `${created.join(", ")}`,
       ].join("\n")
     );
   }
@@ -638,5 +638,5 @@ module.exports = {
   makePlaygroundDeps,
   makeProxies,
   hasTSConfig,
-  injectPropTypes
+  injectPropTypes,
 };

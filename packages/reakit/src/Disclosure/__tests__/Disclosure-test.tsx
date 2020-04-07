@@ -4,7 +4,7 @@ import { Disclosure } from "../Disclosure";
 
 const props: Parameters<typeof Disclosure>[0] = {
   toggle: jest.fn,
-  baseId: "test"
+  baseId: "test",
 };
 
 test("render", () => {

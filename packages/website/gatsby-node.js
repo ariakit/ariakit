@@ -10,7 +10,7 @@ const { repository } = require("./package.json");
 function getAdjacentPaths(arr, index) {
   return {
     nextPagePath: arr[index + 1] ? arr[index + 1] : null,
-    prevPagePath: arr[index - 1] ? arr[index - 1] : null
+    prevPagePath: arr[index - 1] ? arr[index - 1] : null,
   };
 }
 
@@ -41,20 +41,20 @@ exports.createPages = ({ actions, graphql }) => {
         }
       }
     }
-  `).then(result => {
+  `).then((result) => {
     if (result.errors) {
       return Promise.reject(result.errors);
     }
     const flatArray = [];
     result.data.allDocsYaml.edges.forEach(async ({ node }) => {
-      node.paths.forEach(path => flatArray.push(path));
+      node.paths.forEach((path) => flatArray.push(path));
     });
 
     return result.data.allMarkdownRemark.edges.forEach(async ({ node }) => {
       const { frontmatter, fileAbsolutePath, tableOfContents } = node;
       const { path, redirect_from } = frontmatter;
 
-      const currentIndexInFlatArray = flatArray.findIndex(el => el === path);
+      const currentIndexInFlatArray = flatArray.findIndex((el) => el === path);
       const { nextPagePath, prevPagePath } = getAdjacentPaths(
         flatArray,
         currentIndexInFlatArray
@@ -76,8 +76,8 @@ exports.createPages = ({ actions, graphql }) => {
           readmeUrl,
           tableOfContentsAst,
           nextPagePath,
-          prevPagePath
-        }
+          prevPagePath,
+        },
       });
 
       if (redirect_from) {
@@ -85,12 +85,12 @@ exports.createPages = ({ actions, graphql }) => {
           ? redirect_from
           : [redirect_from];
 
-        redirects.forEach(redirectPath => {
+        redirects.forEach((redirectPath) => {
           createRedirect({
             fromPath: redirectPath,
             toPath: path,
             isPermanent: true,
-            redirectInBrowser: true
+            redirectInBrowser: true,
           });
         });
       }

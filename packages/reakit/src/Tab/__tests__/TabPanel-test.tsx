@@ -7,7 +7,7 @@ const props: TabPanelProps = {
   registerPanel: jest.fn(),
   unregisterPanel: jest.fn(),
   panels: [],
-  items: []
+  items: [],
 };
 
 test("render", () => {

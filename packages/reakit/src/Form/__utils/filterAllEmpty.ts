@@ -4,7 +4,7 @@ export function filterAllEmpty<T extends Record<any, any> | Array<any>>(
   object: T
 ): T {
   if (Array.isArray(object)) {
-    return object.filter(value => {
+    return object.filter((value) => {
       if (isPlainObject(value) || Array.isArray(value)) {
         return filterAllEmpty(value);
       }

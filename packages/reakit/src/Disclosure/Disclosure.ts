@@ -30,13 +30,13 @@ export const useDisclosure = createHook<DisclosureOptions, DisclosureHTMLProps>(
         onClick: useAllCallbacks(options.toggle, htmlOnClick),
         "aria-expanded": Boolean(options.visible),
         "aria-controls": controls,
-        ...htmlProps
+        ...htmlProps,
       };
-    }
+    },
   }
 );
 
 export const Disclosure = createComponent({
   as: "button",
-  useHook: useDisclosure
+  useHook: useDisclosure,
 });
