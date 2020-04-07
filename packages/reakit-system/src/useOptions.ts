@@ -13,9 +13,9 @@ import { useToken } from "./useToken";
  *   useAOptions(options, htmlProps) {
  *     return {
  *       ...options,
- *       url: htmlProps.href
+ *       url: htmlProps.href,
  *     };
- *   }
+ *   },
  * };
  *
  * function A({ url, ...htmlProps }) {

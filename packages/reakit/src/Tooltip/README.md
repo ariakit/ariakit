@@ -94,7 +94,7 @@ import React from "react";
 import {
   useTooltipState,
   Tooltip as ReakitTooltip,
-  TooltipReference
+  TooltipReference,
 } from "reakit/Tooltip";
 
 function Tooltip({ children, title, ...props }) {
@@ -102,7 +102,7 @@ function Tooltip({ children, title, ...props }) {
   return (
     <>
       <TooltipReference {...tooltip} {...children.props}>
-        {referenceProps => React.cloneElement(children, referenceProps)}
+        {(referenceProps) => React.cloneElement(children, referenceProps)}
       </TooltipReference>
       <ReakitTooltip {...tooltip} {...props}>
         {title}

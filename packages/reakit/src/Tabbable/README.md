@@ -26,12 +26,8 @@ import { Tabbable } from "reakit/Tabbable";
 function Example() {
   return (
     <>
-      <Tabbable>
-        Tabbable
-      </Tabbable>
-      <Tabbable disabled>
-        Disabled
-      </Tabbable>
+      <Tabbable>Tabbable</Tabbable>
+      <Tabbable disabled>Disabled</Tabbable>
       <Tabbable disabled focusable>
         Focusable
       </Tabbable>

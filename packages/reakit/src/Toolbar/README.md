@@ -27,7 +27,7 @@ import {
   useToolbarState,
   Toolbar,
   ToolbarItem,
-  ToolbarSeparator
+  ToolbarSeparator,
 } from "reakit/Toolbar";
 import { Button } from "reakit/Button";
 

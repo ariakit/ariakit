@@ -157,7 +157,7 @@ import {
   useTabState,
   Tab as BaseTab,
   TabList as BaseTabList,
-  TabPanel as BaseTabPanel
+  TabPanel as BaseTabPanel,
 } from "reakit/Tab";
 
 const TabsContext = React.createContext();

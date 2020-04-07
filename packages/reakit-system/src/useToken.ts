@@ -10,7 +10,7 @@ import { SystemContext } from "./SystemContext";
  * import { SystemProvider, useToken } from "reakit-system";
  *
  * const system = {
- *   token: "value"
+ *   token: "value",
  * };
  *
  * function Component(props) {

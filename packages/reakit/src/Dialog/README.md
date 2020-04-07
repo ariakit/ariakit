@@ -56,7 +56,7 @@ import {
   useDialogState,
   Dialog,
   DialogDisclosure,
-  DialogBackdrop
+  DialogBackdrop,
 } from "reakit/Dialog";
 
 function Example() {
@@ -184,7 +184,7 @@ function Example() {
             bottom: 0,
             right: 16,
             width: 200,
-            height: 300
+            height: 300,
           }}
         >
           <Button onClick={dialog.hide}>Close chat</Button>
@@ -269,7 +269,7 @@ import React from "react";
 import {
   useDialogState,
   Dialog as BaseDialog,
-  DialogDisclosure
+  DialogDisclosure,
 } from "reakit/Dialog";
 
 function Dialog({ disclosure, ...props }) {
@@ -277,7 +277,7 @@ function Dialog({ disclosure, ...props }) {
   return (
     <>
       <DialogDisclosure {...dialog} {...disclosure.props}>
-        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
+        {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </DialogDisclosure>
       <BaseDialog {...dialog} {...props} />
     </>

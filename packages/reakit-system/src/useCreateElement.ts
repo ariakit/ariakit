@@ -19,7 +19,7 @@ import { SystemContext } from "./SystemContext";
  *       return children(rest);
  *     }
  *     return React.createElement(type, props, children);
- *   }
+ *   },
  * };
  *
  * function Component(props) {

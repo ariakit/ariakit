@@ -22,7 +22,7 @@ import ReactDOM from "react-dom";
 import {
   usePlaygroundState,
   PlaygroundEditor,
-  PlaygroundPreview
+  PlaygroundPreview,
 } from "reakit-playground";
 
 const initialCode = `import React from "react";

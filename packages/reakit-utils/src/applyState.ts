@@ -13,7 +13,7 @@ function isUpdater<T>(
  * @example
  * import { applyState } from "reakit-utils";
  *
- * applyState(value => value + 1, 1); // 2
+ * applyState((value) => value + 1, 1); // 2
  * applyState(2, 1); // 2
  */
 export function applyState<T>(

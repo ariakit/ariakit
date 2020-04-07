@@ -36,23 +36,23 @@ import {
   unstable_FormLabel as FormLabel,
   unstable_FormInput as FormInput,
   unstable_FormMessage as FormMessage,
-  unstable_FormSubmitButton as FormSubmitButton
+  unstable_FormSubmitButton as FormSubmitButton,
 } from "reakit/Form";
 
 function Example() {
   const form = useFormState({
     values: { name: "" },
-    onValidate: values => {
+    onValidate: (values) => {
       if (!values.name) {
         const errors = {
-          name: "How can we be friends without knowing your name?"
+          name: "How can we be friends without knowing your name?",
         };
         throw errors;
       }
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-    }
+    },
   });
   return (
     <Form {...form}>
@@ -80,23 +80,23 @@ import {
   unstable_FormLabel as FormLabel,
   unstable_FormInput as FormInput,
   unstable_FormMessage as FormMessage,
-  unstable_FormSubmitButton as FormSubmitButton
+  unstable_FormSubmitButton as FormSubmitButton,
 } from "reakit/Form";
 
 function Example() {
   const form = useFormState({
     values: { message: "" },
-    onValidate: values => {
+    onValidate: (values) => {
       if (!values.message) {
         const errors = {
-          message: "Please enter a message."
+          message: "Please enter a message.",
         };
         throw errors;
       }
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-    }
+    },
   });
   return (
     <Form {...form}>
@@ -134,15 +134,15 @@ import {
   unstable_FormPushButton as FormPushButton,
   unstable_FormSubmitButton as FormSubmitButton,
   unstable_FormInput as FormInput,
-  unstable_FormMessage as FormMessage
+  unstable_FormMessage as FormMessage,
 } from "reakit/Form";
 
 function Example() {
   const form = useFormState({
     values: {
-      people: [{ name: "", email: "" }]
+      people: [{ name: "", email: "" }],
     },
-    onValidate: values => {
+    onValidate: (values) => {
       const errors = {};
       values.people.forEach((value, i) => {
         if (!value.email) {
@@ -160,9 +160,9 @@ function Example() {
         throw errors;
       }
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-    }
+    },
   });
   return (
     <Form {...form}>
@@ -208,16 +208,16 @@ import {
   unstable_FormCheckbox as FormCheckbox,
   unstable_FormGroup as FormGroup,
   unstable_FormSubmitButton as FormSubmitButton,
-  unstable_FormMessage as FormMessage
+  unstable_FormMessage as FormMessage,
 } from "reakit/Form";
 
 function Example() {
   const form = useFormState({
     values: {
       accepted: false,
-      preferences: []
+      preferences: [],
     },
-    onValidate: values => {
+    onValidate: (values) => {
       const errors = {};
       if (!values.accepted) {
         errors.accepted = "You must accept our not-so-evil conditions!";
@@ -229,9 +229,9 @@ function Example() {
         throw errors;
       }
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-    }
+    },
   });
   return (
     <Form {...form}>
@@ -275,21 +275,21 @@ import {
   unstable_FormRadioGroup as FormRadioGroup,
   unstable_FormRadio as FormRadio,
   unstable_FormSubmitButton as FormSubmitButton,
-  unstable_FormMessage as FormMessage
+  unstable_FormMessage as FormMessage,
 } from "reakit/Form";
 
 function Example() {
   const form = useFormState({
     values: { choice: "" },
-    onValidate: values => {
+    onValidate: (values) => {
       if (values.choice !== "js") {
         const errors = { choice: "YOU WILL BE FIRED!" };
         throw errors;
       }
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-    }
+    },
   });
   return (
     <Form {...form}>
@@ -326,21 +326,21 @@ import {
   unstable_FormLabel as FormLabel,
   unstable_FormInput as FormInput,
   unstable_FormMessage as FormMessage,
-  unstable_FormSubmitButton as FormSubmitButton
+  unstable_FormSubmitButton as FormSubmitButton,
 } from "reakit/Form";
 import set from "lodash/set";
 
 const schema = object({
   name: string()
     .min(2, "Your name is too short!")
-    .required("How can we be friends without knowing your name?")
+    .required("How can we be friends without knowing your name?"),
 });
 
 function validateWithYup(yupSchema) {
-  return values =>
+  return (values) =>
     yupSchema.validate(values, { abortEarly: false }).then(
       () => {},
-      error => {
+      (error) => {
         if (error.inner.length) {
           throw error.inner.reduce(
             (acc, curr) => set(acc, curr.path, curr.message),
@@ -354,7 +354,7 @@ function validateWithYup(yupSchema) {
 function Example() {
   const form = useFormState({
     values: { name: "" },
-    onValidate: validateWithYup(schema)
+    onValidate: validateWithYup(schema),
   });
   return (
     <Form {...form}>
@@ -385,7 +385,7 @@ import {
   unstable_FormLabel as FormLabel,
   unstable_FormInput as FormInput,
   unstable_FormMessage as FormMessage,
-  unstable_FormSubmitButton as FormSubmitButton
+  unstable_FormSubmitButton as FormSubmitButton,
 } from "reakit/Form";
 
 const FormContext = React.createContext();
@@ -417,15 +417,15 @@ function SubmitButton(props) {
 }
 
 function Example() {
-  const onValidate = values => {
+  const onValidate = (values) => {
     if (!values.name) {
       const errors = {
-        name: "How can we be friends without knowing your name?"
+        name: "How can we be friends without knowing your name?",
       };
       throw errors;
     }
   };
-  const onSubmit = values => {
+  const onSubmit = (values) => {
     alert(JSON.stringify(values, null, 2));
   };
   return (

@@ -46,7 +46,7 @@ function Example() {
       <HiddenDisclosure {...hidden}>Toggle</HiddenDisclosure>
       {/* instead of {hidden.visible && <Hidden {...hidden}>Hidden</Hidden>} */}
       <Hidden {...hidden}>
-        {props => hidden.visible && <div {...props}>Hidden</div>}
+        {(props) => hidden.visible && <div {...props}>Hidden</div>}
       </Hidden>
     </>
   );
@@ -68,7 +68,7 @@ function Example() {
   return (
     <>
       <HiddenDisclosure {...hidden1}>
-        {props => (
+        {(props) => (
           <HiddenDisclosure {...props} {...hidden2}>
             Toggle All
           </HiddenDisclosure>

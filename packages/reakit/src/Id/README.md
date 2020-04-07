@@ -26,14 +26,14 @@ Learn more in [Get started](/docs/get-started/).
 ```jsx
 import {
   unstable_IdProvider as IdProvider,
-  unstable_Id as Id
+  unstable_Id as Id,
 } from "reakit/Id";
 
 function Example() {
   return (
     <IdProvider>
-      <Id>{props => <div {...props}>{props.id}</div>}</Id>
-      <Id>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id>{(props) => <div {...props}>{props.id}</div>}</Id>
+      <Id>{(props) => <div {...props}>{props.id}</div>}</Id>
     </IdProvider>
   );
 }
@@ -44,19 +44,19 @@ function Example() {
 ```jsx
 import {
   unstable_useIdState as useIdState,
-  unstable_Id as Id
+  unstable_Id as Id,
 } from "reakit/Id";
 
 function Example() {
   const id = useIdState({ baseId: "a" });
   return (
     <>
-      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
-      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
       <Id {...id} id="different-id">
-        {props => <div {...props}>{props.id}</div>}
+        {(props) => <div {...props}>{props.id}</div>}
       </Id>
-      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
     </>
   );
 }
@@ -68,19 +68,19 @@ function Example() {
 import {
   unstable_useIdState as useIdState,
   unstable_IdGroup as IdGroup,
-  unstable_Id as Id
+  unstable_Id as Id,
 } from "reakit/Id";
 
 function Example() {
   const id = useIdState();
   return (
     <IdGroup {...id} id="a">
-      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
-      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
       <Id {...id} id="different-id">
-        {props => <div {...props}>{props.id}</div>}
+        {(props) => <div {...props}>{props.id}</div>}
       </Id>
-      <Id {...id}>{props => <div {...props}>{props.id}</div>}</Id>
+      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
     </IdGroup>
   );
 }
@@ -91,7 +91,7 @@ function Example() {
 ```jsx
 import {
   unstable_IdProvider as IdProvider,
-  unstable_useId as useId
+  unstable_useId as useId,
 } from "reakit/Id";
 
 function Item(props) {

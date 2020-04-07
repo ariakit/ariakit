@@ -76,7 +76,7 @@ function. Otherwise return the argument as the new value.
 ```javascript
 import { applyState } from "reakit-utils";
 
-applyState(value => value + 1, 1); // 2
+applyState((value) => value + 1, 1); // 2
 applyState(2, 1); // 2
 ```
 
@@ -190,11 +190,10 @@ Creates and dispatches `Event` in a way that also works on IE 11.
 ```javascript
 import { fireEvent } from "reakit-utils";
 
-fireEvent(
-  document.getElementById("id"),
-  "blur",
-  { bubbles: true, cancelable: true }
-);
+fireEvent(document.getElementById("id"), "blur", {
+  bubbles: true,
+  cancelable: true,
+});
 ```
 
 ### fireKeyboardEvent
@@ -212,11 +211,10 @@ Creates and dispatches `KeyboardEvent` in a way that also works on IE 11.
 ```javascript
 import { fireKeyboardEvent } from "reakit-utils";
 
-fireKeyboardEvent(
-  document.getElementById("id"),
-  "keydown",
-  { key: "ArrowDown", shiftKey: true }
-);
+fireKeyboardEvent(document.getElementById("id"), "keydown", {
+  key: "ArrowDown",
+  shiftKey: true,
+});
 ```
 
 ### flatten

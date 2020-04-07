@@ -24,7 +24,7 @@ import {
   Menu,
   MenuItem,
   MenuButton,
-  MenuSeparator
+  MenuSeparator,
 } from "reakit/Menu";
 
 function Example() {
@@ -57,7 +57,7 @@ import {
   Menu,
   MenuItem,
   MenuButton,
-  MenuSeparator
+  MenuSeparator,
 } from "reakit/Menu";
 
 function Example() {
@@ -150,7 +150,7 @@ import {
   Menu,
   MenuItem,
   MenuButton,
-  MenuSeparator
+  MenuSeparator,
 } from "reakit/Menu";
 
 const PreferencesMenu = React.forwardRef((props, ref) => {
@@ -199,14 +199,14 @@ import {
   useDialogState,
   Dialog,
   DialogDisclosure,
-  DialogBackdrop
+  DialogBackdrop,
 } from "reakit/Dialog";
 import {
   useMenuState,
   Menu,
   MenuItem,
   MenuButton,
-  MenuSeparator
+  MenuSeparator,
 } from "reakit/Menu";
 
 const UpdatesDialog = React.forwardRef((props, ref) => {
@@ -256,7 +256,7 @@ import {
   MenuBar,
   MenuGroup,
   MenuItemCheckbox,
-  MenuItemRadio
+  MenuItemRadio,
 } from "reakit/Menu";
 
 // OPEN RECENT
@@ -378,7 +378,7 @@ import {
   useMenuState,
   Menu as BaseMenu,
   MenuItem,
-  MenuButton
+  MenuButton,
 } from "reakit/Menu";
 
 function Menu({ disclosure, items, ...props }) {
@@ -386,12 +386,12 @@ function Menu({ disclosure, items, ...props }) {
   return (
     <>
       <MenuButton {...menu} {...disclosure.props}>
-        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
+        {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </MenuButton>
       <BaseMenu {...menu} {...props}>
         {items.map((item, i) => (
           <MenuItem {...menu} {...item.props} key={i}>
-            {itemProps => React.cloneElement(item, itemProps)}
+            {(itemProps) => React.cloneElement(item, itemProps)}
           </MenuItem>
         ))}
       </BaseMenu>
@@ -407,7 +407,7 @@ function Example() {
       items={[
         <button>Custom item 1</button>,
         <button>Custom item 2</button>,
-        <button>Custom item 3</button>
+        <button>Custom item 3</button>,
       ]}
     />
   );

@@ -82,9 +82,9 @@ const useA = createHook({
   useProps(options, htmlProps) {
     return {
       ...htmlProps,
-      href: options.url
+      href: options.url,
     };
-  }
+  },
 });
 
 function A({ url, ...htmlProps }) {
@@ -109,7 +109,7 @@ import { mergeSystem } from "reakit-system";
 import * as bootstrapSystem from "reakit-system-bootstrap";
 
 const mySystem = {
-  useButtonProps() {}
+  useButtonProps() {},
 };
 
 const system = mergeSystem(bootstrapSystem, mySystem);
@@ -177,7 +177,7 @@ const system = {
       return children(rest);
     }
     return React.createElement(type, props, children);
-  }
+  },
 };
 
 function Component(props) {
@@ -216,9 +216,9 @@ const system = {
   useAOptions(options, htmlProps) {
     return {
       ...options,
-      url: htmlProps.href
+      url: htmlProps.href,
     };
-  }
+  },
 };
 
 function A({ url, ...htmlProps }) {
@@ -259,9 +259,9 @@ const system = {
   useAProps(options, htmlProps) {
     return {
       ...htmlProps,
-      href: options.url
+      href: options.url,
     };
-  }
+  },
 };
 
 function A({ url, ...htmlProps }) {
@@ -297,7 +297,7 @@ and [`useProps`](#useprops).
 import { SystemProvider, useToken } from "reakit-system";
 
 const system = {
-  token: "value"
+  token: "value",
 };
 
 function Component(props) {

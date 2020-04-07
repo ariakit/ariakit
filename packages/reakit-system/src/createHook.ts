@@ -34,9 +34,9 @@ type CreateHookOptions<O, P> = {
  *   useProps(options, htmlProps) {
  *     return {
  *       ...htmlProps,
- *       href: options.url
+ *       href: options.url,
  *     };
- *   }
+ *   },
  * });
  *
  * function A({ url, ...htmlProps }) {

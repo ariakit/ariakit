@@ -30,7 +30,7 @@ import {
   usePopoverState,
   Popover,
   PopoverDisclosure,
-  PopoverArrow
+  PopoverArrow,
 } from "reakit/Popover";
 
 function Example() {
@@ -56,7 +56,7 @@ import {
   usePopoverState,
   Popover,
   PopoverDisclosure,
-  PopoverArrow
+  PopoverArrow,
 } from "reakit/Popover";
 
 function Example() {
@@ -155,7 +155,7 @@ import {
   usePopoverState,
   Popover as BasePopover,
   PopoverDisclosure,
-  PopoverArrow
+  PopoverArrow,
 } from "reakit/Popover";
 
 function Popover({ disclosure, ...props }) {
@@ -163,7 +163,7 @@ function Popover({ disclosure, ...props }) {
   return (
     <>
       <PopoverDisclosure {...popover} {...disclosure.props}>
-        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
+        {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </PopoverDisclosure>
       <BasePopover {...popover} {...props}>
         <PopoverArrow {...popover} />

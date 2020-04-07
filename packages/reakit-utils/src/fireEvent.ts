@@ -6,11 +6,10 @@ import { createEvent } from "./createEvent";
  * @example
  * import { fireEvent } from "reakit-utils";
  *
- * fireEvent(
- *   document.getElementById("id"),
- *   "blur",
- *   { bubbles: true, cancelable: true }
- * );
+ * fireEvent(document.getElementById("id"), "blur", {
+ *   bubbles: true,
+ *   cancelable: true,
+ * });
  */
 export function fireEvent(
   element: HTMLElement,

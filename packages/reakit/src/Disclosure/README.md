@@ -28,7 +28,7 @@ Learn more in [Get started](/docs/get-started/).
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureContent
+  DisclosureContent,
 } from "reakit/Disclosure";
 
 function Example() {
@@ -50,7 +50,7 @@ You shouldn't conditionally render the `DisclosureContent` component as this wil
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureContent
+  DisclosureContent,
 } from "reakit/Disclosure";
 
 function Example() {
@@ -60,7 +60,7 @@ function Example() {
       <Disclosure {...disclosure}>Toggle</Disclosure>
       {/* instead of {disclosure.visible && <DisclosureContent {...disclosure}>Content</DisclosureContent>} */}
       <DisclosureContent {...disclosure}>
-        {props => disclosure.visible && <div {...props}>Content</div>}
+        {(props) => disclosure.visible && <div {...props}>Content</div>}
       </DisclosureContent>
     </>
   );
@@ -77,7 +77,7 @@ If you want to have only one `Disclosure` element controling multiple `Disclosur
 import {
   useDisclosureState,
   Disclosure,
-  DisclosureContent
+  DisclosureContent,
 } from "reakit/Disclosure";
 
 function Example() {
@@ -86,7 +86,7 @@ function Example() {
   return (
     <>
       <Disclosure {...disclosure1}>
-        {props => (
+        {(props) => (
           <Disclosure {...props} {...disclosure2}>
             Toggle All
           </Disclosure>

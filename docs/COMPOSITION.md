@@ -42,7 +42,7 @@ function Example() {
   const checkbox = useCheckboxState();
   return (
     <Button {...checkbox}>
-      {props => (
+      {(props) => (
         <Checkbox {...props} as="div">
           {checkbox.state ? "😄 Happy" : "😞 Sad"}
         </Checkbox>
@@ -95,13 +95,13 @@ function useDelayedDisclosureState({ delay, ...initialState } = {}) {
         disclosure.toggle();
         setTransitioning(false);
       }, delay);
-    }
+    },
   };
 }
 
 function Example() {
   const { transitioning, ...disclosure } = useDelayedDisclosureState({
-    delay: 500
+    delay: 500,
   });
   return (
     <>

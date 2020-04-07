@@ -38,7 +38,7 @@ function Example() {
         color: "white",
         background: "red",
         "&:not([disabled]):hover": { background: "green" },
-        "&:not([disabled]):active": { background: "blue" }
+        "&:not([disabled]):active": { background: "blue" },
       })}
     >
       Button

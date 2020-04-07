@@ -58,7 +58,7 @@ import { DisclosureContent, Button } from "reakit";
 function Example() {
   return (
     <DisclosureContent visible>
-      {props => <Button {...props}>Content</Button>}
+      {(props) => <Button {...props}>Content</Button>}
     </DisclosureContent>
   );
 }
@@ -98,7 +98,7 @@ import {
   Box,
   useDisclosureState,
   useDisclosureContent,
-  useDisclosure
+  useDisclosure,
 } from "reakit";
 
 function Example() {

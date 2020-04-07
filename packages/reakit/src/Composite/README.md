@@ -34,7 +34,7 @@ import React from "react";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem
+  unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
 function Example() {
@@ -64,7 +64,7 @@ import React from "react";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem
+  unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
 function Example() {
@@ -91,7 +91,7 @@ import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
   unstable_CompositeGroup as CompositeGroup,
-  unstable_CompositeItem as CompositeItem
+  unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
 function Example() {
@@ -134,7 +134,7 @@ import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
   unstable_CompositeItem as CompositeItem,
-  unstable_CompositeItemWidget as CompositeItemWidget
+  unstable_CompositeItemWidget as CompositeItemWidget,
 } from "reakit/Composite";
 
 function Example() {

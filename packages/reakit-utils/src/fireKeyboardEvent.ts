@@ -6,11 +6,10 @@ import { createKeyboardEvent } from "./createKeyboardEvent";
  * @example
  * import { fireKeyboardEvent } from "reakit-utils";
  *
- * fireKeyboardEvent(
- *   document.getElementById("id"),
- *   "keydown",
- *   { key: "ArrowDown", shiftKey: true }
- * );
+ * fireKeyboardEvent(document.getElementById("id"), "keydown", {
+ *   key: "ArrowDown",
+ *   shiftKey: true,
+ * });
  */
 export function fireKeyboardEvent(
   element: HTMLElement,
