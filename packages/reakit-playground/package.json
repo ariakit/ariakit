@@ -33,7 +33,7 @@
   "dependencies": {
     "@types/buble": "0.19.2",
     "@types/codemirror": "0.0.90",
-    "buble": "0.19.8",
+    "buble": "0.20.0",
     "codemirror": "5.52.2",
     "emotion": "^10.0.27",
     "react-codemirror2": "7.1.0",
