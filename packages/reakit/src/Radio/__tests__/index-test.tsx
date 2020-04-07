@@ -22,12 +22,7 @@ test("click on radio", () => {
 test("click on non-native radio", () => {
   const Test = () => {
     const radio = useRadioState();
-    return (
-      <label>
-        <Radio {...radio} as="div" value="radio" />
-        radio
-      </label>
-    );
+    return <Radio {...radio} as="div" value="radio" aria-label="radio" />;
   };
   const { getByLabelText } = render(<Test />);
   const radio = getByLabelText("radio") as HTMLInputElement;
@@ -61,16 +56,14 @@ test("onChange non-native radio", () => {
     const [checked, setChecked] = React.useState(false);
     const toggle = () => setChecked(!checked);
     return (
-      <label>
-        <Radio
-          {...radio}
-          as="div"
-          value="radio"
-          onChange={toggle}
-          checked={checked}
-        />
-        radio
-      </label>
+      <Radio
+        {...radio}
+        as="div"
+        value="radio"
+        onChange={toggle}
+        checked={checked}
+        aria-label="radio"
+      />
     );
   };
   const { getByLabelText } = render(<Test />);

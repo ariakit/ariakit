@@ -392,7 +392,8 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ### matches
 
--   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>**
+-   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>
+    **
 
 Ponyfill for `Element.prototype.matches`
 

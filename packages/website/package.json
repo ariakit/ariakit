@@ -12,7 +12,6 @@
   },
   "scripts": {
     "start": "yarn develop",
-    "test": "jest",
     "build": "gatsby build",
     "develop": "gatsby develop -H 0.0.0.0 -p 8000",
     "serve": "gatsby serve -H 0.0.0.0 -p 9000"
@@ -22,7 +21,7 @@
     "@types/lodash": "4.14.149",
     "@types/qs": "6.9.1",
     "@types/react-helmet": "5.0.15",
-    "@types/yup": "0.26.32",
+    "@types/yup": "0.26.34",
     "constate": "2.0.0",
     "emotion": "10.0.27",
     "emotion-server": "10.0.27",
@@ -44,11 +43,11 @@
     "gatsby-transformer-sharp": "2.3.16",
     "gatsby-transformer-yaml": "2.2.25",
     "lodash": "4.17.15",
-    "mdast-util-to-string": "1.0.8",
+    "mdast-util-to-string": "1.1.0",
     "prop-types": "15.7.2",
-    "qs": "6.9.1",
-    "react": "16.13.0",
-    "react-dom": "16.13.0",
+    "qs": "6.9.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
     "react-helmet": "5.2.1",
     "react-icons": "3.9.0",
     "react-spring": "8.0.27",
@@ -67,7 +66,7 @@
     "unist-util-select": "3.0.1",
     "unist-util-visit": "2.0.2",
     "whatwg-fetch": "3.0.0",
-    "yup": "0.28.2"
+    "yup": "0.28.3"
   },
   "devDependencies": {
     "babel-preset-gatsby": "0.2.29"

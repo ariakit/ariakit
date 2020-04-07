@@ -24,10 +24,7 @@ test("group checkbox", async () => {
     const checkbox = useCheckboxState({ state: ["orange"] });
     return (
       <div role="group">
-        <label>
-          <Checkbox {...checkbox} as="div" value="apple" />
-          apple
-        </label>
+        <Checkbox {...checkbox} as="div" aria-label="apple" value="apple" />
         <label>
           <Checkbox {...checkbox} value="orange" />
           orange
@@ -83,14 +80,12 @@ test("non-native checkbox onChange checked value", async () => {
   const Test = () => {
     const checkbox = useCheckboxState();
     return (
-      <label>
-        <Checkbox
-          as="div"
-          {...checkbox}
-          onChange={(event: any) => onChange(event.target.checked)}
-        />
-        checkbox
-      </label>
+      <Checkbox
+        {...checkbox}
+        as="div"
+        aria-label="checkbox"
+        onChange={(event: any) => onChange(event.target.checked)}
+      />
     );
   };
   const { getByLabelText } = render(<Test />);
@@ -139,17 +134,15 @@ test("non-native checkbox onChange checked value without useCheckboxState", asyn
   const Test = () => {
     const [checked, setChecked] = React.useState(false);
     return (
-      <label>
-        <Checkbox
-          as="div"
-          checked={checked}
-          onChange={(event: any) => {
-            setChecked(event.target.checked);
-            onChange(event.target.checked);
-          }}
-        />
-        checkbox
-      </label>
+      <Checkbox
+        as="div"
+        aria-label="checkbox"
+        checked={checked}
+        onChange={(event: any) => {
+          setChecked(event.target.checked);
+          onChange(event.target.checked);
+        }}
+      />
     );
   };
   const { getByLabelText } = render(<Test />);
