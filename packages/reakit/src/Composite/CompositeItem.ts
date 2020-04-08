@@ -65,6 +65,10 @@ export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
   unstable_CompositeItemHTMLProps;
 
+type OptionsWithOriginalCurrentId = unstable_CompositeItemOptions & {
+  originalCurrentId?: string | null;
+};
+
 function getWidget(item: Element) {
   return item.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
@@ -89,6 +93,7 @@ export const unstable_useCompositeItem = createHook<
     return {
       ...options,
       id: options.stopId || options.id,
+      originalCurrentId: options.currentId,
       currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
@@ -97,7 +102,7 @@ export const unstable_useCompositeItem = createHook<
   },
 
   useProps(
-    options,
+    options: OptionsWithOriginalCurrentId,
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
@@ -162,7 +167,13 @@ export const unstable_useCompositeItem = createHook<
       if (event.defaultPrevented) return;
       if (isPortalEvent(event)) return;
       if (!id) return;
-      options.setCurrentId?.(id);
+      // Using originalCurrentId because currentId may be different due to
+      // getCurrentId call. If it's already set as the current id, we don't
+      // want to call setCurrentId again, which would cause an additional
+      // render.
+      if (options.originalCurrentId !== id) {
+        options.setCurrentId?.(id);
+      }
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
       // But we don't want to do this if the target is another focusable
