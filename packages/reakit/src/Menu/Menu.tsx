@@ -42,7 +42,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
 
   useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const parent = React.useContext(MenuContext);
-    const hasParent = Boolean(parent);
+    const hasParent = !!parent;
     let ancestorMenuBar: MenuContextType | undefined | null = parent;
 
     while (ancestorMenuBar && ancestorMenuBar.role !== "menubar") {

@@ -57,8 +57,6 @@ export function createOnKeyDown({
       }
     }
 
-    if (onKeyDown) {
-      onKeyDown(event);
-    }
+    onKeyDown?.(event);
   };
 }

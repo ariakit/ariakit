@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { isButton } from "reakit-utils/isButton";
+import { warning } from "reakit-warning";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -27,9 +28,14 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
 
     React.useEffect(() => {
       const self = ref.current;
-
-      if (!self) return;
-
+      if (!self) {
+        warning(
+          true,
+          "Can't determine whether the element is a native button because `ref` wasn't passed to the component",
+          "See https://reakit.io/docs/button"
+        );
+        return;
+      }
       if (!isButton(self)) {
         if (self.tagName !== "A") {
           setRole("button");

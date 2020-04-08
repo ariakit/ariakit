@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps,
@@ -26,18 +25,17 @@ export const unstable_useForm = createHook<
   useState: unstable_useFormState,
 
   useProps(options, { onSubmit: htmlOnSubmit, ...htmlProps }) {
-    const onSubmit = React.useCallback(
-      (event: React.FormEvent) => {
-        event.preventDefault();
-        options.submit();
-      },
-      [options.submit]
-    );
+    const onSubmit = (event: React.FormEvent) => {
+      htmlOnSubmit?.(event);
+      if (event.defaultPrevented) return;
+      event.preventDefault();
+      options.submit?.();
+    };
 
     return {
       role: "form",
       noValidate: true,
-      onSubmit: useAllCallbacks(onSubmit, htmlOnSubmit),
+      onSubmit,
       ...htmlProps,
     };
   },

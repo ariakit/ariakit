@@ -2,34 +2,26 @@ import * as React from "react";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
 import { getDocument } from "reakit-utils/getDocument";
+import { contains } from "reakit-utils/contains";
 import { isFocusTrap } from "./useFocusTrap";
 
 function dialogContains(target: Element) {
-  return (dialog: React.RefObject<HTMLElement>) => {
-    if (!dialog.current) return false;
-
-    if (dialog.current.contains(target)) {
-      return true;
-    }
-
-    const document = getDocument(dialog.current);
-    const backdrop = document.querySelector(
-      `[data-dialog-ref="${dialog.current.id}"]`
-    );
-
+  return (dialogRef: React.RefObject<HTMLElement>) => {
+    const dialog = dialogRef.current;
+    if (!dialog) return false;
+    if (contains(dialog, target)) return true;
+    const document = getDocument(dialog);
+    const backdrop = document.querySelector(`[data-dialog-ref="${dialog.id}"]`);
     if (backdrop) {
-      return backdrop.contains(target);
+      return contains(backdrop, target);
     }
-
     return false;
   };
 }
 
 function isDisclosure(target: Element) {
   return (disclosure: HTMLElement) => {
-    if (disclosure.contains(target)) {
-      return true;
-    }
+    if (contains(disclosure, target)) return true;
     return (
       disclosure.id &&
       disclosure.id === target.getAttribute("aria-activedescendant")
@@ -67,7 +59,7 @@ export function useEventListenerOutside(
       }
 
       // Click inside dialog
-      if (container.contains(target)) return;
+      if (contains(container, target)) return;
 
       // Click on disclosure
       if (disclosures.length && disclosures.some(isDisclosure(target))) {
@@ -75,7 +67,7 @@ export function useEventListenerOutside(
       }
 
       // Click inside a nested dialog or focus trap
-      if (isFocusTrap(target) || nestedDialogs.find(dialogContains(target))) {
+      if (isFocusTrap(target) || nestedDialogs.some(dialogContains(target))) {
         return;
       }
 

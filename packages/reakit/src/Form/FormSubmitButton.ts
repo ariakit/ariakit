@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
@@ -28,7 +27,9 @@ export const unstable_useFormSubmitButton = createHook<
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
-    const onClick = React.useCallback(() => {
+    const onClick = (event: React.MouseEvent) => {
+      htmlOnClick?.(event);
+      if (event.defaultPrevented) return;
       window.requestAnimationFrame(() => {
         const input = getFirstInvalidInput(options.baseId);
         if (input) {
@@ -38,11 +39,11 @@ export const unstable_useFormSubmitButton = createHook<
           }
         }
       });
-    }, [options.baseId]);
+    };
 
     return {
       type: "submit",
-      onClick: useAllCallbacks(onClick, htmlOnClick),
+      onClick,
       ...htmlProps,
     };
   },

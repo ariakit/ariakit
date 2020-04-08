@@ -100,6 +100,8 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       [htmlOnChange, options.disabled, options.setState, options.value]
     );
 
+    const onChangeRef = useLiveRef(onChange);
+
     const onClick = React.useCallback(
       (event: React.MouseEvent) => {
         const self = event.currentTarget as HTMLElement;
@@ -117,9 +119,9 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
         isCurrentItemRef.current &&
         options.unstable_checkOnFocus
       ) {
-        fireChange(self, onChange);
+        fireChange(self, onChangeRef.current);
       }
-    }, [options.unstable_moves, options.unstable_checkOnFocus, onChange]);
+    }, [options.unstable_moves, options.unstable_checkOnFocus]);
 
     return {
       ref: useForkRef(ref, htmlRef),

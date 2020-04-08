@@ -54,52 +54,41 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
   ) {
     const [active, setActive] = React.useState(false);
 
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLElement>) => {
-        htmlOnKeyDown?.(event);
+    const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+      htmlOnKeyDown?.(event);
 
-        if (options.disabled || event.defaultPrevented || event.metaKey) {
-          return;
-        }
+      if (event.defaultPrevented) return;
+      if (options.disabled) return;
+      if (event.metaKey) return;
 
-        const isEnter = options.unstable_clickOnEnter && event.key === "Enter";
-        const isSpace = options.unstable_clickOnSpace && event.key === " ";
+      const isEnter = options.unstable_clickOnEnter && event.key === "Enter";
+      const isSpace = options.unstable_clickOnSpace && event.key === " ";
 
-        if (isEnter || isSpace) {
-          if (isNativeClick(event)) return;
-          event.preventDefault();
-          if (isEnter) {
-            event.currentTarget.click();
-          } else if (isSpace) {
-            setActive(true);
-          }
-        }
-      },
-      [
-        options.disabled,
-        htmlOnKeyDown,
-        options.unstable_clickOnEnter,
-        options.unstable_clickOnSpace,
-      ]
-    );
-
-    const onKeyUp = React.useCallback(
-      (event: React.KeyboardEvent<HTMLElement>) => {
-        htmlOnKeyUp?.(event);
-
-        if (options.disabled || event.defaultPrevented || event.metaKey) {
-          return;
-        }
-
-        const isSpace = options.unstable_clickOnSpace && event.key === " ";
-
-        if (active && isSpace) {
-          setActive(false);
+      if (isEnter || isSpace) {
+        if (isNativeClick(event)) return;
+        event.preventDefault();
+        if (isEnter) {
           event.currentTarget.click();
+        } else if (isSpace) {
+          setActive(true);
         }
-      },
-      [options.disabled, htmlOnKeyUp, active, options.unstable_clickOnSpace]
-    );
+      }
+    };
+
+    const onKeyUp = (event: React.KeyboardEvent<HTMLElement>) => {
+      htmlOnKeyUp?.(event);
+
+      if (event.defaultPrevented) return;
+      if (options.disabled) return;
+      if (event.metaKey) return;
+
+      const isSpace = options.unstable_clickOnSpace && event.key === " ";
+
+      if (active && isSpace) {
+        setActive(false);
+        event.currentTarget.click();
+      }
+    };
 
     return {
       onKeyDown,

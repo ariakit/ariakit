@@ -1,7 +1,6 @@
 import * as React from "react";
 import { As, PropsWithAs, ArrayValue } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { createHook } from "reakit-system/createHook";
 import {
   CheckboxOptions,
@@ -66,14 +65,16 @@ export const unstable_useFormCheckbox = createHook<
   useProps(options, { onBlur: htmlOnBlur, ...htmlProps }) {
     const isBoolean = typeof options.value === "undefined";
 
-    const onBlur = React.useCallback(() => {
-      options.blur(options.name);
-    }, [options.blur, options.name]);
+    const onBlur = (event: React.FocusEvent) => {
+      htmlOnBlur?.(event);
+      if (event.defaultPrevented) return;
+      options.blur?.(options.name);
+    };
 
     return {
       "aria-invalid": shouldShowError(options, options.name),
       name: formatInputName(options.name),
-      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
+      onBlur,
       ...(isBoolean
         ? {
             id: getInputId(options.name, options.baseId),

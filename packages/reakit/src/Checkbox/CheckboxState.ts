@@ -10,7 +10,7 @@ export type CheckboxState = {
    * If checkboxes that share this state have defined a `value` prop, it's
    * going to be an array.
    */
-  state: boolean | "indeterminate" | any[];
+  state: boolean | "indeterminate" | Array<number | string>;
 };
 
 export type CheckboxActions = {

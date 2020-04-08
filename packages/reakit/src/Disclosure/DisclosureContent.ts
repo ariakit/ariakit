@@ -2,15 +2,13 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { cx } from "reakit-utils/cx";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import {
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps,
   unstable_useIdGroup,
 } from "../Id/IdGroup";
 import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
-import { useWarningIfMultiple } from "./__utils/useWarningIfMultiple";
-import { useSetIsMounted } from "./__utils/useSetIsMounted";
 
 export type DisclosureContentOptions = unstable_IdGroupOptions &
   Pick<
@@ -19,7 +17,6 @@ export type DisclosureContentOptions = unstable_IdGroupOptions &
     | "unstable_animating"
     | "unstable_animated"
     | "unstable_stopAnimation"
-    | "unstable_setIsMounted"
   >;
 
 export type DisclosureContentHTMLProps = unstable_IdGroupHTMLProps;
@@ -46,39 +43,38 @@ export const useDisclosureContent = createHook<
     }
   ) {
     const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
-
-    useWarningIfMultiple(options);
-    useSetIsMounted(options);
+    const animating = options.unstable_animated && options.unstable_animating;
+    const hidden = !options.visible && !animating;
+    const style = hidden ? { display: "none", ...htmlStyle } : htmlStyle;
 
     React.useEffect(() => {
       setHiddenClass(!options.visible ? "hidden" : null);
     }, [options.visible]);
 
-    const onTransitionEnd = React.useCallback(
-      (event: React.TransitionEvent) => {
-        if (event.currentTarget !== event.target) return;
+    const onEnd = (event: React.SyntheticEvent) => {
+      if (!isSelfTarget(event)) return;
+      if (options.unstable_animated && options.unstable_stopAnimation) {
+        options.unstable_stopAnimation();
+      }
+    };
 
-        if (options.unstable_animated && options.unstable_stopAnimation) {
-          options.unstable_stopAnimation();
-        }
-      },
-      [options.unstable_animated, options.unstable_stopAnimation]
-    );
+    const onTransitionEnd = (event: React.TransitionEvent) => {
+      htmlOnTransitionEnd?.(event);
+      onEnd(event);
+    };
 
-    const animating = options.unstable_animated && options.unstable_animating;
-    const hidden = !options.visible && !animating;
+    const onAnimationEnd = (event: React.AnimationEvent) => {
+      htmlOnAnimationEnd?.(event);
+      onEnd(event);
+    };
 
     return {
       id: options.baseId,
       className: cx(hiddenClass, htmlClassName),
-      onAnimationEnd: useAllCallbacks(onTransitionEnd, htmlOnAnimationEnd),
-      onTransitionEnd: useAllCallbacks(onTransitionEnd, htmlOnTransitionEnd),
+      onTransitionEnd,
+      onAnimationEnd,
       hidden,
-      ...(hidden
-        ? { style: { display: "none", ...htmlStyle } }
-        : htmlStyle
-        ? { style: htmlStyle }
-        : {}),
+      style,
       ...htmlProps,
     };
   },

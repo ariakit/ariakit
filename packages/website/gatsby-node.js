@@ -91,6 +91,7 @@ exports.createPages = ({ actions, graphql }) => {
             toPath: path,
             isPermanent: true,
             redirectInBrowser: true,
+            force: true,
           });
         });
       }

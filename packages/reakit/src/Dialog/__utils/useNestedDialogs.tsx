@@ -73,13 +73,10 @@ export function useNestedDialogs(dialogRef: DialogRef, options: DialogOptions) {
     [options.visible, addDialog, removeDialog]
   );
 
-  const wrap = React.useCallback(
-    (element: React.ReactNode) => (
-      <DialogContext.Provider value={providerValue}>
-        {element}
-      </DialogContext.Provider>
-    ),
-    [providerValue]
+  const wrap = (element: React.ReactNode) => (
+    <DialogContext.Provider value={providerValue}>
+      {element}
+    </DialogContext.Provider>
   );
 
   return { dialogs, visibleModals, wrap };

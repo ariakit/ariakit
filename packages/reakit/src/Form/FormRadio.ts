@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { BoxOptions } from "../Box";
 import { FormRadioGroupContext } from "./FormRadioGroup";
@@ -62,18 +61,22 @@ export const unstable_useFormRadio = createHook<
     options,
     { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
   ) {
-    const onChange = React.useCallback(() => {
-      options.update(options.name, options.value);
-    }, [options.update, options.name, options.value]);
+    const onChange = (event: React.ChangeEvent) => {
+      htmlOnChange?.(event);
+      if (event.defaultPrevented) return;
+      options.update?.(options.name, options.value);
+    };
 
-    const onBlur = React.useCallback(() => {
-      options.blur(options.name);
-    }, [options.blur, options.name]);
+    const onBlur = (event: React.FocusEvent) => {
+      htmlOnBlur?.(event);
+      if (event.defaultPrevented) return;
+      options.blur?.(options.name);
+    };
 
     return {
       name: formatInputName(options.name),
-      onChange: useAllCallbacks(onChange, htmlOnChange),
-      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
+      onChange,
+      onBlur,
       ...htmlProps,
     };
   },

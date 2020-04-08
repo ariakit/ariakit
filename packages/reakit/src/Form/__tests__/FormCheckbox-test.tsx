@@ -24,7 +24,6 @@ test("render", () => {
           aria-labelledby="base-a-label"
           id="base-a"
           name="a"
-          role="checkbox"
           type="checkbox"
           value=""
         />
@@ -47,18 +46,17 @@ test("render value", () => {
     />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <input
-      aria-checked="true"
-      aria-invalid="false"
-      checked=""
-      name="a"
-      role="checkbox"
-      type="checkbox"
-      value="b"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <input
+          aria-checked="true"
+          aria-invalid="false"
+          checked=""
+          name="a"
+          type="checkbox"
+          value="b"
+        />
+      </div>
+    </body>
+  `);
 });

@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getInputId } from "./__utils/getInputId";
@@ -45,8 +44,11 @@ export const unstable_useFormRemoveButton = createHook<
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
-    const onClick = React.useCallback(() => {
-      options.remove(options.name, options.index);
+    const onClick = (event: React.MouseEvent) => {
+      htmlOnClick?.(event);
+      if (event.defaultPrevented) return;
+
+      options.remove?.(options.name, options.index);
 
       const inputId = getInputId(options.name, options.baseId);
       if (!inputId) return;
@@ -76,17 +78,12 @@ export const unstable_useFormRemoveButton = createHook<
         const pushButtonId = getPushButtonId(options.name, options.baseId);
         if (pushButtonId) {
           const pushButton = document.getElementById(pushButtonId);
-          if (pushButton) {
-            pushButton.focus();
-          }
+          pushButton?.focus();
         }
       });
-    }, [options.remove, options.name, options.index, options.baseId]);
-
-    return {
-      onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps,
     };
+
+    return { onClick, ...htmlProps };
   },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormRemoveButtonOptions<V, P>,

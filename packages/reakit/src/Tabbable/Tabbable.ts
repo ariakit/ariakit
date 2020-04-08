@@ -91,52 +91,46 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       }
     }, []);
 
-    const onClick = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-          return;
+    const onClick = (event: React.MouseEvent) => {
+      if (options.disabled) {
+        event.stopPropagation();
+        event.preventDefault();
+        return;
+      }
+      htmlOnClick?.(event);
+    };
+
+    const onMouseDown = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      if (options.disabled) {
+        event.stopPropagation();
+        event.preventDefault();
+        return;
+      }
+
+      htmlOnMouseDown?.(event);
+      if (event.defaultPrevented) return;
+
+      const self = event.currentTarget;
+      const target = event.target as HTMLElement;
+
+      if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
+        event.preventDefault();
+        const isFocusControl =
+          isFocusable(target) || target.tagName === "LABEL";
+        if (!hasFocusWithin(self) || self === target || !isFocusControl) {
+          self.focus();
         }
-        htmlOnClick?.(event);
-      },
-      [options.disabled, htmlOnClick]
-    );
-
-    const onMouseDown = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-          return;
-        }
-
-        htmlOnMouseDown?.(event);
-        if (event.defaultPrevented) return;
-
-        const self = event.currentTarget as HTMLElement;
-        const target = event.target as HTMLElement;
-
-        if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
-          event.preventDefault();
-          const isFocusControl =
-            isFocusable(target) || target.tagName === "LABEL";
-          if (!hasFocusWithin(self) || self === target || !isFocusControl) {
-            self.focus();
-          }
-        }
-      },
-      [options.disabled, htmlOnMouseDown]
-    );
+      }
+    };
 
     return {
       ref: useForkRef(ref, htmlRef),
       style,
+      tabIndex: !trulyDisabled ? tabIndex : undefined,
+      disabled: trulyDisabled && nativeTabbable ? true : undefined,
+      "aria-disabled": options.disabled ? true : undefined,
       onClick,
       onMouseDown,
-      "aria-disabled": options.disabled ? true : undefined,
-      disabled: trulyDisabled && nativeTabbable ? true : undefined,
-      tabIndex: !trulyDisabled ? tabIndex : undefined,
       ...htmlProps,
     };
   },

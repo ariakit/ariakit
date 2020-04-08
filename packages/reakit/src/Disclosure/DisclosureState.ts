@@ -4,7 +4,6 @@ import {
   SealedInitialState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { warning } from "reakit-warning";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -49,19 +48,10 @@ export type DisclosureActions = unstable_IdActions & {
    * It's called after given milliseconds if `animated` is a number.
    */
   unstable_stopAnimation: () => void;
-  /**
-   * @private
-   */
-  unstable_setIsMounted?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type DisclosureInitialState = unstable_IdInitialState &
-  Partial<Pick<DisclosureState, "visible" | "unstable_animated">> & {
-    /**
-     * @private
-     */
-    unstable_isMounted?: boolean;
-  };
+  Partial<Pick<DisclosureState, "visible" | "unstable_animated">>;
 
 export type DisclosureStateReturn = DisclosureState & DisclosureActions;
 
@@ -79,7 +69,6 @@ export function useDisclosureState(
   const {
     unstable_animated: animated = false,
     visible: sealedVisible = false,
-    unstable_isMounted: initialIsMounted = false,
     ...sealed
   } = useSealedState(initialState);
 
@@ -87,7 +76,6 @@ export function useDisclosureState(
 
   const [visible, setVisible] = React.useState(sealedVisible);
   const [animating, setAnimating] = React.useState(false);
-  const [isMounted, setIsMounted] = React.useState(initialIsMounted);
   const lastVisible = useLastValue(visible);
 
   if (
@@ -107,30 +95,9 @@ export function useDisclosureState(
     return () => clearTimeout(timeoutId);
   }, [animated]);
 
-  const show = React.useCallback(() => {
-    warning(
-      !isMounted,
-      "You're trying to show a `DisclosureContent` component that hasn't been mounted yet.",
-      "You shouldn't conditionally render a `DisclosureContent` component (or any of its derivatives) as this will make some features not work.",
-      "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",
-      "See https://reakit.io/docs/disclosure/#conditionally-rendering"
-    );
-    setVisible(true);
-  }, [isMounted]);
-
+  const show = React.useCallback(() => setVisible(true), []);
   const hide = React.useCallback(() => setVisible(false), []);
-
-  const toggle = React.useCallback(() => {
-    warning(
-      !isMounted,
-      "You're trying to toggle a `DisclosureContent` element that hasn't been mounted yet.",
-      "You shouldn't conditionally render a `DisclosureContent` component (or any of its derivatives) as this will make some features not work.",
-      "If this is intentional, you can omit this warning by passing `unstable_isMounted: true` to `useDisclosureState` or just ignore it.",
-      "See https://reakit.io/docs/disclosure/#conditionally-rendering"
-    );
-    setVisible((v) => !v);
-  }, [isMounted]);
-
+  const toggle = React.useCallback(() => setVisible((v) => !v), []);
   const stopAnimation = React.useCallback(() => setAnimating(false), []);
 
   return {
@@ -142,7 +109,6 @@ export function useDisclosureState(
     hide,
     toggle,
     unstable_stopAnimation: stopAnimation,
-    unstable_setIsMounted: setIsMounted,
   };
 }
 
@@ -155,7 +121,6 @@ const keys: Array<keyof DisclosureStateReturn> = [
   "hide",
   "toggle",
   "unstable_stopAnimation",
-  "unstable_setIsMounted",
 ];
 
 useDisclosureState.__keys = keys;

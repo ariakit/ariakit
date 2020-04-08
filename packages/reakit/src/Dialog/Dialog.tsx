@@ -4,8 +4,6 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -150,43 +148,40 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     useHideOnClickOutside(dialog, disclosures, dialogs, options);
     useDisableHoverOutside(dialog, dialogs, options);
 
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent) => {
-        if (event.key === "Escape" && options.hideOnEsc) {
-          if (!options.hide) {
-            warning(
-              true,
-              "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided.",
-              "See https://reakit.io/docs/dialog",
-              dialog.current
-            );
-            return;
-          }
-          event.stopPropagation();
-          options.hide();
-        }
-      },
-      [options.hideOnEsc, options.hide]
-    );
+    const onKeyDown = (event: React.KeyboardEvent) => {
+      htmlOnKeyDown?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key !== "Escape") return;
+      if (!options.hideOnEsc) return;
+      if (!options.hide) {
+        warning(
+          true,
+          "`hideOnEsc` prop is truthy, but `hide` prop wasn't provided.",
+          "See https://reakit.io/docs/dialog",
+          dialog.current
+        );
+        return;
+      }
+      event.stopPropagation();
+      options.hide();
+    };
 
-    const wrapElement = React.useCallback(
-      (element: React.ReactNode) => {
-        if (options.modal && !backdrop) {
-          return <Portal>{wrap(element)}</Portal>;
-        }
-        return wrap(element);
-      },
-      [options.modal, backdrop, wrap]
-    );
+    const wrapElement = (element: React.ReactNode) => {
+      element = wrap(element);
+      if (options.modal && !backdrop) {
+        element = <Portal>{element}</Portal>;
+      }
+      return htmlWrapElement?.(element) || element;
+    };
 
     return {
       ref: useForkRef(dialog, htmlRef),
       role: "dialog",
       tabIndex: -1,
-      onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
-      wrapElement: usePipe(wrapElement, htmlWrapElement),
       "aria-modal": modal,
       "data-dialog": true,
+      onKeyDown,
+      wrapElement,
       ...htmlProps,
     };
   },

@@ -3,6 +3,7 @@ import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-warning";
 import { isTabbable, ensureFocus } from "reakit-utils/tabbable";
 import { getActiveElement } from "reakit-utils/getActiveElement";
+import { contains } from "reakit-utils/contains";
 import { DialogOptions } from "../Dialog";
 
 function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {
@@ -13,7 +14,7 @@ function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {
   const activeElement = getActiveElement(dialog);
 
   if (!activeElement) return false;
-  if (dialog.contains(activeElement)) return false;
+  if (contains(dialog, activeElement)) return false;
   if (isTabbable(activeElement)) return true;
   if (activeElement.getAttribute("data-dialog") === "true") return true;
 

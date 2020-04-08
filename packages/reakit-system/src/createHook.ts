@@ -1,5 +1,4 @@
 import { toArray } from "reakit-utils/toArray";
-import { deepEqual } from "./__utils/deepEqual";
 import { useOptions } from "./useOptions";
 import { useProps } from "./useProps";
 
@@ -7,7 +6,6 @@ type Hook<O = any, P = any> = {
   (options?: O, htmlProps?: P, unstable_ignoreUseOptions?: boolean): P;
   __keys: ReadonlyArray<any>;
   __useOptions: (options: O, htmlProps: P) => O;
-  __propsAreEqual?: (prev: O & P, next: O & P) => boolean;
 };
 
 type CreateHookOptions<O, P> = {
@@ -18,7 +16,6 @@ type CreateHookOptions<O, P> = {
   useProps?: (options: O, htmlProps: P) => P;
   useComposeOptions?: (options: O, htmlProps: P) => O;
   useComposeProps?: (options: O, htmlProps: P) => P;
-  propsAreEqual?: (prev: O & P, next: O & P) => boolean | undefined | null;
   keys?: ReadonlyArray<keyof O>;
 };
 
@@ -60,11 +57,10 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     }
     // Run composed hooks useOptions
     if (options.compose) {
-      composedHooks.forEach((hook) => {
+      for (const hook of composedHooks) {
         hookOptions = hook.__useOptions(hookOptions, htmlProps);
-      });
+      }
     }
-
     return hookOptions;
   };
 
@@ -100,50 +96,24 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     return htmlProps || ({} as P);
   };
 
+  useHook.__useOptions = __useOptions;
+
+  const composedKeys = composedHooks.reduce((keys, hook) => {
+    keys.push(...(hook.__keys || []));
+    return keys;
+  }, [] as string[]);
+
+  // It's used by createComponent to split option props (keys) and html props
+  useHook.__keys = [
+    ...composedKeys,
+    ...(options.useState?.__keys || []),
+    ...(options.keys || []),
+  ];
+
   if (process.env.NODE_ENV !== "production" && options.name) {
     Object.defineProperty(useHook, "name", {
       value: `use${options.name}`,
     });
-  }
-
-  useHook.__useOptions = __useOptions;
-
-  // It's used by createComponent to split option props (keys) and html props
-  useHook.__keys = [
-    ...composedHooks.reduce((allKeys, hook) => {
-      allKeys.push(...(hook.__keys || []));
-      return allKeys;
-    }, [] as string[]),
-    ...(options.useState ? options.useState.__keys : []),
-    ...(options.keys || []),
-  ];
-
-  const hasPropsAreEqual =
-    !!options.propsAreEqual ||
-    composedHooks.some((hook) => !!hook.__propsAreEqual);
-
-  if (hasPropsAreEqual) {
-    useHook.__propsAreEqual = (prev, next) => {
-      const result = options.propsAreEqual && options.propsAreEqual(prev, next);
-      if (result != null) {
-        return result;
-      }
-
-      for (const hook of composedHooks) {
-        const propsAreEqual = hook.__propsAreEqual;
-        const hookResult = propsAreEqual && propsAreEqual(prev, next);
-        if (hookResult != null) {
-          return hookResult;
-        }
-      }
-
-      // @ts-ignore
-      if (prev.children !== next.children) {
-        return false;
-      }
-
-      return deepEqual(prev, next);
-    };
   }
 
   return useHook;
