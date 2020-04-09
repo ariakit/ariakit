@@ -4,6 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { isTextField } from "reakit-utils/isTextField";
 import { getDocument } from "reakit-utils/getDocument";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useBox, BoxOptions, BoxHTMLProps } from "../Box/Box";
 import {
   unstable_CompositeStateReturn,
@@ -51,42 +52,54 @@ export const unstable_useCompositeItemWidget = createHook<
     }
   ) {
     const initialValue = React.useRef("");
+    const onFocusRef = useLiveRef(htmlOnFocus);
+    const onBlurRef = useLiveRef(htmlOnBlur);
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
 
-    const onFocus = (event: React.FocusEvent<HTMLElement>) => {
-      htmlOnFocus?.(event);
-      options.unstable_setHasActiveWidget?.(true);
-      if (isTextField(event.currentTarget)) {
-        initialValue.current = getTextFieldValue(event.currentTarget);
-      }
-    };
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent<HTMLElement>) => {
+        onFocusRef.current?.(event);
+        options.unstable_setHasActiveWidget?.(true);
+        if (isTextField(event.currentTarget)) {
+          initialValue.current = getTextFieldValue(event.currentTarget);
+        }
+      },
+      [options.unstable_setHasActiveWidget]
+    );
 
-    const onBlur = (event: React.FocusEvent) => {
-      htmlOnBlur?.(event);
-      options.unstable_setHasActiveWidget?.(false);
-    };
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        onBlurRef.current?.(event);
+        options.unstable_setHasActiveWidget?.(false);
+      },
+      [options.unstable_setHasActiveWidget]
+    );
 
-    const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-      htmlOnKeyDown?.(event);
-      if (event.defaultPrevented) return;
-      if (!isSelfTarget(event)) return;
-      if (event.nativeEvent.isComposing) return;
-      const self = event.currentTarget;
-      if (event.key === "Enter") {
-        if (isTextField(self)) {
-          const isMultilineTextField = self.tagName === "TEXTAREA";
-          // Make sure we can create new lines using Shift+Enter
-          if (isMultilineTextField && event.shiftKey) return;
-          // Make sure it'll not trigger a click on the parent button
-          event.preventDefault();
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLElement>) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (!isSelfTarget(event)) return;
+        if (event.nativeEvent.isComposing) return;
+        const self = event.currentTarget;
+        if (event.key === "Enter") {
+          if (isTextField(self)) {
+            const isMultilineTextField = self.tagName === "TEXTAREA";
+            // Make sure we can create new lines using Shift+Enter
+            if (isMultilineTextField && event.shiftKey) return;
+            // Make sure it'll not trigger a click on the parent button
+            event.preventDefault();
+            focusCurrentItem(self, options.currentId);
+          }
+        } else if (event.key === "Escape") {
           focusCurrentItem(self, options.currentId);
+          if (isTextField(self)) {
+            setTextFieldValue(self, initialValue.current);
+          }
         }
-      } else if (event.key === "Escape") {
-        focusCurrentItem(self, options.currentId);
-        if (isTextField(self)) {
-          setTextFieldValue(self, initialValue.current);
-        }
-      }
-    };
+      },
+      [options.currentId]
+    );
 
     return {
       tabIndex: options.unstable_hasActiveWidget ? 0 : -1,

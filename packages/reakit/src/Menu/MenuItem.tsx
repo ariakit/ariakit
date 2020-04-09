@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { getDocument } from "reakit-utils/getDocument";
 import { contains } from "reakit-utils/contains";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
@@ -76,31 +77,39 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
     }
   ) {
     const menuRole = React.useContext(MenuRoleContext);
+    const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
+    const onMouseLeaveRef = useLiveRef(htmlOnMouseLeave);
 
-    const onMouseEnter = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      htmlOnMouseEnter?.(event);
-      if (event.defaultPrevented || menuRole === "menubar") return;
-      event.currentTarget.focus();
-    };
+    const onMouseEnter = React.useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onMouseEnterRef.current?.(event);
+        if (event.defaultPrevented || menuRole === "menubar") return;
+        event.currentTarget.focus();
+      },
+      [menuRole]
+    );
 
-    const onMouseLeave = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      htmlOnMouseLeave?.(event);
-      if (event.defaultPrevented) return;
+    const onMouseLeave = React.useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onMouseLeaveRef.current?.(event);
+        if (event.defaultPrevented) return;
 
-      const self = event.currentTarget;
+        const self = event.currentTarget;
 
-      if (hoveringInside(event)) return;
-      // If this item is a menu disclosure and mouse is leaving it to focus
-      // its respective submenu, we don't want to do anything.
-      if (hoveringExpandedMenu(event)) return;
-      // On menu bars, hovering out of disclosure doesn't blur it.
-      if (menuRole === "menubar" && isExpandedDisclosure(self)) return;
+        if (hoveringInside(event)) return;
+        // If this item is a menu disclosure and mouse is leaving it to focus
+        // its respective submenu, we don't want to do anything.
+        if (hoveringExpandedMenu(event)) return;
+        // On menu bars, hovering out of disclosure doesn't blur it.
+        if (menuRole === "menubar" && isExpandedDisclosure(self)) return;
 
-      // Move focus to menu after blurring
-      if (!hoveringAnotherMenuItem(event, options.items)) {
-        options.move?.(null);
-      }
-    };
+        // Move focus to menu after blurring
+        if (!hoveringAnotherMenuItem(event, options.items)) {
+          options.move?.(null);
+        }
+      },
+      [menuRole, options.items, options.move]
+    );
 
     return {
       role: "menuitem",

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
-import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { BoxOptions } from "../Box";
 import { FormRadioGroupContext } from "./FormRadioGroup";
@@ -61,17 +62,26 @@ export const unstable_useFormRadio = createHook<
     options,
     { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
   ) {
-    const onChange = (event: React.ChangeEvent) => {
-      htmlOnChange?.(event);
-      if (event.defaultPrevented) return;
-      options.update?.(options.name, options.value);
-    };
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onBlurRef = useLiveRef(htmlOnBlur);
 
-    const onBlur = (event: React.FocusEvent) => {
-      htmlOnBlur?.(event);
-      if (event.defaultPrevented) return;
-      options.blur?.(options.name);
-    };
+    const onChange = React.useCallback(
+      (event: React.ChangeEvent) => {
+        onChangeRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.update?.(options.name, options.value);
+      },
+      [options.update, options.name, options.value]
+    );
+
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        onBlurRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.blur?.(options.name);
+      },
+      [options.blur, options.name]
+    );
 
     return {
       name: formatInputName(options.name),
@@ -87,6 +97,7 @@ export const unstable_useFormRadio = createHook<
 
 export const unstable_FormRadio = (createComponent({
   as: "input",
+  memo: true,
   useHook: unstable_useFormRadio,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormRadioOptions<V, P>, T>

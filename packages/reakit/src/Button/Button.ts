@@ -55,5 +55,6 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
 
 export const Button = createComponent({
   as: "button",
+  memo: true,
   useHook: useButton,
 });

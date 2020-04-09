@@ -58,14 +58,20 @@ export const unstable_useFormRadioGroup = createHook<
       Object.values(composite)
     );
 
-    const wrapElement = (element: React.ReactNode) => {
-      element = (
-        <FormRadioGroupContext.Provider value={providerValue}>
-          {element}
-        </FormRadioGroupContext.Provider>
-      );
-      return htmlWrapElement?.(element) || element;
-    };
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => {
+        element = (
+          <FormRadioGroupContext.Provider value={providerValue}>
+            {element}
+          </FormRadioGroupContext.Provider>
+        );
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
+        }
+        return element;
+      },
+      [providerValue, htmlWrapElement]
+    );
 
     return {
       role: "radiogroup",

@@ -31,18 +31,24 @@ export const useDialogBackdrop = createHook<
   },
 
   useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
-    const wrapElement = (element: React.ReactNode) => {
-      if (options.modal) {
-        element = (
-          <Portal>
-            <DialogBackdropContext.Provider value>
-              {element}
-            </DialogBackdropContext.Provider>
-          </Portal>
-        );
-      }
-      return htmlWrapElement?.(element) || element;
-    };
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => {
+        if (options.modal) {
+          element = (
+            <Portal>
+              <DialogBackdropContext.Provider value>
+                {element}
+              </DialogBackdropContext.Provider>
+            </Portal>
+          );
+        }
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
+        }
+        return element;
+      },
+      [options.modal, htmlWrapElement]
+    );
 
     return {
       id: undefined,
@@ -55,5 +61,6 @@ export const useDialogBackdrop = createHook<
 
 export const DialogBackdrop = createComponent({
   as: "div",
+  memo: true,
   useHook: useDialogBackdrop,
 });

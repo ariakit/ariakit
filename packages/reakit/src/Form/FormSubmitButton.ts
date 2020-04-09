@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { getFirstInvalidInput } from "./__utils/getFirstInvalidInput";
@@ -27,29 +28,32 @@ export const unstable_useFormSubmitButton = createHook<
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
-    const onClick = (event: React.MouseEvent) => {
-      htmlOnClick?.(event);
-      if (event.defaultPrevented) return;
-      window.requestAnimationFrame(() => {
-        const input = getFirstInvalidInput(options.baseId);
-        if (input) {
-          input.focus();
-          if ("select" in input) {
+    const onClickRef = useLiveRef(htmlOnClick);
+
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+
+        const self = event.currentTarget;
+
+        window.requestAnimationFrame(() => {
+          const input = getFirstInvalidInput(options.baseId, self);
+          input?.focus();
+          if (input && "select" in input) {
             input.select();
           }
-        }
-      });
-    };
+        });
+      },
+      [options.baseId]
+    );
 
-    return {
-      type: "submit",
-      onClick,
-      ...htmlProps,
-    };
+    return { type: "submit", onClick, ...htmlProps };
   },
 });
 
 export const unstable_FormSubmitButton = createComponent({
   as: "button",
+  memo: true,
   useHook: unstable_useFormSubmitButton,
 });

@@ -32,10 +32,7 @@ export function useCheckboxState(
 ): CheckboxStateReturn {
   const { state: initialValue = false } = useSealedState(initialState);
   const [state, setState] = React.useState(initialValue);
-  return {
-    state,
-    setState,
-  };
+  return { state, setState };
 }
 
 const keys: Array<keyof CheckboxStateReturn> = ["state", "setState"];

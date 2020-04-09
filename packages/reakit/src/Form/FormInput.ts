@@ -1,7 +1,8 @@
 import * as React from "react";
-import { As, PropsWithAs } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -55,17 +56,26 @@ export const unstable_useFormInput = createHook<
     options,
     { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
   ) {
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      htmlOnChange?.(event);
-      if (event.defaultPrevented) return;
-      options.update?.(options.name, event.target.value);
-    };
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onBlurRef = useLiveRef(htmlOnBlur);
 
-    const onBlur = (event: React.FocusEvent) => {
-      htmlOnBlur?.(event);
-      if (event.defaultPrevented) return;
-      options.blur?.(options.name);
-    };
+    const onChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        onChangeRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.update?.(options.name, event.target.value);
+      },
+      [options.update, options.name]
+    );
+
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        onBlurRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.blur?.(options.name);
+      },
+      [options.blur, options.name]
+    );
 
     return {
       id: getInputId(options.name, options.baseId),
@@ -86,6 +96,7 @@ export const unstable_useFormInput = createHook<
 
 export const unstable_FormInput = (createComponent({
   as: "input",
+  memo: true,
   useHook: unstable_useFormInput,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormInputOptions<V, P>, T>

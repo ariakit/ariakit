@@ -5,6 +5,7 @@ import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { createEvent } from "reakit-utils/createEvent";
 import { warning } from "reakit-warning";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -101,6 +102,8 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   ) {
     const ref = React.useRef<HTMLInputElement>(null);
     const [isNativeCheckbox, setIsNativeCheckbox] = React.useState(true);
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onClickRef = useLiveRef(htmlOnClick);
 
     React.useEffect(() => {
       const self = ref.current;
@@ -119,44 +122,57 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
 
     useIndeterminateState(ref, options);
 
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const self = event.currentTarget;
+    const onChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const self = event.currentTarget;
 
-      if (options.disabled) {
-        event.stopPropagation();
-        event.preventDefault();
-        return;
-      }
-
-      if (htmlOnChange) {
-        // If component is NOT rendered as a native input, it will not have
-        // the `checked` property. So we assign it for consistency.
-        if (!isNativeCheckbox) {
-          self.checked = !self.checked;
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+          return;
         }
-        htmlOnChange(event);
-      }
 
-      if (!options.setState) return;
+        if (onChangeRef.current) {
+          // If component is NOT rendered as a native input, it will not have
+          // the `checked` property. So we assign it for consistency.
+          if (!isNativeCheckbox) {
+            self.checked = !self.checked;
+          }
+          onChangeRef.current(event);
+        }
 
-      if (typeof options.value === "undefined") {
-        options.setState(!options.checked);
-      } else {
-        const state = Array.isArray(options.state) ? options.state : [];
-        const index = state.indexOf(options.value);
-        if (index === -1) {
-          options.setState([...state, options.value]);
+        if (!options.setState) return;
+
+        if (typeof options.value === "undefined") {
+          options.setState(!options.checked);
         } else {
-          options.setState(removeIndexFromArray(state, index));
+          const state = Array.isArray(options.state) ? options.state : [];
+          const index = state.indexOf(options.value);
+          if (index === -1) {
+            options.setState([...state, options.value]);
+          } else {
+            options.setState(removeIndexFromArray(state, index));
+          }
         }
-      }
-    };
+      },
+      [
+        options.disabled,
+        isNativeCheckbox,
+        options.setState,
+        options.value,
+        options.checked,
+        options.state,
+      ]
+    );
 
-    const onClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      htmlOnClick?.(event);
-      if (isNativeCheckbox || event.defaultPrevented) return;
-      fireChange(event.currentTarget, onChange);
-    };
+    const onClick = React.useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onClickRef.current?.(event);
+        if (isNativeCheckbox || event.defaultPrevented) return;
+        fireChange(event.currentTarget, onChange);
+      },
+      [isNativeCheckbox, onChange]
+    );
 
     return {
       ref: useForkRef(ref, htmlRef),
@@ -175,5 +191,6 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
 
 export const Checkbox = createComponent({
   as: "input",
+  memo: true,
   useHook: useCheckbox,
 });

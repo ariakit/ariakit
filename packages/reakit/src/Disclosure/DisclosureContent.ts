@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { cx } from "reakit-utils/cx";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps,
@@ -35,8 +36,8 @@ export const useDisclosureContent = createHook<
   useProps(
     options,
     {
-      onAnimationEnd: htmlOnAnimationEnd,
       onTransitionEnd: htmlOnTransitionEnd,
+      onAnimationEnd: htmlOnAnimationEnd,
       className: htmlClassName,
       style: htmlStyle,
       ...htmlProps
@@ -45,28 +46,39 @@ export const useDisclosureContent = createHook<
     const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
     const animating = options.unstable_animated && options.unstable_animating;
     const hidden = !options.visible && !animating;
+    const onTransitionEndRef = useLiveRef(htmlOnTransitionEnd);
+    const onAnimationEndRef = useLiveRef(htmlOnAnimationEnd);
     const style = hidden ? { display: "none", ...htmlStyle } : htmlStyle;
 
     React.useEffect(() => {
       setHiddenClass(!options.visible ? "hidden" : null);
     }, [options.visible]);
 
-    const onEnd = (event: React.SyntheticEvent) => {
-      if (!isSelfTarget(event)) return;
-      if (options.unstable_animated && options.unstable_stopAnimation) {
-        options.unstable_stopAnimation();
-      }
-    };
+    const onEnd = React.useCallback(
+      (event: React.SyntheticEvent) => {
+        if (!isSelfTarget(event)) return;
+        if (options.unstable_animated) {
+          options.unstable_stopAnimation?.();
+        }
+      },
+      [options.unstable_animated, options.unstable_stopAnimation]
+    );
 
-    const onTransitionEnd = (event: React.TransitionEvent) => {
-      htmlOnTransitionEnd?.(event);
-      onEnd(event);
-    };
+    const onTransitionEnd = React.useCallback(
+      (event: React.TransitionEvent) => {
+        onTransitionEndRef.current?.(event);
+        onEnd(event);
+      },
+      [onEnd]
+    );
 
-    const onAnimationEnd = (event: React.AnimationEvent) => {
-      htmlOnAnimationEnd?.(event);
-      onEnd(event);
-    };
+    const onAnimationEnd = React.useCallback(
+      (event: React.AnimationEvent) => {
+        onAnimationEndRef.current?.(event);
+        onEnd(event);
+      },
+      [onEnd]
+    );
 
     return {
       id: options.baseId,

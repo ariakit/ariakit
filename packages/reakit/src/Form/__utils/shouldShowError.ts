@@ -5,5 +5,5 @@ export function shouldShowError<V>(
   { touched, errors }: Pick<unstable_FormState<V>, "touched" | "errors">,
   name: any
 ) {
-  return Boolean(unstable_getIn(touched, name) && unstable_getIn(errors, name));
+  return !!(unstable_getIn(touched, name) && unstable_getIn(errors, name));
 }
