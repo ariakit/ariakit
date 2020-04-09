@@ -17,7 +17,7 @@ export type RadioOptions = CompositeItemOptions &
     /**
      * Same as the `value` attribute.
      */
-    value: string;
+    value: string | number;
     /**
      * Same as the `checked` attribute.
      */

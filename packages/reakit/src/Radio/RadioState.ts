@@ -14,14 +14,14 @@ export type RadioState = CompositeState & {
   /**
    * The `value` attribute of the current checked radio.
    */
-  state: string | undefined;
+  state: string | number | undefined;
 };
 
 export type RadioActions = CompositeActions & {
   /**
    * Sets `state`.
    */
-  setState: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setState: React.Dispatch<React.SetStateAction<string | number | undefined>>;
 };
 
 export type RadioInitialState = CompositeInitialState &
