@@ -176,10 +176,7 @@ export const unstable_useCompositeItem = createHook<
         // getCurrentId call. If it's already set as the current id, we don't
         // want to call setCurrentId again, which would cause an additional
         // render.
-        // TODO: Test without this
-        if (options.originalCurrentId !== id) {
-          options.setCurrentId?.(id);
-        }
+        options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
@@ -193,13 +190,7 @@ export const unstable_useCompositeItem = createHook<
           }
         }
       },
-      [
-        id,
-        options.originalCurrentId,
-        options.setCurrentId,
-        options.unstable_virtual,
-        options.baseId,
-      ]
+      [id, options.setCurrentId, options.unstable_virtual, options.baseId]
     );
 
     const onBlur = React.useCallback(
