@@ -3,6 +3,7 @@ import { As, PropsWithAs } from "reakit-utils/types";
 import { splitProps } from "reakit-utils/splitProps";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
+import { memo } from "./__utils/memo";
 
 type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
@@ -18,6 +19,7 @@ type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
+  memo?: boolean;
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
@@ -47,6 +49,7 @@ export function createComponent<T extends As, O>({
   useHook,
   keys = useHook?.__keys || [],
   useCreateElement = defaultUseCreateElement,
+  memo: shouldMemo,
 }: Options<T, O>) {
   const Comp = (
     { as = type, ...props }: PropsWithAs<O, T>,
@@ -77,6 +80,10 @@ export function createComponent<T extends As, O>({
 
   if (process.env.NODE_ENV !== "production" && useHook) {
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
+  }
+
+  if (shouldMemo) {
+    return memo(forwardRef(Comp as Component<T, O>));
   }
 
   return forwardRef(Comp as Component<T, O>);
