@@ -260,3 +260,41 @@ test("button group", () => {
 </div>
 `);
 });
+
+test("empty strings can be checked", () => {
+  // See https://github.com/reakit/reakit/issues/607
+  const Test = () => {
+    const radio = useRadioState();
+    return (
+      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+        <Radio {...radio} value="" aria-label="empty-string" />
+      </RadioGroup>
+    );
+  };
+
+  const { getByLabelText } = render(<Test />);
+
+  expect(getByLabelText("empty-string")).not.toBeChecked();
+  click(getByLabelText("empty-string"));
+  expect(getByLabelText("empty-string")).toBeChecked();
+  expect(getByLabelText("empty-string")).toHaveFocus();
+});
+
+test("falsy numbers can be checked", () => {
+  // See https://github.com/reakit/reakit/issues/607
+  const Test = () => {
+    const radio = useRadioState();
+    return (
+      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+        <Radio {...radio} value={0} aria-label="zero" />
+      </RadioGroup>
+    );
+  };
+
+  const { getByLabelText } = render(<Test />);
+
+  expect(getByLabelText("zero")).not.toBeChecked();
+  click(getByLabelText("zero"));
+  expect(getByLabelText("zero")).toBeChecked();
+  expect(getByLabelText("zero")).toHaveFocus();
+});
