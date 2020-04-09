@@ -37,7 +37,9 @@ function getChecked(options: RadioOptions) {
   if (typeof options.checked !== "undefined") {
     return options.checked;
   }
-  return ( typeof options.value !== undefined ) && options.state === options.value;
+  return (
+    typeof options.value !== "undefined" && options.state === options.value
+  );
 }
 
 function useInitialChecked(options: RadioOptions) {
