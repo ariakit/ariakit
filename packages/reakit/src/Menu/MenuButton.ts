@@ -159,5 +159,6 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
 
 export const MenuButton = createComponent({
   as: "button",
+  memo: true,
   useHook: useMenuButton,
 });

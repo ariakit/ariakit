@@ -56,5 +56,6 @@ export const useMenuItemCheckbox = createHook<
 
 export const MenuItemCheckbox = createComponent({
   as: "button",
+  memo: true,
   useHook: useMenuItemCheckbox,
 });

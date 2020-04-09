@@ -48,5 +48,6 @@ export const useMenuItemRadio = createHook<
 
 export const MenuItemRadio = createComponent({
   as: "button",
+  memo: true,
   useHook: useMenuItemRadio,
 });
