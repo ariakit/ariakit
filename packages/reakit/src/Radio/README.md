@@ -167,7 +167,7 @@ item in the last row or column and the first item in the first row or
 column and vice-versa.
 
 - **`state`**
-  <code>any</code>
+  <code>string | undefined</code>
 
   The `value` attribute of the current checked radio.
 
@@ -191,7 +191,7 @@ similarly to `readOnly` on form elements. In this case, only
   Same as the HTML attribute.
 
 - **`value`**
-  <code>any</code>
+  <code>string</code>
 
   Same as the `value` attribute.
 
@@ -300,12 +300,12 @@ and `groupId` if any. This state is automatically updated when
   Moves focus to the last item.
 
 - **`state`**
-  <code>any</code>
+  <code>string | undefined</code>
 
   The `value` attribute of the current checked radio.
 
 - **`setState`**
-  <code>(value: any) =&#62; void</code>
+  <code>(value: string) =&#62; void</code>
 
   Sets `state`.
 
