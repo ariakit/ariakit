@@ -17,7 +17,7 @@ export type RadioOptions = CompositeItemOptions &
     /**
      * Same as the `value` attribute.
      */
-    value: any;
+    value: string;
     /**
      * Same as the `checked` attribute.
      */
@@ -37,7 +37,7 @@ function getChecked(options: RadioOptions) {
   if (typeof options.checked !== "undefined") {
     return options.checked;
   }
-  return options.value && options.state === options.value;
+  return ( typeof options.value !== undefined ) && options.state === options.value;
 }
 
 function useInitialChecked(options: RadioOptions) {
