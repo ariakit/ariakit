@@ -24,7 +24,7 @@ function isDisclosure(target: Element) {
     if (contains(disclosure, target)) return true;
     return (
       disclosure.id &&
-      disclosure.id === target.getAttribute("aria-activedescendant")
+      disclosure.id === target.getAttribute?.("aria-activedescendant")
     );
   };
 }

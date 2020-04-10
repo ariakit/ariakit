@@ -83,7 +83,8 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
     const onMouseEnter = React.useCallback(
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onMouseEnterRef.current?.(event);
-        if (event.defaultPrevented || menuRole === "menubar") return;
+        if (event.defaultPrevented) return;
+        if (menuRole === "menubar") return;
         event.currentTarget.focus();
       },
       [menuRole]
@@ -93,16 +94,13 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onMouseLeaveRef.current?.(event);
         if (event.defaultPrevented) return;
-
         const self = event.currentTarget;
-
         if (hoveringInside(event)) return;
         // If this item is a menu disclosure and mouse is leaving it to focus
         // its respective submenu, we don't want to do anything.
         if (hoveringExpandedMenu(event)) return;
         // On menu bars, hovering out of disclosure doesn't blur it.
         if (menuRole === "menubar" && isExpandedDisclosure(self)) return;
-
         // Move focus to menu after blurring
         if (!hoveringAnotherMenuItem(event, options.items)) {
           options.move?.(null);

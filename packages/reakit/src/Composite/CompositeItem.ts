@@ -65,10 +65,6 @@ export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
   unstable_CompositeItemHTMLProps;
 
-type OptionsWithOriginalCurrentId = unstable_CompositeItemOptions & {
-  originalCurrentId?: string | null;
-};
-
 function getWidget(item: Element) {
   return item.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
@@ -93,7 +89,6 @@ export const unstable_useCompositeItem = createHook<
     return {
       ...options,
       id: options.stopId || options.id,
-      originalCurrentId: options.currentId,
       currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
@@ -102,7 +97,7 @@ export const unstable_useCompositeItem = createHook<
   },
 
   useProps(
-    options: OptionsWithOriginalCurrentId,
+    options,
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
@@ -250,14 +245,17 @@ export const unstable_useCompositeItem = createHook<
                 setTextFieldValue(widget, "");
               }
             };
+            const up = options.up && (() => options.up());
+            const next = options.next && (() => options.next());
+            const down = options.down && (() => options.down());
+            const previous = options.previous && (() => options.previous());
             return {
               Delete,
               Backspace: Delete,
-              ArrowUp: (isGrid || isVertical) && (() => options.up?.()),
-              ArrowRight: (isGrid || isHorizontal) && (() => options.next?.()),
-              ArrowDown: (isGrid || isVertical) && (() => options.down?.()),
-              ArrowLeft:
-                (isGrid || isHorizontal) && (() => options.previous?.()),
+              ArrowUp: (isGrid || isVertical) && up,
+              ArrowRight: (isGrid || isHorizontal) && next,
+              ArrowDown: (isGrid || isVertical) && down,
+              ArrowLeft: (isGrid || isHorizontal) && previous,
               Home: (event) => {
                 if (!isGrid || event.ctrlKey) {
                   options.first?.();

@@ -28,5 +28,6 @@ export const useTooltipArrow = createHook<
 
 export const TooltipArrow = createComponent({
   as: "div",
+  memo: true,
   useHook: useTooltipArrow,
 });

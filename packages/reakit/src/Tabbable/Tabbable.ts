@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
@@ -69,6 +70,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
+    const onClickRef = useLiveRef(htmlOnClick);
+    const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
@@ -91,37 +94,43 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       }
     }, []);
 
-    const onClick = (event: React.MouseEvent) => {
-      if (options.disabled) {
-        event.stopPropagation();
-        event.preventDefault();
-        return;
-      }
-      htmlOnClick?.(event);
-    };
-
-    const onMouseDown = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      if (options.disabled) {
-        event.stopPropagation();
-        event.preventDefault();
-        return;
-      }
-
-      htmlOnMouseDown?.(event);
-      if (event.defaultPrevented) return;
-
-      const self = event.currentTarget;
-      const target = event.target as HTMLElement;
-
-      if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
-        event.preventDefault();
-        const isFocusControl =
-          isFocusable(target) || target.tagName === "LABEL";
-        if (!hasFocusWithin(self) || self === target || !isFocusControl) {
-          self.focus();
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+          return;
         }
-      }
-    };
+        onClickRef.current?.(event);
+      },
+      [options.disabled]
+    );
+
+    const onMouseDown = React.useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        if (options.disabled) {
+          event.stopPropagation();
+          event.preventDefault();
+          return;
+        }
+
+        onMouseDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+
+        const self = event.currentTarget;
+        const target = event.target as HTMLElement;
+
+        if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
+          event.preventDefault();
+          const isFocusControl =
+            isFocusable(target) || target.tagName === "LABEL";
+          if (!hasFocusWithin(self) || self === target || !isFocusControl) {
+            self.focus();
+          }
+        }
+      },
+      [options.disabled]
+    );
 
     return {
       ref: useForkRef(ref, htmlRef),

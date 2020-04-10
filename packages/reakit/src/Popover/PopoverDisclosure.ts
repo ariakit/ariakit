@@ -34,5 +34,6 @@ export const usePopoverDisclosure = createHook<
 
 export const PopoverDisclosure = createComponent({
   as: "button",
+  memo: true,
   useHook: usePopoverDisclosure,
 });

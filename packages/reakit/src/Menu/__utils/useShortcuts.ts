@@ -34,15 +34,17 @@ export function useShortcuts(
     if (!menu) return undefined;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.metaKey || event.altKey || event.shiftKey || event.ctrlKey) {
-        return;
-      }
+      if (event.key.length > 1) return;
+      if (event.shiftKey) return;
+      if (event.metaKey) return;
+      if (event.ctrlKey) return;
+      if (event.altKey) return;
       const target = event.target as HTMLElement;
-      const role = target.getAttribute("role");
+      const role = target.getAttribute?.("role");
       const targetIsMenu = target === menu;
       const targetIsMenuItem =
         role &&
-        role.indexOf("menuitem") >= 0 &&
+        role.indexOf("menuitem") !== -1 &&
         closest(target, "[role=menu],[role=menubar]") === menu;
 
       if (!targetIsMenu && !targetIsMenuItem) return;

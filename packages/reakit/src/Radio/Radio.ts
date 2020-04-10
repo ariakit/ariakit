@@ -1,10 +1,10 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { createEvent } from "reakit-utils/createEvent";
+import { warning } from "reakit-warning/warning";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
@@ -85,25 +85,45 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
     options,
     { ref: htmlRef, onChange: htmlOnChange, onClick: htmlOnClick, ...htmlProps }
   ) {
-    const ref = React.useRef<HTMLElement>(null);
+    const ref = React.useRef<HTMLInputElement>(null);
+    const [isNativeRadio, setIsNativeRadio] = React.useState(true);
     const checked = getChecked(options);
     const isCurrentItemRef = useLiveRef(options.currentId === options.id);
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onClickRef = useLiveRef(htmlOnClick);
 
     useInitialChecked(options);
 
+    React.useEffect(() => {
+      const self = ref.current;
+      if (!self) {
+        warning(
+          true,
+          "Can't determine whether the element is a native radio because `ref` wasn't passed to the component",
+          "See https://reakit.io/docs/radio"
+        );
+        return;
+      }
+      if (self.tagName !== "INPUT" || self.type !== "radio") {
+        setIsNativeRadio(false);
+      }
+    }, []);
+
     const onChange = React.useCallback(
       (event: React.ChangeEvent) => {
-        htmlOnChange?.(event);
-        if (options.disabled || event.defaultPrevented) return;
+        onChangeRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
         options.setState?.(options.value);
       },
-      [htmlOnChange, options.disabled, options.setState, options.value]
+      [options.disabled, options.setState, options.value]
     );
 
     const onClick = React.useCallback(
-      (event: React.MouseEvent) => {
-        const self = event.currentTarget as HTMLElement;
-        if (self.tagName === "INPUT") return;
+      (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+        const self = event.currentTarget;
         fireChange(self, onChange);
       },
       [options.unstable_checkOnFocus, onChange]
@@ -123,13 +143,13 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
 
     return {
       ref: useForkRef(ref, htmlRef),
-      checked,
+      role: !isNativeRadio ? "radio" : undefined,
+      type: isNativeRadio ? "radio" : undefined,
+      value: isNativeRadio ? options.value : undefined,
       "aria-checked": checked,
-      value: options.value,
-      role: "radio",
-      type: "radio",
+      checked,
       onChange,
-      onClick: useAllCallbacks(onClick, htmlOnClick),
+      onClick,
       ...htmlProps,
     };
   },
@@ -137,5 +157,6 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
 
 export const Radio = createComponent({
   as: "input",
+  memo: true,
   useHook: useRadio,
 });

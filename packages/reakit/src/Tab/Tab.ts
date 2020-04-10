@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
@@ -17,10 +17,12 @@ export type TabHTMLProps = CompositeItemHTMLProps;
 
 export type TabProps = TabOptions & TabHTMLProps;
 
-function getTabPanelId(options: TabOptions) {
-  return (
-    options.panels?.find((panel) => panel.groupId === options.id)?.id ||
-    undefined
+function useTabPanelId(options: TabOptions) {
+  return React.useMemo(
+    () =>
+      options.panels?.find((panel) => panel.groupId === options.id)?.id ||
+      undefined,
+    [options.panels, options.id]
   );
 }
 
@@ -30,7 +32,7 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
   useState: useTabState,
 
   useOptions({ focusable = true, ...options }) {
-    return { focusable, id: options.stopId, ...options };
+    return { focusable, ...options };
   },
 
   useProps(
@@ -38,34 +40,48 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
     { onClick: htmlOnClick, onFocus: htmlOnFocus, ...htmlProps }
   ) {
     const selected = options.selectedId === options.id;
+    const tabPanelId = useTabPanelId(options);
+    const onClickRef = useLiveRef(htmlOnClick);
+    const onFocusRef = useLiveRef(htmlOnFocus);
 
-    const onClick = React.useCallback(() => {
-      if (options.id && !options.disabled && !selected) {
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
+        if (!options.id) return;
+        if (selected) return;
         options.select?.(options.id);
-      }
-    }, [options.disabled, selected, options.select, options.id]);
+      },
+      [options.disabled, selected, options.select, options.id]
+    );
 
-    const onFocus = React.useCallback(() => {
-      if (options.id && !options.disabled && !options.manual && !selected) {
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        onFocusRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
+        if (options.manual) return;
+        if (!options.id) return;
+        if (selected) return;
         options.select?.(options.id);
-      }
-    }, [
-      options.id,
-      options.disabled,
-      options.manual,
-      selected,
-      options.select,
-    ]);
+      },
+      [options.id, options.disabled, options.manual, selected, options.select]
+    );
 
     return {
       role: "tab",
       "aria-selected": selected,
-      "aria-controls": getTabPanelId(options),
-      onClick: useAllCallbacks(onClick, htmlOnClick),
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      "aria-controls": tabPanelId,
+      onClick,
+      onFocus,
       ...htmlProps,
     };
   },
 });
 
-export const Tab = createComponent({ as: "button", useHook: useTab });
+export const Tab = createComponent({
+  as: "button",
+  memo: true,
+  useHook: useTab,
+});

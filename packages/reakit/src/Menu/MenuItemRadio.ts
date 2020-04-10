@@ -32,7 +32,6 @@ export const useMenuItemRadio = createHook<
       (value) => options.unstable_setValue(options.name, value),
       [options.unstable_setValue, options.name]
     );
-
     return {
       ...options,
       unstable_checkOnFocus: false,

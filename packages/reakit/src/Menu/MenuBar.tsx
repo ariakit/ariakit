@@ -3,7 +3,6 @@ import { useWarning } from "reakit-warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { usePipe } from "reakit-utils/usePipe";
 import { useForkRef } from "reakit-utils/useForkRef";
 import {
   unstable_CompositeOptions as CompositeOptions,
@@ -37,15 +36,26 @@ export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const wrapElement = useMenuContext(ref, role, options);
+    const wrap = useMenuContext(ref, role, options);
 
     useShortcuts(ref, options);
+
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => {
+        element = wrap(element);
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
+        }
+        return element;
+      },
+      [wrap, htmlWrapElement]
+    );
 
     return {
       ref: useForkRef(ref, htmlRef),
       role,
       "aria-orientation": options.orientation,
-      wrapElement: usePipe(wrapElement, htmlWrapElement),
+      wrapElement,
       ...htmlProps,
     };
   },

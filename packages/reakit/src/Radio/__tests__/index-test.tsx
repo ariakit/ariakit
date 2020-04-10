@@ -167,7 +167,6 @@ test("group", () => {
           <input
             aria-checked="false"
             id="base-1"
-            role="radio"
             tabindex="0"
             type="radio"
             value="a"
@@ -178,7 +177,6 @@ test("group", () => {
           <input
             aria-checked="false"
             id="base-2"
-            role="radio"
             tabindex="-1"
             type="radio"
             value="b"
@@ -189,7 +187,6 @@ test("group", () => {
           <input
             aria-checked="false"
             id="base-3"
-            role="radio"
             tabindex="-1"
             type="radio"
             value="c"
@@ -220,43 +217,37 @@ test("button group", () => {
   };
   const { container } = render(<Test />);
   expect(container).toMatchInlineSnapshot(`
-<div>
-  <div
-    aria-label="radiogroup"
-    id="base"
-    role="radiogroup"
-  >
-    <button
-      aria-checked="false"
-      id="base-1"
-      role="radio"
-      tabindex="0"
-      type="radio"
-      value="a"
-    >
-      a
-    </button>
-    <button
-      aria-checked="false"
-      id="base-2"
-      role="radio"
-      tabindex="-1"
-      type="radio"
-      value="b"
-    >
-      b
-    </button>
-    <button
-      aria-checked="false"
-      id="base-3"
-      role="radio"
-      tabindex="-1"
-      type="radio"
-      value="c"
-    >
-      c
-    </button>
-  </div>
-</div>
-`);
+    <div>
+      <div
+        aria-label="radiogroup"
+        id="base"
+        role="radiogroup"
+      >
+        <button
+          aria-checked="false"
+          id="base-1"
+          role="radio"
+          tabindex="0"
+        >
+          a
+        </button>
+        <button
+          aria-checked="false"
+          id="base-2"
+          role="radio"
+          tabindex="-1"
+        >
+          b
+        </button>
+        <button
+          aria-checked="false"
+          id="base-3"
+          role="radio"
+          tabindex="-1"
+        >
+          c
+        </button>
+      </div>
+    </div>
+  `);
 });

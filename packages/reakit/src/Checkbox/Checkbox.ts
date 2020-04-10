@@ -168,7 +168,8 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
     const onClick = React.useCallback(
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onClickRef.current?.(event);
-        if (isNativeCheckbox || event.defaultPrevented) return;
+        if (event.defaultPrevented) return;
+        if (isNativeCheckbox) return;
         fireChange(event.currentTarget, onChange);
       },
       [isNativeCheckbox, onChange]

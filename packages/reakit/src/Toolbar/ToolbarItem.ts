@@ -24,5 +24,6 @@ export const useToolbarItem = createHook<
 
 export const ToolbarItem = createComponent({
   as: "button",
+  memo: true,
   useHook: useToolbarItem,
 });

@@ -37,7 +37,6 @@ export const useMenuItemCheckbox = createHook<
       (value) => options.unstable_setValue(options.name, value),
       [options.unstable_setValue, options.name]
     );
-
     return {
       ...options,
       state: options.unstable_values[options.name],

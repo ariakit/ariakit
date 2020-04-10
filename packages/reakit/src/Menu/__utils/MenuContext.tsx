@@ -45,9 +45,7 @@ export function useMenuContext(
     if (!addChildToParent || orphan) return undefined;
     addChildToParent(menuRef);
     return () => {
-      if (removeChildFromParent) {
-        removeChildFromParent(menuRef);
-      }
+      removeChildFromParent?.(menuRef);
     };
   }, [menuRef, addChildToParent, removeChildFromParent, orphan]);
 

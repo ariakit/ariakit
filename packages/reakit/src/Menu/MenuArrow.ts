@@ -21,5 +21,6 @@ export const useMenuArrow = createHook<MenuArrowOptions, MenuArrowHTMLProps>({
 
 export const MenuArrow = createComponent({
   as: "div",
+  memo: true,
   useHook: useMenuArrow,
 });

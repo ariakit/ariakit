@@ -32,5 +32,6 @@ export const useToolbarSeparator = createHook<
 
 export const ToolbarSeparator = createComponent({
   as: "hr",
+  memo: true,
   useHook: useToolbarSeparator,
 });

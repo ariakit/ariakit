@@ -309,15 +309,17 @@ export const unstable_useComposite = createHook<
                 options.last?.();
               }
             };
+            const first = options.first && (() => options.first());
+            const last = options.last && (() => options.last());
             return {
               ArrowUp: (isGrid || isVertical) && up,
-              ArrowRight: (isGrid || isHorizontal) && options.first,
-              ArrowDown: (isGrid || isVertical) && options.first,
-              ArrowLeft: (isGrid || isHorizontal) && options.last,
-              Home: options.first,
-              End: options.last,
-              PageUp: options.first,
-              PageDown: options.last,
+              ArrowRight: (isGrid || isHorizontal) && first,
+              ArrowDown: (isGrid || isVertical) && first,
+              ArrowLeft: (isGrid || isHorizontal) && last,
+              Home: first,
+              End: last,
+              PageUp: first,
+              PageDown: last,
             };
           },
         }),
