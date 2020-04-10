@@ -66,7 +66,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useCompositeItem,
   useState: useRadioState,
-  keys: ["value", "checked"],
+  keys: ["value", "checked", "unstable_checkOnFocus"],
 
   useOptions(
     { unstable_clickOnEnter = false, unstable_checkOnFocus = true, ...options },
@@ -126,7 +126,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
         const self = event.currentTarget;
         fireChange(self, onChange);
       },
-      [options.unstable_checkOnFocus, onChange]
+      [onChange]
     );
 
     React.useEffect(() => {

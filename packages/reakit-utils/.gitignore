@@ -21,7 +21,9 @@
 /omit
 /matches
 /isTextField
+/isSelfTarget
 /isPromise
+/isPortalEvent
 /isPlainObject
 /isObject
 /isInteger
@@ -38,5 +40,6 @@
 /createOnKeyDown
 /createKeyboardEvent
 /createEvent
+/contains
 /closest
 /applyState

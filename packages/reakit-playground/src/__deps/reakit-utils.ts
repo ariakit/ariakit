@@ -20,7 +20,9 @@ export default {
   "reakit-utils/omit": require("reakit-utils/omit"),
   "reakit-utils/matches": require("reakit-utils/matches"),
   "reakit-utils/isTextField": require("reakit-utils/isTextField"),
+  "reakit-utils/isSelfTarget": require("reakit-utils/isSelfTarget"),
   "reakit-utils/isPromise": require("reakit-utils/isPromise"),
+  "reakit-utils/isPortalEvent": require("reakit-utils/isPortalEvent"),
   "reakit-utils/isPlainObject": require("reakit-utils/isPlainObject"),
   "reakit-utils/isObject": require("reakit-utils/isObject"),
   "reakit-utils/isInteger": require("reakit-utils/isInteger"),
@@ -37,6 +39,7 @@ export default {
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
   "reakit-utils/createKeyboardEvent": require("reakit-utils/createKeyboardEvent"),
   "reakit-utils/createEvent": require("reakit-utils/createEvent"),
+  "reakit-utils/contains": require("reakit-utils/contains"),
   "reakit-utils/closest": require("reakit-utils/closest"),
   "reakit-utils/applyState": require("reakit-utils/applyState")
 };

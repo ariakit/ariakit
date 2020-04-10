@@ -24,8 +24,7 @@ export type MenuHTMLProps = PopoverHTMLProps & MenuBarHTMLProps;
 export type MenuProps = MenuOptions & MenuHTMLProps;
 
 function usePlacementDir(placement?: string) {
-  const array = React.useMemo(() => placement?.split("-"), [placement]);
-  return array?.[0];
+  return React.useMemo(() => placement?.split("-")?.[0], [placement]);
 }
 
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
@@ -72,21 +71,21 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           },
           keyMap: ({ currentTarget, target }) => {
             const { hide } = options;
-            const Escape = hide && (() => hide());
+            const close = hide && (() => hide());
             if (hasParent && contains(currentTarget, target as Element)) {
               // Moves to the next menu button in a horizontal menu bar or
               // close the menu if it's a sub menu
               const ArrowRight =
                 ancestorIsHorizontal && dir !== "left"
                   ? next && (() => next())
-                  : dir === "left" && hide && (() => hide());
+                  : dir === "left" && close;
               const ArrowLeft =
                 ancestorIsHorizontal && dir !== "right"
                   ? previous && (() => previous())
-                  : dir === "right" && hide && (() => hide());
-              return { Escape, ArrowRight, ArrowLeft };
+                  : dir === "right" && close;
+              return { Escape: close, ArrowRight, ArrowLeft };
             }
-            return { Escape };
+            return { Escape: close };
           },
         }),
       [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
