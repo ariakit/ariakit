@@ -64,10 +64,7 @@ test("initial state lazy", () => {
 });
 
 test("show", () => {
-  const result = render({
-    baseId: "base",
-    unstable_isMounted: true,
-  });
+  const result = render({ baseId: "base" });
   act(result.current.show);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },
@@ -89,7 +86,6 @@ test("show animated", () => {
   jest.useFakeTimers();
   const result = render({
     baseId: "base",
-    unstable_isMounted: true,
     unstable_animated: 1000,
   });
   act(result.current.show);
@@ -189,10 +185,7 @@ test("hide animated", () => {
 });
 
 test("toggle", () => {
-  const result = render({
-    baseId: "base",
-    unstable_isMounted: true,
-  });
+  const result = render({ baseId: "base" });
   act(result.current.toggle);
   expect(result.current).toMatchInlineSnapshot(
     { visible: true },

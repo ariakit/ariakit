@@ -1,10 +1,9 @@
-// TODO: Refactor
 import * as React from "react";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { splitProps } from "reakit-utils/splitProps";
-import { memo } from "./__utils/memo";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
+import { memo } from "./__utils/memo";
 
 type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
@@ -14,14 +13,13 @@ type BoxHTMLProps = React.HTMLAttributes<any> &
 type Hook<O> = {
   (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
   __keys?: ReadonlyArray<any>;
-  __propsAreEqual?: (prev: O, next: O) => boolean;
 };
 
 type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
-  propsAreEqual?: (prev: O, next: O) => boolean;
+  memo?: boolean;
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
@@ -49,13 +47,13 @@ export type Component<T extends As, O> = {
 export function createComponent<T extends As, O>({
   as: type,
   useHook,
-  keys = (useHook && useHook.__keys) || [],
-  propsAreEqual = useHook && useHook.__propsAreEqual,
+  keys = useHook?.__keys || [],
   useCreateElement = defaultUseCreateElement,
+  memo: shouldMemo,
 }: Options<T, O>) {
   const Comp = (
     { as = type, ...props }: PropsWithAs<O, T>,
-    ref: React.Ref<any>
+    ref: React.Ref<T>
   ) => {
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
@@ -64,9 +62,12 @@ export function createComponent<T extends As, O>({
         ...htmlProps,
       });
       // @ts-ignore
-      const asKeys = as.render ? as.render.__keys : as.__keys;
-      const asOptions = asKeys ? splitProps(props, asKeys)[0] : {};
-      const element = useCreateElement(as, { ...elementProps, ...asOptions });
+      const asKeys = as.render?.__keys || as.__keys;
+      const asOptions = asKeys && splitProps(props, asKeys)[0];
+      const allProps = asOptions
+        ? { ...elementProps, ...asOptions }
+        : elementProps;
+      const element = useCreateElement(as, allProps);
       if (wrapElement) {
         return wrapElement(element);
       }
@@ -81,5 +82,9 @@ export function createComponent<T extends As, O>({
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
-  return memo(forwardRef(Comp as Component<T, O>), propsAreEqual);
+  if (shouldMemo) {
+    return memo(forwardRef(Comp as Component<T, O>));
+  }
+
+  return forwardRef(Comp as Component<T, O>);
 }

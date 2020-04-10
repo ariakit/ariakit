@@ -5,10 +5,11 @@ import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning, useWarning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { getDocument } from "reakit-utils/getDocument";
 import { isTextField } from "reakit-utils/isTextField";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { isPortalEvent } from "reakit-utils/isPortalEvent";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -68,6 +69,13 @@ function getWidget(item: Element) {
   return item.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
 
+function useItem(options: unstable_CompositeItemOptions) {
+  return React.useMemo(
+    () => options.items?.find((item) => options.id && item.id === options.id),
+    [options.items, options.id]
+  );
+}
+
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
@@ -106,7 +114,11 @@ export const unstable_useCompositeItem = createHook<
     const isCurrentItem = options.currentId === id;
     const isCurrentItemRef = useLiveRef(isCurrentItem);
     const hasFocusedComposite = React.useRef(false);
-    const item = options.items?.find((i) => i.id === id);
+    const item = useItem(options);
+    const onFocusRef = useLiveRef(htmlOnFocus);
+    const onBlurRef = useLiveRef(htmlOnBlur);
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onClickRef = useLiveRef(htmlOnClick);
     const shouldTabIndex =
       (!options.unstable_virtual &&
         !options.unstable_hasActiveWidget &&
@@ -150,16 +162,22 @@ export const unstable_useCompositeItem = createHook<
     }, [options.unstable_moves]);
 
     const onFocus = React.useCallback(
-      (event: React.FocusEvent) => {
-        const { target, currentTarget } = event;
-        if (!id || !currentTarget.contains(target)) return;
+      (event: React.FocusEvent<HTMLElement>) => {
+        onFocusRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (isPortalEvent(event)) return;
+        if (!id) return;
+        // Using originalCurrentId because currentId may be different due to
+        // getCurrentId call. If it's already set as the current id, we don't
+        // want to call setCurrentId again, which would cause an additional
+        // render.
         options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        const targetIsSelf = currentTarget === target;
-        if (targetIsSelf && options.unstable_virtual && options.baseId) {
+        if (isSelfTarget(event) && options.unstable_virtual && options.baseId) {
+          const { target } = event;
           const composite = getDocument(target).getElementById(options.baseId);
           if (composite) {
             hasFocusedComposite.current = true;
@@ -171,7 +189,7 @@ export const unstable_useCompositeItem = createHook<
     );
 
     const onBlur = React.useCallback(
-      (event: React.FocusEvent) => {
+      (event: React.FocusEvent<HTMLElement>) => {
         if (options.unstable_virtual) {
           if (hasFocusedComposite.current) {
             // When hasFocusedComposite is true, composite has been focused
@@ -182,19 +200,39 @@ export const unstable_useCompositeItem = createHook<
             return;
           }
         }
-        htmlOnBlur?.(event);
+        onBlurRef.current?.(event);
       },
-      [options.unstable_virtual, htmlOnBlur]
+      [options.unstable_virtual]
+    );
+
+    const onCharacterKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLElement>) => {
+        onKeyDownRef.current?.(event);
+        if (!isSelfTarget(event)) return;
+        if (event.key.length === 1 && event.key !== " ") {
+          const widget = getWidget(event.currentTarget);
+          if (widget && isTextField(widget)) {
+            widget.focus();
+            const { key } = event;
+            // Using RAF here because otherwise the key will be added twice
+            // to the input when using roving tabindex
+            window.requestAnimationFrame(() => {
+              setTextFieldValue(widget, key);
+            });
+          }
+        }
+      },
+      []
     );
 
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
-          onKeyDown: htmlOnKeyDown,
+          onKeyDown: onCharacterKeyDown,
           stopPropagation: true,
           // We don't want to listen to focusable elements inside the composite
           // item, such as a CompositeItemWidget.
-          shouldKeyDown: (event) => event.currentTarget === event.target,
+          shouldKeyDown: isSelfTarget,
           keyMap: () => {
             // `options.orientation` can also be undefined, which means that
             // both `isVertical` and `isHorizontal` will be `true`.
@@ -207,14 +245,17 @@ export const unstable_useCompositeItem = createHook<
                 setTextFieldValue(widget, "");
               }
             };
+            const up = options.up && (() => options.up());
+            const next = options.next && (() => options.next());
+            const down = options.down && (() => options.down());
+            const previous = options.previous && (() => options.previous());
             return {
               Delete,
               Backspace: Delete,
-              ArrowUp: (isGrid || isVertical) && (() => options.up?.()),
-              ArrowRight: (isGrid || isHorizontal) && (() => options.next?.()),
-              ArrowDown: (isGrid || isVertical) && (() => options.down?.()),
-              ArrowLeft:
-                (isGrid || isHorizontal) && (() => options.previous?.()),
+              ArrowUp: (isGrid || isVertical) && up,
+              ArrowRight: (isGrid || isHorizontal) && next,
+              ArrowDown: (isGrid || isVertical) && down,
+              ArrowLeft: (isGrid || isHorizontal) && previous,
               Home: (event) => {
                 if (!isGrid || event.ctrlKey) {
                   options.first?.();
@@ -247,47 +288,31 @@ export const unstable_useCompositeItem = createHook<
           },
         }),
       [
-        htmlOnKeyDown,
-        item,
+        onCharacterKeyDown,
         options.orientation,
-        options.next,
-        options.previous,
+        item,
         options.up,
+        options.next,
         options.down,
+        options.previous,
         options.first,
         options.last,
       ]
     );
 
-    const onCharacterKeyDown = React.useCallback(
-      (event: React.KeyboardEvent) => {
-        if (event.currentTarget !== event.target) return;
-        if (event.key.length === 1 && event.key !== " ") {
-          const widget = getWidget(event.currentTarget);
-          if (widget && isTextField(widget)) {
-            widget.focus();
-            const { key } = event;
-            // Using RAF here because otherwise the key will be added twice
-            // to the input when using roving tabindex
-            window.requestAnimationFrame(() => {
-              setTextFieldValue(widget, key);
-            });
-          }
-        }
-      },
-      []
-    );
-
     const onClick = React.useCallback(
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        const self = event.currentTarget;
-        const selfIsTarget = self === event.target;
-        const widget = getWidget(self);
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+        const widget = getWidget(event.currentTarget);
         if (widget && !hasFocusWithin(widget)) {
           // If there's a widget inside the composite item, we make sure it's
           // focused when pressing enter, space or clicking on the composite item.
           widget.focus();
-        } else if (selfIsTarget && !hasFocusWithin(self)) {
+        } else if (
+          isSelfTarget(event) &&
+          !hasFocusWithin(event.currentTarget)
+        ) {
           // VoiceOver doesn't automatically focus the composite item when it's not
           // a button, so we force focus here.
           self.focus();
@@ -299,13 +324,13 @@ export const unstable_useCompositeItem = createHook<
     return {
       ref: useForkRef(ref, htmlRef),
       id,
+      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       "aria-selected":
         options.unstable_virtual && isCurrentItem ? true : undefined,
-      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
+      onFocus,
       onBlur,
-      onKeyDown: useAllCallbacks(onCharacterKeyDown, onKeyDown),
-      onClick: useAllCallbacks(onClick, htmlOnClick),
+      onKeyDown,
+      onClick,
       ...htmlProps,
     };
   },
@@ -313,5 +338,6 @@ export const unstable_useCompositeItem = createHook<
 
 export const unstable_CompositeItem = createComponent({
   as: "button",
+  memo: true,
   useHook: unstable_useCompositeItem,
 });

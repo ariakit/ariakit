@@ -26,7 +26,6 @@ test("render", () => {
         <input
           aria-checked="false"
           id="radio"
-          role="radio"
           tabindex="-1"
           type="radio"
           value="radio"
@@ -40,17 +39,16 @@ test("render without state props", () => {
   // @ts-ignore
   const { baseElement } = render(<Radio id="radio" value="radio" />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <input
-      aria-checked="false"
-      id="radio"
-      role="radio"
-      tabindex="0"
-      type="radio"
-      value="radio"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <input
+          aria-checked="false"
+          id="radio"
+          tabindex="0"
+          type="radio"
+          value="radio"
+        />
+      </div>
+    </body>
+  `);
 });

@@ -1,6 +1,7 @@
+import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useButton, ButtonOptions, ButtonHTMLProps } from "../Button/Button";
 import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
 
@@ -22,14 +23,25 @@ export const useDisclosure = createHook<DisclosureOptions, DisclosureHTMLProps>(
       options,
       { onClick: htmlOnClick, "aria-controls": ariaControls, ...htmlProps }
     ) {
+      const onClickRef = useLiveRef(htmlOnClick);
+
       const controls = ariaControls
         ? `${ariaControls} ${options.baseId}`
         : options.baseId;
 
+      const onClick = React.useCallback(
+        (event: React.MouseEvent) => {
+          onClickRef.current?.(event);
+          if (event.defaultPrevented) return;
+          options.toggle?.();
+        },
+        [options.toggle]
+      );
+
       return {
-        onClick: useAllCallbacks(options.toggle, htmlOnClick),
-        "aria-expanded": Boolean(options.visible),
+        "aria-expanded": !!options.visible,
         "aria-controls": controls,
+        onClick,
         ...htmlProps,
       };
     },
@@ -38,5 +50,6 @@ export const useDisclosure = createHook<DisclosureOptions, DisclosureHTMLProps>(
 
 export const Disclosure = createComponent({
   as: "button",
+  memo: true,
   useHook: useDisclosure,
 });

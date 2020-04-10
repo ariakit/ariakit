@@ -29,5 +29,6 @@ export const usePopoverBackdrop = createHook<
 
 export const PopoverBackdrop = createComponent({
   as: "div",
+  memo: true,
   useHook: usePopoverBackdrop,
 });

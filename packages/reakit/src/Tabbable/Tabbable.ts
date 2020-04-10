@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isFocusable } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
@@ -69,6 +70,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
+    const onClickRef = useLiveRef(htmlOnClick);
+    const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
@@ -98,23 +101,23 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           event.preventDefault();
           return;
         }
-        htmlOnClick?.(event);
+        onClickRef.current?.(event);
       },
-      [options.disabled, htmlOnClick]
+      [options.disabled]
     );
 
     const onMouseDown = React.useCallback(
-      (event: React.MouseEvent) => {
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (options.disabled) {
           event.stopPropagation();
           event.preventDefault();
           return;
         }
 
-        htmlOnMouseDown?.(event);
+        onMouseDownRef.current?.(event);
         if (event.defaultPrevented) return;
 
-        const self = event.currentTarget as HTMLElement;
+        const self = event.currentTarget;
         const target = event.target as HTMLElement;
 
         if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
@@ -126,17 +129,17 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           }
         }
       },
-      [options.disabled, htmlOnMouseDown]
+      [options.disabled]
     );
 
     return {
       ref: useForkRef(ref, htmlRef),
       style,
+      tabIndex: !trulyDisabled ? tabIndex : undefined,
+      disabled: trulyDisabled && nativeTabbable ? true : undefined,
+      "aria-disabled": options.disabled ? true : undefined,
       onClick,
       onMouseDown,
-      "aria-disabled": options.disabled ? true : undefined,
-      disabled: trulyDisabled && nativeTabbable ? true : undefined,
-      tabIndex: !trulyDisabled ? tabIndex : undefined,
       ...htmlProps,
     };
   },

@@ -37,5 +37,6 @@ export const useVisuallyHidden = createHook<
 
 export const VisuallyHidden = createComponent({
   as: "span",
+  memo: true,
   useHook: useVisuallyHidden,
 });

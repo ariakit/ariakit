@@ -32,8 +32,6 @@ test("render", () => {
           id="item"
           role="menuitemradio"
           tabindex="-1"
-          type="radio"
-          value="radio"
         />
       </div>
     </body>

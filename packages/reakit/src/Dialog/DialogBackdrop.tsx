@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -35,7 +34,7 @@ export const useDialogBackdrop = createHook<
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         if (options.modal) {
-          return (
+          element = (
             <Portal>
               <DialogBackdropContext.Provider value>
                 {element}
@@ -43,16 +42,18 @@ export const useDialogBackdrop = createHook<
             </Portal>
           );
         }
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
+        }
         return element;
       },
-      [options.modal]
+      [options.modal, htmlWrapElement]
     );
 
     return {
       id: undefined,
-      role: undefined,
-      wrapElement: usePipe(wrapElement, htmlWrapElement),
       "data-dialog-ref": options.baseId,
+      wrapElement,
       ...htmlProps,
     };
   },
@@ -60,5 +61,6 @@ export const useDialogBackdrop = createHook<
 
 export const DialogBackdrop = createComponent({
   as: "div",
+  memo: true,
   useHook: useDialogBackdrop,
 });

@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
-import { usePipe } from "reakit-utils/usePipe";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -34,10 +33,7 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   keys: ["unstable_portal"],
 
   useOptions({ unstable_portal = true, ...options }) {
-    return {
-      unstable_portal,
-      ...options,
-    };
+    return { unstable_portal, ...options };
   },
 
   useProps(
@@ -52,11 +48,14 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         if (options.unstable_portal) {
-          return <Portal>{element}</Portal>;
+          element = <Portal>{element}</Portal>;
+        }
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
         }
         return element;
       },
-      [options.unstable_portal]
+      [options.unstable_portal, htmlWrapElement]
     );
 
     return {
@@ -67,7 +66,7 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
         pointerEvents: "none",
         ...htmlStyle,
       },
-      wrapElement: usePipe(wrapElement, htmlWrapElement),
+      wrapElement,
       ...htmlProps,
     };
   },
@@ -75,5 +74,6 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
 
 export const Tooltip = createComponent({
   as: "div",
+  memo: true,
   useHook: useTooltip,
 });

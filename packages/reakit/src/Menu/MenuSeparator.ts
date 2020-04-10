@@ -31,5 +31,6 @@ export const useMenuSeparator = createHook<
 
 export const MenuSeparator = createComponent({
   as: "hr",
+  memo: true,
   useHook: useMenuSeparator,
 });

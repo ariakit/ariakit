@@ -33,5 +33,6 @@ export const useSeparator = createHook<SeparatorOptions, SeparatorHTMLProps>({
 
 export const Separator = createComponent({
   as: "hr",
+  memo: true,
   useHook: useSeparator,
 });

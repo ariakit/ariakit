@@ -3,12 +3,13 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { useForkRef } from "reakit-utils/useForkRef";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { warning, useWarning } from "reakit-warning";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { getDocument } from "reakit-utils/getDocument";
 import { fireEvent } from "reakit-utils/fireEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   unstable_useIdGroup,
   unstable_IdGroupOptions,
@@ -66,7 +67,7 @@ const validCompositeRoles = [
 const isIE11 = typeof window !== "undefined" && "msCrypto" in window;
 
 function canProxyKeyboardEvent(event: React.KeyboardEvent) {
-  if (event.target !== event.currentTarget) return false;
+  if (!isSelfTarget(event)) return false;
   if (event.metaKey) return false;
   if (event.key === "Tab") return false;
   return true;
@@ -77,6 +78,7 @@ function useKeyboardEventProxy(
   currentItem?: Item,
   htmlEventHandler?: React.KeyboardEventHandler
 ) {
+  const eventHandlerRef = useLiveRef(htmlEventHandler);
   return React.useCallback(
     (event: React.KeyboardEvent) => {
       if (virtual && canProxyKeyboardEvent(event)) {
@@ -93,12 +95,13 @@ function useKeyboardEventProxy(
           }
         }
       }
-      htmlEventHandler?.(event);
+      eventHandlerRef.current?.(event);
     },
-    [virtual, currentItem, htmlEventHandler]
+    [virtual, currentItem]
   );
 }
 
+// istanbul ignore next
 function useActiveElementRef(elementRef: React.RefObject<HTMLElement>) {
   const activeElementRef = React.useRef<HTMLElement | null>(null);
   React.useEffect(() => {
@@ -149,6 +152,8 @@ export const unstable_useComposite = createHook<
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = findEnabledItemById(options.items, options.currentId);
     const previousItem = React.useRef<Item | undefined>(undefined);
+    const onFocusRef = useLiveRef(htmlOnFocus);
+    const onBlurRef = useLiveRef(htmlOnBlur);
     // IE 11 doesn't support event.relatedTarget, so we use the active element
     // ref instead.
     const activeElementRef = isIE11 ? useActiveElementRef(ref) : undefined;
@@ -184,7 +189,6 @@ export const unstable_useComposite = createHook<
 
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
-        const targetIsSelf = event.target === event.currentTarget;
         if (options.unstable_virtual) {
           // IE11 doesn't support event.relatedTarget, so we use the active
           // element ref instead.
@@ -194,7 +198,7 @@ export const unstable_useComposite = createHook<
             options.items,
             previousActiveElement
           );
-          if (targetIsSelf && !previousActiveElementWasItem) {
+          if (isSelfTarget(event) && !previousActiveElementWasItem) {
             // This means that the composite element has been focused while the
             // composite item has not. For example, by clicking on the
             // composite element without touching any item, or by tabbing into
@@ -203,7 +207,7 @@ export const unstable_useComposite = createHook<
             // When it receives focus, the composite item will put focus back
             // on the composite element, in which case hasItemWithFocus will be
             // true.
-            htmlOnFocus?.(event);
+            onFocusRef.current?.(event);
             currentItem?.ref.current?.focus();
             return;
           }
@@ -218,21 +222,20 @@ export const unstable_useComposite = createHook<
             event.stopPropagation();
             return;
           }
-        } else if (targetIsSelf) {
+        } else if (isSelfTarget(event)) {
           // When the roving tabindex composite gets intentionally focused (for
           // example, by clicking directly on it, and not on an item), we make
           // sure to set the current id to null (which means the composite
           // itself is focused).
           options.setCurrentId?.(null);
         }
-        htmlOnFocus?.(event);
+        onFocusRef.current?.(event);
       },
       [
         options.unstable_virtual,
         options.items,
         currentItem,
         options.setCurrentId,
-        htmlOnFocus,
       ]
     );
 
@@ -248,14 +251,13 @@ export const unstable_useComposite = createHook<
         // confusing, so we ignore intermediate focus and blurs by stopping its
         // propagation and not calling the passed onBlur handler (htmlOnBlur).
         if (options.unstable_virtual) {
-          const targetIsSelf = event.target === event.currentTarget;
           const targetIsItem = isItem(options.items, event.target);
           const nextActiveElement = getNextActiveElementOnBlur(event);
           const nextActiveElementIsItem = isItem(
             options.items,
             nextActiveElement
           );
-          if (targetIsSelf && nextActiveElementIsItem) {
+          if (isSelfTarget(event) && nextActiveElementIsItem) {
             // This is an intermediate blur event: blurring the composite
             // container to focus an item (nextActiveElement). We ignore this
             // event.
@@ -281,17 +283,18 @@ export const unstable_useComposite = createHook<
             previousItem.current = currentItem;
           }
         }
-        htmlOnBlur?.(event);
+        onBlurRef.current?.(event);
       },
-      [options.unstable_virtual, currentItem, options.items, htmlOnBlur]
+      [options.unstable_virtual, options.items, currentItem]
     );
 
     const onMove = React.useMemo(
       () =>
         createOnKeyDown({
+          onKeyDown,
           stopPropagation: true,
           shouldKeyDown: (event) =>
-            event.target === event.currentTarget && options.currentId === null,
+            isSelfTarget(event) && options.currentId === null,
           keyMap: () => {
             const isVertical = options.orientation !== "horizontal";
             const isHorizontal = options.orientation !== "vertical";
@@ -306,26 +309,29 @@ export const unstable_useComposite = createHook<
                 options.last?.();
               }
             };
+            const first = options.first && (() => options.first());
+            const last = options.last && (() => options.last());
             return {
               ArrowUp: (isGrid || isVertical) && up,
-              ArrowRight: (isGrid || isHorizontal) && options.first,
-              ArrowDown: (isGrid || isVertical) && options.first,
-              ArrowLeft: (isGrid || isHorizontal) && options.last,
-              Home: options.first,
-              End: options.last,
-              PageUp: options.first,
-              PageDown: options.last,
+              ArrowRight: (isGrid || isHorizontal) && first,
+              ArrowDown: (isGrid || isVertical) && first,
+              ArrowLeft: (isGrid || isHorizontal) && last,
+              Home: first,
+              End: last,
+              PageUp: first,
+              PageDown: last,
             };
           },
         }),
       [
+        onKeyDown,
         options.currentId,
         options.orientation,
         options.groups,
         options.items,
+        options.move,
         options.last,
         options.first,
-        options.move,
       ]
     );
 
@@ -334,7 +340,7 @@ export const unstable_useComposite = createHook<
       id: options.baseId,
       onFocus,
       onBlur,
-      onKeyDown: useAllCallbacks(onMove, onKeyDown),
+      onKeyDown: onMove,
       onKeyUp,
       "aria-activedescendant": options.unstable_virtual
         ? currentItem?.id || undefined

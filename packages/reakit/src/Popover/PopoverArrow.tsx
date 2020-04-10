@@ -43,18 +43,8 @@ export const usePopoverArrow = createHook<
     const { unstable_arrowStyles: arrowStyles } = options;
     const transform = transformMap[placement];
 
-    return {
-      ref: useForkRef(options.unstable_arrowRef, htmlRef),
-      style: {
-        ...arrowStyles,
-        fontSize: options.size,
-        width: "1em",
-        height: "1em",
-        pointerEvents: "none",
-        [placement]: "100%",
-        ...htmlStyle,
-      },
-      children: (
+    const children = React.useMemo(
+      () => (
         <svg viewBox="0 0 30 30" style={{ transform }}>
           <path
             className="stroke"
@@ -67,6 +57,21 @@ export const usePopoverArrow = createHook<
           />
         </svg>
       ),
+      [transform]
+    );
+
+    return {
+      ref: useForkRef(options.unstable_arrowRef, htmlRef),
+      style: {
+        ...arrowStyles,
+        fontSize: options.size,
+        width: "1em",
+        height: "1em",
+        pointerEvents: "none",
+        [placement]: "100%",
+        ...htmlStyle,
+      },
+      children,
       ...htmlProps,
     };
   },
@@ -74,5 +79,6 @@ export const usePopoverArrow = createHook<
 
 export const PopoverArrow = createComponent({
   as: "div",
+  memo: true,
   useHook: usePopoverArrow,
 });

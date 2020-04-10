@@ -1,16 +1,16 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { getDocument } from "reakit-utils/getDocument";
+import { contains } from "reakit-utils/contains";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
   unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
-import { isTouchDevice } from "./__utils/isTouchDevice";
 import { useMenuState, MenuStateReturn } from "./MenuState";
-import { MenuContext } from "./__utils/MenuContext";
+import { MenuRoleContext } from "./__utils/MenuContext";
 
 export type MenuItemOptions = CompositeItemOptions &
   Pick<Partial<MenuStateReturn>, "visible" | "hide" | "placement"> &
@@ -27,39 +27,40 @@ function isExpandedDisclosure(element: HTMLElement) {
   );
 }
 
-function getMouseDestination(event: React.MouseEvent) {
-  if (event.relatedTarget instanceof Element) {
+function getMouseDestination(event: React.MouseEvent<HTMLElement, MouseEvent>) {
+  const relatedTarget = event.relatedTarget as Node | null;
+  if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
     return event.relatedTarget;
   }
-  if ("toElement" in event) {
-    return (event as any).toElement;
-  }
-  return null;
+  return (event as any).toElement || null;
 }
 
-function hoveringInside(event: React.MouseEvent) {
-  const self = event.currentTarget as HTMLElement;
+function hoveringInside(event: React.MouseEvent<HTMLElement, MouseEvent>) {
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
-  return self.contains(nextElement);
+  return contains(event.currentTarget, nextElement);
 }
 
-function hoveringExpandedMenu(event: React.MouseEvent) {
-  const self = event.currentTarget as HTMLElement;
+function hoveringExpandedMenu(
+  event: React.MouseEvent<HTMLElement, MouseEvent>
+) {
+  const self = event.currentTarget;
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
   const document = getDocument(self);
   if (!isExpandedDisclosure(self)) return false;
   const menuId = self.getAttribute("aria-controls");
   const menu = document.getElementById(menuId!);
-  return menu?.contains(nextElement);
+  if (!menu) return false;
+  return contains(menu, nextElement);
 }
 
 function hoveringAnotherMenuItem(
-  event: React.MouseEvent,
+  event: React.MouseEvent<HTMLElement, MouseEvent>,
   items: MenuItemOptions["items"]
 ) {
-  return items?.some((item) => item.ref.current === getMouseDestination(event));
+  const nextElement = getMouseDestination(event);
+  return items?.some((item) => item.ref.current === nextElement);
 }
 
 export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
@@ -75,44 +76,43 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       ...htmlProps
     }
   ) {
-    const menu = React.useContext(MenuContext);
-    const menuRole = menu && menu.role;
+    const menuRole = React.useContext(MenuRoleContext);
+    const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
+    const onMouseLeaveRef = useLiveRef(htmlOnMouseLeave);
 
     const onMouseEnter = React.useCallback(
-      (event: React.MouseEvent) => {
-        if (menuRole === "menubar" || isTouchDevice()) return;
-        const self = event.currentTarget as HTMLElement;
-        self.focus({ preventScroll: true });
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onMouseEnterRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (menuRole === "menubar") return;
+        event.currentTarget.focus();
       },
       [menuRole]
     );
 
     const onMouseLeave = React.useCallback(
-      (event: React.MouseEvent) => {
-        const self = event.currentTarget as HTMLElement;
-
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onMouseLeaveRef.current?.(event);
+        if (event.defaultPrevented) return;
+        const self = event.currentTarget;
         if (hoveringInside(event)) return;
         // If this item is a menu disclosure and mouse is leaving it to focus
         // its respective submenu, we don't want to do anything.
         if (hoveringExpandedMenu(event)) return;
         // On menu bars, hovering out of disclosure doesn't blur it.
-        if (isExpandedDisclosure(self) && menuRole === "menubar") return;
-
+        if (menuRole === "menubar" && isExpandedDisclosure(self)) return;
         // Move focus to menu after blurring
-        if (
-          !hoveringAnotherMenuItem(event, options.items) &&
-          !isTouchDevice()
-        ) {
+        if (!hoveringAnotherMenuItem(event, options.items)) {
           options.move?.(null);
         }
       },
-      [menuRole, options.move, options.items]
+      [menuRole, options.items, options.move]
     );
 
     return {
       role: "menuitem",
-      onMouseEnter: useAllCallbacks(onMouseEnter, htmlOnMouseEnter),
-      onMouseLeave: useAllCallbacks(onMouseLeave, htmlOnMouseLeave),
+      onMouseEnter,
+      onMouseLeave,
       ...htmlProps,
     };
   },
@@ -120,5 +120,6 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
 
 export const MenuItem = createComponent({
   as: "button",
+  memo: true,
   useHook: useMenuItem,
 });

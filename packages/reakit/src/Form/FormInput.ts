@@ -1,8 +1,8 @@
 import * as React from "react";
-import { As, PropsWithAs } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { As, PropsWithAs } from "reakit-utils/types";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -56,26 +56,36 @@ export const unstable_useFormInput = createHook<
     options,
     { onChange: htmlOnChange, onBlur: htmlOnBlur, ...htmlProps }
   ) {
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onBlurRef = useLiveRef(htmlOnBlur);
+
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
-        options.update(options.name, event.target.value);
+        onChangeRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.update?.(options.name, event.target.value);
       },
       [options.update, options.name]
     );
 
-    const onBlur = React.useCallback(() => {
-      options.blur(options.name);
-    }, [options.blur, options.name]);
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        onBlurRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.blur?.(options.name);
+      },
+      [options.blur, options.name]
+    );
 
     return {
       id: getInputId(options.name, options.baseId),
       name: formatInputName(options.name),
       value: unstable_getIn(options.values, options.name, ""),
-      onChange: useAllCallbacks(onChange, htmlOnChange),
-      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
       "aria-describedby": getMessageId(options.name, options.baseId),
       "aria-labelledby": getLabelId(options.name, options.baseId),
       "aria-invalid": shouldShowError(options, options.name),
+      onChange,
+      onBlur,
       ...htmlProps,
     };
   },
@@ -86,6 +96,7 @@ export const unstable_useFormInput = createHook<
 
 export const unstable_FormInput = (createComponent({
   as: "input",
+  memo: true,
   useHook: unstable_useFormInput,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormInputOptions<V, P>, T>

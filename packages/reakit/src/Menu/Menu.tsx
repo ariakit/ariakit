@@ -1,9 +1,11 @@
 import * as React from "react";
 import { useWarning } from "reakit-warning";
+import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { createHook } from "reakit-system/createHook";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { contains } from "reakit-utils/contains";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -21,6 +23,10 @@ export type MenuHTMLProps = PopoverHTMLProps & MenuBarHTMLProps;
 
 export type MenuProps = MenuOptions & MenuHTMLProps;
 
+function usePlacementDir(placement?: string) {
+  return React.useMemo(() => placement?.split("-")?.[0], [placement]);
+}
+
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
   compose: [useMenuBar, usePopover],
@@ -28,7 +34,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
 
   useOptions(options) {
     const parent = React.useContext(MenuContext);
-    const parentIsMenuBar = parent && parent.role === "menubar";
+    const parentIsMenuBar = parent?.role === "menubar";
 
     return {
       unstable_autoFocusOnShow: !parent,
@@ -41,8 +47,9 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   },
 
   useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const parent = React.useContext(MenuContext);
-    const hasParent = Boolean(parent);
+    const hasParent = !!parent;
     let ancestorMenuBar: MenuContextType | undefined | null = parent;
 
     while (ancestorMenuBar && ancestorMenuBar.role !== "menubar") {
@@ -51,33 +58,34 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
 
     const { next, previous, orientation } = ancestorMenuBar || {};
     const ancestorIsHorizontal = orientation === "horizontal";
-    const [dir] = (options.placement || "").split("-");
+    const dir = usePlacementDir(options.placement);
 
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
-          onKeyDown: htmlOnKeyDown,
+          onKeyDown: onKeyDownRef,
           stopPropagation: (event) => {
             // On Esc, only stop propagation if there's no parent menu.
             // Otherwise, pressing Esc should close all menus
             return event.key !== "Escape" && hasParent;
           },
           keyMap: ({ currentTarget, target }) => {
-            const Escape = options.hide;
-            if (hasParent && currentTarget.contains(target as Element)) {
+            const { hide } = options;
+            const close = hide && (() => hide());
+            if (hasParent && contains(currentTarget, target as Element)) {
               // Moves to the next menu button in a horizontal menu bar or
               // close the menu if it's a sub menu
               const ArrowRight =
                 ancestorIsHorizontal && dir !== "left"
                   ? next && (() => next())
-                  : dir === "left" && options.hide;
+                  : dir === "left" && close;
               const ArrowLeft =
                 ancestorIsHorizontal && dir !== "right"
                   ? previous && (() => previous())
-                  : dir === "right" && options.hide;
-              return { Escape, ArrowRight, ArrowLeft };
+                  : dir === "right" && close;
+              return { Escape: close, ArrowRight, ArrowLeft };
             }
-            return { Escape };
+            return { Escape: close };
           },
         }),
       [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]

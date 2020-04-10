@@ -13,8 +13,10 @@ type Options = {
   onKey?: (event: React.KeyboardEvent) => any;
   preventDefault?: boolean | ((event: React.KeyboardEvent) => boolean);
   stopPropagation?: boolean | ((event: React.KeyboardEvent) => boolean);
-  onKeyDown?: (event: React.KeyboardEvent) => void;
   shouldKeyDown?: (event: React.KeyboardEvent) => boolean;
+  onKeyDown?:
+    | React.KeyboardEventHandler
+    | React.RefObject<React.KeyboardEventHandler | undefined>;
 };
 
 /**
@@ -57,8 +59,10 @@ export function createOnKeyDown({
       }
     }
 
-    if (onKeyDown) {
-      onKeyDown(event);
+    if (onKeyDown && "current" in onKeyDown) {
+      onKeyDown.current?.(event);
+    } else {
+      onKeyDown?.(event);
     }
   };
 }

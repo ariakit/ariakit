@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
-import { usePipe } from "reakit-utils/usePipe";
 import {
   unstable_CompositeStateReturn as CompositeStateReturn,
   unstable_useCompositeState as useCompositeState,
@@ -60,17 +59,23 @@ export const unstable_useFormRadioGroup = createHook<
     );
 
     const wrapElement = React.useCallback(
-      (element: React.ReactNode) => (
-        <FormRadioGroupContext.Provider value={providerValue}>
-          {element}
-        </FormRadioGroupContext.Provider>
-      ),
-      [providerValue]
+      (element: React.ReactNode) => {
+        element = (
+          <FormRadioGroupContext.Provider value={providerValue}>
+            {element}
+          </FormRadioGroupContext.Provider>
+        );
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
+        }
+        return element;
+      },
+      [providerValue, htmlWrapElement]
     );
 
     return {
       role: "radiogroup",
-      wrapElement: usePipe(wrapElement, htmlWrapElement),
+      wrapElement,
       ...htmlProps,
     };
   },

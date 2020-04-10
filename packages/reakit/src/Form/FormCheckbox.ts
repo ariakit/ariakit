@@ -1,8 +1,8 @@
 import * as React from "react";
 import { As, PropsWithAs, ArrayValue } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { createHook } from "reakit-system/createHook";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   CheckboxOptions,
   CheckboxHTMLProps,
@@ -64,16 +64,22 @@ export const unstable_useFormCheckbox = createHook<
   },
 
   useProps(options, { onBlur: htmlOnBlur, ...htmlProps }) {
+    const onBlurRef = useLiveRef(htmlOnBlur);
     const isBoolean = typeof options.value === "undefined";
 
-    const onBlur = React.useCallback(() => {
-      options.blur(options.name);
-    }, [options.blur, options.name]);
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        onBlurRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.blur?.(options.name);
+      },
+      [options.blur, options.name]
+    );
 
     return {
       "aria-invalid": shouldShowError(options, options.name),
       name: formatInputName(options.name),
-      onBlur: useAllCallbacks(onBlur, htmlOnBlur),
+      onBlur,
       ...(isBoolean
         ? {
             id: getInputId(options.name, options.baseId),
@@ -91,6 +97,7 @@ export const unstable_useFormCheckbox = createHook<
 
 export const unstable_FormCheckbox = (createComponent({
   as: "input",
+  memo: true,
   useHook: unstable_useFormCheckbox,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "input">(
   props: PropsWithAs<unstable_FormCheckboxOptions<V, P>, T>

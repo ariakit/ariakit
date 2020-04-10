@@ -18,6 +18,7 @@ export type MenuContextType = Pick<
 };
 
 export const MenuContext = React.createContext<MenuContextType | null>(null);
+export const MenuRoleContext = React.createContext<string | null>(null);
 
 export function useMenuContext(
   menuRef: Ref,
@@ -44,9 +45,7 @@ export function useMenuContext(
     if (!addChildToParent || orphan) return undefined;
     addChildToParent(menuRef);
     return () => {
-      if (removeChildFromParent) {
-        removeChildFromParent(menuRef);
-      }
+      removeChildFromParent?.(menuRef);
     };
   }, [menuRef, addChildToParent, removeChildFromParent, orphan]);
 
@@ -77,7 +76,9 @@ export function useMenuContext(
 
   const wrapElement = React.useCallback(
     (c: React.ReactNode) => (
-      <MenuContext.Provider value={providerValue}>{c}</MenuContext.Provider>
+      <MenuContext.Provider value={providerValue}>
+        <MenuRoleContext.Provider value={role}>{c}</MenuRoleContext.Provider>
+      </MenuContext.Provider>
     ),
     [providerValue]
   );

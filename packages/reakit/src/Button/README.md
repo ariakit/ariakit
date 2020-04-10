@@ -60,6 +60,7 @@ const className = css`
       background-color: #0062e6;
     }
     &:active,
+    &[data-active="true"],
     &[aria-expanded="true"] {
       color: #ffffff;
       border-color: #0058cf;
@@ -67,8 +68,7 @@ const className = css`
     }
   }
 
-  &:focus,
-  [aria-activedescendant] &[aria-selected="true"] {
+  &:focus {
     box-shadow: 0 0 0 0.2em rgba(0, 109, 255, 0.4);
     position: relative;
     z-index: 2;

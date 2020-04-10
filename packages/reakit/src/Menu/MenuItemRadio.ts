@@ -32,7 +32,6 @@ export const useMenuItemRadio = createHook<
       (value) => options.unstable_setValue(options.name, value),
       [options.unstable_setValue, options.name]
     );
-
     return {
       ...options,
       unstable_checkOnFocus: false,
@@ -48,5 +47,6 @@ export const useMenuItemRadio = createHook<
 
 export const MenuItemRadio = createComponent({
   as: "button",
+  memo: true,
   useHook: useMenuItemRadio,
 });

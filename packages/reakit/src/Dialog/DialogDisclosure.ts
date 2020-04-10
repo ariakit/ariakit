@@ -29,5 +29,6 @@ export const useDialogDisclosure = createHook<
 
 export const DialogDisclosure = createComponent({
   as: "button",
+  memo: true,
   useHook: useDialogDisclosure,
 });

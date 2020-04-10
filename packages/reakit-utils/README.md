@@ -26,6 +26,7 @@ yarn add reakit-utils
 
 -   [applyState](#applystate)
 -   [closest](#closest)
+-   [contains](#contains)
 -   [createEvent](#createevent)
 -   [createKeyboardEvent](#createkeyboardevent)
 -   [createOnKeyDown](#createonkeydown)
@@ -42,7 +43,9 @@ yarn add reakit-utils
 -   [isInteger](#isinteger)
 -   [isObject](#isobject)
 -   [isPlainObject](#isplainobject)
+-   [isPortalEvent](#isportalevent)
 -   [isPromise](#ispromise)
+-   [isSelfTarget](#isselftarget)
 -   [isTextField](#istextfield)
 -   [matches](#matches)
 -   [omit](#omit)
@@ -98,6 +101,17 @@ closest(document.getElementById("id"), "div");
 // same as
 document.getElementById("id").closest("div");
 ```
+
+### contains
+
+Similar to `Element.prototype.contains`.
+
+#### Parameters
+
+-   `parent` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `child` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### createEvent
 
@@ -367,6 +381,16 @@ Checks whether `arg` is a plain object or not.
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
+### isPortalEvent
+
+Returns `true` if `event` has been fired within a React Portal element.
+
+#### Parameters
+
+-   `event` **React.SyntheticEvent&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element), [Event](https://developer.mozilla.org/docs/Web/API/Event)>** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### isPromise
 
 Checks whether `arg` is a promise or not.
@@ -374,6 +398,16 @@ Checks whether `arg` is a promise or not.
 #### Parameters
 
 -   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isSelfTarget
+
+Returns `true` if `event.target` and `event.currentTarget` are the same.
+
+#### Parameters
+
+-   `event` **React.SyntheticEvent** 
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 

@@ -45,10 +45,7 @@ export const unstable_useCompositeGroup = createHook<
       };
     }, [id, options.registerGroup, options.unregisterGroup]);
 
-    return {
-      ref: useForkRef(ref, htmlRef),
-      ...htmlProps,
-    };
+    return { ref: useForkRef(ref, htmlRef), ...htmlProps };
   },
 });
 

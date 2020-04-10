@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { isButton } from "reakit-utils/isButton";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -53,14 +54,16 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
     { onKeyDown: htmlOnKeyDown, onKeyUp: htmlOnKeyUp, ...htmlProps }
   ) {
     const [active, setActive] = React.useState(false);
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onKeyUpRef = useLiveRef(htmlOnKeyUp);
 
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
-        htmlOnKeyDown?.(event);
+        onKeyDownRef.current?.(event);
 
-        if (options.disabled || event.defaultPrevented || event.metaKey) {
-          return;
-        }
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
+        if (event.metaKey) return;
 
         const isEnter = options.unstable_clickOnEnter && event.key === "Enter";
         const isSpace = options.unstable_clickOnSpace && event.key === " ";
@@ -77,7 +80,6 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
       },
       [
         options.disabled,
-        htmlOnKeyDown,
         options.unstable_clickOnEnter,
         options.unstable_clickOnSpace,
       ]
@@ -85,11 +87,11 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
 
     const onKeyUp = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
-        htmlOnKeyUp?.(event);
+        onKeyUpRef.current?.(event);
 
-        if (options.disabled || event.defaultPrevented || event.metaKey) {
-          return;
-        }
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
+        if (event.metaKey) return;
 
         const isSpace = options.unstable_clickOnSpace && event.key === " ";
 
@@ -98,13 +100,13 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
           event.currentTarget.click();
         }
       },
-      [options.disabled, htmlOnKeyUp, active, options.unstable_clickOnSpace]
+      [options.disabled, options.unstable_clickOnSpace, active]
     );
 
     return {
+      "data-active": active || undefined,
       onKeyDown,
       onKeyUp,
-      "data-active": active || undefined,
       ...htmlProps,
     };
   },
@@ -112,5 +114,6 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
 
 export const Clickable = createComponent({
   as: "button",
+  memo: true,
   useHook: useClickable,
 });
