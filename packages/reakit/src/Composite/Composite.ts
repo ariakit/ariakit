@@ -10,12 +10,8 @@ import { fireEvent } from "reakit-utils/fireEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import {
-  unstable_useIdGroup,
-  unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps,
-} from "../Id/IdGroup";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
+import { useBox } from "../Box/Box";
 import {
   unstable_CompositeStateReturn,
   unstable_useCompositeState,
@@ -30,9 +26,9 @@ import { getNextActiveElementOnBlur } from "./__utils/getNextActiveElementOnBlur
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 
 export type unstable_CompositeOptions = TabbableOptions &
-  unstable_IdGroupOptions &
   Pick<
     Partial<unstable_CompositeStateReturn>,
+    | "baseId"
     | "unstable_virtual"
     | "currentId"
     | "orientation"
@@ -45,8 +41,7 @@ export type unstable_CompositeOptions = TabbableOptions &
     "items" | "setCurrentId" | "first" | "last" | "move"
   >;
 
-export type unstable_CompositeHTMLProps = TabbableHTMLProps &
-  unstable_IdGroupHTMLProps;
+export type unstable_CompositeHTMLProps = TabbableHTMLProps;
 
 export type unstable_CompositeProps = unstable_CompositeOptions &
   unstable_CompositeHTMLProps;
@@ -131,7 +126,7 @@ export const unstable_useComposite = createHook<
   unstable_CompositeHTMLProps
 >({
   name: "Composite",
-  compose: [unstable_useIdGroup, useTabbable],
+  compose: [useTabbable],
   useState: unstable_useCompositeState,
 
   useOptions(options) {
@@ -350,7 +345,7 @@ export const unstable_useComposite = createHook<
   },
 
   useComposeProps(options, htmlProps) {
-    htmlProps = unstable_useIdGroup(options, htmlProps, true);
+    htmlProps = useBox(options, htmlProps, true);
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
     if (options.unstable_virtual || options.currentId === null) {
       // Composite will only be tabbable by default if the focus is managed

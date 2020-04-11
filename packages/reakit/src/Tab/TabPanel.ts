@@ -89,10 +89,6 @@ export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   useState: useTabState,
   keys: ["stopId", "tabId"],
 
-  useOptions(options) {
-    return { ...options, unstable_setBaseId: undefined };
-  },
-
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const tabId = getTabId(options);

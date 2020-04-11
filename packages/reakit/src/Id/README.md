@@ -62,30 +62,6 @@ function Example() {
 }
 ```
 
-### `IdGroup`
-
-```jsx
-import {
-  unstable_useIdState as useIdState,
-  unstable_IdGroup as IdGroup,
-  unstable_Id as Id,
-} from "reakit/Id";
-
-function Example() {
-  const id = useIdState();
-  return (
-    <IdGroup {...id} id="a">
-      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
-      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
-      <Id {...id} id="different-id">
-        {(props) => <div {...props}>{props.id}</div>}
-      </Id>
-      <Id {...id}>{(props) => <div {...props}>{props.id}</div>}</Id>
-    </IdGroup>
-  );
-}
-```
-
 ### `useId`
 
 ```jsx
@@ -123,7 +99,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Id` uses [Box](/docs/box/).
+- `Id` is used by [CompositeGroup](/docs/composite/), [CompositeItem](/docs/composite/) and [TabPanel](/docs/tab/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -139,24 +115,6 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   ID that will serve as a base for all the items IDs.
 
 ### `Id`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>1 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
-
-</details>
-
-### `IdGroup`
 
 - **`id`**
   <code>string | undefined</code>

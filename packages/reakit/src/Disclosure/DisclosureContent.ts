@@ -4,23 +4,20 @@ import { createHook } from "reakit-system/createHook";
 import { cx } from "reakit-utils/cx";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import {
-  unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps,
-  unstable_useIdGroup,
-} from "../Id/IdGroup";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
 
-export type DisclosureContentOptions = unstable_IdGroupOptions &
+export type DisclosureContentOptions = BoxOptions &
   Pick<
     Partial<DisclosureStateReturn>,
+    | "baseId"
     | "visible"
     | "unstable_animating"
     | "unstable_animated"
     | "unstable_stopAnimation"
   >;
 
-export type DisclosureContentHTMLProps = unstable_IdGroupHTMLProps;
+export type DisclosureContentHTMLProps = BoxHTMLProps;
 
 export type DisclosureContentProps = DisclosureContentOptions &
   DisclosureContentHTMLProps;
@@ -30,7 +27,7 @@ export const useDisclosureContent = createHook<
   DisclosureContentHTMLProps
 >({
   name: "DisclosureContent",
-  compose: unstable_useIdGroup,
+  compose: useBox,
   useState: useDisclosureState,
 
   useProps(

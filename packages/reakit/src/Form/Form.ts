@@ -2,17 +2,13 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import {
-  unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps,
-  unstable_useIdGroup,
-} from "../Id/IdGroup";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
-export type unstable_FormOptions = unstable_IdGroupOptions &
+export type unstable_FormOptions = BoxOptions &
   Pick<unstable_FormStateReturn<any>, "submit">;
 
-export type unstable_FormHTMLProps = unstable_IdGroupHTMLProps &
+export type unstable_FormHTMLProps = BoxHTMLProps &
   React.FormHTMLAttributes<any>;
 
 export type unstable_FormProps = unstable_FormOptions & unstable_FormHTMLProps;
@@ -22,7 +18,7 @@ export const unstable_useForm = createHook<
   unstable_FormHTMLProps
 >({
   name: "Form",
-  compose: unstable_useIdGroup,
+  compose: useBox,
   useState: unstable_useFormState,
 
   useProps(options, { onSubmit: htmlOnSubmit, ...htmlProps }) {

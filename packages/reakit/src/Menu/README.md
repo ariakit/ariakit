@@ -678,11 +678,6 @@ element.
 
 ### `Menu`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
 - **`hideOnClickOutside`**
   <code>boolean | undefined</code>
 
@@ -905,11 +900,6 @@ and `groupId` if any. This state is automatically updated when
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
 
 <details><summary>14 state props</summary>
 

@@ -192,11 +192,6 @@ element.
 
 ### `Tooltip`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
 - **`unstable_portal`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 

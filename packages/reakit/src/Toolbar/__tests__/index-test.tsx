@@ -4,9 +4,9 @@ import { useToolbarState, Toolbar, ToolbarItem } from "..";
 
 test("markup", () => {
   const Test = () => {
-    const toolbar = useToolbarState();
+    const toolbar = useToolbarState({ baseId: "base" });
     return (
-      <Toolbar {...toolbar} id="base" aria-label="toolbar">
+      <Toolbar {...toolbar} aria-label="toolbar">
         <ToolbarItem {...toolbar}>Item 1</ToolbarItem>
         <ToolbarItem {...toolbar}>Item 2</ToolbarItem>
         <ToolbarItem {...toolbar}>Item 3</ToolbarItem>
@@ -47,9 +47,9 @@ test("markup", () => {
 
 test("markup virtual", () => {
   const Test = () => {
-    const toolbar = useToolbarState({ unstable_virtual: true });
+    const toolbar = useToolbarState({ unstable_virtual: true, baseId: "base" });
     return (
-      <Toolbar {...toolbar} id="base" aria-label="toolbar">
+      <Toolbar {...toolbar} aria-label="toolbar">
         <ToolbarItem {...toolbar}>Item 1</ToolbarItem>
         <ToolbarItem {...toolbar}>Item 2</ToolbarItem>
         <ToolbarItem {...toolbar}>Item 3</ToolbarItem>

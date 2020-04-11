@@ -350,11 +350,6 @@ by default.
 
 ### `Dialog`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
 
@@ -441,11 +436,6 @@ by default.
 </details>
 
 ### `DialogBackdrop`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
 
 <details><summary>5 state props</summary>
 

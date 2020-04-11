@@ -18,7 +18,7 @@ export type unstable_IdState = {
 
 export type unstable_IdActions = {
   /**
-   * @private
+   * Sets `baseId`.
    */
   unstable_setBaseId: React.Dispatch<React.SetStateAction<string>>;
 };
