@@ -46,6 +46,18 @@ export function PlaygroundPreview({
     console.error(e); // eslint-disable-line no-console
   }, []);
 
+  const wrapElement = React.useCallback(
+    (children: React.ReactNode) => (
+      <Provider
+        unstable_prefix={`${prefix}`}
+        unstable_system={unstyled ? {} : system}
+      >
+        {children}
+      </Provider>
+    ),
+    [prefix, unstyled]
+  );
+
   const [rendered, setRendered] = React.useState(() => {
     try {
       const Example = compileComponent(
@@ -53,7 +65,7 @@ export function PlaygroundPreview({
         options.modules,
         options.componentName
       );
-      return <Example />;
+      return wrapElement(<Example />);
     } catch (e) {
       handleError(e);
     }
@@ -67,18 +79,6 @@ export function PlaygroundPreview({
     }
   }, []);
 
-  const renderChildren = React.useCallback(
-    (children: React.ReactNode) => (
-      <Provider
-        unstable_prefix={`${prefix}`}
-        unstable_system={unstyled ? {} : system}
-      >
-        {children}
-      </Provider>
-    ),
-    [prefix, unstyled]
-  );
-
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setError(null);
@@ -89,7 +89,7 @@ export function PlaygroundPreview({
           options.componentName
         );
         unmount();
-        ReactDOM.render(renderChildren(<Example />), ref.current);
+        ReactDOM.render(wrapElement(<Example />), ref.current);
       } catch (e) {
         unmount();
         handleError(e);
@@ -100,7 +100,7 @@ export function PlaygroundPreview({
     options.code,
     options.modules,
     options.componentName,
-    renderChildren,
+    wrapElement,
     handleError,
     unmount,
   ]);
@@ -116,7 +116,7 @@ export function PlaygroundPreview({
     <ErrorBoundary>
       <div {...htmlProps}>
         {error && <ErrorMessage error={error} />}
-        <div ref={ref}>{renderChildren(rendered)}</div>
+        <div ref={ref}>{wrapElement(rendered)}</div>
       </div>
     </ErrorBoundary>
   );

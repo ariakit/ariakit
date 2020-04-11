@@ -70,7 +70,6 @@ export default function CarbonAd() {
 
   React.useEffect(() => {
     if (!ref.current) return;
-
     const script = loadScript(
       "https://cdn.carbonads.com/carbon.js?serve=CK7DV27N&placement=reakitio",
       ref.current

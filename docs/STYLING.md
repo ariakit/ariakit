@@ -11,6 +11,18 @@ Reakit doesn't depend on any CSS library. Components are unstyled by default. So
 
 <carbon-ad></carbon-ad>
 
+## Unstyled
+
+Reakit components are unstyled by default:
+
+```jsx unstyled
+import { Button } from "reakit";
+
+function Example() {
+  return <Button>Button</Button>;
+}
+```
+
 ## Inline styles
 
 Just use the `style` prop.
@@ -25,7 +37,7 @@ function Example() {
 
 ## CSS in JS
 
-Example with emotion
+Example with emotion:
 
 ```jsx
 import { Button } from "reakit";
@@ -47,11 +59,11 @@ function Example() {
 }
 ```
 
-Example with styled-components
+Example with styled-components:
 
 > When using libraries like styled-components, you'll not be able to use the Reakit [`as` prop](https://reakit.io/docs/composition/#as-prop) since styled components have their own built-in `as` prop which is not passed down to the underlying component. You can use [render props](https://reakit.io/docs/composition/#render-props) instead to achieve the same functionality
 
-```jsx
+```jsx static
 import { Button } from "reakit";
 import styled from "styled-components";
 
