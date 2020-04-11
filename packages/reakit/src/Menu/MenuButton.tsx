@@ -5,6 +5,7 @@ import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { shallowEqual } from "reakit-utils/shallowEqual";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,
@@ -28,6 +29,24 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
     name: "MenuButton",
     compose: usePopoverDisclosure,
     useState: useMenuState,
+
+    propsAreEqual(prev, next) {
+      const {
+        unstable_popoverStyles: prevPopoverStyles,
+        unstable_arrowStyles: prevArrowStyles,
+        currentId: prevCurrentId,
+        unstable_moves: prevMoves,
+        ...prevProps
+      } = prev;
+      const {
+        unstable_popoverStyles: nextPopoverStyles,
+        unstable_arrowStyles: nextArrowStyles,
+        currentId: nextCurrentId,
+        unstable_moves: nextMoves,
+        ...nextProps
+      } = next;
+      return shallowEqual(prevProps, nextProps);
+    },
 
     useProps(
       options,

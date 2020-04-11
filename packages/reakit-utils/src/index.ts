@@ -26,6 +26,7 @@ export * from "./omit";
 export * from "./pick";
 export * from "./removeIndexFromArray";
 export * from "./removeItemFromArray";
+export * from "./shallowEqual";
 export * from "./splitProps";
 export * from "./tabbable";
 export * from "./toArray";

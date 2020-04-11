@@ -68,13 +68,53 @@ import {
 } from "reakit/Composite";
 
 function Example() {
-  const composite = useCompositeState({ unstable_virtual: true });
+  const composite = useCompositeState({ unstable_virtual: true, loop: true });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      <CompositeItem {...composite} onClick={() => alert("clicked")}>
-        Item 1
-      </CompositeItem>
+      <CompositeItem {...composite}>Item 1</CompositeItem>
       <CompositeItem {...composite}>Item 2</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
       <CompositeItem {...composite}>Item 3</CompositeItem>
     </Composite>
   );

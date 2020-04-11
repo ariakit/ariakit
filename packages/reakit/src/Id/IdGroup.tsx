@@ -21,6 +21,7 @@ export type unstable_IdGroupHTMLProps = BoxHTMLProps;
 export type unstable_IdGroupProps = unstable_IdGroupOptions &
   unstable_IdGroupHTMLProps;
 
+// TODO: Remove this component
 export const unstable_useIdGroup = createHook<
   unstable_IdGroupOptions,
   unstable_IdGroupHTMLProps

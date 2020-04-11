@@ -9,6 +9,7 @@ import {
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
   unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
+import { unstable_useId } from "../Id/Id";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuRoleContext } from "./__utils/MenuContext";
 
@@ -68,6 +69,22 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   compose: useCompositeItem,
   useState: useMenuState,
 
+  propsAreEqual(prev, next) {
+    const {
+      unstable_popoverStyles: prevPopoverStyles,
+      unstable_arrowStyles: prevArrowStyles,
+      visible: prevVisible,
+      ...prevProps
+    } = prev;
+    const {
+      unstable_popoverStyles: nextPopoverStyles,
+      unstable_arrowStyles: nextArrowStyles,
+      visible: nextVisible,
+      ...nextProps
+    } = next;
+    return useCompositeItem.__propsAreEqual?.(prevProps, nextProps);
+  },
+
   useProps(
     options,
     {
@@ -118,8 +135,16 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   },
 });
 
-export const MenuItem = createComponent({
+const MenuItemWithoutId = createComponent({
   as: "button",
   memo: true,
   useHook: useMenuItem,
+});
+
+export const MenuItem = createComponent({
+  as: "button",
+  useCreateElement(type, props) {
+    const { id } = unstable_useId(props);
+    return <MenuItemWithoutId as={type} id={id} {...props} />;
+  },
 });

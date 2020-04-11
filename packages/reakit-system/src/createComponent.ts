@@ -13,6 +13,7 @@ type BoxHTMLProps = React.HTMLAttributes<any> &
 type Hook<O> = {
   (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
   __keys?: ReadonlyArray<any>;
+  __propsAreEqual?: (prev: O, next: O) => boolean;
 };
 
 type Options<T extends As, O> = {
@@ -20,7 +21,12 @@ type Options<T extends As, O> = {
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
   memo?: boolean;
-  useCreateElement?: typeof defaultUseCreateElement;
+  propsAreEqual?: (prev: O, next: O) => boolean;
+  useCreateElement?: (
+    type: T,
+    props: Omit<PropsWithAs<O, T>, "as">,
+    children?: React.ReactNode
+  ) => JSX.Element;
 };
 
 export type Component<T extends As, O> = {
@@ -47,9 +53,10 @@ export type Component<T extends As, O> = {
 export function createComponent<T extends As, O>({
   as: type,
   useHook,
+  memo: shouldMemo,
+  propsAreEqual = useHook?.__propsAreEqual,
   keys = useHook?.__keys || [],
   useCreateElement = defaultUseCreateElement,
-  memo: shouldMemo,
 }: Options<T, O>) {
   const Comp = (
     { as = type, ...props }: PropsWithAs<O, T>,
@@ -67,13 +74,13 @@ export function createComponent<T extends As, O>({
       const allProps = asOptions
         ? { ...elementProps, ...asOptions }
         : elementProps;
-      const element = useCreateElement(as, allProps);
+      const element = useCreateElement(as, allProps as typeof props);
       if (wrapElement) {
         return wrapElement(element);
       }
       return element;
     }
-    return useCreateElement(as, props);
+    return useCreateElement(as, { ref, ...props });
   };
 
   (Comp as any).__keys = keys;
@@ -82,8 +89,8 @@ export function createComponent<T extends As, O>({
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
-  if (shouldMemo) {
-    return memo(forwardRef(Comp as Component<T, O>));
+  if (shouldMemo || propsAreEqual) {
+    return memo(forwardRef(Comp as Component<T, O>), propsAreEqual);
   }
 
   return forwardRef(Comp as Component<T, O>);

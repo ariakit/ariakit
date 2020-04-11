@@ -357,7 +357,7 @@ const ViewMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuBarState();
+  const menu = useMenuBarState({ loop: true });
   return (
     <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />

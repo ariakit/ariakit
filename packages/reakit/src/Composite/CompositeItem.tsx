@@ -10,6 +10,7 @@ import { isTextField } from "reakit-utils/isTextField";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { shallowEqual } from "reakit-utils/shallowEqual";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -76,6 +77,8 @@ function useItem(options: unstable_CompositeItemOptions) {
   );
 }
 
+// let i = 0;
+
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
@@ -84,6 +87,28 @@ export const unstable_useCompositeItem = createHook<
   compose: [useClickable, unstable_useId],
   useState: unstable_useCompositeState,
   keys: ["stopId"],
+
+  propsAreEqual(prev, next) {
+    if (!next.id) {
+      return shallowEqual(prev, next);
+    }
+    const {
+      currentId: prevCurrentId,
+      unstable_moves: prevMoves,
+      ...prevProps
+    } = prev;
+    const {
+      currentId: nextCurrentId,
+      unstable_moves: nextMoves,
+      ...nextProps
+    } = next;
+    if (prev.id === next.id) {
+      if (next.id === nextCurrentId || next.id === prevCurrentId) {
+        return false;
+      }
+    }
+    return shallowEqual(prevProps, nextProps);
+  },
 
   useOptions(options) {
     return {
@@ -126,6 +151,14 @@ export const unstable_useCompositeItem = createHook<
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
       !options.items;
+
+    const prevProps = React.useRef({});
+
+    React.useEffect(() => {
+      prevProps.current = options;
+    });
+
+    // console.log(++i);
 
     useWarning(
       !!options.stopId,
@@ -336,8 +369,18 @@ export const unstable_useCompositeItem = createHook<
   },
 });
 
-export const unstable_CompositeItem = createComponent({
+const CompositeItemWithoutId = createComponent({
   as: "button",
-  memo: true,
   useHook: unstable_useCompositeItem,
+});
+
+export const unstable_CompositeItem = createComponent<
+  "button",
+  unstable_CompositeItemOptions
+>({
+  as: "button",
+  useCreateElement(type, props) {
+    const { id } = unstable_useId(props);
+    return <CompositeItemWithoutId as={type} id={id} {...props} />;
+  },
 });
