@@ -368,6 +368,49 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Menu` uses [Popover](/docs/popover/) underneath, so you can use the same approaches as described in the [Animating](/docs/popover/#animating) section there.
+
+```jsx
+import { css } from "emotion";
+import { useMenuState, Menu, MenuItem, MenuButton } from "reakit/Menu";
+
+const styles = css`
+  display: flex;
+  flex-direction: column;
+  background: white;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: scaleY(0);
+  [data-enter] & {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+`;
+
+function Example() {
+  const menu = useMenuState({ animated: 250 });
+  return (
+    <>
+      <MenuButton {...menu}>Preferences</MenuButton>
+      <Menu
+        {...menu}
+        aria-label="Preferences"
+        style={{ border: 0, background: "none", padding: 0 }}
+      >
+        <div className={styles}>
+          <MenuItem {...menu}>Item 1</MenuItem>
+          <MenuItem {...menu}>Item 2</MenuItem>
+          <MenuItem {...menu}>Item 3</MenuItem>
+        </div>
+      </Menu>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Menu` component with a different API on top of Reakit.

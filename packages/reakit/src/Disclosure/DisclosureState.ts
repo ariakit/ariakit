@@ -17,10 +17,12 @@ export type DisclosureState = unstable_IdState & {
    */
   visible: boolean;
   /**
-   * If `true`, `animating` will be set to `true` when `visible` is changed.
+   * If `true`, `animating` will be set to `true` when `visible` is updated.
    * It'll wait for `stopAnimation` to be called or a CSS transition ends.
+   * If `animated` is set to a `number`, `stopAnimation` will be called only
+   * after the same number of milliseconds have passed.
    */
-  animated: boolean;
+  animated: boolean | number;
   /**
    * Whether it's animating or not.
    */
@@ -41,8 +43,13 @@ export type DisclosureActions = unstable_IdActions & {
    */
   toggle: () => void;
   /**
+   * Sets `animated`.
+   */
+  setAnimated: React.Dispatch<
+    React.SetStateAction<DisclosureState["animated"]>
+  >;
+  /**
    * Stops animation. It's called automatically if there's a CSS transition.
-   * It's called after given milliseconds if `animated` is a number.
    */
   stopAnimation: () => void;
 };
@@ -64,26 +71,31 @@ export function useDisclosureState(
   initialState: SealedInitialState<DisclosureInitialState> = {}
 ): DisclosureStateReturn {
   const {
-    animated = false,
-    visible: sealedVisible = false,
+    visible: initialVisible = false,
+    animated: initialAnimated = false,
     ...sealed
   } = useSealedState(initialState);
 
   const id = unstable_useIdState(sealed);
 
-  const [visible, setVisible] = React.useState(sealedVisible);
+  const [visible, setVisible] = React.useState(initialVisible);
+  const [animated, setAnimated] = React.useState(initialAnimated);
   const [animating, setAnimating] = React.useState(false);
   const lastVisible = useLastValue(visible);
 
-  if (
-    animated &&
-    !animating &&
-    lastVisible.current != null &&
-    lastVisible.current !== visible
-  ) {
-    // Sets animating to true when when visible changes
+  const visibleHasChanged =
+    lastVisible.current != null && lastVisible.current !== visible;
+
+  if (animated && !animating && visibleHasChanged) {
+    // Sets animating to true when when visible is updated
     setAnimating(true);
   }
+
+  React.useEffect(() => {
+    if (typeof animated === "number" && animating) {
+      setTimeout(() => setAnimating(false), animated);
+    }
+  }, [animated, animating]);
 
   const show = React.useCallback(() => setVisible(true), []);
   const hide = React.useCallback(() => setVisible(false), []);
@@ -92,24 +104,26 @@ export function useDisclosureState(
 
   return {
     ...id,
+    visible,
     animated,
     animating,
-    visible,
     show,
     hide,
     toggle,
+    setAnimated,
     stopAnimation,
   };
 }
 
 const keys: Array<keyof DisclosureStateReturn> = [
   ...unstable_useIdState.__keys,
+  "visible",
   "animated",
   "animating",
-  "visible",
   "show",
   "hide",
   "toggle",
+  "setAnimated",
   "stopAnimation",
 ];
 

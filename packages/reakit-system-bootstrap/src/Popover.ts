@@ -33,7 +33,7 @@ export function usePopoverProps(
   const borderColor = useFade(foreground, 0.75);
 
   const popover = css`
-    & > .arrow {
+    [data-arrow] {
       background-color: transparent;
       & .stroke {
         fill: ${borderColor};
@@ -54,5 +54,5 @@ export function usePopoverArrowProps(
   _: BootstrapPopoverArrowOptions,
   htmlProps: PopoverArrowHTMLProps = {}
 ): PopoverArrowHTMLProps {
-  return { ...htmlProps, className: cx("arrow", htmlProps.className) };
+  return { "data-arrow": "", ...htmlProps } as PopoverArrowHTMLProps;
 }

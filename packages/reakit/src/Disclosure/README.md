@@ -99,6 +99,151 @@ function Example() {
 }
 ```
 
+### Styling
+
+Reakit components are unstyled by default. You're free to use whatever approach you want. Each component returns a single HTML element that accepts all HTML props, including `className` and `style`.
+
+> The example below uses [Emotion](https://emotion.sh/docs/introduction). But these styles can be reproduced using static CSS and other CSS-in-JS libraries, such as [styled-components](https://styled-components.com/).
+
+```jsx unstyled
+import { css } from "emotion";
+import {
+  useDisclosureState,
+  Disclosure,
+  DisclosureContent,
+} from "reakit/Disclosure";
+
+const styles = css`
+  .button {
+    line-height: 1.5;
+    border: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 0.25rem;
+  }
+  .button:before {
+    display: inline-block;
+    content: "►";
+    margin: 4px;
+  }
+  .button[aria-expanded="true"]:before {
+    transform: rotateZ(90deg);
+  }
+  .content {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+  }
+`;
+
+function Example() {
+  const disclosure = useDisclosureState();
+  return (
+    <div className={styles}>
+      <Disclosure {...disclosure} className="button">
+        Toggle
+      </Disclosure>
+      <DisclosureContent {...disclosure} className="content">
+        Content
+      </DisclosureContent>
+    </div>
+  );
+}
+```
+
+Learn more on [Styling](/docs/styling/).
+
+### Animating
+
+To perform animations, you must set `animated` to `true` on `useDisclosureState`. It'll enable additional `data-*` props on `DisclosureContent` which you can use as selectors in CSS. It will also ensure that the element will only get hidden when the transition has ended.
+
+Use the `[data-enter]` and `[data-leave]` selectors to style both enter and leave animations. `data-enter` is added shortly after the element is shown so there's an interval for the browser to process the initial styles and understand this as a transition.
+
+```jsx
+import { css } from "emotion";
+import {
+  useDisclosureState,
+  Disclosure,
+  DisclosureContent,
+} from "reakit/Disclosure";
+
+const styles = css`
+  .content {
+    transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  .content[data-enter] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  .content[data-leave] {
+    // Uncomment below to have a different leave animation
+    // transform: translate3d(0, 100%, 0);
+  }
+`;
+
+function Example() {
+  // Set animated to true
+  const disclosure = useDisclosureState({ animated: true });
+  return (
+    <div className={styles}>
+      <Disclosure {...disclosure}>Toggle</Disclosure>
+      <DisclosureContent {...disclosure} className="content">
+        Content
+      </DisclosureContent>
+    </div>
+  );
+}
+```
+
+Alternatively, you can set `animated` to a `number` value, so it'll stop the animation and hide the element after that number in milliseconds.
+
+```js static
+import { useDisclosureState } from "reakit/Disclosure";
+
+// Hides DisclosureContent after 500 milliseconds after calling disclosure.hide()
+const disclosure = useDisclosureState({ animated: 500 });
+```
+
+### Manually stopping animations
+
+For transitions that don't use CSS transitions/animations, you must stop the animation manually by calling `disclosure.stopAnimation()`. In the example below, you can see a physics-based animation using [react-spring](https://www.react-spring.io/):
+
+```jsx
+import { useSpring, animated } from "react-spring";
+import {
+  useDisclosureState,
+  Disclosure,
+  DisclosureContent,
+} from "reakit/Disclosure";
+
+function Example() {
+  const disclosure = useDisclosureState({ animated: true });
+  const { opacity, scale } = useSpring({
+    opacity: disclosure.visible ? 1 : 0,
+    scale: disclosure.visible ? 1 : 0,
+    onRest: disclosure.stopAnimation,
+  });
+  return (
+    <div>
+      <Disclosure {...disclosure}>Toggle</Disclosure>
+      <DisclosureContent
+        {...disclosure}
+        as={animated.div}
+        style={{
+          opacity,
+          transformOrigin: "top center",
+          transform: scale.interpolate((s) => `scaleY(${s})`),
+        }}
+      >
+        Content
+      </DisclosureContent>
+    </div>
+  );
+}
+```
+
 ## Accessibility
 
 - `Disclosure` extends the accessibility features of [Button](/docs/button/#accessibility).

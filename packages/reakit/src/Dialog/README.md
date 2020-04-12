@@ -260,6 +260,58 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Dialog` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  useDialogState,
+  Dialog,
+  DialogBackdrop,
+  DialogDisclosure,
+} from "reakit/Dialog";
+
+const backdropStyles = css`
+  perspective: 800px;
+  transition: opacity 250ms ease-in-out;
+  opacity: 0;
+  &[data-enter] {
+    opacity: 1;
+  }
+`;
+
+const dialogStyles = css`
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(-50%, -10%, 0) rotateX(90deg);
+  &[data-enter] {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+`;
+
+function Example() {
+  const dialog = useDialogState({ animated: true });
+  return (
+    <div>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <DialogBackdrop {...dialog} className={backdropStyles}>
+        <Dialog {...dialog} aria-label="Welcome" className={dialogStyles}>
+          Welcome to Reakit!
+          <br />
+          <br />
+          <Button onClick={dialog.hide}>Close</Button>
+        </Dialog>
+      </DialogBackdrop>
+    </div>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Dialog` component with a different API on top of Reakit.

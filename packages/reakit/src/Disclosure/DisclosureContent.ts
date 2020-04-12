@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
 
@@ -15,6 +16,8 @@ export type DisclosureContentHTMLProps = BoxHTMLProps;
 
 export type DisclosureContentProps = DisclosureContentOptions &
   DisclosureContentHTMLProps;
+
+type TransitionState = "enter" | "leave" | null;
 
 export const useDisclosureContent = createHook<
   DisclosureContentOptions,
@@ -34,31 +37,42 @@ export const useDisclosureContent = createHook<
     }
   ) {
     const animating = options.animated && options.animating;
-    const [beforeVisible, setBeforeVisible] = React.useState(false);
-    const [delayedVisible, setDelayedVisible] = React.useState(false);
+    const [transition, setTransition] = React.useState<TransitionState>(null);
     const hidden = !options.visible && !animating;
     const style = hidden ? { display: "none", ...htmlStyle } : htmlStyle;
     const onTransitionEndRef = useLiveRef(htmlOnTransitionEnd);
     const onAnimationEndRef = useLiveRef(htmlOnAnimationEnd);
 
     React.useEffect(() => {
-      setBeforeVisible(!options.visible && !animating);
-    }, [options.visible, animating]);
+      if (!options.animated) return undefined;
+      const raf = requestAnimationFrame(() => {
+        if (options.visible) {
+          setTransition("enter");
+        } else if (animating) {
+          setTransition("leave");
+        } else {
+          setTransition(null);
+        }
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [options.animated, options.visible, animating]);
 
-    React.useEffect(() => {
-      setDelayedVisible(!!options.visible);
-    }, [options.visible]);
-
-    const onEnd = React.useCallback(() => {
-      if (animating) {
-        options.stopAnimation?.();
-      }
-    }, [animating, options.stopAnimation]);
+    const onEnd = React.useCallback(
+      (event: React.SyntheticEvent) => {
+        if (!isSelfTarget(event)) return;
+        if (!animating) return;
+        // Ignores number animated
+        if (options.animated === true) {
+          options.stopAnimation?.();
+        }
+      },
+      [options.animated, animating, options.stopAnimation]
+    );
 
     const onTransitionEnd = React.useCallback(
       (event: React.TransitionEvent) => {
         onTransitionEndRef.current?.(event);
-        onEnd();
+        onEnd(event);
       },
       [onEnd]
     );
@@ -66,15 +80,15 @@ export const useDisclosureContent = createHook<
     const onAnimationEnd = React.useCallback(
       (event: React.AnimationEvent) => {
         onAnimationEndRef.current?.(event);
-        onEnd();
+        onEnd(event);
       },
       [onEnd]
     );
 
     return {
       id: options.baseId,
-      "data-before-visible": beforeVisible || undefined,
-      "data-visible": delayedVisible || undefined,
+      "data-enter": transition === "enter" ? "" : undefined,
+      "data-leave": transition === "leave" ? "" : undefined,
       onTransitionEnd,
       onAnimationEnd,
       hidden,

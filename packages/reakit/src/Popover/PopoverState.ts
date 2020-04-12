@@ -156,13 +156,6 @@ export function usePopoverState(
             enabled: dialog.visible,
           },
           {
-            // https://popper.js.org/docs/v2/modifiers/compute-styles/
-            name: "computeStyles",
-            options: {
-              adaptive: !dialog.animated,
-            },
-          },
-          {
             // https://popper.js.org/docs/v2/modifiers/apply-styles/
             name: "applyStyles",
             enabled: false,

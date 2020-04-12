@@ -145,6 +145,58 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Popover` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+The only difference is that Reakit automatically adds inline styles to the `Popover` container so that it's correctly positioned according to `PopoverDisclosure`. In this example, we're animating an inner wrapper element, so we don't need to overwrite `Popover` positioning styles.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  usePopoverState,
+  Popover,
+  PopoverArrow,
+  PopoverDisclosure,
+} from "reakit/Popover";
+
+const styles = css`
+  background-color: white;
+  padding: 16px;
+  border: 1px solid rgba(33, 33, 33, 0.25);
+  border-radius: 4px;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(0, -20px, 0);
+  [data-enter] & {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`;
+
+function Example() {
+  const popover = usePopoverState({ animated: 250 });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open popover</PopoverDisclosure>
+      <Popover
+        {...popover}
+        aria-label="Welcome"
+        style={{ border: 0, background: "none", padding: 0 }}
+      >
+        <div className={styles}>
+          <PopoverArrow {...popover} />
+          Welcome to Reakit
+          <Button onClick={popover.hide}>Close</Button>
+        </div>
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.

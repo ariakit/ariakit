@@ -85,6 +85,54 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Tooltip` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+The only difference is that Reakit automatically adds inline styles to the `Tooltip` element so that it's correctly positioned according to `TooltipReference`. In this example, we're animating an inner wrapper element, so we don't need to overwrite `Tooltip` positioning styles.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  useTooltipState,
+  Tooltip,
+  TooltipArrow,
+  TooltipReference,
+} from "reakit/Tooltip";
+
+const styles = css`
+  background-color: rgba(33, 33, 33, 0.9);
+  padding: 8px;
+  border-radius: 4px;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(0, -20px, 0);
+  [data-enter] & {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`;
+
+function Example() {
+  const tooltip = useTooltipState({ animated: 250 });
+  return (
+    <>
+      <TooltipReference {...tooltip} as={Button}>
+        Reference
+      </TooltipReference>
+      <Tooltip {...tooltip} style={{ background: "none", padding: 0 }}>
+        <div className={styles}>
+          <TooltipArrow {...tooltip} />
+          Tooltip
+        </div>
+      </Tooltip>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Tooltip` component with a different API on top of Reakit.

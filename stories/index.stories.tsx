@@ -39,7 +39,7 @@ storiesOf("Dialog", module).add("Conditionally rendering", () => {
 storiesOf("Menu", module)
   .add("Animated menu", () => {
     function Example() {
-      const menu = useMenuState({ animated: true });
+      const menu = useMenuState({ animated: 500 });
       return (
         <>
           <MenuButton {...menu}>Menu</MenuButton>
@@ -49,7 +49,7 @@ storiesOf("Menu", module)
                 transition: transform 0.5s ease, opacity 0.5s ease;
                 opacity: 0;
                 transform: translate3d(0, -20px, 0);
-                [data-visible] & {
+                [data-enter] & {
                   opacity: 1;
                   transform: translate3d(0, 0, 0);
                 }
