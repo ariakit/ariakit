@@ -628,7 +628,7 @@ column and vice-versa.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`** <span title="Experimental">⚠️</span>
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
@@ -735,7 +735,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`** <span title="Experimental">⚠️</span>
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
@@ -752,7 +752,7 @@ given milliseconds.
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`stopAnimation`** <span title="Experimental">⚠️</span>
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.

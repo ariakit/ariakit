@@ -44,7 +44,7 @@ export default function Header({ transparent }: HeaderProps) {
   const foreground = usePalette("foreground");
   const primary = usePalette("primary");
   const boxShadowColor = useFade(foreground, 0.85);
-  const dialog = useDialogState({ unstable_animated: true });
+  const dialog = useDialogState({ animated: true });
   const location = useLocation();
 
   React.useEffect(dialog.hide, [location.pathname]);
@@ -140,7 +140,7 @@ export default function Header({ transparent }: HeaderProps) {
             <VisuallyHidden>Open sidebar</VisuallyHidden>
           </DialogDisclosure>
           <Portal>
-            <DialogBackdrop {...dialog} unstable_animated={false} />
+            <DialogBackdrop {...dialog} animated={false} />
           </Portal>
           <Dialog
             {...dialog}
@@ -158,8 +158,9 @@ export default function Header({ transparent }: HeaderProps) {
               border-radius: 0;
               overflow: auto;
               -webkit-overflow-scrolling: touch;
-              &.hidden {
-                transform: translateX(-100%);
+              transform: translateX(-100%);
+              &[data-visible] {
+                transform: translateX(0);
               }
             `}
           >

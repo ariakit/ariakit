@@ -217,7 +217,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`** <span title="Experimental">⚠️</span>
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
@@ -317,7 +317,7 @@ It will be set to `false` if `modal` is `false`.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`** <span title="Experimental">⚠️</span>
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
@@ -325,7 +325,7 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`stopAnimation`** <span title="Experimental">⚠️</span>
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
@@ -386,7 +386,7 @@ by default.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`** <span title="Experimental">⚠️</span>
   <code>number | boolean</code>
 
   If `true`, `animating` will be set to `true` when `visible` changes.
@@ -394,7 +394,7 @@ It'll wait for `stopAnimation` to be called or a CSS transition ends.
 If it's a number, `stopAnimation` will be called automatically after
 given milliseconds.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`stopAnimation`** <span title="Experimental">⚠️</span>
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.

@@ -159,7 +159,7 @@ export function usePopoverState(
             // https://popper.js.org/docs/v2/modifiers/compute-styles/
             name: "computeStyles",
             options: {
-              adaptive: !sealed.unstable_animated,
+              adaptive: !dialog.animated,
             },
           },
           {
@@ -189,7 +189,7 @@ export function usePopoverState(
           {
             // https://popper.js.org/docs/v2/modifiers/arrow/
             name: "arrow",
-            enabled: Boolean(arrowRef.current),
+            enabled: !!arrowRef.current,
             options: { element: arrowRef.current },
           },
           {
@@ -216,7 +216,7 @@ export function usePopoverState(
     originalPlacement,
     fixed,
     dialog.visible,
-    sealed.unstable_animated,
+    dialog.animated,
     flip,
     offset,
     preventOverflow,

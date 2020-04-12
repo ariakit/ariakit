@@ -17,17 +17,14 @@ export type DisclosureState = unstable_IdState & {
    */
   visible: boolean;
   /**
-   * If `true`, `animating` will be set to `true` when `visible` changes.
+   * If `true`, `animating` will be set to `true` when `visible` is changed.
    * It'll wait for `stopAnimation` to be called or a CSS transition ends.
-   * If it's a number, `stopAnimation` will be called automatically after
-   * given milliseconds.
    */
-  unstable_animated: boolean | number;
+  animated: boolean;
   /**
    * Whether it's animating or not.
-   * @private
    */
-  unstable_animating: boolean;
+  animating: boolean;
 };
 
 export type DisclosureActions = unstable_IdActions & {
@@ -47,11 +44,11 @@ export type DisclosureActions = unstable_IdActions & {
    * Stops animation. It's called automatically if there's a CSS transition.
    * It's called after given milliseconds if `animated` is a number.
    */
-  unstable_stopAnimation: () => void;
+  stopAnimation: () => void;
 };
 
 export type DisclosureInitialState = unstable_IdInitialState &
-  Partial<Pick<DisclosureState, "visible" | "unstable_animated">>;
+  Partial<Pick<DisclosureState, "visible" | "animated">>;
 
 export type DisclosureStateReturn = DisclosureState & DisclosureActions;
 
@@ -67,7 +64,7 @@ export function useDisclosureState(
   initialState: SealedInitialState<DisclosureInitialState> = {}
 ): DisclosureStateReturn {
   const {
-    unstable_animated: animated = false,
+    animated = false,
     visible: sealedVisible = false,
     ...sealed
   } = useSealedState(initialState);
@@ -88,13 +85,6 @@ export function useDisclosureState(
     setAnimating(true);
   }
 
-  useIsomorphicEffect(() => {
-    if (typeof animated !== "number") return undefined;
-    // Stops animation after an interval defined by animated
-    const timeoutId = setTimeout(() => setAnimating(false), animated);
-    return () => clearTimeout(timeoutId);
-  }, [animated]);
-
   const show = React.useCallback(() => setVisible(true), []);
   const hide = React.useCallback(() => setVisible(false), []);
   const toggle = React.useCallback(() => setVisible((v) => !v), []);
@@ -102,25 +92,25 @@ export function useDisclosureState(
 
   return {
     ...id,
-    unstable_animated: animated,
-    unstable_animating: animating,
+    animated,
+    animating,
     visible,
     show,
     hide,
     toggle,
-    unstable_stopAnimation: stopAnimation,
+    stopAnimation,
   };
 }
 
 const keys: Array<keyof DisclosureStateReturn> = [
   ...unstable_useIdState.__keys,
-  "unstable_animated",
-  "unstable_animating",
+  "animated",
+  "animating",
   "visible",
   "show",
   "hide",
   "toggle",
-  "unstable_stopAnimation",
+  "stopAnimation",
 ];
 
 useDisclosureState.__keys = keys;
