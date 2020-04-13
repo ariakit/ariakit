@@ -11,7 +11,6 @@ test("render", () => {
         class="__reakit-portal"
       >
         <div
-          class="hidden"
           hidden=""
           id="base"
           role="tooltip"
@@ -58,7 +57,6 @@ test("render without portal", () => {
     <body>
       <div>
         <div
-          class="hidden"
           hidden=""
           id="base"
           role="tooltip"

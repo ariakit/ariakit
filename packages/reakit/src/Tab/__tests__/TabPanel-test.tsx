@@ -16,7 +16,6 @@ test("render", () => {
     <body>
       <div>
         <div
-          class="hidden"
           hidden=""
           id="panel"
           role="tabpanel"
@@ -34,21 +33,20 @@ test("render without state props", () => {
   // @ts-ignore
   const { baseElement } = render(<TabPanel id="panel">tabpanel</TabPanel>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      class="hidden"
-      hidden=""
-      id="panel"
-      role="tabpanel"
-      style="display: none;"
-      tabindex="0"
-    >
-      tabpanel
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          hidden=""
+          id="panel"
+          role="tabpanel"
+          style="display: none;"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
 });
 
 test("render visible", () => {
@@ -58,16 +56,16 @@ test("render visible", () => {
     </TabPanel>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      id="panel"
-      role="tabpanel"
-      tabindex="0"
-    >
-      tabpanel
-    </div>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          id="panel"
+          role="tabpanel"
+          tabindex="0"
+        >
+          tabpanel
+        </div>
+      </div>
+    </body>
+  `);
 });

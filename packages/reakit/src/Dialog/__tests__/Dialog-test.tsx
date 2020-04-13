@@ -18,7 +18,6 @@ test("render", () => {
         <div
           aria-label="dialog"
           aria-modal="true"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"
@@ -83,13 +82,10 @@ test("render non-modal", async () => {
   );
   await wait();
   expect(baseElement).toMatchInlineSnapshot(`
-    <body
-      style="padding-right: 1024px;"
-    >
+    <body>
       <div>
         <div
           aria-label="dialog"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"

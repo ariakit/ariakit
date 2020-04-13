@@ -32,7 +32,6 @@ test("render", () => {
       <div>
         <div
           aria-label="menu"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"
@@ -53,7 +52,6 @@ test("render without state props", () => {
       <div>
         <div
           aria-label="menu"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"

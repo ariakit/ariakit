@@ -406,7 +406,6 @@ test("tab panel with tabId different order", () => {
       </div>
       <div
         aria-labelledby="base-2"
-        class="hidden"
         hidden=""
         id="base-4"
         role="tabpanel"
@@ -426,7 +425,6 @@ test("tab panel with tabId different order", () => {
       </div>
       <div
         aria-labelledby="base-3"
-        class="hidden"
         hidden=""
         id="base-6"
         role="tabpanel"

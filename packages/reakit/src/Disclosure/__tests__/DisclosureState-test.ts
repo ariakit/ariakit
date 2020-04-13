@@ -12,9 +12,9 @@ test("initial state", () => {
   const result = render({ baseId: "base" });
   expect(result.current).toMatchInlineSnapshot(`
     Object {
-      "baseId": "base",
       "animated": false,
       "animating": false,
+      "baseId": "base",
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -31,9 +31,9 @@ test("initial state visible", () => {
     },
     `
     Object {
-      "baseId": "base",
       "animated": false,
       "animating": false,
+      "baseId": "base",
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -51,9 +51,9 @@ test("initial state lazy", () => {
     },
     `
     Object {
-      "baseId": "base",
       "animated": false,
       "animating": false,
+      "baseId": "base",
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -70,9 +70,9 @@ test("show", () => {
     { visible: true },
     `
     Object {
-      "baseId": "base",
       "animated": false,
       "animating": false,
+      "baseId": "base",
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -89,9 +89,9 @@ test("hide", () => {
     { visible: false },
     `
     Object {
-      "baseId": "base",
       "animated": false,
       "animating": false,
+      "baseId": "base",
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -108,9 +108,9 @@ test("toggle", () => {
     { visible: true },
     `
     Object {
-      "baseId": "base",
       "animated": false,
       "animating": false,
+      "baseId": "base",
       "unstable_idCountRef": Object {
         "current": 0,
       },

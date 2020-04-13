@@ -8,7 +8,6 @@ test("render", () => {
     <body>
       <div>
         <div
-          class="hidden"
           data-dialog-ref="popover"
           hidden=""
           style="display: none;"
@@ -21,12 +20,12 @@ test("render", () => {
 test("render visible", () => {
   const { baseElement } = render(<PopoverBackdrop baseId="popover" visible />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      data-dialog-ref="popover"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          data-dialog-ref="popover"
+        />
+      </div>
+    </body>
+  `);
 });
