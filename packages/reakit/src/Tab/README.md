@@ -580,7 +580,7 @@ and `groupId` if any. This state is automatically updated when
 
   Tab's id
 
-<details><summary>9 state props</summary>
+<details><summary>10 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -594,19 +594,23 @@ and `groupId` if any. This state is automatically updated when
 
   Whether it's visible or not.
 
-- **`animated`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`stopAnimation`** <span title="Experimental">⚠️</span>
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`selectedId`**
   <code>string | null | undefined</code>

@@ -269,13 +269,13 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 - **`modal`**
   <code>boolean</code>
@@ -355,7 +355,7 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>7 state props</summary>
+<details><summary>8 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -369,19 +369,23 @@ It will be set to `false` if `modal` is `false`.
 
   Whether it's visible or not.
 
-- **`animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`modal`**
   <code>boolean</code>
@@ -424,7 +428,7 @@ by default.
 
 ### `PopoverBackdrop`
 
-<details><summary>5 state props</summary>
+<details><summary>6 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -438,19 +442,23 @@ by default.
 
   Whether it's visible or not.
 
-- **`animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`modal`**
   <code>boolean</code>
