@@ -45,7 +45,7 @@ export const useDisclosureContent = createHook<
 
     React.useEffect(() => {
       if (!options.animated) return undefined;
-      const raf = requestAnimationFrame(() => {
+      const raf = window.requestAnimationFrame(() => {
         if (options.visible) {
           setTransition("enter");
         } else if (animating) {
@@ -54,7 +54,7 @@ export const useDisclosureContent = createHook<
           setTransition(null);
         }
       });
-      return () => cancelAnimationFrame(raf);
+      return () => window.cancelAnimationFrame(raf);
     }, [options.animated, options.visible, animating]);
 
     const onEnd = React.useCallback(

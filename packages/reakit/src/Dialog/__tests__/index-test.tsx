@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, fireEvent, click, focus, press } from "reakit-test-utils";
-import { Dialog, DialogDisclosure, useDialogState } from "..";
+import { Dialog, DialogDisclosure, DialogBackdrop, useDialogState } from "..";
 
 test("clicking on disclosure opens the dialog", () => {
   const Test = () => {
@@ -1299,4 +1299,106 @@ test("opening a nested orphan dialog closes the parent dialog", () => {
   expect(dialog1).not.toBeVisible();
   expect(dialog2).toBeVisible();
   expect(dialog2).toHaveFocus();
+});
+
+test("nested modal dialog with backdrop markup", () => {
+  const Test = () => {
+    const dialog = useDialogState({ baseId: "dialog1" });
+    const dialog2 = useDialogState({ baseId: "dialog2" });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
+        <DialogBackdrop {...dialog}>
+          <Dialog {...dialog} aria-label="dialog1">
+            <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
+            <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
+          </Dialog>
+        </DialogBackdrop>
+      </>
+    );
+  };
+  const { getByText, baseElement } = render(<Test />);
+  const disclosure1 = getByText("disclosure1");
+  const disclosure2 = getByText("disclosure2");
+  click(disclosure1);
+  click(disclosure2);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body
+      style="padding-right: 1024px; overflow: hidden;"
+    >
+      <div>
+        <button
+          aria-controls="dialog1"
+          aria-expanded="true"
+          aria-haspopup="dialog"
+          type="button"
+        >
+          disclosure1
+        </button>
+      </div>
+      <div
+        aria-hidden="true"
+        class="__reakit-focus-trap"
+        style="position: fixed;"
+        tabindex="0"
+      />
+      <div
+        class="__reakit-portal"
+      >
+        <div
+          data-dialog-ref="dialog1"
+          style=""
+        >
+          <div
+            aria-label="dialog1"
+            data-dialog="true"
+            id="dialog1"
+            role="dialog"
+            style=""
+            tabindex="-1"
+          >
+            <button
+              aria-controls="dialog2"
+              aria-expanded="true"
+              aria-haspopup="dialog"
+              type="button"
+            >
+              disclosure2
+            </button>
+          </div>
+        </div>
+        <div
+          aria-hidden="true"
+          class="__reakit-focus-trap"
+          style="position: fixed;"
+          tabindex="0"
+        />
+        <div
+          class="__reakit-portal"
+        >
+          <div
+            aria-label="dialog2"
+            aria-modal="true"
+            data-dialog="true"
+            id="dialog2"
+            role="dialog"
+            style=""
+            tabindex="0"
+          />
+        </div>
+        <div
+          aria-hidden="true"
+          class="__reakit-focus-trap"
+          style="position: fixed;"
+          tabindex="0"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="__reakit-focus-trap"
+        style="position: fixed;"
+        tabindex="0"
+      />
+    </body>
+  `);
 });

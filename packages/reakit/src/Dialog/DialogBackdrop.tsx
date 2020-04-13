@@ -36,7 +36,7 @@ export const useDialogBackdrop = createHook<
         if (options.modal) {
           element = (
             <Portal>
-              <DialogBackdropContext.Provider value>
+              <DialogBackdropContext.Provider value={options.baseId}>
                 {element}
               </DialogBackdropContext.Provider>
             </Portal>

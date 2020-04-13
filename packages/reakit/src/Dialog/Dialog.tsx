@@ -135,6 +135,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   ) {
     const dialog = React.useRef<HTMLElement>(null);
     const backdrop = React.useContext(DialogBackdropContext);
+    const hasBackdrop = backdrop && backdrop === options.baseId;
     const disclosures = useDisclosuresRef(dialog, options);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
@@ -174,7 +175,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         element = wrap(element);
-        if (options.modal && !backdrop) {
+        if (options.modal && !hasBackdrop) {
           element = <Portal>{element}</Portal>;
         }
         if (htmlWrapElement) {
@@ -182,7 +183,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
         }
         return element;
       },
-      [wrap, options.modal, backdrop, htmlWrapElement]
+      [wrap, options.modal, hasBackdrop, htmlWrapElement]
     );
 
     return {
