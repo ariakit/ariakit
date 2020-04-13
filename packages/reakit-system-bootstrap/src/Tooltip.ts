@@ -30,7 +30,7 @@ export function useTooltipProps(
     border-radius: 0.25rem;
     z-index: 999;
 
-    & > .arrow {
+    [data-arrow] {
       background-color: transparent;
       & .stroke {
         fill: transparent;

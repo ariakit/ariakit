@@ -30,7 +30,6 @@ yarn add reakit-utils
 -   [createEvent](#createevent)
 -   [createKeyboardEvent](#createkeyboardevent)
 -   [createOnKeyDown](#createonkeydown)
--   [cx](#cx)
 -   [fireEvent](#fireevent)
 -   [fireKeyboardEvent](#firekeyboardevent)
 -   [flatten](#flatten)
@@ -170,24 +169,6 @@ Returns an `onKeyDown` handler to be passed to a component.
     -   `options.preventDefault`   (optional, default `true`)
 
 Returns **React.KeyboardEventHandler** 
-
-### cx
-
-Returns a string with truthy class names separated by space.
-
-#### Parameters
-
--   `classes` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) | null | `false`)>** 
-
-#### Examples
-
-```javascript
-import { cx } from "reakit-utils";
-
-const className = cx("a", "b", false, true && "c");
-```
-
-Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
 
 ### fireEvent
 

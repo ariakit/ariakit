@@ -12,9 +12,9 @@ test("initial state", () => {
   const result = render({ baseId: "base" });
   expect(result.current).toMatchInlineSnapshot(`
     Object {
+      "animated": false,
+      "animating": false,
       "baseId": "base",
-      "unstable_animated": false,
-      "unstable_animating": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -31,9 +31,9 @@ test("initial state visible", () => {
     },
     `
     Object {
+      "animated": false,
+      "animating": false,
       "baseId": "base",
-      "unstable_animated": false,
-      "unstable_animating": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -51,9 +51,9 @@ test("initial state lazy", () => {
     },
     `
     Object {
+      "animated": false,
+      "animating": false,
       "baseId": "base",
-      "unstable_animated": false,
-      "unstable_animating": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -70,9 +70,9 @@ test("show", () => {
     { visible: true },
     `
     Object {
+      "animated": false,
+      "animating": false,
       "baseId": "base",
-      "unstable_animated": false,
-      "unstable_animating": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -80,47 +80,6 @@ test("show", () => {
     }
   `
   );
-});
-
-test("show animated", () => {
-  jest.useFakeTimers();
-  const result = render({
-    baseId: "base",
-    unstable_animated: 1000,
-  });
-  act(result.current.show);
-  expect(result.current).toMatchInlineSnapshot(
-    { visible: true, unstable_animating: true },
-    `
-    Object {
-      "baseId": "base",
-      "unstable_animated": 1000,
-      "unstable_animating": true,
-      "unstable_idCountRef": Object {
-        "current": 0,
-      },
-      "visible": true,
-    }
-  `
-  );
-  act(() => {
-    jest.advanceTimersByTime(1000);
-  });
-  expect(result.current).toMatchInlineSnapshot(
-    { visible: true, unstable_animating: false },
-    `
-    Object {
-      "baseId": "base",
-      "unstable_animated": 1000,
-      "unstable_animating": false,
-      "unstable_idCountRef": Object {
-        "current": 0,
-      },
-      "visible": true,
-    }
-  `
-  );
-  jest.useRealTimers();
 });
 
 test("hide", () => {
@@ -130,9 +89,9 @@ test("hide", () => {
     { visible: false },
     `
     Object {
+      "animated": false,
+      "animating": false,
       "baseId": "base",
-      "unstable_animated": false,
-      "unstable_animating": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
@@ -140,48 +99,6 @@ test("hide", () => {
     }
   `
   );
-});
-
-test("hide animated", () => {
-  jest.useFakeTimers();
-  const result = render({
-    baseId: "base",
-    visible: true,
-    unstable_animated: 1000,
-  });
-  act(result.current.hide);
-  expect(result.current).toMatchInlineSnapshot(
-    { visible: false, unstable_animating: true },
-    `
-    Object {
-      "baseId": "base",
-      "unstable_animated": 1000,
-      "unstable_animating": true,
-      "unstable_idCountRef": Object {
-        "current": 0,
-      },
-      "visible": false,
-    }
-  `
-  );
-  act(() => {
-    jest.advanceTimersByTime(1000);
-  });
-  expect(result.current).toMatchInlineSnapshot(
-    { visible: false, unstable_animating: false },
-    `
-    Object {
-      "baseId": "base",
-      "unstable_animated": 1000,
-      "unstable_animating": false,
-      "unstable_idCountRef": Object {
-        "current": 0,
-      },
-      "visible": false,
-    }
-  `
-  );
-  jest.useRealTimers();
 });
 
 test("toggle", () => {
@@ -191,9 +108,9 @@ test("toggle", () => {
     { visible: true },
     `
     Object {
+      "animated": false,
+      "animating": false,
       "baseId": "base",
-      "unstable_animated": false,
-      "unstable_animating": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },

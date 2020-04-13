@@ -36,42 +36,42 @@ storiesOf("Dialog", module).add("Conditionally rendering", () => {
   return <Example />;
 });
 
-storiesOf("Menu", module).add("Animated menu", () => {
-  function Example() {
-    const menu = useMenuState({ unstable_animated: true });
-    return (
-      <>
-        <MenuButton {...menu}>Menu</MenuButton>
-        <Menu
-          {...menu}
-          aria-label="Menu"
-          className={css`
-            transition: transform 0.5s ease, opacity 0.5s ease;
-            &.hidden {
-              opacity: 0;
-              transform: ${menu.unstable_popoverStyles.transform}
-                translate3d(0, -10px, 0) !important;
-            }
-          `}
-        >
-          <MenuItem {...menu}>Item 1</MenuItem>
-          <MenuItem {...menu}>Item 2</MenuItem>
-          <MenuItem {...menu}>Item 3</MenuItem>
-        </Menu>
-      </>
-    );
-  }
-  return <Example />;
-});
-
 storiesOf("Menu", module)
+  .add("Animated menu", () => {
+    function Example() {
+      const menu = useMenuState({ animated: 500 });
+      return (
+        <>
+          <MenuButton {...menu}>Menu</MenuButton>
+          <Menu {...menu} aria-label="Menu">
+            <div
+              className={css`
+                transition: transform 0.5s ease, opacity 0.5s ease;
+                opacity: 0;
+                transform: translate3d(0, -20px, 0);
+                [data-enter] & {
+                  opacity: 1;
+                  transform: translate3d(0, 0, 0);
+                }
+              `}
+            >
+              <MenuItem {...menu}>Item 1</MenuItem>
+              <MenuItem {...menu}>Item 2</MenuItem>
+              <MenuItem {...menu}>Item 3</MenuItem>
+            </div>
+          </Menu>
+        </>
+      );
+    }
+    return <Example />;
+  })
   .add("Animated menu (react-spring)", () => {
     function Example() {
-      const menu = useMenuState({ unstable_animated: true });
+      const menu = useMenuState({ animated: true });
       const { opacity, scale } = useSpring({
         opacity: menu.visible ? 1 : 0,
         scale: menu.visible ? 1 : 0,
-        onRest: menu.unstable_stopAnimation,
+        onRest: menu.stopAnimation,
         config: (name) => ({
           tension: name === "opacity" ? 250 : 300,
           friction: 25,

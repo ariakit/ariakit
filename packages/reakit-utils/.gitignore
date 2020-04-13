@@ -36,7 +36,6 @@
 /flatten
 /fireKeyboardEvent
 /fireEvent
-/cx
 /createOnKeyDown
 /createKeyboardEvent
 /createEvent

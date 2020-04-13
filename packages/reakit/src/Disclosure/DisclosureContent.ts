@@ -1,26 +1,23 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { cx } from "reakit-utils/cx";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
 
 export type DisclosureContentOptions = BoxOptions &
   Pick<
     Partial<DisclosureStateReturn>,
-    | "baseId"
-    | "visible"
-    | "unstable_animating"
-    | "unstable_animated"
-    | "unstable_stopAnimation"
+    "baseId" | "visible" | "animating" | "animated" | "stopAnimation"
   >;
 
 export type DisclosureContentHTMLProps = BoxHTMLProps;
 
 export type DisclosureContentProps = DisclosureContentOptions &
   DisclosureContentHTMLProps;
+
+type TransitionState = "enter" | "leave" | null;
 
 export const useDisclosureContent = createHook<
   DisclosureContentOptions,
@@ -35,30 +32,41 @@ export const useDisclosureContent = createHook<
     {
       onTransitionEnd: htmlOnTransitionEnd,
       onAnimationEnd: htmlOnAnimationEnd,
-      className: htmlClassName,
       style: htmlStyle,
       ...htmlProps
     }
   ) {
-    const [hiddenClass, setHiddenClass] = React.useState<string | null>(null);
-    const animating = options.unstable_animated && options.unstable_animating;
+    const animating = options.animated && options.animating;
+    const [transition, setTransition] = React.useState<TransitionState>(null);
     const hidden = !options.visible && !animating;
+    const style = hidden ? { display: "none", ...htmlStyle } : htmlStyle;
     const onTransitionEndRef = useLiveRef(htmlOnTransitionEnd);
     const onAnimationEndRef = useLiveRef(htmlOnAnimationEnd);
-    const style = hidden ? { display: "none", ...htmlStyle } : htmlStyle;
 
     React.useEffect(() => {
-      setHiddenClass(!options.visible ? "hidden" : null);
-    }, [options.visible]);
+      if (!options.animated) return undefined;
+      const raf = requestAnimationFrame(() => {
+        if (options.visible) {
+          setTransition("enter");
+        } else if (animating) {
+          setTransition("leave");
+        } else {
+          setTransition(null);
+        }
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [options.animated, options.visible, animating]);
 
     const onEnd = React.useCallback(
       (event: React.SyntheticEvent) => {
         if (!isSelfTarget(event)) return;
-        if (options.unstable_animated) {
-          options.unstable_stopAnimation?.();
+        if (!animating) return;
+        // Ignores number animated
+        if (options.animated === true) {
+          options.stopAnimation?.();
         }
       },
-      [options.unstable_animated, options.unstable_stopAnimation]
+      [options.animated, animating, options.stopAnimation]
     );
 
     const onTransitionEnd = React.useCallback(
@@ -79,7 +87,8 @@ export const useDisclosureContent = createHook<
 
     return {
       id: options.baseId,
-      className: cx(hiddenClass, htmlClassName),
+      "data-enter": transition === "enter" ? "" : undefined,
+      "data-leave": transition === "leave" ? "" : undefined,
       onTransitionEnd,
       onAnimationEnd,
       hidden,

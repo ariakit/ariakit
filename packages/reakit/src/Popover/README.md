@@ -145,6 +145,58 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Popover` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+The only difference is that Reakit automatically adds inline styles to the `Popover` container so that it's correctly positioned according to `PopoverDisclosure`. In this example, we're animating an inner wrapper element, so we don't need to overwrite `Popover` positioning styles.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  usePopoverState,
+  Popover,
+  PopoverArrow,
+  PopoverDisclosure,
+} from "reakit/Popover";
+
+const styles = css`
+  background-color: white;
+  padding: 16px;
+  border: 1px solid rgba(33, 33, 33, 0.25);
+  border-radius: 4px;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(0, -20px, 0);
+  [data-enter] & {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`;
+
+function Example() {
+  const popover = usePopoverState({ animated: 250 });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open popover</PopoverDisclosure>
+      <Popover
+        {...popover}
+        aria-label="Welcome"
+        style={{ border: 0, background: "none", padding: 0 }}
+      >
+        <div className={styles}>
+          <PopoverArrow {...popover} />
+          Welcome to Reakit
+          <Button onClick={popover.hide}>Close</Button>
+        </div>
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.
@@ -217,13 +269,13 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 - **`modal`**
   <code>boolean</code>
@@ -303,7 +355,7 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>7 state props</summary>
+<details><summary>8 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -317,19 +369,23 @@ It will be set to `false` if `modal` is `false`.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`modal`**
   <code>boolean</code>
@@ -372,7 +428,7 @@ by default.
 
 ### `PopoverBackdrop`
 
-<details><summary>5 state props</summary>
+<details><summary>6 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -386,19 +442,23 @@ by default.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`modal`**
   <code>boolean</code>
