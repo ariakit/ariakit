@@ -159,7 +159,7 @@ export default function Header({ transparent }: HeaderProps) {
               overflow: auto;
               -webkit-overflow-scrolling: touch;
               transform: translateX(-100%);
-              &[data-visible] {
+              &[data-enter] {
                 transform: translateX(0);
               }
             `}
