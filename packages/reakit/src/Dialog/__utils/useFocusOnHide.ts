@@ -27,9 +27,11 @@ export function useFocusOnHide(
   options: DialogOptions
 ) {
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
+  const animating = !!(options.animated && options.animating);
 
   useUpdateEffect(() => {
     if (!shouldFocus) return;
+    if (animating) return;
 
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
@@ -50,5 +52,5 @@ export function useFocusOnHide(
         dialogRef.current
       );
     }
-  }, [dialogRef, disclosuresRef, shouldFocus]);
+  }, [shouldFocus, animating, dialogRef, disclosuresRef]);
 }
