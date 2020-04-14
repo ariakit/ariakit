@@ -1,0 +1,38 @@
+name: react-next
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+
+    - name: Install dependencies
+      run: yarn
+
+    - name: Upgrade to react@next
+      run: yarn upgrade react@next react-dom@next
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Build
+      run: yarn build
+
+    - name: Type check
+      run: yarn type-check
+
+    - name: Test
+      run: node -e "console.log('Running tests against React v' + require('react').version)" && yarn test
