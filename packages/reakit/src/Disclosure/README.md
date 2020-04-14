@@ -10,7 +10,7 @@ redirect_from:
 
 # Disclosure
 
-Accessible `Disclosure` compoennt that controls visibility of a section of content. It follows the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
+Accessible `Disclosure` component that controls visibility of a section of content. It follows the [WAI-ARIA Disclosure Pattern](https://www.w3.org/TR/wai-aria-practices/#disclosure).
 
 <carbon-ad></carbon-ad>
 
