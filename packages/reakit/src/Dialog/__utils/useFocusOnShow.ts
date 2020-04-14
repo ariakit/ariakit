@@ -12,6 +12,7 @@ export function useFocusOnShow(
 ) {
   const initialFocusRef = options.unstable_initialFocusRef;
   const shouldFocus = options.visible && options.unstable_autoFocusOnShow;
+  const animating = !!(options.animated && options.animating);
 
   useUpdateEffect(() => {
     const dialog = dialogRef.current;
@@ -19,16 +20,16 @@ export function useFocusOnShow(
     warning(
       !!shouldFocus && !dialog,
       "[reakit/Dialog]",
-      "Can't set initial focus on dialog because `ref` wasn't passed to component.",
+      "Can't set initial focus on dialog because `ref` wasn't passed to the dialog element.",
       "See https://reakit.io/docs/dialog"
     );
 
+    if (!shouldFocus) return;
+    if (!dialog) return;
+    if (animating) return;
+
     // If there're nested open dialogs, let them handle focus
-    if (
-      !shouldFocus ||
-      !dialog ||
-      nestedDialogs.some((child) => !child.current?.hidden)
-    ) {
+    if (nestedDialogs.some((child) => !child.current?.hidden)) {
       return;
     }
 
@@ -50,5 +51,5 @@ export function useFocusOnShow(
         );
       }
     }
-  }, [dialogRef, nestedDialogs, initialFocusRef, shouldFocus]);
+  }, [dialogRef, shouldFocus, animating, nestedDialogs, initialFocusRef]);
 }
