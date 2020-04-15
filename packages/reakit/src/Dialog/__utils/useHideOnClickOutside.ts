@@ -47,8 +47,8 @@ export function useHideOnClickOutside(
       // triggered the mousedown event. This prevents the dialog from closing
       // by dragging the cursor (for example, selecting some text inside the
       // dialog and releasing the mouse outside of it).
-      if (mouseDownRef.current === event.target && options.hide) {
-        options.hide();
+      if (mouseDownRef.current === event.target) {
+        options.hide?.();
       }
     },
     options.visible && options.hideOnClickOutside
@@ -59,7 +59,12 @@ export function useHideOnClickOutside(
     disclosuresRef,
     nestedDialogs,
     "focus",
-    options.hide,
+    (event) => {
+      // Fix for https://github.com/reakit/reakit/issues/619
+      if (event.target !== getDocument(dialogRef.current)) {
+        options.hide?.();
+      }
+    },
     options.visible && options.hideOnClickOutside
   );
 }
