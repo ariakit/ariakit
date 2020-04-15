@@ -59,7 +59,13 @@ export function useEventListenerOutside(
       }
 
       // Fix for https://github.com/reakit/reakit/issues/619
-      if (document.hasFocus()) return;
+      if (
+        event.type === "focus" &&
+        (target as any) === document &&
+        document.hasFocus()
+      ) {
+        return;
+      }
 
       // Click inside dialog
       if (contains(container, target)) return;
