@@ -58,6 +58,9 @@ export function useEventListenerOutside(
         return;
       }
 
+      // Fix for https://github.com/reakit/reakit/issues/619
+      if (document.hasFocus()) return;
+
       // Click inside dialog
       if (contains(container, target)) return;
 
