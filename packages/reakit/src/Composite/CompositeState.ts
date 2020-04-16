@@ -284,6 +284,7 @@ function reducer(
   action: CompositeReducerAction
 ): CompositeReducerState {
   const {
+    unstable_virtual: virtual,
     rtl,
     orientation,
     items,
@@ -524,6 +525,11 @@ function reducer(
       );
       return { ...nextState, items };
     }
+    case "setVirtual":
+      return {
+        ...state,
+        unstable_virtual: applyState(action.virtual, virtual),
+      };
     case "setRTL":
       return { ...state, rtl: applyState(action.rtl, rtl) };
     case "setOrientation":
