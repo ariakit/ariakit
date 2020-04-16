@@ -48,7 +48,7 @@ const state = {
       this.listeners.delete(listener);
     };
   },
-  show(id: string) {
+  show(id: string | null) {
     this.currentTooltipId = id;
     this.listeners.forEach((listener) => listener(id));
   },
@@ -74,47 +74,63 @@ export function useTooltipState(
 
   const popover = usePopoverState({ ...sealed, placement });
 
-  React.useEffect(() => {
-    if (!popover.visible) return undefined;
-    return state.subscribe((id) => {
-      // Make sure there will be only one tooltip open
-      if (id !== popover.baseId) {
-        popover.hide();
-      }
-    });
-  }, [popover.visible, popover.baseId, popover.hide]);
-
-  const hide = React.useCallback(() => {
-    popover.hide();
-    // Avoid race conditions when hide is called before show timeout
+  const clearTimeouts = React.useCallback(() => {
     if (showTimeout.current !== null) {
       window.clearTimeout(showTimeout.current);
     }
+    if (hideTimeout.current !== null) {
+      window.clearTimeout(hideTimeout.current);
+    }
+  }, []);
+
+  const hide = React.useCallback(() => {
+    clearTimeouts();
+    popover.hide();
     // Let's give some time so people can move from a reference to another
     // and still show tooltips immediately
     hideTimeout.current = window.setTimeout(() => {
       state.hide(popover.baseId);
     }, timeout);
-  }, [popover.hide, timeout, popover.baseId]);
+  }, [clearTimeouts, popover.hide, timeout, popover.baseId]);
 
   const show = React.useCallback(() => {
-    // Avoid race conditions when show is called before hide timeout
-    if (hideTimeout.current !== null) {
-      window.clearTimeout(hideTimeout.current);
-    }
+    clearTimeouts();
     if (!timeout || state.currentTooltipId) {
       // If there's no timeout or a tooltip visible already, we can show this
       // immediately
       state.show(popover.baseId);
       popover.show();
     } else {
+      // There may be a reference with focus whose tooltip is still not visible
+      // In this case, we want to update it before it gets shown.
+      state.show(null);
       // Otherwise, wait a little bit to show the tooltip
       showTimeout.current = window.setTimeout(() => {
         state.show(popover.baseId);
         popover.show();
       }, timeout);
     }
-  }, [timeout, popover.show, popover.baseId]);
+  }, [clearTimeouts, timeout, popover.show, popover.baseId]);
+
+  React.useEffect(() => {
+    return state.subscribe((id) => {
+      if (id !== popover.baseId) {
+        clearTimeouts();
+        if (popover.visible) {
+          // Make sure there will be only one tooltip visible
+          popover.hide();
+        }
+      }
+    });
+  }, [popover.baseId, clearTimeouts, popover.visible, popover.hide]);
+
+  React.useEffect(
+    () => () => {
+      clearTimeouts();
+      state.hide(popover.baseId);
+    },
+    [clearTimeouts, popover.baseId]
+  );
 
   return {
     ...popover,
