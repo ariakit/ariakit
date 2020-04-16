@@ -67,7 +67,10 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
           stopPropagation: (event) => {
             // On Esc, only stop propagation if there's no parent menu.
             // Otherwise, pressing Esc should close all menus
-            return event.key !== "Escape" && hasParent;
+            if (hasParent) {
+              return event.key !== "Escape";
+            }
+            return event.key === "Escape";
           },
           keyMap: ({ currentTarget, target }) => {
             const { hide } = options;

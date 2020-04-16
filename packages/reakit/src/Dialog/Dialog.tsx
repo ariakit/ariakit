@@ -11,6 +11,7 @@ import {
   useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
+import { MenuContext } from "../Menu/__utils/MenuContext";
 import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -179,9 +180,12 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
           element = <Portal>{element}</Portal>;
         }
         if (htmlWrapElement) {
-          return htmlWrapElement(element);
+          element = htmlWrapElement(element);
         }
-        return element;
+        return (
+          // Prevents Menu > Dialog > Menu to behave as a sub menu
+          <MenuContext.Provider value={null}>{element}</MenuContext.Provider>
+        );
       },
       [wrap, options.modal, hasBackdrop, htmlWrapElement]
     );

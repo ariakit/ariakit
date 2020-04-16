@@ -10,7 +10,7 @@ import {
   unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useMenuState, MenuStateReturn } from "./MenuState";
-import { MenuRoleContext } from "./__utils/MenuContext";
+import { MenuContext } from "./__utils/MenuContext";
 
 export type MenuItemOptions = CompositeItemOptions &
   Pick<Partial<MenuStateReturn>, "visible" | "hide" | "placement"> &
@@ -76,7 +76,8 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       ...htmlProps
     }
   ) {
-    const menuRole = React.useContext(MenuRoleContext);
+    const menu = React.useContext(MenuContext);
+    const menuRole = menu?.role;
     const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
     const onMouseLeaveRef = useLiveRef(htmlOnMouseLeave);
 
