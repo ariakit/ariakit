@@ -6,3 +6,4 @@ coverage
 node_modules
 public
 .cache
+!.storybook

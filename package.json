@@ -46,6 +46,7 @@
     "@babel/preset-env": "7.9.5",
     "@babel/preset-react": "7.9.4",
     "@babel/preset-typescript": "7.9.0",
+    "@storybook/addon-a11y": "5.3.18",
     "@storybook/react": "5.3.18",
     "@testing-library/dom": "6.15.0",
     "@testing-library/jest-dom": "5.3.0",
