@@ -13,7 +13,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext js,ts,tsx",
     "storybook": "start-storybook -p 6006",
-    "storybook:build": "build-storybook",
+    "storybook:build": "build-storybook -o packages/website/public/storybook",
     "clean": "lerna exec --scope reakit* -- yarn clean",
     "build": "lerna exec --scope reakit* --concurrency 1 -- yarn build",
     "build:fast": "yarn build --no-umd",

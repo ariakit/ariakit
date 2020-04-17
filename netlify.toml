@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build:fast && yarn website:build"
+  command = "yarn build:fast && yarn website:build && yarn storybook:build"
   publish = "packages/website/public"
 
 [build.environment]
