@@ -45,7 +45,7 @@ export default function DialogWithForm() {
   return (
     <>
       {name}
-      <DialogDisclosure as="span" {...dialog}>
+      <DialogDisclosure {...dialog}>
         <span role="img" aria-label={`Change name of ${name}`}>
           ✏️
         </span>
