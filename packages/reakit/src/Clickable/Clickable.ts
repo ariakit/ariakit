@@ -29,6 +29,7 @@ export type ClickableProps = ClickableOptions & ClickableHTMLProps;
 function isNativeClick(event: React.KeyboardEvent) {
   const self = event.currentTarget;
   if (!event.isTrusted) return false;
+  // istanbul ignore next: can't test trusted events yet
   return (
     isButton(self) ||
     self.tagName === "INPUT" ||
