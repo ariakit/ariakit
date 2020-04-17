@@ -11,3 +11,9 @@
   to = "https://reakit.io/:splat"
   status = 301
   force = true
+
+[[headers]]
+  for = "/storybook/iframe.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    
