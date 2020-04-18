@@ -8,6 +8,9 @@ import {
   Menu,
   MenuButton,
   MenuItem,
+  usePopoverState,
+  Popover,
+  PopoverDisclosure,
 } from "..";
 
 [true, false].forEach((virtual) => {
@@ -39,22 +42,22 @@ import {
         </Composite>
       );
     };
-    const { getByText: get, getByLabelText: getLabel } = render(<Test />);
+    const { getByText: text, getByLabelText: label } = render(<Test />);
     press.Tab();
-    expect(get("item1")).toHaveFocus();
+    expect(text("item1")).toHaveFocus();
     press.ArrowRight();
-    expect(get("item2")).toHaveFocus();
+    expect(text("item2")).toHaveFocus();
     press.ArrowRight();
-    expect(get("item3")).toHaveFocus();
-    expect(getLabel("menu")).not.toBeVisible();
+    expect(text("item3")).toHaveFocus();
+    expect(label("menu")).not.toBeVisible();
     press.ArrowRight();
-    expect(get("item3")).not.toHaveFocus();
-    expect(getLabel("menu")).toBeVisible();
-    await wait(expect(get("menuitem1")).toHaveFocus);
+    expect(text("item3")).not.toHaveFocus();
+    expect(label("menu")).toBeVisible();
+    await wait(expect(text("menuitem1")).toHaveFocus);
     press.ArrowRight();
-    expect(get("item3")).not.toHaveFocus();
-    expect(getLabel("menu")).toBeVisible();
-    expect(get("menuitem1")).toHaveFocus();
+    expect(text("item3")).not.toHaveFocus();
+    expect(label("menu")).toBeVisible();
+    expect(text("menuitem1")).toHaveFocus();
   });
 
   test(`${strategy} composite with menu button not controlling arrow keys`, async () => {
@@ -83,31 +86,136 @@ import {
         </Composite>
       );
     };
-    const { getByText: get, getByLabelText: getLabel } = render(<Test />);
+    const { getByText: text, getByLabelText: label } = render(<Test />);
     press.Tab();
-    expect(get("item1")).toHaveFocus();
+    expect(text("item1")).toHaveFocus();
     press.ArrowRight();
-    expect(get("item2")).toHaveFocus();
+    expect(text("item2")).toHaveFocus();
     press.ArrowRight();
-    expect(get("item3")).toHaveFocus();
-    expect(getLabel("menu")).not.toBeVisible();
+    expect(text("item3")).toHaveFocus();
+    expect(label("menu")).not.toBeVisible();
     press.ArrowRight();
-    expect(get("item4")).toHaveFocus();
-    expect(getLabel("menu")).not.toBeVisible();
+    expect(text("item4")).toHaveFocus();
+    expect(label("menu")).not.toBeVisible();
     press.ArrowLeft();
-    expect(get("item3")).toHaveFocus();
+    expect(text("item3")).toHaveFocus();
     press.Enter();
-    expect(get("item3")).not.toHaveFocus();
-    expect(getLabel("menu")).toBeVisible();
-    await wait(expect(get("menuitem1")).toHaveFocus);
+    expect(text("item3")).not.toHaveFocus();
+    expect(label("menu")).toBeVisible();
+    await wait(expect(text("menuitem1")).toHaveFocus);
     press.ArrowRight();
-    expect(get("item3")).not.toHaveFocus();
-    expect(getLabel("menu")).toBeVisible();
-    expect(get("menuitem1")).toHaveFocus();
+    expect(text("item3")).not.toHaveFocus();
+    expect(label("menu")).toBeVisible();
+    expect(text("menuitem1")).toHaveFocus();
     press.Escape();
-    expect(get("item3")).toHaveFocus();
-    expect(getLabel("menu")).not.toBeVisible();
+    expect(text("item3")).toHaveFocus();
+    expect(label("menu")).not.toBeVisible();
     press.ArrowRight();
-    expect(get("item4")).toHaveFocus();
+    expect(text("item4")).toHaveFocus();
+  });
+
+  test(`${strategy} menu inside dialog closes only itself when pressing Esc`, () => {
+    const Test = () => {
+      const popover = usePopoverState();
+      const menu = useMenuState({ unstable_virtual: virtual });
+      return (
+        <>
+          <PopoverDisclosure {...popover}>Open popover</PopoverDisclosure>
+          <Popover {...popover} aria-label="popover">
+            <MenuButton {...menu}>Open menu</MenuButton>
+            <Menu {...menu} aria-label="menu">
+              <MenuItem {...menu}>Item 1</MenuItem>
+            </Menu>
+          </Popover>
+        </>
+      );
+    };
+    const { getByText: text, getByLabelText: label } = render(<Test />);
+    press.Tab();
+    expect(text("Open popover")).toHaveFocus();
+    expect(label("popover")).not.toBeVisible();
+    expect(label("menu")).not.toBeVisible();
+    press.Enter();
+    expect(text("Open menu")).toHaveFocus();
+    expect(label("popover")).toBeVisible();
+    expect(label("menu")).not.toBeVisible();
+    press.Enter();
+    expect(text("Item 1")).toHaveFocus();
+    expect(label("popover")).toBeVisible();
+    expect(label("menu")).toBeVisible();
+    press.Escape();
+    expect(text("Open menu")).toHaveFocus();
+    expect(label("popover")).toBeVisible();
+    expect(label("menu")).not.toBeVisible();
+    press.Escape();
+    expect(text("Open popover")).toHaveFocus();
+    expect(label("popover")).not.toBeVisible();
+    expect(label("menu")).not.toBeVisible();
+  });
+
+  test(`${strategy} menu inside dialog inside menu closes only itself when pressing Esc`, () => {
+    const Test = () => {
+      const popover = usePopoverState();
+      const menu1 = useMenuState({ unstable_virtual: virtual });
+      const menu2 = useMenuState({ unstable_virtual: virtual });
+      return (
+        <>
+          <MenuButton {...menu1}>Open menu 1</MenuButton>
+          <Menu {...menu1} aria-label="menu1">
+            <MenuItem {...menu1}>
+              {(props) => (
+                <>
+                  <PopoverDisclosure {...popover} {...props}>
+                    Open popover
+                  </PopoverDisclosure>
+                  <Popover {...popover} aria-label="popover">
+                    <MenuButton {...menu2}>Open menu 2</MenuButton>
+                    <Menu {...menu2} aria-label="menu2">
+                      <MenuItem {...menu2}>Item 1</MenuItem>
+                    </Menu>
+                  </Popover>
+                </>
+              )}
+            </MenuItem>
+          </Menu>
+        </>
+      );
+    };
+    const { getByText: text, getByLabelText: label } = render(<Test />);
+    press.Tab();
+    expect(text("Open menu 1")).toHaveFocus();
+    expect(label("menu1")).not.toBeVisible();
+    expect(label("popover")).not.toBeVisible();
+    expect(label("menu2")).not.toBeVisible();
+    press.Enter();
+    expect(text("Open popover")).toHaveFocus();
+    expect(label("menu1")).toBeVisible();
+    expect(label("popover")).not.toBeVisible();
+    expect(label("menu2")).not.toBeVisible();
+    press.Enter();
+    expect(text("Open menu 2")).toHaveFocus();
+    expect(label("menu1")).toBeVisible();
+    expect(label("popover")).toBeVisible();
+    expect(label("menu2")).not.toBeVisible();
+    press.Enter();
+    expect(text("Item 1")).toHaveFocus();
+    expect(label("menu1")).toBeVisible();
+    expect(label("popover")).toBeVisible();
+    expect(label("menu2")).toBeVisible();
+    press.Escape();
+    expect(text("Open menu 2")).toHaveFocus();
+    expect(label("menu1")).toBeVisible();
+    expect(label("popover")).toBeVisible();
+    expect(label("menu2")).not.toBeVisible();
+    press.Escape();
+    expect(text("Open popover")).toHaveFocus();
+    expect(label("menu1")).toBeVisible();
+    expect(label("popover")).not.toBeVisible();
+    expect(label("menu2")).not.toBeVisible();
+    press.Escape();
+    expect(text("Open menu 1")).toHaveFocus();
+    expect(label("menu1")).not.toBeVisible();
+    expect(label("popover")).not.toBeVisible();
+    expect(label("menu2")).not.toBeVisible();
   });
 });

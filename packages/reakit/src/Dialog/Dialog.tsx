@@ -11,6 +11,7 @@ import {
   useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
+import { MenuContext } from "../Menu/__utils/MenuContext";
 import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -135,6 +136,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   ) {
     const dialog = React.useRef<HTMLElement>(null);
     const backdrop = React.useContext(DialogBackdropContext);
+    const hasBackdrop = backdrop && backdrop === options.baseId;
     const disclosures = useDisclosuresRef(dialog, options);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
@@ -174,15 +176,18 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         element = wrap(element);
-        if (options.modal && !backdrop) {
+        if (options.modal && !hasBackdrop) {
           element = <Portal>{element}</Portal>;
         }
         if (htmlWrapElement) {
-          return htmlWrapElement(element);
+          element = htmlWrapElement(element);
         }
-        return element;
+        return (
+          // Prevents Menu > Dialog > Menu to behave as a sub menu
+          <MenuContext.Provider value={null}>{element}</MenuContext.Provider>
+        );
       },
-      [wrap, options.modal, backdrop, htmlWrapElement]
+      [wrap, options.modal, hasBackdrop, htmlWrapElement]
     );
 
     return {

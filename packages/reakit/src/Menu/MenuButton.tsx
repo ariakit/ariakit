@@ -64,7 +64,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       const ref = React.useRef<HTMLElement>(null);
       const hasPressedMouse = React.useRef(false);
       const [dir] = options.placement.split("-");
-      const hasParent = Boolean(parent);
+      const hasParent = !!parent;
       const parentIsMenuBar = parent?.role === "menubar";
       const onClickRef = useLiveRef(htmlOnClick);
       const onKeyDownRef = useLiveRef(htmlOnKeyDown);
@@ -76,6 +76,9 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         () =>
           createOnKeyDown({
             onKeyDown: onKeyDownRef,
+            // Doesn't prevent default on Escape, otherwise we can't close
+            // dialogs when MenuButton is focused
+            preventDefault: (event) => event.key !== "Escape",
             stopPropagation: (event) => event.key !== "Escape",
             onKey: () => options.show(),
             keyMap: () => {

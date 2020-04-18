@@ -4,7 +4,6 @@ export * from "./contains";
 export * from "./createEvent";
 export * from "./createKeyboardEvent";
 export * from "./createOnKeyDown";
-export * from "./cx";
 export * from "./fireEvent";
 export * from "./fireKeyboardEvent";
 export * from "./flatten";

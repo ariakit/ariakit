@@ -55,7 +55,6 @@ export default {
   "reakit/Id": require("reakit/Id"),
   "reakit/Id/IdState": require("reakit/Id/IdState"),
   "reakit/Id/IdProvider": require("reakit/Id/IdProvider"),
-  "reakit/Id/IdGroup": require("reakit/Id/IdGroup"),
   "reakit/Id/Id": require("reakit/Id/Id"),
   "reakit/Hidden": require("reakit/Hidden"),
   "reakit/Hidden/HiddenState": require("reakit/Hidden/HiddenState"),

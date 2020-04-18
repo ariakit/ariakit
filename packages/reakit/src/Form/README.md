@@ -523,19 +523,9 @@ only occur on submit.
 
 ### `Form`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>2 state props</summary>
+<details><summary>1 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
 
 - **`submit`**
   <code>() =&#62; void</code>

@@ -27,7 +27,7 @@ export const useDialogBackdrop = createHook<
   useState: useDialogState,
 
   useOptions({ modal = true, ...options }) {
-    return { modal, ...options, unstable_setBaseId: undefined };
+    return { modal, ...options };
   },
 
   useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {
@@ -36,7 +36,7 @@ export const useDialogBackdrop = createHook<
         if (options.modal) {
           element = (
             <Portal>
-              <DialogBackdropContext.Provider value>
+              <DialogBackdropContext.Provider value={options.baseId}>
                 {element}
               </DialogBackdropContext.Provider>
             </Portal>

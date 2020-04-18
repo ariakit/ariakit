@@ -106,6 +106,7 @@ import {
           </Menu>
         );
       };
+      jest.useFakeTimers();
       const { getByText, getByLabelText } = render(<Test />);
       const subdisclosure = getByText("subdisclosure");
       const submenu = getByLabelText("submenu");
@@ -114,6 +115,10 @@ import {
       click(subdisclosure);
       expect(submenu).toBeVisible();
       expect(subitem1).not.toHaveFocus();
+      act(() => {
+        jest.runAllTimers();
+      });
+      jest.useRealTimers();
     });
 
     test("focusing menu item disclosure does not open submenu", () => {

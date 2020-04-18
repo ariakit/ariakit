@@ -260,6 +260,58 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Dialog` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  useDialogState,
+  Dialog,
+  DialogBackdrop,
+  DialogDisclosure,
+} from "reakit/Dialog";
+
+const backdropStyles = css`
+  perspective: 800px;
+  transition: opacity 250ms ease-in-out;
+  opacity: 0;
+  &[data-enter] {
+    opacity: 1;
+  }
+`;
+
+const dialogStyles = css`
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(-50%, -10%, 0) rotateX(90deg);
+  &[data-enter] {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+`;
+
+function Example() {
+  const dialog = useDialogState({ animated: true });
+  return (
+    <div>
+      <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+      <DialogBackdrop {...dialog} className={backdropStyles}>
+        <Dialog {...dialog} aria-label="Welcome" className={dialogStyles}>
+          Welcome to Reakit!
+          <br />
+          <br />
+          <Button onClick={dialog.hide}>Close</Button>
+        </Dialog>
+      </DialogBackdrop>
+    </div>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Dialog` component with a different API on top of Reakit.
@@ -331,13 +383,13 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 - **`modal`**
   <code>boolean</code>
@@ -349,11 +401,6 @@ trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
 
 ### `Dialog`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
 
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
@@ -391,7 +438,7 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>7 state props</summary>
+<details><summary>8 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -405,19 +452,23 @@ It will be set to `false` if `modal` is `false`.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`modal`**
   <code>boolean</code>
@@ -442,12 +493,7 @@ by default.
 
 ### `DialogBackdrop`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>5 state props</summary>
+<details><summary>6 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -461,19 +507,23 @@ by default.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`modal`**
   <code>boolean</code>

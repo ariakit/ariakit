@@ -8,7 +8,6 @@ test("render", () => {
   );
   expect(getByText("content")).toMatchInlineSnapshot(`
     <div
-      class="hidden"
       hidden=""
       id="base"
       style="display: none;"

@@ -140,9 +140,9 @@ test("onChange non-native radio", () => {
 
 test("group", () => {
   const Test = () => {
-    const radio = useRadioState();
+    const radio = useRadioState({ baseId: "base" });
     return (
-      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+      <RadioGroup {...radio} aria-label="radiogroup">
         <label>
           <Radio {...radio} value="a" />a
         </label>
@@ -200,9 +200,9 @@ test("group", () => {
 
 test("button group", () => {
   const Test = () => {
-    const radio = useRadioState();
+    const radio = useRadioState({ baseId: "base" });
     return (
-      <RadioGroup {...radio} aria-label="radiogroup" id="base">
+      <RadioGroup {...radio} aria-label="radiogroup">
         <Radio {...radio} as="button" value="a">
           a
         </Radio>

@@ -35,7 +35,6 @@ export default {
   "reakit-utils/flatten": require("reakit-utils/flatten"),
   "reakit-utils/fireKeyboardEvent": require("reakit-utils/fireKeyboardEvent"),
   "reakit-utils/fireEvent": require("reakit-utils/fireEvent"),
-  "reakit-utils/cx": require("reakit-utils/cx"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
   "reakit-utils/createKeyboardEvent": require("reakit-utils/createKeyboardEvent"),
   "reakit-utils/createEvent": require("reakit-utils/createEvent"),

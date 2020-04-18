@@ -11,7 +11,6 @@ test("render", () => {
         class="__reakit-portal"
       >
         <div
-          class="hidden"
           data-dialog-ref="dialog"
           hidden=""
           style="display: none;"
@@ -24,17 +23,17 @@ test("render", () => {
 test("render visible", () => {
   const { baseElement } = render(<DialogBackdrop baseId="dialog" visible />);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div />
-  <div
-    class="__reakit-portal"
-  >
-    <div
-      data-dialog-ref="dialog"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div />
+      <div
+        class="__reakit-portal"
+      >
+        <div
+          data-dialog-ref="dialog"
+        />
+      </div>
+    </body>
+  `);
 });
 
 test("render no modal", () => {
@@ -42,15 +41,14 @@ test("render no modal", () => {
     <DialogBackdrop baseId="dialog" modal={false} />
   );
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <div
-      class="hidden"
-      data-dialog-ref="dialog"
-      hidden=""
-      style="display: none;"
-    />
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <div
+          data-dialog-ref="dialog"
+          hidden=""
+          style="display: none;"
+        />
+      </div>
+    </body>
+  `);
 });

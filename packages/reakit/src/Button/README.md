@@ -30,48 +30,46 @@ function Example() {
 
 ## Styling
 
-The example below uses [Emotion](https://emotion.sh/docs/introduction) and demonstrates how CSS-in-JS can be used to style Reakit components. These styles can be reproduced using static CSS and other CSS-in-JS libraries, such as [styled-components](https://styled-components.com/).
+Reakit components are unstyled by default. You're free to use whatever approach you want. Each component returns a single HTML element that accepts all HTML props, including `className` and `style`.
+
+> The example below uses [Emotion](https://emotion.sh/docs/introduction). But these styles can be reproduced using static CSS and other CSS-in-JS libraries, such as [styled-components](https://styled-components.com/).
 
 ```jsx unstyled
 import { Button } from "reakit/Button";
 import { css } from "emotion";
 
 const className = css`
-  transition: box-shadow 0.15s ease-in-out;
   outline: 0;
   color: #ffffff;
   background: #006dff;
   padding: 0.375em 0.75em;
   line-height: 1.5;
   border: transparent;
+  border-radius: 0.25rem;
   cursor: pointer;
   font-size: 16px;
-  border-radius: 0.25rem;
 
+  &:focus {
+    box-shadow: 0 0 0 0.2em rgba(0, 109, 255, 0.4);
+  }
+
+  &[disabled],
   &[aria-disabled="true"] {
     cursor: auto;
     opacity: 0.5;
   }
 
+  &:not([disabled]),
   &:not([aria-disabled="true"]) {
     &:hover {
       color: #ffffff;
-      border-color: #0057cc;
       background-color: #0062e6;
     }
     &:active,
-    &[data-active="true"],
-    &[aria-expanded="true"] {
+    &[data-active="true"] {
       color: #ffffff;
-      border-color: #0058cf;
       background-color: #004eb8;
     }
-  }
-
-  &:focus {
-    box-shadow: 0 0 0 0.2em rgba(0, 109, 255, 0.4);
-    position: relative;
-    z-index: 2;
   }
 `;
 

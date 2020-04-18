@@ -368,6 +368,49 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Menu` uses [Popover](/docs/popover/) underneath, so you can use the same approaches as described in the [Animating](/docs/popover/#animating) section there.
+
+```jsx
+import { css } from "emotion";
+import { useMenuState, Menu, MenuItem, MenuButton } from "reakit/Menu";
+
+const styles = css`
+  display: flex;
+  flex-direction: column;
+  background: white;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: scaleY(0);
+  [data-enter] & {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+`;
+
+function Example() {
+  const menu = useMenuState({ animated: 250 });
+  return (
+    <>
+      <MenuButton {...menu}>Preferences</MenuButton>
+      <Menu
+        {...menu}
+        aria-label="Preferences"
+        style={{ border: 0, background: "none", padding: 0 }}
+      >
+        <div className={styles}>
+          <MenuItem {...menu}>Item 1</MenuItem>
+          <MenuItem {...menu}>Item 2</MenuItem>
+          <MenuItem {...menu}>Item 3</MenuItem>
+        </div>
+      </Menu>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Menu` component with a different API on top of Reakit.
@@ -628,13 +671,13 @@ column and vice-versa.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 - **`modal`**
   <code>boolean</code>
@@ -677,11 +720,6 @@ element.
   Prevents popover from being positioned outside the boundary.
 
 ### `Menu`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
 
 - **`hideOnClickOutside`**
   <code>boolean | undefined</code>
@@ -726,7 +764,7 @@ It will be set to `false` if `modal` is `false`.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>21 state props</summary>
+<details><summary>22 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -740,13 +778,13 @@ similarly to `readOnly` on form elements. In this case, only
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 - **`modal`**
   <code>boolean</code>
@@ -757,11 +795,15 @@ given milliseconds.
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`setModal`**
   <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
@@ -905,11 +947,6 @@ and `groupId` if any. This state is automatically updated when
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
 
 <details><summary>14 state props</summary>
 
