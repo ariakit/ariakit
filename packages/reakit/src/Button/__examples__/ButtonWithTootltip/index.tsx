@@ -13,17 +13,10 @@ function LockButton({ isLocked, ...rest }: Props) {
   return (
     <>
       <TooltipReference {...rest} {...tooltip} as={Button}>
-        {isLocked ? (
-          <>
-            <VisuallyHidden>Click to unlock</VisuallyHidden>{" "}
-            <span aria-hidden>🔒</span>
-          </>
-        ) : (
-          <>
-            <VisuallyHidden>Click to lock</VisuallyHidden>{" "}
-            <span aria-hidden>🔓</span>
-          </>
-        )}
+        <>
+          <VisuallyHidden>Click to {isLocked ? "unlock" : "lock"}</VisuallyHidden>{" "}
+          <span aria-hidden>{isLocked ? "🔒" : "🔓"}</span>
+        </>
       </TooltipReference>
       <Tooltip {...tooltip}>
         It's {isLocked ? "locked" : "unlocked"}!
