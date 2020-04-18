@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render, fireEvent, type, wait, click } from "reakit-test-utils";
+import { click, focus, press, render, type, wait } from "reakit-test-utils";
 import DialogWithForm from "..";
 
 test("should rename", async () => {
-  const { getByText, getByLabelText, getByRole } = render(<DialogWithForm />);
+  const { getByText, getByLabelText } = render(<DialogWithForm />);
   const name = getByText("Name");
   expect(name).toBeVisible();
   const disclosure = getByText("✏️");
@@ -11,10 +11,10 @@ test("should rename", async () => {
   expect(dialog).not.toBeVisible();
   click(disclosure);
   expect(dialog).toBeVisible();
-  const form = getByRole("form");
   const input = getByLabelText("New name");
-  type(" 2", input);
-  fireEvent.submit(form);
+  focus(input);
+  type(" 2");
+  press.Enter();
   await wait(() => {
     expect(dialog).not.toBeVisible();
   });

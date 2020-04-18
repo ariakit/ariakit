@@ -9,10 +9,10 @@ import {
   unstable_FormSubmitButton as FormSubmitButton,
 } from "reakit/Form";
 
-export interface Props {
+type Props = {
   initialName: string;
   onRename: (newName: string) => void;
-}
+};
 
 function RenameForm({ initialName = "", onRename }: Props) {
   const form = useFormState({
