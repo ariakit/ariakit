@@ -8,11 +8,11 @@ type Props = {
   onClick: () => void;
 };
 
-function LockButton({ isLocked, ...rest }: Props) {
+function LockButton({ isLocked, ...props }: Props) {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipReference {...rest} {...tooltip} as={Button}>
+      <TooltipReference {...props} {...tooltip} as={Button}>
         <>
           <VisuallyHidden>Click to {isLocked ? "unlock" : "lock"}</VisuallyHidden>{" "}
           <span aria-hidden>{isLocked ? "🔒" : "🔓"}</span>
