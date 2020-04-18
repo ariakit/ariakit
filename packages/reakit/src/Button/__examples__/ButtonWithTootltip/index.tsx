@@ -14,17 +14,18 @@ type Props = TooltipReferenceHTMLProps & {
 
 function LockButton({ isLocked, ...props }: Props) {
   const tooltip = useTooltipState();
+  const tip = `It's ${isLocked ? "locked" : "unlocked"}!`;
   return (
     <>
       <TooltipReference {...props} {...tooltip} as={Button}>
         <>
-          <VisuallyHidden>Click to {isLocked ? "unlock" : "lock"}</VisuallyHidden>{" "}
+          <VisuallyHidden>
+            Click to {isLocked ? "unlock" : "lock"}
+          </VisuallyHidden>
           <span aria-hidden>{isLocked ? "🔒" : "🔓"}</span>
         </>
       </TooltipReference>
-      <Tooltip {...tooltip}>
-        It's {isLocked ? "locked" : "unlocked"}!
-      </Tooltip>
+      <Tooltip {...tooltip}>{tip}</Tooltip>
     </>
   );
 }
