@@ -172,6 +172,7 @@ function Example() {
 
 - `Tooltip` has role `tooltip`.
 - `TooltipReference` has `aria-describedby` referring to `Tooltip`.
+- <kbd>Escape</kbd> hides the current visible tooltip.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
