@@ -14,6 +14,6 @@ test("two-state button with tooltip", () => {
   expect(buttonLocked).toBeVisible();
   expect(text("Click to unlock")).toBeVisible();
   expect(text("It's locked!")).toBeVisible();
-  press.Space(buttonLocked);
+  press.Space();
   expect(buttonUnlocked).toBeVisible();
 });
