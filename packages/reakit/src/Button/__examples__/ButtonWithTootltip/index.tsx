@@ -25,9 +25,9 @@ function LockButton({ isLocked, ...rest }: Props) {
           </>
         )}
       </TooltipReference>
-      <Tooltip {...tooltip}>{`It's ${
-        isLocked ? "locked" : "unlocked"
-      }!`}</Tooltip>
+      <Tooltip {...tooltip}>
+        It's {isLocked ? "locked" : "unlocked"}!
+      </Tooltip>
     </>
   );
 }
