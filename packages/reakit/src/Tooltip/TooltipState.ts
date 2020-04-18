@@ -10,6 +10,7 @@ import {
   usePopoverState,
   PopoverStateReturn,
 } from "../Popover/PopoverState";
+import globalState from "./__globalState";
 
 export type TooltipState = Omit<PopoverState, "modal"> & {
   /**
@@ -36,29 +37,6 @@ export type TooltipStateReturn = Omit<
 > &
   TooltipState &
   TooltipActions;
-
-type Listener = (id: string | null) => void;
-
-const state = {
-  currentTooltipId: null as string | null,
-  listeners: new Set<Listener>(),
-  subscribe(listener: Listener) {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
-  },
-  show(id: string | null) {
-    this.currentTooltipId = id;
-    this.listeners.forEach((listener) => listener(id));
-  },
-  hide(id: string) {
-    if (this.currentTooltipId === id) {
-      this.currentTooltipId = null;
-      this.listeners.forEach((listener) => listener(null));
-    }
-  },
-};
 
 export function useTooltipState(
   initialState: SealedInitialState<TooltipInitialState> = {}
@@ -89,31 +67,31 @@ export function useTooltipState(
     // Let's give some time so people can move from a reference to another
     // and still show tooltips immediately
     hideTimeout.current = window.setTimeout(() => {
-      state.hide(popover.baseId);
+      globalState.hide(popover.baseId);
     }, timeout);
   }, [clearTimeouts, popover.hide, timeout, popover.baseId]);
 
   const show = React.useCallback(() => {
     clearTimeouts();
-    if (!timeout || state.currentTooltipId) {
+    if (!timeout || globalState.currentTooltipId) {
       // If there's no timeout or a tooltip visible already, we can show this
       // immediately
-      state.show(popover.baseId);
+      globalState.show(popover.baseId);
       popover.show();
     } else {
       // There may be a reference with focus whose tooltip is still not visible
       // In this case, we want to update it before it gets shown.
-      state.show(null);
+      globalState.show(null);
       // Otherwise, wait a little bit to show the tooltip
       showTimeout.current = window.setTimeout(() => {
-        state.show(popover.baseId);
+        globalState.show(popover.baseId);
         popover.show();
       }, timeout);
     }
   }, [clearTimeouts, timeout, popover.show, popover.baseId]);
 
   React.useEffect(() => {
-    return state.subscribe((id) => {
+    return globalState.subscribe((id) => {
       if (id !== popover.baseId) {
         clearTimeouts();
         if (popover.visible) {
@@ -127,7 +105,7 @@ export function useTooltipState(
   React.useEffect(
     () => () => {
       clearTimeouts();
-      state.hide(popover.baseId);
+      globalState.hide(popover.baseId);
     },
     [clearTimeouts, popover.baseId]
   );

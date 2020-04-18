@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
+import { getDocument } from "reakit-utils/getDocument";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -9,6 +10,7 @@ import {
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
+import globalState from "./__globalState";
 
 export type TooltipOptions = DisclosureContentOptions &
   Pick<
@@ -25,6 +27,13 @@ export type TooltipOptions = DisclosureContentOptions &
 export type TooltipHTMLProps = DisclosureContentHTMLProps;
 
 export type TooltipProps = TooltipOptions & TooltipHTMLProps;
+
+function globallyHideTooltipOnEscape(event: KeyboardEvent) {
+  if (event.defaultPrevented) return;
+  if (event.key === "Escape") {
+    globalState.show(null);
+  }
+}
 
 export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   name: "Tooltip",
@@ -45,6 +54,11 @@ export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
       ...htmlProps
     }
   ) {
+    React.useEffect(() => {
+      const document = getDocument(options.unstable_popoverRef?.current);
+      document.addEventListener("keydown", globallyHideTooltipOnEscape);
+    }, []);
+
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         if (options.unstable_portal) {

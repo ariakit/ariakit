@@ -16,4 +16,7 @@ test("show tooltip", () => {
   expect(text("item2tooltip")).not.toBeVisible();
   expect(text("item2")).toHaveFocus();
   expect(text("item3tooltip")).toBeVisible();
+  press.Escape();
+  expect(text("item2")).toHaveFocus();
+  expect(text("item3tooltip")).not.toBeVisible();
 });
