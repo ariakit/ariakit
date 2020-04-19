@@ -15,7 +15,7 @@ test("show user profile and toggle follow/unfollow button", async () => {
   const button = getByText("Unfollow");
   click(button);
   press.Escape();
-  await wait(expect(popover).not.toBeVisible());
+  expect(popover).not.toBeVisible();
   expect(
     getByLabelText("Click to toggle @JohnDoe's profile")
   ).toHaveTextContent("don't follow");
