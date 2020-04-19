@@ -78,7 +78,7 @@ export default function PopoverWithButton() {
       <PopoverDisclosure
         {...popover}
         {...popoverVisibleOnHover}
-        aria-label={`Click to toggle ${user.username}'s profile`}
+        aria-label={`Toggle ${user.username}'s profile`}
       >
         {user.username} (<VisuallyHidden>someone you </VisuallyHidden>
         {follow ? "" : "don't"} follow)
