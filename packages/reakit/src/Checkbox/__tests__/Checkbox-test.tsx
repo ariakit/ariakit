@@ -43,6 +43,7 @@ test("render disabled focusable", () => {
         <input
           aria-checked="false"
           aria-disabled="true"
+          style="pointer-events: none;"
           type="checkbox"
           value=""
         />

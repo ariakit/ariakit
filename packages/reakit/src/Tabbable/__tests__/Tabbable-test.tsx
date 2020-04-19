@@ -16,13 +16,13 @@ test("render", () => {
 test("render disabled", () => {
   const { getByText } = render(<Tabbable disabled>tabbable</Tabbable>);
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-<div
-  aria-disabled="true"
-  style="pointer-events: none;"
->
-  tabbable
-</div>
-`);
+    <div
+      aria-disabled="true"
+      style="pointer-events: none;"
+    >
+      tabbable
+    </div>
+  `);
 });
 
 test("render disabled focusable", () => {
@@ -32,13 +32,14 @@ test("render disabled focusable", () => {
     </Tabbable>
   );
   expect(getByText("tabbable")).toMatchInlineSnapshot(`
-<div
-  aria-disabled="true"
-  tabindex="0"
->
-  tabbable
-</div>
-`);
+    <div
+      aria-disabled="true"
+      style="pointer-events: none;"
+      tabindex="0"
+    >
+      tabbable
+    </div>
+  `);
 });
 
 test("focus", () => {
