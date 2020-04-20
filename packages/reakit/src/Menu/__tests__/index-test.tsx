@@ -539,7 +539,7 @@ import {
       expect(submenu).toBeVisible();
       await wait(expect(subitem1).toHaveFocus);
       press.ArrowLeft();
-      expect(submenu).not.toBeVisible();
+      await wait(expect(submenu).not.toBeVisible);
       expect(subdisclosure).toHaveFocus();
     });
 
@@ -1005,7 +1005,7 @@ import {
       press.ArrowDown();
       expect(subitem3).toHaveFocus();
       press.ArrowLeft();
-      expect(submenu).not.toBeVisible();
+      await wait(expect(submenu).not.toBeVisible);
       expect(subdisclosure).toHaveFocus();
     });
 
