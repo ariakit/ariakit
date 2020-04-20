@@ -7,7 +7,6 @@ import {
   PopoverArrow,
 } from "reakit/Popover";
 import { Separator } from "reakit/Separator";
-import { VisuallyHidden } from "../../../VisuallyHidden";
 
 function useVisibilityState(initialState: boolean) {
   let timeout: NodeJS.Timeout;
@@ -36,22 +35,17 @@ type User = {
 
 type Props = {
   user: User;
-  follow: boolean;
-  onChange: (value: boolean) => void;
 };
 
-function UserProfile({ user, follow, onChange }: Props) {
+function UserProfile({ user }: Props) {
   return (
     <>
       <header>
-        <h3>{user.fullname}</h3>
-        <small>{user.username}</small>
+        {user.fullname} <small>({user.username})</small>
       </header>
       <p>{user.description}</p>
       <Separator />
-      <Button onClick={() => onChange(!follow)}>
-        {follow ? "Unfollow" : "Follow"}
-      </Button>
+      <Button>follow</Button>
     </>
   );
 }
@@ -64,8 +58,7 @@ const user = {
               vulputate mollis diam nulla et felis. Donec molestie molestie tellus.`,
 };
 
-export default function PopoverWithButton() {
-  const [follow, setFollow] = React.useState(true);
+export default function HoverPopover() {
   const popover = usePopoverState({});
   const [visible, setVisible] = useVisibilityState(popover.visible);
   React.useEffect(() => popover[visible ? "show" : "hide"](), [visible]);
@@ -80,8 +73,7 @@ export default function PopoverWithButton() {
         {...popoverVisibleOnHover}
         aria-label={`Toggle ${user.username}'s profile`}
       >
-        {user.username} (<VisuallyHidden>someone you </VisuallyHidden>
-        {follow ? "" : "don't"} follow)
+        {user.username}
       </PopoverDisclosure>
       <Popover
         {...popover}
@@ -89,11 +81,7 @@ export default function PopoverWithButton() {
         aria-label={`Profile of ${user.fullname}`}
       >
         <PopoverArrow {...popover} />
-        <UserProfile
-          user={user}
-          follow={follow}
-          onChange={(value) => setFollow(value)}
-        />
+        <UserProfile user={user} />
       </Popover>
     </>
   );
