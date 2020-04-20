@@ -57,6 +57,7 @@ export default function HoverPopover() {
       </PopoverDisclosure>
       <Popover
         {...popover}
+        unstable_autoFocusOnShow={false}
         aria-label={`Preview of ${user.fullname}'s profile`}
       >
         <PopoverArrow {...popover} />
