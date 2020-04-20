@@ -18,7 +18,7 @@ function useHoverPopoverState(initialState?: PopoverInitialState) {
     }
     popover.show();
   }, [popover.show]);
-  const hideWithDelay = React.useCallback(() => {
+  const hide = React.useCallback(() => {
     if (timeout) {
       window.clearTimeout(timeout);
     }
@@ -26,8 +26,8 @@ function useHoverPopoverState(initialState?: PopoverInitialState) {
   }, [popover.hide]);
   return {
     ...popover,
-    onMouseEnter: show,
-    onMouseLeave: hide,
+    show,
+    hide,
   };
 }
 
@@ -45,10 +45,15 @@ const user: User = {
 
 export default function HoverPopover() {
   const popover = useHoverPopoverState();
+  const popoverProps = {
+    onMouseEnter: popover.show,
+    onMouseLeave: popover.hide,
+  };
   return (
     <>
       <PopoverDisclosure
         {...popover}
+        {...popoverProps}
         as="a"
         href="#"
         aria-label={`See ${user.username}'s profile`}
@@ -57,6 +62,7 @@ export default function HoverPopover() {
       </PopoverDisclosure>
       <Popover
         {...popover}
+        {...popoverProps}
         unstable_autoFocusOnShow={false}
         aria-label={`Preview of ${user.fullname}'s profile`}
       >
