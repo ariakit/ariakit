@@ -20,5 +20,6 @@ export function useDisableHoverOutside(
       options.visible && options.modal
     );
   useEvent("mouseover");
+  useEvent("mousemove");
   useEvent("mouseout");
 }
