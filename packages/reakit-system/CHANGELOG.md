@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.10.0...reakit-system@0.11.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/609)) ([555b931](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+
+
+
+
+
 # [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.9.0...reakit-system@0.10.0) (2020-03-30)
 
 

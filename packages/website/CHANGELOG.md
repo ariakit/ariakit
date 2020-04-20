@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-rc.0...website@1.0.0-rc.1) (2020-04-20)
+
+
+### Features
+
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/website/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/website/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/website/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
 # [1.0.0-rc.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.16...website@1.0.0-rc.0) (2020-03-30)
 
 

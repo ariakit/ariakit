@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.9.0...reakit-playground@0.10.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/609)) ([555b931](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+
+
+### Features
+
+* Remove experimental `IdGroup` component ([1c73f02](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/1c73f021f78bca6a0c46c99b192d8ff11b124f4d))
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
 # [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.8.0...reakit-playground@0.9.0) (2020-03-30)
 
 
