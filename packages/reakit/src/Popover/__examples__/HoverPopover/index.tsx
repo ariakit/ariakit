@@ -5,26 +5,28 @@ import {
   Popover,
   PopoverDisclosure,
   PopoverArrow,
+  PopoverInitialState,
 } from "reakit/Popover";
 import { Separator } from "reakit/Separator";
 
-function useVisibilityState(initialState: boolean) {
-  let timeout: NodeJS.Timeout;
-  const [visible, setVisible] = React.useState(initialState);
+function useHoverPopoverState(initialState?: PopoverInitialState) {
+  let timeout: number;
+  const popover = usePopoverState(initialState);
   function show() {
-    if (timeout) global.clearTimeout(timeout);
-    setVisible(true);
+    if (timeout) window.clearTimeout(timeout);
+    popover.show();
   }
   function hide() {
-    if (timeout) global.clearTimeout(timeout);
-    timeout = global.setTimeout(() => {
-      setVisible(false);
+    if (timeout) window.clearTimeout(timeout);
+    timeout = window.setTimeout(() => {
+      popover.hide();
     }, 300);
   }
-  function toggle(isVisible: boolean) {
-    isVisible ? show() : hide();
-  }
-  return [visible, toggle] as const;
+  return {
+    ...popover,
+    onMouseEnter: show,
+    onMouseLeave: hide,
+  };
 }
 
 type User = {
@@ -33,24 +35,7 @@ type User = {
   description: string;
 };
 
-type Props = {
-  user: User;
-};
-
-function UserProfile({ user }: Props) {
-  return (
-    <>
-      <header>
-        {user.fullname} <small>({user.username})</small>
-      </header>
-      <p>{user.description}</p>
-      <Separator />
-      <Button>follow</Button>
-    </>
-  );
-}
-
-const user = {
+const user: User = {
   fullname: "John Doe",
   username: "@JohnDoe",
   description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed placerat,
@@ -59,29 +44,28 @@ const user = {
 };
 
 export default function HoverPopover() {
-  const popover = usePopoverState({});
-  const [visible, setVisible] = useVisibilityState(popover.visible);
-  React.useEffect(() => popover[visible ? "show" : "hide"](), [visible]);
-  const popoverVisibleOnHover = {
-    onMouseEnter: () => setVisible(true),
-    onMouseLeave: () => setVisible(false),
-  };
+  const popover = useHoverPopoverState();
   return (
     <>
       <PopoverDisclosure
         {...popover}
-        {...popoverVisibleOnHover}
-        aria-label={`Toggle ${user.username}'s profile`}
+        as="a"
+        href="#"
+        aria-label={`See ${user.username}'s profile`}
       >
         {user.username}
       </PopoverDisclosure>
       <Popover
         {...popover}
-        {...popoverVisibleOnHover}
-        aria-label={`Profile of ${user.fullname}`}
+        aria-label={`Preview of ${user.fullname}'s profile`}
       >
         <PopoverArrow {...popover} />
-        <UserProfile user={user} />
+        <header>
+          {user.fullname} <small>({user.username})</small>
+        </header>
+        <p>{user.description}</p>
+        <Separator />
+        <Button>follow</Button>
       </Popover>
     </>
   );
