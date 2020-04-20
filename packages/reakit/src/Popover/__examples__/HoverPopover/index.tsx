@@ -12,10 +12,12 @@ import { Separator } from "reakit/Separator";
 function useHoverPopoverState(initialState?: PopoverInitialState) {
   let timeout: number;
   const popover = usePopoverState(initialState);
-  function show() {
-    if (timeout) window.clearTimeout(timeout);
+  const show = React.useCallback(() => {
+    if (timeout) {
+      window.clearTimeout(timeout);
+    }
     popover.show();
-  }
+  }, [popover.show]);
   const hideWithDelay = React.useCallback(() => {
     if (timeout) {
       window.clearTimeout(timeout);
