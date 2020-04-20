@@ -1,9 +1,9 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { getDocument } from "reakit-utils/getDocument";
 import { contains } from "reakit-utils/contains";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
   unstable_CompositeItemOptions as CompositeItemOptions,
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
@@ -12,6 +12,9 @@ import {
 import { unstable_useId } from "../Id/Id";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
+import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
+import { useTransitToSubmenu } from "./__utils/useTransitToSubmenu";
+import { isExpandedDisclosure } from "./__utils/isExpandedDisclosure";
 
 export type MenuItemOptions = CompositeItemOptions &
   Pick<Partial<MenuStateReturn>, "visible" | "hide" | "placement"> &
@@ -21,18 +24,12 @@ export type MenuItemHTMLProps = CompositeItemHTMLProps;
 
 export type MenuItemProps = MenuItemOptions & MenuItemHTMLProps;
 
-function isExpandedDisclosure(element: HTMLElement) {
-  return (
-    element.hasAttribute("aria-controls") &&
-    element.getAttribute("aria-expanded") === "true"
-  );
-}
-
 function getMouseDestination(event: React.MouseEvent<HTMLElement, MouseEvent>) {
   const relatedTarget = event.relatedTarget as Node | null;
   if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
     return event.relatedTarget;
   }
+  // IE 11
   return (event as any).toElement || null;
 }
 
@@ -43,17 +40,14 @@ function hoveringInside(event: React.MouseEvent<HTMLElement, MouseEvent>) {
 }
 
 function hoveringExpandedMenu(
-  event: React.MouseEvent<HTMLElement, MouseEvent>
+  event: React.MouseEvent<HTMLElement, MouseEvent>,
+  children?: Array<React.RefObject<HTMLElement>>
 ) {
-  const self = event.currentTarget;
+  if (!children?.length) return false;
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
-  const document = getDocument(self);
-  if (!isExpandedDisclosure(self)) return false;
-  const menuId = self.getAttribute("aria-controls");
-  const menu = document.getElementById(menuId!);
-  if (!menu) return false;
-  return contains(menu, nextElement);
+  const visibleSubmenu = findVisibleSubmenu(children);
+  return visibleSubmenu && contains(visibleSubmenu, nextElement);
 }
 
 function hoveringAnotherMenuItem(
@@ -89,23 +83,29 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
     options,
     {
       onMouseEnter: htmlOnMouseEnter,
+      onMouseMove: htmlOnMouseMove,
       onMouseLeave: htmlOnMouseLeave,
       ...htmlProps
     }
   ) {
     const menu = React.useContext(MenuContext);
-    const menuRole = menu?.role;
-    const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
+    const onMouseMoveRef = useLiveRef(htmlOnMouseMove);
     const onMouseLeaveRef = useLiveRef(htmlOnMouseLeave);
+    const { onMouseEnter, isMouseInTransitToSubmenu } = useTransitToSubmenu(
+      menu,
+      htmlOnMouseEnter
+    );
 
-    const onMouseEnter = React.useCallback(
+    const onMouseMove = React.useCallback(
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        onMouseEnterRef.current?.(event);
+        onMouseMoveRef.current?.(event);
         if (event.defaultPrevented) return;
-        if (menuRole === "menubar") return;
+        if (menu?.role === "menubar") return;
+        if (isMouseInTransitToSubmenu(event)) return;
+        if (hasFocusWithin(event.currentTarget)) return;
         event.currentTarget.focus();
       },
-      [menuRole]
+      []
     );
 
     const onMouseLeave = React.useCallback(
@@ -116,20 +116,22 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
         if (hoveringInside(event)) return;
         // If this item is a menu disclosure and mouse is leaving it to focus
         // its respective submenu, we don't want to do anything.
-        if (hoveringExpandedMenu(event)) return;
+        if (hoveringExpandedMenu(event, menu?.children)) return;
         // On menu bars, hovering out of disclosure doesn't blur it.
-        if (menuRole === "menubar" && isExpandedDisclosure(self)) return;
+        if (menu?.role === "menubar" && isExpandedDisclosure(self)) return;
         // Move focus to menu after blurring
         if (!hoveringAnotherMenuItem(event, options.items)) {
+          if (isMouseInTransitToSubmenu(event)) return;
           options.move?.(null);
         }
       },
-      [menuRole, options.items, options.move]
+      [menu?.role, menu?.children, options.items, options.move]
     );
 
     return {
       role: "menuitem",
       onMouseEnter,
+      onMouseMove,
       onMouseLeave,
       ...htmlProps,
     };

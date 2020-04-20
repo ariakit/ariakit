@@ -13,6 +13,7 @@ import {
 } from "../Popover/PopoverDisclosure";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
+import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
 
 export type MenuButtonOptions = PopoverDisclosureOptions &
   Pick<Partial<MenuStateReturn>, "hide"> &
@@ -66,6 +67,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       const [dir] = options.placement.split("-");
       const hasParent = !!parent;
       const parentIsMenuBar = parent?.role === "menubar";
+      const disabled = options.disabled || htmlProps["aria-disabled"];
       const onClickRef = useLiveRef(htmlOnClick);
       const onKeyDownRef = useLiveRef(htmlOnKeyDown);
       const onFocusRef = useLiveRef(htmlOnFocus);
@@ -80,6 +82,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             // dialogs when MenuButton is focused
             preventDefault: (event) => event.key !== "Escape",
             stopPropagation: (event) => event.key !== "Escape",
+            shouldKeyDown: (event) => event.key === "Escape" || !disabled,
             onKey: () => options.show(),
             keyMap: () => {
               // prevents scroll jump
@@ -98,6 +101,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             },
           }),
         [
+          disabled,
           dir,
           hasParent,
           options.show,
@@ -118,10 +122,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
           if (parentIsMenuBar) {
             // if MenuButton is an item inside a MenuBar, it'll only open
             // if there's already another sibling expanded MenuButton
-            const subjacentOpenMenu = parent.children.some(
-              (r) => r.current && !r.current.hidden
-            );
-            if (subjacentOpenMenu) {
+            if (findVisibleSubmenu(parent.children)) {
               self.focus();
             }
           } else {
@@ -150,11 +151,12 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         (event: React.FocusEvent) => {
           onFocusRef.current?.(event);
           if (event.defaultPrevented) return;
+          if (disabled) return;
           if (parentIsMenuBar && !hasPressedMouse.current) {
             options.show?.();
           }
         },
-        [parentIsMenuBar, options.show]
+        [parentIsMenuBar, options.show, disabled]
       );
 
       // If disclosure is rendered as a menu bar item, it's toggable

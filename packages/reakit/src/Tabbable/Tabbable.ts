@@ -75,7 +75,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
-    const style = trulyDisabled
+    const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
 

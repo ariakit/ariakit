@@ -76,14 +76,14 @@ test("click disabled after clicking non-disabled", () => {
       </>
     );
   };
-  const { getByText } = render(<Test />);
+  const { getByText, baseElement } = render(<Test />);
   const button1 = getByText("button1");
   const button2 = getByText("button2");
 
   click(button1);
   expect(button1).toHaveFocus();
   click(button2);
-  expect(button1).toHaveFocus();
+  expect(baseElement).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
     Array [
@@ -110,6 +110,8 @@ test("click disabled after clicking non-disabled", () => {
       "pointerenter button2",
       "pointermove button2",
       "pointerdown button2",
+      "blur button1",
+      "focusout button1",
       "pointerup button2",
     ]
   `);
@@ -146,7 +148,7 @@ test("click disabled within focusable container", () => {
 
   expect(baseElement).toHaveFocus();
   click(button);
-  expect(baseElement).toHaveFocus();
+  expect(button.parentElement).toHaveFocus();
 });
 
 test("click label htmlFor", () => {
