@@ -51,6 +51,7 @@ yarn add reakit-utils
 -   [pick](#pick)
 -   [removeIndexFromArray](#removeindexfromarray)
 -   [removeItemFromArray](#removeitemfromarray)
+-   [shallowEqual](#shallowequal)
 -   [splitProps](#splitprops)
 -   [tabbable](#tabbable)
 -   [toArray](#toarray)
@@ -495,6 +496,28 @@ removeItemFromArray([obj], obj); // []
 ```
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** A new array without the passed item.
+
+### shallowEqual
+
+Compares two objects.
+
+#### Parameters
+
+-   `objA` **Record&lt;any, any>** 
+-   `objB` **Record&lt;any, any>** 
+
+#### Examples
+
+```javascript
+import { shallowEqual } from "reakit-utils";
+
+shallowEqual({ a: "a" }, {}); // false
+shallowEqual({ a: "a" }, { b: "b" }); // false
+shallowEqual({ a: "a" }, { a: "a" }); // true
+shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### splitProps
 

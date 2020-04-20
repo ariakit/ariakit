@@ -14,6 +14,7 @@ export default {
   "reakit-utils/toArray": require("reakit-utils/toArray"),
   "reakit-utils/tabbable": require("reakit-utils/tabbable"),
   "reakit-utils/splitProps": require("reakit-utils/splitProps"),
+  "reakit-utils/shallowEqual": require("reakit-utils/shallowEqual"),
   "reakit-utils/removeItemFromArray": require("reakit-utils/removeItemFromArray"),
   "reakit-utils/removeIndexFromArray": require("reakit-utils/removeIndexFromArray"),
   "reakit-utils/pick": require("reakit-utils/pick"),

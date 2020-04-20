@@ -15,6 +15,7 @@
 /toArray
 /tabbable
 /splitProps
+/shallowEqual
 /removeItemFromArray
 /removeIndexFromArray
 /pick
