@@ -16,12 +16,12 @@ function useHoverPopoverState(initialState?: PopoverInitialState) {
     if (timeout) window.clearTimeout(timeout);
     popover.show();
   }
-  function hide() {
-    if (timeout) window.clearTimeout(timeout);
-    timeout = window.setTimeout(() => {
-      popover.hide();
-    }, 300);
-  }
+  const hideWithDelay = React.useCallback(() => {
+    if (timeout) {
+      window.clearTimeout(timeout);
+    }
+    timeout = window.setTimeout(popover.hide, 300);
+  }, [popover.hide]);
   return {
     ...popover,
     onMouseEnter: show,
