@@ -5,6 +5,7 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { shallowEqual } from "reakit-utils/shallowEqual";
 import {
   DialogState,
   DialogActions,
@@ -106,6 +107,15 @@ export type PopoverStateReturn = DialogStateReturn &
   PopoverState &
   PopoverActions;
 
+function applyStyles(styles?: Partial<CSSStyleDeclaration>) {
+  return (prevStyles: React.CSSProperties) => {
+    if (styles && !shallowEqual(prevStyles, styles)) {
+      return styles as React.CSSProperties;
+    }
+    return prevStyles;
+  };
+}
+
 export function usePopoverState(
   initialState: SealedInitialState<PopoverInitialState> = {}
 ): PopoverStateReturn {
@@ -189,11 +199,12 @@ export function usePopoverState(
             // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
             name: "updateState",
             phase: "write",
-            enabled: process.env.NODE_ENV !== "test",
+            requires: ["computeStyles"],
+            enabled: dialog.visible && process.env.NODE_ENV !== "test",
             fn({ state }) {
               setPlacement(state.placement);
-              setPopoverStyles(state.styles.popper as React.CSSProperties);
-              setArrowStyles(state.styles.arrow as React.CSSProperties);
+              setPopoverStyles(applyStyles(state.styles.popper));
+              setArrowStyles(applyStyles(state.styles.arrow));
             },
           },
         ],
@@ -218,9 +229,13 @@ export function usePopoverState(
   // Ensure that the popover will be correctly positioned with an additional
   // update.
   React.useEffect(() => {
-    if (dialog.visible && popper.current) {
-      popper.current.update();
-    }
+    if (!dialog.visible) return undefined;
+    const id = window.requestAnimationFrame(() => {
+      popper.current?.forceUpdate();
+    });
+    return () => {
+      window.cancelAnimationFrame(id);
+    };
   }, [dialog.visible]);
 
   return {
