@@ -1,10 +1,10 @@
 import * as React from "react";
 import { render, press, hover, click, wait, focus } from "reakit-test-utils";
-import CompositeWithTooltip from "..";
+import MenuWithSubmenu from "..";
 
 test("open menu", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   expect(label("Edit")).not.toBeVisible();
   click(text("Edit"));
@@ -14,7 +14,7 @@ test("open menu", async () => {
 
 test("open menu by pressing enter", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   expect(label("Edit")).not.toBeVisible();
   focus(text("Edit"));
@@ -25,7 +25,7 @@ test("open menu by pressing enter", async () => {
 
 test("open menu by pressing space", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   expect(label("Edit")).not.toBeVisible();
   focus(text("Edit"));
@@ -36,7 +36,7 @@ test("open menu by pressing space", async () => {
 
 test("open menu by pressing arrow down", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   expect(label("Edit")).not.toBeVisible();
   focus(text("Edit"));
@@ -47,7 +47,7 @@ test("open menu by pressing arrow down", async () => {
 
 test("open menu by pressing arrow up", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   expect(label("Edit")).not.toBeVisible();
   focus(text("Edit"));
@@ -58,7 +58,7 @@ test("open menu by pressing arrow up", async () => {
 
 test("open submenu with click", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   click(text("Edit"));
   click(text("Find"));
@@ -68,7 +68,7 @@ test("open submenu with click", async () => {
 
 test("open submenu with hover", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   click(text("Edit"));
   hover(text("Find"));
@@ -78,7 +78,7 @@ test("open submenu with hover", async () => {
 
 test("open submenu by pressing enter", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   click(text("Edit"));
   focus(text("Find"));
@@ -89,7 +89,7 @@ test("open submenu by pressing enter", async () => {
 
 test("open submenu by pressing space", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   click(text("Edit"));
   focus(text("Find"));
@@ -100,7 +100,7 @@ test("open submenu by pressing space", async () => {
 
 test("open submenu by pressing arrow right", async () => {
   const { getByText: text, getByLabelText: label } = render(
-    <CompositeWithTooltip />
+    <MenuWithSubmenu />
   );
   click(text("Edit"));
   focus(text("Find"));
