@@ -38,9 +38,7 @@ type User = {
 const user: User = {
   fullname: "John Doe",
   username: "@JohnDoe",
-  description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed placerat,
-              tortor vestibulum tempus hendrerit, velit est pellentesque massa,
-              vulputate mollis diam nulla et felis. Donec molestie molestie tellus.`,
+  description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 };
 
 export default function HoverPopover() {
