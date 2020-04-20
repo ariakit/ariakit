@@ -202,7 +202,7 @@ export function getPreviousTabbableIn<T extends Element>(
 }
 
 /**
- * Returns the closest focusable parent of `element`.
+ * Returns the closest focusable element.
  *
  * @memberof tabbable
  *
@@ -210,14 +210,13 @@ export function getPreviousTabbableIn<T extends Element>(
  *
  * @returns {Element|null}
  */
-export function getClosestFocusable<T extends Element>(element: T): T | null {
-  let container: T | null = null;
-
-  do {
-    container = closest(element, selector);
-  } while (container && !isFocusable(container));
-
-  return container;
+export function getClosestFocusable<T extends Element>(
+  element?: T | null
+): T | null | undefined {
+  while (element && !isFocusable(element)) {
+    element = closest(element, selector) as T;
+  }
+  return element;
 }
 
 function defaultIsActive(element: Element) {

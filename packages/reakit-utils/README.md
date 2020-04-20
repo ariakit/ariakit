@@ -641,11 +641,11 @@ Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)
 
 #### getClosestFocusable
 
-Returns the closest focusable parent of `element`.
+Returns the closest focusable element.
 
 ##### Parameters
 
--   `element` **T** 
+-   `element` **(T | null)?** 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
