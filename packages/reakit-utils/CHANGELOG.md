@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.10.0...reakit-utils@0.11.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* **reakit-utils:** Fix `getClosestFocusable` iteration ([b72c623](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/b72c6235a60d5ac624e30ba3acd808b937b06002))
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/609)) ([555b931](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+
+
+### Features
+
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
 # [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.9.0...reakit-utils@0.10.0) (2020-03-30)
 
 

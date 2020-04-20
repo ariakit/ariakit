@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.1](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.0...reakit@1.0.0-rc.1) (2020-04-20)
+
+
+### Bug Fixes
+
+* Add missing `setVirtual` action to `CompositeState` reducer ([965704c](https://github.com/reakit/reakit/commit/965704c14c91e862dffa3425cf2a5c3f696bd751))
+* Fix `<Tabbable disabled focusable />` not focusing closest parent ([b3dfb96](https://github.com/reakit/reakit/commit/b3dfb96dd50969a0bbc9a3bbad11d761a498a0d1))
+* Fix `Checkbox` activating twice on space key on Firefox ([#625](https://github.com/reakit/reakit/issues/625)) ([c4d5961](https://github.com/reakit/reakit/commit/c4d59619f452dd608077857e6c678a91fcfcf87a)), closes [#368](https://github.com/reakit/reakit/issues/368)
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/issues/609)) ([555b931](https://github.com/reakit/reakit/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+* Fix `CompositeItem` not receiving focus when clicking with Safari/VoiceOver ([d3ba001](https://github.com/reakit/reakit/commit/d3ba0010acde0b6533fb6b456afc18968dd2ee89))
+* Fix `Dialog` closing on Firefox when the window loses focus and get focused again ([#620](https://github.com/reakit/reakit/issues/620)) ([7c3119d](https://github.com/reakit/reakit/commit/7c3119df82ec599b685ebd249d88faf78591f61f)), closes [#619](https://github.com/reakit/reakit/issues/619)
+* Fix `Menu` -> `Dialog` -> `Menu` behaving as a sub menu ([#621](https://github.com/reakit/reakit/issues/621)) ([9feb9c1](https://github.com/reakit/reakit/commit/9feb9c168efbbd21cbf06ed695dbf0fccf29148d))
+* Fix `Tooltip` when used with `Composite` components ([#623](https://github.com/reakit/reakit/issues/623)) ([0b70f43](https://github.com/reakit/reakit/commit/0b70f435673db13b75f82d69ac2760b485879674))
+* Fix animated `Dialog` not being correctly focused with VoiceOver ([#618](https://github.com/reakit/reakit/issues/618)) ([db71535](https://github.com/reakit/reakit/commit/db71535b4cdc4d7c88f7860d3a55b62202b845c8))
+* Fix click outside not closing all `Menu` ([341a250](https://github.com/reakit/reakit/commit/341a250fe90b350866dbfbb6662d786cf1a324ac))
+* Fix disabled `MenuButton` being activated when used as a menu item ([6c31dab](https://github.com/reakit/reakit/commit/6c31dab0be1ae606862d7dca6b5b523a67d40309))
+* Fix falsy values on `Radio` not working ([387e8d3](https://github.com/reakit/reakit/commit/387e8d3ffb521f14d3a8c77e9a0b161cde9cb020)), closes [#607](https://github.com/reakit/reakit/issues/607)
+* Fix nested `Dialog` not rendering correctly when the parent has a backdrop ([ce766d5](https://github.com/reakit/reakit/commit/ce766d57b97e6b081a41504e8676e5d47e23e9cd))
+* Fix nested modals when using VoiceOver/Safari ([#608](https://github.com/reakit/reakit/issues/608)) ([417b3b3](https://github.com/reakit/reakit/commit/417b3b391bdb2df173e97aee3276cc00d3db4efe))
+* Fix submenu closing when trying to move into it ([38f0c0b](https://github.com/reakit/reakit/commit/38f0c0b0ed9e9edb64143ea0c544e5101732ba4a))
+
+
+### Features
+
+* Add experimental `unstable_timeout` option to `useTooltipState` ([#622](https://github.com/reakit/reakit/issues/622)) ([5fe208f](https://github.com/reakit/reakit/commit/5fe208f26d3193b4ec73c4f945e1586c4ec52545))
+* Hide `Tooltip` when pressing `Escape` ([#629](https://github.com/reakit/reakit/issues/629)) ([d7f5e8c](https://github.com/reakit/reakit/commit/d7f5e8cca981ca234a3a3f4afe6190d59b4f50be))
+* Remove experimental `IdGroup` component ([1c73f02](https://github.com/reakit/reakit/commit/1c73f021f78bca6a0c46c99b192d8ff11b124f4d))
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/issues/616)) ([16f843f](https://github.com/reakit/reakit/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
 # [1.0.0-rc.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.16...reakit@1.0.0-rc.0) (2020-03-30)
 
 
