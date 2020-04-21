@@ -149,7 +149,7 @@ function Tooltip({ children, title, ...props }) {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipReference {...tooltip} {...children.props}>
+      <TooltipReference  {...tooltip} ref={children.ref} {...children.props}>
         {(referenceProps) => React.cloneElement(children, referenceProps)}
       </TooltipReference>
       <ReakitTooltip {...tooltip} {...props}>
