@@ -42,6 +42,7 @@ export function useTransitToSubmenu(
   const submenuTopPointRef = React.useRef<Point | null>(null);
   const submenuBottomPointRef = React.useRef<Point | null>(null);
   const previousClientX = React.useRef(0);
+  const previousClientY = React.useRef(0);
 
   const assignSubmenuAnchorPoints = React.useCallback(
     (event: React.MouseEvent) => {
@@ -60,8 +61,16 @@ export function useTransitToSubmenu(
 
   const isMouseInTransitToSubmenu = React.useCallback(
     (event: React.MouseEvent) => {
+      const isMoving =
+        previousClientX.current !== event.clientX ||
+        previousClientY.current !== event.clientY;
+      if (!isMoving) {
+        // Safari sometimes triggers mousemove without a mouse movement
+        return true;
+      }
       const movementX = Math.abs(previousClientX.current - event.clientX);
       previousClientX.current = event.clientX;
+      previousClientY.current = event.clientY;
       const hasAnchorPoints = () =>
         submenuTopPointRef.current && submenuBottomPointRef.current;
       if (event.type === "mouseleave" && !hasAnchorPoints()) {

@@ -134,6 +134,7 @@ export function usePopoverState(
   const referenceRef = React.useRef<HTMLElement>(null);
   const popoverRef = React.useRef<HTMLElement>(null);
   const arrowRef = React.useRef<HTMLElement>(null);
+  const popperCreated = React.useRef(false);
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);
@@ -200,7 +201,10 @@ export function usePopoverState(
             name: "updateState",
             phase: "write",
             requires: ["computeStyles"],
-            enabled: dialog.visible && process.env.NODE_ENV !== "test",
+            enabled:
+              // Safari needs styles to be applied in the first render
+              (!popperCreated.current || dialog.visible) &&
+              process.env.NODE_ENV !== "test",
             fn({ state }) {
               setPlacement(state.placement);
               setPopoverStyles(applyStyles(state.styles.popper));
@@ -209,6 +213,7 @@ export function usePopoverState(
           },
         ],
       });
+      popperCreated.current = true;
     }
     return () => {
       if (popper.current) {
