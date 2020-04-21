@@ -328,7 +328,7 @@ function Dialog({ disclosure, ...props }) {
   const dialog = useDialogState();
   return (
     <>
-      <DialogDisclosure {...dialog} {...disclosure.props}>
+      <DialogDisclosure {...dialog} ref={disclosure.ref} {...disclosure.props}>
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </DialogDisclosure>
       <BaseDialog {...dialog} {...props} />
