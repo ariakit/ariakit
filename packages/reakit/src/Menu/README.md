@@ -428,7 +428,7 @@ function Menu({ disclosure, items, ...props }) {
   const menu = useMenuState();
   return (
     <>
-      <MenuButton {...menu} {...disclosure.props}>
+      <MenuButton {...menu} ref={disclosure.ref} {...disclosure.props}>
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </MenuButton>
       <BaseMenu {...menu} {...props}>
