@@ -6,7 +6,6 @@ import {
   useCheckbox,
   CheckboxHTMLProps,
 } from "../Checkbox/Checkbox";
-import { unstable_useId } from "../Id/Id";
 import { MenuItemOptions, MenuItemHTMLProps, useMenuItem } from "./MenuItem";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 
@@ -54,15 +53,8 @@ export const useMenuItemCheckbox = createHook<
   },
 });
 
-const MenuItemCheckboxWithoutId = createComponent({
-  as: "button",
-  useHook: useMenuItemCheckbox,
-});
-
 export const MenuItemCheckbox = createComponent({
   as: "button",
-  useCreateElement(type, props) {
-    const { id } = unstable_useId(props);
-    return <MenuItemCheckboxWithoutId as={type} id={id} {...props} />;
-  },
+  memo: true,
+  useHook: useMenuItemCheckbox,
 });

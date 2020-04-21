@@ -67,58 +67,21 @@ import {
   unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
+const arr = Array.from(Array(25).keys());
+
 function Example() {
   const composite = useCompositeState({ unstable_virtual: true, loop: true });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      <CompositeItem {...composite}>Item 1</CompositeItem>
-      <CompositeItem {...composite}>Item 2</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
-      <CompositeItem {...composite}>Item 3</CompositeItem>
+      {arr.map((i) => (
+        <CompositeItem {...composite} key={i} id={`item-${i}`}>
+          {`Item ${i}`}
+        </CompositeItem>
+      ))}
     </Composite>
   );
 }
+
 ```
 
 ### Two-dimensional navigation
@@ -134,6 +97,19 @@ import {
   unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
+const grid = [
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+  Array.from(Array(8).keys()),
+];
+
 function Grid(props) {
   return <Composite role="grid" {...props} />;
 }
@@ -143,34 +119,33 @@ function GridRow(props) {
 }
 
 function GridCell(props) {
-  return <CompositeItem as="div" role="gridcell" {...props} />;
+  return <CompositeItem as="span" role="gridcell" {...props} />;
 }
 
+const Row = React.memo(
+  ({ index, ...props }) => (
+    <GridRow {...props}>
+      {grid[index].map((i) => (
+        <GridCell {...props} id={`item-${index}-${i}`}>
+          {`Item ${i}`}
+        </GridCell>
+      ))}
+    </GridRow>
+  ),
+  CompositeGroup.unstable_propsAreEqual
+);
+
 function Example() {
-  const composite = useCompositeState({ wrap: true });
+  const composite = useCompositeState({
+    unstable_virtual: true,
+    loop: true,
+    wrap: true,
+  });
   return (
     <Grid {...composite} aria-label="My grid">
-      <GridRow {...composite}>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-      </GridRow>
-      <GridRow {...composite}>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-      </GridRow>
-      <GridRow {...composite}>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-        <GridCell {...composite}>Item</GridCell>
-      </GridRow>
+      {grid.map((_, index) => (
+        <Row {...composite} key={index} index={index} id={`row-${index}`} />
+      ))}
     </Grid>
   );
 }

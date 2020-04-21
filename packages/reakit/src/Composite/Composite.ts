@@ -362,17 +362,15 @@ export const unstable_Composite = createComponent({
   useHook: unstable_useComposite,
   useCreateElement: (type, props, children) => {
     useWarning(
-      validCompositeRoles.indexOf(props.role) === -1,
+      !props.role || validCompositeRoles.indexOf(props.role) === -1,
       "You should provide a valid `role` attribute to composite components.",
       "See https://reakit.io/docs/composite"
     );
-
     useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/composite"
     );
-
     return useCreateElement(type, props, children);
   },
 });

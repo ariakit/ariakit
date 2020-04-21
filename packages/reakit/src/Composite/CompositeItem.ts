@@ -10,7 +10,6 @@ import { isTextField } from "reakit-utils/isTextField";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
-import { shallowEqual } from "reakit-utils/shallowEqual";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -77,8 +76,6 @@ function useItem(options: unstable_CompositeItemOptions) {
   );
 }
 
-// let i = 0;
-
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
@@ -89,8 +86,8 @@ export const unstable_useCompositeItem = createHook<
   keys: ["stopId"],
 
   propsAreEqual(prev, next) {
-    if (!next.id) {
-      return shallowEqual(prev, next);
+    if (!next.id || prev.id !== next.id) {
+      return useClickable.unstable_propsAreEqual(prev, next);
     }
     const {
       currentId: prevCurrentId,
@@ -102,12 +99,10 @@ export const unstable_useCompositeItem = createHook<
       unstable_moves: nextMoves,
       ...nextProps
     } = next;
-    if (prev.id === next.id) {
-      if (next.id === nextCurrentId || next.id === prevCurrentId) {
-        return false;
-      }
+    if (next.id === nextCurrentId || next.id === prevCurrentId) {
+      return false;
     }
-    return shallowEqual(prevProps, nextProps);
+    return useClickable.unstable_propsAreEqual(prevProps, nextProps);
   },
 
   useOptions(options) {
@@ -151,14 +146,6 @@ export const unstable_useCompositeItem = createHook<
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
       !options.items;
-
-    const prevProps = React.useRef({});
-
-    React.useEffect(() => {
-      prevProps.current = options;
-    });
-
-    // console.log(++i);
 
     useWarning(
       !!options.stopId,
@@ -369,18 +356,8 @@ export const unstable_useCompositeItem = createHook<
   },
 });
 
-const CompositeItemWithoutId = createComponent({
+export const unstable_CompositeItem = createComponent({
   as: "button",
+  memo: true,
   useHook: unstable_useCompositeItem,
-});
-
-export const unstable_CompositeItem = createComponent<
-  "button",
-  unstable_CompositeItemOptions
->({
-  as: "button",
-  useCreateElement(type, props) {
-    const { id } = unstable_useId(props);
-    return <CompositeItemWithoutId as={type} id={id} {...props} />;
-  },
 });

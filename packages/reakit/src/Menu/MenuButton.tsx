@@ -5,7 +5,6 @@ import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import { shallowEqual } from "reakit-utils/shallowEqual";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,
@@ -16,7 +15,14 @@ import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
 
 export type MenuButtonOptions = PopoverDisclosureOptions &
-  Pick<Partial<MenuStateReturn>, "hide"> &
+  Pick<
+    Partial<MenuStateReturn>,
+    | "hide"
+    | "unstable_popoverStyles"
+    | "unstable_arrowStyles"
+    | "currentId"
+    | "unstable_moves"
+  > &
   Pick<MenuStateReturn, "show" | "placement" | "first" | "last">;
 
 export type MenuButtonHTMLProps = PopoverDisclosureHTMLProps;
@@ -46,7 +52,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         unstable_moves: nextMoves,
         ...nextProps
       } = next;
-      return shallowEqual(prevProps, nextProps);
+      return usePopoverDisclosure.unstable_propsAreEqual(prevProps, nextProps);
     },
 
     useProps(

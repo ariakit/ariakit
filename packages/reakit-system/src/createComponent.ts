@@ -1,6 +1,7 @@
 import * as React from "react";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { splitProps } from "reakit-utils/splitProps";
+import { shallowEqual } from "reakit-utils/shallowEqual";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 import { memo } from "./__utils/memo";
@@ -12,8 +13,8 @@ type BoxHTMLProps = React.HTMLAttributes<any> &
 
 type Hook<O> = {
   (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
+  unstable_propsAreEqual?: (prev: O, next: O) => boolean;
   __keys?: ReadonlyArray<any>;
-  __propsAreEqual?: (prev: O, next: O) => boolean;
 };
 
 type Options<T extends As, O> = {
@@ -38,6 +39,12 @@ export type Component<T extends As, O> = {
   // The following two types are a workaround.
   <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
   (props: PropsWithAs<O, T>): JSX.Element;
+  displayName?: string;
+  unstable_propsAreEqual: (
+    prev: PropsWithAs<O, T>,
+    next: PropsWithAs<O, T>
+  ) => boolean;
+  __keys?: ReadonlyArray<any>;
 };
 
 /**
@@ -54,11 +61,11 @@ export function createComponent<T extends As, O>({
   as: type,
   useHook,
   memo: shouldMemo,
-  propsAreEqual = useHook?.__propsAreEqual,
+  propsAreEqual = useHook?.unstable_propsAreEqual,
   keys = useHook?.__keys || [],
   useCreateElement = defaultUseCreateElement,
 }: Options<T, O>) {
-  const Comp = (
+  let Comp = ((
     { as = type, ...props }: PropsWithAs<O, T>,
     ref: React.Ref<T>
   ) => {
@@ -81,17 +88,21 @@ export function createComponent<T extends As, O>({
       return element;
     }
     return useCreateElement(as, { ref, ...props });
-  };
-
-  (Comp as any).__keys = keys;
+  }) as Component<T, O>;
 
   if (process.env.NODE_ENV !== "production" && useHook) {
-    (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
+    Comp.displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
-  if (shouldMemo || propsAreEqual) {
-    return memo(forwardRef(Comp as Component<T, O>), propsAreEqual);
+  Comp = forwardRef(Comp);
+
+  if (shouldMemo) {
+    Comp = memo(Comp, propsAreEqual);
   }
 
-  return forwardRef(Comp as Component<T, O>);
+  Comp.__keys = keys;
+
+  Comp.unstable_propsAreEqual = propsAreEqual || shallowEqual;
+
+  return Comp;
 }

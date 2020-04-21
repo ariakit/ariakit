@@ -9,7 +9,6 @@ import {
   unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
   unstable_useCompositeItem as useCompositeItem,
 } from "../Composite/CompositeItem";
-import { unstable_useId } from "../Id/Id";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
@@ -17,7 +16,14 @@ import { useTransitToSubmenu } from "./__utils/useTransitToSubmenu";
 import { isExpandedDisclosure } from "./__utils/isExpandedDisclosure";
 
 export type MenuItemOptions = CompositeItemOptions &
-  Pick<Partial<MenuStateReturn>, "visible" | "hide" | "placement"> &
+  Pick<
+    Partial<MenuStateReturn>,
+    | "visible"
+    | "hide"
+    | "placement"
+    | "unstable_popoverStyles"
+    | "unstable_arrowStyles"
+  > &
   Pick<MenuStateReturn, "next" | "previous" | "move">;
 
 export type MenuItemHTMLProps = CompositeItemHTMLProps;
@@ -76,7 +82,7 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       visible: nextVisible,
       ...nextProps
     } = next;
-    return useCompositeItem.__propsAreEqual?.(prevProps, nextProps);
+    return useCompositeItem.unstable_propsAreEqual(prevProps, nextProps);
   },
 
   useProps(
@@ -138,16 +144,8 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   },
 });
 
-const MenuItemWithoutId = createComponent({
+export const MenuItem = createComponent({
   as: "button",
   memo: true,
   useHook: useMenuItem,
-});
-
-export const MenuItem = createComponent({
-  as: "button",
-  useCreateElement(type, props) {
-    const { id } = unstable_useId(props);
-    return <MenuItemWithoutId as={type} id={id} {...props} />;
-  },
 });

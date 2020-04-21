@@ -1,16 +1,13 @@
 import { toArray } from "reakit-utils/toArray";
 import { shallowEqual } from "reakit-utils/shallowEqual";
-import { isObject } from "reakit-utils/isObject";
-import { pick } from "reakit-utils/pick";
-import { omit } from "reakit-utils/omit";
 import { useOptions } from "./useOptions";
 import { useProps } from "./useProps";
 
 type Hook<O = any, P = any> = {
   (options?: O, htmlProps?: P, unstable_ignoreUseOptions?: boolean): P;
+  unstable_propsAreEqual: (prev: O & P, next: O & P) => boolean;
   __keys: ReadonlyArray<any>;
   __useOptions: (options: O, htmlProps: P) => O;
-  __propsAreEqual?: (prev: O & P, next: O & P) => boolean;
 };
 
 type CreateHookOptions<O, P> = {
@@ -116,33 +113,10 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     ...(options.keys || []),
   ];
 
-  const hasPropsAreEqual =
-    !!options.propsAreEqual ||
-    composedHooks.some((hook) => !!hook.__propsAreEqual);
-
-  if (hasPropsAreEqual) {
-    useHook.__propsAreEqual = (prev, next) => {
-      if (options.propsAreEqual) {
-        return options.propsAreEqual(prev, next);
-      }
-      for (const hook of composedHooks) {
-        if (hook.__propsAreEqual) {
-          if (!hook.__propsAreEqual(prev, next)) {
-            return false;
-          }
-        }
-      }
-
-      // @ts-ignore
-      if (prev.children !== next.children) {
-        return false;
-      }
-      return shallowEqual(
-        omit(prev, useHook.__keys),
-        omit(next, useHook.__keys)
-      );
-    };
-  }
+  useHook.unstable_propsAreEqual =
+    options.propsAreEqual ||
+    composedHooks[0]?.unstable_propsAreEqual ||
+    shallowEqual;
 
   if (process.env.NODE_ENV !== "production" && options.name) {
     Object.defineProperty(useHook, "name", {

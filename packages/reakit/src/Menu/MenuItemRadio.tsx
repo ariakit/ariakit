@@ -2,7 +2,6 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
-import { unstable_useId } from "../Id/Id";
 import { MenuStateReturn, useMenuState } from "./MenuState";
 import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
 
@@ -28,10 +27,6 @@ export const useMenuItemRadio = createHook<
   useState: useMenuState,
   keys: ["name"],
 
-  propsAreEqual(prev, next) {
-    return useMenuItem.__propsAreEqual?.(prev, next);
-  },
-
   useOptions(options) {
     const setState = React.useCallback(
       (value) => options.unstable_setValue(options.name, value),
@@ -50,15 +45,8 @@ export const useMenuItemRadio = createHook<
   },
 });
 
-const MenuItemRadioWithoutId = createComponent({
-  as: "button",
-  useHook: useMenuItemRadio,
-});
-
 export const MenuItemRadio = createComponent({
   as: "button",
-  useCreateElement(type, props) {
-    const { id } = unstable_useId(props);
-    return <MenuItemRadioWithoutId as={type} id={id} {...props} />;
-  },
+  memo: true,
+  useHook: useMenuItemRadio,
 });

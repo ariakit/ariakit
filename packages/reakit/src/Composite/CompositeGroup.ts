@@ -13,10 +13,15 @@ import {
   unstable_CompositeStateReturn,
   unstable_useCompositeState,
 } from "./CompositeState";
+import { findEnabledItemById } from "./__utils/findEnabledItemById";
 
 export type unstable_CompositeGroupOptions = GroupOptions &
   unstable_IdOptions &
-  Pick<unstable_CompositeStateReturn, "registerGroup" | "unregisterGroup">;
+  Pick<unstable_CompositeStateReturn, "registerGroup" | "unregisterGroup"> &
+  Pick<
+    Partial<unstable_CompositeStateReturn>,
+    "currentId" | "unstable_moves" | "items"
+  >;
 
 export type unstable_CompositeGroupHTMLProps = GroupHTMLProps &
   unstable_IdHTMLProps;
@@ -31,6 +36,32 @@ export const unstable_useCompositeGroup = createHook<
   name: "CompositeGroup",
   compose: [useGroup, unstable_useId],
   useState: unstable_useCompositeState,
+
+  propsAreEqual(prev, next) {
+    if (!next.id || prev.id !== next.id) {
+      return useGroup.unstable_propsAreEqual(prev, next);
+    }
+    const {
+      currentId: prevCurrentId,
+      unstable_moves: prevMoves,
+      ...prevProps
+    } = prev;
+    const {
+      currentId: nextCurrentId,
+      unstable_moves: nextMoves,
+      ...nextProps
+    } = next;
+    if (prev.items && next.items) {
+      const prevCurrentItem = findEnabledItemById(prev.items, prevCurrentId);
+      const nextCurrentItem = findEnabledItemById(next.items, nextCurrentId);
+      const prevGroupId = prevCurrentItem?.groupId;
+      const nextGroupId = nextCurrentItem?.groupId;
+      if (next.id === nextGroupId || next.id === prevGroupId) {
+        return false;
+      }
+    }
+    return useGroup.unstable_propsAreEqual(prevProps, nextProps);
+  },
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
