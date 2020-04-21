@@ -10,20 +10,36 @@ import {
 import { Separator } from "reakit/Separator";
 
 function useHoverPopoverState(initialState?: PopoverInitialState) {
-  let timeout: number;
+  const timeout = 300;
+  const showTimeout = React.useRef<number | null>(null);
+  const hideTimeout = React.useRef<number | null>(null);
   const popover = usePopoverState(initialState);
+  const clearTimeouts = React.useCallback(() => {
+    if (showTimeout.current !== null) {
+      window.clearTimeout(showTimeout.current);
+    }
+    if (hideTimeout.current !== null) {
+      window.clearTimeout(hideTimeout.current);
+    }
+  }, []);
   const show = React.useCallback(() => {
-    if (timeout) {
-      window.clearTimeout(timeout);
-    }
-    popover.show();
-  }, [popover.show]);
+    clearTimeouts();
+    showTimeout.current = window.setTimeout(() => {
+      popover.show();
+    }, timeout);
+  }, [clearTimeouts, popover.show]);
   const hide = React.useCallback(() => {
-    if (timeout) {
-      window.clearTimeout(timeout);
-    }
-    timeout = window.setTimeout(popover.hide, 300);
-  }, [popover.hide]);
+    clearTimeouts();
+    hideTimeout.current = window.setTimeout(() => {
+      popover.hide();
+    }, timeout);
+  }, [clearTimeouts, popover.hide]);
+  React.useEffect(
+    () => () => {
+      clearTimeouts();
+    },
+    [clearTimeouts]
+  );
   return {
     ...popover,
     show,
