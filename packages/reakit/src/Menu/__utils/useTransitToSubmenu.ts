@@ -64,7 +64,7 @@ export function useTransitToSubmenu(
       const isMoving =
         previousClientX.current !== event.clientX ||
         previousClientY.current !== event.clientY;
-      if (!isMoving) {
+      if (event.isTrusted && !isMoving) {
         // Safari sometimes triggers mousemove without a mouse movement
         return true;
       }
