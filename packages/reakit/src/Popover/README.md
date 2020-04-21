@@ -214,7 +214,7 @@ function Popover({ disclosure, ...props }) {
   const popover = usePopoverState();
   return (
     <>
-      <PopoverDisclosure {...popover} {...disclosure.props}>
+      <PopoverDisclosure {...popover} ref={disclosure.ref} {...disclosure.props}>
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </PopoverDisclosure>
       <BasePopover {...popover} {...props}>
