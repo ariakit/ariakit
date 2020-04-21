@@ -29,7 +29,7 @@ export function useFocusOnShow(
     if (animating) return;
 
     // If there're nested open dialogs, let them handle focus
-    if (nestedDialogs.some((child) => !child.current?.hidden)) {
+    if (nestedDialogs.some((child) => child.current && !child.current.hidden)) {
       return;
     }
 
