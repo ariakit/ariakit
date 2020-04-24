@@ -19,9 +19,9 @@
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
-    "clean": "../../scripts/build/clean.js",
-    "build": "../../scripts/build/build.js",
-    "docs": "../../scripts/build/docs.js",
+    "clean": "node ../../scripts/build/clean.js",
+    "build": "node ../../scripts/build/build.js",
+    "docs": "node ../../scripts/build/docs.js",
     "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
