@@ -151,12 +151,17 @@ function isPublicModule(rootPath, filename) {
 function getPublicFiles(rootPath, prefix = "") {
   return readdirSync(rootPath)
     .filter((filename) => isPublicModule(rootPath, filename))
+    .sort() // Ensure consistent order across platforms
     .reduce((acc, filename) => {
       const path = join(rootPath, filename);
       const childFiles =
         isDirectory(path) && getPublicFiles(path, join(prefix, filename));
       return {
-        ...(childFiles || { [removeExt(join(prefix, filename))]: path }),
+        ...(childFiles || {
+          [removeExt(normalizePath(join(prefix, filename)))]: normalizePath(
+            path
+          ),
+        }),
         ...acc,
       };
     }, {});
