@@ -796,39 +796,6 @@ test("focus the first tabbable element when nested dialog opens", () => {
   expect(button2).toHaveFocus();
 });
 
-test("focus disclosure in dialog when nested dialog closes", () => {
-  const Test = () => {
-    const dialog = useDialogState();
-    const dialog2 = useDialogState();
-    return (
-      <>
-        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} tabIndex={undefined} aria-label="dialog1">
-          <button>button1</button>
-          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2">
-            <button>button2</button>
-            <button>button3</button>
-          </Dialog>
-        </Dialog>
-      </>
-    );
-  };
-  const { getByText, getByLabelText } = render(<Test />);
-  const disclosure1 = getByText("disclosure1");
-  const dialog1 = getByLabelText("dialog1");
-  const disclosure2 = getByText("disclosure2");
-  const dialog2 = getByLabelText("dialog2");
-  const button2 = getByText("button2");
-  click(disclosure1);
-  focus(disclosure2);
-  click(disclosure2);
-  expect(button2).toHaveFocus();
-  click(dialog1);
-  expect(dialog2).not.toBeVisible();
-  expect(disclosure2).toHaveFocus();
-});
-
 test("focus is trapped within the nested dialog", () => {
   const Test = () => {
     const dialog = useDialogState();
