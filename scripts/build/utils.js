@@ -226,6 +226,7 @@ function makeGitignore(rootPath) {
   const buildFolders = getBuildFolders(rootPath);
   const contents = buildFolders
     .filter(isRootModule)
+    .sort() // Ensure that the order is consistent across platforms
     .map((name) => `/${name}`)
     .join("\n");
   writeFileSync(
