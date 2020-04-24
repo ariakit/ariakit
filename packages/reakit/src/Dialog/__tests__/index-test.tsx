@@ -1402,3 +1402,24 @@ test("nested modal dialog with backdrop markup", () => {
     </body>
   `);
 });
+
+test("should render the default tabIndex when none is specified", () => {
+  function Test() {
+    const dialog = useDialogState();
+    return <Dialog {...dialog} aria-label="dialog" />;
+  }
+
+  const { getByLabelText } = render(<Test />);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", "-1");
+});
+
+// See https://github.com/reakit/reakit/issues/636
+test("passing undefined to tabIndex should render the default tabIndex of -1", () => {
+  function Test() {
+    const dialog = useDialogState();
+    return <Dialog {...dialog} aria-label="dialog" tabIndex={undefined} />;
+  }
+
+  const { getByLabelText } = render(<Test />);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", -1);
+});
