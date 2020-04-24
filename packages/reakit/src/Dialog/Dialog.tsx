@@ -131,6 +131,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       ref: htmlRef,
       onKeyDown: htmlOnKeyDown,
       wrapElement: htmlWrapElement,
+      tabIndex,
       ...htmlProps
     }
   ) {
@@ -193,7 +194,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     return {
       ref: useForkRef(dialog, htmlRef),
       role: "dialog",
-      tabIndex: -1,
+      tabIndex: tabIndex ?? -1,
       "aria-modal": modal,
       "data-dialog": true,
       onKeyDown,

@@ -796,39 +796,6 @@ test("focus the first tabbable element when nested dialog opens", () => {
   expect(button2).toHaveFocus();
 });
 
-test("focus disclosure in dialog when nested dialog closes", () => {
-  const Test = () => {
-    const dialog = useDialogState();
-    const dialog2 = useDialogState();
-    return (
-      <>
-        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} tabIndex={undefined} aria-label="dialog1">
-          <button>button1</button>
-          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2">
-            <button>button2</button>
-            <button>button3</button>
-          </Dialog>
-        </Dialog>
-      </>
-    );
-  };
-  const { getByText, getByLabelText } = render(<Test />);
-  const disclosure1 = getByText("disclosure1");
-  const dialog1 = getByLabelText("dialog1");
-  const disclosure2 = getByText("disclosure2");
-  const dialog2 = getByLabelText("dialog2");
-  const button2 = getByText("button2");
-  click(disclosure1);
-  focus(disclosure2);
-  click(disclosure2);
-  expect(button2).toHaveFocus();
-  click(dialog1);
-  expect(dialog2).not.toBeVisible();
-  expect(disclosure2).toHaveFocus();
-});
-
 test("focus is trapped within the nested dialog", () => {
   const Test = () => {
     const dialog = useDialogState();
@@ -1401,4 +1368,25 @@ test("nested modal dialog with backdrop markup", () => {
       />
     </body>
   `);
+});
+
+test("should render the default tabIndex when none is specified", () => {
+  function Test() {
+    const dialog = useDialogState();
+    return <Dialog {...dialog} aria-label="dialog" />;
+  }
+
+  const { getByLabelText } = render(<Test />);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", "-1");
+});
+
+// See https://github.com/reakit/reakit/issues/636
+test("passing undefined to tabIndex should render the default tabIndex of -1", () => {
+  function Test() {
+    const dialog = useDialogState();
+    return <Dialog {...dialog} aria-label="dialog" tabIndex={undefined} />;
+  }
+
+  const { getByLabelText } = render(<Test />);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", "-1");
 });
