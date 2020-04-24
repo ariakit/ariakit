@@ -1421,5 +1421,5 @@ test("passing undefined to tabIndex should render the default tabIndex of -1", (
   }
 
   const { getByLabelText } = render(<Test />);
-  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", -1);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", "-1");
 });
