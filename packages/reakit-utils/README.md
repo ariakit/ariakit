@@ -503,8 +503,8 @@ Compares two objects.
 
 #### Parameters
 
--   `objA` **Record&lt;any, any>** 
--   `objB` **Record&lt;any, any>** 
+-   `objA` **Record&lt;any, any>?** 
+-   `objB` **Record&lt;any, any>?** 
 
 #### Examples
 
