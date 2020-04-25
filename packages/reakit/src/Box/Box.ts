@@ -28,7 +28,7 @@ export const useBox = createHook<BoxOptions, BoxHTMLProps>({
   propsAreEqual(prev, next) {
     const { unstable_system: prevSystem, ...prevProps } = prev;
     const { unstable_system: nextSystem, ...nextProps } = next;
-    if (prevSystem && nextSystem && prevSystem !== nextSystem) {
+    if (prevSystem !== nextSystem) {
       if (!shallowEqual(prevSystem, nextSystem)) {
         return false;
       }
