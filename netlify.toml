@@ -16,4 +16,6 @@
   for = "/storybook/iframe.html"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
-    
+
+[[plugins]]
+  package = "netlify-plugin-gatsby-cache"
