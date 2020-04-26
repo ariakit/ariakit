@@ -67,21 +67,18 @@ import {
   unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
-const arr = Array.from(Array(25).keys());
-
 function Example() {
-  const composite = useCompositeState({ unstable_virtual: true, loop: true });
+  const composite = useCompositeState({ unstable_virtual: true });
   return (
     <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      {arr.map((i) => (
-        <CompositeItem {...composite} key={i} id={`item-${i}`}>
-          {`Item ${i}`}
-        </CompositeItem>
-      ))}
+      <CompositeItem {...composite} onClick={() => alert("clicked")}>
+        Item 1
+      </CompositeItem>
+      <CompositeItem {...composite}>Item 2</CompositeItem>
+      <CompositeItem {...composite}>Item 3</CompositeItem>
     </Composite>
   );
 }
-
 ```
 
 ### Two-dimensional navigation
@@ -97,19 +94,6 @@ import {
   unstable_CompositeItem as CompositeItem,
 } from "reakit/Composite";
 
-const grid = [
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-  Array.from(Array(8).keys()),
-];
-
 function Grid(props) {
   return <Composite role="grid" {...props} />;
 }
@@ -119,33 +103,34 @@ function GridRow(props) {
 }
 
 function GridCell(props) {
-  return <CompositeItem as="span" role="gridcell" {...props} />;
+  return <CompositeItem as="div" role="gridcell" {...props} />;
 }
 
-const Row = React.memo(
-  ({ index, ...props }) => (
-    <GridRow {...props}>
-      {grid[index].map((i) => (
-        <GridCell {...props} id={`item-${index}-${i}`}>
-          {`Item ${i}`}
-        </GridCell>
-      ))}
-    </GridRow>
-  ),
-  CompositeGroup.unstable_propsAreEqual
-);
-
 function Example() {
-  const composite = useCompositeState({
-    unstable_virtual: true,
-    loop: true,
-    wrap: true,
-  });
+  const composite = useCompositeState({ wrap: true });
   return (
     <Grid {...composite} aria-label="My grid">
-      {grid.map((_, index) => (
-        <Row {...composite} key={index} index={index} id={`row-${index}`} />
-      ))}
+      <GridRow {...composite}>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+      </GridRow>
+      <GridRow {...composite}>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+      </GridRow>
+      <GridRow {...composite}>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+        <GridCell {...composite}>Item</GridCell>
+      </GridRow>
     </Grid>
   );
 }
@@ -174,6 +159,118 @@ function Example() {
         <CompositeItemWidget {...composite} as="input" type="text" />
       </CompositeItem>
       <CompositeItem {...composite}>Item 4</CompositeItem>
+    </Composite>
+  );
+}
+```
+
+## Performance
+
+If you notice performance issues when rendering several `CompositeItem`s, you can do the following:
+
+1. Pass an `id` prop to each `CompositeItem`.
+2. Memoize all non-primitive props that you're passing to `CompositeItem`, including event handlers (e.g. `onClick`) and the `children` prop.
+
+`CompositeItem` will compare the passed `id` with `composite.currentId` and, if the other props haven't been changed, it'll only re-render if it's the previous or the current active item.
+
+> In the example below, focus on any item and keep <kbd>→</kbd> pressed to see it smoothly changing focus. Then, unmemoize any non-primitive prop (like `onClick` or `children`) and do the same to see the difference yourself. 
+
+<!-- eslint-disable no-alert -->
+
+```jsx unstyled
+import React from "react";
+import {
+  unstable_useCompositeState as useCompositeState,
+  unstable_Composite as Composite,
+  unstable_CompositeItem as CompositeItem,
+} from "reakit/Composite";
+
+const items = Array.from({ length: 88 }).map((_, i) => `item-${i}`);
+
+function Example() {
+  const composite = useCompositeState({ loop: true });
+
+  // Remove the React.useCallback call below to see the difference
+  const onClick = React.useCallback((event) => {
+    window.alert(event.currentTarget.id);
+  }, []);
+
+  const children = React.useCallback(
+    (itemProps) => (
+      <span {...itemProps}>
+        <span>{` o `}</span>
+      </span>
+    ),
+    []
+  );
+
+  return (
+    <Composite {...composite} role="toolbar" aria-label="Performance">
+      {items.map((id) => (
+        <CompositeItem {...composite} key={id} id={id} onClick={onClick}>
+          {children}
+        </CompositeItem>
+      ))}
+    </Composite>
+  );
+}
+```
+
+For two-dimensional composites, you can group `CompositeItem`s and their `CompositeGroup` in a separate memoized component, use `CompositeGroup.unstable_propsAreEqual` and do the following:
+
+1. Follow the instructions above for `CompositeItem`s.
+2. Pass an `id` prop to your memoized component that is wrapping `CompositeGroup` and its `CompositeItem`s.
+3. Memoize all non-primitive props that you're passing to that memoized component.
+
+<!-- eslint-disable no-alert -->
+
+```jsx unstyled
+import React from "react";
+import {
+  unstable_useCompositeState as useCompositeState,
+  unstable_Composite as Composite,
+  unstable_CompositeGroup as CompositeGroup,
+  unstable_CompositeItem as CompositeItem,
+} from "reakit/Composite";
+
+const grid = Array.from({ length: 22 }).fill(Array.from({ length: 22 }));
+
+const Row = React.memo(({ cells, ...props }) => {
+  const onClick = React.useCallback((event) => {
+    window.alert(event.currentTarget.id);
+  }, []);
+  const children = React.useCallback(
+    (itemProps) => (
+      <span {...itemProps}>
+        <span>{` o `}</span>
+      </span>
+    ),
+    []
+  );
+  return (
+    <CompositeGroup {...props} role="row">
+      {cells.map((_, i) => (
+        <CompositeItem
+          {...props}
+          role="gridcell"
+          key={i}
+          id={`${props.id}-cell-${i}`}
+          onClick={onClick}
+        >
+          {children}
+        </CompositeItem>
+      ))}
+    </CompositeGroup>
+  );
+}, CompositeGroup.unstable_propsAreEqual);
+
+function Example() {
+  const composite = useCompositeState({ wrap: true, loop: true });
+  return (
+    <Composite {...composite} role="grid" aria-label="Big Virtual Composite">
+      {grid.map((cells, i) => (
+        <Row {...composite} key={i} cells={cells} id={`row-${i}`} />
+      ))}
     </Composite>
   );
 }
