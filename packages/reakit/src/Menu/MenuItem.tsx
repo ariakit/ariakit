@@ -13,7 +13,6 @@ import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
 import { useTransitToSubmenu } from "./__utils/useTransitToSubmenu";
-import { isExpandedDisclosure } from "./__utils/isExpandedDisclosure";
 
 export type MenuItemOptions = CompositeItemOptions &
   Pick<
@@ -118,13 +117,11 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onMouseLeaveRef.current?.(event);
         if (event.defaultPrevented) return;
-        const self = event.currentTarget;
+        if (menu?.role === "menubar") return;
         if (hoveringInside(event)) return;
         // If this item is a menu disclosure and mouse is leaving it to focus
         // its respective submenu, we don't want to do anything.
         if (hoveringExpandedMenu(event, menu?.children)) return;
-        // On menu bars, hovering out of disclosure doesn't blur it.
-        if (menu?.role === "menubar" && isExpandedDisclosure(self)) return;
         // Move focus to menu after blurring
         if (!hoveringAnotherMenuItem(event, options.items)) {
           if (isMouseInTransitToSubmenu(event)) return;

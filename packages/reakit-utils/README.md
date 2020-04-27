@@ -63,6 +63,7 @@ yarn add reakit-utils
 -   [usePipe](#usepipe)
 -   [useSealedState](#usesealedstate)
 -   [useUpdateEffect](#useupdateeffect)
+-   [useWhyDidYouUpdate](#usewhydidyouupdate)
 
 ### applyState
 
@@ -882,6 +883,16 @@ A `React.useEffect` that will not run on the first render.
 
 -   `effect` **React.EffectCallback** 
 -   `deps` **(ReadonlyArray&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))?** 
+
+### useWhyDidYouUpdate
+
+-   **See: <https://usehooks.com/useWhyDidYouUpdate/>
+    **
+
+#### Parameters
+
+-   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `props` **Record&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), any>** 
 
 ## License
 

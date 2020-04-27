@@ -99,13 +99,15 @@ export const unstable_useCompositeItem = createHook<
       unstable_moves: nextMoves,
       ...nextProps
     } = next;
-    if (next.id === nextCurrentId || next.id === prevCurrentId) {
-      return false;
+    if (nextCurrentId !== prevCurrentId) {
+      if (next.id === nextCurrentId || next.id === prevCurrentId) {
+        return false;
+      }
     }
     return useClickable.unstable_propsAreEqual(prevProps, nextProps);
   },
 
-  useOptions(options) {
+  useOptions(options, htmlProps) {
     return {
       ...options,
       id: options.stopId || options.id,
