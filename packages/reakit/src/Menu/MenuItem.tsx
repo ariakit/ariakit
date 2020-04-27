@@ -60,7 +60,10 @@ function hoveringAnotherMenuItem(
   items: MenuItemOptions["items"]
 ) {
   const nextElement = getMouseDestination(event);
-  return items?.some((item) => item.ref.current === nextElement);
+  if (!nextElement) return false;
+  return items?.some(
+    (item) => item.ref.current && contains(item.ref.current, nextElement)
+  );
 }
 
 export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
