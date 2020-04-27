@@ -457,6 +457,51 @@ function Example() {
 }
 ```
 
+## Performance
+
+If you notice performance issues when rendering several `MenuItem`s, you can do the following:
+
+1. Pass an `id` prop to each `MenuItem`.
+2. Memoize all non-primitive props that you're passing to `MenuItem`, including event handlers (e.g. `onClick`) and the `children` prop.
+
+`MenuItem` will compare the passed `id` with `menu.currentId` and, if the other props haven't been changed, it'll only re-render if it's the previous or the current active item.
+
+<!-- eslint-disable no-alert -->
+
+```jsx
+import React from "react";
+import { useMenuState, Menu, MenuButton, MenuItem } from "reakit/Menu";
+
+const items = Array.from({ length: 25 }).map((_, i) => `item-${i}`);
+
+function Example() {
+  const menu = useMenuState({ loop: true });
+  const onClick = React.useCallback((event) => {
+    window.alert(event.currentTarget.id);
+  }, []);
+  const children = React.useCallback(
+    (itemProps) => (
+      <span {...itemProps}>
+        <span>{itemProps.id}</span>
+      </span>
+    ),
+    []
+  );
+  return (
+    <>
+      <MenuButton {...menu}>Performance</MenuButton>
+      <Menu {...menu} aria-label="Performance">
+        {items.map((id) => (
+          <MenuItem {...menu} key={id} id={id} onClick={onClick}>
+            {children}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+}
+```
+
 ## Accessibility
 
 - `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).

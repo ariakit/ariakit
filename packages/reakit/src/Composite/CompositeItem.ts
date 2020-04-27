@@ -107,7 +107,7 @@ export const unstable_useCompositeItem = createHook<
     return useClickable.unstable_propsAreEqual(prevProps, nextProps);
   },
 
-  useOptions(options, htmlProps) {
+  useOptions(options) {
     return {
       ...options,
       id: options.stopId || options.id,
@@ -189,16 +189,12 @@ export const unstable_useCompositeItem = createHook<
         if (event.defaultPrevented) return;
         if (isPortalEvent(event)) return;
         if (!id) return;
-        // Using originalCurrentId because currentId may be different due to
-        // getCurrentId call. If it's already set as the current id, we don't
-        // want to call setCurrentId again, which would cause an additional
-        // render.
         options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (isSelfTarget(event) && options.unstable_virtual && options.baseId) {
+        if (options.unstable_virtual && options.baseId && isSelfTarget(event)) {
           const { target } = event;
           const composite = getDocument(target).getElementById(options.baseId);
           if (composite) {
