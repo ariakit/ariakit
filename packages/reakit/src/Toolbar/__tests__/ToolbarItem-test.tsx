@@ -24,7 +24,7 @@ test("render", () => {
       <div>
         <button
           id="item"
-          tabindex="-1"
+          tabindex="0"
         >
           button
         </button>
@@ -37,15 +37,15 @@ test("render without state props", () => {
   // @ts-ignore
   const { baseElement } = render(<ToolbarItem id="item">button</ToolbarItem>);
   expect(baseElement).toMatchInlineSnapshot(`
-<body>
-  <div>
-    <button
-      id="item"
-      tabindex="0"
-    >
-      button
-    </button>
-  </div>
-</body>
-`);
+    <body>
+      <div>
+        <button
+          id="item"
+          tabindex="0"
+        >
+          button
+        </button>
+      </div>
+    </body>
+  `);
 });

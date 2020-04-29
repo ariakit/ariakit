@@ -125,7 +125,7 @@ export const unstable_useCompositeItem = createHook<
         isCurrentItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
-      !options.items;
+      !options.items?.length;
 
     useWarning(
       !!options.stopId,
