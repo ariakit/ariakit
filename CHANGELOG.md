@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.2](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.1...reakit@1.0.0-rc.2) (2020-04-29)
+
+
+### Bug Fixes
+
+* Ensure `undefined` doesn't override default tabIndex in `Dialog` ([#638](https://github.com/reakit/reakit/issues/638)) ([a6a87f4](https://github.com/reakit/reakit/commit/a6a87f490aafd8a66e32bf6cf03cbca77c2404c6)), closes [#636](https://github.com/reakit/reakit/issues/636)
+* Fix `Menu` issues on Safari ([8d9f33c](https://github.com/reakit/reakit/commit/8d9f33c64eebfc16312d1247797b0ef4089bc718))
+* Fix hovering `MenuItem` with `Dialog` open closing the dialog ([06c72ff](https://github.com/reakit/reakit/commit/06c72ffecf31f3fa267f3c83e3cde4f79a6426c4))
+* Fix nested `Dialog` blocking parent auto focus when it's conditionally rendered ([324395b](https://github.com/reakit/reakit/commit/324395ba8a7d5f5db4da856218841eff8b96205d))
+
+
+### Features
+
+* Make `CompositeItem` tabbable before they're registered (for example, on SSR) ([dff1ba1](https://github.com/reakit/reakit/commit/dff1ba1a9b34629e7ecdd27c86a78663e4da370e))
+
+
+### Performance Improvements
+
+* Reduce the number of renders on `Popover`/`Tooltip`/`Menu` ([f554600](https://github.com/reakit/reakit/commit/f5546009dd3f64dbc327a89fd4a391061514b6da))
+
+
+
+
+
 # [1.0.0-rc.1](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.0...reakit@1.0.0-rc.1) (2020-04-20)
 
 
