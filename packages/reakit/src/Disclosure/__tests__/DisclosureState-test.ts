@@ -119,3 +119,24 @@ test("toggle", () => {
   `
   );
 });
+
+test("setVisible", () => {
+  const result = render({ baseId: "base" });
+  act(() => {
+    result.current.setVisible(true);
+  });
+  expect(result.current).toMatchInlineSnapshot(
+    { visible: true },
+    `
+    Object {
+      "animated": false,
+      "animating": false,
+      "baseId": "base",
+      "unstable_idCountRef": Object {
+        "current": 0,
+      },
+      "visible": true,
+    }
+  `
+  );
+});

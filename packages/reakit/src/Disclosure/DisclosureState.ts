@@ -43,6 +43,10 @@ export type DisclosureActions = unstable_IdActions & {
    */
   toggle: () => void;
   /**
+   * Sets `visible`.
+   */
+  setVisible: React.Dispatch<React.SetStateAction<DisclosureState["visible"]>>;
+  /**
    * Sets `animated`.
    */
   setAnimated: React.Dispatch<
@@ -110,6 +114,7 @@ export function useDisclosureState(
     show,
     hide,
     toggle,
+    setVisible,
     setAnimated,
     stopAnimation,
   };
@@ -123,6 +128,7 @@ const keys: Array<keyof DisclosureStateReturn> = [
   "show",
   "hide",
   "toggle",
+  "setVisible",
   "setAnimated",
   "stopAnimation",
 ];
