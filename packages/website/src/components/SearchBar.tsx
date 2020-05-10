@@ -47,12 +47,12 @@ export default function SearchBar({ variant = "default" }: ISearchBarProps) {
 
   useEffect(() => {
     import("docsearch.js")
-      .then(module => {
+      .then((module) => {
         module.default({
           apiKey: "2f44778ac6ae42bb4edea44efbb0b647",
           indexName: "reakit",
           inputSelector: `#${searchInputId}`,
-          debug: false
+          debug: false,
         });
 
         addStyleSheet(docSearchCSSPath);
