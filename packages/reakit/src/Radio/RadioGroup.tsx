@@ -2,41 +2,40 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { warning } from "reakit-utils/warning";
+import { useWarning } from "reakit-warning";
 import {
-  unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps,
-  unstable_useIdGroup
-} from "../Id/IdGroup";
+  unstable_CompositeOptions,
+  unstable_CompositeHTMLProps,
+  unstable_useComposite,
+} from "../Composite/Composite";
 import { useRadioState } from "./RadioState";
 
-export type RadioGroupOptions = unstable_IdGroupOptions;
+export type RadioGroupOptions = unstable_CompositeOptions;
 
-export type RadioGroupHTMLProps = unstable_IdGroupHTMLProps &
+export type RadioGroupHTMLProps = unstable_CompositeHTMLProps &
   React.FieldsetHTMLAttributes<any>;
 
 export type RadioGroupProps = RadioGroupOptions & RadioGroupHTMLProps;
 
 const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
   name: "RadioGroup",
-  compose: unstable_useIdGroup,
+  compose: unstable_useComposite,
   useState: useRadioState,
 
   useProps(_, htmlProps) {
     return { role: "radiogroup", ...htmlProps };
-  }
+  },
 });
 
 export const RadioGroup = createComponent({
-  as: "fieldset",
+  as: "div",
   useHook: useRadioGroup,
   useCreateElement: (type, props, children) => {
-    warning(
+    useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
-      "[reakit/RadioGroup]",
       "You should provide either `aria-label` or `aria-labelledby` props.",
       "See https://reakit.io/docs/radio"
     );
     return useCreateElement(type, props, children);
-  }
+  },
 });

@@ -46,12 +46,12 @@ export const useHeading = createHook<HeadingOptions, HeadingHTMLProps>({
       }
     `;
     return { ...htmlProps, className: cx(heading, htmlProps.className) };
-  }
+  },
 });
 
 const Heading = createComponent({
   as: "h1",
-  useHook: useHeading
+  useHook: useHeading,
 });
 
 export default Heading;

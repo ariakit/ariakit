@@ -5,7 +5,7 @@ import { TooltipReference } from "../TooltipReference";
 const props: Parameters<typeof TooltipReference>[0] = {
   baseId: "base",
   show: jest.fn(),
-  hide: jest.fn()
+  hide: jest.fn(),
 };
 
 test("render", () => {

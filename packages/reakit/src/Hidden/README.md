@@ -1,11 +1,5 @@
 ---
 path: /docs/hidden/
-redirect_from:
-  - /components/hidden/
-  - /components/hidden/hiddencontainer/
-  - /components/hidden/hiddenhide/
-  - /components/hidden/hiddenshow/
-  - /components/hidden/hiddentoggle/
 ---
 
 # Hidden
@@ -52,7 +46,7 @@ function Example() {
       <HiddenDisclosure {...hidden}>Toggle</HiddenDisclosure>
       {/* instead of {hidden.visible && <Hidden {...hidden}>Hidden</Hidden>} */}
       <Hidden {...hidden}>
-        {props => hidden.visible && <div {...props}>Hidden</div>}
+        {(props) => hidden.visible && <div {...props}>Hidden</div>}
       </Hidden>
     </>
   );
@@ -74,7 +68,7 @@ function Example() {
   return (
     <>
       <HiddenDisclosure {...hidden1}>
-        {props => (
+        {(props) => (
           <HiddenDisclosure {...props} {...hidden2}>
             Toggle All
           </HiddenDisclosure>
@@ -118,22 +112,17 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 ### `Hidden`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>4 state props</summary>
+<details><summary>5 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -147,19 +136,23 @@ given milliseconds.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 </details>
 

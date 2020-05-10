@@ -1,17 +1,19 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { BoxHTMLProps } from "../Box/Box";
 import { unstable_IdStateReturn, unstable_useIdState } from "./IdState";
 import { unstable_IdContext } from "./IdProvider";
 
-export type unstable_IdOptions = BoxOptions &
-  Pick<Partial<unstable_IdStateReturn>, "baseId" | "unstable_idCountRef"> & {
-    /**
-     * Same as the HTML attribute.
-     */
-    id?: string;
-  };
+export type unstable_IdOptions = Pick<
+  Partial<unstable_IdStateReturn>,
+  "baseId" | "unstable_idCountRef"
+> & {
+  /**
+   * Same as the HTML attribute.
+   */
+  id?: string;
+};
 
 export type unstable_IdHTMLProps = BoxHTMLProps;
 
@@ -21,8 +23,6 @@ export const unstable_useId = createHook<
   unstable_IdOptions,
   unstable_IdHTMLProps
 >({
-  name: "Id",
-  compose: useBox,
   useState: unstable_useIdState,
   keys: ["id"],
 
@@ -49,21 +49,20 @@ export const unstable_useId = createHook<
     // or a random string (without Provider).
     const baseId = React.useMemo(() => options.baseId || generateId(), [
       options.baseId,
-      generateId
+      generateId,
     ]);
 
-    const id = options.id || htmlProps.id || `${baseId}${suffix}`;
+    const id = htmlProps.id || options.id || `${baseId}${suffix}`;
 
     return { ...options, id };
   },
 
   useProps(options, htmlProps) {
-    const id = typeof htmlProps.id === "undefined" ? options.id : htmlProps.id;
-    return { ...htmlProps, id };
-  }
+    return { id: options.id, ...htmlProps };
+  },
 });
 
 export const unstable_Id = createComponent({
   as: "div",
-  useHook: unstable_useId
+  useHook: unstable_useId,
 });

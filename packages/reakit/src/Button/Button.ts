@@ -1,24 +1,25 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
+import { useForkRef } from "reakit-utils/useForkRef";
 import { isButton } from "reakit-utils/isButton";
+import { warning } from "reakit-warning";
 import {
-  TabbableOptions,
-  TabbableHTMLProps,
-  useTabbable
-} from "../Tabbable/Tabbable";
+  ClickableOptions,
+  ClickableHTMLProps,
+  useClickable,
+} from "../Clickable/Clickable";
 
-export type ButtonOptions = TabbableOptions;
+export type ButtonOptions = ClickableOptions;
 
-export type ButtonHTMLProps = TabbableHTMLProps &
+export type ButtonHTMLProps = ClickableHTMLProps &
   React.ButtonHTMLAttributes<any>;
 
 export type ButtonProps = ButtonOptions & ButtonHTMLProps;
 
 export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   name: "Button",
-  compose: useTabbable,
+  compose: useClickable,
 
   useProps(_, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
@@ -27,9 +28,14 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
 
     React.useEffect(() => {
       const self = ref.current;
-
-      if (!self) return;
-
+      if (!self) {
+        warning(
+          true,
+          "Can't determine whether the element is a native button because `ref` wasn't passed to the component",
+          "See https://reakit.io/docs/button"
+        );
+        return;
+      }
       if (!isButton(self)) {
         if (self.tagName !== "A") {
           setRole("button");
@@ -39,15 +45,16 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
     }, []);
 
     return {
-      ref: mergeRefs(ref, htmlRef),
+      ref: useForkRef(ref, htmlRef),
       role,
       type,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Button = createComponent({
   as: "button",
-  useHook: useButton
+  memo: true,
+  useHook: useButton,
 });

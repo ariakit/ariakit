@@ -7,7 +7,6 @@ const {
   makePlaygroundDeps,
   cleanBuild,
   hasTSConfig,
-  injectPropTypes
 } = require("./utils");
 
 process.env.NODE_ENV = "production";
@@ -19,7 +18,6 @@ if (process.argv.includes("--no-umd")) {
 const cwd = process.cwd();
 
 cleanBuild(cwd);
-injectPropTypes(cwd);
 makeGitignore(cwd);
 makePlaygroundDeps(cwd);
 makeProxies(cwd);
@@ -29,5 +27,5 @@ if (hasTSConfig(cwd)) {
 }
 
 spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
-  stdio: "inherit"
+  stdio: "inherit",
 });

@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-rc.1...website@1.0.0-rc.2) (2020-04-29)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+# [1.0.0-rc.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-rc.0...website@1.0.0-rc.1) (2020-04-20)
+
+
+### Features
+
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/website/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/website/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/website/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
+# [1.0.0-rc.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.16...website@1.0.0-rc.0) (2020-03-30)
+
+
+### Features
+
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/tree/master/packages/website/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/tree/master/packages/website/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+* Select the first `Tab` by default and don't require `stopId` prop ([#597](https://github.com/reakit/reakit/tree/master/packages/website/issues/597)) ([528b016](https://github.com/reakit/reakit/tree/master/packages/website/commit/528b016304f381b171cdc96598201deb54fb53c8))
+
+
+### BREAKING CHANGES
+
+* The first `Tab` is now selected by default. There's no need to pass `selectedId` to `useTabState` anymore.
+
+  If you're already using `selectedId` to select a tab in the initial render, you don't need to change anything as this still works. But, if you want to render tabs with none selected, you should now pass `null` to `selectedId`:
+
+  ```js
+  // if you're already using selectedId, there's no need to change anything
+  const tab = useTabState({ selectedId: "tab-1" });
+  ```
+
+  ```diff
+  // when there's no tab selected by default, you now need to explicitly specify it
+  - const tab = useTabState();
+  + const tab = useTabState({ selectedId: null });
+  ```
+* **Most users will not be affected by this**, but `stops`, `register` and `unregister` on the returned object of state hooks have been renamed to `items`, `registerItem` and `unregisterItem`, respectively.
+
+  ```diff
+  const tab = useTabState();
+  - tab.stops.map(...);
+  + tab.items.map(...);
+  - tab.register(...);
+  + tab.registerItem(...);
+  - tab.unregister(...);
+  + tab.unregisterItem(...);
+  ```
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+
+
+
+
+
+# [1.0.0-beta.16](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.15...website@1.0.0-beta.16) (2020-02-10)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/tree/master/packages/website/issues/541)) ([4397ab0](https://github.com/reakit/reakit/tree/master/packages/website/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/website/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/website/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+
+
+
+
+
+# [1.0.0-beta.15](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.14...website@1.0.0-beta.15) (2020-02-05)
+
+
+### Features
+
+* **website:** Add `Id` to the docs menu ([95f1fd9](https://github.com/reakit/reakit/tree/master/packages/website/commit/95f1fd9))
+
+
+
+
+
 # [1.0.0-beta.14](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.0-beta.13...website@1.0.0-beta.14) (2019-12-18)
 
 **Note:** Version bump only for package website

@@ -38,12 +38,12 @@ test("context", () => {
       wrapper: ({ children }) => (
         <Provider
           unstable_system={{
-            useCreateElement: (_, props, c) => <p {...props}>{c}</p>
+            useCreateElement: (_, props, c) => <p {...props}>{c}</p>,
           }}
         >
           {children}
         </Provider>
-      )
+      ),
     }
   );
   expect(result.current).toMatchInlineSnapshot(`

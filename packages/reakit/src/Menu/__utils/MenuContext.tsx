@@ -31,11 +31,11 @@ export function useMenuContext(
     parent || {};
 
   const addChild = React.useCallback(
-    (ref: Ref) => setChildren(refs => [...refs, ref]),
+    (ref: Ref) => setChildren((refs) => [...refs, ref]),
     []
   );
   const removeChild = React.useCallback(
-    (ref: Ref) => setChildren(refs => removeItemFromArray(refs, ref)),
+    (ref: Ref) => setChildren((refs) => removeItemFromArray(refs, ref)),
     []
   );
 
@@ -44,9 +44,7 @@ export function useMenuContext(
     if (!addChildToParent || orphan) return undefined;
     addChildToParent(menuRef);
     return () => {
-      if (removeChildFromParent) {
-        removeChildFromParent(menuRef);
-      }
+      removeChildFromParent?.(menuRef);
     };
   }, [menuRef, addChildToParent, removeChildFromParent, orphan]);
 
@@ -60,7 +58,7 @@ export function useMenuContext(
       parent,
       children,
       addChild,
-      removeChild
+      removeChild,
     }),
     [
       options.orientation,
@@ -71,16 +69,18 @@ export function useMenuContext(
       parent,
       children,
       addChild,
-      removeChild
+      removeChild,
     ]
   );
 
-  const wrap = React.useCallback(
-    (c: React.ReactNode) => (
-      <MenuContext.Provider value={providerValue}>{c}</MenuContext.Provider>
+  const wrapElement = React.useCallback(
+    (element: React.ReactNode) => (
+      <MenuContext.Provider value={providerValue}>
+        {element}
+      </MenuContext.Provider>
     ),
     [providerValue]
   );
 
-  return wrap;
+  return wrapElement;
 }

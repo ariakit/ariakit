@@ -1,14 +1,16 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { useButton, ButtonOptions, ButtonHTMLProps } from "../Button/Button";
-import { useHiddenState, HiddenStateReturn } from "./HiddenState";
+import { warning } from "reakit-warning";
+import {
+  DisclosureOptions,
+  DisclosureHTMLProps,
+  useDisclosure,
+} from "../Disclosure/Disclosure";
+import { useHiddenState } from "./HiddenState";
 
-export type HiddenDisclosureOptions = ButtonOptions &
-  Pick<Partial<HiddenStateReturn>, "visible"> &
-  Pick<HiddenStateReturn, "toggle" | "baseId">;
+export type HiddenDisclosureOptions = DisclosureOptions;
 
-export type HiddenDisclosureHTMLProps = ButtonHTMLProps;
+export type HiddenDisclosureHTMLProps = DisclosureHTMLProps;
 
 export type HiddenDisclosureProps = HiddenDisclosureOptions &
   HiddenDisclosureHTMLProps;
@@ -18,27 +20,20 @@ export const useHiddenDisclosure = createHook<
   HiddenDisclosureHTMLProps
 >({
   name: "HiddenDisclosure",
-  compose: useButton,
+  compose: useDisclosure,
   useState: useHiddenState,
 
-  useProps(
-    options,
-    { onClick: htmlOnClick, "aria-controls": ariaControls, ...htmlProps }
-  ) {
-    const controls = ariaControls
-      ? `${ariaControls} ${options.baseId}`
-      : options.baseId;
-
-    return {
-      onClick: useAllCallbacks(options.toggle, htmlOnClick),
-      "aria-expanded": Boolean(options.visible),
-      "aria-controls": controls,
-      ...htmlProps
-    };
-  }
+  useProps(_, htmlProps) {
+    warning(
+      true,
+      "`HiddenDisclosure` has been renamed to `Disclosure`. Using `<HiddenDisclosure />` will no longer work in future versions.",
+      "See https://reakit.io/docs/disclosure"
+    );
+    return htmlProps;
+  },
 });
 
 export const HiddenDisclosure = createComponent({
   as: "button",
-  useHook: useHiddenDisclosure
+  useHook: useHiddenDisclosure,
 });

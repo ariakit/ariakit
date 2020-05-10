@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, fireEvent, click, focus, press } from "reakit-test-utils";
-import { Dialog, DialogDisclosure, useDialogState } from "..";
+import { Dialog, DialogDisclosure, DialogBackdrop, useDialogState } from "..";
 
 test("clicking on disclosure opens the dialog", () => {
   const Test = () => {
@@ -18,6 +18,20 @@ test("clicking on disclosure opens the dialog", () => {
   expect(dialog).not.toBeVisible();
   click(disclosure);
   expect(dialog).toBeVisible();
+});
+
+test("passing modal to Dialog should warn", () => {
+  const Test = () => {
+    const dialog = useDialogState();
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
+        <Dialog {...dialog} tabIndex={0} modal={false} aria-label="dialog" />
+      </>
+    );
+  };
+  render(<Test />);
+  expect(console).toHaveWarned();
 });
 
 test("focus the first tabbable element when dialog opens", () => {
@@ -102,11 +116,11 @@ test("does not auto focus when dialog was mounted visible", () => {
 
 test("focus the first tabbable element when non-modal dialog opens", () => {
   const Test = () => {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" modal={false}>
+        <Dialog {...dialog} aria-label="dialog">
           <button>button1</button>
           <button>button2</button>
         </Dialog>
@@ -123,14 +137,13 @@ test("focus the first tabbable element when non-modal dialog opens", () => {
 
 test("does not auto focus non-modal when autoFocusOnShow is falsy", () => {
   const Test = () => {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog
           {...dialog}
           aria-label="dialog"
-          modal={false}
           unstable_autoFocusOnShow={false}
         >
           <button>button1</button>
@@ -204,7 +217,7 @@ test("focus a given element when dialog opens and initial focus has been manuall
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog">
-          {props =>
+          {(props) =>
             dialog.visible && (
               <div {...props}>
                 <button>button1</button>
@@ -363,17 +376,12 @@ test("focus is trapped within an empty dialog", () => {
 
 test("focus is not trapped within the non-modal dialog", async () => {
   const Test = () => {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     return (
       <>
         <button>button1</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog
-          {...dialog}
-          aria-label="dialog"
-          modal={false}
-          hideOnClickOutside={false}
-        >
+        <Dialog {...dialog} aria-label="dialog" hideOnClickOutside={false}>
           <button>button2</button>
           <button>button3</button>
         </Dialog>
@@ -542,11 +550,11 @@ test("clicking outside puts focus on the dialog when hideOnClickOutside is falsy
 
 test("focusing outside closes the non-modal dialog", () => {
   const Test = () => {
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <button>button</button>
-        <Dialog {...dialog} aria-label="dialog" modal={false} />
+        <Dialog {...dialog} aria-label="dialog" />
       </>
     );
   };
@@ -561,16 +569,11 @@ test("focusing outside closes the non-modal dialog", () => {
 
 test("focusing outside does not close the non-modal dialog when hideOnClickOutside is falsy", () => {
   const Test = () => {
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <button>button</button>
-        <Dialog
-          {...dialog}
-          aria-label="dialog"
-          modal={false}
-          hideOnClickOutside={false}
-        />
+        <Dialog {...dialog} aria-label="dialog" hideOnClickOutside={false} />
       </>
     );
   };
@@ -585,11 +588,11 @@ test("focusing outside does not close the non-modal dialog when hideOnClickOutsi
 
 test("focusing disclosure does not close the non-modal dialog", () => {
   const Test = () => {
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" modal={false} />
+        <Dialog {...dialog} aria-label="dialog" />
       </>
     );
   };
@@ -604,12 +607,12 @@ test("focusing disclosure does not close the non-modal dialog", () => {
 
 test("focusing any of multiple disclosures does not close the non-modal dialog", () => {
   const Test = () => {
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" modal={false} />
+        <Dialog {...dialog} aria-label="dialog" />
       </>
     );
   };
@@ -688,11 +691,11 @@ test("focus the disclosure that has been used to open the dialog when dialog clo
 
 test("focus disclosure when non-modal dialog closes", () => {
   const Test = () => {
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" modal={false} />
+        <Dialog {...dialog} aria-label="dialog" />
       </>
     );
   };
@@ -726,12 +729,12 @@ test("focus a given element when dialog closes", () => {
 
 test("focusing an element outside keeps focus on it after the non-modal dialog closes", () => {
   const Test = () => {
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <button>button</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" modal={false} />
+        <Dialog {...dialog} aria-label="dialog" />
       </>
     );
   };
@@ -746,17 +749,12 @@ test("focusing an element outside keeps focus on it after the non-modal dialog c
 test("focus a given element when non-modal dialog closes", () => {
   const Test = () => {
     const ref = React.useRef<HTMLButtonElement>(null);
-    const dialog = useDialogState({ visible: true });
+    const dialog = useDialogState({ visible: true, modal: false });
     return (
       <>
         <button ref={ref}>button</button>
         <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog
-          {...dialog}
-          aria-label="dialog"
-          modal={false}
-          unstable_finalFocusRef={ref}
-        />
+        <Dialog {...dialog} aria-label="dialog" unstable_finalFocusRef={ref} />
       </>
     );
   };
@@ -798,39 +796,6 @@ test("focus the first tabbable element when nested dialog opens", () => {
   expect(button2).toHaveFocus();
 });
 
-test("focus disclosure in dialog when nested dialog closes", () => {
-  const Test = () => {
-    const dialog = useDialogState();
-    const dialog2 = useDialogState();
-    return (
-      <>
-        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} tabIndex={undefined} aria-label="dialog1">
-          <button>button1</button>
-          <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog {...dialog2} aria-label="dialog2">
-            <button>button2</button>
-            <button>button3</button>
-          </Dialog>
-        </Dialog>
-      </>
-    );
-  };
-  const { getByText, getByLabelText } = render(<Test />);
-  const disclosure1 = getByText("disclosure1");
-  const dialog1 = getByLabelText("dialog1");
-  const disclosure2 = getByText("disclosure2");
-  const dialog2 = getByLabelText("dialog2");
-  const button2 = getByText("button2");
-  click(disclosure1);
-  focus(disclosure2);
-  click(disclosure2);
-  expect(button2).toHaveFocus();
-  click(dialog1);
-  expect(dialog2).not.toBeVisible();
-  expect(disclosure2).toHaveFocus();
-});
-
 test("focus is trapped within the nested dialog", () => {
   const Test = () => {
     const dialog = useDialogState();
@@ -870,7 +835,7 @@ test("focus is trapped within the nested dialog", () => {
 test("focus is not trapped within the nested non-modal dialog", async () => {
   const Test = () => {
     const dialog = useDialogState();
-    const dialog2 = useDialogState();
+    const dialog2 = useDialogState({ modal: false });
     return (
       <>
         <button>button1</button>
@@ -878,12 +843,7 @@ test("focus is not trapped within the nested non-modal dialog", async () => {
         <Dialog {...dialog} aria-label="dialog1">
           <button>button2</button>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog
-            {...dialog2}
-            aria-label="dialog2"
-            modal={false}
-            hideOnClickOutside={false}
-          >
+          <Dialog {...dialog2} aria-label="dialog2" hideOnClickOutside={false}>
             <button>button3</button>
             <button>button4</button>
           </Dialog>
@@ -919,26 +879,16 @@ test("focus is not trapped within the nested non-modal dialog", async () => {
 
 test("focus is not trapped within two nested non-modal dialog", async () => {
   const Test = () => {
-    const dialog = useDialogState();
-    const dialog2 = useDialogState();
+    const dialog = useDialogState({ modal: false });
+    const dialog2 = useDialogState({ modal: false });
     return (
       <>
         <button>button1</button>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog
-          {...dialog}
-          aria-label="dialog1"
-          modal={false}
-          hideOnClickOutside={false}
-        >
+        <Dialog {...dialog} aria-label="dialog1" hideOnClickOutside={false}>
           <button>button2</button>
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog
-            {...dialog2}
-            aria-label="dialog2"
-            modal={false}
-            hideOnClickOutside={false}
-          >
+          <Dialog {...dialog2} aria-label="dialog2" hideOnClickOutside={false}>
             <button>button3</button>
             <button>button4</button>
           </Dialog>
@@ -1012,18 +962,13 @@ test("clicking on the nested dialog does not close the parent dialog", () => {
 test("clicking on the nested non-modal dialog does not close the parent dialog", () => {
   const Test = () => {
     const dialog = useDialogState();
-    const dialog2 = useDialogState();
+    const dialog2 = useDialogState({ modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog
-            {...dialog2}
-            tabIndex={0}
-            aria-label="dialog2"
-            modal={false}
-          />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1045,12 +990,12 @@ test("clicking on the nested non-modal dialog does not close the parent dialog",
 
 test("clicking on the nested dialog does not close the parent non-modal dialog", () => {
   const Test = () => {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     const dialog2 = useDialogState();
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog1" modal={false}>
+        <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
@@ -1074,13 +1019,13 @@ test("clicking on the nested dialog does not close the parent non-modal dialog",
 
 test("clicking on the nested dialog does not close the grandparent non-modal dialog", () => {
   const Test = () => {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     const dialog2 = useDialogState();
     const dialog3 = useDialogState();
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog1" modal={false}>
+        <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog {...dialog2} aria-label="dialog2">
             <DialogDisclosure {...dialog3}>disclosure3</DialogDisclosure>
@@ -1142,18 +1087,13 @@ test("clicking on the parent dialog closes the nested dialog", () => {
 test("clicking on the parent dialog closes the nested non-modal dialog", () => {
   const Test = () => {
     const dialog = useDialogState();
-    const dialog2 = useDialogState();
+    const dialog2 = useDialogState({ modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
         <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog
-            {...dialog2}
-            tabIndex={0}
-            aria-label="dialog2"
-            modal={false}
-          />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1175,19 +1115,14 @@ test("clicking on the parent dialog closes the nested non-modal dialog", () => {
 
 test("clicking on the parent non-modal dialog closes the nested non-modal dialog", () => {
   const Test = () => {
-    const dialog = useDialogState();
-    const dialog2 = useDialogState();
+    const dialog = useDialogState({ modal: false });
+    const dialog2 = useDialogState({ modal: false });
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog1" modal={false}>
+        <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
-          <Dialog
-            {...dialog2}
-            tabIndex={0}
-            aria-label="dialog2"
-            modal={false}
-          />
+          <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
       </>
     );
@@ -1209,12 +1144,12 @@ test("clicking on the parent non-modal dialog closes the nested non-modal dialog
 
 test("clicking on the parent non-modal dialog closes the nested dialog", () => {
   const Test = () => {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     const dialog2 = useDialogState();
     return (
       <>
         <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog1" modal={false}>
+        <Dialog {...dialog} aria-label="dialog1">
           <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
           <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
         </Dialog>
@@ -1260,10 +1195,10 @@ test("esc closes nested dialog, but not parent dialog", () => {
 test("esc on parent dialog closes nested dialogs", () => {
   const Test = () => {
     const dialog = useDialogState({ visible: true });
-    const dialog2 = useDialogState({ visible: true });
+    const dialog2 = useDialogState({ visible: true, modal: false });
     return (
       <Dialog {...dialog} aria-label="dialog1">
-        <Dialog {...dialog2} aria-label="dialog2" modal={false} />
+        <Dialog {...dialog2} aria-label="dialog2" />
       </Dialog>
     );
   };
@@ -1331,4 +1266,127 @@ test("opening a nested orphan dialog closes the parent dialog", () => {
   expect(dialog1).not.toBeVisible();
   expect(dialog2).toBeVisible();
   expect(dialog2).toHaveFocus();
+});
+
+test("nested modal dialog with backdrop markup", () => {
+  const Test = () => {
+    const dialog = useDialogState({ baseId: "dialog1" });
+    const dialog2 = useDialogState({ baseId: "dialog2" });
+    return (
+      <>
+        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
+        <DialogBackdrop {...dialog}>
+          <Dialog {...dialog} aria-label="dialog1">
+            <DialogDisclosure {...dialog2}>disclosure2</DialogDisclosure>
+            <Dialog {...dialog2} tabIndex={0} aria-label="dialog2" />
+          </Dialog>
+        </DialogBackdrop>
+      </>
+    );
+  };
+  const { getByText, baseElement } = render(<Test />);
+  const disclosure1 = getByText("disclosure1");
+  const disclosure2 = getByText("disclosure2");
+  click(disclosure1);
+  click(disclosure2);
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body
+      style="padding-right: 1024px; overflow: hidden;"
+    >
+      <div>
+        <button
+          aria-controls="dialog1"
+          aria-expanded="true"
+          aria-haspopup="dialog"
+          type="button"
+        >
+          disclosure1
+        </button>
+      </div>
+      <div
+        aria-hidden="true"
+        class="__reakit-focus-trap"
+        style="position: fixed;"
+        tabindex="0"
+      />
+      <div
+        class="__reakit-portal"
+      >
+        <div
+          data-dialog-ref="dialog1"
+          style=""
+        >
+          <div
+            aria-label="dialog1"
+            data-dialog="true"
+            id="dialog1"
+            role="dialog"
+            style=""
+            tabindex="-1"
+          >
+            <button
+              aria-controls="dialog2"
+              aria-expanded="true"
+              aria-haspopup="dialog"
+              type="button"
+            >
+              disclosure2
+            </button>
+          </div>
+        </div>
+        <div
+          aria-hidden="true"
+          class="__reakit-focus-trap"
+          style="position: fixed;"
+          tabindex="0"
+        />
+        <div
+          class="__reakit-portal"
+        >
+          <div
+            aria-label="dialog2"
+            aria-modal="true"
+            data-dialog="true"
+            id="dialog2"
+            role="dialog"
+            style=""
+            tabindex="0"
+          />
+        </div>
+        <div
+          aria-hidden="true"
+          class="__reakit-focus-trap"
+          style="position: fixed;"
+          tabindex="0"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="__reakit-focus-trap"
+        style="position: fixed;"
+        tabindex="0"
+      />
+    </body>
+  `);
+});
+
+test("should render the default tabIndex when none is specified", () => {
+  function Test() {
+    const dialog = useDialogState();
+    return <Dialog {...dialog} aria-label="dialog" />;
+  }
+
+  const { getByLabelText } = render(<Test />);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", "-1");
+});
+
+// See https://github.com/reakit/reakit/issues/636
+test("passing undefined to tabIndex should render the default tabIndex of -1", () => {
+  function Test() {
+    const dialog = useDialogState();
+    return <Dialog {...dialog} aria-label="dialog" tabIndex={undefined} />;
+  }
+
+  const { getByLabelText } = render(<Test />);
+  expect(getByLabelText("dialog")).toHaveAttribute("tabIndex", "-1");
 });

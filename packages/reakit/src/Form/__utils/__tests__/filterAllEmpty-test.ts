@@ -5,10 +5,10 @@ test("filterAllEmpty", () => {
   delete arr[1];
   const obj = {
     a: ["b", "c"],
-    d: arr
+    d: arr,
   };
   expect(filterAllEmpty(obj)).toEqual({
     a: ["b", "c"],
-    d: [0, 2, 3]
+    d: [0, 2, 3],
   });
 });

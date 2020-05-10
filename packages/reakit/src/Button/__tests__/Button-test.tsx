@@ -16,20 +16,20 @@ test("render", () => {
 test("render anchor", () => {
   const { getByText } = render(<Button as="a">button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
-    <a>
-      button
-    </a>
-  `);
+<a>
+  button
+</a>
+`);
 });
 
 test("render div", () => {
   const { getByText } = render(<Button as="div">button</Button>);
   expect(getByText("button")).toMatchInlineSnapshot(`
-    <div
-      role="button"
-      tabindex="0"
-    >
-      button
-    </div>
-  `);
+<div
+  role="button"
+  tabindex="0"
+>
+  button
+</div>
+`);
 });

@@ -1,18 +1,14 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import {
-  unstable_IdGroupOptions,
-  unstable_IdGroupHTMLProps,
-  unstable_useIdGroup
-} from "../Id/IdGroup";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 
-export type unstable_FormOptions = unstable_IdGroupOptions &
+export type unstable_FormOptions = BoxOptions &
   Pick<unstable_FormStateReturn<any>, "submit">;
 
-export type unstable_FormHTMLProps = unstable_IdGroupHTMLProps &
+export type unstable_FormHTMLProps = BoxHTMLProps &
   React.FormHTMLAttributes<any>;
 
 export type unstable_FormProps = unstable_FormOptions & unstable_FormHTMLProps;
@@ -22,14 +18,18 @@ export const unstable_useForm = createHook<
   unstable_FormHTMLProps
 >({
   name: "Form",
-  compose: unstable_useIdGroup,
+  compose: useBox,
   useState: unstable_useFormState,
 
   useProps(options, { onSubmit: htmlOnSubmit, ...htmlProps }) {
+    const onSubmitRef = useLiveRef(htmlOnSubmit);
+
     const onSubmit = React.useCallback(
       (event: React.FormEvent) => {
+        onSubmitRef.current?.(event);
+        if (event.defaultPrevented) return;
         event.preventDefault();
-        options.submit();
+        options.submit?.();
       },
       [options.submit]
     );
@@ -37,13 +37,13 @@ export const unstable_useForm = createHook<
     return {
       role: "form",
       noValidate: true,
-      onSubmit: useAllCallbacks(onSubmit, htmlOnSubmit),
-      ...htmlProps
+      onSubmit,
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const unstable_Form = createComponent({
   as: "form",
-  useHook: unstable_useForm
+  useHook: unstable_useForm,
 });

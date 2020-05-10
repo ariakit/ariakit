@@ -4,7 +4,7 @@ import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(
   menuRef: React.RefObject<HTMLElement>,
-  { stops, move }: Pick<MenuStateReturn, "stops" | "move">,
+  { items, move }: Pick<MenuStateReturn, "items" | "move">,
   timeout = 500
 ) {
   const [keys, setKeys] = React.useState("");
@@ -14,7 +14,7 @@ export function useShortcuts(
 
     const timeoutId = setTimeout(() => setKeys(""), timeout);
 
-    const stop = stops.find(s =>
+    const stop = items.find((s) =>
       Boolean(
         s.ref.current &&
           s.ref.current.textContent &&
@@ -27,22 +27,24 @@ export function useShortcuts(
     }
 
     return () => clearTimeout(timeoutId);
-  }, [keys, stops, move, timeout]);
+  }, [keys, items, move, timeout]);
 
   React.useEffect(() => {
     const menu = menuRef.current;
     if (!menu) return undefined;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.metaKey || event.altKey || event.shiftKey || event.ctrlKey) {
-        return;
-      }
+      if (event.key.length > 1) return;
+      if (event.shiftKey) return;
+      if (event.metaKey) return;
+      if (event.ctrlKey) return;
+      if (event.altKey) return;
       const target = event.target as HTMLElement;
-      const role = target.getAttribute("role");
+      const role = target.getAttribute?.("role");
       const targetIsMenu = target === menu;
       const targetIsMenuItem =
         role &&
-        role.indexOf("menuitem") >= 0 &&
+        role.indexOf("menuitem") !== -1 &&
         closest(target, "[role=menu],[role=menubar]") === menu;
 
       if (!targetIsMenu && !targetIsMenuItem) return;
@@ -50,7 +52,7 @@ export function useShortcuts(
       if (/^[a-z0-9_-]$/i.test(event.key)) {
         event.stopPropagation();
         event.preventDefault();
-        setKeys(k => `${k}${event.key}`);
+        setKeys((k) => `${k}${event.key}`);
       }
     };
 

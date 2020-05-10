@@ -30,7 +30,7 @@ test("press enter on button preventDefault", async () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onKeyDown={event => event.preventDefault()}>
+      <button ref={ref} onKeyDown={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -46,6 +46,31 @@ test("press enter on button preventDefault", async () => {
       "keyup button",
     ]
   `);
+});
+
+test("press enter on textarea", () => {
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLFormElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <form ref={ref}>
+        form
+        <textarea aria-label="textarea" />
+      </form>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const textarea = getByLabelText("textarea") as HTMLTextAreaElement;
+  press.Enter(textarea);
+  expect(textarea.value).toBe("\n");
+  expect(stack).toMatchInlineSnapshot(`
+Array [
+  "focusin textarea",
+  "keydown textarea",
+  "keyup textarea",
+]
+`);
 });
 
 test("press enter on form input", () => {
@@ -153,7 +178,7 @@ test("press space on button preventDefault", async () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onKeyUp={event => event.preventDefault()}>
+      <button ref={ref} onKeyUp={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -201,30 +226,30 @@ test("press tab", async () => {
   expect(button2).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
-    Array [
-      "focus button1",
-      "focusin button1",
-      "keyup button1",
-      "keydown button1",
-      "blur button1",
-      "focusout button1",
-      "focus button2",
-      "focusin button2",
-      "keyup button2",
-      "keydown button2",
-      "blur button2",
-      "focusout button2",
-      "focus button1",
-      "focusin button1",
-      "keyup button1",
-      "keydown button1",
-      "blur button1",
-      "focusout button1",
-      "focus button2",
-      "focusin button2",
-      "keyup button2",
-    ]
-  `);
+Array [
+  "focus button1",
+  "focusin button1",
+  "keyup button1",
+  "keydown button1",
+  "focusout button1",
+  "blur button1",
+  "focus button2",
+  "focusin button2",
+  "keyup button2",
+  "keydown button2",
+  "focusout button2",
+  "blur button2",
+  "focus button1",
+  "focusin button1",
+  "keyup button1",
+  "keydown button1",
+  "focusout button1",
+  "blur button1",
+  "focus button2",
+  "focusin button2",
+  "keyup button2",
+]
+`);
 });
 
 test("press tab preventDefault", async () => {
@@ -238,7 +263,7 @@ test("press tab preventDefault", async () => {
       <>
         <button
           ref={ref1}
-          onKeyDown={event => {
+          onKeyDown={(event) => {
             if (event.key === "Tab" && !event.shiftKey) {
               event.preventDefault();
             }
@@ -263,18 +288,18 @@ test("press tab preventDefault", async () => {
   expect(button2).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
-    Array [
-      "focus button1",
-      "focusin button1",
-      "keyup button1",
-      "keydown button1",
-      "keyup button1",
-      "keydown button1",
-      "blur button1",
-      "focusout button1",
-      "focus button2",
-      "focusin button2",
-      "keyup button2",
-    ]
-  `);
+Array [
+  "focus button1",
+  "focusin button1",
+  "keyup button1",
+  "keydown button1",
+  "keyup button1",
+  "keydown button1",
+  "focusout button1",
+  "blur button1",
+  "focus button2",
+  "focusin button2",
+  "keyup button2",
+]
+`);
 });

@@ -1,30 +1,30 @@
 import * as React from "react";
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 import {
-  RoverState,
-  RoverActions,
-  RoverInitialState,
-  useRoverState
-} from "../Rover";
+  unstable_CompositeState as CompositeState,
+  unstable_CompositeActions as CompositeActions,
+  unstable_CompositeInitialState as CompositeInitialState,
+  unstable_useCompositeState as useCompositeState,
+} from "../Composite";
 
-export type RadioState = RoverState & {
+export type RadioState = CompositeState & {
   /**
    * The `value` attribute of the current checked radio.
    */
-  state: any;
+  state: string | number | undefined;
 };
 
-export type RadioActions = RoverActions & {
+export type RadioActions = CompositeActions & {
   /**
    * Sets `state`.
    */
-  setState: React.Dispatch<React.SetStateAction<any>>;
+  setState: React.Dispatch<React.SetStateAction<string | number | undefined>>;
 };
 
-export type RadioInitialState = RoverInitialState &
+export type RadioInitialState = CompositeInitialState &
   Partial<Pick<RadioState, "state">>;
 
 export type RadioStateReturn = RadioState & RadioActions;
@@ -32,25 +32,22 @@ export type RadioStateReturn = RadioState & RadioActions;
 export function useRadioState(
   initialState: SealedInitialState<RadioInitialState> = {}
 ): RadioStateReturn {
-  const { state: initialCurrentValue, loop = true, ...sealed } = useSealedState(
+  const { state: initialValue, loop = true, ...sealed } = useSealedState(
     initialState
   );
-
-  const [state, setState] = React.useState(initialCurrentValue);
-
-  const rover = useRoverState({ ...sealed, loop });
-
+  const [state, setState] = React.useState(initialValue);
+  const composite = useCompositeState({ ...sealed, loop });
   return {
-    ...rover,
+    ...composite,
     state,
-    setState
+    setState,
   };
 }
 
 const keys: Array<keyof RadioStateReturn> = [
-  ...useRoverState.__keys,
+  ...useCompositeState.__keys,
   "state",
-  "setState"
+  "setState",
 ];
 
 useRadioState.__keys = keys;

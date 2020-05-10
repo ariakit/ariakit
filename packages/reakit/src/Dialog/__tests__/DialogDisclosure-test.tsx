@@ -4,7 +4,7 @@ import { DialogDisclosure } from "../DialogDisclosure";
 
 const props: Parameters<typeof DialogDisclosure>[0] = {
   baseId: "base",
-  toggle: jest.fn
+  toggle: jest.fn,
 };
 
 test("render", () => {
@@ -34,17 +34,17 @@ test("render visible", () => {
     </DialogDisclosure>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-controls="base"
-          aria-expanded="true"
-          aria-haspopup="dialog"
-          type="button"
-        >
-          disclosure
-        </button>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <button
+      aria-controls="base"
+      aria-expanded="true"
+      aria-haspopup="dialog"
+      type="button"
+    >
+      disclosure
+    </button>
+  </div>
+</body>
+`);
 });

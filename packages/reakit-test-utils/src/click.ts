@@ -1,31 +1,11 @@
-import {
-  isFocusable,
-  getClosestFocusable,
-  closest,
-  warning
-} from "reakit-utils";
-import { subscribeDefaultPrevented } from "./__utils/subscribeDefaultPrevented";
+import { isFocusable, getClosestFocusable, closest } from "reakit-utils";
+import { warning } from "reakit-warning";
 import { fireEvent } from "./fireEvent";
 import { focus } from "./focus";
 import { hover } from "./hover";
 import { blur } from "./blur";
 
 import "./mockClientRects";
-
-// https://twitter.com/diegohaz/status/1176998102139572225
-function shouldBlurRightAfterFocus(element: Element) {
-  const { userAgent } = navigator;
-  const is = (string: string) => userAgent.indexOf(string) !== -1;
-  const isMac = is("Mac");
-  const isSafariOrFirefox = is("Safari") || is("Firefox");
-  const isBlurrableElement =
-    element instanceof HTMLButtonElement ||
-    (element instanceof HTMLInputElement &&
-      ["button", "submit", "reset", "checkbox", "radio"].includes(
-        element.type
-      ));
-  return isMac && isSafariOrFirefox && isBlurrableElement;
-}
 
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {
@@ -47,11 +27,7 @@ function getInputFromLabel(element: HTMLLabelElement) {
     | undefined;
 }
 
-function clickLabel(
-  element: HTMLLabelElement,
-  defaultPrevented: { current?: boolean },
-  options?: MouseEventInit
-) {
+function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
   const input = getInputFromLabel(element);
   const isInputDisabled = Boolean(input?.disabled);
 
@@ -62,13 +38,13 @@ function clickLabel(
     input.disabled = true;
   }
 
-  fireEvent.click(element, options);
+  const defaultAllowed = fireEvent.click(element, options);
 
   if (input) {
     // Now we can revert input disabled state and fire events on it in the
     // right order.
     input.disabled = isInputDisabled;
-    if (!defaultPrevented.current && isFocusable(input)) {
+    if (defaultAllowed && isFocusable(input)) {
       focus(input);
       // Only "click" is fired! Browsers don't go over the whole event stack in
       // this case (mousedown, mouseup etc.).
@@ -104,14 +80,14 @@ function clickOption(
   if (select.multiple) {
     const options = Array.from(select.options);
     const resetOptions = () =>
-      options.forEach(option => {
+      options.forEach((option) => {
         setSelected(option, false);
       });
     const selectRange = (a: number, b: number) => {
       const from = Math.min(a, b);
       const to = Math.max(a, b) + 1;
       const selectedOptions = options.slice(from, to);
-      selectedOptions.forEach(option => {
+      selectedOptions.forEach((option) => {
         setSelected(option, true);
       });
     };
@@ -155,41 +131,29 @@ export function click(element: Element, options?: MouseEventInit) {
   hover(element, options);
   const { disabled } = element as HTMLButtonElement;
 
-  let defaultPrevented = subscribeDefaultPrevented(
-    element,
-    "pointerdown",
-    "mousedown"
-  );
-
-  fireEvent.pointerDown(element, options);
+  let defaultAllowed = fireEvent.pointerDown(element, options);
 
   if (!disabled) {
     // Mouse events are not called on disabled elements
-    fireEvent.mouseDown(element, options);
-  }
-
-  if (!defaultPrevented.current) {
-    // Do not enter this if event.preventDefault() has been called on
-    // pointerdown or mousedown.
-    if (isFocusable(element)) {
-      focus(element);
-      // Safari and Firefox on MacOS dispatch blur right after focus
-      if (shouldBlurRightAfterFocus(element)) {
-        blur(element);
-      }
-    } else if (!disabled) {
-      // If the element is not focusable, focus the closest focusable parent
-      const closestFocusable = getClosestFocusable(element);
-      if (closestFocusable) {
-        focus(closestFocusable);
-      } else {
-        // This will automatically set document.body as the activeElement
-        blur();
-      }
+    if (!fireEvent.mouseDown(element, options)) {
+      defaultAllowed = false;
     }
   }
 
-  defaultPrevented = subscribeDefaultPrevented(element, "click");
+  // Do not enter this if event.preventDefault() has been called on
+  // pointerdown or mousedown.
+  if (defaultAllowed && isFocusable(element)) {
+    focus(element);
+  } else if (element.parentElement) {
+    // If the element is not focusable, focus the closest focusable parent
+    const closestFocusable = getClosestFocusable(element.parentElement);
+    if (closestFocusable) {
+      focus(closestFocusable);
+    } else {
+      // This will automatically set document.body as the activeElement
+      blur();
+    }
+  }
 
   fireEvent.pointerUp(element, options);
 
@@ -201,12 +165,10 @@ export function click(element: Element, options?: MouseEventInit) {
   const label = getClosestLabel(element);
 
   if (label) {
-    clickLabel(label, defaultPrevented, options);
+    clickLabel(label, options);
   } else if (element instanceof HTMLOptionElement) {
     clickOption(element, options);
   } else {
     fireEvent.click(element, options);
   }
-
-  defaultPrevented.unsubscribe();
 }

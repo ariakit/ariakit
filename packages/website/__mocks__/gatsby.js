@@ -8,8 +8,8 @@ module.exports = {
   Link: jest.fn().mockImplementation(({ to, ...rest }) =>
     React.createElement("a", {
       ...rest,
-      href: to
+      href: to,
     })
   ),
-  StaticQuery: jest.fn()
+  StaticQuery: jest.fn(),
 };

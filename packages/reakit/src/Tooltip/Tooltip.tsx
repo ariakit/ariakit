@@ -1,13 +1,18 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
-import { usePipe } from "reakit-utils/usePipe";
-import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
+import { useForkRef } from "reakit-utils/useForkRef";
+import { getDocument } from "reakit-utils/getDocument";
+import {
+  DisclosureContentOptions,
+  DisclosureContentHTMLProps,
+  useDisclosureContent,
+} from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { TooltipStateReturn, useTooltipState } from "./TooltipState";
+import globalState from "./__globalState";
 
-export type TooltipOptions = HiddenOptions &
+export type TooltipOptions = DisclosureContentOptions &
   Pick<
     Partial<TooltipStateReturn>,
     "unstable_popoverRef" | "unstable_popoverStyles"
@@ -19,52 +24,70 @@ export type TooltipOptions = HiddenOptions &
     unstable_portal?: boolean;
   };
 
-export type TooltipHTMLProps = HiddenHTMLProps;
+export type TooltipHTMLProps = DisclosureContentHTMLProps;
 
 export type TooltipProps = TooltipOptions & TooltipHTMLProps;
 
+function globallyHideTooltipOnEscape(event: KeyboardEvent) {
+  if (event.defaultPrevented) return;
+  if (event.key === "Escape") {
+    globalState.show(null);
+  }
+}
+
 export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   name: "Tooltip",
-  compose: useHidden,
+  compose: useDisclosureContent,
   useState: useTooltipState,
   keys: ["unstable_portal"],
 
   useOptions({ unstable_portal = true, ...options }) {
-    return {
-      unstable_portal,
-      ...options
-    };
+    return { unstable_portal, ...options };
   },
 
   useProps(
     options,
-    { ref: htmlRef, style: htmlStyle, unstable_wrap: htmlWrap, ...htmlProps }
+    {
+      ref: htmlRef,
+      style: htmlStyle,
+      wrapElement: htmlWrapElement,
+      ...htmlProps
+    }
   ) {
-    const wrap = React.useCallback(
-      (children: React.ReactNode) => {
+    React.useEffect(() => {
+      const document = getDocument(options.unstable_popoverRef?.current);
+      document.addEventListener("keydown", globallyHideTooltipOnEscape);
+    }, []);
+
+    const wrapElement = React.useCallback(
+      (element: React.ReactNode) => {
         if (options.unstable_portal) {
-          return <Portal>{children}</Portal>;
+          element = <Portal>{element}</Portal>;
         }
-        return children;
+        if (htmlWrapElement) {
+          return htmlWrapElement(element);
+        }
+        return element;
       },
-      [options.unstable_portal]
+      [options.unstable_portal, htmlWrapElement]
     );
 
     return {
-      ref: mergeRefs(options.unstable_popoverRef, htmlRef),
+      ref: useForkRef(options.unstable_popoverRef, htmlRef),
       role: "tooltip",
       style: {
         ...options.unstable_popoverStyles,
         pointerEvents: "none",
-        ...htmlStyle
+        ...htmlStyle,
       },
-      unstable_wrap: usePipe(wrap, htmlWrap),
-      ...htmlProps
+      wrapElement,
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Tooltip = createComponent({
   as: "div",
-  useHook: useTooltip
+  memo: true,
+  useHook: useTooltip,
 });

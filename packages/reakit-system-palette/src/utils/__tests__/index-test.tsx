@@ -11,7 +11,7 @@ function render<T extends (...args: any[]) => any>(
   return renderHook(() => useHook(...args), {
     wrapper: (props: { children: React.ReactNode }) => (
       <Provider unstable_system={system} {...props} />
-    )
+    ),
   }).result;
 }
 

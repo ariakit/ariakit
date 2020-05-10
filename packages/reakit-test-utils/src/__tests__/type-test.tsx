@@ -13,7 +13,7 @@ test("type", () => {
       <input
         ref={ref}
         aria-label="input"
-        onChange={event => values.push(event.target.value)}
+        onChange={(event) => values.push(event.target.value)}
       />
     );
   };
@@ -81,7 +81,7 @@ test("type readOnly", () => {
       <input
         ref={ref}
         aria-label="input"
-        onChange={event => values.push(event.target.value)}
+        onChange={(event) => values.push(event.target.value)}
         readOnly
       />
     );
@@ -129,8 +129,8 @@ test("type preventDefault", () => {
       <input
         ref={ref}
         aria-label="input"
-        onChange={event => values.push(event.target.value)}
-        onKeyDown={event => {
+        onChange={(event) => values.push(event.target.value)}
+        onKeyDown={(event) => {
           if (event.key !== "e") {
             event.preventDefault();
           }

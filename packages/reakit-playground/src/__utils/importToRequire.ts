@@ -23,7 +23,7 @@ export function importToRequire(code: string) {
         /import (.+),\s?{([^}]+)} from ([^\s;]+);?/g,
         [
           "const $1 = require($3).default || require($3);",
-          "const {$2} = require($3);"
+          "const {$2} = require($3);",
         ].join("\n")
       )
   );

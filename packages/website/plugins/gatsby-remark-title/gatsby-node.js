@@ -11,13 +11,13 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
     return {
       title: {
         type: GraphQLString,
-        resolve: source => {
+        resolve: (source) => {
           const tree = processor.parse(source.internal.content);
           const heading = getFirstHeading(tree);
           if (!heading) return undefined;
           return mdastToString(heading);
-        }
-      }
+        },
+      },
     };
   }
   return {};

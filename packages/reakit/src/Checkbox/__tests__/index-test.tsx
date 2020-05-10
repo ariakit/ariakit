@@ -19,15 +19,43 @@ test("single checkbox", () => {
   expect(checkbox.checked).toBe(true);
 });
 
-test("group checkbox", async () => {
+test("group checkbox", () => {
+  const Test = () => {
+    const checkbox = useCheckboxState();
+    return (
+      <div role="group">
+        <Checkbox {...checkbox} as="div" aria-label="apple" value="apple" />
+        <label>
+          <Checkbox {...checkbox} value="orange" />
+          orange
+        </label>
+        <label>
+          <Checkbox {...checkbox} value="watermelon" />
+          watermelon
+        </label>
+      </div>
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const apple = getByLabelText("apple") as HTMLInputElement;
+  const orange = getByLabelText("orange") as HTMLInputElement;
+  const watermelon = getByLabelText("watermelon") as HTMLInputElement;
+  expect(apple.checked).toBe(false);
+  expect(orange.checked).toBe(false);
+  expect(watermelon.checked).toBe(false);
+  click(orange);
+  click(apple);
+  expect(apple.checked).toBe(true);
+  expect(orange.checked).toBe(true);
+  expect(watermelon.checked).toBe(false);
+});
+
+test("group checkbox with initial state", () => {
   const Test = () => {
     const checkbox = useCheckboxState({ state: ["orange"] });
     return (
       <div role="group">
-        <label>
-          <Checkbox {...checkbox} as="div" value="apple" />
-          apple
-        </label>
+        <Checkbox {...checkbox} as="div" aria-label="apple" value="apple" />
         <label>
           <Checkbox {...checkbox} value="orange" />
           orange
@@ -52,7 +80,7 @@ test("group checkbox", async () => {
   expect(watermelon.checked).toBe(false);
 });
 
-test("checkbox onChange checked value", async () => {
+test("checkbox onChange checked value", () => {
   const onChange = jest.fn();
   const Test = () => {
     const checkbox = useCheckboxState();
@@ -60,7 +88,7 @@ test("checkbox onChange checked value", async () => {
       <label>
         <Checkbox
           {...checkbox}
-          onChange={event => onChange(event.target.checked)}
+          onChange={(event) => onChange(event.target.checked)}
         />
         checkbox
       </label>
@@ -78,19 +106,17 @@ test("checkbox onChange checked value", async () => {
   expect(onChange).toBeCalledWith(false);
 });
 
-test("non-native checkbox onChange checked value", async () => {
+test("non-native checkbox onChange checked value", () => {
   const onChange = jest.fn();
   const Test = () => {
     const checkbox = useCheckboxState();
     return (
-      <label>
-        <Checkbox
-          as="div"
-          {...checkbox}
-          onChange={(event: any) => onChange(event.target.checked)}
-        />
-        checkbox
-      </label>
+      <Checkbox
+        {...checkbox}
+        as="div"
+        aria-label="checkbox"
+        onChange={(event: any) => onChange(event.target.checked)}
+      />
     );
   };
   const { getByLabelText } = render(<Test />);
@@ -105,7 +131,7 @@ test("non-native checkbox onChange checked value", async () => {
   expect(onChange).toBeCalledWith(false);
 });
 
-test("checkbox onChange checked value without useCheckboxState", async () => {
+test("checkbox onChange checked value without useCheckboxState", () => {
   const onChange = jest.fn();
   const Test = () => {
     const [checked, setChecked] = React.useState(false);
@@ -113,7 +139,7 @@ test("checkbox onChange checked value without useCheckboxState", async () => {
       <label>
         <Checkbox
           checked={checked}
-          onChange={event => {
+          onChange={(event) => {
             setChecked(event.target.checked);
             onChange(event.target.checked);
           }}
@@ -134,22 +160,20 @@ test("checkbox onChange checked value without useCheckboxState", async () => {
   expect(onChange).toBeCalledWith(false);
 });
 
-test("non-native checkbox onChange checked value without useCheckboxState", async () => {
+test("non-native checkbox onChange checked value without useCheckboxState", () => {
   const onChange = jest.fn();
   const Test = () => {
     const [checked, setChecked] = React.useState(false);
     return (
-      <label>
-        <Checkbox
-          as="div"
-          checked={checked}
-          onChange={(event: any) => {
-            setChecked(event.target.checked);
-            onChange(event.target.checked);
-          }}
-        />
-        checkbox
-      </label>
+      <Checkbox
+        as="div"
+        aria-label="checkbox"
+        checked={checked}
+        onChange={(event: any) => {
+          setChecked(event.target.checked);
+          onChange(event.target.checked);
+        }}
+      />
     );
   };
   const { getByLabelText } = render(<Test />);
@@ -162,6 +186,25 @@ test("non-native checkbox onChange checked value without useCheckboxState", asyn
   click(checkbox);
   expect(checkbox.checked).toBe(false);
   expect(onChange).toBeCalledWith(false);
+});
+
+test("non-native checkbox onClick preventDefault", () => {
+  const Test = () => {
+    const checkbox = useCheckboxState();
+    return (
+      <Checkbox
+        {...checkbox}
+        as="div"
+        aria-label="checkbox"
+        onClick={(event: React.MouseEvent) => event.preventDefault()}
+      />
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
+  expect(checkbox.checked).toBe(false);
+  click(checkbox);
+  expect(checkbox.checked).toBe(false);
 });
 
 test("useCheckbox", () => {
@@ -172,7 +215,7 @@ test("useCheckbox", () => {
       {
         checked,
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          setChecked(event.target.checked)
+          setChecked(event.target.checked),
       }
     );
     return (
@@ -188,7 +231,6 @@ test("useCheckbox", () => {
   expect(checkbox).toMatchInlineSnapshot(`
     <input
       aria-checked="false"
-      role="checkbox"
       type="checkbox"
       value=""
     />
@@ -198,7 +240,6 @@ test("useCheckbox", () => {
   expect(checkbox).toMatchInlineSnapshot(`
     <input
       aria-checked="true"
-      role="checkbox"
       type="checkbox"
       value=""
     />
@@ -208,7 +249,6 @@ test("useCheckbox", () => {
   expect(checkbox).toMatchInlineSnapshot(`
     <input
       aria-checked="false"
-      role="checkbox"
       type="checkbox"
       value=""
     />

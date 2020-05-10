@@ -1,8 +1,25 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
-import { warning } from "reakit-utils/warning";
+import { warning } from "reakit-warning";
 import { isTabbable, ensureFocus } from "reakit-utils/tabbable";
+import { getActiveElement } from "reakit-utils/getActiveElement";
+import { contains } from "reakit-utils/contains";
 import { DialogOptions } from "../Dialog";
+
+function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {
+  const dialog = dialogRef.current;
+
+  if (!dialog) return false;
+
+  const activeElement = getActiveElement(dialog);
+
+  if (!activeElement) return false;
+  if (contains(dialog, activeElement)) return false;
+  if (isTabbable(activeElement)) return true;
+  if (activeElement.getAttribute("data-dialog") === "true") return true;
+
+  return false;
+}
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
@@ -10,37 +27,30 @@ export function useFocusOnHide(
   options: DialogOptions
 ) {
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
+  const animating = !!(options.animated && options.animating);
 
   useUpdateEffect(() => {
     if (!shouldFocus) return;
-    const dialog = dialogRef.current;
+    if (animating) return;
 
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
-    if (
-      document.activeElement &&
-      dialog &&
-      !dialog.contains(document.activeElement) &&
-      (isTabbable(document.activeElement) ||
-        document.activeElement.getAttribute("data-dialog") === "true")
-    ) {
+    if (hidByFocusingAnotherElement(dialogRef)) {
       return;
     }
 
     const finalFocusEl =
-      (options.unstable_finalFocusRef &&
-        options.unstable_finalFocusRef.current) ||
-      (disclosuresRef.current && disclosuresRef.current[0]);
+      options.unstable_finalFocusRef?.current || disclosuresRef.current?.[0];
 
     if (finalFocusEl) {
       ensureFocus(finalFocusEl);
     } else {
       warning(
         true,
-        "[reakit/Dialog]",
         "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
-        "See https://reakit.io/docs/dialog"
+        "See https://reakit.io/docs/dialog",
+        dialogRef.current
       );
     }
-  }, [dialogRef, disclosuresRef, shouldFocus]);
+  }, [shouldFocus, animating, dialogRef, disclosuresRef]);
 }

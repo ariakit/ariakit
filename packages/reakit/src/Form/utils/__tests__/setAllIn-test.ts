@@ -5,14 +5,14 @@ test("setAllIn", () => {
     a: {
       b: ["c", "d"],
       e: "f",
-      g: 1
-    }
+      g: 1,
+    },
   };
   expect(unstable_setAllIn(obj, "a")).toEqual({
     a: {
       b: ["a", "a"],
       e: "a",
-      g: "a"
-    }
+      g: "a",
+    },
   });
 });

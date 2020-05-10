@@ -76,14 +76,14 @@ test("click disabled after clicking non-disabled", () => {
       </>
     );
   };
-  const { getByText } = render(<Test />);
+  const { getByText, baseElement } = render(<Test />);
   const button1 = getByText("button1");
   const button2 = getByText("button2");
 
   click(button1);
   expect(button1).toHaveFocus();
   click(button2);
-  expect(button1).toHaveFocus();
+  expect(baseElement).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
     Array [
@@ -110,6 +110,8 @@ test("click disabled after clicking non-disabled", () => {
       "pointerenter button2",
       "pointermove button2",
       "pointerdown button2",
+      "blur button1",
+      "focusout button1",
       "pointerup button2",
     ]
   `);
@@ -146,7 +148,7 @@ test("click disabled within focusable container", () => {
 
   expect(baseElement).toHaveFocus();
   click(button);
-  expect(baseElement).toHaveFocus();
+  expect(button.parentElement).toHaveFocus();
 });
 
 test("click label htmlFor", () => {
@@ -364,9 +366,10 @@ test("click label preventDefault onClick", () => {
     useAllEvents(input, stack);
     return (
       <>
+        {/* eslint-disable-next-line */}
         <label
           ref={label}
-          onClick={event => event.preventDefault()}
+          onClick={(event) => event.preventDefault()}
           htmlFor="input"
         >
           label
@@ -405,7 +408,7 @@ test("click button preventDefault onMouseDown", () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onMouseDown={event => event.preventDefault()}>
+      <button ref={ref} onMouseDown={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -423,7 +426,7 @@ test("click button preventDefault onPointerDown", () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
     return (
-      <button ref={ref} onPointerDown={event => event.preventDefault()}>
+      <button ref={ref} onPointerDown={(event) => event.preventDefault()}>
         button
       </button>
     );
@@ -468,7 +471,7 @@ test("select", async () => {
   expect(Array.from(select.selectedOptions)).toEqual([
     option2,
     option3,
-    option4
+    option4,
   ]);
 
   expect(stack).toMatchInlineSnapshot(`
@@ -524,58 +527,13 @@ test("select", async () => {
   expect(Array.from(select.selectedOptions)).toEqual([
     option1,
     option2,
-    option4
+    option4,
   ]);
 
   click(option3, { shiftKey: true });
   expect(Array.from(select.selectedOptions)).toEqual([
     option1,
     option2,
-    option3
+    option3,
   ]);
-});
-
-test("click on safari", () => {
-  const previousUserAgent = window.navigator.userAgent;
-  Object.defineProperty(window.navigator, "userAgent", {
-    value:
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9",
-    writable: true
-  });
-
-  const stack = [] as string[];
-  const Test = () => {
-    const ref = React.useRef<HTMLButtonElement>(null);
-    useAllEvents(ref, stack);
-    return <button ref={ref}>button</button>;
-  };
-  const { getByText } = render(<Test />);
-  const button = getByText("button");
-
-  click(button);
-  expect(button).not.toHaveFocus();
-
-  expect(stack).toMatchInlineSnapshot(`
-    Array [
-      "pointerover button",
-      "pointerenter button",
-      "mouseover button",
-      "mouseenter button",
-      "pointermove button",
-      "mousemove button",
-      "pointerdown button",
-      "mousedown button",
-      "focus button",
-      "focusin button",
-      "blur button",
-      "focusout button",
-      "pointerup button",
-      "mouseup button",
-      "click button",
-    ]
-  `);
-
-  Object.defineProperty(window.navigator, "userAgent", {
-    value: previousUserAgent
-  });
 });

@@ -1,25 +1,69 @@
-import { SealedInitialState } from "reakit-utils/useSealedState";
+import * as React from "react";
 import {
-  useHiddenState,
-  HiddenState,
-  HiddenActions,
-  HiddenInitialState
-} from "../Hidden/HiddenState";
+  SealedInitialState,
+  useSealedState,
+} from "reakit-utils/useSealedState";
+import {
+  useDisclosureState,
+  DisclosureState,
+  DisclosureActions,
+  DisclosureInitialState,
+  DisclosureStateReturn,
+} from "../Disclosure/DisclosureState";
 
-export type DialogState = HiddenState;
+export type DialogState = DisclosureState & {
+  /**
+   * Toggles Dialog's `modal` state.
+   *   - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+   *   - Modal: `preventBodyScroll` is automatically enabled, focus is
+   * trapped within the dialog and the dialog is rendered within a `Portal`
+   * by default.
+   */
+  modal: boolean;
+};
 
-export type DialogActions = HiddenActions;
+export type DialogActions = DisclosureActions & {
+  /**
+   * Sets `modal`.
+   */
+  setModal: React.Dispatch<React.SetStateAction<DialogState["modal"]>>;
+};
 
-export type DialogInitialState = HiddenInitialState;
+export type DialogInitialState = DisclosureInitialState &
+  Partial<Pick<DialogState, "modal">>;
 
-export type DialogStateReturn = DialogState & DialogActions;
+export type DialogStateReturn = DisclosureStateReturn &
+  DialogState &
+  DialogActions & {
+    /**
+     * @private
+     */
+    unstable_modal: boolean;
+  };
 
 export function useDialogState(
   initialState: SealedInitialState<DialogInitialState> = {}
 ): DialogStateReturn {
-  return useHiddenState(initialState);
+  const { modal: initialModal = true, ...sealed } = useSealedState(
+    initialState
+  );
+
+  const [modal, setModal] = React.useState(initialModal);
+  const hidden = useDisclosureState(sealed);
+
+  return {
+    modal,
+    setModal,
+    unstable_modal: modal,
+    ...hidden,
+  };
 }
 
-const keys: Array<keyof DialogStateReturn> = [...useHiddenState.__keys];
+const keys: Array<keyof DialogStateReturn> = [
+  ...useDisclosureState.__keys,
+  "modal",
+  "setModal",
+  "unstable_modal",
+];
 
 useDialogState.__keys = keys;

@@ -1,9 +1,16 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { Toolbar } from "../Toolbar";
+import { Toolbar, ToolbarProps } from "../Toolbar";
 
-const props: Parameters<typeof Toolbar>[0] = {
-  "aria-label": "toolbar"
+const props: ToolbarProps = {
+  "aria-label": "toolbar",
+  baseId: "toolbar",
+  currentId: null,
+  items: [],
+  setCurrentId: jest.fn(),
+  move: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn(),
 };
 
 test("render", () => {
@@ -13,7 +20,9 @@ test("render", () => {
       <div>
         <div
           aria-label="toolbar"
+          id="toolbar"
           role="toolbar"
+          tabindex="0"
         >
           toolbar
         </div>
@@ -29,16 +38,40 @@ test("render orientation", () => {
     </Toolbar>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          aria-label="toolbar"
-          aria-orientation="horizontal"
-          role="toolbar"
-        >
-          toolbar
-        </div>
-      </div>
-    </body>
-  `);
+<body>
+  <div>
+    <div
+      aria-label="toolbar"
+      aria-orientation="horizontal"
+      id="toolbar"
+      role="toolbar"
+      tabindex="0"
+    >
+      toolbar
+    </div>
+  </div>
+</body>
+`);
+});
+
+test("render without state props", () => {
+  const { baseElement } = render(
+    // @ts-ignore
+    <Toolbar id="toolbar" aria-label="toolbar">
+      toolbar
+    </Toolbar>
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+<body>
+  <div>
+    <div
+      aria-label="toolbar"
+      id="toolbar"
+      role="toolbar"
+    >
+      toolbar
+    </div>
+  </div>
+</body>
+`);
 });

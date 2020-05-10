@@ -6,7 +6,7 @@ redirect_from:
 
 # Composition
 
-Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box/), [Tabbable](/docs/tabbable/) and [Rover](/docs/rover/).
+Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box/), [Tabbable](/docs/tabbable/) and [Composite](/docs/composite/).
 
 The API isn't different. It's designed so you can create new things based on any existing module.
 
@@ -42,7 +42,7 @@ function Example() {
   const checkbox = useCheckboxState();
   return (
     <Button {...checkbox}>
-      {props => (
+      {(props) => (
         <Checkbox {...props} as="div">
           {checkbox.state ? "😄 Happy" : "😞 Sad"}
         </Checkbox>
@@ -61,14 +61,16 @@ Props hooks receive two arguments: `options` and `htmlProps`; and return new `ht
 Props will be merged automatically. If there's any conflict between props, the topmost hook (in the case below, `useButton`) will take precedence.
 
 ```jsx
-import { useCheckboxState, useCheckbox, useButton } from "reakit";
+import { Box, useCheckboxState, useCheckbox, useButton } from "reakit";
 
 function Example() {
   const options = useCheckboxState();
   // Composing Checkbox and Button together
   const htmlProps = useCheckbox(options, useButton());
   return (
-    <button {...htmlProps}>{options.state ? "😄 Happy" : "😞 Sad"}</button>
+    <Box as="button" {...htmlProps}>
+      {options.state ? "😄 Happy" : "😞 Sad"}
+    </Box>
   );
 }
 ```
@@ -79,36 +81,38 @@ State hooks are composable as well. For example, [`useTabState`](/docs/tab/) use
 
 ```jsx
 import React from "react";
-import { useHiddenState, Hidden, HiddenDisclosure } from "reakit";
+import { useDisclosureState, DisclosureContent, Disclosure } from "reakit";
 
-function useDelayedHiddenState({ delay, ...initialState } = {}) {
-  const hidden = useHiddenState(initialState);
+function useDelayedDisclosureState({ delay, ...initialState } = {}) {
+  const disclosure = useDisclosureState(initialState);
   const [transitioning, setTransitioning] = React.useState(false);
   return {
-    ...hidden,
+    ...disclosure,
     transitioning,
     toggle: () => {
       setTransitioning(true);
       setTimeout(() => {
-        hidden.toggle();
+        disclosure.toggle();
         setTransitioning(false);
       }, delay);
-    }
+    },
   };
 }
 
 function Example() {
-  const { transitioning, ...hidden } = useDelayedHiddenState({ delay: 500 });
+  const { transitioning, ...disclosure } = useDelayedDisclosureState({
+    delay: 500,
+  });
   return (
     <>
-      <HiddenDisclosure {...hidden}>
+      <Disclosure {...disclosure}>
         {transitioning
           ? "Please wait..."
-          : hidden.visible
+          : disclosure.visible
           ? "Hide with delay"
           : "Show with delay"}
-      </HiddenDisclosure>
-      <Hidden {...hidden}>Hidden</Hidden>
+      </Disclosure>
+      <DisclosureContent {...disclosure}>Content</DisclosureContent>
     </>
   );
 }

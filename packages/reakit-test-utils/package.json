@@ -1,6 +1,6 @@
 {
   "name": "reakit-test-utils",
-  "version": "0.6.9",
+  "version": "0.11.0",
   "description": "Reakit test utils",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils",
@@ -17,10 +17,10 @@
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
-    "clean": "../../scripts/build/clean.js",
-    "build": "../../scripts/build/build.js",
-    "docs": "../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn build",
+    "clean": "node ../../scripts/build/clean.js",
+    "build": "node ../../scripts/build/build.js",
+    "docs": "node ../../scripts/build/docs.js",
+    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [
@@ -28,15 +28,15 @@
     "react",
     "system"
   ],
-  "devDependencies": {
-    "reakit-utils": "^0.7.3"
+  "dependencies": {
+    "reakit-utils": "^0.12.0",
+    "reakit-warning": "^0.3.0"
   },
   "peerDependencies": {
     "@testing-library/dom": "^6.0.0",
     "@testing-library/react": "^9.0.0",
     "@testing-library/react-hooks": "^3.0.0",
     "react": "^16.8.0",
-    "react-dom": "^16.8.0",
-    "reakit-utils": "^0.7.0"
+    "react-dom": "^16.8.0"
   }
 }

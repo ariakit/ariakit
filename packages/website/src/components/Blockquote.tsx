@@ -5,7 +5,7 @@ import { createHook, createComponent } from "reakit-system";
 import {
   usePalette,
   useLighten,
-  useContrast
+  useContrast,
 } from "reakit-system-palette/utils";
 import TestTube from "../icons/TestTube";
 
@@ -45,16 +45,16 @@ export const useBlockquote = createHook<BlockquoteOptions, BlockquoteHTMLProps>(
         }
 
         ${isExperimental &&
-          css`
-            display: flex;
+        css`
+          display: flex;
 
-            svg {
-              flex: none;
-              width: 50px;
-              height: 50px;
-              margin-right: 20px;
-            }
-          `}
+          svg {
+            flex: none;
+            width: 50px;
+            height: 50px;
+            margin-right: 20px;
+          }
+        `}
       `;
 
       return {
@@ -67,15 +67,15 @@ export const useBlockquote = createHook<BlockquoteOptions, BlockquoteHTMLProps>(
         ) : (
           htmlProps.children
         ),
-        className: cx(blockquote, htmlProps.className)
+        className: cx(blockquote, htmlProps.className),
       };
-    }
+    },
   }
 );
 
 const Blockquote = createComponent({
   as: "blockquote",
-  useHook: useBlockquote
+  useHook: useBlockquote,
 });
 
 export default Blockquote;

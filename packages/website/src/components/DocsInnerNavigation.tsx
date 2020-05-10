@@ -20,10 +20,10 @@ type Props = {
 function useCollection() {
   const [items, setItems] = React.useState<string[]>([]);
   const add = React.useCallback((item: string) => {
-    setItems(prevItems => [...prevItems, item]);
+    setItems((prevItems) => [...prevItems, item]);
   }, []);
   const remove = React.useCallback((item: string) => {
-    setItems(prevItems => {
+    setItems((prevItems) => {
       const idx = prevItems.indexOf(item);
       return [...prevItems.slice(0, idx), ...prevItems.slice(idx + 1)];
     });
@@ -31,11 +31,11 @@ function useCollection() {
   return {
     items,
     add,
-    remove
+    remove,
   };
 }
 
-const useCollectionContext = constate(() => {
+const [CollectionProvider, useCollectionContext] = constate(() => {
   const value = useCollection();
   return React.useMemo(() => value, Object.values(value));
 });
@@ -51,12 +51,12 @@ function useScrollSpy() {
     if (!items.length) return undefined;
 
     const elements = document.querySelectorAll<HTMLElement>(
-      items.map(item => `[id="${item}"]`).join(",")
+      items.map((item) => `[id="${item}"]`).join(",")
     );
     const elementsArray = Array.from(elements);
 
     const handleScroll = () => {
-      elementsArray.forEach(element => {
+      elementsArray.forEach((element) => {
         if (element.offsetTop <= window.scrollY + 100) {
           setCurrentId(element.id);
         }
@@ -71,7 +71,7 @@ function useScrollSpy() {
   return currentId;
 }
 
-const useScrollSpyContext = constate(useScrollSpy);
+const [ScrollSpyProvider, useScrollSpyContext] = constate(useScrollSpy);
 
 function useDocsInnerNavigationCSS() {
   const background = usePalette("background");
@@ -148,22 +148,22 @@ const { Compiler: renderAst } = new RehypeReact({
         );
       }
       return <a {...props}>{props.children}</a>;
-    }
-  }
+    },
+  },
 });
 
 export default function DocsInnerNavigation({
   sourceUrl,
   readmeUrl,
   title,
-  tableOfContentsAst
+  tableOfContentsAst,
 }: Props) {
   const { id } = useId();
   const className = useDocsInnerNavigationCSS();
 
   return (
-    <useCollectionContext.Provider>
-      <useScrollSpyContext.Provider>
+    <CollectionProvider>
+      <ScrollSpyProvider>
         <div className={className} key={title}>
           <Button
             as="a"
@@ -189,7 +189,7 @@ export default function DocsInnerNavigation({
           </div>
           <nav aria-labelledby={id}>{renderAst(tableOfContentsAst)}</nav>
         </div>
-      </useScrollSpyContext.Provider>
-    </useCollectionContext.Provider>
+      </ScrollSpyProvider>
+    </CollectionProvider>
   );
 }

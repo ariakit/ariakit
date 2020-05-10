@@ -33,12 +33,12 @@ export const useList = createHook<ListOptions, ListHTMLProps>({
       }
     `;
     return { ...htmlProps, className: cx(list, htmlProps.className) };
-  }
+  },
 });
 
 const List = createComponent({
   as: "ul",
-  useHook: useList
+  useHook: useList,
 });
 
 export default List;

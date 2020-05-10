@@ -18,18 +18,18 @@ export function useBoxProps(
   const textColor = system.fill === "opaque" ? contrast : color;
   const backgroundColor = system.fill === "opaque" ? color : undefined;
   const borderColor = system.fill === "outline" ? color : undefined;
-  const style = {
-    ...(textColor ? { color: textColor } : {}),
-    ...(backgroundColor ? { backgroundColor } : {}),
-    ...(borderColor ? { border: `1px solid ${borderColor}`, borderColor } : {})
-  };
+  const style = {} as React.CSSProperties;
 
-  return { style: { ...style, ...htmlStyle }, ...htmlProps } as BoxHTMLProps & {
-    style: {
-      color?: string;
-      backgroundColor?: string;
-      border?: string;
-      borderColor?: string;
-    };
-  };
+  if (textColor) {
+    style.color = textColor;
+  }
+  if (backgroundColor) {
+    style.backgroundColor = backgroundColor;
+  }
+  if (borderColor) {
+    style.border = `1px solid ${borderColor}`;
+    style.borderColor = borderColor;
+  }
+
+  return { style: { ...style, ...htmlStyle }, ...htmlProps };
 }

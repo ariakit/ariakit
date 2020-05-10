@@ -13,12 +13,13 @@ export function useDisableHoverOutside(
       { current: null },
       nestedDialogs,
       eventType,
-      event => {
+      (event) => {
         event.stopPropagation();
         event.preventDefault();
       },
       options.visible && options.modal
     );
   useEvent("mouseover");
+  useEvent("mousemove");
   useEvent("mouseout");
 }

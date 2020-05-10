@@ -25,15 +25,15 @@ module.exports = {
         targets: test
           ? { node: "current" }
           : {
-              browsers: "defaults"
-            }
-      }
+              browsers: "defaults",
+            },
+      },
     ],
     "@babel/preset-typescript",
-    "@babel/preset-react"
+    "@babel/preset-react",
   ],
   plugins: [
-    "babel-plugin-dev-expression",
+    "reakit-warning/babel-plugin",
     "babel-plugin-macros",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-proposal-object-rest-spread",
@@ -42,9 +42,9 @@ module.exports = {
       "babel-plugin-module-resolver",
       {
         alias: {
-          "^reakit([^/]*)(.*)$": "reakit\\1/src\\2"
-        }
-      }
-    ]
-  ].filter(Boolean)
+          "^reakit([^/]*)(.*)$": "reakit\\1/src\\2",
+        },
+      },
+    ],
+  ].filter(Boolean),
 };

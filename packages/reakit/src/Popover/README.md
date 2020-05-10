@@ -30,7 +30,7 @@ import {
   usePopoverState,
   Popover,
   PopoverDisclosure,
-  PopoverArrow
+  PopoverArrow,
 } from "reakit/Popover";
 
 function Example() {
@@ -56,7 +56,7 @@ import {
   usePopoverState,
   Popover,
   PopoverDisclosure,
-  PopoverArrow
+  PopoverArrow,
 } from "reakit/Popover";
 
 function Example() {
@@ -145,6 +145,58 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Popover` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+The only difference is that Reakit automatically adds inline styles to the `Popover` container so that it's correctly positioned according to `PopoverDisclosure`. In this example, we're animating an inner wrapper element, so we don't need to overwrite `Popover` positioning styles.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  usePopoverState,
+  Popover,
+  PopoverArrow,
+  PopoverDisclosure,
+} from "reakit/Popover";
+
+const styles = css`
+  background-color: white;
+  padding: 16px;
+  border: 1px solid rgba(33, 33, 33, 0.25);
+  border-radius: 4px;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(0, -20px, 0);
+  [data-enter] & {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`;
+
+function Example() {
+  const popover = usePopoverState({ animated: 250 });
+  return (
+    <>
+      <PopoverDisclosure {...popover}>Open popover</PopoverDisclosure>
+      <Popover
+        {...popover}
+        aria-label="Welcome"
+        style={{ border: 0, background: "none", padding: 0 }}
+      >
+        <div className={styles}>
+          <PopoverArrow {...popover} />
+          Welcome to Reakit
+          <Button onClick={popover.hide}>Close</Button>
+        </div>
+      </Popover>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Popover` component with a different API on top of Reakit.
@@ -155,15 +207,15 @@ import {
   usePopoverState,
   Popover as BasePopover,
   PopoverDisclosure,
-  PopoverArrow
+  PopoverArrow,
 } from "reakit/Popover";
 
 function Popover({ disclosure, ...props }) {
   const popover = usePopoverState();
   return (
     <>
-      <PopoverDisclosure {...popover} {...disclosure.props}>
-        {disclosureProps => React.cloneElement(disclosure, disclosureProps)}
+      <PopoverDisclosure {...popover} ref={disclosure.ref} {...disclosure.props}>
+        {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </PopoverDisclosure>
       <BasePopover {...popover} {...props}>
         <PopoverArrow {...popover} />
@@ -197,7 +249,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Popover` uses [Dialog](/docs/dialog/), and is used by [Menu](/docs/menu/).
 - `PopoverArrow` uses [Box](/docs/box/), and is used by [TooltipArrow](/docs/tooltip/).
 - `PopoverBackdrop` uses [DialogBackdrop](/docs/dialog/).
-- `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog/), and is used by [MenuDisclosure](/docs/menu/).
+- `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog/), and is used by [MenuButton](/docs/menu/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -217,13 +269,22 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -241,46 +302,22 @@ given milliseconds.
   Flip the popover's placement when it starts to overlap its reference
 element.
 
-- **`unstable_shift`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+- **`unstable_offset`** <span title="Experimental">⚠️</span>
+  <code>[string | number, string | number] | undefined</code>
 
-  Shift popover on the start or end of its reference element.
-
-- **`unstable_inner`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Position the popover inside the reference element.
+  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 
 - **`gutter`**
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.
+  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
 
 - **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
   Prevents popover from being positioned outside the boundary.
 
-- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
-  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
-
-  Boundaries element used by `preventOverflow`.
-
 ### `Popover`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-- **`modal`**
-  <code>boolean | undefined</code>
-
-  Toggles Dialog's `modal` state.
-  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-  - Modal: `preventBodyScroll` is automatically enabled, focus is
-trapped within the dialog and the dialog is rendered within a `Portal`
-by default.
 
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
@@ -310,12 +347,6 @@ When not set, the first tabbable element within the dialog will be used.
   The element that will be focused when the dialog hides.
 When not set, the disclosure component will be used.
 
-- **`unstable_portal`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
-
 - **`unstable_orphan`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
@@ -324,7 +355,7 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>5 state props</summary>
+<details><summary>8 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -338,19 +369,37 @@ It will be set to `false` if `modal` is `false`.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
+- **`setModal`**
+  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
+
+  Sets `modal`.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -379,12 +428,7 @@ It's called after given milliseconds if `animated` is a number.
 
 ### `PopoverBackdrop`
 
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
-
-<details><summary>4 state props</summary>
+<details><summary>6 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -398,19 +442,32 @@ It's called after given milliseconds if `animated` is a number.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
 
 </details>
 

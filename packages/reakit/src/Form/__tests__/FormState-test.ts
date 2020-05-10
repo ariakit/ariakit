@@ -33,7 +33,7 @@ test("initial state values", () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
       baseId: "base",
-      values: { a: "a", b: { c: ["d", "e"] } }
+      values: { a: "a", b: { c: ["d", "e"] } },
     })
   );
   expect(result.current).toMatchInlineSnapshot(`
@@ -66,7 +66,7 @@ test("initial state values", () => {
 test("update", () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
-      values: { a: "a", b: { c: ["d", "e"] } }
+      values: { a: "a", b: { c: ["d", "e"] } },
     })
   );
   expect(result.current.values.a).toBe("a");
@@ -80,14 +80,14 @@ test("update", () => {
 test("update with function", () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
-      values: { a: "a", b: { c: ["d", "e"] } }
+      values: { a: "a", b: { c: ["d", "e"] } },
     })
   );
   expect(result.current.values.a).toBe("a");
-  act(() => result.current.update("a", v => `${v}b`));
+  act(() => result.current.update("a", (v) => `${v}b`));
   expect(result.current.values.a).toBe("ab");
   expect(result.current.values.b.c).toEqual(["d", "e"]);
-  act(() => result.current.update(["b", "c", 1] as const, v => `${v}f`));
+  act(() => result.current.update(["b", "c", 1] as const, (v) => `${v}f`));
   expect(result.current.values.b.c).toEqual(["d", "ef"]);
 });
 
@@ -97,7 +97,7 @@ test("update undefined", () => {
   };
   const { result } = renderHook(() =>
     unstable_useFormState<Values>({
-      values: { a: "a" }
+      values: { a: "a" },
     })
   );
   expect(result.current.values.a).toBe("a");
@@ -109,12 +109,12 @@ test("validate", async () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
       values: { a: "a" },
-      onValidate: values => {
+      onValidate: (values) => {
         if (values.a === "a") {
           const error = { a: "error" };
           throw error;
         }
-      }
+      },
     })
   );
   await act(() =>
@@ -132,12 +132,12 @@ test("validate with updating onValidate", async () => {
     }, []);
     return unstable_useFormState({
       values: { a: "a" },
-      onValidate: values => {
+      onValidate: (values) => {
         if (values.a === "a") {
           const error = { a: message };
           throw error;
         }
-      }
+      },
     });
   });
   // @ts-ignore
@@ -154,12 +154,12 @@ test("submit", async () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
       values: { a: "a" },
-      onSubmit: values => {
+      onSubmit: (values) => {
         if (values.a === "a") {
           const error = { a: "error" };
           throw error;
         }
-      }
+      },
     })
   );
   await act(result.current.submit);
@@ -170,7 +170,7 @@ test("submit with resetOnSubmitSucceed", async () => {
   const { result } = renderHook(() =>
     unstable_useFormState({
       values: { a: "a" },
-      resetOnSubmitSucceed: true
+      resetOnSubmitSucceed: true,
     })
   );
   expect(result.current.values.a).toBe("a");
@@ -189,12 +189,12 @@ test("submit with updating onSubmit", async () => {
     }, []);
     return unstable_useFormState({
       values: { a: "a" },
-      onSubmit: values => {
+      onSubmit: (values) => {
         if (values.a === "a") {
           const error = { a: message };
           throw error;
         }
-      }
+      },
     });
   });
   await act(result.current.submit);

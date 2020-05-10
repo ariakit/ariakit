@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   PopoverArrowOptions,
   PopoverArrowHTMLProps,
-  usePopoverArrow
+  usePopoverArrow,
 } from "../Popover/PopoverArrow";
 import { useTooltipState } from "./TooltipState";
 
@@ -23,10 +23,11 @@ export const useTooltipArrow = createHook<
 
   useOptions({ size = 16, ...options }) {
     return { size, ...options };
-  }
+  },
 });
 
 export const TooltipArrow = createComponent({
   as: "div",
-  useHook: useTooltipArrow
+  memo: true,
+  useHook: useTooltipArrow,
 });

@@ -67,7 +67,7 @@ Learn more about render props in [Composition](/docs/composition/#render-props).
 import { Box } from "reakit/Box";
 
 function Example() {
-  return <Box>{props => <button {...props}>Button</button>}</Box>;
+  return <Box>{(props) => <button {...props}>Button</button>}</Box>;
 }
 ```
 

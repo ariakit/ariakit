@@ -85,6 +85,54 @@ function Example() {
 }
 ```
 
+### Animating
+
+`Tooltip` uses [DisclosureContent](/docs/disclosure/) underneath, so you can use the same approaches as described in the [Animating](/docs/disclosure/#animating) section there.
+
+The only difference is that Reakit automatically adds inline styles to the `Tooltip` element so that it's correctly positioned according to `TooltipReference`. In this example, we're animating an inner wrapper element, so we don't need to overwrite `Tooltip` positioning styles.
+
+```jsx
+import { css } from "emotion";
+import { Button } from "reakit/Button";
+import {
+  useTooltipState,
+  Tooltip,
+  TooltipArrow,
+  TooltipReference,
+} from "reakit/Tooltip";
+
+const styles = css`
+  background-color: rgba(33, 33, 33, 0.9);
+  padding: 8px;
+  border-radius: 4px;
+  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+  opacity: 0;
+  transform-origin: top center;
+  transform: translate3d(0, -20px, 0);
+  [data-enter] & {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`;
+
+function Example() {
+  const tooltip = useTooltipState({ animated: 250 });
+  return (
+    <>
+      <TooltipReference {...tooltip} as={Button}>
+        Reference
+      </TooltipReference>
+      <Tooltip {...tooltip} style={{ background: "none", padding: 0 }}>
+        <div className={styles}>
+          <TooltipArrow {...tooltip} />
+          Tooltip
+        </div>
+      </Tooltip>
+    </>
+  );
+}
+```
+
 ### Abstracting
 
 You can build your own `Tooltip` component with a different API on top of Reakit.
@@ -94,15 +142,15 @@ import React from "react";
 import {
   useTooltipState,
   Tooltip as ReakitTooltip,
-  TooltipReference
+  TooltipReference,
 } from "reakit/Tooltip";
 
 function Tooltip({ children, title, ...props }) {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipReference {...tooltip} {...children.props}>
-        {referenceProps => React.cloneElement(children, referenceProps)}
+      <TooltipReference {...tooltip} ref={children.ref} {...children.props}>
+        {(referenceProps) => React.cloneElement(children, referenceProps)}
       </TooltipReference>
       <ReakitTooltip {...tooltip} {...props}>
         {title}
@@ -124,12 +172,13 @@ function Example() {
 
 - `Tooltip` has role `tooltip`.
 - `TooltipReference` has `aria-describedby` referring to `Tooltip`.
+- <kbd>Escape</kbd> hides the current visible tooltip.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tooltip` uses [Hidden](/docs/hidden/).
+- `Tooltip` uses [DisclosureContent](/docs/disclosure/).
 - `TooltipArrow` uses [PopoverArrow](/docs/popover/).
 - `TooltipReference` uses [Box](/docs/box/).
 
@@ -151,13 +200,13 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -175,37 +224,22 @@ given milliseconds.
   Flip the popover's placement when it starts to overlap its reference
 element.
 
-- **`unstable_shift`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
+- **`unstable_offset`** <span title="Experimental">⚠️</span>
+  <code>[string | number, string | number] | undefined</code>
 
-  Shift popover on the start or end of its reference element.
-
-- **`unstable_inner`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Position the popover inside the reference element.
+  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 
 - **`gutter`**
   <code>number | undefined</code>
 
-  Offset between the reference and the popover.
+  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
 
 - **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
   Prevents popover from being positioned outside the boundary.
 
-- **`unstable_boundariesElement`** <span title="Experimental">⚠️</span>
-  <code>&#34;scrollParent&#34; | &#34;viewport&#34; | &#34;window&#34; | undefined</code>
-
-  Boundaries element used by `preventOverflow`.
-
 ### `Tooltip`
-
-- **`id`**
-  <code>string | undefined</code>
-
-  Same as the HTML attribute.
 
 - **`unstable_portal`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
@@ -213,7 +247,7 @@ element.
   Whether or not the dialog should be rendered within `Portal`.
 It's `true` by default if `modal` is `true`.
 
-<details><summary>4 state props</summary>
+<details><summary>5 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -227,19 +261,23 @@ It's `true` by default if `modal` is `true`.
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 </details>
 

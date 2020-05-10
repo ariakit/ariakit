@@ -4,7 +4,7 @@ import {
   FaFacebook,
   FaTwitter,
   FaGithub,
-  FaStackOverflow
+  FaStackOverflow,
 } from "react-icons/fa";
 import { VisuallyHidden } from "reakit";
 import { css } from "@emotion/core";

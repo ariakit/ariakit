@@ -7,7 +7,7 @@ import {
   blur,
   click,
   press,
-  focus
+  focus,
 } from "reakit-test-utils";
 import {
   unstable_Form as Form,
@@ -28,7 +28,7 @@ import {
   unstable_useFormRadio as useFormRadio,
   unstable_useFormRadioGroup as useFormRadioGroup,
   unstable_useFormRemoveButton as useFormRemoveButton,
-  unstable_FormStateReturn as FormStateReturn
+  unstable_FormStateReturn as FormStateReturn,
 } from "..";
 
 test("validate on change", async () => {
@@ -109,15 +109,15 @@ test("display validation error", async () => {
   const Test = () => {
     const form = useFormState({
       values: {
-        input: ""
+        input: "",
       },
-      onValidate: values => {
+      onValidate: (values) => {
         if (!values.input) {
           const error = { input: "required" };
           return Promise.reject(error);
         }
         return undefined;
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -140,14 +140,14 @@ test("display validation message", async () => {
   const Test = () => {
     const form = useFormState({
       values: {
-        input: ""
+        input: "",
       },
-      onValidate: values => {
+      onValidate: (values) => {
         if (values.input) {
           return { input: "nice" };
         }
         return {};
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -174,22 +174,22 @@ test("display submission error", async () => {
       values: {
         a: {
           b: {
-            c: ["d", "e", "f"]
-          }
-        }
+            c: ["d", "e", "f"],
+          },
+        },
       },
-      onSubmit: values => {
+      onSubmit: (values) => {
         if (values.a.b.c[1] === "e") {
           const error = {
             a: {
               b: {
-                c: [null, "error"]
-              }
-            }
+                c: [null, "error"],
+              },
+            },
           };
           throw error;
         }
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -213,22 +213,22 @@ test("display submission message", async () => {
       values: {
         a: {
           b: {
-            c: ["d", "e", "f"]
-          }
-        }
+            c: ["d", "e", "f"],
+          },
+        },
       },
-      onSubmit: values => {
+      onSubmit: (values) => {
         if (values.a.b.c[1] === "e") {
           return {
             a: {
               b: {
-                c: [null, "nice"]
-              }
-            }
+                c: [null, "nice"],
+              },
+            },
           };
         }
         return {};
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -256,22 +256,22 @@ test("display validation message on submit", async () => {
       values: {
         a: {
           b: {
-            c: ["d", "e", "f"]
-          }
-        }
+            c: ["d", "e", "f"],
+          },
+        },
       },
-      onValidate: values => {
+      onValidate: (values) => {
         if (values.a.b.c[1] === "e") {
           return {
             a: {
               b: {
-                c: [null, "nice"]
-              }
-            }
+                c: [null, "nice"],
+              },
+            },
           };
         }
         return {};
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -299,22 +299,22 @@ test("display validation error on submit", async () => {
       values: {
         a: {
           b: {
-            c: ["d", "e", "f"]
-          }
-        }
+            c: ["d", "e", "f"],
+          },
+        },
       },
-      onValidate: values => {
+      onValidate: (values) => {
         if (values.a.b.c[1] === "e") {
           const error = {
             a: {
               b: {
-                c: [null, "error"]
-              }
-            }
+                c: [null, "error"],
+              },
+            },
           };
           throw error;
         }
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -336,14 +336,14 @@ test("display group error", async () => {
   const Test = () => {
     const form = useFormState({
       values: {
-        input: ["a"] as Array<"a" | "b" | "c">
+        input: ["a"] as Array<"a" | "b" | "c">,
       },
-      onValidate: values => {
+      onValidate: (values) => {
         if (values.input.length <= 1) {
           const error = { input: "error" };
           throw error;
         }
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -380,14 +380,14 @@ test("display group message", async () => {
   const Test = () => {
     const form = useFormState({
       values: {
-        input: false
+        input: false,
       },
-      onSubmit: values => {
+      onSubmit: (values) => {
         if (!values.input) {
           return { input: "nice" };
         }
         return {};
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -421,14 +421,14 @@ test("focus the first invalid input on failed submit", async () => {
       values: {
         input1: "",
         input2: "",
-        input3: ""
+        input3: "",
       },
-      onValidate: values => {
+      onValidate: (values) => {
         if (!values.input2) {
           const error = { input2: "error" };
           throw error;
         }
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -456,12 +456,12 @@ test("focus the first invalid fieldset on failed submit", async () => {
       values: {
         input1: "",
         choice1: "",
-        choice2: ""
+        choice2: "",
       },
       onValidate: () => {
         const error = { choice1: "error", choice2: "error" };
         throw error;
-      }
+      },
     });
     return (
       <Form {...form}>
@@ -494,8 +494,8 @@ test("arrow keys control radio buttons", async () => {
   const Test = () => {
     const form = useFormState({
       values: {
-        input: "a"
-      }
+        input: "a",
+      },
     });
     return (
       <Form {...form}>
@@ -520,7 +520,7 @@ test("arrow keys control radio buttons", async () => {
 
   focus(b);
   expect(b).toHaveFocus();
-  expect(b.checked).toBe(true);
+  expect(b.checked).toBe(false);
 
   press.ArrowDown();
   expect(c).toHaveFocus();
@@ -548,8 +548,8 @@ test("push/remove button adds/removes entry and moves focus", async () => {
     const form = useFormState({
       baseId: "form",
       values: {
-        people: [] as Array<{ name: string; email: string }>
-      }
+        people: [] as Array<{ name: string; email: string }>,
+      },
     });
     return (
       <Form {...form}>
@@ -666,9 +666,9 @@ test("useFormCheckbox passing name as htmlProps", async () => {
   const Test = () => {
     const form = useFormState({
       values: {
-        input: false
+        input: false,
       },
-      onValidate
+      onValidate,
     });
     // @ts-ignore
     const checkbox = useFormCheckbox(form, { name: "input" });
@@ -744,14 +744,14 @@ test("useFormPushButton and useFormRemoveButton passing name and value as htmlPr
     const form = useFormState<Values>({
       baseId: "form",
       values: {
-        people: []
-      }
+        people: [],
+      },
     });
     // @ts-ignore
     const pushButton = useFormPushButton(form, {
       name: "people",
       value: { name: "", email: "" },
-      "data-testid": "push"
+      "data-testid": "push",
     });
     return (
       <Form {...form}>
@@ -867,16 +867,16 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
     const form = useFormState<Values>({
       baseId: "form",
       values: {
-        input: "a"
-      }
+        input: "a",
+      },
     });
     // @ts-ignore
-    const { unstable_wrap: wrap, ...radioGroup } = useFormRadioGroup(form, {
-      name: "input"
+    const { wrapElement, ...radioGroup } = useFormRadioGroup(form, {
+      name: "input",
     });
     return (
       <Form {...form}>
-        {wrap(
+        {wrapElement(
           <fieldset {...radioGroup}>
             <CustomFormRadio {...form} value="a" />
             <CustomFormRadio {...form} value="b" />
@@ -908,7 +908,6 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
               checked=""
               id="form-input-1"
               name="input"
-              role="radio"
               tabindex="0"
               type="radio"
               value="a"
@@ -920,7 +919,6 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
               aria-checked="false"
               id="form-input-2"
               name="input"
-              role="radio"
               tabindex="-1"
               type="radio"
               value="b"
@@ -932,7 +930,6 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
               aria-checked="false"
               id="form-input-3"
               name="input"
-              role="radio"
               tabindex="-1"
               type="radio"
               value="c"
@@ -950,8 +947,8 @@ test("reset form after removing an item", async () => {
     const form = useFormState({
       baseId: "form",
       values: {
-        names: ["a", "b", "c"]
-      }
+        names: ["a", "b", "c"],
+      },
     });
     return (
       <Form {...form}>

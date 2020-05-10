@@ -2,19 +2,19 @@ import { css, cx } from "emotion";
 import { unstable_FormHTMLProps, unstable_FormOptions } from "reakit/Form/Form";
 import {
   unstable_FormInputHTMLProps,
-  unstable_FormInputOptions
+  unstable_FormInputOptions,
 } from "reakit/Form/FormInput";
 import {
   unstable_FormMessageHTMLProps,
-  unstable_FormMessageOptions
+  unstable_FormMessageOptions,
 } from "reakit/Form/FormMessage";
 import {
   unstable_FormLabelHTMLProps,
-  unstable_FormLabelOptions
+  unstable_FormLabelOptions,
 } from "reakit/Form/FormLabel";
 import {
   unstable_FormGroupHTMLProps,
-  unstable_FormGroupOptions
+  unstable_FormGroupOptions,
 } from "reakit/Form/FormGroup";
 import { unstable_FormRemoveButtonOptions } from "reakit/Form/FormRemoveButton";
 import { unstable_getIn } from "reakit/Form/utils/getIn";
@@ -55,9 +55,9 @@ export function useFormInputOptions({
     unstable_system: {
       fill,
       ...system,
-      palette: isInvalid ? "danger" : system.palette
+      palette: isInvalid ? "danger" : system.palette,
     },
-    ...options
+    ...options,
   };
 }
 
@@ -66,7 +66,7 @@ export function useFormInputProps(
   htmlProps: unstable_FormInputHTMLProps = {}
 ): unstable_FormInputHTMLProps {
   const {
-    style: { backgroundColor, borderColor: originalBorderColor }
+    style: { backgroundColor, borderColor: originalBorderColor },
   } = usePaletteBoxProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";
@@ -104,9 +104,9 @@ export function useFormMessageOptions({
   return {
     unstable_system: {
       ...system,
-      palette: isInvalid ? "danger" : system.palette || "success"
+      palette: isInvalid ? "danger" : system.palette || "success",
     },
-    ...options
+    ...options,
   };
 }
 
@@ -158,9 +158,9 @@ export function useFormGroupOptions({
     unstable_system: {
       fill,
       ...system,
-      palette: isInvalid ? "danger" : system.palette
+      palette: isInvalid ? "danger" : system.palette,
     },
-    ...options
+    ...options,
   };
 }
 
@@ -169,7 +169,7 @@ export function useFormGroupProps(
   htmlProps: unstable_FormGroupHTMLProps = {}
 ): unstable_FormGroupHTMLProps {
   const {
-    style: { backgroundColor, borderColor: originalBorderColor }
+    style: { backgroundColor, borderColor: originalBorderColor },
   } = usePaletteBoxProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";

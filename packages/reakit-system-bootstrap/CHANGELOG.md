@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.10.0...reakit-system-bootstrap@0.11.0) (2020-04-29)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
+# [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.9.0...reakit-system-bootstrap@0.10.0) (2020-04-20)
+
+
+### Features
+
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.8.0...reakit-system-bootstrap@0.9.0) (2020-03-30)
+
+
+### Features
+
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+
+
+### BREAKING CHANGES
+
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+
+
+
+
+
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.7.0...reakit-system-bootstrap@0.8.0) (2020-02-10)
+
+
+### Features
+
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* Upgrade to popper.js v2 ([#545](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/545)) ([55f7c21](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/55f7c21b6651efc7ee18e45c17bf7be3ef5d39d2))
+
+
+### BREAKING CHANGES
+
+* The internal `popper.js` dependency has been upgraded to `v2`. The stable `Popover` API remains the same. But, while this change has been tested with the most common use cases, there may be some edge cases where `Popover` and `Menu` (which uses `Popover` underneath) may behave differently.
+
+
+
+
+
+# [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.11...reakit-system-bootstrap@0.7.0) (2020-02-05)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
 ## [0.6.11](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.6.10...reakit-system-bootstrap@0.6.11) (2019-12-18)
 
 **Note:** Version bump only for package reakit-system-bootstrap

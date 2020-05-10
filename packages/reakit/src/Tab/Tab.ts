@@ -1,23 +1,34 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
-import { RoverOptions, RoverHTMLProps, useRover } from "../Rover/Rover";
-import { getTabId, getTabPanelId } from "./__utils";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import {
+  unstable_CompositeItemOptions as CompositeItemOptions,
+  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
+  unstable_useCompositeItem as useCompositeItem,
+} from "../Composite/CompositeItem";
 import { useTabState, TabStateReturn } from "./TabState";
 
-export type TabOptions = RoverOptions &
-  Pick<Required<RoverOptions>, "stopId"> &
+export type TabOptions = CompositeItemOptions &
   Pick<Partial<TabStateReturn>, "manual"> &
-  Pick<TabStateReturn, "baseId" | "selectedId" | "select">;
+  Pick<TabStateReturn, "panels" | "selectedId" | "select">;
 
-export type TabHTMLProps = RoverHTMLProps;
+export type TabHTMLProps = CompositeItemHTMLProps;
 
 export type TabProps = TabOptions & TabHTMLProps;
 
+function useTabPanelId(options: TabOptions) {
+  return React.useMemo(
+    () =>
+      options.panels?.find((panel) => panel.groupId === options.id)?.id ||
+      undefined,
+    [options.panels, options.id]
+  );
+}
+
 export const useTab = createHook<TabOptions, TabHTMLProps>({
   name: "Tab",
-  compose: useRover,
+  compose: useCompositeItem,
   useState: useTabState,
 
   useOptions({ focusable = true, ...options }) {
@@ -28,31 +39,49 @@ export const useTab = createHook<TabOptions, TabHTMLProps>({
     options,
     { onClick: htmlOnClick, onFocus: htmlOnFocus, ...htmlProps }
   ) {
-    const stopId = options.stopId || options.id || htmlProps.id;
-    const selected = options.selectedId === stopId;
+    const selected = options.selectedId === options.id;
+    const tabPanelId = useTabPanelId(options);
+    const onClickRef = useLiveRef(htmlOnClick);
+    const onFocusRef = useLiveRef(htmlOnFocus);
 
-    const onClick = React.useCallback(() => {
-      if (stopId && !options.disabled && !selected) {
-        options.select(stopId);
-      }
-    }, [options.disabled, selected, options.select, stopId]);
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
+        if (!options.id) return;
+        if (selected) return;
+        options.select?.(options.id);
+      },
+      [options.disabled, selected, options.select, options.id]
+    );
 
-    const onFocus = React.useCallback(() => {
-      if (stopId && !options.disabled && !options.manual && !selected) {
-        options.select(stopId);
-      }
-    }, [options.disabled, options.manual, selected, options.select, stopId]);
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        onFocusRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.disabled) return;
+        if (options.manual) return;
+        if (!options.id) return;
+        if (selected) return;
+        options.select?.(options.id);
+      },
+      [options.id, options.disabled, options.manual, selected, options.select]
+    );
 
     return {
       role: "tab",
-      id: getTabId(stopId, options.baseId),
       "aria-selected": selected,
-      "aria-controls": getTabPanelId(stopId, options.baseId),
-      onClick: useAllCallbacks(onClick, htmlOnClick),
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
-      ...htmlProps
+      "aria-controls": tabPanelId,
+      onClick,
+      onFocus,
+      ...htmlProps,
     };
-  }
+  },
 });
 
-export const Tab = createComponent({ as: "button", useHook: useTab });
+export const Tab = createComponent({
+  as: "button",
+  memo: true,
+  useHook: useTab,
+});

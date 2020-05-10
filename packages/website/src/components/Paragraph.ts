@@ -15,12 +15,12 @@ export const useParagraph = createHook<ParagraphOptions, ParagraphHTMLProps>({
       line-height: 1.5;
     `;
     return { ...htmlProps, className: cx(paragraph, htmlProps.className) };
-  }
+  },
 });
 
 const Paragraph = createComponent({
   as: "p",
-  useHook: useParagraph
+  useHook: useParagraph,
 });
 
 export default Paragraph;

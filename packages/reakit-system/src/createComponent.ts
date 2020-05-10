@@ -1,31 +1,29 @@
-// TODO: Refactor
 import * as React from "react";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { splitProps } from "reakit-utils/splitProps";
-import { memo } from "./__utils/memo";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
+import { memo } from "./__utils/memo";
 
 type BoxHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
-    unstable_wrap?: (children: React.ReactNode) => JSX.Element;
+    wrapElement?: (element: React.ReactNode) => React.ReactNode;
   };
 
 type Hook<O> = {
   (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
   __keys?: ReadonlyArray<any>;
-  __propsAreEqual?: (prev: O, next: O) => boolean;
 };
 
 type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
-  propsAreEqual?: (prev: O, next: O) => boolean;
+  memo?: boolean;
   useCreateElement?: typeof defaultUseCreateElement;
 };
 
-export interface Component<T extends As, O> {
+export type Component<T extends As, O> = {
   // This is the desired type
   // <TT extends As = T>(props: PropsWithAs<O, TT>): JSX.Element;
   // Unfortunately, TypeScript doesn't like it. It works for string elements
@@ -34,31 +32,44 @@ export interface Component<T extends As, O> {
   // The following two types are a workaround.
   <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
   (props: PropsWithAs<O, T>): JSX.Element;
-}
+};
 
+/**
+ * Creates a React component.
+ *
+ * @example
+ * import { createComponent } from "reakit-system";
+ *
+ * const A = createComponent({ as: "a" });
+ *
+ * @param options
+ */
 export function createComponent<T extends As, O>({
   as: type,
   useHook,
-  keys = (useHook && useHook.__keys) || [],
-  propsAreEqual = useHook && useHook.__propsAreEqual,
-  useCreateElement = defaultUseCreateElement
+  keys = useHook?.__keys || [],
+  useCreateElement = defaultUseCreateElement,
+  memo: shouldMemo,
 }: Options<T, O>) {
   const Comp = (
     { as = type, ...props }: PropsWithAs<O, T>,
-    ref: React.Ref<any>
+    ref: React.Ref<T>
   ) => {
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
-      const { unstable_wrap, ...elementProps } = useHook(options, {
+      const { wrapElement, ...elementProps } = useHook(options, {
         ref,
-        ...htmlProps
+        ...htmlProps,
       });
       // @ts-ignore
-      const asKeys = as.render ? as.render.__keys : as.__keys;
-      const asOptions = asKeys ? splitProps(props, asKeys)[0] : {};
-      const element = useCreateElement(as, { ...elementProps, ...asOptions });
-      if (unstable_wrap) {
-        return unstable_wrap(element);
+      const asKeys = as.render?.__keys || as.__keys;
+      const asOptions = asKeys && splitProps(props, asKeys)[0];
+      const allProps = asOptions
+        ? { ...elementProps, ...asOptions }
+        : elementProps;
+      const element = useCreateElement(as, allProps);
+      if (wrapElement) {
+        return wrapElement(element);
       }
       return element;
     }
@@ -71,5 +82,9 @@ export function createComponent<T extends As, O>({
     (Comp as any).displayName = useHook.name.replace(/^(unstable_)?use/, "");
   }
 
-  return memo(forwardRef(Comp as Component<T, O>), propsAreEqual);
+  if (shouldMemo) {
+    return memo(forwardRef(Comp as Component<T, O>));
+  }
+
+  return forwardRef(Comp as Component<T, O>);
 }

@@ -3,6 +3,133 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.10.0...reakit-playground@0.11.0) (2020-04-29)
+
+
+### Features
+
+* **reakit-utils:** Add `shallowEqual` util ([c3e7a71](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/c3e7a717b182f1e0f9c734d2bc058787f091ce82))
+
+
+
+
+
+# [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.9.0...reakit-playground@0.10.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/609)) ([555b931](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+
+
+### Features
+
+* Remove experimental `IdGroup` component ([1c73f02](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/1c73f021f78bca6a0c46c99b192d8ff11b124f4d))
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.8.0...reakit-playground@0.9.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* Add ie11 ponyfill for Element.matches ([#555](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/555)) ([07488aa](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/07488aa1142ffba652c4582890f52bda9953966a)), closes [#556](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/556)
+
+
+### Features
+
+* **reakit-utils:** Remove `warning` util ([ff98d43](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/ff98d43568790cc191fde1ee9b56a35311a3a10f))
+* **reakit-warning:** Add `reakit-warning` package ([82e17ee](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/82e17ee089cf97974438fe08b18cdadf2b9a1a2c))
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+* Add `DisclosureContent` component ([#554](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/554)) ([fd93b08](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/fd93b08046ac89c5995e926a09f9e60464c83ce7))
+* Remove `Provider` from `reakit/utils/Provider` ([134f7eb](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/134f7ebc55838882f5e8dbd19473fb7417135116))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `warning` has been removed from `reakit-utils`. Use the `reakit-warning` package instead.
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+* Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
+* `DisclosureRegion` has been renamed to `DisclosureContent`.
+
+
+
+
+
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.7.0...reakit-playground@0.8.0) (2020-02-10)
+
+
+### Features
+
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/544)) ([f5fa914](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* **reakit-utils:** Add `useForkRef` method ([8366545](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8366545bf372cb8fb7c61bd18785c780c3794361))
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/541)) ([4397ab0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `mergeRefs` has been replaced by `useForkRef`. It's now a custom hook, so it should follow the rules of hooks.
+
+  *Before*:
+  ```jsx
+  import React from "react";
+  import { mergeRefs } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={mergeRefs(internalRef, ref)} {...props} />;
+  });
+  ```
+
+  *After*:
+  ```jsx
+  import React from "react";
+  import { useForkRef } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={useForkRef(internalRef, ref)} {...props} />;
+  });
+  ```
+
+
+
+
+
+# [0.7.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.12...reakit-playground@0.7.0) (2020-02-05)
+
+
+### Features
+
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/a252fcd))
+* **reakit-utils:** Add `isButton` method ([8ff86fc](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8ff86fc))
+* **reakit-utils:** Add `isPlainObject` function ([faeb26f](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/faeb26f))
+
+
+
+
+
 ## [0.6.12](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.6.11...reakit-playground@0.6.12) (2019-12-18)
 
 **Note:** Version bump only for package reakit-playground

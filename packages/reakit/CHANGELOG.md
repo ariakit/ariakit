@@ -3,6 +3,189 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.2](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.1...reakit@1.0.0-rc.2) (2020-04-29)
+
+
+### Bug Fixes
+
+* Ensure `undefined` doesn't override default tabIndex in `Dialog` ([#638](https://github.com/reakit/reakit/issues/638)) ([a6a87f4](https://github.com/reakit/reakit/commit/a6a87f490aafd8a66e32bf6cf03cbca77c2404c6)), closes [#636](https://github.com/reakit/reakit/issues/636)
+* Fix `Menu` issues on Safari ([8d9f33c](https://github.com/reakit/reakit/commit/8d9f33c64eebfc16312d1247797b0ef4089bc718))
+* Fix hovering `MenuItem` with `Dialog` open closing the dialog ([06c72ff](https://github.com/reakit/reakit/commit/06c72ffecf31f3fa267f3c83e3cde4f79a6426c4))
+* Fix nested `Dialog` blocking parent auto focus when it's conditionally rendered ([324395b](https://github.com/reakit/reakit/commit/324395ba8a7d5f5db4da856218841eff8b96205d))
+
+
+### Features
+
+* Make `CompositeItem` tabbable before they're registered (for example, on SSR) ([dff1ba1](https://github.com/reakit/reakit/commit/dff1ba1a9b34629e7ecdd27c86a78663e4da370e))
+
+
+### Performance Improvements
+
+* Reduce the number of renders on `Popover`/`Tooltip`/`Menu` ([f554600](https://github.com/reakit/reakit/commit/f5546009dd3f64dbc327a89fd4a391061514b6da))
+
+
+
+
+
+# [1.0.0-rc.1](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.0...reakit@1.0.0-rc.1) (2020-04-20)
+
+
+### Bug Fixes
+
+* Add missing `setVirtual` action to `CompositeState` reducer ([965704c](https://github.com/reakit/reakit/commit/965704c14c91e862dffa3425cf2a5c3f696bd751))
+* Fix `<Tabbable disabled focusable />` not focusing closest parent ([b3dfb96](https://github.com/reakit/reakit/commit/b3dfb96dd50969a0bbc9a3bbad11d761a498a0d1))
+* Fix `Checkbox` activating twice on space key on Firefox ([#625](https://github.com/reakit/reakit/issues/625)) ([c4d5961](https://github.com/reakit/reakit/commit/c4d59619f452dd608077857e6c678a91fcfcf87a)), closes [#368](https://github.com/reakit/reakit/issues/368)
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/issues/609)) ([555b931](https://github.com/reakit/reakit/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+* Fix `CompositeItem` not receiving focus when clicking with Safari/VoiceOver ([d3ba001](https://github.com/reakit/reakit/commit/d3ba0010acde0b6533fb6b456afc18968dd2ee89))
+* Fix `Dialog` closing on Firefox when the window loses focus and get focused again ([#620](https://github.com/reakit/reakit/issues/620)) ([7c3119d](https://github.com/reakit/reakit/commit/7c3119df82ec599b685ebd249d88faf78591f61f)), closes [#619](https://github.com/reakit/reakit/issues/619)
+* Fix `Menu` -> `Dialog` -> `Menu` behaving as a sub menu ([#621](https://github.com/reakit/reakit/issues/621)) ([9feb9c1](https://github.com/reakit/reakit/commit/9feb9c168efbbd21cbf06ed695dbf0fccf29148d))
+* Fix `Tooltip` when used with `Composite` components ([#623](https://github.com/reakit/reakit/issues/623)) ([0b70f43](https://github.com/reakit/reakit/commit/0b70f435673db13b75f82d69ac2760b485879674))
+* Fix animated `Dialog` not being correctly focused with VoiceOver ([#618](https://github.com/reakit/reakit/issues/618)) ([db71535](https://github.com/reakit/reakit/commit/db71535b4cdc4d7c88f7860d3a55b62202b845c8))
+* Fix click outside not closing all `Menu` ([341a250](https://github.com/reakit/reakit/commit/341a250fe90b350866dbfbb6662d786cf1a324ac))
+* Fix disabled `MenuButton` being activated when used as a menu item ([6c31dab](https://github.com/reakit/reakit/commit/6c31dab0be1ae606862d7dca6b5b523a67d40309))
+* Fix falsy values on `Radio` not working ([387e8d3](https://github.com/reakit/reakit/commit/387e8d3ffb521f14d3a8c77e9a0b161cde9cb020)), closes [#607](https://github.com/reakit/reakit/issues/607)
+* Fix nested `Dialog` not rendering correctly when the parent has a backdrop ([ce766d5](https://github.com/reakit/reakit/commit/ce766d57b97e6b081a41504e8676e5d47e23e9cd))
+* Fix nested modals when using VoiceOver/Safari ([#608](https://github.com/reakit/reakit/issues/608)) ([417b3b3](https://github.com/reakit/reakit/commit/417b3b391bdb2df173e97aee3276cc00d3db4efe))
+* Fix submenu closing when trying to move into it ([38f0c0b](https://github.com/reakit/reakit/commit/38f0c0b0ed9e9edb64143ea0c544e5101732ba4a))
+
+
+### Features
+
+* Add experimental `unstable_timeout` option to `useTooltipState` ([#622](https://github.com/reakit/reakit/issues/622)) ([5fe208f](https://github.com/reakit/reakit/commit/5fe208f26d3193b4ec73c4f945e1586c4ec52545))
+* Hide `Tooltip` when pressing `Escape` ([#629](https://github.com/reakit/reakit/issues/629)) ([d7f5e8c](https://github.com/reakit/reakit/commit/d7f5e8cca981ca234a3a3f4afe6190d59b4f50be))
+* Remove experimental `IdGroup` component ([1c73f02](https://github.com/reakit/reakit/commit/1c73f021f78bca6a0c46c99b192d8ff11b124f4d))
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/issues/616)) ([16f843f](https://github.com/reakit/reakit/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
+# [1.0.0-rc.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.16...reakit@1.0.0-rc.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` dispatching `click` twice when it's composed by another `Tabbable` ([#553](https://github.com/reakit/reakit/issues/553)) ([d231120](https://github.com/reakit/reakit/commit/d23112071b983b35e9262dded9df5dd6e84cb6ce))
+
+
+### Features
+
+* Add `Clickable` component ([#596](https://github.com/reakit/reakit/issues/596)) ([6a9fca9](https://github.com/reakit/reakit/commit/6a9fca9f20f1e93eb93776577607d5577d6f5870))
+* Add `DisclosureContent` component ([#554](https://github.com/reakit/reakit/issues/554)) ([fd93b08](https://github.com/reakit/reakit/commit/fd93b08046ac89c5995e926a09f9e60464c83ce7))
+* Automatically check `Radio` on focus ([#599](https://github.com/reakit/reakit/issues/599)) ([6edc689](https://github.com/reakit/reakit/commit/6edc68980de142686bdbdceecc8769e2a6265001))
+* Remove `Provider` from `reakit/utils/Provider` ([134f7eb](https://github.com/reakit/reakit/commit/134f7ebc55838882f5e8dbd19473fb7417135116))
+* Select the first `Tab` by default and don't require `stopId` prop ([#597](https://github.com/reakit/reakit/issues/597)) ([528b016](https://github.com/reakit/reakit/commit/528b016304f381b171cdc96598201deb54fb53c8))
+* Support `rtl` on `Toolbar` ([#601](https://github.com/reakit/reakit/issues/601)) ([2811071](https://github.com/reakit/reakit/commit/281107130fac84bf37489f51e77f7c68e0e1b4f2))
+
+
+### BREAKING CHANGES
+
+* The first `Tab` is now selected by default. There's no need to pass `selectedId` to `useTabState` anymore.
+
+  If you're already using `selectedId` to select a tab in the initial render, you don't need to change anything as this still works. But, if you want to render tabs with none selected, you should now pass `null` to `selectedId`:
+
+  ```js
+  // if you're already using selectedId, there's no need to change anything
+  const tab = useTabState({ selectedId: "tab-1" });
+  ```
+
+  ```diff
+  // when there's no tab selected by default, you now need to explicitly specify it
+  - const tab = useTabState();
+  + const tab = useTabState({ selectedId: null });
+  ```
+* **Most users will not be affected by this**, but `stops`, `register` and `unregister` on the returned object of state hooks have been renamed to `items`, `registerItem` and `unregisterItem`, respectively.
+
+  ```diff
+  const tab = useTabState();
+  - tab.stops.map(...);
+  + tab.items.map(...);
+  - tab.register(...);
+  + tab.registerItem(...);
+  - tab.unregister(...);
+  + tab.unregisterItem(...);
+  ```
+* `Tabbable` doesn't trigger a click on the element when pressing <kbd>Enter</kbd> and <kbd>Space</kbd> anymore. If you need that feature, use `Clickable` instead.
+
+  **Before:**
+  ```jsx
+  import { Tabbable } from "reakit/Tabbable";
+  <Tabbable />
+  ```
+  **After:**
+  ```jsx
+  import { Clickable } from "reakit/Clickable";
+  // Tabbable is not going away, it just doesn't represent a clickable element
+  // anymore
+  <Clickable />
+  ```
+* Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
+* `DisclosureRegion` has been renamed to `DisclosureContent`.
+
+
+
+
+
+# [1.0.0-beta.16](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.15...reakit@1.0.0-beta.16) (2020-02-10)
+
+
+### Bug Fixes
+
+* Check for classList existence before use ([#540](https://github.com/reakit/reakit/issues/540)) ([92a5fa1](https://github.com/reakit/reakit/commit/92a5fa1fd30e876eb8c25f3bbed48fbd7b8e15fb)), closes [#537](https://github.com/reakit/reakit/issues/537)
+* Fix `transitionEnd` capturing children transitions ([#548](https://github.com/reakit/reakit/issues/548)) ([4cf1eaa](https://github.com/reakit/reakit/commit/4cf1eaad204a787be70f9db31b25e18972723ea2)), closes [#531](https://github.com/reakit/reakit/issues/531)
+* Fix inconsistent `Tooltip` behavior on disabled `Tabbable` ([#552](https://github.com/reakit/reakit/issues/552)) ([d507772](https://github.com/reakit/reakit/commit/d507772ed470770f5db322ab68eced3b3259d8f0)), closes [#471](https://github.com/reakit/reakit/issues/471)
+* Fix portaled components without dimensions in the first render ([#547](https://github.com/reakit/reakit/issues/547)) ([8783aec](https://github.com/reakit/reakit/commit/8783aec08f68be6e432bc39be85f2824ef8ca64e)), closes [#532](https://github.com/reakit/reakit/issues/532)
+* Remove confusing `rover.unregister()` warning ([#549](https://github.com/reakit/reakit/issues/549)) ([2a72e35](https://github.com/reakit/reakit/commit/2a72e350c4134a55c77b0f2a19fea8a15af4e3bd)), closes [#488](https://github.com/reakit/reakit/issues/488)
+
+
+### Features
+
+* Add `Disclosure` module and deprecate `Hidden` ([#541](https://github.com/reakit/reakit/issues/541)) ([4397ab0](https://github.com/reakit/reakit/commit/4397ab0ea70e78ed187d6f463a5941f72907afb0))
+* Add `MenuButton` and deprecate `MenuDisclosure` ([#544](https://github.com/reakit/reakit/issues/544)) ([f5fa914](https://github.com/reakit/reakit/commit/f5fa914b6e73f0f8fc5636a25aa5ebe2d421dcf8))
+* Upgrade to popper.js v2 ([#545](https://github.com/reakit/reakit/issues/545)) ([55f7c21](https://github.com/reakit/reakit/commit/55f7c21b6651efc7ee18e45c17bf7be3ef5d39d2))
+
+
+### BREAKING CHANGES
+
+* The internal `popper.js` dependency has been upgraded to `v2`. The stable `Popover` API remains the same. But, while this change has been tested with the most common use cases, there may be some edge cases where `Popover` and `Menu` (which uses `Popover` underneath) may behave differently.
+
+
+
+
+
+# [1.0.0-beta.15](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.14...reakit@1.0.0-beta.15) (2020-02-05)
+
+
+### Bug Fixes
+
+* Fix parent `Dialog` closing when clicking on nested `DialogBackdrop` ([#530](https://github.com/reakit/reakit/issues/530)) ([e8bc3be](https://github.com/reakit/reakit/commit/e8bc3be)), closes [#529](https://github.com/reakit/reakit/issues/529)
+* Fix warning on deprecated `Provider` import ([1cd9421](https://github.com/reakit/reakit/commit/1cd9421))
+* Prevent clicks when pressing Enter/Space with meta key on non-native `Tabbable` ([#534](https://github.com/reakit/reakit/issues/534)) ([7f0c8cf](https://github.com/reakit/reakit/commit/7f0c8cf))
+* Stop converting `File` objects into plain objects when submitting `Form` ([5899d8d](https://github.com/reakit/reakit/commit/5899d8d)), closes [#415](https://github.com/reakit/reakit/issues/415)
+
+
+### Features
+
+* Add `modal` state to `useDialogState` ([#535](https://github.com/reakit/reakit/issues/535)) ([f3953ad](https://github.com/reakit/reakit/commit/f3953ad)), closes [#404](https://github.com/reakit/reakit/issues/404)
+* Add `unstable_offset` option to `usePopoverState` ([#527](https://github.com/reakit/reakit/issues/527)) ([301fbca](https://github.com/reakit/reakit/commit/301fbca)), closes [#511](https://github.com/reakit/reakit/issues/511)
+* Render nested `Dialog` on a portal outside of its parent `Dialog` ([#533](https://github.com/reakit/reakit/issues/533)) ([9f0a5cc](https://github.com/reakit/reakit/commit/9f0a5cc))
+* Replace `unstable_wrap` by `wrapElement` ([#538](https://github.com/reakit/reakit/issues/538)) ([17a12fb](https://github.com/reakit/reakit/commit/17a12fb))
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/commit/a252fcd))
+
+
+### BREAKING CHANGES
+
+* This should affect a very small number of people: the way nested modal `Dialog`s are rendered has been changed. To avoid styling issues, nested dialogs are rendered outside of the parent `Dialog` (but still inside the parent `Portal`).
+
+
+
+
+
 # [1.0.0-beta.14](https://github.com/reakit/reakit/compare/reakit@1.0.0-beta.13...reakit@1.0.0-beta.14) (2019-12-18)
 
 

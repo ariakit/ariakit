@@ -11,5 +11,5 @@ export default {
   ...ReakitSystemPalette,
   ...ReakitSystem,
   ...ReakitUtils,
-  ...Reakit
+  ...Reakit,
 };

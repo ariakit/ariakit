@@ -24,7 +24,6 @@ test("render", () => {
           aria-labelledby="base-a-label"
           id="base-a"
           name="a"
-          role="checkbox"
           type="checkbox"
           value=""
         />
@@ -54,7 +53,6 @@ test("render value", () => {
           aria-invalid="false"
           checked=""
           name="a"
-          role="checkbox"
           type="checkbox"
           value="b"
         />

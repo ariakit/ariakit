@@ -4,7 +4,7 @@ import { reduceObjects } from "./__utils/reduceObjects";
 import { SystemContextType } from "./SystemContext";
 
 function mergeFunctionsInObjects(objects: Array<Record<string, any>>) {
-  const object = reduceObjects(objects, value => typeof value === "function");
+  const object = reduceObjects(objects, (value) => typeof value === "function");
   const keys = Object.keys(object);
   const result: Record<string, any> = {};
 
@@ -34,6 +34,28 @@ function mergeObjectsInObjects(systems: Array<Record<string, any>>) {
   return result;
 }
 
+/**
+ * Merges multiple system objects into a single system object.
+ *
+ * @example
+ * import { Provider } from "reakit";
+ * import { mergeSystem } from "reakit-system";
+ * import * as bootstrapSystem from "reakit-system-bootstrap";
+ *
+ * const mySystem = {
+ *   useButtonProps() {},
+ * };
+ *
+ * const system = mergeSystem(bootstrapSystem, mySystem);
+ *
+ * function App() {
+ *   return (
+ *     <Provider unstable_system={system}>
+ *       <div>App</div>
+ *     </Provider>
+ *   );
+ * }
+ */
 export function mergeSystem<T extends SystemContextType[]>(...systems: T) {
   return Object.assign(
     {},

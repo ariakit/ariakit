@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build:fast && yarn website:build"
+  command = "yarn build:fast && yarn website:build && yarn storybook:build"
   publish = "packages/website/public"
 
 [build.environment]
@@ -11,3 +11,9 @@
   to = "https://reakit.io/:splat"
   status = 301
   force = true
+
+[[headers]]
+  for = "/storybook/iframe.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    

@@ -11,7 +11,7 @@ const {
   getSourcePath,
   getPackage,
   getModuleDir,
-  getMainDir
+  getMainDir,
 } = require("./utils");
 
 const cwd = process.cwd();
@@ -26,7 +26,7 @@ function makeExternalPredicate(externalArr) {
     return () => false;
   }
   const pattern = new RegExp(`^(${externalArr.join("|")})($|/)`);
-  return id => pattern.test(id);
+  return (id) => pattern.test(id);
 }
 
 function getExternal(isUMD) {
@@ -39,9 +39,9 @@ function getPlugins(isUMD) {
   const commonPlugins = [
     babel({
       extensions,
-      exclude: ["node_modules/**", "../../node_modules/**"]
+      exclude: ["node_modules/**", "../../node_modules/**"],
     }),
-    resolve({ extensions, preferBuiltins: false })
+    resolve({ extensions, preferBuiltins: false }),
   ];
 
   if (isUMD) {
@@ -50,14 +50,14 @@ function getPlugins(isUMD) {
       commonjs({
         include: /node_modules/,
         namedExports: {
-          "body-scroll-lock": ["enableBodyScroll", "disableBodyScroll"]
-        }
+          "body-scroll-lock": ["enableBodyScroll", "disableBodyScroll"],
+        },
       }),
       ignore(["stream"]),
       terser(),
       replace({
-        "process.env.NODE_ENV": JSON.stringify("production")
-      })
+        "process.env.NODE_ENV": JSON.stringify("production"),
+      }),
     ];
   }
 
@@ -74,8 +74,8 @@ function getOutput(isUMD) {
       globals: {
         reakit: "Reakit",
         react: "React",
-        "react-dom": "ReactDOM"
-      }
+        "react-dom": "ReactDOM",
+      },
     };
   }
 
@@ -84,13 +84,13 @@ function getOutput(isUMD) {
   return [
     moduleDir && {
       format: "es",
-      dir: moduleDir
+      dir: moduleDir,
     },
     {
       format: "cjs",
       dir: getMainDir(cwd),
-      exports: "named"
-    }
+      exports: "named",
+    },
   ].filter(Boolean);
 }
 
@@ -106,11 +106,11 @@ function getConfig(isUMD) {
     external: getExternal(isUMD),
     plugins: getPlugins(isUMD),
     output: getOutput(isUMD),
-    input: getInput(isUMD)
+    input: getInput(isUMD),
   };
 }
 
 module.exports = [
   getConfig(),
-  pkg.unpkg && !process.env.NO_UMD && getConfig(true)
+  pkg.unpkg && !process.env.NO_UMD && getConfig(true),
 ].filter(Boolean);

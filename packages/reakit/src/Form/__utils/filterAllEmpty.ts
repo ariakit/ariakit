@@ -1,11 +1,11 @@
-import { isObject } from "reakit-utils/isObject";
+import { isPlainObject } from "reakit-utils/isPlainObject";
 
 export function filterAllEmpty<T extends Record<any, any> | Array<any>>(
   object: T
 ): T {
   if (Array.isArray(object)) {
-    return object.filter(value => {
-      if (isObject(value)) {
+    return object.filter((value) => {
+      if (isPlainObject(value) || Array.isArray(value)) {
         return filterAllEmpty(value);
       }
       return true;
@@ -18,7 +18,10 @@ export function filterAllEmpty<T extends Record<any, any> | Array<any>>(
   for (const key of keys) {
     const k = key as keyof T;
     const value = object[k];
-    result[k] = isObject(value) ? filterAllEmpty(value) : object[k];
+    result[k] =
+      isPlainObject(value) || Array.isArray(value)
+        ? filterAllEmpty(value)
+        : object[k];
   }
 
   return result;

@@ -2,13 +2,6 @@
 import * as React from "react";
 
 /**
- * @memberof types
- * @template T Object
- * @template K Union of T keys
- */
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-/**
  * Render prop type
  * @memberof types
  * @template P Props
@@ -69,9 +62,9 @@ export type ExtractHTMLAttributes<P> = Pick<
  * @memberof types
  * @template U Union
  */
-export type UnionToIntersection<U> = (U extends any
-? (k: U) => void
-: never) extends (k: infer I) => void
+export type UnionToIntersection<U> = (
+  U extends any ? (k: U) => void : never
+) extends (k: infer I) => void
   ? I
   : never;
 

@@ -1,5 +1,6 @@
 export * from "./Box";
 export * from "./Button";
+export * from "./Composite";
 export * from "./Dialog";
 export * from "./Form";
 export * from "./Group";

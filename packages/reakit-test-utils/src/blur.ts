@@ -1,4 +1,5 @@
-import { warning } from "reakit-utils";
+import { getActiveElement } from "reakit-utils";
+import { warning } from "reakit-warning";
 import { DirtiableElement } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
 import { act } from "./act";
@@ -10,7 +11,7 @@ export function blur(element?: DirtiableElement | null) {
 
   if (!element) return;
   if (element.tagName === "BODY") return;
-  if (element.ownerDocument?.activeElement !== element) {
+  if (getActiveElement(element) !== element) {
     warning(
       true,
       "[reakit-test-utils/blur]",

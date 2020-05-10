@@ -1,7 +1,7 @@
 import { css, cx } from "emotion";
 import {
   SeparatorHTMLProps,
-  SeparatorOptions
+  SeparatorOptions,
 } from "reakit/Separator/Separator";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { useFade } from "reakit-system-palette/utils/fade";

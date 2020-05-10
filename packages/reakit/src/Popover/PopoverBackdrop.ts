@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import {
   DialogBackdropOptions,
   DialogBackdropHTMLProps,
-  useDialogBackdrop
+  useDialogBackdrop,
 } from "../Dialog/DialogBackdrop";
 import { usePopoverState } from "./PopoverState";
 
@@ -20,10 +20,15 @@ export const usePopoverBackdrop = createHook<
 >({
   name: "PopoverBackdrop",
   compose: useDialogBackdrop,
-  useState: usePopoverState
+  useState: usePopoverState,
+
+  useOptions({ modal = false, ...options }) {
+    return { modal, ...options };
+  },
 });
 
 export const PopoverBackdrop = createComponent({
   as: "div",
-  useHook: usePopoverBackdrop
+  memo: true,
+  useHook: usePopoverBackdrop,
 });

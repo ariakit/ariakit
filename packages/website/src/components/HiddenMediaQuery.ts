@@ -28,14 +28,14 @@ export const useHiddenMediaQuery = createHook<
 
     return {
       ...htmlProps,
-      className: cx(hiddenMediaQuery, htmlProps.className)
+      className: cx(hiddenMediaQuery, htmlProps.className),
     };
-  }
+  },
 });
 
 const HiddenMediaQuery = createComponent({
   as: "div",
-  useHook: useHiddenMediaQuery
+  useHook: useHiddenMediaQuery,
 });
 
 export default HiddenMediaQuery;

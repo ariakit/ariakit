@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   useSealedState,
-  SealedInitialState
+  SealedInitialState,
 } from "reakit-utils/useSealedState";
 
 export type CheckboxState = {
@@ -10,7 +10,7 @@ export type CheckboxState = {
    * If checkboxes that share this state have defined a `value` prop, it's
    * going to be an array.
    */
-  state: boolean | "indeterminate" | any[];
+  state: boolean | "indeterminate" | Array<number | string>;
 };
 
 export type CheckboxActions = {
@@ -32,10 +32,7 @@ export function useCheckboxState(
 ): CheckboxStateReturn {
   const { state: initialValue = false } = useSealedState(initialState);
   const [state, setState] = React.useState(initialValue);
-  return {
-    state,
-    setState
-  };
+  return { state, setState };
 }
 
 const keys: Array<keyof CheckboxStateReturn> = ["state", "setState"];

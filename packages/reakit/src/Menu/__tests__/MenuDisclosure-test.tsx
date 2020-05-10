@@ -8,13 +8,14 @@ const props: Parameters<typeof MenuDisclosure>[0] = {
   placement: "bottom",
   show: jest.fn(),
   first: jest.fn(),
-  last: jest.fn()
+  last: jest.fn(),
 };
 
 test("render", () => {
   const { baseElement } = render(
     <MenuDisclosure {...props}>disclosure</MenuDisclosure>
   );
+  expect(console).toHaveWarned();
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>

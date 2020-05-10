@@ -11,15 +11,18 @@ function createRef(id: string) {
 
 const props: Parameters<typeof Menu>[0] = {
   baseId: "base",
-  stops: [
+  items: [
     { id: "a", ref: createRef("a") },
-    { id: "b", ref: createRef("b") }
+    { id: "b", ref: createRef("b") },
   ],
+  setCurrentId: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
+  first: jest.fn(),
+  last: jest.fn(),
   placement: "bottom-start",
-  "aria-label": "menu"
+  "aria-label": "menu",
 };
 
 test("render", () => {
@@ -29,7 +32,6 @@ test("render", () => {
       <div>
         <div
           aria-label="menu"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"
@@ -50,7 +52,6 @@ test("render without state props", () => {
       <div>
         <div
           aria-label="menu"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"

@@ -1,17 +1,14 @@
 import * as React from "react";
 import { css, cx } from "emotion";
 import { MenuHTMLProps, MenuOptions } from "reakit/Menu/Menu";
-import {
-  MenuDisclosureHTMLProps,
-  MenuDisclosureOptions
-} from "reakit/Menu/MenuDisclosure";
+import { MenuButtonHTMLProps, MenuButtonOptions } from "reakit/Menu/MenuButton";
 import {
   MenuItemCheckboxHTMLProps,
-  MenuItemCheckboxOptions
+  MenuItemCheckboxOptions,
 } from "reakit/Menu/MenuItemCheckbox";
 import {
   MenuItemRadioHTMLProps,
-  MenuItemRadioOptions
+  MenuItemRadioOptions,
 } from "reakit/Menu/MenuItemRadio";
 import { MenuGroupHTMLProps, MenuGroupOptions } from "reakit/Menu/MenuGroup";
 import { MenuBarHTMLProps, MenuBarOptions } from "reakit/Menu/MenuBar";
@@ -20,6 +17,7 @@ import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { MenuStateReturn } from "reakit/Menu/MenuState";
+import { usePipe } from "reakit-utils/usePipe";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapMenuBarOptions = BootstrapBoxOptions & MenuBarOptions;
@@ -31,6 +29,7 @@ export function useMenuBarProps(
   const isHorizontal = options.orientation === "horizontal";
 
   const menuBar = css`
+    position: relative;
     display: flex;
     flex-direction: ${isHorizontal ? "row" : "column"};
     white-space: nowrap;
@@ -83,7 +82,8 @@ export function useMenuItemProps(
         box-shadow: none !important;
       }
 
-      &:active {
+      &:active,
+      &[data-active] {
         background-color: ${darkPrimary} !important;
       }
     }
@@ -94,40 +94,65 @@ export function useMenuItemProps(
 
 export type BootstrapMenuOptions = BootstrapBoxOptions & MenuOptions;
 
+const OrientationContext = React.createContext<
+  "horizontal" | "vertical" | undefined
+>(undefined);
+
 export function useMenuOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
   ...options
 }: BootstrapMenuOptions): BootstrapMenuOptions {
-  return {
-    unstable_system: { palette, fill, ...system },
-    ...options
-  };
+  const parentOrientation = React.useContext(OrientationContext);
+  const unstable_system = { palette, fill, ...system };
+  const transform = options.unstable_popoverStyles?.transform || "";
+
+  if (parentOrientation === "vertical" && options.orientation === "vertical") {
+    return {
+      ...options,
+      unstable_system,
+      unstable_popoverStyles: {
+        ...options.unstable_popoverStyles,
+        transform: `${transform} translate3d(0px, -0.3em, 0px)`,
+      },
+    };
+  }
+
+  return { ...options, unstable_system };
 }
 
 export function useMenuProps(
-  _: BootstrapMenuOptions,
+  options: BootstrapMenuOptions,
   htmlProps: MenuHTMLProps = {}
 ): MenuHTMLProps {
   const menu = css`
     display: flex;
     border-radius: 0;
-
-    &:not([aria-orientation="horizontal"]) > &[aria-orientation="vertical"] {
-      margin-top: -0.3em;
-    }
   `;
 
-  return { ...htmlProps, className: cx(menu, htmlProps.className) };
+  const wrapElement = React.useCallback(
+    (element: React.ReactNode) => (
+      <OrientationContext.Provider value={options.orientation}>
+        {element}
+      </OrientationContext.Provider>
+    ),
+    [options.orientation]
+  );
+
+  return {
+    ...htmlProps,
+    wrapElement: usePipe(wrapElement, htmlProps.wrapElement),
+    className: cx(menu, htmlProps.className),
+  };
 }
 
-export type BootstrapMenuDisclosureOptions = BootstrapBoxOptions &
-  MenuDisclosureOptions &
+export type BootstrapMenuButtonOptions = BootstrapBoxOptions &
+  MenuButtonOptions &
   Pick<Partial<MenuStateReturn>, "unstable_originalPlacement">;
 
-export function useMenuDisclosureProps(
-  options: BootstrapMenuDisclosureOptions,
-  { children, ...htmlProps }: MenuDisclosureHTMLProps = {}
-): MenuDisclosureHTMLProps {
+export function useMenuButtonProps(
+  options: BootstrapMenuButtonOptions,
+  { children, ...htmlProps }: MenuButtonHTMLProps = {}
+): MenuButtonHTMLProps {
   const placement = options.unstable_originalPlacement || options.placement;
   const dir = placement
     ? (placement.split("-")[0] as "top" | "bottom" | "right" | "left")
@@ -154,19 +179,19 @@ export function useMenuDisclosureProps(
           <svg viewBox="0 0 43.3 50">
             <polygon points="0 25 43.3 50 43.3 0 0 25" />
           </svg>
-        )
+        ),
       }[dir]
     : null;
 
-  const menuDisclosure = css`
+  const menuButton = css`
     position: relative;
 
     [role="menu"] > & {
       ${children &&
-        dir !== "left" &&
-        css`
-          padding-right: 2em !important;
-        `}
+      dir !== "left" &&
+      css`
+        padding-right: 2em !important;
+      `}
     }
 
     svg {
@@ -186,7 +211,7 @@ export function useMenuDisclosureProps(
       }
 
       ${children &&
-        css`
+      css`
           margin-${dir === "left" ? "right" : "left"}: 0.5em;
         `}
     }
@@ -204,7 +229,7 @@ export function useMenuDisclosureProps(
                 {child.props.children}
                 {svg}
               </>
-            )
+            ),
           });
         }
       ) : (
@@ -213,7 +238,7 @@ export function useMenuDisclosureProps(
           {svg}
         </>
       ),
-    className: cx(menuDisclosure, htmlProps.className)
+    className: cx(menuButton, htmlProps.className),
   };
 }
 

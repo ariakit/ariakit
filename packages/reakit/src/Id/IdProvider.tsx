@@ -10,14 +10,14 @@ export const unstable_IdContext = React.createContext(generateRandomString);
 
 export function unstable_IdProvider({
   children,
-  prefix = defaultPrefix
+  prefix = defaultPrefix,
 }: unstable_IdProviderProps) {
   const count = React.useRef(0);
 
   const generateId = React.useCallback(
     (localPrefix: string = prefix) =>
       `${localPrefix ? `${localPrefix}-` : ""}${++count.current}`,
-    []
+    [prefix]
   );
   return (
     <unstable_IdContext.Provider value={generateId}>

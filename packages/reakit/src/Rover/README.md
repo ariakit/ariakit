@@ -90,7 +90,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Rover` uses [Tabbable](/docs/tabbable/), and is used by [MenuItem](/docs/menu/), [Radio](/docs/radio/), [Tab](/docs/tab/) and [ToolbarItem](/docs/toolbar/).
+- `Rover` uses [Clickable](/docs/clickable/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

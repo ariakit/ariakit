@@ -1,6 +1,6 @@
 {
   "name": "reakit-system-bootstrap",
-  "version": "0.6.11",
+  "version": "0.11.0",
   "description": "Reakit bootstrap system",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap",
@@ -19,10 +19,10 @@
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
-    "clean": "../../scripts/build/clean.js",
-    "build": "../../scripts/build/build.js",
-    "docs": "../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn build",
+    "clean": "node ../../scripts/build/clean.js",
+    "build": "node ../../scripts/build/build.js",
+    "docs": "node ../../scripts/build/docs.js",
+    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [
@@ -31,12 +31,13 @@
     "system"
   ],
   "dependencies": {
-    "emotion": "^10.0.23",
-    "reakit-system-palette": "^0.6.11"
+    "emotion": "^10.0.27",
+    "reakit-system-palette": "^0.11.0",
+    "reakit-utils": "^0.12.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "reakit": "^1.0.0-beta.11"
+    "reakit": "^1.0.0-beta.16"
   }
 }

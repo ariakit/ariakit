@@ -9,7 +9,7 @@ import {
   useDialogState,
   Dialog,
   DialogBackdrop,
-  Portal
+  Portal,
 } from "reakit";
 import { FaGithub } from "react-icons/fa";
 import { MdMenu } from "react-icons/md";
@@ -44,7 +44,7 @@ export default function Header({ transparent }: HeaderProps) {
   const foreground = usePalette("foreground");
   const primary = usePalette("primary");
   const boxShadowColor = useFade(foreground, 0.85);
-  const dialog = useDialogState({ unstable_animated: true });
+  const dialog = useDialogState({ animated: true });
   const location = useLocation();
 
   React.useEffect(dialog.hide, [location.pathname]);
@@ -68,11 +68,11 @@ export default function Header({ transparent }: HeaderProps) {
           transition: transform 250ms ease-in-out;
           ${!transparent && `box-shadow: 0 1px 2px ${boxShadowColor}`};
           ${transparent &&
-            css`
-              background: transparent;
-              color: white;
-              transform: translateY(32px);
-            `};
+          css`
+            background: transparent;
+            color: white;
+            transform: translateY(32px);
+          `};
 
           & > *:not(:last-child) {
             margin-right: 16px;
@@ -118,8 +118,8 @@ export default function Header({ transparent }: HeaderProps) {
         <Global
           styles={{
             ":root": {
-              "--header-height": "60px"
-            }
+              "--header-height": "60px",
+            },
           }}
         />
         <SkipToContent />
@@ -140,7 +140,7 @@ export default function Header({ transparent }: HeaderProps) {
             <VisuallyHidden>Open sidebar</VisuallyHidden>
           </DialogDisclosure>
           <Portal>
-            <DialogBackdrop {...dialog} unstable_animated={false} />
+            <DialogBackdrop {...dialog} animated={false} />
           </Portal>
           <Dialog
             {...dialog}
@@ -158,8 +158,9 @@ export default function Header({ transparent }: HeaderProps) {
               border-radius: 0;
               overflow: auto;
               -webkit-overflow-scrolling: touch;
-              &.hidden {
-                transform: translateX(-100%);
+              transform: translateX(-100%);
+              &[data-enter] {
+                transform: translateX(0);
               }
             `}
           >
@@ -172,7 +173,7 @@ export default function Header({ transparent }: HeaderProps) {
         </Anchor>
         <div style={{ flex: 1 }} />
         <HiddenMediaQuery query="max-width: 768px">
-          {props => (
+          {(props) => (
             <>
               {isLarge && (
                 <SearchBar

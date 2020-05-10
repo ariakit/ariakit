@@ -23,6 +23,6 @@ export function useDarken(color?: string, ratio?: number) {
   React.useDebugValue(`${color}*${ratio}`);
   return React.useMemo(() => darken(color, ratio) as string | undefined, [
     color,
-    ratio
+    ratio,
   ]);
 }

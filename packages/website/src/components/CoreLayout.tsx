@@ -89,29 +89,29 @@ export default function CoreLayout(props: CoreLayoutProps) {
             padding: 0.2em 0.4em;
           }
           ${!title &&
-            !isHome &&
-            css`
-              margin: 72px auto;
-              max-width: 1200px;
-            `}
+          !isHome &&
+          css`
+            margin: 72px auto;
+            max-width: 1200px;
+          `}
           ${title &&
-            css`
-              margin: 72px 232px 72px 262px;
-              padding: 8px;
-              box-sizing: border-box;
+          css`
+            margin: 72px 232px 72px 262px;
+            padding: 8px;
+            box-sizing: border-box;
 
-              @media (max-width: 1024px) {
-                margin-right: 0;
-              }
-              @media (max-width: 768px) {
-                margin-left: 0;
-              }
-              @media (min-width: 1440px) {
-                max-width: 946px;
-                margin-right: auto;
-                margin-left: auto;
-              }
-            `}
+            @media (max-width: 1024px) {
+              margin-right: 0;
+            }
+            @media (max-width: 768px) {
+              margin-left: 0;
+            }
+            @media (min-width: 1440px) {
+              max-width: 946px;
+              margin-right: auto;
+              margin-left: auto;
+            }
+          `}
         `}
       >
         {props.children}

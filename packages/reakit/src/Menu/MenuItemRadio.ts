@@ -29,23 +29,24 @@ export const useMenuItemRadio = createHook<
 
   useOptions(options) {
     const setState = React.useCallback(
-      value => options.unstable_setValue(options.name, value),
+      (value) => options.unstable_setValue(options.name, value),
       [options.unstable_setValue, options.name]
     );
-
     return {
       ...options,
+      unstable_checkOnFocus: false,
       state: options.unstable_values[options.name],
-      setState
+      setState,
     };
   },
 
   useProps(_, htmlProps) {
     return { role: "menuitemradio", ...htmlProps };
-  }
+  },
 });
 
 export const MenuItemRadio = createComponent({
   as: "button",
-  useHook: useMenuItemRadio
+  memo: true,
+  useHook: useMenuItemRadio,
 });

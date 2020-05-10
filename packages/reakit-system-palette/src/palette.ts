@@ -14,5 +14,5 @@ export const palette: Palette = {
   warning: "#FFC107",
   danger: "#DC3545",
   background: ref("white", "#ffffff"),
-  foreground: contrast(ref("background", "#ffffff"))
+  foreground: contrast(ref("background", "#ffffff")),
 };

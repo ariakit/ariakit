@@ -5,7 +5,7 @@ import RehypeReact from "rehype-react";
 import {
   PlaygroundPreview,
   PlaygroundEditor,
-  usePlaygroundState
+  usePlaygroundState,
 } from "reakit-playground";
 import * as emotion from "emotion";
 import * as styled from "styled-components";
@@ -68,11 +68,11 @@ const { Compiler: renderAst } = new RehypeReact({
     blockquote: Blockquote,
     summary: Summary,
     h1: Heading,
-    h2: props => <Heading as="h2" {...props} />,
-    h3: props => <Heading as="h3" {...props} />,
-    h4: props => <Heading as="h4" {...props} />,
-    h5: props => <Heading as="h5" {...props} />,
-    h6: props => <Heading as="h6" {...props} />,
+    h2: (props) => <Heading as="h2" {...props} />,
+    h3: (props) => <Heading as="h3" {...props} />,
+    h4: (props) => <Heading as="h4" {...props} />,
+    h5: (props) => <Heading as="h5" {...props} />,
+    h6: (props) => <Heading as="h6" {...props} />,
     span: (props: React.HTMLAttributes<any>) => {
       if (props.title === "Experimental") {
         return (
@@ -86,12 +86,17 @@ const { Compiler: renderAst } = new RehypeReact({
     pre: (props: React.HTMLAttributes<any>) => {
       const codeElement = getChildrenCode(props);
       if (codeElement) {
-        const { static: isStatic, maxHeight, className } = codeElement.props;
+        const {
+          static: isStatic,
+          unstyled,
+          maxHeight,
+          className,
+        } = codeElement.props;
         let [, mode] = className.match(/language-(.+)/) || ([] as any[]);
 
         const modeMap = {
           html: "htmlmixed",
-          js: "javascript"
+          js: "javascript",
         };
 
         if (mode in modeMap) {
@@ -111,6 +116,7 @@ const { Compiler: renderAst } = new RehypeReact({
           return (
             <div>
               <PlaygroundPreview
+                unstyled={unstyled}
                 modules={{
                   emotion,
                   yup,
@@ -118,7 +124,7 @@ const { Compiler: renderAst } = new RehypeReact({
                   "lodash/set": set,
                   "styled-components": styled,
                   "react-spring": spring,
-                  "./UniversalAccess": FaUniversalAccess
+                  "./UniversalAccess": FaUniversalAccess,
                 }}
                 {...state}
               />
@@ -143,13 +149,13 @@ const { Compiler: renderAst } = new RehypeReact({
         );
       }
       return <pre {...props} />;
-    }
-  }
+    },
+  },
 });
 
 export default function Docs({ data, pageContext }: DocsProps) {
   const {
-    markdownRemark: { title, htmlAst, excerpt }
+    markdownRemark: { title, htmlAst, excerpt },
   } = data;
   const { nextPagePath, prevPagePath } = pageContext;
 

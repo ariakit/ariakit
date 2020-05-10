@@ -4,7 +4,9 @@ path: /docs/tabbable/
 
 # Tabbable
 
-`Tabbable` is an abstract component that implements all the interactions an interactive element needs to be fully accessible when it's not rendered as its respective native element.
+`Tabbable` is an abstract component that makes elements perceivable for keyboard users.
+
+> If you also want to make a tabbable element clickable with <kbd>Enter</kbd> and <kbd>Space</kbd>, see [Clickable](/docs/clickable).
 
 <carbon-ad></carbon-ad>
 
@@ -18,22 +20,15 @@ Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
-<!-- eslint-disable no-alert -->
-
 ```jsx
 import { Tabbable } from "reakit/Tabbable";
 
 function Example() {
-  const onClick = () => alert("clicked");
   return (
     <>
-      <Tabbable as="div" onClick={onClick}>
-        Tabbable
-      </Tabbable>
-      <Tabbable as="div" onClick={onClick} disabled>
-        Disabled
-      </Tabbable>
-      <Tabbable as="div" onClick={onClick} disabled focusable>
+      <Tabbable>Tabbable</Tabbable>
+      <Tabbable disabled>Disabled</Tabbable>
+      <Tabbable disabled focusable>
         Focusable
       </Tabbable>
     </>
@@ -45,7 +40,6 @@ function Example() {
 
 - `Tabbable` has `tabindex` set to `0` by default. If it's `disabled` and not `focusable`, the `tabindex` attribute is removed.
 - `Tabbable` has `aria-disabled` set to `true` when the `disabled` prop is passed in.
-- Pressing <kbd>Enter</kbd> or <kbd>Space</kbd> triggers a click event on `Tabbable` regardless of its rendered element.
 - `click`, `mouseDown` and `mouseOver` events aren't triggered when the `disabled` prop is passed in.
 - Focus is automatically set on `Tabbable` when it's clicked, which prevents inconsistencies between browsers.
 
@@ -53,7 +47,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tabbable` uses [Box](/docs/box/), and is used by [Button](/docs/button/), [Checkbox](/docs/checkbox/), [FormInput](/docs/form/) and [Rover](/docs/rover/).
+- `Tabbable` uses [Box](/docs/box/), and is used by [Clickable](/docs/clickable/), [Composite](/docs/composite/), and [FormInput](/docs/form/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

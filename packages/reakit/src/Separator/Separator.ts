@@ -26,12 +26,13 @@ export const useSeparator = createHook<SeparatorOptions, SeparatorHTMLProps>({
     return {
       role: "separator",
       "aria-orientation": options.orientation,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const Separator = createComponent({
   as: "hr",
-  useHook: useSeparator
+  memo: true,
+  useHook: useSeparator,
 });

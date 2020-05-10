@@ -1,8 +1,9 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
-import { ArrayValue, As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { ArrayValue, As, PropsWithAs } from "reakit-utils/types";
+import { useLiveRef } from "reakit-utils/useLiveRef";
+import { getDocument } from "reakit-utils/getDocument";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
 import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
@@ -47,36 +48,46 @@ export const unstable_useFormPushButton = createHook<
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {
-    const onClick = React.useCallback(() => {
-      options.push(options.name, options.value);
-      const { length } = unstable_getIn(options.values, options.name, []);
-      const inputId = getInputId(
-        `${formatInputName(options.name, "-")}-${length}`,
-        options.baseId
-      );
-      if (!inputId) return;
+    const onClickRef = useLiveRef(htmlOnClick);
 
-      window.requestAnimationFrame(() => {
-        const selector = `[id^="${inputId}"]`;
-        const input = document.querySelector<HTMLElement>(selector);
-        if (input) {
-          input.focus();
-        }
-      });
-    }, [
-      options.push,
-      options.name,
-      options.value,
-      options.values,
-      options.baseId
-    ]);
+    const onClick = React.useCallback(
+      (event: React.MouseEvent) => {
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+
+        options.push?.(options.name, options.value);
+
+        const { length } = unstable_getIn(options.values, options.name, []);
+        const inputId = getInputId(
+          `${formatInputName(options.name, "-")}-${length}`,
+          options.baseId
+        );
+
+        if (!inputId) return;
+        const self = event.currentTarget;
+
+        window.requestAnimationFrame(() => {
+          const selector = `[id^="${inputId}"]`;
+          const document = getDocument(self);
+          const input = document.querySelector<HTMLElement>(selector);
+          input?.focus();
+        });
+      },
+      [
+        options.push,
+        options.name,
+        options.value,
+        options.values,
+        options.baseId,
+      ]
+    );
 
     return {
       id: getPushButtonId(options.name, options.baseId),
-      onClick: useAllCallbacks(onClick, htmlOnClick),
-      ...htmlProps
+      onClick,
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormPushButtonOptions<V, P>,
   htmlProps?: unstable_FormPushButtonHTMLProps
@@ -84,7 +95,8 @@ export const unstable_useFormPushButton = createHook<
 
 export const unstable_FormPushButton = (createComponent({
   as: "button",
-  useHook: unstable_useFormPushButton
+  memo: true,
+  useHook: unstable_useFormPushButton,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "button">(
   props: PropsWithAs<unstable_FormPushButtonOptions<V, P>, T>
 ) => JSX.Element;

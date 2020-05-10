@@ -4,7 +4,7 @@ import { Popover } from "../Popover";
 
 const props: Parameters<typeof Popover>[0] = {
   baseId: "base",
-  "aria-label": "popover"
+  "aria-label": "popover",
 };
 
 test("render", () => {
@@ -14,7 +14,6 @@ test("render", () => {
       <div>
         <div
           aria-label="popover"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"
@@ -67,7 +66,6 @@ test("render modal", () => {
         <div
           aria-label="popover"
           aria-modal="true"
-          class="hidden"
           data-dialog="true"
           hidden=""
           id="base"

@@ -14,10 +14,10 @@ export const useGroup = createHook<GroupOptions, GroupHTMLProps>({
 
   useProps(_, htmlProps) {
     return { role: "group", ...htmlProps };
-  }
+  },
 });
 
 export const Group = createComponent({
   as: "div",
-  useHook: useGroup
+  useHook: useGroup,
 });

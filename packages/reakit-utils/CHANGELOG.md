@@ -3,6 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.11.0...reakit-utils@0.12.0) (2020-04-29)
+
+
+### Features
+
+* **reakit-utils:** Add `shallowEqual` util ([c3e7a71](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/c3e7a717b182f1e0f9c734d2bc058787f091ce82))
+
+
+
+
+
+# [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.10.0...reakit-utils@0.11.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* **reakit-utils:** Fix `getClosestFocusable` iteration ([b72c623](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/b72c6235a60d5ac624e30ba3acd808b937b06002))
+* Fix `Composite` on IE11 ([#609](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/609)) ([555b931](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/555b931de003a81a635ed1d980d67f9c62fb91e0))
+
+
+### Features
+
+* Replace `unstable_animated` by `animated` with improvements on the API ([#616](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/616)) ([16f843f](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/16f843f8dc4b97a552d629bd41cf20107e307a77)), closes [#528](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/528)
+
+
+### BREAKING CHANGES
+
+* **This should affect only people who were using the `unstable_animated` API**: `DisclosureContent` and its derivative components don't add `hidden` class anymore. You should now use `[data-enter]` and `[data-leave]` selectors. For more details, see [Animating](https://reakit.io/docs/disclosure/#animating).
+
+
+
+
+
+# [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.9.0...reakit-utils@0.10.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* Add ie11 ponyfill for Element.matches ([#555](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/555)) ([07488aa](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/07488aa1142ffba652c4582890f52bda9953966a)), closes [#556](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/556)
+
+
+### Features
+
+* **reakit-utils:** Add `flatten` util ([57ac450](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/57ac4503da4604bae5a18dc6d7e6644ec152daad))
+* **reakit-utils:** Remove `warning` util ([ff98d43](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/ff98d43568790cc191fde1ee9b56a35311a3a10f))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `warning` has been removed from `reakit-utils`. Use the `reakit-warning` package instead.
+
+
+
+
+
+# [0.9.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.8.0...reakit-utils@0.9.0) (2020-02-10)
+
+
+### Features
+
+* **reakit-utils:** Add `useForkRef` method ([8366545](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8366545bf372cb8fb7c61bd18785c780c3794361))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `mergeRefs` has been replaced by `useForkRef`. It's now a custom hook, so it should follow the rules of hooks.
+
+  *Before*:
+  ```jsx
+  import React from "react";
+  import { mergeRefs } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={mergeRefs(internalRef, ref)} {...props} />;
+  });
+  ```
+
+  *After*:
+  ```jsx
+  import React from "react";
+  import { useForkRef } from "reakit-utils";
+
+  const Component = React.forwardRef((props, ref) => {
+    const internalRef = React.useRef();
+    return <div ref={useForkRef(internalRef, ref)} {...props} />;
+  });
+  ```
+
+
+
+
+
+# [0.8.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.3...reakit-utils@0.8.0) (2020-02-05)
+
+
+### Features
+
+* **reakit-utils:** Add `getActiveElement` method ([a252fcd](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/a252fcd))
+* **reakit-utils:** Add `isButton` method ([8ff86fc](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8ff86fc))
+* **reakit-utils:** Add `isPlainObject` function ([faeb26f](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/faeb26f))
+* **reakit-utils:** Remove `Omit` type ([24797e0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/24797e0))
+
+
+### BREAKING CHANGES
+
+* **reakit-utils:** `Omit` has been removed from `reakit-utils/types`. [TypeScript now supports it natively](https://www.typescriptlang.org/docs/handbook/utility-types.html#omittk).
+
+
+
+
+
 ## [0.7.3](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.7.2...reakit-utils@0.7.3) (2019-12-18)
 
 **Note:** Version bump only for package reakit-utils

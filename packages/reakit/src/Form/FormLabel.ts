@@ -45,9 +45,9 @@ export const unstable_useFormLabel = createHook<
       children: options.label,
       id: getLabelId(options.name, options.baseId),
       htmlFor: getInputId(options.name, options.baseId),
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormLabelOptions<V, P>,
   htmlProps?: unstable_FormLabelHTMLProps
@@ -55,7 +55,8 @@ export const unstable_useFormLabel = createHook<
 
 export const unstable_FormLabel = (createComponent({
   as: "label",
-  useHook: unstable_useFormLabel
+  memo: true,
+  useHook: unstable_useFormLabel,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "label">(
   props: PropsWithAs<unstable_FormLabelOptions<V, P>, T>
 ) => JSX.Element;

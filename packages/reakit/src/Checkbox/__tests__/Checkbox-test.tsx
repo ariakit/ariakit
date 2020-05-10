@@ -9,7 +9,6 @@ test("render", () => {
       <div>
         <input
           aria-checked="false"
-          role="checkbox"
           type="checkbox"
           value=""
         />
@@ -27,7 +26,7 @@ test("render disabled", () => {
           aria-checked="false"
           aria-disabled="true"
           disabled=""
-          role="checkbox"
+          style="pointer-events: none;"
           type="checkbox"
           value=""
         />
@@ -44,7 +43,7 @@ test("render disabled focusable", () => {
         <input
           aria-checked="false"
           aria-disabled="true"
-          role="checkbox"
+          style="pointer-events: none;"
           type="checkbox"
           value=""
         />
@@ -61,7 +60,6 @@ test("render checked", () => {
         <input
           aria-checked="true"
           checked=""
-          role="checkbox"
           type="checkbox"
           value=""
         />
@@ -146,9 +144,7 @@ test("focus disabled focusable", () => {
 test("non-native checkbox click", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" onClick={fn} /> checkbox
-    </label>
+    <Checkbox as="div" onClick={fn} aria-label="checkbox" />
   );
   const checkbox = getByLabelText("checkbox");
   expect(fn).toHaveBeenCalledTimes(0);
@@ -159,9 +155,7 @@ test("non-native checkbox click", () => {
 test("non-native checkbox click disabled", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" onClick={fn} disabled /> checkbox
-    </label>
+    <Checkbox as="div" onClick={fn} aria-label="checkbox" disabled />
   );
   const checkbox = getByLabelText("checkbox");
   click(checkbox);
@@ -171,9 +165,7 @@ test("non-native checkbox click disabled", () => {
 test("non-native checkbox click disabled focusable", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" onClick={fn} disabled focusable /> checkbox
-    </label>
+    <Checkbox as="div" onClick={fn} aria-label="checkbox" disabled focusable />
   );
   const checkbox = getByLabelText("checkbox");
   click(checkbox);
@@ -182,9 +174,7 @@ test("non-native checkbox click disabled focusable", () => {
 
 test("non-native checkbox focus", () => {
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" /> checkbox
-    </label>
+    <Checkbox as="div" aria-label="checkbox" />
   );
   const checkbox = getByLabelText("checkbox");
   expect(checkbox).not.toHaveFocus();
@@ -194,9 +184,7 @@ test("non-native checkbox focus", () => {
 
 test("non-native checkbox focus disabled", () => {
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" disabled /> checkbox
-    </label>
+    <Checkbox as="div" aria-label="checkbox" disabled />
   );
   const checkbox = getByLabelText("checkbox");
   expect(checkbox).not.toHaveFocus();
@@ -206,9 +194,7 @@ test("non-native checkbox focus disabled", () => {
 
 test("non-native checkbox focus disabled focusable", () => {
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" disabled focusable /> checkbox
-    </label>
+    <Checkbox as="div" aria-label="checkbox" disabled focusable />
   );
   const checkbox = getByLabelText("checkbox");
   expect(checkbox).not.toHaveFocus();
@@ -219,9 +205,7 @@ test("non-native checkbox focus disabled focusable", () => {
 test("non-native checkbox space", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" onClick={fn} /> checkbox
-    </label>
+    <Checkbox as="div" onClick={fn} aria-label="checkbox" />
   );
   const checkbox = getByLabelText("checkbox");
   press.Space(checkbox);
@@ -231,9 +215,7 @@ test("non-native checkbox space", () => {
 test("non-native checkbox space disabled", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" onClick={fn} disabled /> checkbox
-    </label>
+    <Checkbox as="div" onClick={fn} aria-label="checkbox" disabled />
   );
   const checkbox = getByLabelText("checkbox");
   press.Space(checkbox);
@@ -243,9 +225,7 @@ test("non-native checkbox space disabled", () => {
 test("non-native checkbox space disabled focusable", () => {
   const fn = jest.fn();
   const { getByLabelText } = render(
-    <label>
-      <Checkbox as="div" onClick={fn} disabled focusable /> checkbox
-    </label>
+    <Checkbox as="div" onClick={fn} aria-label="checkbox" disabled focusable />
   );
   const checkbox = getByLabelText("checkbox");
   press.Space(checkbox);

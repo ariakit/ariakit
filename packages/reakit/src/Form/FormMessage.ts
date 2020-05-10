@@ -54,9 +54,9 @@ export const unstable_useFormMessage = createHook<
       role: "alert",
       id: getMessageId(options.name, options.baseId),
       children,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 }) as <V, P extends DeepPath<V, P>>(
   options: unstable_FormMessageOptions<V, P>,
   htmlProps?: unstable_FormMessageHTMLProps
@@ -64,7 +64,8 @@ export const unstable_useFormMessage = createHook<
 
 export const unstable_FormMessage = (createComponent({
   as: "div",
-  useHook: unstable_useFormMessage
+  memo: true,
+  useHook: unstable_useFormMessage,
 }) as unknown) as <V, P extends DeepPath<V, P>, T extends As = "div">(
   props: PropsWithAs<unstable_FormMessageOptions<V, P>, T>
 ) => JSX.Element;

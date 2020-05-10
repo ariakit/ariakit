@@ -1,15 +1,17 @@
 import * as React from "react";
-import Popper from "popper.js";
+import { createPopper, Instance } from "@popperjs/core";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { shallowEqual } from "reakit-utils/shallowEqual";
 import {
   DialogState,
   DialogActions,
   DialogInitialState,
-  useDialogState
+  useDialogState,
+  DialogStateReturn,
 } from "../Dialog/DialogState";
 
 type Placement =
@@ -62,10 +64,6 @@ export type PopoverState = DialogState & {
   /**
    * @private
    */
-  unstable_scheduleUpdate: () => boolean;
-  /**
-   * @private
-   */
   unstable_update: () => boolean;
   /**
    * Actual `placement`.
@@ -92,28 +90,31 @@ export type PopoverInitialState = DialogInitialState &
      */
     unstable_flip?: boolean;
     /**
-     * Shift popover on the start or end of its reference element.
+     * Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
      */
-    unstable_shift?: boolean;
+    unstable_offset?: [number | string, number | string];
     /**
-     * Position the popover inside the reference element.
-     */
-    unstable_inner?: boolean;
-    /**
-     * Offset between the reference and the popover.
+     * Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
      */
     gutter?: number;
     /**
      * Prevents popover from being positioned outside the boundary.
      */
     unstable_preventOverflow?: boolean;
-    /**
-     * Boundaries element used by `preventOverflow`.
-     */
-    unstable_boundariesElement?: Popper.Boundary;
   };
 
-export type PopoverStateReturn = PopoverState & PopoverActions;
+export type PopoverStateReturn = DialogStateReturn &
+  PopoverState &
+  PopoverActions;
+
+function applyStyles(styles?: Partial<CSSStyleDeclaration>) {
+  return (prevStyles: React.CSSProperties) => {
+    if (styles && !shallowEqual(prevStyles, styles)) {
+      return styles as React.CSSProperties;
+    }
+    return prevStyles;
+  };
+}
 
 export function usePopoverState(
   initialState: SealedInitialState<PopoverInitialState> = {}
@@ -122,39 +123,32 @@ export function usePopoverState(
     gutter = 12,
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
-    unstable_shift: shift = true,
-    unstable_inner: inner = false,
+    unstable_offset: sealedOffset,
     unstable_preventOverflow: preventOverflow = true,
-    unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
+    modal = false,
     ...sealed
   } = useSealedState(initialState);
 
-  const popper = React.useRef<Popper | null>(null);
+  const popper = React.useRef<Instance | null>(null);
   const referenceRef = React.useRef<HTMLElement>(null);
   const popoverRef = React.useRef<HTMLElement>(null);
   const arrowRef = React.useRef<HTMLElement>(null);
+  const popperCreated = React.useRef(false);
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);
+  const [offset] = React.useState(sealedOffset || [0, gutter]);
   const [popoverStyles, setPopoverStyles] = React.useState<React.CSSProperties>(
     {}
   );
   const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
 
-  const dialog = useDialogState(sealed);
-
-  const scheduleUpdate = React.useCallback(() => {
-    if (popper.current) {
-      popper.current.scheduleUpdate();
-      return true;
-    }
-    return false;
-  }, []);
+  const dialog = useDialogState({ modal, ...sealed });
 
   const update = React.useCallback(() => {
     if (popper.current) {
-      popper.current.update();
+      popper.current.forceUpdate();
       return true;
     }
     return false;
@@ -162,42 +156,64 @@ export function usePopoverState(
 
   useIsomorphicEffect(() => {
     if (referenceRef.current && popoverRef.current) {
-      popper.current = new Popper(referenceRef.current, popoverRef.current, {
+      popper.current = createPopper(referenceRef.current, popoverRef.current, {
+        // https://popper.js.org/docs/v2/constructors/#options
         placement: originalPlacement,
-        eventsEnabled: dialog.visible,
-        positionFixed: fixed,
-        modifiers: {
-          applyStyle: { enabled: false },
-          flip: { enabled: flip, padding: 16 },
-          inner: { enabled: inner },
-          shift: { enabled: shift },
-          offset: { enabled: shift, offset: `0, ${gutter}` },
-          preventOverflow: { enabled: preventOverflow, boundariesElement },
-          arrow: arrowRef.current
-            ? { enabled: true, element: arrowRef.current }
-            : undefined,
-          updateStateModifier: {
-            order: 900,
-            enabled: true,
-            fn: data => {
-              setPlacement(data.placement);
-              setPopoverStyles(data.styles as React.CSSProperties);
-
-              // https://github.com/reakit/reakit/issues/408
-              if (
-                data.arrowStyles.left != null &&
-                !isNaN(+data.arrowStyles.left) &&
-                data.arrowStyles.top != null &&
-                !isNaN(+data.arrowStyles.top)
-              ) {
-                setArrowStyles(data.arrowStyles as React.CSSProperties);
-              }
-
-              return data;
-            }
-          }
-        }
+        strategy: fixed ? "fixed" : "absolute",
+        modifiers: [
+          {
+            // https://popper.js.org/docs/v2/modifiers/event-listeners/
+            name: "eventListeners",
+            enabled: dialog.visible,
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/apply-styles/
+            name: "applyStyles",
+            enabled: false,
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/flip/
+            name: "flip",
+            enabled: flip,
+            options: { padding: 8 },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/offset/
+            name: "offset",
+            options: { offset },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
+            name: "preventOverflow",
+            enabled: preventOverflow,
+            options: {
+              tetherOffset: () => arrowRef.current?.clientWidth || 0,
+            },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/arrow/
+            name: "arrow",
+            enabled: !!arrowRef.current,
+            options: { element: arrowRef.current },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
+            name: "updateState",
+            phase: "write",
+            requires: ["computeStyles"],
+            enabled:
+              // Safari needs styles to be applied in the first render
+              (!popperCreated.current || dialog.visible) &&
+              process.env.NODE_ENV !== "test",
+            fn({ state }) {
+              setPlacement(state.placement);
+              setPopoverStyles(applyStyles(state.styles.popper));
+              setArrowStyles(applyStyles(state.styles.arrow));
+            },
+          },
+        ],
       });
+      popperCreated.current = true;
     }
     return () => {
       if (popper.current) {
@@ -206,32 +222,26 @@ export function usePopoverState(
       }
     };
   }, [
-    dialog.visible,
     originalPlacement,
+    fixed,
+    dialog.visible,
+    dialog.animated,
     flip,
-    inner,
-    shift,
-    gutter,
+    offset,
     preventOverflow,
-    boundariesElement,
-    fixed
   ]);
 
-  // This fixes cases when `unstable_portal` is `true` only when popover is visible
-  // https://spectrum.chat/reakit/general/i-was-wondering-if-can-hide-portal-of-tooltip-when-conditionally-rendered~4e05ffe1-93e8-4c72-8c85-eccb1c3f2ff1
+  // Ensure that the popover will be correctly positioned with an additional
+  // update.
   React.useEffect(() => {
-    if (dialog.visible && popper.current) {
-      popper.current.update();
-    }
+    if (!dialog.visible) return undefined;
+    const id = window.requestAnimationFrame(() => {
+      popper.current?.forceUpdate();
+    });
+    return () => {
+      window.cancelAnimationFrame(id);
+    };
   }, [dialog.visible]);
-
-  // Schedule an update if popover has initial visible state set to true
-  // So it'll be correctly positioned
-  React.useEffect(() => {
-    if (sealed.visible && popper.current) {
-      popper.current.update();
-    }
-  }, [sealed.visible]);
 
   return {
     ...dialog,
@@ -240,11 +250,10 @@ export function usePopoverState(
     unstable_arrowRef: arrowRef,
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
-    unstable_scheduleUpdate: scheduleUpdate,
     unstable_update: update,
     unstable_originalPlacement: originalPlacement,
     placement,
-    place: React.useCallback(place, [])
+    place,
   };
 }
 
@@ -255,11 +264,10 @@ const keys: Array<keyof PopoverStateReturn> = [
   "unstable_arrowRef",
   "unstable_popoverStyles",
   "unstable_arrowStyles",
-  "unstable_scheduleUpdate",
   "unstable_update",
   "unstable_originalPlacement",
   "placement",
-  "place"
+  "place",
 ];
 
 usePopoverState.__keys = keys;

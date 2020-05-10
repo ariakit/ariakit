@@ -33,25 +33,15 @@ function Example() {
   return (
     <>
       <TabList {...tab} aria-label="My tabs">
-        <Tab {...tab} stopId="tab1">
-          Tab 1
-        </Tab>
-        <Tab {...tab} stopId="tab2" disabled>
+        <Tab {...tab}>Tab 1</Tab>
+        <Tab {...tab} disabled>
           Tab 2
         </Tab>
-        <Tab {...tab} stopId="tab3">
-          Tab 3
-        </Tab>
+        <Tab {...tab}>Tab 3</Tab>
       </TabList>
-      <TabPanel {...tab} stopId="tab1">
-        Tab 1
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab2">
-        Tab 2
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab3">
-        Tab 3
-      </TabPanel>
+      <TabPanel {...tab}>Tab 1</TabPanel>
+      <TabPanel {...tab}>Tab 2</TabPanel>
+      <TabPanel {...tab}>Tab 3</TabPanel>
     </>
   );
 }
@@ -59,7 +49,7 @@ function Example() {
 
 ### Default selected tab
 
-You can set the default selected tab by passing a `stopId` to `selectedId` on `useTabState`.
+You can set the default selected tab by passing an `id` to `selectedId` on `useTabState`.
 
 ```jsx
 import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
@@ -69,25 +59,41 @@ function Example() {
   return (
     <>
       <TabList {...tab} aria-label="My tabs">
-        <Tab {...tab} stopId="tab1">
-          Tab 1
-        </Tab>
-        <Tab {...tab} stopId="tab2" disabled>
+        <Tab {...tab}>Tab 1</Tab>
+        <Tab {...tab} disabled>
           Tab 2
         </Tab>
-        <Tab {...tab} stopId="tab3">
+        <Tab {...tab} id="tab3">
           Tab 3
         </Tab>
       </TabList>
-      <TabPanel {...tab} stopId="tab1">
-        Tab 1
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab2">
-        Tab 2
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab3">
-        Tab 3
-      </TabPanel>
+      <TabPanel {...tab}>Tab 1</TabPanel>
+      <TabPanel {...tab}>Tab 2</TabPanel>
+      <TabPanel {...tab}>Tab 3</TabPanel>
+    </>
+  );
+}
+```
+
+### No selected tab
+
+By default, the first tab will be selected, but you can unset it by passing `null` to `selectedId` on `useTabState`
+
+```jsx
+import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
+
+function Example() {
+  const tab = useTabState({ selectedId: null });
+  return (
+    <>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab}>Tab 1</Tab>
+        <Tab {...tab}>Tab 2</Tab>
+        <Tab {...tab}>Tab 3</Tab>
+      </TabList>
+      <TabPanel {...tab}>Tab 1</TabPanel>
+      <TabPanel {...tab}>Tab 2</TabPanel>
+      <TabPanel {...tab}>Tab 3</TabPanel>
     </>
   );
 }
@@ -105,25 +111,13 @@ function Example() {
   return (
     <>
       <TabList {...tab} aria-label="My tabs">
-        <Tab {...tab} stopId="tab1">
-          Tab 1
-        </Tab>
-        <Tab {...tab} stopId="tab2" disabled>
-          Tab 2
-        </Tab>
-        <Tab {...tab} stopId="tab3">
-          Tab 3
-        </Tab>
+        <Tab {...tab}>Tab 1</Tab>
+        <Tab {...tab}>Tab 2</Tab>
+        <Tab {...tab}>Tab 3</Tab>
       </TabList>
-      <TabPanel {...tab} stopId="tab1">
-        Tab 1
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab2">
-        Tab 2
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab3">
-        Tab 3
-      </TabPanel>
+      <TabPanel {...tab}>Tab 1</TabPanel>
+      <TabPanel {...tab}>Tab 2</TabPanel>
+      <TabPanel {...tab}>Tab 3</TabPanel>
     </>
   );
 }
@@ -131,7 +125,7 @@ function Example() {
 
 ### Vertical tabs
 
-You can control the orientation of the tabs by setting `orientation` on `useTabState`. Since it composes from [Rover](/docs/rover/), explicitly defining an orientation will change how arrow key navigation works. If it's set to `vertical`, only <kbd>↑</kbd> and <kbd>↓</kbd> will work.
+You can control the orientation of the tabs by setting `orientation` on `useTabState`. Since it composes from [CompositeItem](/docs/composite/), explicitly defining an orientation will change how arrow key navigation works. If it's set to `vertical`, only <kbd>↑</kbd> and <kbd>↓</kbd> will work.
 
 ```jsx
 import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
@@ -141,25 +135,13 @@ function Example() {
   return (
     <div style={{ display: "flex" }}>
       <TabList {...tab} aria-label="My tabs">
-        <Tab {...tab} stopId="tab1">
-          Tab 1
-        </Tab>
-        <Tab {...tab} stopId="tab2" disabled>
-          Tab 2
-        </Tab>
-        <Tab {...tab} stopId="tab3">
-          Tab 3
-        </Tab>
+        <Tab {...tab}>Tab 1</Tab>
+        <Tab {...tab}>Tab 2</Tab>
+        <Tab {...tab}>Tab 3</Tab>
       </TabList>
-      <TabPanel {...tab} stopId="tab1">
-        Tab 1
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab2">
-        Tab 2
-      </TabPanel>
-      <TabPanel {...tab} stopId="tab3">
-        Tab 3
-      </TabPanel>
+      <TabPanel {...tab}>Tab 1</TabPanel>
+      <TabPanel {...tab}>Tab 2</TabPanel>
+      <TabPanel {...tab}>Tab 3</TabPanel>
     </div>
   );
 }
@@ -175,7 +157,7 @@ import {
   useTabState,
   Tab as BaseTab,
   TabList as BaseTabList,
-  TabPanel as BaseTabPanel
+  TabPanel as BaseTabPanel,
 } from "reakit/Tab";
 
 const TabsContext = React.createContext();
@@ -205,13 +187,13 @@ function Example() {
   return (
     <Tabs selectedId="tab3">
       <TabList aria-label="My tabs">
-        <Tab stopId="tab1">Tab 1</Tab>
-        <Tab stopId="tab2">Tab 2</Tab>
-        <Tab stopId="tab3">Tab 3</Tab>
+        <Tab>Tab 1</Tab>
+        <Tab>Tab 2</Tab>
+        <Tab id="tab3">Tab 3</Tab>
       </TabList>
-      <TabPanel stopId="tab1">Tab 1</TabPanel>
-      <TabPanel stopId="tab2">Tab 2</TabPanel>
-      <TabPanel stopId="tab3">Tab 3</TabPanel>
+      <TabPanel>Tab 1</TabPanel>
+      <TabPanel>Tab 2</TabPanel>
+      <TabPanel>Tab 3</TabPanel>
     </Tabs>
   );
 }
@@ -222,19 +204,21 @@ function Example() {
 - `Tab` has role `tab`.
 - `Tab` has `aria-controls` referring to its associated `TabPanel`.
 - The selected `Tab` has `aria-selected` set to `true` and all other `Tab`s have it set to `false`.
-- `Tab` extends the accessibility features of [Rover](/docs/rover/#accessibility).
+- `Tab` extends the accessibility features of [CompositeItem](/docs/composite/#accessibility).
 - `TabList` has role `tablist`.
 - `TabList` has `aria-orientation` set to `vertical` or `horizontal` based on the value of the `orientation` option.
+- `TabList` extends the accessibility features of [Composite](/docs/composite/#accessibility).
 - `TabPanel` has role `tabpanel`.
 - `TabPanel` has `aria-labelledby` referring to its associated `Tab`.
+- `TabPanel` extends the accessibility features of [DisclosureContent](/docs/disclosure/#accessibility).
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tab` uses [Rover](/docs/rover/).
-- `TabList` uses [Box](/docs/box/).
-- `TabPanel` uses [Hidden](/docs/hidden/).
+- `Tab` uses [CompositeItem](/docs/composite/).
+- `TabList` uses [Composite](/docs/composite/).
+- `TabPanel` uses [DisclosureContent](/docs/disclosure/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -249,38 +233,86 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
   ID that will serve as a base for all the items IDs.
 
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
+- **`rtl`**
+  <code>boolean</code>
+
+  Determines how `next` and `previous` functions will behave. If `rtl` is
+set to `true`, they will be inverted. You still need to set `dir="rtl"` on
+HTML/CSS.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
 
-- **`stops`**
-  <code>Stop[]</code>
-
-  A list of element refs and IDs of the roving items.
+  It doesn't have any effect on two-dimensional composites.
 
 - **`currentId`**
-  <code>string | null</code>
+  <code>string | null | undefined</code>
 
-  The current focused element ID.
-
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
-
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
 
 - **`loop`**
-  <code>boolean</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
 
-  If enabled:
-  - Jumps to the first item when moving next from the last item.
-  - Jumps to the last item when moving previous from the first item.
+  On one-dimensional composites:
+  - `true` loops from the last item to the first item and vice-versa.
+  - `horizontal` loops only if `orientation` is `horizontal` or not set.
+  - `vertical` loops only if `orientation` is `vertical` or not set.
+  - If `currentId` is initially set to `null`, the composite element will
+be focused in between the last and first items.
+
+  On two-dimensional composites:
+  - `true` loops from the last row/column item to the first item in the
+same row/column and vice-versa. If it's the last item in the last row, it
+moves to the first item in the first row and vice-versa.
+  - `horizontal` loops only from the last row item to the first item in
+the same row.
+  - `vertical` loops only from the last column item to the first item in
+the column row.
+  - If `currentId` is initially set to `null`, vertical loop will have no
+effect as moving down from the last row or up from the first row will
+focus the composite element.
+  - If `wrap` matches the value of `loop`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`wrap`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+
+  If enabled, moving to the next item from the last one in a row or column
+will focus the first item in the next row or column and vice-versa.
+  - `true` wraps between rows and columns.
+  - `horizontal` wraps only between rows.
+  - `vertical` wraps only between columns.
+  - If `loop` matches the value of `wrap`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
 
 - **`selectedId`**
-  <code>string | null</code>
+  <code>string | null | undefined</code>
 
-  The current selected tab's `stopId`.
+  The current selected tab's `id`.
 
 - **`manual`**
   <code>boolean</code>
@@ -306,12 +338,7 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-- **`stopId`**
-  <code>string | undefined</code>
-
-  Element ID.
-
-<details><summary>15 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -320,61 +347,95 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
 
 - **`unstable_moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
 
-  Stores the number of moves that have been made by calling `move`, `next`,
-`previous`, `first` or `last`.
-
-- **`stops`**
-  <code>Stop[]</code>
-
-  A list of element refs and IDs of the roving items.
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
 
 - **`currentId`**
-  <code>string | null</code>
+  <code>string | null | undefined</code>
 
-  The current focused element ID.
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
 
-- **`register`**
-  <code>(id: string, ref: RefObject&#60;HTMLElement&#62;) =&#62; void</code>
+- **`items`**
+  <code>Item[]</code>
 
-  Registers the element ID and ref in the roving tab index list.
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
 
-- **`unregister`**
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`registerItem`**
+  <code>(item: Item) =&#62; void</code>
+
+  Registers a composite item.
+
+- **`unregisterItem`**
   <code>(id: string) =&#62; void</code>
 
-  Unregisters the roving item.
-
-- **`move`**
-  <code title="(id: string | null, unstable_silent?: boolean | undefined) =&#62; void">(id: string | null, unstable_silent?: boolean |...</code>
-
-  Moves focus to a given element ID.
+  Unregisters a composite item.
 
 - **`next`**
-  <code>() =&#62; void</code>
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
-  Moves focus to the next element.
+  Moves focus to the next item.
 
 - **`previous`**
-  <code>() =&#62; void</code>
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
 
-  Moves focus to the previous element.
+  Moves focus to the previous item.
+
+- **`up`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item above.
+
+- **`down`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item below.
 
 - **`first`**
   <code>() =&#62; void</code>
 
-  Moves focus to the first element.
+  Moves focus to the first item.
 
 - **`last`**
   <code>() =&#62; void</code>
 
-  Moves focus to the last element.
+  Moves focus to the last item.
 
 - **`manual`**
   <code>boolean</code>
@@ -382,25 +443,37 @@ similarly to `readOnly` on form elements. In this case, only
   Whether the tab selection should be manual.
 
 - **`selectedId`**
-  <code>string | null</code>
+  <code>string | null | undefined</code>
 
-  The current selected tab's `stopId`.
+  The current selected tab's `id`.
+
+- **`panels`**
+  <code>Item[]</code>
+
+  Lists all the panels.
 
 - **`select`**
   <code>(id: string | null) =&#62; void</code>
 
-  Selects a tab by its `stopId`.
+  Moves into and selects a tab by its `id`.
 
 </details>
 
 ### `TabList`
 
-- **`id`**
-  <code>string | undefined</code>
+- **`disabled`**
+  <code>boolean | undefined</code>
 
   Same as the HTML attribute.
 
-<details><summary>2 state props</summary>
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+<details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -409,10 +482,89 @@ similarly to `readOnly` on form elements. In this case, only
 
   ID that will serve as a base for all the items IDs.
 
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
 
-  Defines the orientation of the rover list.
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`wrap`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+
+  If enabled, moving to the next item from the last one in a row or column
+will focus the first item in the next row or column and vice-versa.
+  - `true` wraps between rows and columns.
+  - `horizontal` wraps only between rows.
+  - `vertical` wraps only between columns.
+  - If `loop` matches the value of `wrap`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`groups`**
+  <code>Group[]</code>
+
+  Lists all the composite groups with their `id` and DOM `ref`. This state
+is automatically updated when `registerGroup` and `unregisterGroup` are
+called.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
 
 </details>
 
@@ -423,12 +575,12 @@ similarly to `readOnly` on form elements. In this case, only
 
   Same as the HTML attribute.
 
-- **`stopId`**
-  <code>string</code>
+- **`tabId`**
+  <code>string | undefined</code>
 
-  Tab's `stopId`.
+  Tab's id
 
-<details><summary>5 state props</summary>
+<details><summary>10 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -442,23 +594,49 @@ similarly to `readOnly` on form elements. In this case, only
 
   Whether it's visible or not.
 
-- **`unstable_animated`** <span title="Experimental">⚠️</span>
+- **`animating`**
+  <code>boolean</code>
+
+  Whether it's animating or not.
+
+- **`animated`**
   <code>number | boolean</code>
 
-  If `true`, `animating` will be set to `true` when `visible` changes.
+  If `true`, `animating` will be set to `true` when `visible` is updated.
 It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If it's a number, `stopAnimation` will be called automatically after
-given milliseconds.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
 
-- **`unstable_stopAnimation`** <span title="Experimental">⚠️</span>
+- **`stopAnimation`**
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-It's called after given milliseconds if `animated` is a number.
 
 - **`selectedId`**
-  <code>string | null</code>
+  <code>string | null | undefined</code>
 
-  The current selected tab's `stopId`.
+  The current selected tab's `id`.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
+
+- **`panels`**
+  <code>Item[]</code>
+
+  Lists all the panels.
+
+- **`registerPanel`**
+  <code>(item: Item) =&#62; void</code>
+
+  Registers a tab panel.
+
+- **`unregisterPanel`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters a tab panel.
 
 </details>

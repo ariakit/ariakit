@@ -44,14 +44,14 @@ export const useSkipToContent = createHook<
       children: "Skip to main content",
       href: "#main",
       ...htmlProps,
-      className: cx(skipToContent, htmlProps.className)
+      className: cx(skipToContent, htmlProps.className),
     };
-  }
+  },
 });
 
 const SkipToContent = createComponent({
   as: "a",
-  useHook: useSkipToContent
+  useHook: useSkipToContent,
 });
 
 export default SkipToContent;

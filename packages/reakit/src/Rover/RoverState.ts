@@ -1,15 +1,14 @@
 // Credits: https://github.com/stevejay/react-roving-tabindex
 import * as React from "react";
-import { warning } from "reakit-utils/warning";
 import {
   SealedInitialState,
-  useSealedState
+  useSealedState,
 } from "reakit-utils/useSealedState";
 import {
   unstable_IdState,
   unstable_IdActions,
   unstable_IdInitialState,
-  unstable_useIdState
+  unstable_useIdState,
 } from "../Id/IdState";
 
 type Stop = {
@@ -42,8 +41,8 @@ export type RoverState = unstable_IdState & {
   unstable_moves: number;
   /**
    * If enabled:
-   *  - Jumps to the first item when moving next from the last item.
-   *  - Jumps to the last item when moving previous from the first item.
+   *   - Jumps to the first item when moving next from the last item.
+   *   - Jumps to the last item when moving previous from the first item.
    */
   loop: boolean;
 };
@@ -119,7 +118,7 @@ function reducer(
     currentId,
     unstable_pastId: pastId,
     unstable_moves: moves,
-    loop
+    loop,
   } = state;
 
   switch (action.type) {
@@ -128,17 +127,17 @@ function reducer(
       if (stops.length === 0) {
         return {
           ...state,
-          stops: [{ id, ref }]
+          stops: [{ id, ref }],
         };
       }
 
-      const index = stops.findIndex(stop => stop.id === id);
+      const index = stops.findIndex((stop) => stop.id === id);
 
       if (index >= 0) {
         return state;
       }
 
-      const indexToInsertAt = stops.findIndex(stop => {
+      const indexToInsertAt = stops.findIndex((stop) => {
         if (!stop.ref.current || !ref.current) return false;
         // Return true if the new rover element is located earlier in the DOM
         // than stop's element, else false:
@@ -154,7 +153,7 @@ function reducer(
       if (indexToInsertAt === -1) {
         return {
           ...state,
-          stops: [...stops, { id, ref }]
+          stops: [...stops, { id, ref }],
         };
       }
       return {
@@ -162,15 +161,14 @@ function reducer(
         stops: [
           ...stops.slice(0, indexToInsertAt),
           { id, ref },
-          ...stops.slice(indexToInsertAt)
-        ]
+          ...stops.slice(indexToInsertAt),
+        ],
       };
     }
     case "unregister": {
       const { id } = action;
-      const nextStops = stops.filter(stop => stop.id !== id);
+      const nextStops = stops.filter((stop) => stop.id !== id);
       if (nextStops.length === stops.length) {
-        warning(true, "[reakit/RoverState]", `${id} stop is not registered`);
         return state;
       }
 
@@ -178,7 +176,7 @@ function reducer(
         ...state,
         stops: nextStops,
         unstable_pastId: pastId && pastId === id ? null : pastId,
-        currentId: currentId && currentId === id ? null : currentId
+        currentId: currentId && currentId === id ? null : currentId,
       };
     }
     case "move": {
@@ -190,11 +188,11 @@ function reducer(
           ...state,
           currentId: null,
           unstable_pastId: currentId,
-          unstable_moves: nextMoves
+          unstable_moves: nextMoves,
         };
       }
 
-      const index = stops.findIndex(stop => stop.id === id);
+      const index = stops.findIndex((stop) => stop.id === id);
 
       // Item doesn't exist, so we don't count a move
       if (index === -1) {
@@ -209,28 +207,28 @@ function reducer(
         ...state,
         currentId: stops[index].id,
         unstable_pastId: currentId,
-        unstable_moves: nextMoves
+        unstable_moves: nextMoves,
       };
     }
     case "next": {
       if (currentId == null) {
         return reducer(state, { type: "move", id: stops[0] && stops[0].id });
       }
-      const index = stops.findIndex(stop => stop.id === currentId);
+      const index = stops.findIndex((stop) => stop.id === currentId);
 
       // If loop is truthy, turns [0, currentId, 2, 3] into [currentId, 2, 3, 0]
       // Otherwise turns into [currentId, 2, 3]
       const reorderedStops = [
         ...stops.slice(index + 1),
-        ...(loop ? stops.slice(0, index) : [])
+        ...(loop ? stops.slice(0, index) : []),
       ];
 
       const nextIndex =
-        reorderedStops.findIndex(stop => stop.id === currentId) + 1;
+        reorderedStops.findIndex((stop) => stop.id === currentId) + 1;
 
       return reducer(state, {
         type: "move",
-        id: reorderedStops[nextIndex] && reorderedStops[nextIndex].id
+        id: reorderedStops[nextIndex] && reorderedStops[nextIndex].id,
       });
     }
     case "previous": {
@@ -240,7 +238,7 @@ function reducer(
       );
       return {
         ...state,
-        ...nextState
+        ...nextState,
       };
     }
     case "first": {
@@ -255,7 +253,7 @@ function reducer(
       return {
         ...state,
         currentId: null,
-        unstable_pastId: null
+        unstable_pastId: null,
       };
     }
     case "orientate":
@@ -280,7 +278,7 @@ export function useRoverState(
     currentId,
     unstable_pastId: null,
     unstable_moves: 0,
-    loop
+    loop,
   });
 
   const idState = unstable_useIdState(sealed);
@@ -293,7 +291,7 @@ export function useRoverState(
       []
     ),
     unregister: React.useCallback(
-      id => dispatch({ type: "unregister", id }),
+      (id) => dispatch({ type: "unregister", id }),
       []
     ),
     move: React.useCallback(
@@ -306,9 +304,9 @@ export function useRoverState(
     last: React.useCallback(() => dispatch({ type: "last" }), []),
     unstable_reset: React.useCallback(() => dispatch({ type: "reset" }), []),
     unstable_orientate: React.useCallback(
-      o => dispatch({ type: "orientate", orientation: o }),
+      (o) => dispatch({ type: "orientate", orientation: o }),
       []
-    )
+    ),
   };
 }
 
@@ -328,7 +326,7 @@ const keys: Array<keyof RoverStateReturn> = [
   "first",
   "last",
   "unstable_reset",
-  "unstable_orientate"
+  "unstable_orientate",
 ];
 
 useRoverState.__keys = keys;

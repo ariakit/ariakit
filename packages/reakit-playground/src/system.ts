@@ -5,11 +5,11 @@ import { usePalette, useFade, useContrast } from "reakit-system-palette/utils";
 import { ErrorMessageOptions, ErrorMessageHTMLProps } from "./ErrorMessage";
 import {
   PlaygroundEditorOptions,
-  PlaygroundEditorHTMLProps
+  PlaygroundEditorHTMLProps,
 } from "./PlaygroundEditor";
 import {
   PlaygroundPreviewOptions,
-  PlaygroundPreviewHTMLProps
+  PlaygroundPreviewHTMLProps,
 } from "./PlaygroundPreview";
 
 const baseStyles = raw("codemirror/lib/codemirror.css");
@@ -220,14 +220,14 @@ export function usePlaygroundEditorProps(
       }
     }
     ${options.readOnly &&
-      css`
-        .CodeMirror-lines {
-          cursor: auto;
-        }
-        .CodeMirror-cursors {
-          display: none;
-        }
-      `}
+    css`
+      .CodeMirror-lines {
+        cursor: auto;
+      }
+      .CodeMirror-cursors {
+        display: none;
+      }
+    `}
   `;
   return { ...htmlProps, className: cx(playgroundEditor, htmlProps.className) };
 }
@@ -246,6 +246,6 @@ export function usePlaygroundPreviewProps(
   `;
   return {
     ...htmlProps,
-    className: cx(playgroundPreview, htmlProps.className)
+    className: cx(playgroundPreview, htmlProps.className),
   };
 }

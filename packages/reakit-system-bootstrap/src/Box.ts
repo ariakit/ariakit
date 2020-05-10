@@ -2,7 +2,7 @@ import { css, cx } from "emotion";
 import { BoxHTMLProps } from "reakit/Box/Box";
 import {
   PaletteBoxOptions,
-  useBoxProps as usePaletteBoxProps
+  useBoxProps as usePaletteBoxProps,
 } from "reakit-system-palette/Box";
 
 export type BootstrapBoxOptions = PaletteBoxOptions;

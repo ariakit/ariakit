@@ -88,7 +88,7 @@ const eventNames = [
   "transitionstart",
   "volumechange",
   "waiting",
-  "wheel"
+  "wheel",
 ];
 
 function getIdentifier(element: HTMLElement) {
@@ -108,9 +108,11 @@ export function useAllEvents(ref: React.RefObject<Element>, stack: string[]) {
     if (!element) return undefined;
     const handler = (event: Event) =>
       stack.push(`${event.type} ${getIdentifier(event.target as HTMLElement)}`);
-    eventNames.forEach(event => element.addEventListener(event, handler));
+    eventNames.forEach((event) => element.addEventListener(event, handler));
     return () => {
-      eventNames.forEach(event => element.removeEventListener(event, handler));
+      eventNames.forEach((event) =>
+        element.removeEventListener(event, handler)
+      );
     };
   }, [ref]);
 }

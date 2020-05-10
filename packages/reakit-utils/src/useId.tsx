@@ -9,15 +9,13 @@ export type IdProviderProps = {
 const defaultPrefix = "id-";
 
 const generateId = (prefix = defaultPrefix) =>
-  `${prefix}${Math.random()
-    .toString(32)
-    .substr(2, 6)}`;
+  `${prefix}${Math.random().toString(32).substr(2, 6)}`;
 
 const Context = React.createContext(generateId);
 
 export function IdProvider({
   children,
-  unstable_prefix: prefix = ""
+  unstable_prefix: prefix = "",
 }: IdProviderProps) {
   const count = React.useRef(0);
   const genId = React.useMemo(

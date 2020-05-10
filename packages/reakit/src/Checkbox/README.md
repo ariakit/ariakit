@@ -27,24 +27,85 @@ import { Checkbox } from "reakit/Checkbox";
 function Example() {
   const [checked, setChecked] = React.useState(false);
   const toggle = () => setChecked(!checked);
-  return <Checkbox checked={checked} onChange={toggle} />;
+  return (
+    <label>
+      <Checkbox checked={checked} onChange={toggle} />
+      Checkbox
+    </label>
+  );
+}
+```
+
+### Rendering as a different element
+
+You can render `Checkbox` as any component. Reakit will ensure that it's accessible by adding proper ARIA attributes and event handlers.
+
+> When styling, instead of using `:checked` or the `[checked]` selector, you will have to use `[aria-checked="true"]` to select non-native checked checkboxes.
+
+```jsx
+import React from "react";
+import { Checkbox } from "reakit/Checkbox";
+import { Button } from "reakit/Button";
+
+function Example() {
+  const [checked, setChecked] = React.useState(false);
+  const toggle = () => setChecked(!checked);
+  return (
+    <Checkbox as={Button} checked={checked} onChange={toggle}>
+      {checked ? "Uncheck" : "Check"}
+    </Checkbox>
+  );
 }
 ```
 
 ### `useCheckboxState`
 
-For convenience, Reakit provides a `useCheckboxState` that already implements the state logic:
+For convenience and consistency with the other components, Reakit provides a `useCheckboxState` that already implements the state logic for you:
 
 ```jsx
 import { useCheckboxState, Checkbox } from "reakit/Checkbox";
 
 function Example() {
   const checkbox = useCheckboxState({ state: true });
-  return <Checkbox {...checkbox} />;
+  return (
+    <label>
+      <Checkbox {...checkbox} />
+      Checkbox
+    </label>
+  );
 }
 ```
 
-### `indeterminate` state
+### Multiple checkboxes
+
+Oftentimes we need to render multiple checkboxes and store the checked values in an array. It can be easily done with Reakit:
+
+```jsx
+import { useCheckboxState, Checkbox } from "reakit/Checkbox";
+
+function Example() {
+  const checkbox = useCheckboxState({ state: [] });
+  return (
+    <>
+      <div>Choices: {checkbox.state.join(", ")}</div>
+      <label>
+        <Checkbox {...checkbox} value="apple" />
+        Apple
+      </label>
+      <label>
+        <Checkbox {...checkbox} value="orange" />
+        Orange
+      </label>
+      <label>
+        <Checkbox {...checkbox} value="watermelon" />
+        Watermelon
+      </label>
+    </>
+  );
+}
+```
+
+### Indeterminate or mixed state
 
 You can programmatically set checkbox value as `indeterminate`:
 
@@ -103,23 +164,6 @@ function Example() {
 }
 ```
 
-### `as` prop
-
-You can render the checkbox as any element. Reakit will add the props and interactions necessary for accessibility. You may need to add some styling though. You can use selectors like `[aria-checked]` for doing so.
-
-```jsx
-import { useCheckboxState, Checkbox } from "reakit/Checkbox";
-
-function Example() {
-  const checkbox = useCheckboxState();
-  return (
-    <Checkbox {...checkbox} as="button">
-      {checkbox.state ? "Checked" : "Unchecked"}
-    </Checkbox>
-  );
-}
-```
-
 ## Accessibility
 
 - `Checkbox` has role `checkbox`.
@@ -131,7 +175,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Checkbox` uses [Tabbable](/docs/tabbable/), and is used by [FormCheckbox](/docs/form/) and [MenuItemCheckbox](/docs/menu/).
+- `Checkbox` uses [Clickable](/docs/clickable/), and is used by [FormCheckbox](/docs/form/) and [MenuItemCheckbox](/docs/menu/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -142,7 +186,7 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 ### `useCheckboxState`
 
 - **`state`**
-  <code>boolean | any[] | &#34;indeterminate&#34;</code>
+  <code>boolean | &#34;indeterminate&#34; | (string | number)[]</code>
 
   Stores the state of the checkbox.
 If checkboxes that share this state have defined a `value` prop, it's
@@ -163,7 +207,7 @@ similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
 - **`value`**
-  <code>any</code>
+  <code>string | number | undefined</code>
 
   Checkbox's value is going to be used when multiple checkboxes share the
 same state. Checking a checkbox with value will add it to the state
@@ -179,14 +223,14 @@ array.
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
 - **`state`**
-  <code>boolean | any[] | &#34;indeterminate&#34;</code>
+  <code>boolean | &#34;indeterminate&#34; | (string | number)[]</code>
 
   Stores the state of the checkbox.
 If checkboxes that share this state have defined a `value` prop, it's
 going to be an array.
 
 - **`setState`**
-  <code title="(value: SetStateAction&#60;boolean | any[] | &#34;indeterminate&#34;&#62;) =&#62; void">(value: SetStateAction&#60;boolean | any[] | &#34;indet...</code>
+  <code title="(value: SetStateAction&#60;boolean | &#34;indeterminate&#34; | (string | number)[]&#62;) =&#62; void">(value: SetStateAction&#60;boolean | &#34;indeterminate...</code>
 
   Sets `state`.
 

@@ -5,18 +5,21 @@ import { MenuItemRadio } from "../MenuItemRadio";
 const props: Parameters<typeof MenuItemRadio>[0] = {
   name: "radio",
   value: "radio",
-  stopId: "item",
-  stops: [],
+  id: "item",
+  items: [],
   currentId: null,
-  register: jest.fn(),
-  unregister: jest.fn(),
+  registerItem: jest.fn(),
+  unregisterItem: jest.fn(),
+  setCurrentId: jest.fn(),
   move: jest.fn(),
   next: jest.fn(),
   previous: jest.fn(),
   first: jest.fn(),
   last: jest.fn(),
+  up: jest.fn(),
+  down: jest.fn(),
   unstable_values: {},
-  unstable_setValue: jest.fn()
+  unstable_setValue: jest.fn(),
 };
 
 test("render", () => {
@@ -28,9 +31,7 @@ test("render", () => {
           aria-checked="false"
           id="item"
           role="menuitemradio"
-          tabindex="-1"
-          type="radio"
-          value="radio"
+          tabindex="0"
         />
       </div>
     </body>

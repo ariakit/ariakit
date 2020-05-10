@@ -3,14 +3,13 @@ import { render } from "reakit-test-utils";
 import { PopoverBackdrop } from "../PopoverBackdrop";
 
 test("render", () => {
-  const { baseElement } = render(<PopoverBackdrop />);
+  const { baseElement } = render(<PopoverBackdrop baseId="popover" />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
         <div
-          class="hidden"
+          data-dialog-ref="popover"
           hidden=""
-          role="presentation"
           style="display: none;"
         />
       </div>
@@ -19,12 +18,12 @@ test("render", () => {
 });
 
 test("render visible", () => {
-  const { baseElement } = render(<PopoverBackdrop visible />);
+  const { baseElement } = render(<PopoverBackdrop baseId="popover" visible />);
   expect(baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
         <div
-          role="presentation"
+          data-dialog-ref="popover"
         />
       </div>
     </body>

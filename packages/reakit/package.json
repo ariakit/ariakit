@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0-rc.2",
   "description": "Toolkit for building accessible rich web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -23,10 +23,10 @@
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
-    "clean": "../../scripts/build/clean.js",
-    "build": "../../scripts/build/build.js",
-    "docs": "../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn build",
+    "clean": "node ../../scripts/build/clean.js",
+    "build": "node ../../scripts/build/build.js",
+    "docs": "node ../../scripts/build/docs.js",
+    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [
@@ -38,10 +38,11 @@
     "components"
   ],
   "dependencies": {
-    "body-scroll-lock": "^2.6.4",
-    "popper.js": "^1.16.0",
-    "reakit-system": "^0.7.2",
-    "reakit-utils": "^0.7.3"
+    "@popperjs/core": "^2.3.3",
+    "body-scroll-lock": "^3.0.1",
+    "reakit-system": "^0.12.0",
+    "reakit-utils": "^0.12.0",
+    "reakit-warning": "^0.3.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",

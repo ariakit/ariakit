@@ -28,14 +28,15 @@ export const useVisuallyHidden = createHook<
         position: "absolute",
         whiteSpace: "nowrap",
         width: "1px",
-        ...htmlStyle
+        ...htmlStyle,
       },
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const VisuallyHidden = createComponent({
   as: "span",
-  useHook: useVisuallyHidden
+  memo: true,
+  useHook: useVisuallyHidden,
 });

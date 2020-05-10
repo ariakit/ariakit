@@ -13,43 +13,22 @@ test("initial state", () => {
   expect(result.current).toMatchInlineSnapshot(`
     Object {
       "baseId": "base",
-      "currentId": null,
+      "currentId": undefined,
+      "groups": Array [],
+      "items": Array [],
       "loop": true,
       "manual": false,
       "orientation": undefined,
-      "selectedId": null,
-      "stops": Array [],
+      "panels": Array [],
+      "rtl": false,
+      "selectedId": undefined,
+      "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
       "unstable_moves": 0,
-      "unstable_pastId": null,
+      "unstable_virtual": false,
+      "wrap": false,
     }
   `);
-});
-
-test("initial state selectedId", () => {
-  const result = render({ selectedId: "a" });
-  expect(result.current).toMatchInlineSnapshot(
-    {
-      currentId: "a",
-      selectedId: "a"
-    },
-    `
-    Object {
-      "baseId": "base",
-      "currentId": "a",
-      "loop": true,
-      "manual": false,
-      "orientation": undefined,
-      "selectedId": "a",
-      "stops": Array [],
-      "unstable_idCountRef": Object {
-        "current": 0,
-      },
-      "unstable_moves": 0,
-      "unstable_pastId": null,
-    }
-  `
-  );
 });

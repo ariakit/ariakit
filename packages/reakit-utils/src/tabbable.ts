@@ -1,6 +1,7 @@
 /** @module tabbable */
 import { closest } from "./closest";
 import { getActiveElement } from "./getActiveElement";
+import { matches } from "./matches";
 
 const selector =
   "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +
@@ -17,7 +18,7 @@ function isVisible(element: Element) {
 }
 
 function hasNegativeTabIndex(element: Element) {
-  const tabIndex = parseInt(element.getAttribute("tabIndex") || "0", 10);
+  const tabIndex = parseInt(element.getAttribute("tabindex") || "0", 10);
   return tabIndex < 0;
 }
 
@@ -35,7 +36,7 @@ function hasNegativeTabIndex(element: Element) {
  * isFocusable(document.querySelector("input:disabled")); // false
  */
 export function isFocusable(element: Element): boolean {
-  return element.matches(selector) && isVisible(element);
+  return matches(element, selector) && isVisible(element);
 }
 
 /**
@@ -201,7 +202,7 @@ export function getPreviousTabbableIn<T extends Element>(
 }
 
 /**
- * Returns the closest focusable parent of `element`.
+ * Returns the closest focusable element.
  *
  * @memberof tabbable
  *
@@ -209,14 +210,13 @@ export function getPreviousTabbableIn<T extends Element>(
  *
  * @returns {Element|null}
  */
-export function getClosestFocusable<T extends Element>(element: T): T | null {
-  let container: T | null = null;
-
-  do {
-    container = closest(element, selector);
-  } while (container && !isFocusable(container));
-
-  return container;
+export function getClosestFocusable<T extends Element>(
+  element?: T | null
+): T | null | undefined {
+  while (element && !isFocusable(element)) {
+    element = closest(element, selector) as T;
+  }
+  return element;
 }
 
 function defaultIsActive(element: Element) {

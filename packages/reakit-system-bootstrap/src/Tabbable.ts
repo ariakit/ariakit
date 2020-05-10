@@ -15,12 +15,12 @@ export function useTabbableProps(
   {
     // Setting `primary` here and not in `useTabbableOptions` because we want
     // it to default to `primary` only for the tabbable `box-shadow`
-    unstable_system: { palette = "primary", ...system } = {}
+    unstable_system: { palette = "primary", ...system } = {},
   }: BootstrapTabbableOptions,
   htmlProps: TabbableHTMLProps = {}
 ): TabbableHTMLProps {
   const {
-    style: { color, backgroundColor }
+    style: { color, backgroundColor },
   } = usePaletteBoxProps({ unstable_system: { palette, ...system } });
 
   const dark = usePalette("dark") || "black";

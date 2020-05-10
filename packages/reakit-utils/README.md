@@ -24,108 +24,64 @@ yarn add reakit-utils
 
 #### Table of Contents
 
+-   [applyState](#applystate)
 -   [closest](#closest)
-    -   [Parameters](#parameters)
-    -   [Examples](#examples)
+-   [contains](#contains)
+-   [createEvent](#createevent)
+-   [createKeyboardEvent](#createkeyboardevent)
 -   [createOnKeyDown](#createonkeydown)
-    -   [Parameters](#parameters-1)
--   [cx](#cx)
-    -   [Parameters](#parameters-2)
-    -   [Examples](#examples-1)
+-   [fireEvent](#fireevent)
+-   [fireKeyboardEvent](#firekeyboardevent)
+-   [flatten](#flatten)
 -   [getActiveElement](#getactiveelement)
-    -   [Parameters](#parameters-3)
+-   [getDefaultView](#getdefaultview)
 -   [getDocument](#getdocument)
-    -   [Parameters](#parameters-4)
 -   [hasFocusWithin](#hasfocuswithin)
-    -   [Parameters](#parameters-5)
-    -   [Examples](#examples-2)
 -   [isButton](#isbutton)
-    -   [Parameters](#parameters-6)
-    -   [Examples](#examples-3)
 -   [isEmpty](#isempty)
-    -   [Parameters](#parameters-7)
-    -   [Examples](#examples-4)
 -   [isInteger](#isinteger)
-    -   [Parameters](#parameters-8)
-    -   [Examples](#examples-5)
 -   [isObject](#isobject)
-    -   [Parameters](#parameters-9)
+-   [isPlainObject](#isplainobject)
+-   [isPortalEvent](#isportalevent)
 -   [isPromise](#ispromise)
-    -   [Parameters](#parameters-10)
--   [mergeRefs](#mergerefs)
-    -   [Parameters](#parameters-11)
-    -   [Examples](#examples-6)
+-   [isSelfTarget](#isselftarget)
+-   [isTextField](#istextfield)
+-   [matches](#matches)
 -   [omit](#omit)
-    -   [Parameters](#parameters-12)
-    -   [Examples](#examples-7)
 -   [pick](#pick)
-    -   [Parameters](#parameters-13)
-    -   [Examples](#examples-8)
 -   [removeIndexFromArray](#removeindexfromarray)
-    -   [Parameters](#parameters-14)
-    -   [Examples](#examples-9)
 -   [removeItemFromArray](#removeitemfromarray)
-    -   [Parameters](#parameters-15)
-    -   [Examples](#examples-10)
+-   [shallowEqual](#shallowequal)
 -   [splitProps](#splitprops)
-    -   [Parameters](#parameters-16)
-    -   [Examples](#examples-11)
 -   [tabbable](#tabbable)
-    -   [isFocusable](#isfocusable)
-        -   [Parameters](#parameters-17)
-        -   [Examples](#examples-12)
-    -   [isTabbable](#istabbable)
-        -   [Parameters](#parameters-18)
-        -   [Examples](#examples-13)
-    -   [getAllFocusableIn](#getallfocusablein)
-        -   [Parameters](#parameters-19)
-    -   [getFirstFocusableIn](#getfirstfocusablein)
-        -   [Parameters](#parameters-20)
-    -   [getAllTabbableIn](#getalltabbablein)
-        -   [Parameters](#parameters-21)
-    -   [getFirstTabbableIn](#getfirsttabbablein)
-        -   [Parameters](#parameters-22)
-    -   [getLastTabbableIn](#getlasttabbablein)
-        -   [Parameters](#parameters-23)
-    -   [getNextTabbableIn](#getnexttabbablein)
-        -   [Parameters](#parameters-24)
-    -   [getPreviousTabbableIn](#getprevioustabbablein)
-        -   [Parameters](#parameters-25)
-    -   [getClosestFocusable](#getclosestfocusable)
-        -   [Parameters](#parameters-26)
-    -   [ensureFocus](#ensurefocus)
-        -   [Parameters](#parameters-27)
-        -   [Examples](#examples-14)
 -   [toArray](#toarray)
-    -   [Parameters](#parameters-28)
-    -   [Examples](#examples-15)
 -   [types](#types)
-    -   [Omit](#omit-1)
-    -   [RenderProp](#renderprop)
-    -   [As](#as)
-    -   [ElementType](#elementtype)
-    -   [HTMLAttributesWithRef](#htmlattributeswithref)
-    -   [ExtractHTMLAttributes](#extracthtmlattributes)
-    -   [UnionToIntersection](#uniontointersection)
-    -   [PickByValue](#pickbyvalue)
-    -   [PropsWithAs](#propswithas)
-    -   [ArrayValue](#arrayvalue)
-    -   [AnyFunction](#anyfunction)
 -   [useAllCallbacks](#useallcallbacks)
-    -   [Parameters](#parameters-29)
-    -   [Examples](#examples-16)
+-   [useForkRef](#useforkref)
 -   [useIsomorphicEffect](#useisomorphiceffect)
 -   [useLiveRef](#useliveref)
-    -   [Parameters](#parameters-30)
 -   [usePipe](#usepipe)
-    -   [Parameters](#parameters-31)
 -   [useSealedState](#usesealedstate)
-    -   [Parameters](#parameters-32)
 -   [useUpdateEffect](#useupdateeffect)
-    -   [Parameters](#parameters-33)
--   [warning](#warning)
-    -   [Parameters](#parameters-34)
-    -   [Examples](#examples-17)
+
+### applyState
+
+Receives a `setState` argument and calls it with `currentValue` if it's a
+function. Otherwise return the argument as the new value.
+
+#### Parameters
+
+-   `argument` **React.SetStateAction&lt;T>** 
+-   `currentValue` **T** 
+
+#### Examples
+
+```javascript
+import { applyState } from "reakit-utils";
+
+applyState((value) => value + 1, 1); // 2
+applyState(2, 1); // 2
+```
 
 ### closest
 
@@ -146,6 +102,59 @@ closest(document.getElementById("id"), "div");
 document.getElementById("id").closest("div");
 ```
 
+### contains
+
+Similar to `Element.prototype.contains`.
+
+#### Parameters
+
+-   `parent` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `child` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### createEvent
+
+Creates an `Event` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **EventInit**  (optional, default `{}`)
+
+#### Examples
+
+```javascript
+import { createEvent } from "reakit-utils";
+
+const el = document.getElementById("id");
+el.dispatchEvent(createEvent(el, "blur", { bubbles: false }));
+```
+
+Returns **[Event](https://developer.mozilla.org/docs/Web/API/Event)** 
+
+### createKeyboardEvent
+
+Creates a `KeyboardEvent` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **KeyboardEventInit**  (optional, default `{}`)
+
+#### Examples
+
+```javascript
+import { createKeyboardEvent } from "reakit-utils";
+
+const el = document.getElementById("id");
+el.dispatchEvent(createKeyboardEvent(el, "keydown", { key: "ArrowDown" }));
+```
+
+Returns **[KeyboardEvent](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)** 
+
 ### createOnKeyDown
 
 Returns an `onKeyDown` handler to be passed to a component.
@@ -162,23 +171,64 @@ Returns an `onKeyDown` handler to be passed to a component.
 
 Returns **React.KeyboardEventHandler** 
 
-### cx
+### fireEvent
 
-Returns a string with truthy class names separated by space.
+Creates and dispatches `Event` in a way that also works on IE 11.
 
 #### Parameters
 
--   `classes` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) | null | `false`)>** 
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **EventInit** 
 
 #### Examples
 
 ```javascript
-import { cx } from "reakit-utils";
+import { fireEvent } from "reakit-utils";
 
-const className = cx("a", "b", false, true && "c");
+fireEvent(document.getElementById("id"), "blur", {
+  bubbles: true,
+  cancelable: true,
+});
 ```
 
-Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
+### fireKeyboardEvent
+
+Creates and dispatches `KeyboardEvent` in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `eventInit` **KeyboardEventInit** 
+
+#### Examples
+
+```javascript
+import { fireKeyboardEvent } from "reakit-utils";
+
+fireKeyboardEvent(document.getElementById("id"), "keydown", {
+  key: "ArrowDown",
+  shiftKey: true,
+});
+```
+
+### flatten
+
+Transforms an array with multiple levels into a flattened one.
+
+#### Parameters
+
+-   `array` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;T>** 
+
+#### Examples
+
+```javascript
+import { flatten } from "reakit-utils";
+
+flatten([0, 1, [2, [3, 4], 5], 6]);
+// => [0, 1, 2, 3, 4, 5, 6]
+```
 
 ### getActiveElement
 
@@ -187,6 +237,16 @@ Returns `element.ownerDocument.activeElement`.
 #### Parameters
 
 -   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
+
+### getDefaultView
+
+Returns `element.ownerDocument.defaultView || window`.
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)?** 
+
+Returns **[Window](https://developer.mozilla.org/docs/Web/API/Window)** 
 
 ### getDocument
 
@@ -293,6 +353,26 @@ Checks whether `arg` is an object or not.
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
+### isPlainObject
+
+Checks whether `arg` is a plain object or not.
+
+#### Parameters
+
+-   `arg` **any** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isPortalEvent
+
+Returns `true` if `event` has been fired within a React Portal element.
+
+#### Parameters
+
+-   `event` **React.SyntheticEvent&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element), [Event](https://developer.mozilla.org/docs/Web/API/Event)>** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### isPromise
 
 Checks whether `arg` is a promise or not.
@@ -303,28 +383,40 @@ Checks whether `arg` is a promise or not.
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### mergeRefs
+### isSelfTarget
 
-Merges multiple React ref props into a single value that can be passed to
-a component.
+Returns `true` if `event.target` and `event.currentTarget` are the same.
 
 #### Parameters
 
--   `refs` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(React.Ref&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
+-   `event` **React.SyntheticEvent** 
 
-#### Examples
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-```javascript
-import React from "react";
-import { mergeRefs } from "reakit-utils";
+### isTextField
 
-const Component = React.forwardRef((props, ref) => {
-  const internalRef = React.useRef();
-  return <div ref={mergeRefs(internalRef, ref)} {...props} />;
-});
-```
+Check whether the given element is a text field, where text field is defined
+by the ability to select within the input, or that it is contenteditable.
 
-Returns **(React.Ref&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### matches
+
+-   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>
+    **
+
+Ponyfill for `Element.prototype.matches`
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `selectors` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### omit
 
@@ -404,6 +496,28 @@ removeItemFromArray([obj], obj); // []
 ```
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** A new array without the passed item.
+
+### shallowEqual
+
+Compares two objects.
+
+#### Parameters
+
+-   `objA` **Record&lt;any, any>** 
+-   `objB` **Record&lt;any, any>** 
+
+#### Examples
+
+```javascript
+import { shallowEqual } from "reakit-utils";
+
+shallowEqual({ a: "a" }, {}); // false
+shallowEqual({ a: "a" }, { b: "b" }); // false
+shallowEqual({ a: "a" }, { a: "a" }); // true
+shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### splitProps
 
@@ -550,11 +664,11 @@ Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)
 
 #### getClosestFocusable
 
-Returns the closest focusable parent of `element`.
+Returns the closest focusable element.
 
 ##### Parameters
 
--   `element` **T** 
+-   `element` **(T | null)?** 
 -   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
@@ -611,10 +725,6 @@ toArray(["a"]); // ["a"]
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
 
 ### types
-
-#### Omit
-
-Type: Pick&lt;T, Exclude&lt;any, K>>
 
 #### RenderProp
 
@@ -709,6 +819,28 @@ function Component(props) {
 
 Returns **AnyFunction** 
 
+### useForkRef
+
+Merges up to two React Refs into a single memoized function React Ref so you
+can pass it to an element.
+
+#### Parameters
+
+-   `refA` **React.Ref&lt;any>?** 
+-   `refB` **React.Ref&lt;any>?** 
+
+#### Examples
+
+```javascript
+import React from "react";
+import { useForkRef } from "reakit-utils";
+
+const Component = React.forwardRef((props, ref) => {
+  const internalRef = React.useRef();
+  return <div {...props} ref={useForkRef(internalRef, ref)} />;
+});
+```
+
 ### useIsomorphicEffect
 
 `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side
@@ -750,24 +882,6 @@ A `React.useEffect` that will not run on the first render.
 
 -   `effect` **React.EffectCallback** 
 -   `deps` **(ReadonlyArray&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))?** 
-
-### warning
-
-Logs `messages` to the console using `console.warn` based on a `condition`.
-
-#### Parameters
-
--   `condition` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
--   `messages` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
-
-#### Examples
-
-```javascript
-import { warning } from "reakit-utils";
-
-warning(true, "a", "b"); // console.warn("a\nb")
-warning(false, "a", "b"); // does nothing
-```
 
 ## License
 

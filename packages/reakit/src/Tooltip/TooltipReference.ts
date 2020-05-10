@@ -1,7 +1,8 @@
+import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { useForkRef } from "reakit-utils/useForkRef";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useTooltipState, TooltipStateReturn } from "./TooltipState";
 
@@ -33,20 +34,61 @@ export const useTooltipReference = createHook<
       ...htmlProps
     }
   ) {
+    const onFocusRef = useLiveRef(htmlOnFocus);
+    const onBlurRef = useLiveRef(htmlOnBlur);
+    const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
+    const onMouseLeaveRef = useLiveRef(htmlOnMouseLeave);
+
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        onFocusRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.show?.();
+      },
+      [options.show]
+    );
+
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent) => {
+        onBlurRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.hide?.();
+      },
+      [options.hide]
+    );
+
+    const onMouseEnter = React.useCallback(
+      (event: React.MouseEvent) => {
+        onMouseEnterRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.show?.();
+      },
+      [options.show]
+    );
+
+    const onMouseLeave = React.useCallback(
+      (event: React.MouseEvent) => {
+        onMouseLeaveRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.hide?.();
+      },
+      [options.hide]
+    );
+
     return {
-      ref: mergeRefs(options.unstable_referenceRef, htmlRef),
+      ref: useForkRef(options.unstable_referenceRef, htmlRef),
       tabIndex: 0,
-      onFocus: useAllCallbacks(options.show, htmlOnFocus),
-      onBlur: useAllCallbacks(options.hide, htmlOnBlur),
-      onMouseEnter: useAllCallbacks(options.show, htmlOnMouseEnter),
-      onMouseLeave: useAllCallbacks(options.hide, htmlOnMouseLeave),
+      onFocus,
+      onBlur,
+      onMouseEnter,
+      onMouseLeave,
       "aria-describedby": options.baseId,
-      ...htmlProps
+      ...htmlProps,
     };
-  }
+  },
 });
 
 export const TooltipReference = createComponent({
   as: "div",
-  useHook: useTooltipReference
+  useHook: useTooltipReference,
 });
