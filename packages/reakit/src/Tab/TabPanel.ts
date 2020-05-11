@@ -80,7 +80,7 @@ function getTabId(options: TabPanelOptions) {
   }
   const panelIndex = getPanelIndex(options.panels, panel);
   const tabsWithoutPanel = getTabsWithoutPanel(options.items, options.panels);
-  return tabsWithoutPanel[panelIndex].id || undefined;
+  return tabsWithoutPanel[panelIndex]?.id || undefined;
 }
 
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
