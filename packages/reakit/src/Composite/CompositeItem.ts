@@ -10,6 +10,7 @@ import { isTextField } from "reakit-utils/isTextField";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { ensureFocus } from "reakit-utils/tabbable";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -193,7 +194,7 @@ export const unstable_useCompositeItem = createHook<
           const composite = getDocument(target).getElementById(options.baseId);
           if (composite) {
             hasFocusedComposite.current = true;
-            composite.focus();
+            ensureFocus(composite);
           }
         }
       },
@@ -214,6 +215,7 @@ export const unstable_useCompositeItem = createHook<
             // right after focusing this item. This is an intermediate blur
             // event, so we ignore it.
             hasFocusedComposite.current = false;
+            event.preventDefault();
             event.stopPropagation();
             return;
           }
