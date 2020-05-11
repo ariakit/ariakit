@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
 import {
   DisclosureOptions,
@@ -30,6 +31,7 @@ export const useDialogDisclosure = createHook<
 
   useProps(options, { ref: htmlRef, onClick: htmlOnClick, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
+    const onClickRef = useLiveRef(htmlOnClick);
     const [expanded, setExpanded] = React.useState(false);
     const disclosureRef = options.unstable_disclosureRef;
 
@@ -51,13 +53,13 @@ export const useDialogDisclosure = createHook<
 
     const onClick = React.useCallback(
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        htmlOnClick?.(event);
+        onClickRef.current?.(event);
         if (event.defaultPrevented) return;
         if (disclosureRef) {
           disclosureRef.current = event.currentTarget;
         }
       },
-      [disclosureRef, htmlOnClick]
+      [disclosureRef]
     );
 
     return {

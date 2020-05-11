@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { useFocusOnMouseDown } from "./__utils/useFocusOnMouseDown";
@@ -69,6 +70,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
+    const onClickRef = useLiveRef(htmlOnClick);
+    const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
@@ -101,9 +104,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           event.preventDefault();
           return;
         }
-        htmlOnClick?.(event);
+        onClickRef.current?.(event);
       },
-      [options.disabled, htmlOnClick]
+      [options.disabled]
     );
 
     const onMouseDown = React.useCallback(
@@ -114,9 +117,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           return;
         }
         onMouseDownFocus?.(event);
-        htmlOnMouseDown?.(event);
+        onMouseDownRef.current?.(event);
       },
-      [options.disabled, onMouseDownFocus, htmlOnMouseDown]
+      [options.disabled, onMouseDownFocus]
     );
 
     return {
