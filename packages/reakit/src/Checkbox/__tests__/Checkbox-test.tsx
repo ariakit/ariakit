@@ -10,7 +10,6 @@ test("render", () => {
         <input
           aria-checked="false"
           type="checkbox"
-          value=""
         />
       </div>
     </body>
@@ -28,7 +27,6 @@ test("render disabled", () => {
           disabled=""
           style="pointer-events: none;"
           type="checkbox"
-          value=""
         />
       </div>
     </body>
@@ -45,7 +43,6 @@ test("render disabled focusable", () => {
           aria-disabled="true"
           style="pointer-events: none;"
           type="checkbox"
-          value=""
         />
       </div>
     </body>
@@ -61,7 +58,6 @@ test("render checked", () => {
           aria-checked="true"
           checked=""
           type="checkbox"
-          value=""
         />
       </div>
     </body>
