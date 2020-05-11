@@ -38,12 +38,7 @@ export type DialogInitialState = DisclosureInitialState &
 
 export type DialogStateReturn = DisclosureStateReturn &
   DialogState &
-  DialogActions & {
-    /**
-     * @private
-     */
-    unstable_modal: boolean;
-  };
+  DialogActions;
 
 export function useDialogState(
   initialState: SealedInitialState<DialogInitialState> = {}
@@ -61,7 +56,6 @@ export function useDialogState(
     modal,
     setModal,
     unstable_disclosureRef: disclosureRef,
-    unstable_modal: modal,
   };
 }
 
@@ -70,7 +64,6 @@ const keys: Array<keyof DialogStateReturn> = [
   "modal",
   "setModal",
   "unstable_disclosureRef",
-  "unstable_modal",
 ];
 
 useDialogState.__keys = keys;

@@ -26,7 +26,7 @@ import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 export type DialogOptions = DisclosureContentOptions &
   Pick<
     Partial<DialogStateReturn>,
-    "modal" | "setModal" | "unstable_modal" | "hide" | "unstable_disclosureRef"
+    "modal" | "hide" | "unstable_disclosureRef"
   > &
   Pick<DialogStateReturn, "baseId"> & {
     /**
@@ -98,21 +98,8 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
     unstable_orphan,
-    unstable_modal,
-    setModal,
     ...options
   }) {
-    React.useEffect(() => {
-      if (setModal && unstable_modal !== modal) {
-        warning(
-          true,
-          "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
-          "See https://github.com/reakit/reakit/pull/535"
-        );
-        setModal(modal);
-      }
-    }, [setModal, unstable_modal, modal]);
-
     return {
       modal,
       hideOnEsc,

@@ -20,20 +20,6 @@ test("clicking on disclosure opens the dialog", () => {
   expect(dialog).toBeVisible();
 });
 
-test("passing modal to Dialog should warn", () => {
-  const Test = () => {
-    const dialog = useDialogState();
-    return (
-      <>
-        <DialogDisclosure {...dialog}>disclosure</DialogDisclosure>
-        <Dialog {...dialog} tabIndex={0} modal={false} aria-label="dialog" />
-      </>
-    );
-  };
-  render(<Test />);
-  expect(console).toHaveWarned();
-});
-
 test("focus the first tabbable element when dialog opens", () => {
   const Test = () => {
     const dialog = useDialogState();
