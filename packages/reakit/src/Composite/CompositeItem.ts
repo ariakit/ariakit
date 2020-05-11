@@ -26,6 +26,7 @@ import {
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
+import { Item } from "./__utils/types";
 
 export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
@@ -65,8 +66,8 @@ export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
   unstable_CompositeItemHTMLProps;
 
-function getWidget(item: Element) {
-  return item.querySelector<HTMLElement>("[data-composite-item-widget]");
+function getWidget(itemElement: Element) {
+  return itemElement.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
 
 function useItem(options: unstable_CompositeItemOptions) {
@@ -74,6 +75,16 @@ function useItem(options: unstable_CompositeItemOptions) {
     () => options.items?.find((item) => options.id && item.id === options.id),
     [options.items, options.id]
   );
+}
+
+function targetIsAnotherItem(event: React.SyntheticEvent, items: Item[]) {
+  if (isSelfTarget(event)) return false;
+  for (const item of items) {
+    if (item.ref.current === event.target) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export const unstable_useCompositeItem = createHook<
@@ -167,6 +178,7 @@ export const unstable_useCompositeItem = createHook<
         if (event.defaultPrevented) return;
         if (isPortalEvent(event)) return;
         if (!id) return;
+        if (targetIsAnotherItem(event, options.items)) return;
         // Using originalCurrentId because currentId may be different due to
         // getCurrentId call. If it's already set as the current id, we don't
         // want to call setCurrentId again, which would cause an additional
@@ -185,7 +197,13 @@ export const unstable_useCompositeItem = createHook<
           }
         }
       },
-      [id, options.setCurrentId, options.unstable_virtual, options.baseId]
+      [
+        id,
+        options.items,
+        options.setCurrentId,
+        options.unstable_virtual,
+        options.baseId,
+      ]
     );
 
     const onBlur = React.useCallback(
