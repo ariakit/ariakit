@@ -20,6 +20,10 @@ export type DialogState = DisclosureState & {
    * by default.
    */
   modal: boolean;
+  /**
+   * @private
+   */
+  unstable_disclosureRef: React.MutableRefObject<HTMLElement | null>;
 };
 
 export type DialogActions = DisclosureActions & {
@@ -48,14 +52,16 @@ export function useDialogState(
     initialState
   );
 
+  const disclosure = useDisclosureState(sealed);
   const [modal, setModal] = React.useState(initialModal);
-  const hidden = useDisclosureState(sealed);
+  const disclosureRef = React.useRef<HTMLElement | null>(null);
 
   return {
+    ...disclosure,
     modal,
     setModal,
+    unstable_disclosureRef: disclosureRef,
     unstable_modal: modal,
-    ...hidden,
   };
 }
 
@@ -63,6 +69,7 @@ const keys: Array<keyof DialogStateReturn> = [
   ...useDisclosureState.__keys,
   "modal",
   "setModal",
+  "unstable_disclosureRef",
   "unstable_modal",
 ];
 

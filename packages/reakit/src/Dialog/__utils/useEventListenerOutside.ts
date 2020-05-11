@@ -19,19 +19,17 @@ function dialogContains(target: Element) {
   };
 }
 
-function isDisclosure(target: Element) {
-  return (disclosure: HTMLElement) => {
-    if (contains(disclosure, target)) return true;
-    return (
-      disclosure.id &&
-      disclosure.id === target.getAttribute?.("aria-activedescendant")
-    );
-  };
+function isDisclosure(target: Element, disclosure: HTMLElement) {
+  if (contains(disclosure, target)) return true;
+  return (
+    disclosure.id &&
+    disclosure.id === target.getAttribute?.("aria-activedescendant")
+  );
 }
 
 export function useEventListenerOutside(
   containerRef: React.RefObject<HTMLElement>,
-  disclosuresRef: React.RefObject<HTMLElement[]>,
+  disclosureRef: React.RefObject<HTMLElement>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   eventType: string,
   listener?: (e: Event) => void,
@@ -46,7 +44,7 @@ export function useEventListenerOutside(
       if (!listenerRef.current) return;
 
       const container = containerRef.current;
-      const disclosures = disclosuresRef.current || [];
+      const disclosure = disclosureRef.current;
       const target = event.target as Element;
 
       if (!container) {
@@ -62,7 +60,7 @@ export function useEventListenerOutside(
       if (contains(container, target)) return;
 
       // Click on disclosure
-      if (disclosures.length && disclosures.some(isDisclosure(target))) {
+      if (disclosure && isDisclosure(target, disclosure)) {
         return;
       }
 
@@ -81,7 +79,7 @@ export function useEventListenerOutside(
     };
   }, [
     containerRef,
-    disclosuresRef,
+    disclosureRef,
     nestedDialogs,
     eventType,
     shouldListen,

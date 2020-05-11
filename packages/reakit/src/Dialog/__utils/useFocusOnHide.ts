@@ -23,7 +23,7 @@ function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosuresRef: React.RefObject<HTMLElement[]>,
+  disclosureRef: React.RefObject<HTMLElement>,
   options: DialogOptions
 ) {
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
@@ -40,17 +40,17 @@ export function useFocusOnHide(
     }
 
     const finalFocusEl =
-      options.unstable_finalFocusRef?.current || disclosuresRef.current?.[0];
+      options.unstable_finalFocusRef?.current || disclosureRef.current;
 
     if (finalFocusEl) {
       ensureFocus(finalFocusEl);
-    } else {
-      warning(
-        true,
-        "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
-        "See https://reakit.io/docs/dialog",
-        dialogRef.current
-      );
+      return;
     }
-  }, [shouldFocus, animating, dialogRef, disclosuresRef]);
+    warning(
+      true,
+      "Can't return focus after closing dialog. Either render a disclosure component or provide a `unstable_finalFocusRef` prop.",
+      "See https://reakit.io/docs/dialog",
+      dialogRef.current
+    );
+  }, [shouldFocus, animating, dialogRef, disclosureRef]);
 }

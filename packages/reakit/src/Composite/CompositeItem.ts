@@ -304,15 +304,13 @@ export const unstable_useCompositeItem = createHook<
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        const widget = getWidget(event.currentTarget);
+        const self = event.currentTarget;
+        const widget = getWidget(self);
         if (widget && !hasFocusWithin(widget)) {
           // If there's a widget inside the composite item, we make sure it's
           // focused when pressing enter, space or clicking on the composite item.
           widget.focus();
-        } else if (
-          isSelfTarget(event) &&
-          !hasFocusWithin(event.currentTarget)
-        ) {
+        } else if (isSelfTarget(event) && !hasFocusWithin(self)) {
           // VoiceOver doesn't automatically focus the composite item when it's not
           // a button, so we force focus here.
           self.focus();
