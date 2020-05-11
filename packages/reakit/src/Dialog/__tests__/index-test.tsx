@@ -605,30 +605,6 @@ test("focusing disclosure does not close the non-modal dialog", () => {
   expect(dialog).toBeVisible();
 });
 
-test("focusing any of multiple disclosures does not close the non-modal dialog", () => {
-  const Test = () => {
-    const dialog = useDialogState({ visible: true, modal: false });
-    return (
-      <>
-        <DialogDisclosure {...dialog}>disclosure1</DialogDisclosure>
-        <DialogDisclosure {...dialog}>disclosure2</DialogDisclosure>
-        <Dialog {...dialog} aria-label="dialog" />
-      </>
-    );
-  };
-  const { getByText, getByLabelText } = render(<Test />);
-  const disclosure1 = getByText("disclosure1");
-  const disclosure2 = getByText("disclosure2");
-  const dialog = getByLabelText("dialog");
-  expect(dialog).toBeVisible();
-  focus(disclosure1);
-  expect(disclosure1).toHaveFocus();
-  expect(dialog).toBeVisible();
-  focus(disclosure2);
-  expect(disclosure2).toHaveFocus();
-  expect(dialog).toBeVisible();
-});
-
 test("focus disclosure when dialog closes", () => {
   const Test = () => {
     const dialog = useDialogState();

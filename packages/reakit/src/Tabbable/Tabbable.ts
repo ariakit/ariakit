@@ -2,12 +2,10 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { isFocusable } from "reakit-utils/tabbable";
-import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { isButton } from "reakit-utils/isButton";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { warning } from "reakit-warning";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { useFocusOnMouseDown } from "./__utils/useFocusOnMouseDown";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -28,6 +26,16 @@ export type TabbableHTMLProps = BoxHTMLProps & {
 
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
+function isUserAgent(string: string) {
+  if (typeof window === "undefined") return false;
+  return window.navigator.userAgent.indexOf(string) !== -1;
+}
+
+const isSafariOrFirefoxOnMac =
+  isUserAgent("Mac") &&
+  !isUserAgent("Chrome") &&
+  (isUserAgent("Safari") || isUserAgent("Firefox"));
+
 function isNativeTabbable(element: Element) {
   return (
     element.tagName === "BUTTON" ||
@@ -39,15 +47,6 @@ function isNativeTabbable(element: Element) {
     element.tagName === "VIDEO"
   );
 }
-
-// https://twitter.com/diegohaz/status/1176998102139572225
-function isUserAgent(string: string) {
-  if (typeof window === "undefined") return false;
-  return window.navigator.userAgent.indexOf(string) !== -1;
-}
-
-const isSafariOrFirefoxOnMac =
-  isUserAgent("Mac") && (isUserAgent("Safari") || isUserAgent("Firefox"));
 
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
@@ -70,16 +69,17 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const onClickRef = useLiveRef(htmlOnClick);
-    const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
+    const onMouseDownFocus = isSafariOrFirefoxOnMac
+      ? useFocusOnMouseDown()
+      : undefined;
 
-    React.useEffect(() => {
+    useIsomorphicEffect(() => {
       const tabbable = ref.current;
       if (!tabbable) {
         warning(
@@ -101,9 +101,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           event.preventDefault();
           return;
         }
-        onClickRef.current?.(event);
+        htmlOnClick?.(event);
       },
-      [options.disabled]
+      [options.disabled, htmlOnClick]
     );
 
     const onMouseDown = React.useCallback(
@@ -113,23 +113,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           event.preventDefault();
           return;
         }
-
-        onMouseDownRef.current?.(event);
-        if (event.defaultPrevented) return;
-
-        const self = event.currentTarget;
-        const target = event.target as HTMLElement;
-
-        if (isSafariOrFirefoxOnMac && isButton(self) && self.contains(target)) {
-          event.preventDefault();
-          const isFocusControl =
-            isFocusable(target) || target.tagName === "LABEL";
-          if (!hasFocusWithin(self) || self === target || !isFocusControl) {
-            self.focus();
-          }
-        }
+        onMouseDownFocus?.(event);
+        htmlOnMouseDown?.(event);
       },
-      [options.disabled]
+      [options.disabled, onMouseDownFocus, htmlOnMouseDown]
     );
 
     return {
