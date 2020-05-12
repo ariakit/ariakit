@@ -37,4 +37,3 @@ export * from "./useLiveRef";
 export * from "./usePipe";
 export * from "./useSealedState";
 export * from "./useUpdateEffect";
-export * from "./useWhyDidYouUpdate";
