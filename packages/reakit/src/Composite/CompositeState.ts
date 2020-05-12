@@ -331,11 +331,10 @@ function reducer(
       // Group will be null if it's a one-dimensional composite
       const nextItem = { groupId: group?.id, ...item };
       const index = findDOMIndex(items, nextItem);
-      const nextState = {
+      return {
         ...state,
         items: addItemAtIndex(items, nextItem, index),
       };
-      return { ...nextState, currentId: getCurrentId(nextState) };
     }
     case "unregisterItem": {
       const { id } = action;
@@ -617,6 +616,13 @@ export function unstable_useCompositeState(
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
+
+  // When currentId is undefined, set it to the first enabled item.
+  React.useEffect(() => {
+    if (state.currentId !== undefined) return;
+    if (!state.items.length) return;
+    dispatch({ type: "setCurrentId" });
+  }, [state.currentId, state.items]);
 
   return {
     ...idState,

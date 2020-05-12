@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useWarning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import {
   DisclosureContentOptions,
@@ -21,12 +20,6 @@ export type TabPanelOptions = DisclosureContentOptions &
     TabStateReturn,
     "selectedId" | "registerPanel" | "unregisterPanel" | "panels" | "items"
   > & {
-    /**
-     * Tab's `stopId`.
-     * @deprecated Use `tabId` instead.
-     * @private
-     */
-    stopId?: string;
     /**
      * Tab's id
      */
@@ -74,32 +67,25 @@ function getPanelIndex(
  */
 function getTabId(options: TabPanelOptions) {
   const panel = options.panels?.find((p) => p.id === options.id);
-  const tabId = options.tabId || options.stopId || panel?.groupId;
+  const tabId = options.tabId || panel?.groupId;
   if (tabId || !panel || !options.panels || !options.items) {
     return tabId;
   }
   const panelIndex = getPanelIndex(options.panels, panel);
   const tabsWithoutPanel = getTabsWithoutPanel(options.items, options.panels);
-  return tabsWithoutPanel[panelIndex].id || undefined;
+  return tabsWithoutPanel[panelIndex]?.id || undefined;
 }
 
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   name: "TabPanel",
   compose: [unstable_useId, useDisclosureContent],
   useState: useTabState,
-  keys: ["stopId", "tabId"],
+  keys: ["tabId"],
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);
     const tabId = getTabId(options);
     const { id, registerPanel, unregisterPanel } = options;
-
-    useWarning(
-      Boolean(options.stopId),
-      "`TabPanel`'s `stopId` prop is deprecated. Use `tabId` instead.",
-      "See https://reakit.io/docs/tab",
-      ref
-    );
 
     React.useEffect(() => {
       if (!id) return undefined;

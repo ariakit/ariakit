@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { warning, useWarning } from "reakit-warning";
+import { warning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { getDocument } from "reakit-utils/getDocument";
@@ -10,6 +10,7 @@ import { isTextField } from "reakit-utils/isTextField";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { ensureFocus } from "reakit-utils/tabbable";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -26,6 +27,7 @@ import {
 } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
+import { Item } from "./__utils/types";
 
 export type unstable_CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
@@ -50,14 +52,7 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "down"
     | "first"
     | "last"
-  > & {
-    /**
-     * Element ID.
-     * @deprecated Use `id` instead.
-     * @private
-     */
-    stopId?: string;
-  };
+  >;
 
 export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
   unstable_IdHTMLProps;
@@ -65,8 +60,8 @@ export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
 export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
   unstable_CompositeItemHTMLProps;
 
-function getWidget(item: Element) {
-  return item.querySelector<HTMLElement>("[data-composite-item-widget]");
+function getWidget(itemElement: Element) {
+  return itemElement.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
 
 function useItem(options: unstable_CompositeItemOptions) {
@@ -76,6 +71,16 @@ function useItem(options: unstable_CompositeItemOptions) {
   );
 }
 
+function targetIsAnotherItem(event: React.SyntheticEvent, items: Item[]) {
+  if (isSelfTarget(event)) return false;
+  for (const item of items) {
+    if (item.ref.current === event.target) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const unstable_useCompositeItem = createHook<
   unstable_CompositeItemOptions,
   unstable_CompositeItemHTMLProps
@@ -83,7 +88,6 @@ export const unstable_useCompositeItem = createHook<
   name: "CompositeItem",
   compose: [useClickable, unstable_useId],
   useState: unstable_useCompositeState,
-  keys: ["stopId"],
 
   propsAreEqual(prev, next) {
     if (!next.id || prev.id !== next.id) {
@@ -110,7 +114,7 @@ export const unstable_useCompositeItem = createHook<
   useOptions(options) {
     return {
       ...options,
-      id: options.stopId || options.id,
+      id: options.id,
       currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
@@ -147,13 +151,7 @@ export const unstable_useCompositeItem = createHook<
         isCurrentItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
-      !options.items;
-
-    useWarning(
-      !!options.stopId,
-      "The `stopId` prop has been deprecated. Please, use the `id` prop instead.",
-      ref
-    );
+      !options.items?.length;
 
     React.useEffect(() => {
       if (!id) return undefined;
@@ -189,6 +187,11 @@ export const unstable_useCompositeItem = createHook<
         if (event.defaultPrevented) return;
         if (isPortalEvent(event)) return;
         if (!id) return;
+        if (targetIsAnotherItem(event, options.items)) return;
+        // Using originalCurrentId because currentId may be different due to
+        // getCurrentId call. If it's already set as the current id, we don't
+        // want to call setCurrentId again, which would cause an additional
+        // render.
         options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
@@ -199,11 +202,17 @@ export const unstable_useCompositeItem = createHook<
           const composite = getDocument(target).getElementById(options.baseId);
           if (composite) {
             hasFocusedComposite.current = true;
-            composite.focus();
+            ensureFocus(composite);
           }
         }
       },
-      [id, options.setCurrentId, options.unstable_virtual, options.baseId]
+      [
+        id,
+        options.items,
+        options.setCurrentId,
+        options.unstable_virtual,
+        options.baseId,
+      ]
     );
 
     const onBlur = React.useCallback(
@@ -214,6 +223,7 @@ export const unstable_useCompositeItem = createHook<
             // right after focusing this item. This is an intermediate blur
             // event, so we ignore it.
             hasFocusedComposite.current = false;
+            event.preventDefault();
             event.stopPropagation();
             return;
           }
@@ -322,15 +332,13 @@ export const unstable_useCompositeItem = createHook<
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        const widget = getWidget(event.currentTarget);
+        const self = event.currentTarget;
+        const widget = getWidget(self);
         if (widget && !hasFocusWithin(widget)) {
           // If there's a widget inside the composite item, we make sure it's
           // focused when pressing enter, space or clicking on the composite item.
           widget.focus();
-        } else if (
-          isSelfTarget(event) &&
-          !hasFocusWithin(event.currentTarget)
-        ) {
+        } else if (isSelfTarget(event) && !hasFocusWithin(self)) {
           // VoiceOver doesn't automatically focus the composite item when it's not
           // a button, so we force focus here.
           self.focus();

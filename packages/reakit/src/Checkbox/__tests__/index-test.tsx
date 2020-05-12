@@ -232,7 +232,6 @@ test("useCheckbox", () => {
     <input
       aria-checked="false"
       type="checkbox"
-      value=""
     />
   `);
   click(checkbox);
@@ -241,7 +240,6 @@ test("useCheckbox", () => {
     <input
       aria-checked="true"
       type="checkbox"
-      value=""
     />
   `);
   click(checkbox);
@@ -250,7 +248,6 @@ test("useCheckbox", () => {
     <input
       aria-checked="false"
       type="checkbox"
-      value=""
     />
   `);
 });

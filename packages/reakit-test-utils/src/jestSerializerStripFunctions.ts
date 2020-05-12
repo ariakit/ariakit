@@ -5,7 +5,7 @@ export const jestSerializerStripFunctions: jest.SnapshotSerializerPlugin = {
     isObject(val) &&
     !Array.isArray(val) &&
     Object.values(val).find((v) => typeof v === "function"),
-  print: (val, serialize) =>
+  print: (val: any, serialize) =>
     serialize(
       Object.keys(val)
         .filter((key) => typeof val[key] !== "function")

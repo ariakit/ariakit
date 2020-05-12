@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.2...reakit@1.0.0) (2020-05-12)
+
+
+### Bug Fixes
+
+* Fix `Composite` focus when inside conditionally rendered `Dialog` ([1331ead](https://github.com/reakit/reakit/commit/1331ead093358514fb97d0673887e46a2c74c9bc))
+* Fix `Tabbable` elements preventing behaviors on mouse down ([#641](https://github.com/reakit/reakit/issues/641)) ([239eb56](https://github.com/reakit/reakit/commit/239eb5622a1a02cd6f69c857bb725c8250dad155)), closes [#432](https://github.com/reakit/reakit/issues/432)
+* Fix error on `TabPanel` when used without `Tab`s ([5bd8bb1](https://github.com/reakit/reakit/commit/5bd8bb110bb5e08a82547ccddef802c50c7d7504))
+
+
+### Features
+
+* Add `setVisible` method to `useDisclosureState` ([7896f2f](https://github.com/reakit/reakit/commit/7896f2ffc3e0853c24dd9203a20b208f9402e1f4))
+* Remove `undefined` props from props hooks and render props ([d95c9e5](https://github.com/reakit/reakit/commit/d95c9e5311debc59c3e5d137936cc78e95fb8215))
+* Remove deprecated `Hidden` module ([7a1cb99](https://github.com/reakit/reakit/commit/7a1cb99b96d11900c16aade43fa154eb3b54d635))
+* Remove deprecated `modal` prop from `Dialog` ([5d787b1](https://github.com/reakit/reakit/commit/5d787b16cecec104d641ed21955bbd4399ca807a))
+* Remove deprecated `stopId` prop ([2ffe843](https://github.com/reakit/reakit/commit/2ffe84373b441b9b9b04f247aad16ad1a28e775e))
+* Support nested `CompositeItem`s ([#642](https://github.com/reakit/reakit/issues/642)) ([64cf18b](https://github.com/reakit/reakit/commit/64cf18bdc4a7f959daa6ca1aaaedb1e0040ffc41))
+
+
+### BREAKING CHANGES
+
+* The **deprecated** `stopId` prop has been removed from all the `CompositeItem` derivative components, such as `Tab`, `Radio`, `ToolbarItem` and `MenuItem`.
+
+  On `Tab`, the `stopId` prop has been replaced by `id`, and it's no longer required, just like on the other `CompositeItem` components:
+
+  ```diff
+  - <Tab stopId="id" />
+  + <Tab id="id" />
+  // or
+  + <Tab />
+  ```
+
+  On `TabPanel`, the `stopId` prop has been replaced by `tabId`, and it's no longer required (the relationship between `Tab` and `TabPanel` is now automatically inferred by their order in the DOM, [learn more](https://reakit.io/docs/tab/)):
+
+  ```diff
+  - <TabPanel stopId="tab-id" />
+  + <TabPanel tabId="tab-id" />
+  // or
+  + <TabPanel />
+  ```
+
+  On all the other `CompositeItem` derivative components (`Radio`, `ToolbarItem` and `MenuItem`), the optional `stopId` prop has been replaced by the — also optional — `id` prop:
+
+  ```diff
+  - <Radio stopId="id" />
+  + <Radio id="id" />
+  - <ToolbarItem stopId="id" />
+  + <ToolbarItem id="id" />
+  - <MenuItem stopId="id" />
+  + <MenuItem id="id" />
+  ```
+* The **deprecated** `Hidden` module has been removed. Use `Disclosure` instead.
+
+  **Before:**
+  ```jsx
+  import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
+  const hidden = useHiddenState();
+  <HiddenDisclosure {...hidden}>Disclosure</HiddenDisclosure>
+  <Hidden {...hidden}>Hidden</Hidden>
+  ```
+
+  **After:**
+  ```jsx
+  import {
+    useDisclosureState,
+    DisclosureContent,
+    Disclosure,
+  } from "reakit/Disclosure";
+  const disclosure = useDisclosureState();
+  <Disclosure {...disclosure}>Disclosure</Disclosure>
+  <DisclosureContent {...disclosure}>Content</DisclosureContent>
+  ```
+* The **deprecated** `modal` prop has been removed from `Dialog`. Now you can only set it on `useDialogState`.
+
+  **Before:**
+  ```jsx
+  const dialog = useDialogState();
+  <Dialog {...dialog} modal={false} />
+  ```
+
+  **After:**
+  ```jsx
+  const dialog = useDialogState({ modal: false });
+  <Dialog {...dialog} />
+  ```
+
+
+
+
+
+# [1.0.0-rc.2](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.1...reakit@1.0.0-rc.2) (2020-04-29)
+
+
+### Bug Fixes
+
+* Ensure `undefined` doesn't override default tabIndex in `Dialog` ([#638](https://github.com/reakit/reakit/issues/638)) ([a6a87f4](https://github.com/reakit/reakit/commit/a6a87f490aafd8a66e32bf6cf03cbca77c2404c6)), closes [#636](https://github.com/reakit/reakit/issues/636)
+* Fix `Menu` issues on Safari ([8d9f33c](https://github.com/reakit/reakit/commit/8d9f33c64eebfc16312d1247797b0ef4089bc718))
+* Fix hovering `MenuItem` with `Dialog` open closing the dialog ([06c72ff](https://github.com/reakit/reakit/commit/06c72ffecf31f3fa267f3c83e3cde4f79a6426c4))
+* Fix nested `Dialog` blocking parent auto focus when it's conditionally rendered ([324395b](https://github.com/reakit/reakit/commit/324395ba8a7d5f5db4da856218841eff8b96205d))
+
+
+### Features
+
+* Make `CompositeItem` tabbable before they're registered (for example, on SSR) ([dff1ba1](https://github.com/reakit/reakit/commit/dff1ba1a9b34629e7ecdd27c86a78663e4da370e))
+
+
+### Performance Improvements
+
+* Reduce the number of renders on `Popover`/`Tooltip`/`Menu` ([f554600](https://github.com/reakit/reakit/commit/f5546009dd3f64dbc327a89fd4a391061514b6da))
+
+
+
+
+
 # [1.0.0-rc.1](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.0...reakit@1.0.0-rc.1) (2020-04-20)
 
 

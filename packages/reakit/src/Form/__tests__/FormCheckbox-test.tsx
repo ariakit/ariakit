@@ -25,7 +25,6 @@ test("render", () => {
           id="base-a"
           name="a"
           type="checkbox"
-          value=""
         />
       </div>
     </body>

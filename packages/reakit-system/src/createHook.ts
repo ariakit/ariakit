@@ -96,7 +96,15 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
         }
       }
     }
-    return htmlProps || ({} as P);
+    // Remove undefined values from htmlProps
+    const finalHTMLProps = {} as P;
+    const definedHTMLProps = htmlProps || ({} as P);
+    for (const prop in definedHTMLProps) {
+      if (definedHTMLProps[prop] !== undefined) {
+        finalHTMLProps[prop] = definedHTMLProps[prop];
+      }
+    }
+    return finalHTMLProps;
   };
 
   useHook.__useOptions = __useOptions;

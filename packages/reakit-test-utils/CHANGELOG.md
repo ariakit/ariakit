@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.1](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.11.0...reakit-test-utils@0.11.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` elements preventing behaviors on mouse down ([#641](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/641)) ([239eb56](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/239eb5622a1a02cd6f69c857bb725c8250dad155)), closes [#432](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/432)
+
+
+### Features
+
+* Remove deprecated `Hidden` module ([7a1cb99](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/7a1cb99b96d11900c16aade43fa154eb3b54d635))
+
+
+### BREAKING CHANGES
+
+* The **deprecated** `Hidden` module has been removed. Use `Disclosure` instead.
+
+  **Before:**
+  ```jsx
+  import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
+  const hidden = useHiddenState();
+  <HiddenDisclosure {...hidden}>Disclosure</HiddenDisclosure>
+  <Hidden {...hidden}>Hidden</Hidden>
+  ```
+
+  **After:**
+  ```jsx
+  import {
+    useDisclosureState,
+    DisclosureContent,
+    Disclosure,
+  } from "reakit/Disclosure";
+  const disclosure = useDisclosureState();
+  <Disclosure {...disclosure}>Disclosure</Disclosure>
+  <DisclosureContent {...disclosure}>Content</DisclosureContent>
+  ```
+
+
+
+
+
+# [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.10.0...reakit-test-utils@0.11.0) (2020-04-29)
+
+**Note:** Version bump only for package reakit-test-utils
+
+
+
+
+
 # [0.10.0](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.9.0...reakit-test-utils@0.10.0) (2020-04-20)
 
 

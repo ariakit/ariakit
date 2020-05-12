@@ -7,7 +7,6 @@ export * from "./Dialog";
 export * from "./Disclosure";
 export * from "./Form";
 export * from "./Group";
-export * from "./Hidden";
 export * from "./Id";
 export * from "./Menu";
 export * from "./Popover";

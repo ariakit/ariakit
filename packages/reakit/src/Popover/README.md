@@ -214,7 +214,7 @@ function Popover({ disclosure, ...props }) {
   const popover = usePopoverState();
   return (
     <>
-      <PopoverDisclosure {...popover} {...disclosure.props}>
+      <PopoverDisclosure {...popover} ref={disclosure.ref} {...disclosure.props}>
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </PopoverDisclosure>
       <BasePopover {...popover} {...props}>
@@ -355,7 +355,7 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>8 state props</summary>
+<details><summary>7 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -395,11 +395,6 @@ after the same number of milliseconds have passed.
   - Modal: `preventBodyScroll` is automatically enabled, focus is
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
-
-- **`setModal`**
-  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
-
-  Sets `modal`.
 
 - **`hide`**
   <code>() =&#62; void</code>

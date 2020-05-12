@@ -12,7 +12,7 @@ import {
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
 import { MenuContext } from "../Menu/__utils/MenuContext";
-import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
+import { useDisclosureRef } from "./__utils/useDisclosureRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
 import { useFocusTrap } from "./__utils/useFocusTrap";
@@ -26,7 +26,7 @@ import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 export type DialogOptions = DisclosureContentOptions &
   Pick<
     Partial<DialogStateReturn>,
-    "modal" | "setModal" | "unstable_modal" | "hide"
+    "modal" | "hide" | "unstable_disclosureRef"
   > &
   Pick<DialogStateReturn, "baseId"> & {
     /**
@@ -98,21 +98,8 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     unstable_autoFocusOnShow = true,
     unstable_autoFocusOnHide = true,
     unstable_orphan,
-    unstable_modal,
-    setModal,
     ...options
   }) {
-    React.useEffect(() => {
-      if (setModal && unstable_modal !== modal) {
-        warning(
-          true,
-          "Setting `modal` prop on `Dialog` is deprecated. Set it on `useDialogState` instead.",
-          "See https://github.com/reakit/reakit/pull/535"
-        );
-        setModal(modal);
-      }
-    }, [setModal, unstable_modal, modal]);
-
     return {
       modal,
       hideOnEsc,
@@ -131,13 +118,14 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       ref: htmlRef,
       onKeyDown: htmlOnKeyDown,
       wrapElement: htmlWrapElement,
+      tabIndex,
       ...htmlProps
     }
   ) {
     const dialog = React.useRef<HTMLElement>(null);
     const backdrop = React.useContext(DialogBackdropContext);
     const hasBackdrop = backdrop && backdrop === options.baseId;
-    const disclosures = useDisclosuresRef(dialog, options);
+    const disclosure = useDisclosureRef(dialog, options);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
     // VoiceOver/Safari accepts only one `aria-modal` container, so if there
@@ -148,8 +136,8 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     usePreventBodyScroll(dialog, options);
     useFocusTrap(dialog, visibleModals, options);
     useFocusOnShow(dialog, dialogs, options);
-    useFocusOnHide(dialog, disclosures, options);
-    useHideOnClickOutside(dialog, disclosures, dialogs, options);
+    useFocusOnHide(dialog, disclosure, options);
+    useHideOnClickOutside(dialog, disclosure, dialogs, options);
     useDisableHoverOutside(dialog, dialogs, options);
 
     const onKeyDown = React.useCallback(
@@ -193,7 +181,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     return {
       ref: useForkRef(dialog, htmlRef),
       role: "dialog",
-      tabIndex: -1,
+      tabIndex: tabIndex ?? -1,
       "aria-modal": modal,
       "data-dialog": true,
       onKeyDown,

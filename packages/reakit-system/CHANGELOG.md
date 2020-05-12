@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.12.0...reakit-system@0.12.1) (2020-05-12)
+
+
+### Features
+
+* Remove `undefined` props from props hooks and render props ([d95c9e5](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/d95c9e5311debc59c3e5d137936cc78e95fb8215))
+
+
+
+
+
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.11.0...reakit-system@0.12.0) (2020-04-29)
+
+**Note:** Version bump only for package reakit-system
+
+
+
+
+
 # [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.10.0...reakit-system@0.11.0) (2020-04-20)
 
 

@@ -428,7 +428,7 @@ function Menu({ disclosure, items, ...props }) {
   const menu = useMenuState();
   return (
     <>
-      <MenuButton {...menu} {...disclosure.props}>
+      <MenuButton {...menu} ref={disclosure.ref} {...disclosure.props}>
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </MenuButton>
       <BaseMenu {...menu} {...props}>
@@ -809,7 +809,7 @@ It will be set to `false` if `modal` is `false`.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>22 state props</summary>
+<details><summary>21 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -849,11 +849,6 @@ by default.
   <code>() =&#62; void</code>
 
   Stops animation. It's called automatically if there's a CSS transition.
-
-- **`setModal`**
-  <code>(value: SetStateAction&#60;boolean&#62;) =&#62; void</code>
-
-  Sets `modal`.
 
 - **`hide`**
   <code>() =&#62; void</code>

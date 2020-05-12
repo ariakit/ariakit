@@ -10,17 +10,13 @@ function useMouseDownRef(
   const mouseDownRef = React.useRef<EventTarget | null>();
 
   React.useEffect(() => {
-    if (!options.visible || !options.hideOnClickOutside) {
-      return undefined;
-    }
-
+    if (!options.visible) return undefined;
+    if (!options.hideOnClickOutside) return undefined;
     const document = getDocument(dialogRef.current);
     const onMouseDown = (event: MouseEvent) => {
       mouseDownRef.current = event.target;
     };
-
     document.addEventListener("mousedown", onMouseDown);
-
     return () => {
       document.removeEventListener("mousedown", onMouseDown);
     };
@@ -31,7 +27,7 @@ function useMouseDownRef(
 
 export function useHideOnClickOutside(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosuresRef: React.RefObject<HTMLElement[]>,
+  disclosureRef: React.RefObject<HTMLElement>,
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   options: DialogOptions
 ) {
@@ -39,7 +35,7 @@ export function useHideOnClickOutside(
 
   useEventListenerOutside(
     dialogRef,
-    disclosuresRef,
+    disclosureRef,
     nestedDialogs,
     "click",
     (event) => {
@@ -56,7 +52,7 @@ export function useHideOnClickOutside(
 
   useEventListenerOutside(
     dialogRef,
-    disclosuresRef,
+    disclosureRef,
     nestedDialogs,
     "focus",
     (event) => {

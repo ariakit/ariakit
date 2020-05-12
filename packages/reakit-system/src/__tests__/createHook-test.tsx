@@ -24,6 +24,22 @@ test("useProps", () => {
   `);
 });
 
+test("useProps undefined props", () => {
+  const useHook = createHook<{}, React.HTMLAttributes<any>>({
+    useProps(_, htmlProps) {
+      return {
+        ...htmlProps,
+        "data-a": undefined,
+      };
+    },
+  });
+  expect(useHook({}, { id: "a" })).toMatchInlineSnapshot(`
+    Object {
+      "id": "a",
+    }
+  `);
+});
+
 test("compose useProps", () => {
   const useHook = createHook<Options, React.HTMLAttributes<any>>({
     useProps(options, htmlProps) {

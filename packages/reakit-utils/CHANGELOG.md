@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.11.0...reakit-utils@0.12.0) (2020-04-29)
+
+
+### Features
+
+* **reakit-utils:** Add `shallowEqual` util ([c3e7a71](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/c3e7a717b182f1e0f9c734d2bc058787f091ce82))
+
+
+
+
+
 # [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.10.0...reakit-utils@0.11.0) (2020-04-20)
 
 
