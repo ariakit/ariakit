@@ -38,8 +38,8 @@
     "components"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.3.3",
-    "body-scroll-lock": "^3.0.1",
+    "@popperjs/core": "^2.4.0",
+    "body-scroll-lock": "^3.0.2",
     "reakit-system": "^0.12.0",
     "reakit-utils": "^0.12.0",
     "reakit-warning": "^0.3.0"
