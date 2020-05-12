@@ -15,6 +15,7 @@ export default {
   "reakit-test-utils/mockClientRects": require("reakit-test-utils/mockClientRects"),
   "reakit-test-utils/press": require("reakit-test-utils/press"),
   "reakit-test-utils/render": require("reakit-test-utils/render"),
+  "reakit-test-utils/screen": require("reakit-test-utils/screen"),
   "reakit-test-utils/type": require("reakit-test-utils/type"),
   "reakit-test-utils/wait": require("reakit-test-utils/wait")
 };
