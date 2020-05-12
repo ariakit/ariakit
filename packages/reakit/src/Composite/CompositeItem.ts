@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
-import { warning, useWarning } from "reakit-warning";
+import { warning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { getDocument } from "reakit-utils/getDocument";
@@ -52,14 +52,7 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "down"
     | "first"
     | "last"
-  > & {
-    /**
-     * Element ID.
-     * @deprecated Use `id` instead.
-     * @private
-     */
-    stopId?: string;
-  };
+  >;
 
 export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
   unstable_IdHTMLProps;
@@ -95,12 +88,11 @@ export const unstable_useCompositeItem = createHook<
   name: "CompositeItem",
   compose: [useClickable, unstable_useId],
   useState: unstable_useCompositeState,
-  keys: ["stopId"],
 
   useOptions(options) {
     return {
       ...options,
-      id: options.stopId || options.id,
+      id: options.id,
       currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
@@ -138,12 +130,6 @@ export const unstable_useCompositeItem = createHook<
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
       !options.items?.length;
-
-    useWarning(
-      !!options.stopId,
-      "The `stopId` prop has been deprecated. Please, use the `id` prop instead.",
-      ref
-    );
 
     React.useEffect(() => {
       if (!id) return undefined;
