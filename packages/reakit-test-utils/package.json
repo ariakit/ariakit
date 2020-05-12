@@ -1,6 +1,6 @@
 {
   "name": "reakit-test-utils",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Reakit test utils",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils",

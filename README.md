@@ -95,8 +95,6 @@ By donating $5 or more you [become a backer](https://opencollective.com/reakit) 
 
 ## Installation
 
-> Reakit `v1` is still in `beta`. **If you're looking for `v0`, see [v0 branch](https://github.com/reakit/reakit/tree/v0), [v0 docs](https://v0.reakit.io) and the [migration guide](https://github.com/reakit/reakit/issues/350).**
-
 npm:
 ```sh
 npm i reakit

@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.11.0...reakit-playground@0.12.0) (2020-05-12)
+
+
+### Features
+
+* Remove deprecated `Hidden` module ([7a1cb99](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/7a1cb99b96d11900c16aade43fa154eb3b54d635))
+
+
+### BREAKING CHANGES
+
+* The **deprecated** `Hidden` module has been removed. Use `Disclosure` instead.
+
+  **Before:**
+  ```jsx
+  import { useHiddenState, Hidden, HiddenDisclosure } from "reakit/Hidden";
+  const hidden = useHiddenState();
+  <HiddenDisclosure {...hidden}>Disclosure</HiddenDisclosure>
+  <Hidden {...hidden}>Hidden</Hidden>
+  ```
+
+  **After:**
+  ```jsx
+  import {
+    useDisclosureState,
+    DisclosureContent,
+    Disclosure,
+  } from "reakit/Disclosure";
+  const disclosure = useDisclosureState();
+  <Disclosure {...disclosure}>Disclosure</Disclosure>
+  <DisclosureContent {...disclosure}>Content</DisclosureContent>
+  ```
+
+
+
+
+
 # [0.11.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.10.0...reakit-playground@0.11.0) (2020-04-29)
 
 
