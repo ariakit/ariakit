@@ -3,17 +3,17 @@ module.exports = {
   extends: ["airbnb", "plugin:prettier/recommended", "prettier/react"],
   env: {
     jest: true,
-    browser: true
+    browser: true,
   },
   settings: {
     "import/resolver": {
       "babel-module": {
-        extensions: [".js", ".jsx", ".ts", ".tsx"]
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
       },
       node: {
-        extensions: [".js", ".jsx", ".ts", ".tsx"]
-      }
-    }
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+      },
+    },
   },
   rules: {
     camelcase: "off",
@@ -57,10 +57,10 @@ module.exports = {
           ["builtin", "external", "internal"],
           "parent",
           "sibling",
-          "index"
-        ]
-      }
-    ]
+          "index",
+        ],
+      },
+    ],
   },
   overrides: [
     {
@@ -68,8 +68,8 @@ module.exports = {
       plugins: ["markdown"],
       rules: {
         "no-unused-vars": "off",
-        "react/react-in-jsx-scope": "off"
-      }
+        "react/react-in-jsx-scope": "off",
+      },
     },
     {
       files: ["**/*.ts", "**/*.tsx"],
@@ -79,8 +79,8 @@ module.exports = {
         "no-undef": "off",
         "no-unused-vars": "off",
         "no-restricted-globals": "off",
-        "no-useless-constructor": "off"
-      }
-    }
-  ]
+        "no-useless-constructor": "off",
+      },
+    },
+  ],
 };
