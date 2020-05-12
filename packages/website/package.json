@@ -21,7 +21,7 @@
     "@types/lodash": "4.14.150",
     "@types/qs": "6.9.2",
     "@types/react-helmet": "5.0.15",
-    "@types/yup": "0.26.36",
+    "@types/yup": "0.28.3",
     "constate": "2.0.0",
     "docsearch.js": "2.6.3",
     "emotion": "10.0.27",
@@ -49,7 +49,7 @@
     "qs": "6.9.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-helmet": "5.2.1",
+    "react-helmet": "6.0.0",
     "react-icons": "3.10.0",
     "react-spring": "8.0.27",
     "reakit": "^1.0.0-rc.2",
@@ -70,6 +70,6 @@
     "yup": "0.28.5"
   },
   "devDependencies": {
-    "babel-preset-gatsby": "0.3.2"
+    "babel-preset-gatsby": "0.4.1"
   }
 }
