@@ -46,6 +46,10 @@ export const useDisclosureContent = createHook<
 
     React.useEffect(() => {
       if (!options.animated) return undefined;
+      // Double RAF is needed so the browser has enough time to paint the
+      // default styles before processing the `data-enter` attribute. Otherwise
+      // it wouldn't be considered a transition.
+      // See https://github.com/reakit/reakit/issues/643
       raf.current = window.requestAnimationFrame(() => {
         raf.current = window.requestAnimationFrame(() => {
           if (options.visible) {
