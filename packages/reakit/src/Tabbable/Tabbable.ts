@@ -5,8 +5,11 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { isButton } from "reakit-utils/isButton";
+import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { useFocusOnMouseDown } from "./__utils/useFocusOnMouseDown";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -78,9 +81,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
-    const onMouseDownFocus = isSafariOrFirefoxOnMac
-      ? useFocusOnMouseDown()
-      : undefined;
 
     useIsomorphicEffect(() => {
       const tabbable = ref.current;
@@ -116,10 +116,25 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           event.preventDefault();
           return;
         }
-        onMouseDownFocus?.(event);
         onMouseDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (!isSafariOrFirefoxOnMac) return;
+        // Safari and Firefox on MacOS don't focus on buttons on mouse down
+        // like other browsers/platforms. Instead, they focus on the closest
+        // focusable parent element (ultimately, the body element). So we make
+        // sure to give focus to the tabbable element on mouse down.
+        // This also helps with VoiceOver, that doesn't focus on tabbable
+        // elements when pressing VO+Space (click).
+        if (isPortalEvent(event)) return;
+        const self = event.currentTarget;
+        if (!isSelfTarget(event) && !isButton(self)) return;
+        window.setTimeout(() => {
+          if (!hasFocusWithin(self)) {
+            self.focus();
+          }
+        });
       },
-      [options.disabled, onMouseDownFocus]
+      [options.disabled]
     );
 
     return {
