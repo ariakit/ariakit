@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press } from "reakit-test-utils";
+import { render, press, click } from "reakit-test-utils";
 import NestedCompositeItems from "..";
 
 test("navigate through nested composite items", () => {
@@ -22,4 +22,6 @@ test("navigate through nested composite items", () => {
   expect(text("item2")).toHaveFocus();
   press.Home();
   expect(label("item0")).toHaveFocus();
+  click(text("item1"));
+  expect(text("item2")).toHaveFocus();
 });

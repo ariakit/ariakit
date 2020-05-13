@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { isButton } from "reakit-utils/isButton";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -71,6 +72,7 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
         if (event.defaultPrevented) return;
         if (options.disabled) return;
         if (event.metaKey) return;
+        if (!isSelfTarget(event)) return;
 
         const isEnter = options.unstable_clickOnEnter && event.key === "Enter";
         const isSpace = options.unstable_clickOnSpace && event.key === " ";
