@@ -45,14 +45,16 @@ export const useDisclosureContent = createHook<
 
     React.useEffect(() => {
       if (!options.animated) return undefined;
-      const raf = window.requestAnimationFrame(() => {
-        if (options.visible) {
-          setTransition("enter");
-        } else if (animating) {
-          setTransition("leave");
-        } else {
-          setTransition(null);
-        }
+      let raf = window.requestAnimationFrame(() => {
+        raf = window.requestAnimationFrame(() => {
+          if (options.visible) {
+            setTransition("enter");
+          } else if (animating) {
+            setTransition("leave");
+          } else {
+            setTransition(null);
+          }
+        });
       });
       return () => window.cancelAnimationFrame(raf);
     }, [options.animated, options.visible, animating]);
