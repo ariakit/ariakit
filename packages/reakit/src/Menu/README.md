@@ -357,7 +357,7 @@ const ViewMenu = React.forwardRef((props, ref) => {
 });
 
 function Example() {
-  const menu = useMenuBarState({ loop: true });
+  const menu = useMenuBarState();
   return (
     <MenuBar {...menu}>
       <MenuItem {...menu} as={FileMenu} />
@@ -479,6 +479,8 @@ function Example() {
   const onClick = React.useCallback((event) => {
     window.alert(event.currentTarget.id);
   }, []);
+  // If children aren't primitive values (like strings), memoize them with
+  // React.useCallback
   const children = React.useCallback(
     (itemProps) => (
       <span {...itemProps}>
