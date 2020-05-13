@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/reakit/reakit/compare/reakit@1.0.0...reakit@1.0.1) (2020-05-13)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` not receiving focus on VoiceOver click ([#644](https://github.com/reakit/reakit/issues/644)) ([ea4b204](https://github.com/reakit/reakit/commit/ea4b204b191eb40f4a87e4307ff01f573ea876ea))
+* Fix enter animation on `DisclosureContent` and derivative components ([#645](https://github.com/reakit/reakit/issues/645)) ([11f9687](https://github.com/reakit/reakit/commit/11f9687ef46bf176ed36c46cd67eab30ad76e3b3)), closes [#643](https://github.com/reakit/reakit/issues/643)
+
+
+
+
+
 # [1.0.0](https://github.com/reakit/reakit/compare/reakit@1.0.0-rc.2...reakit@1.0.0) (2020-05-12)
 
 
