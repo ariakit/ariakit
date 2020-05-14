@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Reakit website",
   "license": "MIT",
@@ -52,8 +52,8 @@
     "react-helmet": "6.0.0",
     "react-icons": "3.10.0",
     "react-spring": "8.0.27",
-    "reakit": "^1.0.1",
-    "reakit-playground": "^0.12.1",
+    "reakit": "^1.0.2",
+    "reakit-playground": "^0.12.2",
     "reakit-system": "^0.12.1",
     "reakit-system-bootstrap": "^0.11.2",
     "reakit-system-palette": "^0.11.2",
