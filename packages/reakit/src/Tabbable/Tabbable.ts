@@ -40,6 +40,37 @@ const isSafariOrFirefoxOnMac =
   !isUserAgent("Chrome") &&
   (isUserAgent("Safari") || isUserAgent("Firefox"));
 
+function useFocusOnMouseDown() {
+  const [element, setElement] = React.useState<HTMLElement | null>(null);
+
+  const onMouseDown = React.useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      if (!isSafariOrFirefoxOnMac) return;
+      // Safari and Firefox on MacOS don't focus on buttons on mouse down
+      // like other browsers/platforms. Instead, they focus on the closest
+      // focusable parent element (ultimately, the body element). So we make
+      // sure to give focus to the tabbable element on mouse down.
+      // This also helps with VoiceOver, that doesn't focus on tabbable
+      // elements when pressing VO+Space (click).
+      if (isPortalEvent(event)) return;
+      const self = event.currentTarget;
+      if (!isSelfTarget(event) && !isButton(self)) return;
+      setElement(self);
+    },
+    []
+  );
+
+  React.useEffect(() => {
+    if (!element) return;
+    if (!hasFocusWithin(element)) {
+      element.focus();
+    }
+    setElement(null);
+  }, [element]);
+
+  return onMouseDown;
+}
+
 function isNativeTabbable(element: Element) {
   return (
     element.tagName === "BUTTON" ||
@@ -81,6 +112,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
+    const focusOnMouseDown = isSafariOrFirefoxOnMac
+      ? useFocusOnMouseDown()
+      : undefined;
 
     useIsomorphicEffect(() => {
       const tabbable = ref.current;
@@ -118,23 +152,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         }
         onMouseDownRef.current?.(event);
         if (event.defaultPrevented) return;
-        if (!isSafariOrFirefoxOnMac) return;
-        // Safari and Firefox on MacOS don't focus on buttons on mouse down
-        // like other browsers/platforms. Instead, they focus on the closest
-        // focusable parent element (ultimately, the body element). So we make
-        // sure to give focus to the tabbable element on mouse down.
-        // This also helps with VoiceOver, that doesn't focus on tabbable
-        // elements when pressing VO+Space (click).
-        if (isPortalEvent(event)) return;
-        const self = event.currentTarget;
-        if (!isSelfTarget(event) && !isButton(self)) return;
-        window.setTimeout(() => {
-          if (!hasFocusWithin(self)) {
-            self.focus();
-          }
-        });
+        focusOnMouseDown?.(event);
       },
-      [options.disabled]
+      [options.disabled, focusOnMouseDown]
     );
 
     return {
