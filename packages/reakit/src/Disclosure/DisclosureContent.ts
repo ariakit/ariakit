@@ -42,19 +42,26 @@ export const useDisclosureContent = createHook<
     const style = hidden ? { display: "none", ...htmlStyle } : htmlStyle;
     const onTransitionEndRef = useLiveRef(htmlOnTransitionEnd);
     const onAnimationEndRef = useLiveRef(htmlOnAnimationEnd);
+    const raf = React.useRef(0);
 
     React.useEffect(() => {
       if (!options.animated) return undefined;
-      const raf = window.requestAnimationFrame(() => {
-        if (options.visible) {
-          setTransition("enter");
-        } else if (animating) {
-          setTransition("leave");
-        } else {
-          setTransition(null);
-        }
+      // Double RAF is needed so the browser has enough time to paint the
+      // default styles before processing the `data-enter` attribute. Otherwise
+      // it wouldn't be considered a transition.
+      // See https://github.com/reakit/reakit/issues/643
+      raf.current = window.requestAnimationFrame(() => {
+        raf.current = window.requestAnimationFrame(() => {
+          if (options.visible) {
+            setTransition("enter");
+          } else if (animating) {
+            setTransition("leave");
+          } else {
+            setTransition(null);
+          }
+        });
       });
-      return () => window.cancelAnimationFrame(raf);
+      return () => window.cancelAnimationFrame(raf.current);
     }, [options.animated, options.visible, animating]);
 
     const onEnd = React.useCallback(
