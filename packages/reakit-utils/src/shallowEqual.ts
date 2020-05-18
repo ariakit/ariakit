@@ -10,10 +10,14 @@
  * shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
  */
 export function shallowEqual(
-  objA: Record<any, any>,
-  objB: Record<any, any>
+  objA?: Record<any, any>,
+  objB?: Record<any, any>
 ): boolean {
   if (objA === objB) return true;
+  if (!objA) return false;
+  if (!objB) return false;
+  if (typeof objA !== "object") return false;
+  if (typeof objB !== "object") return false;
 
   const aKeys = Object.keys(objA);
   const bKeys = Object.keys(objB);

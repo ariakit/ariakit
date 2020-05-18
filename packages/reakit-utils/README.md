@@ -503,8 +503,8 @@ Compares two objects.
 
 #### Parameters
 
--   `objA` **Record&lt;any, any>** 
--   `objB` **Record&lt;any, any>** 
+-   `objA` **Record&lt;any, any>?** 
+-   `objB` **Record&lt;any, any>?** 
 
 #### Examples
 
@@ -736,19 +736,7 @@ Type: function (props: P): React.ReactElement&lt;any>
 
 "as" prop
 
-Type: React.ReactType&lt;P>
-
-#### ElementType
-
-Converts T to its element type
-
-```ts
-type HTMLDivElement = ElementType<"div">;
-type FunctionalComponent = ElementType<() => null>;
-type Never = ElementType<"foo">;
-```
-
-Type: any
+Type: React.ElementType&lt;P>
 
 #### HTMLAttributesWithRef
 
@@ -770,12 +758,6 @@ Type: Pick&lt;HTMLAttributesWithRef, Extract&lt;any, any>>
 Transforms `"a" | "b"` into `"a" & "b"`
 
 Type: any
-
-#### PickByValue
-
-Same as Pick, but with value types instead of key
-
-Type: Pick&lt;T, any>
 
 #### PropsWithAs
 
