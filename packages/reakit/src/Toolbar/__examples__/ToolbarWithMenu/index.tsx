@@ -24,24 +24,9 @@ const MoreItems = React.forwardRef((props: ToolbarProps, ref) => {
         Other Fruits
       </MenuButton>
       <Menu {...menu} aria-label="Other fruits">
-        <MenuItem {...menu}>
-          Pears &nbsp;
-          <span role="img" aria-label="Pear emoji">
-            🍐
-          </span>
-        </MenuItem>
-        <MenuItem {...menu}>
-          Kiwis &nbsp;
-          <span role="img" aria-label="Kiwi emoji">
-            🥝
-          </span>
-        </MenuItem>
-        <MenuItem {...menu}>
-          Lemons &nbsp;
-          <span role="img" aria-label="Lemon emoji">
-            🍋
-          </span>
-        </MenuItem>
+        <MenuItem {...menu}>Pears</MenuItem>
+        <MenuItem {...menu}>Kiwis</MenuItem>
+        <MenuItem {...menu}>Lemons</MenuItem>
       </Menu>
     </>
   );
@@ -52,16 +37,10 @@ export default function ToolbarWithMenu() {
   return (
     <Toolbar {...toolbar} aria-label="Fruits">
       <ToolbarItem {...toolbar} as={Button}>
-        Apples &nbsp;
-        <span role="img" aria-label="Apple emoji">
-          🍏
-        </span>
+        Apples
       </ToolbarItem>
       <ToolbarItem {...toolbar} as={Button}>
-        Oranges &nbsp;
-        <span role="img" aria-label="Orange emoji">
-          🍊
-        </span>
+        Oranges
       </ToolbarItem>
       <ToolbarItem {...toolbar} as={MoreItems} />
     </Toolbar>
