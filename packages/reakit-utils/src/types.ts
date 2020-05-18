@@ -13,28 +13,7 @@ export type RenderProp<P = {}> = (props: P) => React.ReactElement<any>;
  * @memberof types
  * @template P Props
  */
-export type As<P = any> = React.ReactType<P>;
-
-/**
- * Converts T to its element type
- * ```ts
- * type HTMLDivElement = ElementType<"div">;
- * type FunctionalComponent = ElementType<() => null>;
- * type Never = ElementType<"foo">;
- * ```
- * @memberof types
- * @template T Component type or string tag
- */
-export type ElementType<T> = T extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[T] extends React.DetailedHTMLProps<
-      React.HTMLAttributes<infer E>,
-      infer E
-    >
-    ? E
-    : never
-  : T extends React.ComponentType<any> | React.ExoticComponent<any>
-  ? T
-  : never;
+export type As<P = any> = React.ElementType<P>;
 
 /**
  * @memberof types
@@ -67,17 +46,6 @@ export type UnionToIntersection<U> = (
 ) extends (k: infer I) => void
   ? I
   : never;
-
-/**
- * Same as Pick, but with value types instead of key
- * @memberof types
- * @template T Object
- * @template V Value
- */
-export type PickByValue<T, V> = Pick<
-  T,
-  { [K in keyof T]: T[K] extends V ? K : never }[keyof T]
->;
 
 /**
  * Generic component props with "as" prop
