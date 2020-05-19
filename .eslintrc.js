@@ -82,5 +82,18 @@ module.exports = {
         "no-useless-constructor": "off",
       },
     },
+    {
+      files: "**/*-test.tsx",
+      plugins: ["jest"],
+      rules: {
+        "jest/consistent-test-it": [
+          "error",
+          {
+            fn: "test",
+            withinDescribe: "test",
+          },
+        ],
+      },
+    },
   ],
 };
