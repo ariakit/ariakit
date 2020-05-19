@@ -75,11 +75,11 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
     { value, checked }
   ) {
     return {
-      value,
       checked,
       unstable_clickOnEnter,
       unstable_checkOnFocus,
       ...options,
+      value: options.value ?? value,
     };
   },
 

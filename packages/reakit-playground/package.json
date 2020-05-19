@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@types/buble": "0.19.2",
-    "@types/codemirror": "0.0.92",
+    "@types/codemirror": "0.0.93",
     "buble": "0.20.0",
     "codemirror": "5.53.2",
     "emotion": "^10.0.27",

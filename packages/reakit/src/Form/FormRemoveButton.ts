@@ -42,7 +42,10 @@ export const unstable_useFormRemoveButton = createHook<
   keys: ["name", "index"],
 
   useOptions(options, { name }) {
-    return { name, ...options };
+    return {
+      ...options,
+      name: options.name || name,
+    };
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {

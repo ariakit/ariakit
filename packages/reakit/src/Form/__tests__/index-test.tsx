@@ -874,16 +874,15 @@ test("useFormRadio and useFormRadioGroup passing name and value as htmlProps", a
     const { wrapElement, ...radioGroup } = useFormRadioGroup(form, {
       name: "input",
     });
+    const children = (
+      <fieldset {...radioGroup}>
+        <CustomFormRadio {...form} value="a" />
+        <CustomFormRadio {...form} value="b" />
+        <CustomFormRadio {...form} value="c" />
+      </fieldset>
+    );
     return (
-      <Form {...form}>
-        {wrapElement(
-          <fieldset {...radioGroup}>
-            <CustomFormRadio {...form} value="a" />
-            <CustomFormRadio {...form} value="b" />
-            <CustomFormRadio {...form} value="c" />
-          </fieldset>
-        )}
-      </Form>
+      <Form {...form}>{wrapElement ? wrapElement(children) : children}</Form>
     );
   };
   const { container } = render(<Test />);

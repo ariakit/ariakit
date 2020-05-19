@@ -10,7 +10,10 @@ function render(
 ) {
   return renderHook(() => useProps(...args), {
     wrapper: (props: SystemProviderProps) => (
-      <SystemProvider unstable_system={system} {...props} />
+      <SystemProvider
+        {...props}
+        unstable_system={props.unstable_system || system}
+      />
     ),
   }).result;
 }
