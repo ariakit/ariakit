@@ -44,7 +44,11 @@ export const unstable_useFormPushButton = createHook<
   keys: ["name", "value"],
 
   useOptions(options, { name, value }) {
-    return { name, value, ...options };
+    return {
+      ...options,
+      name: options.name || name,
+      value: options.value ?? value,
+    };
   },
 
   useProps(options, { onClick: htmlOnClick, ...htmlProps }) {

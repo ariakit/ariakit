@@ -49,7 +49,10 @@ export const unstable_useFormInput = createHook<
   keys: ["name"],
 
   useOptions(options, { name }) {
-    return { name, ...options };
+    return {
+      ...options,
+      name: options.name || name,
+    };
   },
 
   useProps(

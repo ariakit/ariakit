@@ -47,7 +47,10 @@ export const unstable_useFormRadioGroup = createHook<
   keys: ["name"],
 
   useOptions(options, { name }) {
-    return { name, ...options };
+    return {
+      ...options,
+      name: options.name || name,
+    };
   },
 
   useProps(options, { wrapElement: htmlWrapElement, ...htmlProps }) {

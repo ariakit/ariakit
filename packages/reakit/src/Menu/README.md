@@ -1160,6 +1160,11 @@ arrow keys.
 
   Actual `placement`.
 
+- **`show`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `true`
+
 - **`first`**
   <code>() =&#62; void</code>
 
@@ -1169,11 +1174,6 @@ arrow keys.
   <code>() =&#62; void</code>
 
   Moves focus to the last item.
-
-- **`show`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `true`
 
 </details>
 
@@ -1242,6 +1242,11 @@ arrow keys.
 
   Actual `placement`.
 
+- **`show`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `true`
+
 - **`first`**
   <code>() =&#62; void</code>
 
@@ -1251,11 +1256,6 @@ arrow keys.
   <code>() =&#62; void</code>
 
   Moves focus to the last item.
-
-- **`show`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `true`
 
 </details>
 
