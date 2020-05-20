@@ -7,7 +7,7 @@ import { ToolbarProps } from "../../Toolbar";
 const MoreItems = React.forwardRef<HTMLButtonElement, ToolbarProps>(
   (props, ref) => {
     const menu = useMenuState({ placement: "bottom-end" });
-    const buttonRef = ref as RefObject<HTMLButtonElement>;
+    const buttonRef = ref;
 
     return (
       <>

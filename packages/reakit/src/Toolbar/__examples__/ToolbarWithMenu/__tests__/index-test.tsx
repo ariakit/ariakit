@@ -14,7 +14,7 @@ test("renders toolbar items with closed menu", () => {
   expect(text("Lemons")).not.toBeVisible();
 });
 
-it("can navigate toolbar items through keyboard", () => {
+test("can navigate toolbar items through keyboard", () => {
   const { getByText: text } = render(<ToolbarWithMenu />);
 
   press.Tab();
