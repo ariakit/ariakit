@@ -1,4 +1,5 @@
 export * from "./act";
+export * from "./axe";
 export * from "./blur";
 export * from "./click";
 export * from "./fireEvent";
