@@ -11,7 +11,6 @@ import { Button } from "reakit/Button";
 const MoreItems = React.forwardRef<HTMLButtonElement, ToolbarProps>(
   (props, ref) => {
     const menu = useMenuState({ placement: "bottom-end" });
-
     return (
       <>
         <MenuButton {...menu} {...props} ref={ref} aria-label="Other fruits">
