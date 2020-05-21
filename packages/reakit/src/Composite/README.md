@@ -57,6 +57,8 @@ function Example() {
 
 You can still attach event handlers to `CompositeItem` just like it were using the roving tabindex method. You don't need to change anything else to make it work.
 
+> The `unstable_virtual` prop is still experimental and may change in future patch and minor releases.
+
 <!-- eslint-disable no-alert -->
 
 ```jsx
@@ -145,7 +147,7 @@ If you notice performance issues when rendering several `CompositeItem`s, you ca
 
 `CompositeItem` will compare the passed `id` with `composite.currentId` and, if the other props haven't been changed, it'll only re-render if it's the previous or the current active item.
 
-> In the example below, focus on any item and keep <kbd>→</kbd> pressed to see it smoothly changing focus. Then, unmemoize any non-primitive prop (like `onClick` or `children`) and do the same to see the difference yourself. 
+In the example below, focus on any item and keep <kbd>→</kbd> pressed to see it smoothly changing focus. Then, unmemoize any non-primitive prop (like `onClick` or `children`) and do the same to see the difference yourself. 
 
 <!-- eslint-disable no-alert -->
 
@@ -161,89 +163,22 @@ const items = Array.from({ length: 88 }).map((_, i) => `item-${i}`);
 
 function Example() {
   const composite = useCompositeState({ loop: true });
-
   // Remove the React.useCallback call below to see the difference
   const onClick = React.useCallback((event) => {
     window.alert(event.currentTarget.id);
   }, []);
-
   // If children aren't primitive values (like strings), you can memoize them
   // with React.useCallback
   const children = React.useCallback(
-    (itemProps) => (
-      <span {...itemProps}>
-        <span>{` o `}</span>
-      </span>
-    ),
+    (itemProps) => <span {...itemProps}>👉</span>,
     []
   );
-
   return (
     <Composite {...composite} role="toolbar" aria-label="Performance">
       {items.map((id) => (
         <CompositeItem {...composite} key={id} id={id} onClick={onClick}>
           {children}
         </CompositeItem>
-      ))}
-    </Composite>
-  );
-}
-```
-
-For two-dimensional composites, you can group `CompositeItem`s and their `CompositeGroup` in a separate memoized component, use `CompositeGroup.unstable_propsAreEqual` and do the following:
-
-1. Follow the instructions above for `CompositeItem`s.
-2. Pass an `id` prop to your memoized component that is wrapping `CompositeGroup` and its `CompositeItem`s.
-3. Memoize all non-primitive props that you're passing to that memoized component.
-
-<!-- eslint-disable no-alert -->
-
-```jsx unstyled
-import React from "react";
-import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeGroup as CompositeGroup,
-  unstable_CompositeItem as CompositeItem,
-} from "reakit/Composite";
-
-const grid = Array.from({ length: 22 }).fill(Array.from({ length: 22 }));
-
-const Row = React.memo(({ cells, ...props }) => {
-  const onClick = React.useCallback((event) => {
-    window.alert(event.currentTarget.id);
-  }, []);
-  const children = React.useCallback(
-    (itemProps) => (
-      <span {...itemProps}>
-        <span>{` o `}</span>
-      </span>
-    ),
-    []
-  );
-  return (
-    <CompositeGroup {...props} role="row">
-      {cells.map((_, i) => (
-        <CompositeItem
-          {...props}
-          role="gridcell"
-          key={i}
-          id={`${props.id}-cell-${i}`}
-          onClick={onClick}
-        >
-          {children}
-        </CompositeItem>
-      ))}
-    </CompositeGroup>
-  );
-}, CompositeGroup.unstable_propsAreEqual);
-
-function Example() {
-  const composite = useCompositeState({ wrap: true, loop: true });
-  return (
-    <Composite {...composite} role="grid" aria-label="Big Virtual Composite">
-      {grid.map((cells, i) => (
-        <Row {...composite} key={i} cells={cells} id={`row-${i}`} />
       ))}
     </Composite>
   );

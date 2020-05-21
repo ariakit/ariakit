@@ -64,6 +64,7 @@ const { Compiler: renderAst } = new RehypeReact({
     a: Anchor,
     p: Paragraph,
     ul: List,
+    ol: (props) => <List as="ol" {...props} />,
     kbd: KeyboardInput,
     blockquote: Blockquote,
     summary: Summary,
