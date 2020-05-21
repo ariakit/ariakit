@@ -1,6 +1,7 @@
 module.exports = {
   parser: "babel-eslint",
   extends: ["airbnb", "plugin:prettier/recommended", "prettier/react"],
+  plugins: ["jest"],
   env: {
     jest: true,
     browser: true,
@@ -49,6 +50,13 @@ module.exports = {
     "react/destructuring-assignment": "off",
     "react/button-has-type": "off",
     "react/state-in-constructor": "off",
+    "jest/consistent-test-it": [
+      "error",
+      {
+        fn: "test",
+        withinDescribe: "test",
+      },
+    ],
     "import/order": [
       "error",
       {
@@ -80,19 +88,6 @@ module.exports = {
         "no-unused-vars": "off",
         "no-restricted-globals": "off",
         "no-useless-constructor": "off",
-      },
-    },
-    {
-      files: "**/*-test.tsx",
-      plugins: ["jest"],
-      rules: {
-        "jest/consistent-test-it": [
-          "error",
-          {
-            fn: "test",
-            withinDescribe: "test",
-          },
-        ],
       },
     },
   ],
