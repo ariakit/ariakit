@@ -3,6 +3,7 @@
 export default {
   "reakit-test-utils": require("reakit-test-utils"),
   "reakit-test-utils/act": require("reakit-test-utils/act"),
+  "reakit-test-utils/axe": require("reakit-test-utils/axe"),
   "reakit-test-utils/blur": require("reakit-test-utils/blur"),
   "reakit-test-utils/click": require("reakit-test-utils/click"),
   "reakit-test-utils/fireEvent": require("reakit-test-utils/fireEvent"),

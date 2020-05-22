@@ -3592,6 +3592,14 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
+"@types/jest-axe@3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@types/jest-axe/-/jest-axe-3.2.2.tgz#9f66189683b91be02ba20e5defac42824f332f38"
+  integrity sha512-xVscGbS3nDay2GRG2TwF6xx92BbwU46gGanoelAfrweTng8OKU9pmX8AByuz5i8lWQ+y6B9PvkbtAJNDjsdSJQ==
+  dependencies:
+    "@types/jest" "*"
+    axe-core "^3.0.3"
+
 "@types/jest@*":
   version "25.2.1"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-25.2.1.tgz#9544cd438607955381c1bdbdb97767a249297db5"
@@ -4860,7 +4868,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.9.1.tgz#7e33d8f7d449b3f673cd72deb9abdc552dbe528e"
   integrity sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==
 
-axe-core@^3.3.2:
+axe-core@^3.0.3, axe-core@^3.3.2, axe-core@^3.5.1:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-3.5.3.tgz#5b7c0ee7c5197d546bd3a07c3ef701896f5773e9"
   integrity sha512-HZpLE7xu05+8AbpqXITGdxp1Xwk8ysAXrg7MiKRY27py3DAyEJpoJQo1727pWF3F+O79V3r+cTWhOzfB49P89w==
@@ -12771,6 +12779,16 @@ iterate-value@^1.0.0:
     es-get-iterator "^1.0.2"
     iterate-iterator "^1.0.1"
 
+jest-axe@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jest-axe/-/jest-axe-3.4.0.tgz#2bea80d37087e7723481ecc1b054f87ec563cabd"
+  integrity sha512-iKAq/cBxvyizSkpSY+CTndsXy2v5IWAkYXqanPF6bGaGXJ3fEtzEWQRVeZ0SHCEbsjnvDaOly5nwiiDOz0suDw==
+  dependencies:
+    axe-core "^3.5.1"
+    chalk "^3.0.0"
+    jest-matcher-utils "^25.1.0"
+    lodash.merge "^4.6.2"
+
 jest-changed-files@^26.0.1:
   version "26.0.1"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-26.0.1.tgz#1334630c6a1ad75784120f39c3aa9278e59f349f"
@@ -13823,6 +13841,11 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
+
+lodash.merge@^4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
+  integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
 lodash.mergewith@^4.6.2:
   version "4.6.2"
