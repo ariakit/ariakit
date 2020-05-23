@@ -5,19 +5,19 @@ import {
   Popover,
   PopoverDisclosure,
   PopoverArrow,
-  PopoverProps,
+  PopoverDisclosureProps,
 } from "reakit/Popover";
 import { Button } from "reakit/Button";
 
-const PopoverItem = React.forwardRef<HTMLButtonElement, PopoverProps>(
-  (_, ref) => {
+const PopoverItem = React.forwardRef<HTMLButtonElement, PopoverDisclosureProps>(
+  (props, ref) => {
     const popover = usePopoverState();
     return (
       <>
-        <PopoverDisclosure {...popover} ref={ref}>
+        <PopoverDisclosure {...popover} {...props} ref={ref}>
           Mars
         </PopoverDisclosure>
-        <Popover {...popover} aria-label="Mars" tabIndex={0}>
+        <Popover {...popover} aria-label="Trip to Mars details" tabIndex={0}>
           <PopoverArrow {...popover} />
           This trip lasts three days and takes place in the otherworldly
           environment of Ares Station.

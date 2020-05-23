@@ -2,17 +2,16 @@ import * as React from "react";
 import { render, press } from "reakit-test-utils";
 import ToolbarWithPopover from "..";
 
-const popoverText =
-  "This trip lasts three days and takes place in the otherworldly environment of Ares Station.";
-
 test("renders toolbar items with closed popover", () => {
-  const { getByText: text } = render(<ToolbarWithPopover />);
+  const { getByText: text, getByLabelText: labelText } = render(
+    <ToolbarWithPopover />
+  );
 
   expect(text("Beach")).toBeVisible();
   expect(text("Mountain")).toBeVisible();
   expect(text("Mars")).toBeVisible();
 
-  expect(text(popoverText)).not.toBeVisible();
+  expect(labelText("Trip to Mars details")).not.toBeVisible();
 });
 
 test("allows to navigate toolbar items through keyboard", () => {
@@ -30,10 +29,15 @@ test("allows to navigate toolbar items through keyboard", () => {
   press.ArrowRight();
   press.ArrowRight();
   expect(text("Mars")).toHaveFocus();
+
+  press.ArrowLeft();
+  expect(text("Mountain")).toHaveFocus();
 });
 
 test("allows to open / close the popover through keyboard", () => {
-  const { getByText: text } = render(<ToolbarWithPopover />);
+  const { getByText: text, getByLabelText: labelText } = render(
+    <ToolbarWithPopover />
+  );
 
   press.Tab();
   expect(text("Beach")).toHaveFocus();
@@ -44,10 +48,10 @@ test("allows to open / close the popover through keyboard", () => {
   expect(text("Mars")).toHaveFocus();
 
   press.Enter();
-  expect(text(popoverText)).toBeVisible();
-  expect(text(popoverText)).toHaveFocus();
+  expect(labelText("Trip to Mars details")).toBeVisible();
+  expect(labelText("Trip to Mars details")).toHaveFocus();
 
   press.Escape();
-  expect(text(popoverText)).not.toBeVisible();
+  expect(labelText("Trip to Mars details")).not.toBeVisible();
   expect(text("Mars")).toHaveFocus();
 });
