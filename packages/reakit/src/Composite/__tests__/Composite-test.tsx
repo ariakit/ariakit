@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, axe } from "reakit-test-utils";
+import { render, press } from "reakit-test-utils";
 import {
   unstable_Composite as Composite,
   unstable_CompositeProps,
@@ -29,13 +29,6 @@ test("render", () => {
       />
     </div>
   `);
-});
-
-test("render with no a11y violations", async () => {
-  const { container } = render(<Composite {...props} />);
-  const results = await axe(container.innerHTML);
-  expect(console).toHaveWarned();
-  expect(results).toHaveNoViolations();
 });
 
 test("render aria-activedescendant", () => {

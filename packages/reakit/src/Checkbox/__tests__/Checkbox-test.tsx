@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, click, press, axe } from "reakit-test-utils";
+import { render, click, press } from "reakit-test-utils";
 import { Checkbox, CheckboxOptions, CheckboxHTMLProps } from "../Checkbox";
 
 test("render", () => {
@@ -62,13 +62,6 @@ test("render checked", () => {
       </div>
     </body>
   `);
-});
-
-test("render with no a11y violations", async () => {
-  const { baseElement } = render(<Checkbox aria-label="apple" />);
-  const results = await axe(baseElement.innerHTML);
-
-  expect(results).toHaveNoViolations();
 });
 
 test("click", () => {
