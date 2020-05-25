@@ -1,6 +1,5 @@
 import * as React from "react";
-import { render } from "reakit-test-utils";
-import { verify } from "../../../../reakit-test-utils/src/verify";
+import { render, axe } from "reakit-test-utils";
 import { Box } from "../Box";
 
 test("render", () => {
@@ -12,9 +11,9 @@ test("render", () => {
   `);
 });
 
-test("has no a11y violations", async () => {
+test("render with no a11y violations", async () => {
   const { container } = render(<Box>box</Box>);
-  const results = await verify(container.innerHTML);
+  const results = await axe(container.innerHTML);
 
   expect(results).toHaveNoViolations();
 });

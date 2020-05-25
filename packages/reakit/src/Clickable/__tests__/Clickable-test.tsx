@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, click, focus, press } from "reakit-test-utils";
+import { render, click, focus, press, axe } from "reakit-test-utils";
 import { Clickable, ClickableProps } from "../Clickable";
 
 test("render", () => {

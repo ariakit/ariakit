@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, click } from "reakit-test-utils";
+import { render, click, axe } from "reakit-test-utils";
 import { Checkbox, useCheckbox, useCheckboxState } from "..";
 
 test("single checkbox", () => {
@@ -78,6 +78,29 @@ test("group checkbox with initial state", () => {
   expect(apple.checked).toBe(true);
   expect(orange.checked).toBe(true);
   expect(watermelon.checked).toBe(false);
+});
+
+test("group checkbox renders with no a11y violations", async () => {
+  const Test = () => {
+    const checkbox = useCheckboxState({ state: ["orange"] });
+    return (
+      <div role="group">
+        <Checkbox {...checkbox} as="div" aria-label="apple" value="apple" />
+        <label>
+          <Checkbox {...checkbox} value="orange" />
+          orange
+        </label>
+        <label>
+          <Checkbox {...checkbox} value="watermelon" />
+          watermelon
+        </label>
+      </div>
+    );
+  };
+  const { container } = render(<Test />);
+  const results = await axe(container.innerHTML);
+
+  expect(results).toHaveNoViolations();
 });
 
 test("checkbox onChange checked value", () => {

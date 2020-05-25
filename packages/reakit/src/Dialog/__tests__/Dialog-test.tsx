@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "reakit-test-utils";
+import { render, axe } from "reakit-test-utils";
 import { Dialog } from "../Dialog";
 
 const props: Parameters<typeof Dialog>[0] = {
@@ -96,4 +96,11 @@ test("render non-modal", () => {
       </div>
     </body>
   `);
+});
+
+test("render with no a11y violations", async () => {
+  const { baseElement } = render(<Dialog {...props}>dialog</Dialog>);
+  const results = await axe(baseElement.innerHTML);
+
+  expect(results).toHaveNoViolations();
 });

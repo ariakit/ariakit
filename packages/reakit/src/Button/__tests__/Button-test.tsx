@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "reakit-test-utils";
+import { render, axe } from "reakit-test-utils";
 import { Button } from "../Button";
 
 test("render", () => {
@@ -11,6 +11,13 @@ test("render", () => {
       button
     </button>
   `);
+});
+
+test("render with no a11y violations", async () => {
+  const { container } = render(<Button>box</Button>);
+  const results = await axe(container.innerHTML);
+
+  expect(results).toHaveNoViolations();
 });
 
 test("render anchor", () => {
