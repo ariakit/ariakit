@@ -1,5 +1,6 @@
 import * as React from "react";
-import { click, press, render } from "reakit-test-utils";
+import { click, press, render, axe } from "reakit-test-utils";
+import { cleanup } from "@testing-library/react";
 import ButtonWithTooltip from "..";
 
 test("two-state button with tooltip", () => {
@@ -16,4 +17,12 @@ test("two-state button with tooltip", () => {
   expect(text("It's locked!")).toBeVisible();
   press.Space();
   expect(buttonUnlocked).toBeVisible();
+});
+
+test("renders with no a11y violations", async () => {
+  const { container } = render(<ButtonWithTooltip />);
+  const results = await axe(container.innerHTML);
+
+  expect(results).toHaveNoViolations();
+  cleanup;
 });
