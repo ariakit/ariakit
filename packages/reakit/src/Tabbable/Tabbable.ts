@@ -46,6 +46,7 @@ const isSafariOrFirefoxOnMac =
 // element, which is ultimately the body element. So we make sure to give focus
 // to the tabbable element on mouse down so it works consistently across
 // browsers.
+// istanbul ignore next
 function useFocusOnMouseDown() {
   if (!isSafariOrFirefoxOnMac) return undefined;
   const [element, scheduleFocus] = React.useState<HTMLElement | null>(null);
