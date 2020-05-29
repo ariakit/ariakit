@@ -6,7 +6,6 @@ import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { isButton } from "reakit-utils/isButton";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
@@ -46,8 +45,7 @@ const isSafariOrFirefoxOnMac =
 // browsers/platforms. Instead, they focus on the closest focusable ancestor
 // element, which is ultimately the body element. So we make sure to give focus
 // to the tabbable element on mouse down so it works consistently across
-// browsers. This also helps with VoiceOver, which doesn't focus on tabbable
-// elements when pressing VO+Space (click).
+// browsers.
 function useFocusOnMouseDown() {
   if (!isSafariOrFirefoxOnMac) return undefined;
   const [element, scheduleFocus] = React.useState<HTMLElement | null>(null);
@@ -64,10 +62,7 @@ function useFocusOnMouseDown() {
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       const self = event.currentTarget;
       if (isPortalEvent(event)) return;
-      // We don't want to perform this action if the event target is not the
-      // tabbable element. Unless it's a button element, in which case an inner
-      // element could be the target (like an SVG element).
-      if (!isSelfTarget(event) && !isButton(self)) return;
+      if (!isButton(self)) return;
       const activeElement = getActiveElement(self);
       if (!activeElement) return;
 
