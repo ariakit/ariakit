@@ -1,6 +1,7 @@
 module.exports = {
   parser: "babel-eslint",
   extends: ["airbnb", "plugin:prettier/recommended", "prettier/react"],
+  plugins: ["jest"],
   env: {
     jest: true,
     browser: true,
@@ -50,6 +51,13 @@ module.exports = {
     "react/button-has-type": "off",
     "react/state-in-constructor": "off",
     "jsx-a11y/accessible-emoji": "off",
+    "jest/consistent-test-it": [
+      "error",
+      {
+        fn: "test",
+        withinDescribe: "test",
+      },
+    ],
     "import/order": [
       "error",
       {

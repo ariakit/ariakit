@@ -28,6 +28,7 @@
   paths:
     - /docs/box/
     - /docs/clickable/
+    - /docs/composite/
     - /docs/id/
     - /docs/portal/
     - /docs/rover/

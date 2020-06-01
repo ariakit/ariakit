@@ -29,6 +29,7 @@
     "system"
   ],
   "dependencies": {
+    "jest-axe": "3.4.0",
     "reakit-utils": "^0.12.0",
     "reakit-warning": "^0.3.0"
   },
