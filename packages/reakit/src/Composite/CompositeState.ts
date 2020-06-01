@@ -25,6 +25,7 @@ import { placeItemsAfter } from "./__utils/placeItemsAfter";
 import { getItemsInGroup } from "./__utils/getItemsInGroup";
 import { getOppositeOrientation } from "./__utils/getOppositeOrientation";
 import { addItemAtIndex } from "./__utils/addItemAtIndex";
+import { sortBasedOnDOMPosition } from "./__utils/sortBasedOnDOMPosition";
 
 export type unstable_CompositeState = unstable_IdState & {
   /**
@@ -166,6 +167,11 @@ export type unstable_CompositeActions = unstable_IdActions & {
    */
   last: () => void;
   /**
+   * Sorts the composite items state. This is especially useful after modifying
+   * the composite items order in the DOM.
+   */
+  unstable_sort: () => void;
+  /**
    * Sets `virtual`.
    */
   unstable_setVirtual: React.Dispatch<
@@ -236,6 +242,7 @@ type CompositeReducerAction =
   | { type: "down"; allTheWay?: boolean }
   | { type: "first" }
   | { type: "last" }
+  | { type: "sort" }
   | {
       type: "setVirtual";
       virtual: React.SetStateAction<
@@ -524,6 +531,13 @@ function reducer(
       );
       return { ...nextState, items };
     }
+    case "sort": {
+      return {
+        ...state,
+        items: sortBasedOnDOMPosition(items),
+        groups: sortBasedOnDOMPosition(groups),
+      };
+    }
     case "setVirtual":
       return {
         ...state,
@@ -642,6 +656,7 @@ export function unstable_useCompositeState(
     down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
     first: useAction(() => dispatch({ type: "first" })),
     last: useAction(() => dispatch({ type: "last" })),
+    unstable_sort: useAction(() => dispatch({ type: "sort" })),
     unstable_setVirtual: useAction((value) =>
       dispatch({ type: "setVirtual", virtual: value })
     ),
@@ -681,6 +696,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "down",
   "first",
   "last",
+  "unstable_sort",
   "unstable_setVirtual",
   "setRTL",
   "setOrientation",
