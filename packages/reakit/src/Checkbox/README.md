@@ -164,6 +164,61 @@ function Example() {
 }
 ```
 
+## Styling
+
+Reakit components are [un-styled by default](/docs/styling/). Each component returns a single HTML element that accepts all HTML props, including `className` and `style`.
+
+> The example below uses [Emotion](https://emotion.sh/docs/introduction). But these styles can be reproduced using static CSS and other CSS-in-JS libraries, such as [styled-components](https://styled-components.com/).
+
+```jsx unstyled
+import * as React from "react";
+import { Checkbox } from "reakit/Checkbox";
+import { css } from "emotion";
+
+const labelStyle = css`
+  display: flex;
+  align-items: center;
+`;
+
+const checkboxStyle = css`
+  appearance: none;
+  border: 1px solid #a860ff;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  &:after {
+    content: "✔";
+    display: none;
+    color: white;
+    font-size: 70%;
+  }
+  &:checked {
+    background-color: #6a50ee;
+    border: 2px solid #a860ff;
+    &:after {
+      display: block;
+    }
+  }
+`;
+
+function Example() {
+  const [checked, setChecked] = React.useState(false);
+  const toggle = () => setChecked(!checked);
+  return (
+    <label className={labelStyle}>
+      <Checkbox checked={checked} onChange={toggle} className={checkboxStyle} />
+      Checkbox
+    </label>
+  );
+}
+```
+
 ## Accessibility
 
 - `Checkbox` has role `checkbox`.
@@ -189,8 +244,8 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean | &#34;indeterminate&#34; | (string | number)[]</code>
 
   Stores the state of the checkbox.
-If checkboxes that share this state have defined a `value` prop, it's
-going to be an array.
+  If checkboxes that share this state have defined a `value` prop, it's
+  going to be an array.
 
 ### `Checkbox`
 
@@ -203,15 +258,15 @@ going to be an array.
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
-similarly to `readOnly` on form elements. In this case, only
-`aria-disabled` will be set.
+  similarly to `readOnly` on form elements. In this case, only
+  `aria-disabled` will be set.
 
 - **`value`**
   <code>string | number | undefined</code>
 
   Checkbox's value is going to be used when multiple checkboxes share the
-same state. Checking a checkbox with value will add it to the state
-array.
+  same state. Checking a checkbox with value will add it to the state
+  array.
 
 - **`checked`**
   <code>boolean | undefined</code>
@@ -226,8 +281,8 @@ array.
   <code>boolean | &#34;indeterminate&#34; | (string | number)[]</code>
 
   Stores the state of the checkbox.
-If checkboxes that share this state have defined a `value` prop, it's
-going to be an array.
+  If checkboxes that share this state have defined a `value` prop, it's
+  going to be an array.
 
 - **`setState`**
   <code title="(value: SetStateAction&#60;boolean | &#34;indeterminate&#34; | (string | number)[]&#62;) =&#62; void">(value: SetStateAction&#60;boolean | &#34;indeterminate...</code>
