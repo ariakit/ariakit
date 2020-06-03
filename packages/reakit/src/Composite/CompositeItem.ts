@@ -188,10 +188,6 @@ export const unstable_useCompositeItem = createHook<
         if (isPortalEvent(event)) return;
         if (!id) return;
         if (targetIsAnotherItem(event, options.items)) return;
-        // Using originalCurrentId because currentId may be different due to
-        // getCurrentId call. If it's already set as the current id, we don't
-        // want to call setCurrentId again, which would cause an additional
-        // render.
         options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.

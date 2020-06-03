@@ -31,12 +31,6 @@ type Options<T extends As, O> = {
 };
 
 export type Component<T extends As, O> = {
-  // This is the desired type
-  // <TT extends As = T>(props: PropsWithAs<O, TT>): JSX.Element;
-  // Unfortunately, TypeScript doesn't like it. It works for string elements
-  // and functional components without generics, but it breaks on generics.
-  // See ./__tests__/createComponent-test.tsx
-  // The following two types are a workaround.
   <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
   (props: PropsWithAs<O, T>): JSX.Element;
   displayName?: string;
