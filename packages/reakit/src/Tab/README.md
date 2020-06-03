@@ -75,9 +75,11 @@ function Example() {
 }
 ```
 
+Note that `Tab` automatically generates an `id` if you don't specify one. In this example, an `id` is explicitly assigned for the third tab, so that the same value can be specified as the `selectedId`. No `id` is assigned for the other tabs. The automatically generated `id`s are fine, since we don't need to reference them.
+
 ### No selected tab
 
-By default, the first tab will be selected, but you can unset it by passing `null` to `selectedId` on `useTabState`
+By default, the first tab will be selected, but you can unset it by passing `null` to `selectedId` on `useTabState`.
 
 ```jsx
 import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
@@ -122,6 +124,65 @@ function Example() {
   );
 }
 ```
+
+### Detecting the selected tab
+
+On each render, `selectedId` from `useTabState` specifies which tab is currently selected. You can check it and alter your render accordingly. For example, since only the panel for the selected tab is visible, you can avoid rendering the contents of the other ones as an optimization.
+
+```jsx
+import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
+
+function Example() {
+  const tab = useTabState();
+  return (
+    <>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab} id="tab1">
+          Tab 1
+        </Tab>
+        <Tab {...tab} id="tab2">
+          Tab 2
+        </Tab>
+        <Tab {...tab} id="tab3">
+          Tab 3
+        </Tab>
+      </TabList>
+      <TabPanel {...tab}>{tab.selectedId === "tab1" && "Tab 1"}</TabPanel>
+      <TabPanel {...tab}>{tab.selectedId === "tab2" && "Tab 2"}</TabPanel>
+      <TabPanel {...tab}>{tab.selectedId === "tab3" && "Tab 3"}</TabPanel>
+    </>
+  );
+}
+```
+
+### Non-tabbable tab panels
+
+By default, `TabPanel`s are tabbable. You can disable this by passing a `tabIndex` prop to the `TabPanel`: either `-1` to make it not tababble but still focusable, or `undefined` to make it neither tabbable nor focusable.
+
+```jsx
+import { useTabState, Tab, TabList, TabPanel } from "reakit/Tab";
+import { Button } from "reakit/Button";
+
+function Example() {
+  const tab = useTabState();
+  return (
+    <>
+      <TabList {...tab} aria-label="My tabs">
+        <Tab {...tab}>Tab 1</Tab>
+        <Tab {...tab}>Tab 2</Tab>
+        <Tab {...tab}>Tab 3</Tab>
+      </TabList>
+      <TabPanel {...tab}>Tab 1</TabPanel>
+      <TabPanel {...tab} tabIndex={undefined}>
+        <Button>Button</Button>
+      </TabPanel>
+      <TabPanel {...tab}>Tab 3</TabPanel>
+    </>
+  );
+}
+```
+
+You should only do this if the contents of the `TabPanel` are tabbable.
 
 ### Vertical tabs
 
