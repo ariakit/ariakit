@@ -30,42 +30,6 @@ type MenuBar = Array<MenuButton>;
 
 const menuBar: MenuBar = [
   {
-    label: "",
-    ariaLabel: "Apple",
-    menu: [
-      { label: "About This Mac" },
-      { type: "separator" },
-      { label: "System Preferences..." },
-      {
-        label: "Location",
-        menu: [
-          {
-            label: "Network 1",
-            name: "network",
-            type: "radio",
-          },
-          {
-            label: "Network 2",
-            name: "network",
-            type: "radio",
-          },
-          { type: "separator" },
-          { label: "Network Preferences..." },
-        ],
-      },
-      { label: "App Store..." },
-      { type: "separator" },
-      { label: "Force Quit Chrome" },
-      { type: "separator" },
-      { label: "Sleep" },
-      { label: "Restart..." },
-      { label: "Shut Down..." },
-      { type: "separator" },
-      { label: "Lock Screen" },
-      { label: "Log Out" },
-    ],
-  },
-  {
     label: "Chrome",
     menu: [
       { label: "About Google Chrome" },
