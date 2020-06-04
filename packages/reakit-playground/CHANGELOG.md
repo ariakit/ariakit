@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.3](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.2...reakit-playground@0.12.3) (2020-06-04)
+
+
+### Features
+
+* **reakit-test-utils:** Add `axe` utility ([#654](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/654)) ([db7f022](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/db7f02297e7c08c3e3085bd9677ad2b24fe5f09d))
+
+
+
+
+
 ## [0.12.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.1...reakit-playground@0.12.2) (2020-05-14)
 
 **Note:** Version bump only for package reakit-playground

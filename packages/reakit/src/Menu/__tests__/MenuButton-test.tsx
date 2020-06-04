@@ -1,8 +1,8 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { MenuButton } from "../MenuButton";
+import { MenuButton, MenuButtonProps } from "../MenuButton";
 
-const props: Parameters<typeof MenuButton>[0] = {
+const props: MenuButtonProps = {
   baseId: "base",
   toggle: jest.fn(),
   placement: "bottom",

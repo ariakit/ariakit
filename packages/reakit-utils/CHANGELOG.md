@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.1](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.12.0...reakit-utils@0.12.1) (2020-06-04)
+
+
+### Features
+
+* **reakit-utils:** Accept undefined arguments on `shallowEqual` ([c710c93](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/c710c93a5afe0aed1cae157d5766f36eb9730fba))
+
+
+
+
+
 # [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.11.0...reakit-utils@0.12.0) (2020-04-29)
 
 

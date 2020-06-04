@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/reakit/reakit/compare/reakit@1.0.2...reakit@1.0.3) (2020-06-04)
+
+
+### Bug Fixes
+
+* Fix blur/focus events order on `Tabbable` on Safari and Firefox on MacOS ([#658](https://github.com/reakit/reakit/issues/658)) ([aad12ce](https://github.com/reakit/reakit/commit/aad12ced87dd3a94e4679a8e510a2e8d9fd3c1f8))
+
+
+### Performance Improvements
+
+* Improve `Composite` performance ([#660](https://github.com/reakit/reakit/issues/660)) ([f6656b6](https://github.com/reakit/reakit/commit/f6656b6b765bbec639754aa96a2f08b717413068))
+
+
+
+
+
 ## [1.0.2](https://github.com/reakit/reakit/compare/reakit@1.0.1...reakit@1.0.2) (2020-05-14)
 
 
