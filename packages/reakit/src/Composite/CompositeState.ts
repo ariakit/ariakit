@@ -368,7 +368,7 @@ function reducer(
           ...nextState,
           currentId: nextPastIds[0],
         });
-        return { ...nextState, currentId: nextId, unstable_moves: 0 };
+        return { ...nextState, currentId: nextId };
       }
       return nextState;
     }
@@ -552,12 +552,7 @@ function reducer(
         ...state,
         currentId: applyState(action.currentId, currentId),
       });
-      return {
-        ...state,
-        currentId: nextCurrentId,
-        unstable_moves: state.currentId !== nextCurrentId ? 0 : moves,
-        hasSetCurrentId: true,
-      };
+      return { ...state, currentId: nextCurrentId, hasSetCurrentId: true };
     }
     case "setLoop":
       return { ...state, loop: applyState(action.loop, loop) };
