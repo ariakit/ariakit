@@ -107,6 +107,8 @@ export const unstable_useCompositeItem = createHook<
       if (next.id === nextCurrentId || next.id === prevCurrentId) {
         return false;
       }
+    } else if (prevMoves !== nextMoves) {
+      return false;
     }
     return useClickable.unstable_propsAreEqual(prevProps, nextProps);
   },

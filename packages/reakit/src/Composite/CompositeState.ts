@@ -277,6 +277,7 @@ type CompositeReducerState = Omit<
   initialCurrentId: unstable_CompositeState["currentId"];
   initialLoop: unstable_CompositeState["loop"];
   initialWrap: unstable_CompositeState["wrap"];
+  hasSetCurrentId?: boolean;
 };
 
 function reducer(
@@ -300,6 +301,7 @@ function reducer(
     initialCurrentId,
     initialLoop,
     initialWrap,
+    hasSetCurrentId,
   } = state;
 
   switch (action.type) {
@@ -331,10 +333,20 @@ function reducer(
       // Group will be null if it's a one-dimensional composite
       const nextItem = { groupId: group?.id, ...item };
       const index = findDOMIndex(items, nextItem);
-      return {
+      const nextState = {
         ...state,
         items: addItemAtIndex(items, nextItem, index),
       };
+      if (!hasSetCurrentId && !moves && initialCurrentId === undefined) {
+        // Sets currentId to the first enabled item. This runs whenever an item
+        // is registered because the first enabled item may be registered
+        // asynchronously.
+        return {
+          ...nextState,
+          currentId: findFirstEnabledItem(nextState.items)?.id,
+        };
+      }
+      return nextState;
     }
     case "unregisterItem": {
       const { id } = action;
@@ -376,21 +388,20 @@ function reducer(
       const nextPastIds = currentId
         ? [currentId, ...filteredPastIds]
         : filteredPastIds;
+      const nextState = { ...state, pastIds: nextPastIds };
       // move(null) will focus the composite element itself, not an item
       if (id === null) {
         return {
-          ...state,
-          pastIds: nextPastIds,
+          ...nextState,
           unstable_moves: moves + 1,
-          currentId: getCurrentId(state, id),
+          currentId: getCurrentId(nextState, id),
         };
       }
       const item = findEnabledItemById(items, id);
       return {
-        ...state,
-        pastIds: nextPastIds,
+        ...nextState,
         unstable_moves: item ? moves + 1 : moves,
-        currentId: getCurrentId(state, item?.id),
+        currentId: getCurrentId(nextState, item?.id),
       };
     }
     case "next": {
@@ -545,6 +556,7 @@ function reducer(
         ...state,
         currentId: nextCurrentId,
         unstable_moves: state.currentId !== nextCurrentId ? 0 : moves,
+        hasSetCurrentId: true,
       };
     }
     case "setLoop":
@@ -557,7 +569,7 @@ function reducer(
         unstable_virtual: initialVirtual,
         rtl: initialRTL,
         orientation: initialOrientation,
-        currentId: initialCurrentId,
+        currentId: getCurrentId({ ...state, currentId: initialCurrentId }),
         loop: initialLoop,
         wrap: initialWrap,
         unstable_moves: 0,
@@ -593,6 +605,7 @@ export function unstable_useCompositeState(
       initialCurrentId,
       initialLoop,
       initialWrap,
+      hasSetCurrentId,
       ...state
     },
     dispatch,
@@ -616,13 +629,6 @@ export function unstable_useCompositeState(
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
-
-  // When currentId is undefined, set it to the first enabled item.
-  React.useEffect(() => {
-    if (state.currentId !== undefined) return;
-    if (!state.items.length) return;
-    dispatch({ type: "setCurrentId" });
-  }, [state.currentId, state.items]);
 
   return {
     ...idState,
