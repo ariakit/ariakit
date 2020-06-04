@@ -1,9 +1,9 @@
-name: Bundle Size
+name: bundle-size
 
 on: [pull_request]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
