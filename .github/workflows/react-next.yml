@@ -1,4 +1,4 @@
-name: react-next
+name: react@next
 
 on:
   schedule:
