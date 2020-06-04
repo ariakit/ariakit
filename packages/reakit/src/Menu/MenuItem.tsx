@@ -5,9 +5,9 @@ import { contains } from "reakit-utils/contains";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
-  unstable_CompositeItemOptions as CompositeItemOptions,
-  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem,
+  CompositeItemOptions,
+  CompositeItemHTMLProps,
+  useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";

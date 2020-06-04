@@ -3,9 +3,9 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
-  unstable_CompositeItemOptions as CompositeItemOptions,
-  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem,
+  CompositeItemOptions,
+  CompositeItemHTMLProps,
+  useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useTabState, TabStateReturn } from "./TabState";
 

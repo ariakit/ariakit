@@ -4,22 +4,22 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { useWarning } from "reakit-warning";
 import {
-  unstable_CompositeOptions,
-  unstable_CompositeHTMLProps,
-  unstable_useComposite,
+  CompositeOptions,
+  CompositeHTMLProps,
+  useComposite,
 } from "../Composite/Composite";
 import { useRadioState } from "./RadioState";
 
-export type RadioGroupOptions = unstable_CompositeOptions;
+export type RadioGroupOptions = CompositeOptions;
 
-export type RadioGroupHTMLProps = unstable_CompositeHTMLProps &
+export type RadioGroupHTMLProps = CompositeHTMLProps &
   React.FieldsetHTMLAttributes<any>;
 
 export type RadioGroupProps = RadioGroupOptions & RadioGroupHTMLProps;
 
 const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
   name: "RadioGroup",
-  compose: unstable_useComposite,
+  compose: useComposite,
   useState: useRadioState,
 
   useProps(_, htmlProps) {

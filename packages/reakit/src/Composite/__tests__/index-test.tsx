@@ -1,10 +1,10 @@
 import * as React from "react";
 import { render, focus, press, click, type, wait } from "reakit-test-utils";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeGroup as CompositeGroup,
-  unstable_CompositeItem as CompositeItem,
+  useCompositeState,
+  Composite,
+  CompositeGroup,
+  CompositeItem,
   unstable_CompositeItemWidget as CompositeItemWidget,
 } from "..";
 

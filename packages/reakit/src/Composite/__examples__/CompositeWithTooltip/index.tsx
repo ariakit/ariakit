@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useTooltipState, Tooltip, TooltipReference } from "reakit/Tooltip";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
-  unstable_CompositeItemProps as CompositeItemProps,
+  useCompositeState,
+  Composite,
+  CompositeItem,
+  CompositeItemProps,
 } from "reakit/Composite";
 
 function CompositeItemWithTooltip({ children, ...props }: CompositeItemProps) {

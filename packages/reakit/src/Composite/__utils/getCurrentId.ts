@@ -1,9 +1,9 @@
-import { unstable_CompositeState } from "../CompositeState";
+import { CompositeState } from "../CompositeState";
 import { findFirstEnabledItem } from "./findFirstEnabledItem";
 
 export function getCurrentId(
-  options: Pick<unstable_CompositeState, "currentId" | "items">,
-  passedId?: unstable_CompositeState["currentId"]
+  options: Pick<CompositeState, "currentId" | "items">,
+  passedId?: CompositeState["currentId"]
 ) {
   if (passedId || passedId === null) {
     return passedId;

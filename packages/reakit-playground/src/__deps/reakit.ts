@@ -15,7 +15,7 @@ export default {
   "reakit/Composite/Composite": require("reakit/Composite/Composite"),
   "reakit/Composite/CompositeGroup": require("reakit/Composite/CompositeGroup"),
   "reakit/Composite/CompositeItem": require("reakit/Composite/CompositeItem"),
-  "reakit/Composite/CompositeItemWidget": require("reakit/Composite/CompositeItemWidget"),
+  "reakit/Composite/unstable_CompositeItemWidget": require("reakit/Composite/unstable_CompositeItemWidget"),
   "reakit/Composite/CompositeState": require("reakit/Composite/CompositeState"),
   "reakit/Dialog": require("reakit/Dialog"),
   "reakit/Dialog/Dialog": require("reakit/Dialog/Dialog"),

@@ -12,10 +12,7 @@ import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import { useBox } from "../Box/Box";
-import {
-  unstable_CompositeStateReturn,
-  unstable_useCompositeState,
-} from "./CompositeState";
+import { CompositeStateReturn, useCompositeState } from "./CompositeState";
 import { Item } from "./__utils/types";
 import { groupItems } from "./__utils/groupItems";
 import { flatten } from "./__utils/flatten";
@@ -25,9 +22,9 @@ import { getCurrentId } from "./__utils/getCurrentId";
 import { getNextActiveElementOnBlur } from "./__utils/getNextActiveElementOnBlur";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 
-export type unstable_CompositeOptions = TabbableOptions &
+export type CompositeOptions = TabbableOptions &
   Pick<
-    Partial<unstable_CompositeStateReturn>,
+    Partial<CompositeStateReturn>,
     | "baseId"
     | "unstable_virtual"
     | "currentId"
@@ -37,14 +34,13 @@ export type unstable_CompositeOptions = TabbableOptions &
     | "groups"
   > &
   Pick<
-    unstable_CompositeStateReturn,
+    CompositeStateReturn,
     "items" | "setCurrentId" | "first" | "last" | "move"
   >;
 
-export type unstable_CompositeHTMLProps = TabbableHTMLProps;
+export type CompositeHTMLProps = TabbableHTMLProps;
 
-export type unstable_CompositeProps = unstable_CompositeOptions &
-  unstable_CompositeHTMLProps;
+export type CompositeProps = CompositeOptions & CompositeHTMLProps;
 
 const validCompositeRoles = [
   "combobox",
@@ -121,13 +117,10 @@ function isItem(items: Item[], element?: Element | EventTarget | null) {
   return items?.some((item) => !!element && item.ref.current === element);
 }
 
-export const unstable_useComposite = createHook<
-  unstable_CompositeOptions,
-  unstable_CompositeHTMLProps
->({
+export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
   name: "Composite",
   compose: [useTabbable],
-  useState: unstable_useCompositeState,
+  useState: useCompositeState,
 
   useOptions(options) {
     return { ...options, currentId: getCurrentId(options) };
@@ -357,9 +350,9 @@ export const unstable_useComposite = createHook<
   },
 });
 
-export const unstable_Composite = createComponent({
+export const Composite = createComponent({
   as: "div",
-  useHook: unstable_useComposite,
+  useHook: useComposite,
   useCreateElement: (type, props, children) => {
     useWarning(
       !props.role || validCompositeRoles.indexOf(props.role) === -1,

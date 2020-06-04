@@ -9,33 +9,26 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import {
-  unstable_CompositeStateReturn,
-  unstable_useCompositeState,
-} from "./CompositeState";
+import { CompositeStateReturn, useCompositeState } from "./CompositeState";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 
-export type unstable_CompositeGroupOptions = GroupOptions &
+export type CompositeGroupOptions = GroupOptions &
   unstable_IdOptions &
-  Pick<unstable_CompositeStateReturn, "registerGroup" | "unregisterGroup"> &
-  Pick<
-    Partial<unstable_CompositeStateReturn>,
-    "currentId" | "unstable_moves" | "items"
-  >;
+  Pick<CompositeStateReturn, "registerGroup" | "unregisterGroup"> &
+  Pick<Partial<CompositeStateReturn>, "currentId" | "unstable_moves" | "items">;
 
-export type unstable_CompositeGroupHTMLProps = GroupHTMLProps &
-  unstable_IdHTMLProps;
+export type CompositeGroupHTMLProps = GroupHTMLProps & unstable_IdHTMLProps;
 
-export type unstable_CompositeGroupProps = unstable_CompositeGroupOptions &
-  unstable_CompositeGroupHTMLProps;
+export type CompositeGroupProps = CompositeGroupOptions &
+  CompositeGroupHTMLProps;
 
-export const unstable_useCompositeGroup = createHook<
-  unstable_CompositeGroupOptions,
-  unstable_CompositeGroupHTMLProps
+export const useCompositeGroup = createHook<
+  CompositeGroupOptions,
+  CompositeGroupHTMLProps
 >({
   name: "CompositeGroup",
   compose: [useGroup, unstable_useId],
-  useState: unstable_useCompositeState,
+  useState: useCompositeState,
 
   propsAreEqual(prev, next) {
     if (!next.id || prev.id !== next.id) {
@@ -80,7 +73,7 @@ export const unstable_useCompositeGroup = createHook<
   },
 });
 
-export const unstable_CompositeGroup = createComponent({
+export const CompositeGroup = createComponent({
   as: "div",
-  useHook: unstable_useCompositeGroup,
+  useHook: useCompositeGroup,
 });

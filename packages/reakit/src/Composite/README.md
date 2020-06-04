@@ -1,13 +1,8 @@
 ---
 path: /docs/composite/
-experimental: true
 ---
 
 # Composite
-
-<blockquote experimental="true">
-  <strong>This is experimental</strong> and may have breaking changes in minor or patch version updates. Issues for this module will have lower priority. Even so, if you use it, feel free to <a href="https://github.com/reakit/reakit/issues/new/choose" target="_blank">give us feedback</a>.
-</blockquote>
 
 `Composite` is a component that may contain navigable items represented by `CompositeItem`. It's inspired by the [WAI-ARIA Composite Role](https://www.w3.org/TR/wai-aria-1.1/#composite) and implements all the [keyboard navigation mechanisms](https://www.w3.org/TR/wai-aria-practices/#kbd_general_within) to ensure that there's only one tab stop for the whole `Composite` element. This means that it can behave as a [roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex) or [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices/#kbd_focus_activedescendant) container.
 
@@ -31,11 +26,7 @@ In the most basic usage, `Composite` will work as a [roving tabindex](https://ww
 
 ```jsx
 import React from "react";
-import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
-} from "reakit/Composite";
+import { useCompositeState, Composite, CompositeItem } from "reakit/Composite";
 
 function Example() {
   const composite = useCompositeState();
@@ -63,11 +54,7 @@ You can still attach event handlers to `CompositeItem` just like it were using t
 
 ```jsx
 import React from "react";
-import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
-} from "reakit/Composite";
+import { useCompositeState, Composite, CompositeItem } from "reakit/Composite";
 
 function Example() {
   const composite = useCompositeState({ unstable_virtual: true });
@@ -90,10 +77,10 @@ You can build a two-dimensional `Composite` by using `CompositeGroup`.
 ```jsx
 import React from "react";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeGroup as CompositeGroup,
-  unstable_CompositeItem as CompositeItem,
+  useCompositeState,
+  Composite,
+  CompositeGroup,
+  CompositeItem,
 } from "reakit/Composite";
 
 function Grid(props) {
@@ -153,11 +140,7 @@ In the example below, focus on any item and keep <kbd>→</kbd> pressed to see i
 
 ```jsx unstyled
 import React from "react";
-import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
-} from "reakit/Composite";
+import { useCompositeState, Composite, CompositeItem } from "reakit/Composite";
 
 const items = Array.from({ length: 88 }).map((_, i) => `item-${i}`);
 
@@ -215,9 +198,9 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/), and is used by [TabList](/docs/tab/), [RadioGroup](/docs/radio/) and [Toolbar](/docs/toolbar/).
+- `Composite` uses [Tabbable](/docs/tabbable/), and is used by [TabList](/docs/tab/), [RadioGroup](/docs/radio/), [Menu](/docs/menu/) and [Toolbar](/docs/toolbar/).
 - `CompositeGroup` uses [Group](/docs/group/) and [Id](/docs/id/).
-- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/), and is used by [Tab](/docs/tab/), [Radio](/docs/radio/) and [ToolbarItem](/docs/toolbar/).
+- `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/), and is used by [Tab](/docs/tab/), [Radio](/docs/radio/), [MenuItem](/docs/menu/) and [ToolbarItem](/docs/toolbar/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -589,7 +572,7 @@ and `groupId` if any. This state is automatically updated when
 
 </details>
 
-### `CompositeItemWidget`
+### `unstable_CompositeItemWidget`
 
 <details><summary>2 state props</summary>
 

@@ -1,10 +1,10 @@
 import * as React from "react";
 import { VisuallyHidden } from "reakit/VisuallyHidden";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeGroup as CompositeGroup,
-  unstable_CompositeItem as CompositeItem,
+  useCompositeState,
+  Composite,
+  CompositeGroup,
+  CompositeItem,
 } from "reakit/Composite";
 
 function move<T>(item: T, times: number) {

@@ -27,7 +27,7 @@ import { getOppositeOrientation } from "./__utils/getOppositeOrientation";
 import { addItemAtIndex } from "./__utils/addItemAtIndex";
 import { sortBasedOnDOMPosition } from "./__utils/sortBasedOnDOMPosition";
 
-export type unstable_CompositeState = unstable_IdState & {
+export type CompositeState = unstable_IdState & {
   /**
    * If enabled, the composite element will act as an
    * [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
@@ -121,7 +121,7 @@ export type unstable_CompositeState = unstable_IdState & {
   unstable_hasActiveWidget: boolean;
 };
 
-export type unstable_CompositeActions = unstable_IdActions & {
+export type CompositeActions = unstable_IdActions & {
   /**
    * Registers a composite item.
    */
@@ -175,36 +175,32 @@ export type unstable_CompositeActions = unstable_IdActions & {
    * Sets `virtual`.
    */
   unstable_setVirtual: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["unstable_virtual"]>
+    React.SetStateAction<CompositeState["unstable_virtual"]>
   >;
   /**
    * Sets `rtl`.
    */
-  setRTL: React.Dispatch<React.SetStateAction<unstable_CompositeState["rtl"]>>;
+  setRTL: React.Dispatch<React.SetStateAction<CompositeState["rtl"]>>;
   /**
    * Sets `orientation`.
    */
   setOrientation: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["orientation"]>
+    React.SetStateAction<CompositeState["orientation"]>
   >;
   /**
    * Sets `currentId`.
    */
   setCurrentId: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["currentId"]>
+    React.SetStateAction<CompositeState["currentId"]>
   >;
   /**
    * Sets `loop`.
    */
-  setLoop: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["loop"]>
-  >;
+  setLoop: React.Dispatch<React.SetStateAction<CompositeState["loop"]>>;
   /**
    * Sets `wrap`.
    */
-  setWrap: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["wrap"]>
-  >;
+  setWrap: React.Dispatch<React.SetStateAction<CompositeState["wrap"]>>;
   /**
    * Resets to initial state.
    */
@@ -214,21 +210,21 @@ export type unstable_CompositeActions = unstable_IdActions & {
    * @private
    */
   unstable_setHasActiveWidget: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["unstable_hasActiveWidget"]>
+    React.SetStateAction<CompositeState["unstable_hasActiveWidget"]>
   >;
 };
 
-export type unstable_CompositeInitialState = unstable_IdInitialState &
+export type CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
-      unstable_CompositeState,
+      CompositeState,
       "unstable_virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
     >
   >;
 
-export type unstable_CompositeStateReturn = unstable_IdStateReturn &
-  unstable_CompositeState &
-  unstable_CompositeActions;
+export type CompositeStateReturn = unstable_IdStateReturn &
+  CompositeState &
+  CompositeActions;
 
 type CompositeReducerAction =
   | { type: "registerItem"; item: Item }
@@ -245,45 +241,41 @@ type CompositeReducerAction =
   | { type: "sort" }
   | {
       type: "setVirtual";
-      virtual: React.SetStateAction<
-        unstable_CompositeState["unstable_virtual"]
-      >;
+      virtual: React.SetStateAction<CompositeState["unstable_virtual"]>;
     }
   | {
       type: "setRTL";
-      rtl: React.SetStateAction<unstable_CompositeState["rtl"]>;
+      rtl: React.SetStateAction<CompositeState["rtl"]>;
     }
   | {
       type: "setOrientation";
-      orientation?: React.SetStateAction<
-        unstable_CompositeState["orientation"]
-      >;
+      orientation?: React.SetStateAction<CompositeState["orientation"]>;
     }
   | {
       type: "setCurrentId";
-      currentId?: React.SetStateAction<unstable_CompositeState["currentId"]>;
+      currentId?: React.SetStateAction<CompositeState["currentId"]>;
     }
   | {
       type: "setLoop";
-      loop: React.SetStateAction<unstable_CompositeState["loop"]>;
+      loop: React.SetStateAction<CompositeState["loop"]>;
     }
   | {
       type: "setWrap";
-      wrap: React.SetStateAction<unstable_CompositeState["wrap"]>;
+      wrap: React.SetStateAction<CompositeState["wrap"]>;
     }
   | { type: "reset" };
 
 type CompositeReducerState = Omit<
-  unstable_CompositeState,
+  CompositeState,
   "unstable_hasActiveWidget" | keyof unstable_IdState
 > & {
   pastIds: string[];
-  initialVirtual: unstable_CompositeState["unstable_virtual"];
-  initialRTL: unstable_CompositeState["rtl"];
-  initialOrientation: unstable_CompositeState["orientation"];
-  initialCurrentId: unstable_CompositeState["currentId"];
-  initialLoop: unstable_CompositeState["loop"];
-  initialWrap: unstable_CompositeState["wrap"];
+  initialVirtual: CompositeState["unstable_virtual"];
+  initialRTL: CompositeState["rtl"];
+  initialOrientation: CompositeState["orientation"];
+  initialCurrentId: CompositeState["currentId"];
+  initialLoop: CompositeState["loop"];
+  initialWrap: CompositeState["wrap"];
   hasSetCurrentId?: boolean;
 };
 
@@ -593,9 +585,9 @@ function useAction<T extends (...args: any[]) => any>(fn: T) {
   return React.useCallback(fn, []);
 }
 
-export function unstable_useCompositeState(
-  initialState: SealedInitialState<unstable_CompositeInitialState> = {}
-): unstable_CompositeStateReturn {
+export function useCompositeState(
+  initialState: SealedInitialState<CompositeInitialState> = {}
+): CompositeStateReturn {
   const {
     unstable_virtual: virtual = false,
     rtl = false,
@@ -678,7 +670,7 @@ export function unstable_useCompositeState(
   };
 }
 
-const keys: Array<keyof unstable_CompositeStateReturn> = [
+const keys: Array<keyof CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
   "unstable_virtual",
   "rtl",
@@ -712,4 +704,4 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "unstable_setHasActiveWidget",
 ];
 
-unstable_useCompositeState.__keys = keys;
+useCompositeState.__keys = keys;
