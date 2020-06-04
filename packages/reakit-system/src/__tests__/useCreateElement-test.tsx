@@ -33,14 +33,20 @@ test("render props", () => {
 });
 
 test("render props with component type", () => {
-  const A = ({ children }: { children: () => string }) => (
-    <div>{children()}</div>
-  );
-  const B = () => useCreateElement(A, {}, () => "a");
+  type HTMLProps = React.HTMLAttributes<any>;
+  type AProps = { children: (props: HTMLProps) => React.ReactElement };
+
+  const A = ({ children }: AProps) => children({ className: "a" });
+  const B = () =>
+    useCreateElement(A, {}, (props: HTMLProps) => <div {...props}>a</div>);
+
   const { container } = render(<B />);
+
   expect(container).toMatchInlineSnapshot(`
     <div>
-      <div>
+      <div
+        class="a"
+      >
         a
       </div>
     </div>
