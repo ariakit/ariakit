@@ -572,7 +572,7 @@ and `groupId` if any. This state is automatically updated when
 
 </details>
 
-### `unstable_CompositeItemWidget`
+### `CompositeItemWidget`
 
 <details><summary>2 state props</summary>
 

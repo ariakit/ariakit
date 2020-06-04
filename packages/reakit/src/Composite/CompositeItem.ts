@@ -189,7 +189,7 @@ export const useCompositeItem = createHook<
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
-        // element inside the composite item, such as unstable_CompositeItemWidget.
+        // element inside the composite item, such as CompositeItemWidget.
         if (options.unstable_virtual && options.baseId && isSelfTarget(event)) {
           const { target } = event;
           const composite = getDocument(target).getElementById(options.baseId);
@@ -252,7 +252,7 @@ export const useCompositeItem = createHook<
           onKeyDown: onCharacterKeyDown,
           stopPropagation: true,
           // We don't want to listen to focusable elements inside the composite
-          // item, such as a unstable_CompositeItemWidget.
+          // item, such as a CompositeItemWidget.
           shouldKeyDown: isSelfTarget,
           keyMap: () => {
             // `options.orientation` can also be undefined, which means that
