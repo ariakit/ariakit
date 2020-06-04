@@ -244,8 +244,8 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean | &#34;indeterminate&#34; | (string | number)[]</code>
 
   Stores the state of the checkbox.
-  If checkboxes that share this state have defined a `value` prop, it's
-  going to be an array.
+If checkboxes that share this state have defined a `value` prop, it's
+going to be an array.
 
 ### `Checkbox`
 
@@ -258,15 +258,15 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean | undefined</code>
 
   When an element is `disabled`, it may still be `focusable`. It works
-  similarly to `readOnly` on form elements. In this case, only
-  `aria-disabled` will be set.
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
 
 - **`value`**
   <code>string | number | undefined</code>
 
   Checkbox's value is going to be used when multiple checkboxes share the
-  same state. Checking a checkbox with value will add it to the state
-  array.
+same state. Checking a checkbox with value will add it to the state
+array.
 
 - **`checked`**
   <code>boolean | undefined</code>
@@ -281,8 +281,8 @@ Learn more in [Composition](/docs/composition/#props-hooks).
   <code>boolean | &#34;indeterminate&#34; | (string | number)[]</code>
 
   Stores the state of the checkbox.
-  If checkboxes that share this state have defined a `value` prop, it's
-  going to be an array.
+If checkboxes that share this state have defined a `value` prop, it's
+going to be an array.
 
 - **`setState`**
   <code title="(value: SetStateAction&#60;boolean | &#34;indeterminate&#34; | (string | number)[]&#62;) =&#62; void">(value: SetStateAction&#60;boolean | &#34;indeterminate...</code>
