@@ -1,9 +1,11 @@
 import { toArray } from "reakit-utils/toArray";
+import { shallowEqual } from "reakit-utils/shallowEqual";
 import { useOptions } from "./useOptions";
 import { useProps } from "./useProps";
 
 type Hook<O = any, P = any> = {
   (options?: O, htmlProps?: P, unstable_ignoreUseOptions?: boolean): P;
+  unstable_propsAreEqual: (prev: O & P, next: O & P) => boolean;
   __keys: ReadonlyArray<any>;
   __useOptions: (options: O, htmlProps: P) => O;
 };
@@ -16,6 +18,7 @@ type CreateHookOptions<O, P> = {
   useProps?: (options: O, htmlProps: P) => P;
   useComposeOptions?: (options: O, htmlProps: P) => O;
   useComposeProps?: (options: O, htmlProps: P) => P;
+  propsAreEqual?: (prev: O & P, next: O & P) => boolean;
   keys?: ReadonlyArray<keyof O>;
 };
 
@@ -117,6 +120,11 @@ export function createHook<O, P>(options: CreateHookOptions<O, P>) {
     ...(options.useState?.__keys || []),
     ...(options.keys || []),
   ];
+
+  useHook.unstable_propsAreEqual =
+    options.propsAreEqual ||
+    composedHooks[0]?.unstable_propsAreEqual ||
+    shallowEqual;
 
   if (process.env.NODE_ENV !== "production" && options.name) {
     Object.defineProperty(useHook, "name", {

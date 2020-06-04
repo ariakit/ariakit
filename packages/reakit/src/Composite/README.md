@@ -57,6 +57,8 @@ function Example() {
 
 You can still attach event handlers to `CompositeItem` just like it were using the roving tabindex method. You don't need to change anything else to make it work.
 
+> The `unstable_virtual` prop is still experimental and may change in future patch and minor releases.
+
 <!-- eslint-disable no-alert -->
 
 ```jsx
@@ -136,29 +138,48 @@ function Example() {
 }
 ```
 
-### Widgets inside composite item
+## Performance
 
-You may have editable content or widgets that also use keyboard navigation inside composite items. You can click, or press <kbd>Enter</kbd> or <kbd>Space</kbd> to activate the widget. It disables the composite navigation until you press <kbd>Escape</kbd> or move focus outside the composite element.
+If you notice performance issues when rendering several `CompositeItem`s, you can do the following:
 
-```jsx
+1. Pass an `id` prop to each `CompositeItem`.
+2. Memoize all non-primitive props that you're passing to `CompositeItem`, including event handlers (e.g. `onClick`) and the `children` prop.
+
+`CompositeItem` will compare the passed `id` with `composite.currentId` and, if the other props haven't been changed, it'll only re-render if it's the previous or the current active item.
+
+In the example below, focus on any item and keep <kbd>→</kbd> pressed to see it smoothly changing focus. Then, unmemoize any non-primitive prop (like `onClick` or `children`) and do the same to see the difference yourself. 
+
+<!-- eslint-disable no-alert -->
+
+```jsx unstyled
 import React from "react";
 import {
   unstable_useCompositeState as useCompositeState,
   unstable_Composite as Composite,
   unstable_CompositeItem as CompositeItem,
-  unstable_CompositeItemWidget as CompositeItemWidget,
 } from "reakit/Composite";
 
+const items = Array.from({ length: 88 }).map((_, i) => `item-${i}`);
+
 function Example() {
-  const composite = useCompositeState();
+  const composite = useCompositeState({ loop: true });
+  // Remove the React.useCallback call below to see the difference
+  const onClick = React.useCallback((event) => {
+    window.alert(event.currentTarget.id);
+  }, []);
+  // If children aren't primitive values (like strings), you can memoize them
+  // with React.useCallback
+  const children = React.useCallback(
+    (itemProps) => <span {...itemProps}>👉</span>,
+    []
+  );
   return (
-    <Composite {...composite} role="toolbar" aria-label="My toolbar">
-      <CompositeItem {...composite}>Item 1</CompositeItem>
-      <CompositeItem {...composite}>Item 2</CompositeItem>
-      <CompositeItem {...composite}>
-        <CompositeItemWidget {...composite} as="input" type="text" />
-      </CompositeItem>
-      <CompositeItem {...composite}>Item 4</CompositeItem>
+    <Composite {...composite} role="toolbar" aria-label="Performance">
+      {items.map((id) => (
+        <CompositeItem {...composite} key={id} id={id} onClick={onClick}>
+          {children}
+        </CompositeItem>
+      ))}
     </Composite>
   );
 }
@@ -189,11 +210,6 @@ function Example() {
   - <kbd>PageDown</kbd> moves focus to the last `CompositeItem` in the column.
   - <kbd>Ctrl</kbd>+<kbd>Home</kbd> moves focus to the first `CompositeItem` in the composite element.
   - <kbd>Ctrl</kbd>+<kbd>End</kbd> moves focus to the last `CompositeItem` in the composite element.
-- When using `CompositeItemWidget`:
-  - Clicking or pressing <kbd>Enter</kbd> or <kbd>Space</kbd> on a `CompositeItem` that has a child `CompositeItemWidget` disables composite keyboard navigation and focus the widget.
-  - <kbd>Enter</kbd> on the current focused `CompositeItemWidget` restores the composite keyboard navigation and focus the parent `CompositeItem` if the widget is a text field.
-  - <kbd>Escape</kbd> on the current focused `CompositeItemWidget` restores the composite keyboard navigation and focus the parent `CompositeItem`. If the widget is a text field, any changes are undone.
-  - If `CompositeItemWidget` is a text field, pressing any printable character on the parent `CompositeItem` changes the widget value and moves focus into it.
 
 Learn more in [Accessibility](/docs/accessibility/).
 
@@ -202,7 +218,6 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Composite` uses [Tabbable](/docs/tabbable/) (when `focusStrategy` is set to `aria-activedescendant`) and [IdGroup](/docs/id/), and is used by [TabList](/docs/tab/), [RadioGroup](/docs/radio/) and [Toolbar](/docs/toolbar/).
 - `CompositeGroup` uses [Group](/docs/group/) and [Id](/docs/id/).
 - `CompositeItem` uses [Id](/docs/id/) and [Clickable](/docs/clickable/), and is used by [Tab](/docs/tab/), [Radio](/docs/radio/) and [ToolbarItem](/docs/toolbar/).
-- `CompositeItemWidget` uses [Box](/docs/box/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
@@ -409,7 +424,7 @@ and `groupId` if any. This state is automatically updated when
 
   Same as the HTML attribute.
 
-<details><summary>3 state props</summary>
+<details><summary>6 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -427,6 +442,30 @@ and `groupId` if any. This state is automatically updated when
   <code>(id: string) =&#62; void</code>
 
   Unregisters a composite group.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
 
 </details>
 

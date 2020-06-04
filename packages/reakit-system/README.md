@@ -51,9 +51,10 @@ Creates a React component.
 -   `options` **Options&lt;T, O>** 
     -   `options.as`  
     -   `options.useHook`  
+    -   `options.memo`  
+    -   `options.propsAreEqual`   (optional, default `useHook?.unstable_propsAreEqual`)
     -   `options.keys`   (optional, default `useHook?.__keys||[]`)
     -   `options.useCreateElement`   (optional, default `defaultUseCreateElement`)
-    -   `options.memo`  
 
 #### Examples
 

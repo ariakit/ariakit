@@ -50,6 +50,7 @@ module.exports = {
     "react/destructuring-assignment": "off",
     "react/button-has-type": "off",
     "react/state-in-constructor": "off",
+    "jsx-a11y/accessible-emoji": "off",
     "jest/consistent-test-it": [
       "error",
       {

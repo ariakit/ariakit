@@ -13,10 +13,16 @@ import { useMenuState, MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
 import { useTransitToSubmenu } from "./__utils/useTransitToSubmenu";
-import { isExpandedDisclosure } from "./__utils/isExpandedDisclosure";
 
 export type MenuItemOptions = CompositeItemOptions &
-  Pick<Partial<MenuStateReturn>, "visible" | "hide" | "placement"> &
+  Pick<
+    Partial<MenuStateReturn>,
+    | "visible"
+    | "hide"
+    | "placement"
+    | "unstable_popoverStyles"
+    | "unstable_arrowStyles"
+  > &
   Pick<MenuStateReturn, "next" | "previous" | "move">;
 
 export type MenuItemHTMLProps = CompositeItemHTMLProps;
@@ -54,13 +60,32 @@ function hoveringAnotherMenuItem(
   items: MenuItemOptions["items"]
 ) {
   const nextElement = getMouseDestination(event);
-  return items?.some((item) => item.ref.current === nextElement);
+  if (!nextElement) return false;
+  return items?.some(
+    (item) => item.ref.current && contains(item.ref.current, nextElement)
+  );
 }
 
 export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   name: "MenuItem",
   compose: useCompositeItem,
   useState: useMenuState,
+
+  propsAreEqual(prev, next) {
+    const {
+      unstable_popoverStyles: prevPopoverStyles,
+      unstable_arrowStyles: prevArrowStyles,
+      visible: prevVisible,
+      ...prevProps
+    } = prev;
+    const {
+      unstable_popoverStyles: nextPopoverStyles,
+      unstable_arrowStyles: nextArrowStyles,
+      visible: nextVisible,
+      ...nextProps
+    } = next;
+    return useCompositeItem.unstable_propsAreEqual(prevProps, nextProps);
+  },
 
   useProps(
     options,
@@ -95,13 +120,11 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onMouseLeaveRef.current?.(event);
         if (event.defaultPrevented) return;
-        const self = event.currentTarget;
+        if (menu?.role === "menubar") return;
         if (hoveringInside(event)) return;
         // If this item is a menu disclosure and mouse is leaving it to focus
         // its respective submenu, we don't want to do anything.
         if (hoveringExpandedMenu(event, menu?.children)) return;
-        // On menu bars, hovering out of disclosure doesn't blur it.
-        if (menu?.role === "menubar" && isExpandedDisclosure(self)) return;
         // Move focus to menu after blurring
         if (!hoveringAnotherMenuItem(event, options.items)) {
           if (isMouseInTransitToSubmenu(event)) return;
