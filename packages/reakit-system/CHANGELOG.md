@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.12.1...reakit-system@0.12.2) (2020-06-04)
+
+
+### Bug Fixes
+
+* **reakit-system:** Fix forwardRef TypeScript types ([2d96447](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/2d9644704f8e9e1f14ecf726ad8d4f7b401817c9))
+
+
+### Performance Improvements
+
+* Improve `Composite` performance ([#660](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/660)) ([f6656b6](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/f6656b6b765bbec639754aa96a2f08b717413068))
+
+
+
+
+
 ## [0.12.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.12.0...reakit-system@0.12.1) (2020-05-12)
 
 

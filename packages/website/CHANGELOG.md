@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.2...website@1.0.3) (2020-06-04)
+
+
+### Features
+
+* **website:** Add BLM banner ([#663](https://github.com/reakit/reakit/tree/master/packages/website/issues/663)) ([c1d05de](https://github.com/reakit/reakit/tree/master/packages/website/commit/c1d05deb3261d526dd9cddb87aed2f2dd5054194))
+
+
+### Performance Improvements
+
+* Improve `Composite` performance ([#660](https://github.com/reakit/reakit/tree/master/packages/website/issues/660)) ([f6656b6](https://github.com/reakit/reakit/tree/master/packages/website/commit/f6656b6b765bbec639754aa96a2f08b717413068))
+
+
+
+
+
 ## [1.0.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.1...website@1.0.2) (2020-05-14)
 
 **Note:** Version bump only for package website
