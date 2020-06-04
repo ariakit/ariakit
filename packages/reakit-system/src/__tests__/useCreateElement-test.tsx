@@ -1,4 +1,5 @@
 import * as React from "react";
+import { render } from "reakit-test-utils";
 import { renderHook } from "reakit-test-utils/hooks";
 import { Provider } from "reakit/Provider";
 import { useCreateElement } from "../useCreateElement";
@@ -27,6 +28,21 @@ test("render props", () => {
       id="a"
     >
       div
+    </div>
+  `);
+});
+
+test("render props with component type", () => {
+  const A = ({ children }: { children: () => string }) => (
+    <div>{children()}</div>
+  );
+  const B = () => useCreateElement(A, {}, () => "a");
+  const { container } = render(<B />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div>
+        a
+      </div>
     </div>
   `);
 });
