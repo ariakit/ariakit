@@ -1,9 +1,6 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import {
-  unstable_CompositeGroupProps as CompositeGroupProps,
-  unstable_CompositeGroup as CompositeGroup,
-} from "../CompositeGroup";
+import { CompositeGroupProps, CompositeGroup } from "../CompositeGroup";
 
 const props: CompositeGroupProps = {
   registerGroup: jest.fn(),

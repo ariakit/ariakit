@@ -1,11 +1,11 @@
 import * as React from "react";
 import { render, focus, press, blur } from "reakit-test-utils";
 import {
-  unstable_CompositeItemWidgetProps,
+  unstable_CompositeItemWidgetProps as CompositeItemWidgetProps,
   unstable_CompositeItemWidget as CompositeItemWidget,
 } from "../CompositeItemWidget";
 
-const props: unstable_CompositeItemWidgetProps = {
+const props: CompositeItemWidgetProps = {
   unstable_hasActiveWidget: false,
   unstable_setHasActiveWidget: jest.fn(),
   currentId: "a",

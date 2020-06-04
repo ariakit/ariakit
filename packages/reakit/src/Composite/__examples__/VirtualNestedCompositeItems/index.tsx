@@ -1,9 +1,5 @@
 import * as React from "react";
-import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
-} from "reakit/Composite";
+import { useCompositeState, Composite, CompositeItem } from "reakit/Composite";
 
 export default function VirtualNestedCompositeItems() {
   const composite = useCompositeState({ loop: true, unstable_virtual: true });

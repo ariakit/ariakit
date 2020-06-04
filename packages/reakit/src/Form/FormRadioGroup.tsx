@@ -3,8 +3,8 @@ import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
 import {
-  unstable_CompositeStateReturn as CompositeStateReturn,
-  unstable_useCompositeState as useCompositeState,
+  CompositeStateReturn,
+  useCompositeState,
 } from "../Composite/CompositeState";
 import {
   unstable_FormGroupOptions,

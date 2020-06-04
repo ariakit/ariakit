@@ -1,9 +1,6 @@
 import * as React from "react";
 import { render, focus, press, click } from "reakit-test-utils";
-import {
-  unstable_CompositeItemProps as CompositeItemProps,
-  unstable_CompositeItem as CompositeItem,
-} from "../CompositeItem";
+import { CompositeItemProps, CompositeItem } from "../CompositeItem";
 
 const props: CompositeItemProps = {
   items: [

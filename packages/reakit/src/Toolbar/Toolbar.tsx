@@ -3,22 +3,22 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import {
-  unstable_CompositeOptions,
-  unstable_CompositeHTMLProps,
-  unstable_useComposite,
+  CompositeOptions,
+  CompositeHTMLProps,
+  useComposite,
 } from "../Composite/Composite";
 import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
 
-export type ToolbarOptions = unstable_CompositeOptions &
+export type ToolbarOptions = CompositeOptions &
   Pick<Partial<ToolbarStateReturn>, "orientation">;
 
-export type ToolbarHTMLProps = unstable_CompositeHTMLProps;
+export type ToolbarHTMLProps = CompositeHTMLProps;
 
 export type ToolbarProps = ToolbarOptions & ToolbarHTMLProps;
 
 export const useToolbar = createHook<ToolbarOptions, ToolbarHTMLProps>({
   name: "Toolbar",
-  compose: unstable_useComposite,
+  compose: useComposite,
   useState: useToolbarState,
 
   useProps(options, htmlProps) {

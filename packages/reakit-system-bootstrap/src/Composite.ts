@@ -1,7 +1,7 @@
 import { css, cx } from "emotion";
 import {
-  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_CompositeItemOptions as CompositeItemOptions,
+  CompositeItemHTMLProps,
+  CompositeItemOptions,
 } from "reakit/Composite/CompositeItem";
 import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
 import { BootstrapBoxOptions } from "./Box";

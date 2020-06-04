@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render, press, wait } from "reakit-test-utils";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
+  useCompositeState,
+  Composite,
+  CompositeItem,
   useMenuState,
   Menu,
   MenuButton,

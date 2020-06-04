@@ -1,10 +1,7 @@
 import * as React from "react";
 import { renderHook, act } from "reakit-test-utils/hooks";
 import { jestSerializerStripFunctions } from "reakit-test-utils/jestSerializerStripFunctions";
-import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_CompositeInitialState as CompositeInitialState,
-} from "../CompositeState";
+import { useCompositeState, CompositeInitialState } from "../CompositeState";
 
 expect.addSnapshotSerializer(jestSerializerStripFunctions);
 

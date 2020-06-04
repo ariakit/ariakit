@@ -6,9 +6,9 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { createEvent } from "reakit-utils/createEvent";
 import { warning } from "reakit-warning/warning";
 import {
-  unstable_CompositeItemOptions as CompositeItemOptions,
-  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem,
+  CompositeItemOptions,
+  CompositeItemHTMLProps,
+  useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 

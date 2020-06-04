@@ -4,10 +4,10 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import {
-  unstable_CompositeState as CompositeState,
-  unstable_CompositeActions as CompositeActions,
-  unstable_CompositeInitialState as CompositeInitialState,
-  unstable_useCompositeState as useCompositeState,
+  CompositeState,
+  CompositeActions,
+  CompositeInitialState,
+  useCompositeState,
 } from "../Composite";
 
 export type MenuBarState = CompositeState & {
