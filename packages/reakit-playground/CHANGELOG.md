@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.12.4](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.3...reakit-playground@0.12.4) (2020-06-06)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
 ## [0.12.3](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.2...reakit-playground@0.12.3) (2020-06-04)
 
 
@@ -132,14 +140,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   **Before:**
   ```jsx
   import { Tabbable } from "reakit/Tabbable";
-  <Tabbable />
+  
+  <Tabbable />;
   ```
   **After:**
   ```jsx
   import { Clickable } from "reakit/Clickable";
   // Tabbable is not going away, it just doesn't represent a clickable element
   // anymore
-  <Clickable />
+  <Clickable />;
   ```
 * Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
 * `DisclosureRegion` has been renamed to `DisclosureContent`.

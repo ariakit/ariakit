@@ -15,6 +15,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.0.4](https://github.com/reakit/reakit/compare/reakit@1.0.3...reakit@1.0.4) (2020-06-06)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` preventing drag events on mouse down on Safari ([#670](https://github.com/reakit/reakit/issues/670)) ([6830c5a](https://github.com/reakit/reakit/commit/6830c5a649c55c6e1a418490fff4a9b70a92b9d8))
+
+
+
+
+
 ## [1.0.3](https://github.com/reakit/reakit/compare/reakit@1.0.2...reakit@1.0.3) (2020-06-04)
 
 
@@ -132,13 +143,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   **Before:**
   ```jsx
   const dialog = useDialogState();
-  <Dialog {...dialog} modal={false} />
+  <Dialog {...dialog} modal={false} />;
   ```
 
   **After:**
   ```jsx
   const dialog = useDialogState({ modal: false });
-  <Dialog {...dialog} />
+  <Dialog {...dialog} />;
   ```
 
 
@@ -257,14 +268,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   **Before:**
   ```jsx
   import { Tabbable } from "reakit/Tabbable";
-  <Tabbable />
+  
+  <Tabbable />;
   ```
   **After:**
   ```jsx
   import { Clickable } from "reakit/Clickable";
   // Tabbable is not going away, it just doesn't represent a clickable element
   // anymore
-  <Clickable />
+  <Clickable />;
   ```
 * Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
 * `DisclosureRegion` has been renamed to `DisclosureContent`.
@@ -364,11 +376,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
   **Before:**
   ```jsx
-  <Checkbox onChange={event => setChecked(!event.target.checked)} />;
+  <Checkbox onChange={(event) => setChecked(!event.target.checked)} />;
   ```
   **After:**
   ```jsx
-  <Checkbox onChange={event => setChecked(event.target.checked)} />;
+  <Checkbox onChange={(event) => setChecked(event.target.checked)} />;
   ```
 
 

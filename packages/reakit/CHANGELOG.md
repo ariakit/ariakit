@@ -15,6 +15,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.0.4](https://github.com/reakit/reakit/compare/reakit@1.0.3...reakit@1.0.4) (2020-06-06)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` preventing drag events on mouse down on Safari ([#670](https://github.com/reakit/reakit/issues/670)) ([6830c5a](https://github.com/reakit/reakit/commit/6830c5a649c55c6e1a418490fff4a9b70a92b9d8))
+
+
+
+
+
 ## [1.0.3](https://github.com/reakit/reakit/compare/reakit@1.0.2...reakit@1.0.3) (2020-06-04)
 
 
