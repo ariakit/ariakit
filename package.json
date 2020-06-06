@@ -104,8 +104,6 @@
     "react-dom": "16.13.1",
     "react-spring": "8.0.27",
     "react-test-renderer": "16.13.1",
-    "reakit-test-utils": "*",
-    "reakit-warning": "*",
     "rimraf": "3.0.2",
     "rollup": "2.13.1",
     "rollup-plugin-ignore": "1.0.6",
