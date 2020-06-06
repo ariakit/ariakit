@@ -124,18 +124,18 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
           // MenuButton's don't do anything on mouse over when they aren't
           // cointained within a Menu/MenuBar
           if (!parent) return;
-          const self = event.currentTarget;
+          const element = event.currentTarget;
           if (parentIsMenuBar) {
             // if MenuButton is an item inside a MenuBar, it'll only open
             // if there's already another sibling expanded MenuButton
             if (findVisibleSubmenu(parent.children)) {
-              self.focus();
+              element.focus();
             }
           } else {
             // If it's in a Menu, open after a short delay
             // TODO: Make the delay a prop?
             setTimeout(() => {
-              if (hasFocusWithin(self)) {
+              if (hasFocusWithin(element)) {
                 options.show?.();
               }
             }, 200);

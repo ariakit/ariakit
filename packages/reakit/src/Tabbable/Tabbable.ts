@@ -53,23 +53,23 @@ function focusIfNeeded(element: HTMLElement) {
 // istanbul ignore next
 function useFocusOnMouseDown() {
   if (!isSafariOrFirefoxOnMac) return undefined;
-  const [element, scheduleFocus] = React.useState<HTMLElement | null>(null);
+  const [tabbable, scheduleFocus] = React.useState<HTMLElement | null>(null);
 
   React.useEffect(() => {
-    if (!element) return;
-    focusIfNeeded(element);
+    if (!tabbable) return;
+    focusIfNeeded(tabbable);
     scheduleFocus(null);
-  }, [element]);
+  }, [tabbable]);
 
   const onMouseDown = React.useCallback(
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      const self = event.currentTarget;
+      const element = event.currentTarget;
       if (isPortalEvent(event)) return;
-      if (!isButton(self)) return;
-      const activeElement = getActiveElement(self);
+      if (!isButton(element)) return;
+      const activeElement = getActiveElement(element);
       if (!activeElement) return;
       const activeElementIsBody = activeElement.tagName === "BODY";
-      const focusableAncestor = getClosestFocusable(self.parentElement);
+      const focusableAncestor = getClosestFocusable(element.parentElement);
       if (
         activeElement === focusableAncestor ||
         (activeElementIsBody && !focusableAncestor)
@@ -81,8 +81,8 @@ function useFocusOnMouseDown() {
         // we also don't have any other event to listen to since body never
         // emits focus/blur events on itself.
         // In both of these cases, we have to schedule focus on this tabbable
-        // element (self).
-        scheduleFocus(self);
+        // element.
+        scheduleFocus(element);
       } else if (focusableAncestor) {
         // Clicking (mouse down) on the tabbable element on Safari and Firefox
         // on MacOS will fire focus on the focusable ancestor element if
@@ -90,13 +90,13 @@ function useFocusOnMouseDown() {
         // for this event to happen before moving focus to this element.
         // Instead of moving focus right away, we have to schedule it,
         // otherwise it's gonna prevent drag events from happening.
-        const onFocus = () => scheduleFocus(self);
+        const onFocus = () => scheduleFocus(element);
         focusableAncestor.addEventListener("focusin", onFocus, { once: true });
       } else {
         // Finally, if there's no focsuable ancestor and there's another
         // element with focus, we wait for that element to get blurred before
         // focusing this one.
-        const onBlur = () => focusIfNeeded(self);
+        const onBlur = () => focusIfNeeded(element);
         activeElement.addEventListener("blur", onBlur, { once: true });
       }
     },

@@ -34,9 +34,9 @@ export function useDisclosureRef(
     // forcing focus on the disclosure button. Otherwise, we wouldn't be able
     // to close the dialog by clicking again on the disclosure.
     const onMouseDown = (event: MouseEvent) => {
-      const self = event.currentTarget as HTMLElement;
+      const element = event.currentTarget as HTMLElement;
       event.preventDefault();
-      self.focus();
+      element.focus();
     };
     const disclosure = options.unstable_disclosureRef?.current || ref.current;
     disclosure?.addEventListener("mousedown", onMouseDown);

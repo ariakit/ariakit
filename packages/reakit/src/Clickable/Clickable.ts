@@ -28,15 +28,15 @@ export type ClickableHTMLProps = TabbableHTMLProps;
 export type ClickableProps = ClickableOptions & ClickableHTMLProps;
 
 function isNativeClick(event: React.KeyboardEvent) {
-  const self = event.currentTarget;
+  const element = event.currentTarget;
   if (!event.isTrusted) return false;
   // istanbul ignore next: can't test trusted events yet
   return (
-    isButton(self) ||
-    self.tagName === "INPUT" ||
-    self.tagName === "TEXTAREA" ||
-    self.tagName === "A" ||
-    self.tagName === "SELECT"
+    isButton(element) ||
+    element.tagName === "INPUT" ||
+    element.tagName === "TEXTAREA" ||
+    element.tagName === "A" ||
+    element.tagName === "SELECT"
   );
 }
 

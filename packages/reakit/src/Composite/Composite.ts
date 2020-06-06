@@ -154,8 +154,8 @@ export const unstable_useComposite = createHook<
     const activeElementRef = isIE11 ? useActiveElementRef(ref) : undefined;
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) {
+      const element = ref.current;
+      if (!element) {
         warning(
           true,
           "Can't focus composite component because `ref` wasn't passed to component.",
@@ -166,7 +166,7 @@ export const unstable_useComposite = createHook<
       if (options.unstable_moves && !currentItem) {
         // If composite.move(null) has been called, the composite container
         // will receive focus.
-        self.focus();
+        element.focus();
       }
     }, [options.unstable_moves, currentItem]);
 

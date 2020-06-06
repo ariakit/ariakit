@@ -27,8 +27,8 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
     const [type, setType] = React.useState<"button" | undefined>("button");
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) {
+      const element = ref.current;
+      if (!element) {
         warning(
           true,
           "Can't determine whether the element is a native button because `ref` wasn't passed to the component",
@@ -36,8 +36,8 @@ export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
         );
         return;
       }
-      if (!isButton(self)) {
-        if (self.tagName !== "A") {
+      if (!isButton(element)) {
+        if (element.tagName !== "A") {
           setRole("button");
         }
         setType(undefined);

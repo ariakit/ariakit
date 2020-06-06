@@ -164,8 +164,8 @@ export const unstable_useCompositeItem = createHook<
     }, [id, trulyDisabled, options.registerItem, options.unregisterItem]);
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) {
+      const element = ref.current;
+      if (!element) {
         warning(
           true,
           "Can't focus composite item component because `ref` wasn't passed to component.",
@@ -179,7 +179,7 @@ export const unstable_useCompositeItem = createHook<
       // isCurrentItemRef instead of isCurrentItem because we don't want to
       // focus the item if isCurrentItem changes (and options.moves doesn't).
       if (options.unstable_moves && isCurrentItemRef.current) {
-        self.focus();
+        element.focus();
       }
     }, [options.unstable_moves]);
 
@@ -330,8 +330,8 @@ export const unstable_useCompositeItem = createHook<
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        const self = event.currentTarget;
-        const widget = getWidget(self);
+        const element = event.currentTarget;
+        const widget = getWidget(element);
         if (widget && !hasFocusWithin(widget)) {
           // If there's a widget inside the composite item, we make sure it's
           // focused when pressing enter, space or clicking on the composite item.
