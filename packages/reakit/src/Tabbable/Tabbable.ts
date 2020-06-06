@@ -96,8 +96,8 @@ function useFocusOnMouseDown() {
         // Finally, if there's no focsuable ancestor and there's another
         // element with focus, we wait for that element to get blurred before
         // focusing this one.
-        const onFocus = () => focusIfNeeded(self);
-        activeElement.addEventListener("blur", onFocus, { once: true });
+        const onBlur = () => focusIfNeeded(self);
+        activeElement.addEventListener("blur", onBlur, { once: true });
       }
     },
     []
