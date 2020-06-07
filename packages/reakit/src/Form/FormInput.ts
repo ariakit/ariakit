@@ -3,11 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import {
-  TabbableOptions,
-  TabbableHTMLProps,
-  useTabbable,
-} from "../Tabbable/Tabbable";
+import { InputOptions, InputHTMLProps, useInput } from "../Input/Input";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
@@ -20,7 +16,7 @@ import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
 export type unstable_FormInputOptions<
   V,
   P extends DeepPath<V, P>
-> = TabbableOptions &
+> = InputOptions &
   Pick<
     unstable_FormStateReturn<V>,
     "baseId" | "values" | "touched" | "errors" | "update" | "blur"
@@ -31,7 +27,7 @@ export type unstable_FormInputOptions<
     name: P;
   };
 
-export type unstable_FormInputHTMLProps = TabbableHTMLProps &
+export type unstable_FormInputHTMLProps = InputHTMLProps &
   React.InputHTMLAttributes<any>;
 
 export type unstable_FormInputProps<
@@ -44,7 +40,7 @@ export const unstable_useFormInput = createHook<
   unstable_FormInputHTMLProps
 >({
   name: "FormInput",
-  compose: useTabbable,
+  compose: useInput,
   useState: unstable_useFormState,
   keys: ["name"],
 

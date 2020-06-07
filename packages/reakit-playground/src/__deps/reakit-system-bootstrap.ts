@@ -8,6 +8,7 @@ export default {
   "reakit-system-bootstrap/Dialog": require("reakit-system-bootstrap/Dialog"),
   "reakit-system-bootstrap/Form": require("reakit-system-bootstrap/Form"),
   "reakit-system-bootstrap/Group": require("reakit-system-bootstrap/Group"),
+  "reakit-system-bootstrap/Input": require("reakit-system-bootstrap/Input"),
   "reakit-system-bootstrap/Menu": require("reakit-system-bootstrap/Menu"),
   "reakit-system-bootstrap/Popover": require("reakit-system-bootstrap/Popover"),
   "reakit-system-bootstrap/Separator": require("reakit-system-bootstrap/Separator"),

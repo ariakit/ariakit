@@ -1,5 +1,5 @@
 - section: Guide
-  paths: 
+  paths:
     - /docs/get-started/
     - /docs/basic-concepts/
     - /docs/composition/
@@ -16,6 +16,7 @@
     - /docs/disclosure/
     - /docs/form/
     - /docs/group/
+    - /docs/input/
     - /docs/menu/
     - /docs/popover/
     - /docs/radio/

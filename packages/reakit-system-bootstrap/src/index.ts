@@ -4,6 +4,7 @@ export * from "./Composite";
 export * from "./Dialog";
 export * from "./Form";
 export * from "./Group";
+export * from "./Input";
 export * from "./Menu";
 export * from "./palette";
 export * from "./Popover";

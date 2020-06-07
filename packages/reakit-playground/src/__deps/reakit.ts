@@ -49,6 +49,8 @@ export default {
   "reakit/Id/Id": require("reakit/Id/Id"),
   "reakit/Id/IdProvider": require("reakit/Id/IdProvider"),
   "reakit/Id/IdState": require("reakit/Id/IdState"),
+  "reakit/Input": require("reakit/Input"),
+  "reakit/Input/Input": require("reakit/Input/Input"),
   "reakit/Menu": require("reakit/Menu"),
   "reakit/Menu/Menu": require("reakit/Menu/Menu"),
   "reakit/Menu/MenuArrow": require("reakit/Menu/MenuArrow"),
