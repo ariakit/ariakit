@@ -81,6 +81,11 @@ yarn
 yarn website
 ```
 
+### Branches
+
+`master` branch contains current stable version of `reakit` packages and it is publishing as main `latest` [dist-tag](https://docs.npmjs.com/cli/dist-tag) to npm. PRs with bug fixes could be targeted directly to the `master` branch.
+PRs that introduce new features/components should be targeted to the `next` branch. Newly added components and APIs should be prefixed with `unstable_` to indicate its experimental status.
+
 ### Scripts
 
 - `yarn test` runs tests for all packages.
