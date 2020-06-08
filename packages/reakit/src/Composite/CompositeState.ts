@@ -4,6 +4,7 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import { applyState } from "reakit-utils/applyState";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -581,12 +582,11 @@ function useAction<T extends (...args: any[]) => any>(fn: T) {
 
 function useIsUnmountedRef() {
   const isUnmountedRef = React.useRef(false);
-  React.useLayoutEffect(
-    () => () => {
+  useIsomorphicEffect(() => {
+    return () => {
       isUnmountedRef.current = true;
-    },
-    []
-  );
+    };
+  }, []);
   return isUnmountedRef;
 }
 
