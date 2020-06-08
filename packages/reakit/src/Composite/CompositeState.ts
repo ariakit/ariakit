@@ -579,6 +579,17 @@ function useAction<T extends (...args: any[]) => any>(fn: T) {
   return React.useCallback(fn, []);
 }
 
+function useIsMountedRef() {
+  const isMountedRef = React.useRef(true);
+  React.useLayoutEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
+    []
+  );
+  return isMountedRef;
+}
+
 export function unstable_useCompositeState(
   initialState: SealedInitialState<unstable_CompositeInitialState> = {}
 ): unstable_CompositeStateReturn {
@@ -624,20 +635,34 @@ export function unstable_useCompositeState(
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
+  // See ./__examples__/DrillUpComposite
+  const isMountedRef = useIsMountedRef();
 
   return {
     ...idState,
     ...state,
     unstable_hasActiveWidget: hasActiveWidget,
     unstable_setHasActiveWidget: setHasActiveWidget,
-    registerItem: useAction((item) => dispatch({ type: "registerItem", item })),
-    unregisterItem: useAction((id) => dispatch({ type: "unregisterItem", id })),
-    registerGroup: useAction((group) =>
-      dispatch({ type: "registerGroup", group })
-    ),
-    unregisterGroup: useAction((id) =>
-      dispatch({ type: "unregisterGroup", id })
-    ),
+    registerItem: useAction((item) => {
+      if (isMountedRef.current) {
+        dispatch({ type: "registerItem", item });
+      }
+    }),
+    unregisterItem: useAction((id) => {
+      if (isMountedRef.current) {
+        dispatch({ type: "unregisterItem", id });
+      }
+    }),
+    registerGroup: useAction((group) => {
+      if (isMountedRef.current) {
+        dispatch({ type: "registerGroup", group });
+      }
+    }),
+    unregisterGroup: useAction((id) => {
+      if (isMountedRef.current) {
+        dispatch({ type: "unregisterGroup", id });
+      }
+    }),
     move: useAction((id) => dispatch({ type: "move", id })),
     next: useAction((allTheWay) => dispatch({ type: "next", allTheWay })),
     previous: useAction((allTheWay) =>
