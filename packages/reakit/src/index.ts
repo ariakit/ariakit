@@ -8,6 +8,7 @@ export * from "./Disclosure";
 export * from "./Form";
 export * from "./Group";
 export * from "./Id";
+export * from "./Input";
 export * from "./Menu";
 export * from "./Popover";
 export * from "./Portal";

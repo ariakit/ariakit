@@ -455,7 +455,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Form` uses [Box](/docs/box/).
 - `FormCheckbox` uses [Checkbox](/docs/checkbox/).
 - `FormGroup` uses [Group](/docs/group/).
-- `FormInput` uses [Tabbable](/docs/tabbable/).
+- `FormInput` uses [Input](/docs/input/).
 - `FormLabel` uses [Box](/docs/box/).
 - `FormMessage` uses [Box](/docs/box/).
 - `FormPushButton` uses [Button](/docs/button/).
