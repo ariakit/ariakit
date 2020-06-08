@@ -78,20 +78,20 @@ export const unstable_useCompositeItemWidget = createHook<
         if (event.defaultPrevented) return;
         if (!isSelfTarget(event)) return;
         if (event.nativeEvent.isComposing) return;
-        const self = event.currentTarget;
+        const element = event.currentTarget;
         if (event.key === "Enter") {
-          if (isTextField(self)) {
-            const isMultilineTextField = self.tagName === "TEXTAREA";
+          if (isTextField(element)) {
+            const isMultilineTextField = element.tagName === "TEXTAREA";
             // Make sure we can create new lines using Shift+Enter
             if (isMultilineTextField && event.shiftKey) return;
             // Make sure it'll not trigger a click on the parent button
             event.preventDefault();
-            focusCurrentItem(self, options.currentId);
+            focusCurrentItem(element, options.currentId);
           }
         } else if (event.key === "Escape") {
-          focusCurrentItem(self, options.currentId);
-          if (isTextField(self)) {
-            setTextFieldValue(self, initialValue.current);
+          focusCurrentItem(element, options.currentId);
+          if (isTextField(element)) {
+            setTextFieldValue(element, initialValue.current);
           }
         }
       },

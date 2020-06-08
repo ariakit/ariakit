@@ -68,11 +68,11 @@ export const unstable_useFormPushButton = createHook<
         );
 
         if (!inputId) return;
-        const self = event.currentTarget;
+        const element = event.currentTarget;
 
         window.requestAnimationFrame(() => {
           const selector = `[id^="${inputId}"]`;
-          const document = getDocument(self);
+          const document = getDocument(element);
           const input = document.querySelector<HTMLElement>(selector);
           input?.focus();
         });

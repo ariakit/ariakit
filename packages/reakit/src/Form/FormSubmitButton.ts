@@ -35,10 +35,10 @@ export const unstable_useFormSubmitButton = createHook<
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
 
-        const self = event.currentTarget;
+        const element = event.currentTarget;
 
         window.requestAnimationFrame(() => {
-          const input = getFirstInvalidInput(options.baseId, self);
+          const input = getFirstInvalidInput(options.baseId, element);
           input?.focus();
           if (input && "select" in input) {
             input.select();
