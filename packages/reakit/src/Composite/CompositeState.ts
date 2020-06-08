@@ -4,6 +4,7 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import { applyState } from "reakit-utils/applyState";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -579,6 +580,16 @@ function useAction<T extends (...args: any[]) => any>(fn: T) {
   return React.useCallback(fn, []);
 }
 
+function useIsUnmountedRef() {
+  const isUnmountedRef = React.useRef(false);
+  useIsomorphicEffect(() => {
+    return () => {
+      isUnmountedRef.current = true;
+    };
+  }, []);
+  return isUnmountedRef;
+}
+
 export function unstable_useCompositeState(
   initialState: SealedInitialState<unstable_CompositeInitialState> = {}
 ): unstable_CompositeStateReturn {
@@ -624,20 +635,33 @@ export function unstable_useCompositeState(
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
+  // register/unregister may be called when this component is unmounted. We
+  // store the unmounted state here so we don't update the state if it's true.
+  // This only happens in a very specific situation.
+  // See https://github.com/reakit/reakit/issues/650
+  const isUnmountedRef = useIsUnmountedRef();
 
   return {
     ...idState,
     ...state,
     unstable_hasActiveWidget: hasActiveWidget,
     unstable_setHasActiveWidget: setHasActiveWidget,
-    registerItem: useAction((item) => dispatch({ type: "registerItem", item })),
-    unregisterItem: useAction((id) => dispatch({ type: "unregisterItem", id })),
-    registerGroup: useAction((group) =>
-      dispatch({ type: "registerGroup", group })
-    ),
-    unregisterGroup: useAction((id) =>
-      dispatch({ type: "unregisterGroup", id })
-    ),
+    registerItem: useAction((item) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "registerItem", item });
+    }),
+    unregisterItem: useAction((id) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "unregisterItem", id });
+    }),
+    registerGroup: useAction((group) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "registerGroup", group });
+    }),
+    unregisterGroup: useAction((id) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "unregisterGroup", id });
+    }),
     move: useAction((id) => dispatch({ type: "move", id })),
     next: useAction((allTheWay) => dispatch({ type: "next", allTheWay })),
     previous: useAction((allTheWay) =>
