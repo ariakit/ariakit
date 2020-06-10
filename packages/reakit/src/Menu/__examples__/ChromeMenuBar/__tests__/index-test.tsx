@@ -30,7 +30,7 @@ test("navigate through the menu bar using keyboard", async () => {
   expect(label("Help")).toBeVisible();
   press.ArrowRight();
   expect(text("Chrome")).toHaveFocus();
-  expect(label("Chrome")).toBeVisible();
+  await wait(expect(label("Chrome")).toBeVisible);
   press.ArrowDown();
   await wait(expect(text("About Google Chrome")).toHaveFocus);
   press.ArrowDown();

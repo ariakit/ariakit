@@ -57,7 +57,7 @@ import {
     press.ArrowRight();
     expect(text("item3")).not.toHaveFocus();
     expect(label("menu")).toBeVisible();
-    expect(text("menuitem1")).toHaveFocus();
+    await wait(expect(text("menuitem1")).toHaveFocus);
   });
 
   test(`${strategy} composite with menu button not controlling arrow keys`, async () => {

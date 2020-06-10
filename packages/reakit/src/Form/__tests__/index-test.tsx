@@ -130,7 +130,7 @@ test("display validation error", async () => {
   const { getByLabelText, getByTestId } = render(<Test />);
   const input = getByLabelText("input");
   const error = getByTestId("error");
-  expect(error).toBeEmpty();
+  expect(error).toBeEmptyDOMElement();
   focus(input);
   blur();
   await wait(() => expect(error).toHaveTextContent("required"));
@@ -160,9 +160,9 @@ test("display validation message", async () => {
   const { getByLabelText, getByTestId } = render(<Test />);
   const input = getByLabelText("input");
   const message = getByTestId("message");
-  expect(message).toBeEmpty();
+  expect(message).toBeEmptyDOMElement();
   type("a", input);
-  expect(message).toBeEmpty();
+  expect(message).toBeEmptyDOMElement();
   focus(input);
   blur();
   await wait(() => expect(message).toHaveTextContent("nice"));
@@ -202,7 +202,7 @@ test("display submission error", async () => {
   const { getByRole, getByTestId } = render(<Test />);
   const form = getByRole("form");
   const error = getByTestId("error");
-  expect(error).toBeEmpty();
+  expect(error).toBeEmptyDOMElement();
   fireEvent.submit(form);
   await wait(() => expect(error).toHaveTextContent("error"));
 });
@@ -245,7 +245,7 @@ test("display submission message", async () => {
   const { getByRole, getByTestId } = render(<Test />);
   const form = getByRole("form");
   const message = getByTestId("message");
-  expect(message).toBeEmpty();
+  expect(message).toBeEmptyDOMElement();
   fireEvent.submit(form);
   await wait(() => expect(message).toHaveTextContent("nice"));
 });
@@ -288,7 +288,7 @@ test("display validation message on submit", async () => {
   const { getByRole, getByTestId } = render(<Test />);
   const form = getByRole("form");
   const message = getByTestId("message");
-  expect(message).toBeEmpty();
+  expect(message).toBeEmptyDOMElement();
   fireEvent.submit(form);
   await wait(() => expect(message).toHaveTextContent("nice"));
 });
@@ -327,7 +327,7 @@ test("display validation error on submit", async () => {
   const { getByRole, getByTestId } = render(<Test />);
   const form = getByRole("form");
   const error = getByTestId("error");
-  expect(error).toBeEmpty();
+  expect(error).toBeEmptyDOMElement();
   fireEvent.submit(form);
   await wait(() => expect(error).toHaveTextContent("error"));
 });
@@ -367,11 +367,11 @@ test("display group error", async () => {
   const error = getByTestId("error");
   const a = getByLabelText("a");
   const b = getByLabelText("b");
-  expect(error).toBeEmpty();
+  expect(error).toBeEmptyDOMElement();
   fireEvent.submit(form);
   await wait(() => expect(error).toHaveTextContent("error"));
   click(b);
-  await wait(expect(error).toBeEmpty);
+  await wait(expect(error).toBeEmptyDOMElement);
   click(a);
   await wait(() => expect(error).toHaveTextContent("error"));
 });
@@ -405,14 +405,14 @@ test("display group message", async () => {
   const form = getByRole("form");
   const checkbox = getByLabelText("checkbox") as HTMLInputElement;
   const message = getByTestId("message");
-  expect(message).toBeEmpty();
+  expect(message).toBeEmptyDOMElement();
   fireEvent.submit(form);
   await wait(() => expect(message).toHaveTextContent("nice"));
   expect(checkbox.checked).toBe(false);
   click(checkbox);
   expect(checkbox.checked).toBe(true);
   fireEvent.submit(form);
-  await wait(expect(message).toBeEmpty);
+  await wait(expect(message).toBeEmptyDOMElement);
 });
 
 test("focus the first invalid input on failed submit", async () => {
