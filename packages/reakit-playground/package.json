@@ -36,7 +36,7 @@
     "buble": "0.20.0",
     "codemirror": "5.54.0",
     "emotion": "^10.0.27",
-    "react-codemirror2": "7.2.0",
+    "react-codemirror2": "7.2.1",
     "reakit": "^1.0.4",
     "reakit-system": "^0.12.2",
     "reakit-system-bootstrap": "^0.11.3",
