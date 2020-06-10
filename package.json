@@ -60,6 +60,7 @@
     "@types/jest": "26.0.0",
     "@types/jest-axe": "3.2.2",
     "@types/prop-types": "15.7.3",
+    "@types/react-dom": "16.9.8",
     "@types/storybook__react": "5.2.1",
     "@types/vfile-message": "1.0.1",
     "@types/wordpress__jest-console": "3.0.2",
