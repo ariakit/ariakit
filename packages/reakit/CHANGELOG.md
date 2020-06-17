@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/reakit/reakit/compare/reakit@1.0.5...reakit@1.1.0) (2020-06-17)
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/issues/671)) ([79d3926](https://github.com/reakit/reakit/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/issues/665)
+* Add experimental `unstable_sort` method to `useCompositeState` ([57e409e](https://github.com/reakit/reakit/commit/57e409e1d656eec3c3959bfbb76e32841fe300ad))
+* Mark `Composite` as stable ([#667](https://github.com/reakit/reakit/issues/667)) ([5e01f4c](https://github.com/reakit/reakit/commit/5e01f4c1cdd23a55cb2d8d870b268310d0f42681))
+
+
+
+
+
 ## [1.0.5](https://github.com/reakit/reakit/compare/reakit@1.0.4...reakit@1.0.5) (2020-06-17)
 
 

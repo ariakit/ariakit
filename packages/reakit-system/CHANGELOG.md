@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.13.0-alpha.0...reakit-system@0.13.0) (2020-06-17)
+
+
+### Features
+
+* Support render props passed to the `as` prop component ([#668](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/668)) ([214d0e6](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/214d0e6357ea659a05d351fc26f539d186df0404))
+
+
+
+
+
 ## [0.12.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.12.1...reakit-system@0.12.2) (2020-06-04)
 
 

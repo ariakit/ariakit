@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.12.0-alpha.0...reakit-system-palette@0.12.0) (2020-06-17)
+
+**Note:** Version bump only for package reakit-system-palette
+
+
+
+
+
 ## [0.11.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-palette/compare/reakit-system-palette@0.11.2...reakit-system-palette@0.11.3) (2020-06-04)
 
 **Note:** Version bump only for package reakit-system-palette

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.5...reakit-playground@0.13.0) (2020-06-17)
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/671)) ([79d3926](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/665)
+
+
+
+
+
 ## [0.12.5](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.4...reakit-playground@0.12.5) (2020-06-17)
 
 **Note:** Version bump only for package reakit-playground

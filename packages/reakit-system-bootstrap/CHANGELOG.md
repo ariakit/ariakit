@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.12.0-alpha.0...reakit-system-bootstrap@0.12.0) (2020-06-17)
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/671)) ([79d3926](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/665)
+
+
+
+
+
 ## [0.11.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.11.2...reakit-system-bootstrap@0.11.3) (2020-06-04)
 
 **Note:** Version bump only for package reakit-system-bootstrap
