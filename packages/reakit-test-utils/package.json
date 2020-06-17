@@ -1,6 +1,6 @@
 {
   "name": "reakit-test-utils",
-  "version": "0.12.0-alpha.0",
+  "version": "0.12.0",
   "description": "Reakit test utils",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils",
@@ -30,8 +30,8 @@
   ],
   "dependencies": {
     "jest-axe": "3.4.0",
-    "reakit-utils": "^0.13.0-alpha.0",
-    "reakit-warning": "^0.4.0-alpha.0"
+    "reakit-utils": "^0.12.1",
+    "reakit-warning": "^0.3.1"
   },
   "peerDependencies": {
     "@testing-library/dom": "^7.0.0",
