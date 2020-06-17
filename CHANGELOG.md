@@ -3,25 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.1.0-alpha.1](https://github.com/reakit/reakit/compare/reakit@1.0.4...reakit@1.1.0-alpha.1) (2020-06-06)
+## [1.0.5](https://github.com/reakit/reakit/compare/reakit@1.0.4...reakit@1.0.5) (2020-06-17)
 
 
-### Features
+### Bug Fixes
 
-* Add experimental `unstable_sort` method to `useCompositeState` ([57e409e](https://github.com/reakit/reakit/commit/57e409e1d656eec3c3959bfbb76e32841fe300ad))
-* Mark `Composite` as stable ([#667](https://github.com/reakit/reakit/issues/667)) ([5e01f4c](https://github.com/reakit/reakit/commit/5e01f4c1cdd23a55cb2d8d870b268310d0f42681))
-
-
-
-
-
-# [1.1.0-alpha.0](https://github.com/reakit/reakit/compare/reakit@1.0.3...reakit@1.1.0-alpha.0) (2020-06-04)
-
-
-### Features
-
-* Add experimental `unstable_sort` method to `useCompositeState` ([57e409e](https://github.com/reakit/reakit/commit/57e409e1d656eec3c3959bfbb76e32841fe300ad))
-* Mark `Composite` as stable ([#667](https://github.com/reakit/reakit/issues/667)) ([5e01f4c](https://github.com/reakit/reakit/commit/5e01f4c1cdd23a55cb2d8d870b268310d0f42681))
+* Fix `Composite` state update on unmounted components ([#672](https://github.com/reakit/reakit/issues/672)) ([1b1c9aa](https://github.com/reakit/reakit/commit/1b1c9aac60cc5b1c4dc440af6c4c5936fc57e333)), closes [#650](https://github.com/reakit/reakit/issues/650)
 
 
 
@@ -155,13 +142,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   **Before:**
   ```jsx
   const dialog = useDialogState();
-  <Dialog {...dialog} modal={false} />
+  <Dialog {...dialog} modal={false} />;
   ```
 
   **After:**
   ```jsx
   const dialog = useDialogState({ modal: false });
-  <Dialog {...dialog} />
+  <Dialog {...dialog} />;
   ```
 
 
@@ -280,14 +267,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   **Before:**
   ```jsx
   import { Tabbable } from "reakit/Tabbable";
-  <Tabbable />
+  
+  <Tabbable />;
   ```
   **After:**
   ```jsx
   import { Clickable } from "reakit/Clickable";
   // Tabbable is not going away, it just doesn't represent a clickable element
   // anymore
-  <Clickable />
+  <Clickable />;
   ```
 * Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
 * `DisclosureRegion` has been renamed to `DisclosureContent`.
@@ -387,11 +375,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
   **Before:**
   ```jsx
-  <Checkbox onChange={event => setChecked(!event.target.checked)} />;
+  <Checkbox onChange={(event) => setChecked(!event.target.checked)} />;
   ```
   **After:**
   ```jsx
-  <Checkbox onChange={event => setChecked(event.target.checked)} />;
+  <Checkbox onChange={(event) => setChecked(event.target.checked)} />;
   ```
 
 
