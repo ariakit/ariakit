@@ -22,7 +22,8 @@
     "website:build": "lerna exec --scope website -- yarn build",
     "website:serve": "lerna exec --scope website -- yarn serve",
     "prerelease": "patch-package && yarn build",
-    "release": "lerna publish --pre-dist-tag next"
+    "release": "lerna publish --pre-dist-tag next --no-private",
+    "release:next": "yarn release --conventional-prerelease --no-changelog"
   },
   "husky": {
     "hooks": {
