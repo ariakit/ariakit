@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/reakit/reakit/compare/reakit@1.0.4...reakit@1.0.5) (2020-06-17)
+
+
+### Bug Fixes
+
+* Fix `Composite` state update on unmounted components ([#672](https://github.com/reakit/reakit/issues/672)) ([1b1c9aa](https://github.com/reakit/reakit/commit/1b1c9aac60cc5b1c4dc440af6c4c5936fc57e333)), closes [#650](https://github.com/reakit/reakit/issues/650)
+
+
+
+
+
 ## [1.0.4](https://github.com/reakit/reakit/compare/reakit@1.0.3...reakit@1.0.4) (2020-06-06)
 
 
