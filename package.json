@@ -22,7 +22,7 @@
     "website:build": "lerna exec --scope website -- yarn build",
     "website:serve": "lerna exec --scope website -- yarn serve",
     "prerelease": "patch-package && yarn build",
-    "release": "lerna publish --no-private --pre-dist-tag next",
+    "release": "lerna publish --pre-dist-tag next",
     "release:next": "yarn release --no-git-tag-version --no-changelog",
     "release:graduate": "yarn release --conventional-graduate"
   },
