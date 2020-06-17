@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Button } from "reakit/Button";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
-  unstable_CompositeGroup as CompositeGroup,
-  unstable_CompositeStateReturn as CompositeStateReturn,
+  useCompositeState,
+  Composite,
+  CompositeItem,
+  CompositeGroup,
+  CompositeStateReturn,
 } from "reakit/Composite";
 
 const CompositeContext = React.createContext<CompositeStateReturn | null>(null);
