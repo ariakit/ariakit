@@ -161,6 +161,13 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       [options.hideOnEsc, options.hide]
     );
 
+    const onBlur = React.useCallback((event: React.FocusEvent<HTMLElement>) => {
+      // TODO: Support IE 11
+      if (!event.relatedTarget) {
+        event.currentTarget.focus();
+      }
+    }, []);
+
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         element = wrap(element);
@@ -185,6 +192,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       "aria-modal": modal,
       "data-dialog": true,
       onKeyDown,
+      onBlur,
       wrapElement,
       ...htmlProps,
     };
