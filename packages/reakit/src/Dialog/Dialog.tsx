@@ -168,6 +168,12 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       }
     }, []);
 
+    React.useEffect(() => {
+      if (options.visible && document.activeElement === document.body) {
+        dialog.current?.focus();
+      }
+    });
+
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         element = wrap(element);

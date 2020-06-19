@@ -56,6 +56,8 @@ export function useEventListenerOutside(
         return;
       }
 
+      if (!target.parentNode) return;
+
       // Click inside dialog
       if (contains(container, target)) return;
 

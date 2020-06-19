@@ -4,19 +4,13 @@ import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
 
 export default function DialogWithFocusLoss() {
   const dialog = useDialogState();
-  React.useEffect(() => {
-    if (dialog.visible) {
-      const { activeElement } = document;
-      if (activeElement instanceof HTMLElement) {
-        activeElement.blur();
-      }
-    }
-  }, [dialog.visible]);
+  const [on, setOn] = React.useState(true);
   return (
     <>
       <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
       <Dialog {...dialog} aria-label="Dialog with focus loss">
-        <Button onClick={dialog.hide}>Close</Button>
+        <Button onFocus={(event) => event.currentTarget.blur()}>Button</Button>
+        {on && <Button onFocus={() => setOn(!on)}>Button</Button>}
       </Dialog>
     </>
   );
