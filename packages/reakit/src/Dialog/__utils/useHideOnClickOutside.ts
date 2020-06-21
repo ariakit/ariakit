@@ -57,7 +57,10 @@ export function useHideOnClickOutside(
     "focus",
     (event) => {
       // Fix for https://github.com/reakit/reakit/issues/619
-      if (event.target !== getDocument(dialogRef.current)) {
+      if (
+        event.target !== getDocument(dialogRef.current) &&
+        event.target !== document.body
+      ) {
         options.hide?.();
       }
     },

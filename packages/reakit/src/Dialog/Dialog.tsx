@@ -5,6 +5,7 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { getActiveElement } from "reakit-utils/getActiveElement";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -75,6 +76,19 @@ export type DialogHTMLProps = DisclosureContentHTMLProps;
 
 export type DialogProps = DialogOptions & DialogHTMLProps;
 
+const isIE11 = typeof window !== "undefined" && "msCrypto" in window;
+
+export function getNextActiveElementOnBlur(event: React.FocusEvent) {
+  // IE 11 doesn't support event.relatedTarget on blur.
+  // document.activeElement points the the next active element.
+  // On modern browsers, document.activeElement points to the current target.
+  if (isIE11) {
+    const activeElement = getActiveElement(event.target);
+    return activeElement as HTMLElement | null;
+  }
+  return event.relatedTarget as HTMLElement | null;
+}
+
 export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   name: "Dialog",
   compose: useDisclosureContent,
@@ -117,6 +131,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     {
       ref: htmlRef,
       onKeyDown: htmlOnKeyDown,
+      onBlur: htmlOnBlur,
       wrapElement: htmlWrapElement,
       tabIndex,
       ...htmlProps
@@ -127,6 +142,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const hasBackdrop = backdrop && backdrop === options.baseId;
     const disclosure = useDisclosureRef(dialog, options);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onBlurRef = useLiveRef(htmlOnBlur);
     const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
     // VoiceOver/Safari accepts only one `aria-modal` container, so if there
     // are visible child modals, then we don't want to set aria-modal on the
@@ -161,18 +177,55 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       [options.hideOnEsc, options.hide]
     );
 
-    const onBlur = React.useCallback((event: React.FocusEvent<HTMLElement>) => {
-      // TODO: Support IE 11
-      if (!event.relatedTarget) {
-        event.currentTarget.focus();
-      }
-    }, []);
+    const [a, setA] = React.useState();
 
-    React.useEffect(() => {
-      if (options.visible && document.activeElement === document.body) {
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent<HTMLElement>) => {
+        onBlurRef.current?.(event);
+        if (!options.visible) return;
+        // console.log(event.target);
+        // TODO: Support IE 11
+        const nextActiveElement = getNextActiveElementOnBlur(event);
+        if (
+          !nextActiveElement ||
+          !nextActiveElement.tagName ||
+          nextActiveElement.tagName === "HTML" ||
+          nextActiveElement === document.body
+        ) {
+          setA({});
+        }
+        // DISPLAY IS NOT WORKING ON SAFARI
+      },
+      [options.visible]
+    );
+
+    React.useLayoutEffect(() => {
+      if (
+        (a && options.visible && document.activeElement === document.body) ||
+        !document.activeElement ||
+        document.activeElement.tagName === "HTML"
+      ) {
         dialog.current?.focus();
       }
-    });
+    }, [a]);
+
+    React.useEffect(() => {
+      if (!options.visible || !dialog.current) return undefined;
+      const observer = new MutationObserver((mutations) => {
+        const [mutation] = mutations;
+        if (mutation.target !== dialog.current) return;
+        if (
+          document.activeElement === document.body ||
+          !document.activeElement
+        ) {
+          dialog.current?.focus();
+        }
+      });
+      observer.observe(dialog.current, { childList: true, subtree: true });
+      return () => {
+        observer.disconnect();
+      };
+    }, [options.visible]);
 
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
