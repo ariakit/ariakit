@@ -8,7 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* Restore missing `Composite` references ([9d9eff2](https://github.com/reakit/reakit/commit/9d9eff216328038b34af50cea03f45f8297e0756)), closes [#667](https://github.com/reakit/reakit/issues/667) [#issuecomment-647108385](https://github.com/reakit/reakit/issues/issuecomment-647108385)
+* Restore missing `Composite` references ([9d9eff2](https://github.com/reakit/reakit/commit/9d9eff216328038b34af50cea03f45f8297e0756)), closes [#667 (comment)](#https://github.com/reakit/reakit/pull/667#issuecomment-647108385)
 
 
 
