@@ -53,6 +53,12 @@ export default function CoreLayout(props: CoreLayoutProps) {
             background: ${background};
             color: ${foreground};
           }
+
+          :root {
+            --nav-width: 270px;
+            --aside-width: 210px;
+            --horizontal-gutter: 22px;
+          }
         `}
       />
       <Header transparent={isHome && !scrolled} />
@@ -61,10 +67,10 @@ export default function CoreLayout(props: CoreLayoutProps) {
           css={css`
             position: fixed;
             background: ${background};
-            width: 240px;
+            width: var(--nav-width);
             z-index: 900;
             top: 120px;
-            left: 10px;
+            left: 0;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
             height: calc(100vh - var(--header-height, 60px));
@@ -108,7 +114,10 @@ export default function CoreLayout(props: CoreLayoutProps) {
           ${
             title &&
             css`
-              margin: 100px 232px 72px 262px;
+              margin-top: 100px;
+              margin-right: calc(var(--aside-width) + var(--horizontal-gutter));
+              margin-bottom: 72px;
+              margin-left: calc(var(--nav-width) + var(--horizontal-gutter));
               padding: 8px;
               box-sizing: border-box;
 
@@ -120,7 +129,11 @@ export default function CoreLayout(props: CoreLayoutProps) {
                 margin-top: 120px;
               }
               @media (min-width: 1440px) {
-                max-width: 946px;
+                max-width: calc(
+                  1440px - var(--aside-width) - var(--nav-width) -
+                    var(--horizontal-gutter) * 2 -
+                    (var(--nav-width) - var(--aside-width))
+                );
                 margin-right: auto;
                 margin-left: auto;
               }
@@ -136,7 +149,7 @@ export default function CoreLayout(props: CoreLayoutProps) {
             position: fixed;
             top: 80px;
             right: 0;
-            width: 210px;
+            width: var(--aside-width);
             background: ${background};
             padding: 72px 16px;
             box-sizing: border-box;

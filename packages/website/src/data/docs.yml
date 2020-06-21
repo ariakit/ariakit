@@ -7,7 +7,7 @@
     - /docs/styling/
     - /docs/managing-state/
     - /docs/bundle-size/
-    - /docs/troubleshooting/
+    - /docs/experimental/
 - section: Components
   paths:
     - /docs/button/

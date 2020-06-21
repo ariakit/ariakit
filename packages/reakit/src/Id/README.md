@@ -6,7 +6,9 @@ experimental: true
 # Id
 
 <blockquote experimental="true">
-  <strong>This is experimental</strong> and may have breaking changes in minor or patch version updates. Issues for this module will have lower priority. Even so, if you use it, feel free to <a href="https://github.com/reakit/reakit/issues/new/choose" target="_blank">give us feedback</a>.
+
+  **This is experimental** and may introduce **breaking changes** or be **removed altogether** in patch and minor versions without notice. Learn more in [Experimental features](/docs/experimental/).
+
 </blockquote>
 
 `Id` is a component that renders an element with an automatically generated `id` attribute that is consistent across server and client. It's used by several other components.
