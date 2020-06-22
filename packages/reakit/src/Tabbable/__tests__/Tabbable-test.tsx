@@ -79,7 +79,9 @@ test("native button focus", () => {
 });
 
 test("native radio focus", () => {
-  const { getByLabelText } = render(<Tabbable as="input" type="radio" aria-label="tabbable" />);
+  const { getByLabelText } = render(
+    <Tabbable as="input" type="radio" aria-label="tabbable" />
+  );
   const tabbable = getByLabelText("tabbable");
   expect(tabbable).not.toHaveFocus();
   focus(tabbable);
