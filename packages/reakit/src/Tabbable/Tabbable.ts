@@ -7,6 +7,7 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
+import { isRadio } from "reakit-utils/isRadio";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { getClosestFocusable } from "reakit-utils/tabbable";
@@ -65,7 +66,7 @@ function useFocusOnMouseDown() {
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       const element = event.currentTarget;
       if (isPortalEvent(event)) return;
-      if (!isButton(element)) return;
+      if (!(isButton(element) || isRadio(element))) return;
       const activeElement = getActiveElement(element);
       if (!activeElement) return;
       const activeElementIsBody = activeElement.tagName === "BODY";

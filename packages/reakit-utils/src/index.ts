@@ -18,6 +18,7 @@ export * from "./isObject";
 export * from "./isPlainObject";
 export * from "./isPortalEvent";
 export * from "./isPromise";
+export * from "./isRadio";
 export * from "./isSelfTarget";
 export * from "./isTextField";
 export * from "./matches";
