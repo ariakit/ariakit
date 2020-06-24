@@ -4,10 +4,10 @@ import { closest } from "./closest";
  * Checks whether `element` is a label targeting a native HTML radio element or not.
  *
  * @example
- * import { isLabelOfRadio } from "reakit-utils";
+ * import { isLabelForRadio } from "reakit-utils";
  *
- * isLabelOfRadio(document.querySelector("label[for='radio']")); // true
- * isLabelOfRadio(document.querySelector("label[for='email']")); // false
+ * isLabelForRadio(document.querySelector("label[for='radio']")); // true
+ * isLabelForRadio(document.querySelector("label[for='email']")); // false
  *
  * @returns {boolean}
  */
