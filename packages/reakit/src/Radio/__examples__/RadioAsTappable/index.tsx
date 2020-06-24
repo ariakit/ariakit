@@ -31,11 +31,11 @@ export default function RadioAsTappable() {
         <label htmlFor="orange">orange</label>
         <Radio {...radio} value="orange" id="orange" />
         <label>
-          <Radio {...radio} value="apple" />
+          <Radio {...radio} value="apple" data-testid="apple" />
           apple
         </label>
         <label>
-          <Radio {...radio} value="banana" />
+          <Radio {...radio} value="banana" data-testid="banana" />
           <span>banana</span>
         </label>
         <Radio {...radio} value="watermelon" id="watermelon" />
