@@ -77,11 +77,11 @@ import { useDisclosureState, DisclosureContent } from "reakit";
 
 function Example() {
   // exposes `visible` state and methods like `show`, `hide` and `toggle`
-  const hidden = useDisclosureState({ visible: true });
+  const disclosure = useDisclosureState({ visible: true });
   return (
     <>
-      <button onClick={hidden.toggle}>Disclosure</button>
-      <DisclosureContent {...hidden}>Content</DisclosureContent>
+      <button onClick={disclosure.toggle}>Disclosure</button>
+      <DisclosureContent {...disclosure}>Content</DisclosureContent>
     </>
   );
 }
