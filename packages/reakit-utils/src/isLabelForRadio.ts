@@ -12,19 +12,18 @@ import { closest } from "./closest";
  * @returns {boolean}
  */
 export function isLabelForRadio(element: Element): element is HTMLLabelElement {
-  let label = element as HTMLLabelElement;
-  if (label.tagName !== "LABEL") {
-    return false;
-  }
-  let input = document.getElementById(label.htmlFor) as HTMLInputElement | any;
-  if (input) {
-    return input.type === "radio";
-  }
-  label = closest(element, "label");
-  if (label) {
-    input = label.querySelector<HTMLInputElement>("input");
+  const label = element as HTMLLabelElement;
+  if (label.tagName === "LABEL") {
+    const input = document.getElementById(label.htmlFor) as HTMLInputElement | any;
     if (input) {
       return input.type === "radio";
+    }
+  }
+  const labelAsParent = closest(element, "label") as HTMLLabelElement;
+  if (labelAsParent) {
+    const inputInside = labelAsParent.querySelector<HTMLInputElement>("input");
+    if (inputInside) {
+      return inputInside.type === "radio";
     }
   }
   return false;
