@@ -11,9 +11,9 @@ import { isRadio } from "reakit-utils/isRadio";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { getClosestFocusable } from "reakit-utils/tabbable";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { isLabelForRadio } from "reakit-utils/isLabelForRadio";
 import { closest } from "reakit-utils/closest";
+import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -217,7 +217,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     }, []);
 
     const onClick = React.useCallback(
-      (event: React.MouseEvent) => {
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (options.disabled) {
           event.stopPropagation();
           event.preventDefault();
