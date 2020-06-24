@@ -12,6 +12,8 @@ import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { getClosestFocusable } from "reakit-utils/tabbable";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { isLabelForRadio } from "reakit-utils/isLabelForRadio";
+import { closest } from "reakit-utils/closest";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -66,7 +68,7 @@ function useFocusOnMouseDown() {
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       const element = event.currentTarget;
       if (isPortalEvent(event)) return;
-      if (!(isButton(element) || isRadio(element))) return;
+      if (!isButton(element)) return;
       const activeElement = getActiveElement(element);
       if (!activeElement) return;
       const activeElementIsBody = activeElement.tagName === "BODY";
@@ -94,7 +96,7 @@ function useFocusOnMouseDown() {
         const onFocus = () => scheduleFocus(element);
         focusableAncestor.addEventListener("focusin", onFocus, { once: true });
       } else {
-        // Finally, if there's no focsuable ancestor and there's another
+        // Finally, if there's no focusable ancestor and there's another
         // element with focus, we wait for that element to get blurred before
         // focusing this one.
         const onBlur = () => focusIfNeeded(element);
@@ -105,6 +107,54 @@ function useFocusOnMouseDown() {
   );
 
   return onMouseDown;
+}
+
+function useFocusOnClick() {
+  if (!isSafariOrFirefoxOnMac) return undefined;
+  const [tabbable, scheduleFocus] = React.useState<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!tabbable) return;
+    focusIfNeeded(tabbable);
+    scheduleFocus(null);
+  }, [tabbable]);
+
+  const onClick = React.useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      const element = event.currentTarget;
+      if (isPortalEvent(event)) return;
+      if (!(isLabelForRadio(element) || isRadio(element))) return;
+
+      let elementToFocus;
+
+      const input = element as HTMLInputElement;
+      if (input.tagName === "INPUT" && input.type === "radio") {
+        elementToFocus = element;
+      }
+
+      const label = element as HTMLLabelElement;
+      const inputAsTarget = document.getElementById(
+        label.htmlFor
+      ) as HTMLInputElement;
+      if (label.tagName === "LABEL" && inputAsTarget?.type === "radio") {
+        elementToFocus = inputAsTarget;
+      }
+
+      const closestLabel = closest(element, "label") as HTMLLabelElement;
+      if (closestLabel) {
+        const inputInside = label.querySelector<HTMLInputElement>("input");
+        if (inputInside?.type === "radio") {
+          elementToFocus = input;
+        }
+      }
+
+      if (!elementToFocus) return;
+      scheduleFocus(elementToFocus);
+    },
+    []
+  );
+
+  return onClick;
 }
 
 function isNativeTabbable(element: Element) {
@@ -148,6 +198,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
+    const focusOnClick = useFocusOnClick();
     const focusOnMouseDown = useFocusOnMouseDown();
 
     useIsomorphicEffect(() => {
@@ -173,8 +224,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           return;
         }
         onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+        focusOnClick?.(event);
       },
-      [options.disabled]
+      [options.disabled, focusOnClick]
     );
 
     const onMouseDown = React.useCallback(
