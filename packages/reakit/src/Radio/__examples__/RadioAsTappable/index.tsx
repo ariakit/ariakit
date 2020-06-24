@@ -26,7 +26,7 @@ export default function RadioAsTappable() {
   return (
     <>
       <p>{radio.currentId} has been checked</p>
-      <p> {focusedElement.id || "body"} has the focus</p>
+      <p> {focusedElement?.id || "body"} has the focus</p>
       <RadioGroup {...radio} aria-label="fruits">
         <label htmlFor="orange">orange</label>
         <Radio {...radio} value="orange" id="orange" />
