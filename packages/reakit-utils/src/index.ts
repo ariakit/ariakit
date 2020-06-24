@@ -14,6 +14,7 @@ export * from "./hasFocusWithin";
 export * from "./isButton";
 export * from "./isEmpty";
 export * from "./isInteger";
+export * from "./isLabelForRadio";
 export * from "./isObject";
 export * from "./isPlainObject";
 export * from "./isPortalEvent";

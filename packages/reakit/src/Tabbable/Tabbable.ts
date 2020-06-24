@@ -128,7 +128,7 @@ function useFocusOnClick() {
       let elementToFocus;
 
       const input = element as HTMLInputElement;
-      if (input.tagName === "INPUT" && input.type === "radio") {
+      if (isRadio(input)) {
         elementToFocus = element;
       }
 

@@ -14,7 +14,9 @@ import { closest } from "./closest";
 export function isLabelForRadio(element: Element): element is HTMLLabelElement {
   const label = element as HTMLLabelElement;
   if (label.tagName === "LABEL") {
-    const input = document.getElementById(label.htmlFor) as HTMLInputElement | any;
+    const input = document.getElementById(label.htmlFor) as
+      | HTMLInputElement
+      | any;
     if (input) {
       return input.type === "radio";
     }
