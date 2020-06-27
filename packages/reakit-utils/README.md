@@ -36,6 +36,7 @@ yarn add reakit-utils
 -   [getActiveElement](#getactiveelement)
 -   [getDefaultView](#getdefaultview)
 -   [getDocument](#getdocument)
+-   [getNextActiveElementOnBlur](#getnextactiveelementonblur)
 -   [hasFocusWithin](#hasfocuswithin)
 -   [isButton](#isbutton)
 -   [isEmpty](#isempty)
@@ -257,6 +258,28 @@ Returns `element.ownerDocument || window.document`.
 -   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
 
 Returns **[Document](https://developer.mozilla.org/docs/Web/API/Document)** 
+
+### getNextActiveElementOnBlur
+
+Cross-browser method that returns the next active element (the element that
+is receiving focus) after a blur event is dispatched. It receives the blur
+event object as the argument.
+
+#### Parameters
+
+-   `event` **React.FocusEvent** 
+
+#### Examples
+
+```javascript
+import { getNextActiveElementOnBlur } from "reakit-utils";
+
+const element = document.getElementById("id");
+element.addEventListener("blur", (event) => {
+  const nextActiveElement = getNextActiveElementOnBlur(event);
+  ...
+});
+```
 
 ### hasFocusWithin
 
