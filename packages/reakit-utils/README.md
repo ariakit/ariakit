@@ -267,7 +267,7 @@ event object as the argument.
 
 #### Parameters
 
--   `event` **React.FocusEvent** 
+-   `event` **(React.FocusEvent | [FocusEvent](https://developer.mozilla.org/docs/Web/API/FocusEvent))** 
 
 #### Examples
 
