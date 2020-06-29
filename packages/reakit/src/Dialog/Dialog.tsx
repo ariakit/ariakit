@@ -5,7 +5,6 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,
@@ -23,6 +22,8 @@ import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
 import { useDialogState, DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
+import { useFocusOnChildUnmount } from "./__utils/useFocusOnChildUnmount";
+import { useFocusOnBlur } from "./__utils/useFocusOnBlur";
 
 export type DialogOptions = DisclosureContentOptions &
   Pick<
@@ -130,6 +131,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const disclosure = useDisclosureRef(dialog, options);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const onBlurRef = useLiveRef(htmlOnBlur);
+    const focusOnBlur = useFocusOnBlur(dialog, options);
     const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
     // VoiceOver/Safari accepts only one `aria-modal` container, so if there
     // are visible child modals, then we don't want to set aria-modal on the
@@ -138,6 +140,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
 
     usePreventBodyScroll(dialog, options);
     useFocusTrap(dialog, visibleModals, options);
+    useFocusOnChildUnmount(dialog, options);
     useFocusOnShow(dialog, dialogs, options);
     useFocusOnHide(dialog, disclosure, options);
     useHideOnClickOutside(dialog, disclosure, dialogs, options);
@@ -164,55 +167,13 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       [options.hideOnEsc, options.hide]
     );
 
-    const [a, setA] = React.useState();
-
     const onBlur = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
         onBlurRef.current?.(event);
-        if (!options.visible) return;
-        // console.log(event.target);
-        // TODO: Support IE 11
-        const nextActiveElement = getNextActiveElementOnBlur(event);
-        if (
-          !nextActiveElement ||
-          !nextActiveElement.tagName ||
-          nextActiveElement.tagName === "HTML" ||
-          nextActiveElement === document.body
-        ) {
-          setA({});
-        }
-        // DISPLAY IS NOT WORKING ON SAFARI
+        focusOnBlur(event);
       },
-      [options.visible]
+      [options.visible, focusOnBlur]
     );
-
-    React.useLayoutEffect(() => {
-      if (
-        (a && options.visible && document.activeElement === document.body) ||
-        !document.activeElement ||
-        document.activeElement.tagName === "HTML"
-      ) {
-        dialog.current?.focus();
-      }
-    }, [a]);
-
-    React.useEffect(() => {
-      if (!options.visible || !dialog.current) return undefined;
-      const observer = new MutationObserver((mutations) => {
-        const [mutation] = mutations;
-        if (mutation.target !== dialog.current) return;
-        if (
-          document.activeElement === document.body ||
-          !document.activeElement
-        ) {
-          dialog.current?.focus();
-        }
-      });
-      observer.observe(dialog.current, { childList: true, subtree: true });
-      return () => {
-        observer.disconnect();
-      };
-    }, [options.visible]);
 
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
