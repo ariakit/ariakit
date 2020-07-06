@@ -5,7 +5,13 @@ experimental: true
 
 # Grid
 
-Description
+<blockquote experimental="true">
+
+  **This is experimental** and may introduce **breaking changes** or be **removed altogether** in patch and minor versions without notice. Learn more in [Experimental features](/docs/experimental/).
+
+</blockquote>
+
+Accessible `Grid` component that enables users to navigate the information or interactive elements it contains using directional navigation keys. The items are organized in a two-dimensional container. It follows the [WAI-ARIA Grid Pattern](https://www.w3.org/TR/wai-aria-practices/#grid).
 
 <carbon-ad></carbon-ad>
 
@@ -19,11 +25,46 @@ Learn more in [Get started](/docs/get-started/).
 
 ## Usage
 
-Example
+```jsx
+import {
+  unstable_useGridState as useGridState,
+  unstable_Grid as Grid,
+  unstable_GridRow as GridRow,
+  unstable_GridCell as GridCell,
+} from "reakit/Grid";
+
+function Example() {
+  const grid = useGridState();
+  return (
+    <Grid {...grid} aria-label="My grid">
+      <GridRow {...grid}>
+        <GridCell {...grid}>cell</GridCell>
+        <GridCell {...grid}>cell</GridCell>
+        <GridCell {...grid}>cell</GridCell>
+      </GridRow>
+      <GridRow {...grid}>
+        <GridCell {...grid}>cell</GridCell>
+        <GridCell {...grid}>cell</GridCell>
+        <GridCell {...grid}>cell</GridCell>
+      </GridRow>
+      <GridRow {...grid}>
+        <GridCell {...grid}>cell</GridCell>
+        <GridCell {...grid}>cell</GridCell>
+        <GridCell {...grid}>cell</GridCell>
+      </GridRow>
+    </Grid>
+  );
+}
+```
 
 ## Accessibility
 
 - `Grid` has role `grid`.
+- `Grid` extends the accessibility features of [Composite](/docs/composite/#accessibility).
+- `GridRow` has role `row`.
+- `GridRow` extends the accessibility features of [CompositeGroup](/docs/composite/#accessibility).
+- `GridCell` has role `gridcell`.
+- `GridCell` extends the accessibility features of [CompositeItem](/docs/composite/#accessibility).
 
 Learn more in [Accessibility](/docs/accessibility/).
 
