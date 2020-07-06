@@ -1270,11 +1270,11 @@ import {
       const submenu2 = getByLabelText("submenu2");
       focus(item1);
       expect(submenu1).toBeVisible();
-      expect(item1).toHaveFocus();
+      await wait(expect(item1).toHaveFocus);
       press.ArrowDown();
       await wait(expect(submenu1item1).toHaveFocus);
       press.ArrowDown();
-      expect(item10).toHaveFocus();
+      await wait(expect(item10).toHaveFocus);
       press.ArrowRight();
       expect(submenu10).toBeVisible();
       await wait(expect(submenu10item1).toHaveFocus);

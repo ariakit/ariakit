@@ -30,6 +30,7 @@ test("initial state", () => {
       "loop": false,
       "orientation": undefined,
       "rtl": false,
+      "unstable_angular": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
@@ -79,31 +80,32 @@ test("registerItem", () => {
   const result = render();
   act(() => result.current.registerItem({ id: "1", ref: createRef() }));
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "baseId": "base",
-  "currentId": "1",
-  "groups": Array [],
-  "items": Array [
     Object {
-      "groupId": undefined,
-      "id": "1",
-      "ref": Object {
-        "current": <div />,
+      "baseId": "base",
+      "currentId": "1",
+      "groups": Array [],
+      "items": Array [
+        Object {
+          "groupId": undefined,
+          "id": "1",
+          "ref": Object {
+            "current": <div />,
+          },
+        },
+      ],
+      "loop": false,
+      "orientation": undefined,
+      "rtl": false,
+      "unstable_angular": false,
+      "unstable_hasActiveWidget": false,
+      "unstable_idCountRef": Object {
+        "current": 0,
       },
-    },
-  ],
-  "loop": false,
-  "orientation": undefined,
-  "rtl": false,
-  "unstable_hasActiveWidget": false,
-  "unstable_idCountRef": Object {
-    "current": 0,
-  },
-  "unstable_moves": 0,
-  "unstable_virtual": false,
-  "wrap": false,
-}
-`);
+      "unstable_moves": 0,
+      "unstable_virtual": false,
+      "wrap": false,
+    }
+  `);
 });
 
 test("unregisterItem", () => {
@@ -112,29 +114,30 @@ test("unregisterItem", () => {
   act(() => result.current.registerItem({ id: "2", ref: createRef() }));
   act(() => result.current.unregisterItem("1"));
   expect(result.current).toMatchInlineSnapshot(`
-Object {
-  "baseId": "base",
-  "currentId": "2",
-  "groups": Array [],
-  "items": Array [
     Object {
-      "groupId": undefined,
-      "id": "2",
-      "ref": Object {
-        "current": <div />,
+      "baseId": "base",
+      "currentId": "2",
+      "groups": Array [],
+      "items": Array [
+        Object {
+          "groupId": undefined,
+          "id": "2",
+          "ref": Object {
+            "current": <div />,
+          },
+        },
+      ],
+      "loop": false,
+      "orientation": undefined,
+      "rtl": false,
+      "unstable_angular": false,
+      "unstable_hasActiveWidget": false,
+      "unstable_idCountRef": Object {
+        "current": 0,
       },
-    },
-  ],
-  "loop": false,
-  "orientation": undefined,
-  "rtl": false,
-  "unstable_hasActiveWidget": false,
-  "unstable_idCountRef": Object {
-    "current": 0,
-  },
-  "unstable_moves": 0,
-  "unstable_virtual": false,
-  "wrap": false,
-}
-`);
+      "unstable_moves": 0,
+      "unstable_virtual": false,
+      "wrap": false,
+    }
+  `);
 });
