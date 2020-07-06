@@ -23,13 +23,15 @@ export function fillGroups(
 
   for (const group of groups) {
     for (let i = 0; i < maxLength; i += 1) {
-      if (!group[i] || (angular && group[i].disabled)) {
-        const lastItem =
-          i === 0 && angular ? findFirstEnabledItem(group) : group[i - 1];
+      const item = group[i];
+      if (!item || (angular && item.disabled)) {
+        const isFrist = i === 0;
+        const previousItem =
+          isFrist && angular ? findFirstEnabledItem(group) : group[i - 1];
         group[i] =
-          lastItem && currentId !== lastItem?.id && angular
-            ? lastItem
-            : createEmptyItem(lastItem?.groupId);
+          previousItem && currentId !== previousItem?.id && angular
+            ? previousItem
+            : createEmptyItem(previousItem?.groupId);
       }
     }
   }
