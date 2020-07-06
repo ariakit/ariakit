@@ -16,6 +16,7 @@ test("initial state", () => {
       "orientation": undefined,
       "rtl": false,
       "state": undefined,
+      "unstable_angular": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,

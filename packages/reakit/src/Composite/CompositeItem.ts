@@ -210,16 +210,14 @@ export const useCompositeItem = createHook<
 
     const onBlur = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
-        if (options.unstable_virtual) {
-          if (hasFocusedComposite.current) {
-            // When hasFocusedComposite is true, composite has been focused
-            // right after focusing this item. This is an intermediate blur
-            // event, so we ignore it.
-            hasFocusedComposite.current = false;
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
+        if (options.unstable_virtual && hasFocusedComposite.current) {
+          // When hasFocusedComposite is true, composite has been focused right
+          // after focusing this item. This is an intermediate blur event, so
+          // we ignore it.
+          hasFocusedComposite.current = false;
+          event.preventDefault();
+          event.stopPropagation();
+          return;
         }
         onBlurRef.current?.(event);
       },
@@ -235,8 +233,8 @@ export const useCompositeItem = createHook<
           if (widget && isTextField(widget)) {
             widget.focus();
             const { key } = event;
-            // Using RAF here because otherwise the key will be added twice
-            // to the input when using roving tabindex
+            // Using RAF here because otherwise the key will be added twice to
+            // the input when using roving tabindex
             window.requestAnimationFrame(() => {
               setTextFieldValue(widget, key);
             });

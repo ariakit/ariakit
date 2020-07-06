@@ -119,6 +119,10 @@ export type CompositeState = unstable_IdState & {
   /**
    * @private
    */
+  unstable_angular: boolean;
+  /**
+   * @private
+   */
   unstable_hasActiveWidget: boolean;
 };
 
@@ -207,7 +211,7 @@ export type CompositeActions = unstable_IdActions & {
    */
   reset: () => void;
   /**
-   * Sets `hasFocusInsideItem`.
+   * Sets `hasActiveWidget`.
    * @private
    */
   unstable_setHasActiveWidget: React.Dispatch<
@@ -219,7 +223,13 @@ export type CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
       CompositeState,
-      "unstable_virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
+      | "unstable_virtual"
+      | "rtl"
+      | "orientation"
+      | "currentId"
+      | "loop"
+      | "wrap"
+      | "unstable_angular"
     >
   >;
 
@@ -295,6 +305,7 @@ function reducer(
     wrap,
     pastIds,
     unstable_moves: moves,
+    unstable_angular: angular,
     initialVirtual,
     initialRTL,
     initialOrientation,
@@ -499,7 +510,7 @@ function reducer(
       // with disabled fake items. Then, we reorganize the items list so
       // [1-1, 1-2, 2-1, 2-2] becomes [1-1, 2-1, 1-2, 2-2].
       const verticalItems = verticalizeItems(
-        flatten(fillGroups(groupItems(items)))
+        flatten(fillGroups(groupItems(items), currentId, angular))
       );
       const canLoop = loop && loop !== "horizontal";
       // Pressing down arrow key will only focus the composite element if loop
@@ -513,7 +524,7 @@ function reducer(
     }
     case "up": {
       const verticalItems = verticalizeItems(
-        reverse(flatten(fillGroups(groupItems(items))))
+        reverse(flatten(fillGroups(groupItems(items), currentId, angular)))
       );
       // If currentId is initially set to null, we'll always focus the
       // composite element when the up arrow key is pressed in the first row.
@@ -606,6 +617,7 @@ export function useCompositeState(
     currentId,
     loop = false,
     wrap = false,
+    unstable_angular = false,
     ...sealed
   } = useSealedState(initialState);
   const [
@@ -632,6 +644,7 @@ export function useCompositeState(
     wrap,
     unstable_moves: 0,
     pastIds: [],
+    unstable_angular,
     initialVirtual: virtual,
     initialRTL: rtl,
     initialOrientation: orientation,
@@ -705,6 +718,7 @@ const keys: Array<keyof CompositeStateReturn> = [
   "loop",
   "wrap",
   "unstable_moves",
+  "unstable_angular",
   "unstable_hasActiveWidget",
   "registerItem",
   "unregisterItem",
