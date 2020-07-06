@@ -21,6 +21,10 @@ export const unstable_useGridRow = createHook<
   name: "GridRow",
   compose: useCompositeGroup,
   useState: useGridState,
+
+  useProps(_, htmlProps) {
+    return { role: "row", ...htmlProps };
+  },
 });
 
 export const unstable_GridRow = createComponent({

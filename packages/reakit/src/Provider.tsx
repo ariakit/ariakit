@@ -9,9 +9,11 @@ export type ProviderProps = Partial<SystemProviderProps> & {
   unstable_prefix?: string;
 };
 
+const defaultSystem = {};
+
 export function Provider({
   unstable_prefix: prefix,
-  unstable_system: system = {},
+  unstable_system: system = defaultSystem,
   children,
 }: ProviderProps) {
   return (
