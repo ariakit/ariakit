@@ -8,9 +8,7 @@ import {
 } from "../Composite/CompositeItem";
 import { unstable_useGridState as useGridState } from "./GridState";
 
-export type unstable_GridCellOptions = CompositeItemOptions & {
-  colSpan?: number;
-};
+export type unstable_GridCellOptions = CompositeItemOptions;
 
 export type unstable_GridCellHTMLProps = CompositeItemHTMLProps &
   React.TdHTMLAttributes<any>;
