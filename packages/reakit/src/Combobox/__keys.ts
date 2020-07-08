@@ -36,5 +36,3 @@ const COMBOBOX_STATE_KEYS = [
   "unstable_setHasActiveWidget",
 ] as const;
 export const COMBOBOX_KEYS = COMBOBOX_STATE_KEYS;
-export const GRID_CELL_KEYS = COMBOBOX_KEYS;
-export const GRID_ROW_KEYS = GRID_CELL_KEYS;

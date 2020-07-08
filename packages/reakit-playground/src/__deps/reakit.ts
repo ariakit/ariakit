@@ -14,8 +14,6 @@ export default {
   "reakit/Combobox": require("reakit/Combobox"),
   "reakit/Combobox/Combobox": require("reakit/Combobox/Combobox"),
   "reakit/Combobox/ComboboxState": require("reakit/Combobox/ComboboxState"),
-  "reakit/Combobox/GridCell": require("reakit/Combobox/GridCell"),
-  "reakit/Combobox/GridRow": require("reakit/Combobox/GridRow"),
   "reakit/Composite": require("reakit/Composite"),
   "reakit/Composite/Composite": require("reakit/Composite/Composite"),
   "reakit/Composite/CompositeGroup": require("reakit/Composite/CompositeGroup"),
