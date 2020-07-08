@@ -9,6 +9,7 @@ import {
   ClickableHTMLProps,
   useClickable,
 } from "../Clickable/Clickable";
+import { BUTTON_KEYS } from "./__keys";
 
 export type ButtonOptions = ClickableOptions;
 
@@ -20,6 +21,7 @@ export type ButtonProps = ButtonOptions & ButtonHTMLProps;
 export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   name: "Button",
   compose: useClickable,
+  keys: BUTTON_KEYS,
 
   useProps(_, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);

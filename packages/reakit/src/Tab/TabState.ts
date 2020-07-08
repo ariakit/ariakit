@@ -101,16 +101,3 @@ export function useTabState(
     ]),
   };
 }
-
-const keys: Array<keyof TabStateReturn> = [
-  ...useCompositeState.__keys,
-  "selectedId",
-  "panels",
-  "manual",
-  "select",
-  "setSelectedId",
-  "registerPanel",
-  "unregisterPanel",
-];
-
-useTabState.__keys = keys;

@@ -7,7 +7,7 @@ import {
   CompositeHTMLProps,
   useComposite,
 } from "../Composite/Composite";
-import { unstable_useGridState as useGridState } from "./GridState";
+import { GRID_KEYS } from "./__keys";
 
 export type unstable_GridOptions = CompositeOptions;
 
@@ -21,7 +21,7 @@ export const unstable_useGrid = createHook<
 >({
   name: "Grid",
   compose: useComposite,
-  useState: useGridState,
+  keys: GRID_KEYS,
 
   useProps(_, htmlProps) {
     return { role: "grid", ...htmlProps };

@@ -12,7 +12,8 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import { useTabState, TabStateReturn } from "./TabState";
+import { TabStateReturn } from "./TabState";
+import { TAB_PANEL_KEYS } from "./__keys";
 
 export type TabPanelOptions = DisclosureContentOptions &
   unstable_IdOptions &
@@ -79,8 +80,7 @@ function getTabId(options: TabPanelOptions) {
 export const useTabPanel = createHook<TabPanelOptions, TabPanelHTMLProps>({
   name: "TabPanel",
   compose: [unstable_useId, useDisclosureContent],
-  useState: useTabState,
-  keys: ["tabId"],
+  keys: TAB_PANEL_KEYS,
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);

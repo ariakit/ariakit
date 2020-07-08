@@ -63,10 +63,3 @@ export function useMenuState(
     ...popover,
   };
 }
-
-const keys: Array<keyof MenuStateReturn> = [
-  ...useMenuBarState.__keys,
-  ...usePopoverState.__keys,
-];
-
-useMenuState.__keys = keys;

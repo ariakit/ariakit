@@ -5,7 +5,7 @@ import {
   PopoverArrowHTMLProps,
   usePopoverArrow,
 } from "../Popover/PopoverArrow";
-import { useTooltipState } from "./TooltipState";
+import { TOOLTIP_ARROW_KEYS } from "./__keys";
 
 export type TooltipArrowOptions = PopoverArrowOptions;
 
@@ -19,7 +19,7 @@ export const useTooltipArrow = createHook<
 >({
   name: "TooltipArrow",
   compose: usePopoverArrow,
-  useState: useTooltipState,
+  keys: TOOLTIP_ARROW_KEYS,
 
   useOptions({ size = 16, ...options }) {
     return { size, ...options };

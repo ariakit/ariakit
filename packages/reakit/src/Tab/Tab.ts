@@ -7,7 +7,8 @@ import {
   CompositeItemHTMLProps,
   useCompositeItem,
 } from "../Composite/CompositeItem";
-import { useTabState, TabStateReturn } from "./TabState";
+import { TabStateReturn } from "./TabState";
+import { TAB_KEYS } from "./__keys";
 
 export type TabOptions = CompositeItemOptions &
   Pick<Partial<TabStateReturn>, "manual"> &
@@ -29,7 +30,7 @@ function useTabPanelId(options: TabOptions) {
 export const useTab = createHook<TabOptions, TabHTMLProps>({
   name: "Tab",
   compose: useCompositeItem,
-  useState: useTabState,
+  keys: TAB_KEYS,
 
   useOptions({ focusable = true, ...options }) {
     return { focusable, ...options };

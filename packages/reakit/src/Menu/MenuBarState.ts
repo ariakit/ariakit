@@ -52,11 +52,3 @@ export function useMenuBarState(
     }, []),
   };
 }
-
-const keys: Array<keyof MenuBarStateReturn> = [
-  ...useCompositeState.__keys,
-  "unstable_values",
-  "unstable_setValue",
-];
-
-useMenuBarState.__keys = keys;

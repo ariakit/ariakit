@@ -119,18 +119,3 @@ export function useDisclosureState(
     stopAnimation,
   };
 }
-
-const keys: Array<keyof DisclosureStateReturn> = [
-  ...unstable_useIdState.__keys,
-  "visible",
-  "animated",
-  "animating",
-  "show",
-  "hide",
-  "toggle",
-  "setVisible",
-  "setAnimated",
-  "stopAnimation",
-];
-
-useDisclosureState.__keys = keys;

@@ -12,8 +12,9 @@ import {
   usePopover,
 } from "../Popover/Popover";
 import { MenuBarOptions, MenuBarHTMLProps, useMenuBar } from "./MenuBar";
-import { useMenuState, MenuStateReturn } from "./MenuState";
+import { MenuStateReturn } from "./MenuState";
 import { MenuContext, MenuContextType } from "./__utils/MenuContext";
+import { MENU_KEYS } from "./__keys";
 
 export type MenuOptions = Omit<PopoverOptions, "hideOnEsc"> &
   Pick<MenuStateReturn, "placement"> &
@@ -30,7 +31,7 @@ function usePlacementDir(placement?: string) {
 export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
   name: "Menu",
   compose: [useMenuBar, usePopover],
-  useState: useMenuState,
+  keys: MENU_KEYS,
 
   useOptions(options) {
     const parent = React.useContext(MenuContext);

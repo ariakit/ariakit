@@ -43,11 +43,3 @@ export function useRadioState(
     setState,
   };
 }
-
-const keys: Array<keyof RadioStateReturn> = [
-  ...useCompositeState.__keys,
-  "state",
-  "setState",
-];
-
-useRadioState.__keys = keys;

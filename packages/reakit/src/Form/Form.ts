@@ -3,7 +3,8 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
+import { FORM_KEYS } from "./__keys";
 
 export type unstable_FormOptions = BoxOptions &
   Pick<unstable_FormStateReturn<any>, "submit">;
@@ -19,7 +20,7 @@ export const unstable_useForm = createHook<
 >({
   name: "Form",
   compose: useBox,
-  useState: unstable_useFormState,
+  keys: FORM_KEYS,
 
   useProps(options, { onSubmit: htmlOnSubmit, ...htmlProps }) {
     const onSubmitRef = useLiveRef(htmlOnSubmit);

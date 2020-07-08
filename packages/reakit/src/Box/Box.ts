@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { shallowEqual } from "reakit-utils/shallowEqual";
+import { BOX_KEYS } from "./__keys";
 
 export type BoxOptions = {
   /**
@@ -24,7 +25,7 @@ export type BoxProps = BoxOptions & BoxHTMLProps;
 
 export const useBox = createHook<BoxOptions, BoxHTMLProps>({
   name: "Box",
-  keys: ["unstable_system"],
+  keys: BOX_KEYS,
   propsAreEqual(prev, next) {
     const { unstable_system: prevSystem, ...prevProps } = prev;
     const { unstable_system: nextSystem, ...nextProps } = next;

@@ -11,9 +11,9 @@ import {
   unstable_FormGroupHTMLProps,
   unstable_useFormGroup,
 } from "./FormGroup";
-import { unstable_useFormState } from "./FormState";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
+import { FORM_RADIO_GROUP_KEYS } from "./__keys";
 
 export type unstable_FormRadioGroupOptions<
   V,
@@ -43,8 +43,7 @@ export const unstable_useFormRadioGroup = createHook<
 >({
   name: "FormRadioGroup",
   compose: unstable_useFormGroup as any,
-  useState: unstable_useFormState,
-  keys: ["name"],
+  keys: FORM_RADIO_GROUP_KEYS,
 
   useOptions(options, { name }) {
     return {

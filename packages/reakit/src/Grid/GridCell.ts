@@ -6,7 +6,7 @@ import {
   CompositeItemHTMLProps,
   useCompositeItem,
 } from "../Composite/CompositeItem";
-import { unstable_useGridState as useGridState } from "./GridState";
+import { GRID_CELL_KEYS } from "./__keys";
 
 export type unstable_GridCellOptions = CompositeItemOptions;
 
@@ -22,7 +22,7 @@ export const unstable_useGridCell = createHook<
 >({
   name: "GridCell",
   compose: useCompositeItem,
-  useState: useGridState,
+  keys: GRID_CELL_KEYS,
 
   useProps(_, htmlProps) {
     return { role: "gridcell", ...htmlProps };

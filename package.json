@@ -7,7 +7,7 @@
   },
   "scripts": {
     "test": "jest",
-    "test:all": "yarn lint && yarn docs && yarn build && yarn type-check && yarn test && yarn website:build && yarn clean && yarn website:serve",
+    "test:all": "yarn lint && yarn build && yarn type-check && yarn test && yarn website:build && yarn clean && yarn website:serve",
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "type-check": "tsc --noEmit",
@@ -17,6 +17,7 @@
     "clean": "lerna exec --scope reakit* -- yarn clean",
     "build": "lerna exec --scope reakit* --concurrency 1 -- yarn build",
     "build:fast": "yarn build --no-umd",
+    "keys": "lerna exec --scope reakit* -- yarn keys",
     "docs": "lerna exec --scope reakit* -- yarn docs",
     "website": "lerna exec --scope website -- yarn start",
     "website:build": "lerna exec --scope website -- yarn build",

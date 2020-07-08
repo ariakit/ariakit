@@ -25,7 +25,3 @@ export function useToolbarState(
   );
   return useCompositeState({ orientation, ...sealed });
 }
-
-const keys: Array<keyof ToolbarStateReturn> = [...useCompositeState.__keys];
-
-useToolbarState.__keys = keys;
