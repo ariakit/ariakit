@@ -1,9 +1,9 @@
 ---
-path: /docs/grid/
+path: /docs/combobox/
 experimental: true
 ---
 
-# Grid
+# Combobox
 
 <blockquote experimental="true">
 
@@ -11,7 +11,7 @@ experimental: true
 
 </blockquote>
 
-Accessible `Grid` component that enables users to navigate the information or interactive elements it contains using directional navigation keys. The items are organized in a two-dimensional container. It follows the [WAI-ARIA Grid Pattern](https://www.w3.org/TR/wai-aria-practices/#grid).
+Accessible `Combobox` component that enables users to navigate the information or interactive elements it contains using directional navigation keys. The items are organized in a two-dimensional container. It follows the [WAI-ARIA Combobox Pattern](https://www.w3.org/TR/wai-aria-practices/#combobox).
 
 <carbon-ad></carbon-ad>
 
@@ -27,52 +27,34 @@ Learn more in [Get started](/docs/get-started/).
 
 ```jsx
 import {
-  unstable_useGridState as useGridState,
-  unstable_Grid as Grid,
-  unstable_GridRow as GridRow,
-  unstable_GridCell as GridCell,
-} from "reakit/Grid";
+  unstable_useComboboxState as useComboboxState,
+  unstable_Combobox as Combobox,
+  unstable_ComboboxRow as ComboboxRow,
+  unstable_ComboboxCell as ComboboxCell,
+} from "reakit/Combobox";
 
 function Example() {
-  const grid = useGridState();
-  return (
-    <Grid {...grid} aria-label="My grid">
-      <GridRow {...grid}>
-        <GridCell {...grid}>cell</GridCell>
-        <GridCell {...grid}>cell</GridCell>
-        <GridCell {...grid}>cell</GridCell>
-      </GridRow>
-      <GridRow {...grid}>
-        <GridCell {...grid}>cell</GridCell>
-        <GridCell {...grid}>cell</GridCell>
-        <GridCell {...grid}>cell</GridCell>
-      </GridRow>
-      <GridRow {...grid}>
-        <GridCell {...grid}>cell</GridCell>
-        <GridCell {...grid}>cell</GridCell>
-        <GridCell {...grid}>cell</GridCell>
-      </GridRow>
-    </Grid>
-  );
+  const combobox = useComboboxState();
+  return <Combobox {...combobox} />;
 }
 ```
 
 ## Accessibility
 
-- `Grid` has role `grid`.
-- `Grid` extends the accessibility features of [Composite](/docs/composite/#accessibility).
-- `GridRow` has role `row`.
-- `GridRow` extends the accessibility features of [CompositeGroup](/docs/composite/#accessibility).
-- `GridCell` has role `gridcell`.
-- `GridCell` extends the accessibility features of [CompositeItem](/docs/composite/#accessibility).
+- `Combobox` has role `combobox`.
+- `Combobox` extends the accessibility features of [Composite](/docs/composite/#accessibility).
+- `ComboboxRow` has role `row`.
+- `ComboboxRow` extends the accessibility features of [CompositeGroup](/docs/composite/#accessibility).
+- `ComboboxCell` has role `comboboxcell`.
+- `ComboboxCell` extends the accessibility features of [CompositeItem](/docs/composite/#accessibility).
 
 Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Grid` uses [Composite](/docs/composite/).
-- `GridRow` uses [CompositeGroup](/docs/composite/).
-- `GridCell` uses [CompositeItem](/docs/composite/).
+- `Combobox` uses [Composite](/docs/composite/).
+- `ComboboxRow` uses [CompositeGroup](/docs/composite/).
+- `ComboboxCell` uses [CompositeItem](/docs/composite/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
