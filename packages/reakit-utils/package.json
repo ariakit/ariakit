@@ -21,7 +21,6 @@
     "lint": "eslint . --ext js,ts,tsx",
     "clean": "node ../../scripts/build/clean.js",
     "build": "node ../../scripts/build/build.js",
-    "keys": "exit 0",
     "docs": "documentation readme src --markdown-toc-max-depth=2 --section=API --parse-extension ts",
     "preversion": "yarn lint && yarn test && yarn docs && yarn build",
     "postpublish": "yarn clean"
