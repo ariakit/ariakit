@@ -6,8 +6,9 @@ import { getDocument } from "reakit-utils/getDocument";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useBox, BoxOptions, BoxHTMLProps } from "../Box/Box";
-import { CompositeStateReturn, useCompositeState } from "./CompositeState";
+import { CompositeStateReturn } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
+import { COMPOSITE_ITEM_WIDGET_KEYS } from "./__keys";
 
 export type unstable_CompositeItemWidgetOptions = BoxOptions &
   Pick<Partial<CompositeStateReturn>, "wrap"> &
@@ -37,7 +38,7 @@ export const unstable_useCompositeItemWidget = createHook<
 >({
   name: "CompositeItemWidget",
   compose: useBox,
-  useState: useCompositeState,
+  keys: COMPOSITE_ITEM_WIDGET_KEYS,
 
   useProps(
     options,

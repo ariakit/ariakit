@@ -8,7 +8,8 @@ import { getInputId } from "./__utils/getInputId";
 import { getMessageId } from "./__utils/getMessageId";
 import { getLabelId } from "./__utils/getLabelId";
 import { shouldShowError } from "./__utils/shouldShowError";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
+import { FORM_GROUP_KEYS } from "./__keys";
 
 export type unstable_FormGroupOptions<
   V,
@@ -35,8 +36,7 @@ export const unstable_useFormGroup = createHook<
 >({
   name: "FormGroup",
   compose: useGroup,
-  useState: unstable_useFormState,
-  keys: ["name"],
+  keys: FORM_GROUP_KEYS,
 
   useProps(options, htmlProps) {
     return {

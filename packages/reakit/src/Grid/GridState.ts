@@ -24,9 +24,3 @@ export function unstable_useGridState(
   const sealed = useSealedState(initialState);
   return useCompositeState(sealed);
 }
-
-const keys: Array<keyof unstable_GridStateReturn> = [
-  ...useCompositeState.__keys,
-];
-
-unstable_useGridState.__keys = keys;

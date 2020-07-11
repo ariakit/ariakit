@@ -10,9 +10,10 @@ import {
   PopoverDisclosureHTMLProps,
   usePopoverDisclosure,
 } from "../Popover/PopoverDisclosure";
-import { useMenuState, MenuStateReturn } from "./MenuState";
+import { MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
+import { MENU_BUTTON_KEYS } from "./__keys";
 
 export type MenuButtonOptions = PopoverDisclosureOptions &
   Pick<
@@ -35,7 +36,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
   {
     name: "MenuButton",
     compose: usePopoverDisclosure,
-    useState: useMenuState,
+    keys: MENU_BUTTON_KEYS,
 
     propsAreEqual(prev, next) {
       const {

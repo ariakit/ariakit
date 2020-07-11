@@ -7,7 +7,8 @@ import {
   CompositeHTMLProps,
   useComposite,
 } from "../Composite/Composite";
-import { useTabState, TabStateReturn } from "./TabState";
+import { TabStateReturn } from "./TabState";
+import { TAB_LIST_KEYS } from "./__keys";
 
 export type TabListOptions = CompositeOptions &
   Pick<Partial<TabStateReturn>, "orientation">;
@@ -19,7 +20,7 @@ export type TabListProps = TabListOptions & TabListHTMLProps;
 export const useTabList = createHook<TabListOptions, TabListHTMLProps>({
   name: "TabList",
   compose: useComposite,
-  useState: useTabState,
+  keys: TAB_LIST_KEYS,
 
   useProps(options, htmlProps) {
     return {

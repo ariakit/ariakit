@@ -11,7 +11,8 @@ import {
 } from "../Composite/Composite";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuContext } from "./__utils/MenuContext";
-import { MenuStateReturn, useMenuState } from "./MenuState";
+import { MenuStateReturn } from "./MenuState";
+import { MENU_BAR_KEYS } from "./__keys";
 
 export type MenuBarOptions = CompositeOptions &
   Pick<Partial<MenuStateReturn>, "orientation"> &
@@ -24,7 +25,7 @@ export type MenuBarProps = MenuBarOptions & MenuBarHTMLProps;
 export const useMenuBar = createHook<MenuBarOptions, MenuBarHTMLProps>({
   name: "MenuBar",
   compose: useComposite,
-  useState: useMenuState,
+  keys: MENU_BAR_KEYS,
 
   useProps(
     options,

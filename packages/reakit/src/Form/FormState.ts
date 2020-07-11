@@ -404,25 +404,3 @@ export function unstable_useFormState<V = Record<any, any>>(
     ),
   };
 }
-
-const keys: Array<keyof unstable_FormStateReturn<any>> = [
-  ...unstable_useIdState.__keys,
-  "values",
-  "touched",
-  "messages",
-  "errors",
-  "validating",
-  "valid",
-  "submitting",
-  "submitSucceed",
-  "submitFailed",
-  "validate",
-  "submit",
-  "reset",
-  "update",
-  "blur",
-  "push",
-  "remove",
-];
-
-unstable_useFormState.__keys = keys;

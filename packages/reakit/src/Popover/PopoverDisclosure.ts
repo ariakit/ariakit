@@ -6,7 +6,8 @@ import {
   DialogDisclosureHTMLProps,
   useDialogDisclosure,
 } from "../Dialog/DialogDisclosure";
-import { usePopoverState, PopoverStateReturn } from "./PopoverState";
+import { PopoverStateReturn } from "./PopoverState";
+import { POPOVER_DISCLOSURE_KEYS } from "./__keys";
 
 export type PopoverDisclosureOptions = DialogDisclosureOptions &
   Pick<Partial<PopoverStateReturn>, "unstable_referenceRef">;
@@ -22,7 +23,7 @@ export const usePopoverDisclosure = createHook<
 >({
   name: "PopoverDisclosure",
   compose: useDialogDisclosure,
-  useState: usePopoverState,
+  keys: POPOVER_DISCLOSURE_KEYS,
 
   useProps(options, { ref: htmlRef, ...htmlProps }) {
     return {

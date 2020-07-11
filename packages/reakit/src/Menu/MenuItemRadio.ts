@@ -2,8 +2,9 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { RadioOptions, RadioHTMLProps, useRadio } from "../Radio/Radio";
-import { MenuStateReturn, useMenuState } from "./MenuState";
+import { MenuStateReturn } from "./MenuState";
 import { useMenuItem, MenuItemOptions, MenuItemHTMLProps } from "./MenuItem";
+import { MENU_ITEM_RADIO_KEYS } from "./__keys";
 
 export type MenuItemRadioOptions = RadioOptions &
   MenuItemOptions &
@@ -24,8 +25,7 @@ export const useMenuItemRadio = createHook<
 >({
   name: "MenuItemRadio",
   compose: [useMenuItem, useRadio],
-  useState: useMenuState,
-  keys: ["name"],
+  keys: MENU_ITEM_RADIO_KEYS,
 
   propsAreEqual(prev, next) {
     if (prev.name !== next.name) {

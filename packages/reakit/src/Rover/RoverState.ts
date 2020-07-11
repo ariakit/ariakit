@@ -309,24 +309,3 @@ export function useRoverState(
     ),
   };
 }
-
-const keys: Array<keyof RoverStateReturn> = [
-  ...unstable_useIdState.__keys,
-  "orientation",
-  "stops",
-  "currentId",
-  "unstable_pastId",
-  "unstable_moves",
-  "loop",
-  "register",
-  "unregister",
-  "move",
-  "next",
-  "previous",
-  "first",
-  "last",
-  "unstable_reset",
-  "unstable_orientate",
-];
-
-useRoverState.__keys = keys;

@@ -9,7 +9,8 @@ import {
   useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
-import { TooltipStateReturn, useTooltipState } from "./TooltipState";
+import { TooltipStateReturn } from "./TooltipState";
+import { TOOLTIP_KEYS } from "./__keys";
 import globalState from "./__globalState";
 
 export type TooltipOptions = DisclosureContentOptions &
@@ -38,8 +39,7 @@ function globallyHideTooltipOnEscape(event: KeyboardEvent) {
 export const useTooltip = createHook<TooltipOptions, TooltipHTMLProps>({
   name: "Tooltip",
   compose: useDisclosureContent,
-  useState: useTooltipState,
-  keys: ["unstable_portal"],
+  keys: TOOLTIP_KEYS,
 
   useOptions({ unstable_portal = true, ...options }) {
     return { unstable_portal, ...options };

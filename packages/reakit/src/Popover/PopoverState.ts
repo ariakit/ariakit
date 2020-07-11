@@ -256,18 +256,3 @@ export function usePopoverState(
     place,
   };
 }
-
-const keys: Array<keyof PopoverStateReturn> = [
-  ...useDialogState.__keys,
-  "unstable_referenceRef",
-  "unstable_popoverRef",
-  "unstable_arrowRef",
-  "unstable_popoverStyles",
-  "unstable_arrowStyles",
-  "unstable_update",
-  "unstable_originalPlacement",
-  "placement",
-  "place",
-];
-
-usePopoverState.__keys = keys;

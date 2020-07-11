@@ -11,7 +11,8 @@ import {
   ClickableHTMLProps,
   useClickable,
 } from "../Clickable/Clickable";
-import { CheckboxStateReturn, useCheckboxState } from "./CheckboxState";
+import { CheckboxStateReturn } from "./CheckboxState";
+import { CHECKBOX_KEYS } from "./__keys";
 
 export type CheckboxOptions = ClickableOptions &
   Pick<Partial<CheckboxStateReturn>, "state" | "setState"> & {
@@ -81,8 +82,7 @@ function useIndeterminateState(
 export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
   name: "Checkbox",
   compose: useClickable,
-  useState: useCheckboxState,
-  keys: ["value", "checked"],
+  keys: CHECKBOX_KEYS,
 
   useOptions(
     { unstable_clickOnEnter = false, ...options },

@@ -11,7 +11,8 @@ import { getLabelId } from "./__utils/getLabelId";
 import { shouldShowError } from "./__utils/shouldShowError";
 import { formatInputName } from "./__utils/formatInputName";
 import { unstable_getIn } from "./utils/getIn";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
+import { FORM_INPUT_KEYS } from "./__keys";
 
 export type unstable_FormInputOptions<
   V,
@@ -41,8 +42,7 @@ export const unstable_useFormInput = createHook<
 >({
   name: "FormInput",
   compose: useInput,
-  useState: unstable_useFormState,
-  keys: ["name"],
+  keys: FORM_INPUT_KEYS,
 
   useOptions(options, { name }) {
     return {

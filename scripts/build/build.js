@@ -2,12 +2,15 @@
 const { join } = require("path");
 const spawn = require("cross-spawn");
 const {
+  hasTSConfig,
   makeProxies,
   makeGitignore,
   makePlaygroundDeps,
-  cleanBuild,
-  hasTSConfig,
 } = require("./utils");
+
+require("./clean");
+require("./docs");
+require("./keys");
 
 process.env.NODE_ENV = "production";
 
@@ -17,7 +20,6 @@ if (process.argv.includes("--no-umd")) {
 
 const cwd = process.cwd();
 
-cleanBuild(cwd);
 makeGitignore(cwd);
 makePlaygroundDeps(cwd);
 makeProxies(cwd);

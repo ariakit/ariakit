@@ -7,7 +7,8 @@ import {
   CompositeHTMLProps,
   useComposite,
 } from "../Composite/Composite";
-import { ToolbarStateReturn, useToolbarState } from "./ToolbarState";
+import { ToolbarStateReturn } from "./ToolbarState";
+import { TOOLBAR_KEYS } from "./__keys";
 
 export type ToolbarOptions = CompositeOptions &
   Pick<Partial<ToolbarStateReturn>, "orientation">;
@@ -19,7 +20,7 @@ export type ToolbarProps = ToolbarOptions & ToolbarHTMLProps;
 export const useToolbar = createHook<ToolbarOptions, ToolbarHTMLProps>({
   name: "Toolbar",
   compose: useComposite,
-  useState: useToolbarState,
+  keys: TOOLBAR_KEYS,
 
   useProps(options, htmlProps) {
     return {
