@@ -9,6 +9,10 @@ We would love for you to contribute to Reakit and help make it even better. By c
   - [What about if you have problems that cannot be discussed in a public issue?](#what-about-if-you-have-problems-that-cannot-be-discussed-in-a-public-issue)
 - [How to start contributing?](#how-to-start-contributing)
 - [Contributing with code](#contributing-with-code)
+  - [Website](#website)
+  - [Storybook examples](#storybook-examples)
+  - [New options](#new-options)
+  - [Branches](#branches)
   - [Scripts](#scripts)
 
 ## Ownership
@@ -77,13 +81,25 @@ If you haven't already done so, [install yarn](https://yarnpkg.com/en/docs/insta
 ```sh
 git clone https://github.com/reakit/reakit
 cd reakit
-yarn
-yarn website
+yarn # install dependencies
 ```
+
+### Website
+
+If you're working on the website or on any README.md file in components folders, you'll want to run `yarn website` to see your changes on the browser. This will run a development version of the website that will automatically refresh whenever you make a change to the README.md files.
+
+### Storybook examples
+
+Components in the `reakit` package usually have examples within `__examples__` folders. You should run `yarn storybook` to see those examples on the browser.
+
+### New options
+
+When adding new [options](https://reakit.io/docs/basic-concepts/#options) to components or new state to [state hooks](https://reakit.io/docs/basic-concepts/#state-hooks), you should run `yarn keys`. This will make sure that the newly added option names are included in the list of keys for each component, so they're filtered out from the HTML elements.
 
 ### Branches
 
 `master` branch contains current stable version of `reakit` packages and it is publishing as main `latest` [dist-tag](https://docs.npmjs.com/cli/dist-tag) to npm. PRs with bug fixes could be targeted directly to the `master` branch.
+
 PRs that introduce new features/components should be targeted to the `next` branch. Newly added components and APIs should be prefixed with `unstable_` to indicate its experimental status.
 
 ### Scripts
@@ -95,6 +111,7 @@ PRs that introduce new features/components should be targeted to the `next` bran
 - `yarn lint --fix` runs `eslint` and automatically fix issues.
 - `yarn build` builds all `reakit*` packages.
 - `yarn build:fast` builds all `reakit*` packages ignoring UMD builds.
+- `yarn keys` generates `__keys.ts` files into component folders.
 - `yarn docs` builds docs into README files.
 - `yarn website` starts a development server of the website.
 - `yarn website:build` builds production files of the website (requires `yarn build` to be executed first).
