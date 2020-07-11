@@ -62,21 +62,12 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 <!-- Automatically generated -->
 
-### `useComboboxState`
+### `useComboboxGridState`
 
 - **`baseId`**
   <code>string</code>
 
   ID that will serve as a base for all the items IDs.
-
-- **`unstable_virtual`** <span title="Experimental">⚠️</span>
-  <code>boolean</code>
-
-  If enabled, the composite element will act as an
-[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
-container instead of
-[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
-DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`rtl`**
   <code>boolean</code>
@@ -145,6 +136,136 @@ will focus the first item in the next row or column and vice-versa.
 item in the last row or column and the first item in the first row or
 column and vice-versa.
 
+- **`currentValue`**
+  <code>string</code>
+
+  Current value that will be used to filter `values`.
+
+- **`selectedValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
+- **`autocomplete`**
+  <code>boolean</code>
+
+  TODO.
+
+- **`values`**
+  <code>string[]</code>
+
+  Values that will be used to produce `matches`.
+
+- **`limit`**
+  <code>number | undefined</code>
+
+  Maximum number of matches.
+
+- **`columns`**
+  <code>number</code>
+
+  Number of columns by which `values` will be splitted to generate the
+`matches` 2D array.
+
+### `useComboboxState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`rtl`**
+  <code>boolean</code>
+
+  Determines how `next` and `previous` functions will behave. If `rtl` is
+set to `true`, they will be inverted. You still need to set `dir="rtl"` on
+HTML/CSS.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`loop`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+
+  On one-dimensional composites:
+  - `true` loops from the last item to the first item and vice-versa.
+  - `horizontal` loops only if `orientation` is `horizontal` or not set.
+  - `vertical` loops only if `orientation` is `vertical` or not set.
+  - If `currentId` is initially set to `null`, the composite element will
+be focused in between the last and first items.
+
+  On two-dimensional composites:
+  - `true` loops from the last row/column item to the first item in the
+same row/column and vice-versa. If it's the last item in the last row, it
+moves to the first item in the first row and vice-versa.
+  - `horizontal` loops only from the last row item to the first item in
+the same row.
+  - `vertical` loops only from the last column item to the first item in
+the column row.
+  - If `currentId` is initially set to `null`, vertical loop will have no
+effect as moving down from the last row or up from the first row will
+focus the composite element.
+  - If `wrap` matches the value of `loop`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`wrap`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+
+  If enabled, moving to the next item from the last one in a row or column
+will focus the first item in the next row or column and vice-versa.
+  - `true` wraps between rows and columns.
+  - `horizontal` wraps only between rows.
+  - `vertical` wraps only between columns.
+  - If `loop` matches the value of `wrap`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`currentValue`**
+  <code>string</code>
+
+  Current value that will be used to filter `values`.
+
+- **`selectedValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
+- **`autocomplete`**
+  <code>boolean</code>
+
+  TODO.
+
+- **`values`**
+  <code>string[]</code>
+
+  Values that will be used to produce `matches`.
+
+- **`limit`**
+  <code>number | undefined</code>
+
+  Maximum number of matches.
+
 ### `Combobox`
 
 - **`disabled`**
@@ -159,7 +280,7 @@ column and vice-versa.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>12 state props</summary>
+<details><summary>17 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -212,18 +333,18 @@ will focus the first item in the next row or column and vice-versa.
 item in the last row or column and the first item in the first row or
 column and vice-versa.
 
-- **`unstable_moves`** <span title="Experimental">⚠️</span>
-  <code>number</code>
-
-  Stores the number of moves that have been performed by calling `move`,
-`next`, `previous`, `up`, `down`, `first` or `last`.
-
 - **`groups`**
   <code>Group[]</code>
 
   Lists all the composite groups with their `id` and DOM `ref`. This state
 is automatically updated when `registerGroup` and `unregisterGroup` are
 called.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
 
 - **`items`**
   <code>Item[]</code>
@@ -251,5 +372,230 @@ and `groupId` if any. This state is automatically updated when
   <code>(id: string | null) =&#62; void</code>
 
   Moves focus to a given item ID.
+
+- **`selectedValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
+- **`autocomplete`**
+  <code>boolean</code>
+
+  TODO.
+
+- **`setSelectedValue`**
+  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
+
+  Sets `selectedValue`.
+
+- **`currentValue`**
+  <code>string</code>
+
+  Current value that will be used to filter `values`.
+
+- **`setCurrentValue`**
+  <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
+
+  Sets `currentValue`.
+
+</details>
+
+### `ComboboxGrid`
+
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+</details>
+
+### `ComboboxGridCell`
+
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`value`**
+  <code>string</code>
+
+  Cell's value.
+
+<details><summary>17 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
+
+- **`registerItem`**
+  <code>(item: Item) =&#62; void</code>
+
+  Registers a composite item.
+
+- **`unregisterItem`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters a composite item.
+
+- **`next`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the next item.
+
+- **`previous`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the previous item.
+
+- **`up`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item above.
+
+- **`down`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item below.
+
+- **`setSelectedValue`**
+  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
+
+  Sets `selectedValue`.
+
+- **`setCurrentValue`**
+  <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
+
+  Sets `currentValue`.
+
+</details>
+
+### `ComboboxGridRow`
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+<details><summary>6 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`registerGroup`**
+  <code>(group: Group) =&#62; void</code>
+
+  Registers a composite group.
+
+- **`unregisterGroup`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters a composite group.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
 
 </details>
