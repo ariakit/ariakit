@@ -13,7 +13,12 @@ const COMBOBOX_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
-  "state",
+  "currentValue",
+  "selectedValue",
+  "autocomplete",
+  "values",
+  "limit",
+  "matches",
   "unstable_setBaseId",
   "registerItem",
   "unregisterItem",
@@ -35,10 +40,21 @@ const COMBOBOX_STATE_KEYS = [
   "setWrap",
   "reset",
   "unstable_setHasActiveWidget",
-  "matches",
-  "setState",
+  "setCurrentValue",
+  "setSelectedValue",
+  "setAutocomplete",
+  "setValues",
+  "setLimit",
 ] as const;
-export const COMBOBOX_KEYS = COMBOBOX_STATE_KEYS;
+const COMBOBOX_GRID_STATE_KEYS = [
+  ...COMBOBOX_STATE_KEYS,
+  "columns",
+  "setColumns",
+] as const;
+export const COMBOBOX_KEYS = COMBOBOX_GRID_STATE_KEYS;
 export const COMBOBOX_GRID_KEYS = COMBOBOX_KEYS;
-export const COMBOBOX_GRID_CELL_KEYS = COMBOBOX_GRID_KEYS;
-export const COMBOBOX_GRID_ROW_KEYS = COMBOBOX_GRID_CELL_KEYS;
+export const COMBOBOX_GRID_CELL_KEYS = [
+  ...COMBOBOX_GRID_KEYS,
+  "value",
+] as const;
+export const COMBOBOX_GRID_ROW_KEYS = COMBOBOX_GRID_KEYS;

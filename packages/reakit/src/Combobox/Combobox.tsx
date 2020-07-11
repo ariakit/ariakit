@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   CompositeOptions,
   CompositeHTMLProps,
@@ -10,8 +11,11 @@ import { COMBOBOX_KEYS } from "./__keys";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
 
 export type unstable_ComboboxOptions = CompositeOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "baseId"> &
-  Pick<unstable_ComboboxStateReturn, "state" | "setState">;
+  Pick<
+    Partial<unstable_ComboboxStateReturn>,
+    "baseId" | "selectedValue" | "setSelectedValue" | "autocomplete"
+  > &
+  Pick<unstable_ComboboxStateReturn, "currentValue" | "setCurrentValue">;
 
 export type unstable_ComboboxHTMLProps = CompositeHTMLProps &
   React.InputHTMLAttributes<any>;
@@ -27,16 +31,45 @@ export const unstable_useCombobox = createHook<
   compose: useComposite,
   keys: COMBOBOX_KEYS,
 
-  useProps(options, { "aria-controls": ariaControls, ...htmlProps }) {
+  useProps(
+    options,
+    {
+      "aria-controls": ariaControls,
+      onChange: htmlOnChange,
+      onKeyDown: htmlOnKeyDown,
+      ...htmlProps
+    }
+  ) {
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+
+    const value = options.autocomplete
+      ? options.selectedValue || options.currentValue
+      : options.currentValue;
+
     const controls = ariaControls
       ? `${ariaControls} ${options.baseId}-grid`
       : `${options.baseId}-grid`;
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
-        options.setState?.(event.target.value);
+        onChangeRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.setSelectedValue?.(undefined);
+        options.setCurrentValue?.(event.target.value);
       },
-      [options.setState]
+      [options.setSelectedValue, options.setCurrentValue]
+    );
+
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (event.key === "Escape") {
+          options.setSelectedValue?.(undefined);
+        }
+      },
+      [options.setSelectedValue]
     );
 
     return {
@@ -46,8 +79,9 @@ export const unstable_useCombobox = createHook<
       "aria-haspopup": "grid",
       "aria-expanded": true,
       "aria-owns": `${options.baseId}-grid`,
-      value: options.state,
+      value,
       onChange,
+      onKeyDown,
       ...htmlProps,
     };
   },
@@ -59,14 +93,11 @@ export const unstable_useCombobox = createHook<
         event: React.KeyboardEvent<HTMLInputElement>,
         handler?: React.KeyboardEventHandler<HTMLInputElement>
       ) => {
-        const inputHasFocus = options.currentId == null;
+        const inputHasFocus = options.currentId === null;
         if (inputHasFocus) {
           if (["ArrowLeft", "ArrowRight"].includes(event.key)) return;
         } else if (event.key.startsWith("Arrow")) {
           event.preventDefault();
-        }
-        if (event.key === " ") {
-          return;
         }
         handler?.(event);
       },

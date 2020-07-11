@@ -670,6 +670,21 @@ function getKeysName(moduleName) {
 }
 
 /**
+ * @param {Object} object
+ */
+function sortStateSets(object) {
+  return Object.entries(object)
+    .sort(([aKey, aValue], [bKey, bValue]) => {
+      if (aKey.endsWith("State") && bKey.endsWith("State")) {
+        if (isSubsetOf(aValue, bValue)) return -1;
+        if (isSubsetOf(bValue, aValue)) return 1;
+      }
+      return 0;
+    })
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+}
+
+/**
  * @param {any[]} a
  * @param {any[]} b
  */
@@ -746,25 +761,24 @@ function makeKeys(rootPath) {
     });
 
     if (Object.keys(keys).length) {
-      const contents = Object.entries(replaceSubsetInObject(keys)).reduce(
-        (acc, [moduleName, array]) => {
-          if (moduleName.endsWith("State")) {
-            return `${acc}const ${getKeysName(moduleName)} = ${JSON.stringify(
-              array
-            ).replace(/"([.A-Z_]+)"/g, "$1")} as const;\n`.replace(
-              /\[\.\.\.([A_Z_])\]/,
-              "$1"
-            );
-          }
-          return `${acc}export const ${getKeysName(
-            moduleName
-          )} = ${JSON.stringify(array).replace(
-            /"([.A-Z_]+)"/g,
+      const contents = Object.entries(
+        replaceSubsetInObject(sortStateSets(keys))
+      ).reduce((acc, [moduleName, array]) => {
+        if (moduleName.endsWith("State")) {
+          return `${acc}const ${getKeysName(moduleName)} = ${JSON.stringify(
+            array
+          ).replace(/"([.A-Z_]+)"/g, "$1")} as const;\n`.replace(
+            /\[\.\.\.([A_Z_])\]/,
             "$1"
-          )} as const;\n`.replace(/\[\.\.\.([A-Z_]+)\] as const/g, "$1");
-        },
-        ""
-      );
+          );
+        }
+        return `${acc}export const ${getKeysName(
+          moduleName
+        )} = ${JSON.stringify(array).replace(
+          /"([.A-Z_]+)"/g,
+          "$1"
+        )} as const;\n`.replace(/\[\.\.\.([A-Z_]+)\] as const/g, "$1");
+      }, "");
       writeFileSync(
         join(modulePath, "__keys.ts"),
         prettier.format(
