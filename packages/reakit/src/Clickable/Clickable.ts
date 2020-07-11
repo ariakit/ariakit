@@ -9,6 +9,7 @@ import {
   TabbableHTMLProps,
   useTabbable,
 } from "../Tabbable/Tabbable";
+import { CLICKABLE_KEYS } from "./__keys";
 
 export type ClickableOptions = TabbableOptions & {
   /**
@@ -43,7 +44,7 @@ function isNativeClick(event: React.KeyboardEvent) {
 export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
   name: "Clickable",
   compose: useTabbable,
-  keys: ["unstable_clickOnEnter", "unstable_clickOnSpace"],
+  keys: CLICKABLE_KEYS,
 
   useOptions({
     unstable_clickOnEnter = true,

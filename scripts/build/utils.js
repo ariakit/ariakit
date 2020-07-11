@@ -1,4 +1,6 @@
 const { join, dirname, relative, basename } = require("path");
+const { toUpper, snakeCase, isEqual } = require("lodash");
+const prettier = require("prettier");
 const ast = require("@textlint/markdown-to-ast");
 const inject = require("md-node-inject");
 const toMarkdown = require("ast-to-markdown");
@@ -124,6 +126,14 @@ function isDirectory(path) {
  */
 function getSourcePath(rootPath) {
   return join(rootPath, "src");
+}
+
+/**
+ * Ensure that paths are consistent across Windows and non-Windows platforms.
+ * @param {string} filePath
+ */
+function normalizePath(filePath) {
+  return filePath.replace(/\\/g, "/");
 }
 
 /**
@@ -388,6 +398,7 @@ function getModuleName(node) {
   return getEscapedName(node)
     .replace("unstable_", "")
     .replace(/^(.+)InitialState$/, "use$1State")
+    .replace(/^(.+)StateReturn$/, "$1State")
     .replace("Options", "");
 }
 
@@ -431,11 +442,12 @@ function getTagNames(prop) {
 /**
  * @param {import("ts-morph").Node<Node>} node
  */
-function getProps(node) {
-  return node
-    .getType()
-    .getProperties()
-    .filter((prop) => !getTagNames(prop).includes("JSDocPrivateTag"));
+function getProps(node, includePrivate) {
+  const props = node.getType().getProperties();
+  if (includePrivate) {
+    return props;
+  }
+  return props.filter((prop) => !getTagNames(prop).includes("JSDocPrivateTag"));
 }
 
 /**
@@ -633,11 +645,149 @@ function injectPropTypes(rootPath) {
 }
 
 /**
- * Ensure that paths are consistent across Windows and non-Windows platforms.
- * @param {string} filePath
+ * @param {import("ts-morph").Node<Node>} node
+ * @return {import("ts-morph").Node<Node>|null}
  */
-function normalizePath(filePath) {
-  return filePath.replace(/\\/g, "/");
+function getLiteralNode(node) {
+  if (node.getKindName() === "TypeLiteral") {
+    return node;
+  }
+  const children = node.getChildren();
+  for (const child of children) {
+    const result = getLiteralNode(child);
+    if (result) {
+      return result;
+    }
+  }
+  return null;
+}
+
+/**
+ * @param {string} moduleName
+ */
+function getKeysName(moduleName) {
+  return `${toUpper(snakeCase(moduleName))}_KEYS`;
+}
+
+/**
+ * @param {Object} object
+ */
+function sortStateSets(object) {
+  return Object.entries(object)
+    .sort(([aKey, aValue], [bKey, bValue]) => {
+      if (aKey.endsWith("State") && bKey.endsWith("State")) {
+        if (isSubsetOf(aValue, bValue)) return -1;
+        if (isSubsetOf(bValue, aValue)) return 1;
+      }
+      return 0;
+    })
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+}
+
+/**
+ * @param {any[]} a
+ * @param {any[]} b
+ */
+function isSubsetOf(a, b) {
+  return a.length && b.length && a.every((item) => b.includes(item));
+}
+
+/**
+ * @param {Object} object
+ */
+function replaceSubsetInObject(object) {
+  const finalObj = {};
+  Object.entries(object).forEach(([key, array]) => {
+    const refs = Object.entries(finalObj)
+      .filter(([, items]) => isSubsetOf(items, array))
+      .map(([k]) => k);
+
+    finalObj[key] = [
+      ...refs.map((ref) => `...${getKeysName(ref)}`),
+      ...array.filter(
+        (item) => !refs.some((ref) => object[ref].includes(item))
+      ),
+    ];
+  });
+  if (!isEqual(object, finalObj)) {
+    return replaceSubsetInObject(finalObj);
+  }
+  return finalObj;
+}
+
+/**
+ * Create __keys.json files
+ * @param {string} rootPath
+ */
+function makeKeys(rootPath) {
+  const publicFiles = getPublicFiles(getSourcePath(rootPath));
+  const filesByModule = Object.values(publicFiles).reduce((acc, path) => {
+    const moduleName = dirname(path);
+    acc[moduleName] = [...(acc[moduleName] || []), path];
+    return acc;
+  }, {});
+
+  const project = new Project({
+    tsConfigFilePath: join(rootPath, "tsconfig.json"),
+    addFilesFromTsConfig: false,
+  });
+
+  Object.entries(filesByModule).forEach(([modulePath, paths]) => {
+    const sourceFiles = project.addSourceFilesAtPaths(paths);
+    const keys = {};
+    const stateProps = [];
+
+    sortSourceFiles(sourceFiles).forEach((sourceFile) => {
+      sourceFile.forEachChild((node) => {
+        if (isOptionsDeclaration(node) || isStateReturnDeclaration(node)) {
+          const literalNode = isOptionsDeclaration(node)
+            ? getLiteralNode(node)
+            : node;
+          const props = literalNode
+            ? getProps(literalNode, true).map((prop) => prop.getEscapedName())
+            : [];
+          if (isStateReturnDeclaration(node)) {
+            for (const prop of props) {
+              if (!stateProps.includes(prop)) {
+                stateProps.push(prop);
+              }
+            }
+            keys[getModuleName(node)] = props;
+          } else {
+            keys[getModuleName(node)] = [...stateProps, ...props];
+          }
+        }
+      });
+    });
+
+    if (Object.keys(keys).length) {
+      const contents = Object.entries(
+        replaceSubsetInObject(sortStateSets(keys))
+      ).reduce((acc, [moduleName, array]) => {
+        if (moduleName.endsWith("State")) {
+          return `${acc}const ${getKeysName(moduleName)} = ${JSON.stringify(
+            array
+          ).replace(/"([.A-Z_]+)"/g, "$1")} as const;\n`.replace(
+            /\[\.\.\.([A_Z_])\]/,
+            "$1"
+          );
+        }
+        return `${acc}export const ${getKeysName(
+          moduleName
+        )} = ${JSON.stringify(array).replace(
+          /"([.A-Z_]+)"/g,
+          "$1"
+        )} as const;\n`.replace(/\[\.\.\.([A-Z_]+)\] as const/g, "$1");
+      }, "");
+      writeFileSync(
+        join(modulePath, "__keys.ts"),
+        prettier.format(
+          `// Automatically generated by scripts/build/keys.js\n${contents}`,
+          { parser: "babel-ts" }
+        )
+      );
+    }
+  });
 }
 
 module.exports = {
@@ -657,5 +807,5 @@ module.exports = {
   makeProxies,
   hasTSConfig,
   injectPropTypes,
-  normalizePath,
+  makeKeys,
 };

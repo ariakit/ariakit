@@ -5,7 +5,7 @@ import {
   CompositeItemHTMLProps,
   useCompositeItem,
 } from "../Composite/CompositeItem";
-import { useToolbarState } from "./ToolbarState";
+import { TOOLBAR_ITEM_KEYS } from "./__keys";
 
 export type ToolbarItemOptions = CompositeItemOptions;
 
@@ -19,7 +19,7 @@ export const useToolbarItem = createHook<
 >({
   name: "ToolbarItem",
   compose: useCompositeItem,
-  useState: useToolbarState,
+  keys: TOOLBAR_ITEM_KEYS,
 });
 
 export const ToolbarItem = createComponent({

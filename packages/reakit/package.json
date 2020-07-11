@@ -25,8 +25,9 @@
     "lint": "eslint . --ext js,ts,tsx",
     "clean": "node ../../scripts/build/clean.js",
     "build": "node ../../scripts/build/build.js",
+    "keys": "node ../../scripts/build/keys.js",
     "docs": "node ../../scripts/build/docs.js",
-    "preversion": "yarn lint && yarn test && yarn docs && yarn build",
+    "preversion": "yarn lint && yarn test && yarn build",
     "postpublish": "yarn clean"
   },
   "keywords": [

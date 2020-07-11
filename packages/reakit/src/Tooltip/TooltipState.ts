@@ -50,7 +50,10 @@ export function useTooltipState(
   const showTimeout = React.useRef<number | null>(null);
   const hideTimeout = React.useRef<number | null>(null);
 
-  const popover = usePopoverState({ ...sealed, placement });
+  const { modal, setModal, ...popover } = usePopoverState({
+    ...sealed,
+    placement,
+  });
 
   const clearTimeouts = React.useCallback(() => {
     if (showTimeout.current !== null) {
@@ -118,11 +121,3 @@ export function useTooltipState(
     unstable_setTimeout: setTimeout,
   };
 }
-
-const keys: Array<keyof PopoverStateReturn | keyof TooltipStateReturn> = [
-  ...usePopoverState.__keys,
-  "unstable_timeout",
-  "unstable_setTimeout",
-];
-
-useTooltipState.__keys = keys;

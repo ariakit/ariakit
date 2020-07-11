@@ -21,10 +21,11 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import { CompositeStateReturn, useCompositeState } from "./CompositeState";
+import { CompositeStateReturn } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
 import { Item } from "./__utils/types";
+import { COMPOSITE_ITEM_KEYS } from "./__keys";
 
 export type CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
@@ -82,7 +83,7 @@ export const useCompositeItem = createHook<
 >({
   name: "CompositeItem",
   compose: [useClickable, unstable_useId],
-  useState: useCompositeState,
+  keys: COMPOSITE_ITEM_KEYS,
 
   propsAreEqual(prev, next) {
     if (!next.id || prev.id !== next.id) {

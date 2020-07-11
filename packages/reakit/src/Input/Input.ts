@@ -6,6 +6,7 @@ import {
   TabbableHTMLProps,
   useTabbable,
 } from "../Tabbable/Tabbable";
+import { INPUT_KEYS } from "./__keys";
 
 export type InputOptions = TabbableOptions;
 
@@ -16,6 +17,7 @@ export type InputProps = InputOptions & InputHTMLProps;
 export const useInput = createHook<InputOptions, InputHTMLProps>({
   name: "Input",
   compose: useTabbable,
+  keys: INPUT_KEYS,
 });
 
 export const Input = createComponent({

@@ -7,7 +7,8 @@ import {
   CheckboxHTMLProps,
 } from "../Checkbox/Checkbox";
 import { MenuItemOptions, MenuItemHTMLProps, useMenuItem } from "./MenuItem";
-import { MenuStateReturn, useMenuState } from "./MenuState";
+import { MenuStateReturn } from "./MenuState";
+import { MENU_ITEM_CHECKBOX_KEYS } from "./__keys";
 
 export type MenuItemCheckboxOptions = CheckboxOptions &
   MenuItemOptions &
@@ -29,8 +30,7 @@ export const useMenuItemCheckbox = createHook<
 >({
   name: "MenuItemCheckbox",
   compose: [useMenuItem, useCheckbox],
-  useState: useMenuState,
-  keys: ["name"],
+  keys: MENU_ITEM_CHECKBOX_KEYS,
 
   propsAreEqual(prev, next) {
     if (prev.name !== next.name) {

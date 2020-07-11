@@ -5,12 +5,13 @@ import { ArrayValue, As, PropsWithAs } from "reakit-utils/types";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { getDocument } from "reakit-utils/getDocument";
 import { ButtonOptions, ButtonHTMLProps, useButton } from "../Button/Button";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { formatInputName } from "./__utils/formatInputName";
 import { getInputId } from "./__utils/getInputId";
 import { getPushButtonId } from "./__utils/getPushButtonId";
 import { DeepPath, DeepPathValue } from "./__utils/types";
+import { FORM_PUSH_BUTTON_KEYS } from "./__keys";
 
 export type unstable_FormPushButtonOptions<
   V,
@@ -40,8 +41,7 @@ export const unstable_useFormPushButton = createHook<
 >({
   name: "FormPushButton",
   compose: useButton,
-  useState: unstable_useFormState,
-  keys: ["name", "value"],
+  keys: FORM_PUSH_BUTTON_KEYS,
 
   useOptions(options, { name, value }) {
     return {

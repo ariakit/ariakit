@@ -16,7 +16,8 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import { RoverStateReturn, useRoverState } from "./RoverState";
+import { RoverStateReturn } from "./RoverState";
+import { ROVER_KEYS } from "./__keys";
 
 export type RoverOptions = ClickableOptions &
   unstable_IdOptions &
@@ -46,8 +47,7 @@ export type RoverProps = RoverOptions & RoverHTMLProps;
 export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
   compose: [useClickable, unstable_useId],
-  useState: useRoverState,
-  keys: ["stopId"],
+  keys: ROVER_KEYS,
 
   useProps(
     options,

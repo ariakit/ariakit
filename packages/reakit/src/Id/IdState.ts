@@ -43,11 +43,3 @@ export function unstable_useIdState(
     unstable_idCountRef: idCountRef,
   };
 }
-
-const keys: Array<keyof unstable_IdStateReturn> = [
-  "baseId",
-  "unstable_setBaseId",
-  "unstable_idCountRef",
-];
-
-unstable_useIdState.__keys = keys;

@@ -4,7 +4,8 @@ import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { useDisclosureState, DisclosureStateReturn } from "./DisclosureState";
+import { DisclosureStateReturn } from "./DisclosureState";
+import { DISCLOSURE_CONTENT_KEYS } from "./__keys";
 
 export type DisclosureContentOptions = BoxOptions &
   Pick<
@@ -25,7 +26,7 @@ export const useDisclosureContent = createHook<
 >({
   name: "DisclosureContent",
   compose: useBox,
-  useState: useDisclosureState,
+  keys: DISCLOSURE_CONTENT_KEYS,
 
   useProps(
     options,

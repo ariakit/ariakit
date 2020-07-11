@@ -7,8 +7,9 @@ import {
   useDisclosureContent,
 } from "../Disclosure/DisclosureContent";
 import { Portal } from "../Portal/Portal";
-import { useDialogState, DialogStateReturn } from "./DialogState";
+import { DialogStateReturn } from "./DialogState";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
+import { DIALOG_BACKDROP_KEYS } from "./__keys";
 
 export type DialogBackdropOptions = DisclosureContentOptions &
   Pick<Partial<DialogStateReturn>, "modal">;
@@ -24,7 +25,7 @@ export const useDialogBackdrop = createHook<
 >({
   name: "DialogBackdrop",
   compose: useDisclosureContent,
-  useState: useDialogState,
+  keys: DIALOG_BACKDROP_KEYS,
 
   useOptions({ modal = true, ...options }) {
     return { modal, ...options };

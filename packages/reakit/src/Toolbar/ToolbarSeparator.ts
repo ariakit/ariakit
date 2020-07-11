@@ -5,7 +5,7 @@ import {
   SeparatorHTMLProps,
   useSeparator,
 } from "../Separator/Separator";
-import { useToolbarState } from "./ToolbarState";
+import { TOOLBAR_SEPARATOR_KEYS } from "./__keys";
 
 export type ToolbarSeparatorOptions = SeparatorOptions;
 
@@ -20,7 +20,7 @@ export const useToolbarSeparator = createHook<
 >({
   name: "ToolbarSeparator",
   compose: useSeparator,
-  useState: useToolbarState,
+  keys: TOOLBAR_SEPARATOR_KEYS,
 
   useOptions({ orientation = "vertical", ...options }) {
     return {

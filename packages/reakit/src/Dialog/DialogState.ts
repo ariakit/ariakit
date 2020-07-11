@@ -58,12 +58,3 @@ export function useDialogState(
     unstable_disclosureRef: disclosureRef,
   };
 }
-
-const keys: Array<keyof DialogStateReturn> = [
-  ...useDisclosureState.__keys,
-  "modal",
-  "setModal",
-  "unstable_disclosureRef",
-];
-
-useDialogState.__keys = keys;

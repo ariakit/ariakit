@@ -11,11 +11,12 @@ import {
 import { DeepPath, DeepPathValue } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { formatInputName } from "./__utils/formatInputName";
 import { getMessageId } from "./__utils/getMessageId";
 import { shouldShowError } from "./__utils/shouldShowError";
+import { FORM_CHECKBOX_KEYS } from "./__keys";
 
 export type unstable_FormCheckboxOptions<V, P extends DeepPath<V, P>> = Omit<
   CheckboxOptions,
@@ -51,8 +52,7 @@ export const unstable_useFormCheckbox = createHook<
 >({
   name: "FormCheckbox",
   compose: useCheckbox,
-  useState: unstable_useFormState,
-  keys: ["name", "value"],
+  keys: FORM_CHECKBOX_KEYS,
 
   useOptions(options, htmlProps) {
     const name = options.name || htmlProps.name;

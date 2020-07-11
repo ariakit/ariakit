@@ -3,7 +3,8 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { usePopoverState, PopoverStateReturn } from "./PopoverState";
+import { PopoverStateReturn } from "./PopoverState";
+import { POPOVER_ARROW_KEYS } from "./__keys";
 
 export type PopoverArrowOptions = BoxOptions &
   Pick<
@@ -25,8 +26,7 @@ export const usePopoverArrow = createHook<
 >({
   name: "PopoverArrow",
   compose: useBox,
-  useState: usePopoverState,
-  keys: ["size"],
+  keys: POPOVER_ARROW_KEYS,
 
   useOptions({ size = 30, ...options }) {
     return { size, ...options };

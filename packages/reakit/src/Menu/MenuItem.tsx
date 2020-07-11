@@ -9,10 +9,11 @@ import {
   CompositeItemHTMLProps,
   useCompositeItem,
 } from "../Composite/CompositeItem";
-import { useMenuState, MenuStateReturn } from "./MenuState";
+import { MenuStateReturn } from "./MenuState";
 import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
 import { useTransitToSubmenu } from "./__utils/useTransitToSubmenu";
+import { MENU_ITEM_KEYS } from "./__keys";
 
 export type MenuItemOptions = CompositeItemOptions &
   Pick<
@@ -69,7 +70,7 @@ function hoveringAnotherMenuItem(
 export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
   name: "MenuItem",
   compose: useCompositeItem,
-  useState: useMenuState,
+  keys: MENU_ITEM_KEYS,
 
   propsAreEqual(prev, next) {
     const {

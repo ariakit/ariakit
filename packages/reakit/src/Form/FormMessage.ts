@@ -2,12 +2,13 @@ import { createComponent } from "reakit-system/createComponent";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { getMessageId } from "./__utils/getMessageId";
 import { shouldShowError } from "./__utils/shouldShowError";
 import { shouldShowMessage } from "./__utils/shouldShowMessage";
 import { DeepPath } from "./__utils/types";
+import { FORM_MESSAGE_KEYS } from "./__keys";
 
 export type unstable_FormMessageOptions<
   V,
@@ -36,8 +37,7 @@ export const unstable_useFormMessage = createHook<
 >({
   name: "FormMessage",
   compose: useBox,
-  useState: unstable_useFormState,
-  keys: ["name"],
+  keys: FORM_MESSAGE_KEYS,
 
   useProps(options, htmlProps) {
     let children = shouldShowError(options, options.name)
