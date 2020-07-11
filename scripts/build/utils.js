@@ -178,6 +178,20 @@ function getPublicFiles(rootPath, prefix = "") {
 }
 
 /**
+ * Returns the same as getPublicFiles, but grouped by modules.
+ * Like { "path/to/moduleName": ["path/to/moduleName/file1", "path/to/moduleName/file2"] }
+ * @param {string} rootPath
+ */
+function getPublicFilesByModules(rootPath) {
+  const publicFiles = getPublicFiles(rootPath);
+  return Object.values(publicFiles).reduce((acc, path) => {
+    const moduleName = dirname(path);
+    acc[moduleName] = [...(acc[moduleName] || []), path];
+    return acc;
+  }, {});
+}
+
+/**
  * Returns ["module", "path/to/module", ...]
  * @param {string} rootPath
  */
@@ -441,6 +455,7 @@ function getTagNames(prop) {
 
 /**
  * @param {import("ts-morph").Node<Node>} node
+ * @param {boolean} includePrivate
  */
 function getProps(node, includePrivate) {
   const props = node.getType().getProperties();
@@ -448,6 +463,14 @@ function getProps(node, includePrivate) {
     return props;
   }
   return props.filter((prop) => !getTagNames(prop).includes("JSDocPrivateTag"));
+}
+
+/**
+ * @param {import("ts-morph").Node<Node>} node
+ * @param {boolean} includePrivate
+ */
+function getPropsNames(node, includePrivate) {
+  return getProps(node, includePrivate).map((prop) => prop.getEscapedName());
 }
 
 /**
@@ -670,6 +693,14 @@ function getKeysName(moduleName) {
 }
 
 /**
+ * @param {any[]} a
+ * @param {any[]} b
+ */
+function isSubsetOf(a, b) {
+  return a.length && b.length && a.every((item) => b.includes(item));
+}
+
+/**
  * @param {Object} object
  */
 function sortStateSets(object) {
@@ -682,14 +713,6 @@ function sortStateSets(object) {
       return 0;
     })
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
-}
-
-/**
- * @param {any[]} a
- * @param {any[]} b
- */
-function isSubsetOf(a, b) {
-  return a.length && b.length && a.every((item) => b.includes(item));
 }
 
 /**
@@ -716,78 +739,88 @@ function replaceSubsetInObject(object) {
 }
 
 /**
+ * @param {string} acc
+ * @param {[string, string[]]} entry
+ */
+function reduceKeys(acc, [moduleName, array]) {
+  const declaration = `const ${getKeysName(moduleName)}`;
+  const value = `${JSON.stringify(array)} as const`
+    // "...FOO_KEYS" -> ...FOO_KEYS (without quotes)
+    .replace(/"([.A-Z_]+)"/g, "$1")
+    // [...FOO_KEYS] as const -> FOO_KEYS
+    .replace(/\[\.\.\.([A-Z_]+)\] as const/g, "$1");
+
+  const finalString = `${declaration} = ${value};\n`;
+
+  if (!moduleName.endsWith("State")) {
+    return `${acc}export ${finalString}`;
+  }
+  return `${acc}${finalString}`;
+}
+
+/**
  * Create __keys.json files
  * @param {string} rootPath
  */
 function makeKeys(rootPath) {
-  const publicFiles = getPublicFiles(getSourcePath(rootPath));
-  const filesByModule = Object.values(publicFiles).reduce((acc, path) => {
-    const moduleName = dirname(path);
-    acc[moduleName] = [...(acc[moduleName] || []), path];
-    return acc;
-  }, {});
-
+  const pkg = getPackage(rootPath);
+  const filesByModules = getPublicFilesByModules(getSourcePath(rootPath));
   const project = new Project({
     tsConfigFilePath: join(rootPath, "tsconfig.json"),
     addFilesFromTsConfig: false,
   });
+  const created = [];
 
-  Object.entries(filesByModule).forEach(([modulePath, paths]) => {
+  Object.entries(filesByModules).forEach(([modulePath, paths]) => {
     const sourceFiles = project.addSourceFilesAtPaths(paths);
     const keys = {};
-    const stateProps = [];
+    const stateKeys = [];
 
     sortSourceFiles(sourceFiles).forEach((sourceFile) => {
       sourceFile.forEachChild((node) => {
-        if (isOptionsDeclaration(node) || isStateReturnDeclaration(node)) {
+        if (isStateReturnDeclaration(node) || isOptionsDeclaration(node)) {
           const literalNode = isOptionsDeclaration(node)
             ? getLiteralNode(node)
             : node;
-          const props = literalNode
-            ? getProps(literalNode, true).map((prop) => prop.getEscapedName())
-            : [];
+          const props = literalNode ? getPropsNames(literalNode, true) : [];
           if (isStateReturnDeclaration(node)) {
             for (const prop of props) {
-              if (!stateProps.includes(prop)) {
-                stateProps.push(prop);
+              if (!stateKeys.includes(prop)) {
+                stateKeys.push(prop);
               }
             }
             keys[getModuleName(node)] = props;
           } else {
-            keys[getModuleName(node)] = [...stateProps, ...props];
+            keys[getModuleName(node)] = [...stateKeys, ...props];
           }
         }
       });
     });
 
-    if (Object.keys(keys).length) {
-      const contents = Object.entries(
-        replaceSubsetInObject(sortStateSets(keys))
-      ).reduce((acc, [moduleName, array]) => {
-        if (moduleName.endsWith("State")) {
-          return `${acc}const ${getKeysName(moduleName)} = ${JSON.stringify(
-            array
-          ).replace(/"([.A-Z_]+)"/g, "$1")} as const;\n`.replace(
-            /\[\.\.\.([A_Z_])\]/,
-            "$1"
-          );
-        }
-        return `${acc}export const ${getKeysName(
-          moduleName
-        )} = ${JSON.stringify(array).replace(
-          /"([.A-Z_]+)"/g,
-          "$1"
-        )} as const;\n`.replace(/\[\.\.\.([A-Z_]+)\] as const/g, "$1");
-      }, "");
-      writeFileSync(
-        join(modulePath, "__keys.ts"),
-        prettier.format(
-          `// Automatically generated by scripts/build/keys.js\n${contents}`,
-          { parser: "babel-ts" }
-        )
-      );
-    }
+    if (!Object.keys(keys).length) return;
+
+    const normalizedKeys = replaceSubsetInObject(sortStateSets(keys));
+    const contents = Object.entries(normalizedKeys).reduce(reduceKeys, "");
+    created.push(chalk.bold(chalk.green(basename(modulePath))));
+
+    writeFileSync(
+      join(modulePath, "__keys.ts"),
+      prettier.format(
+        `// Automatically generated by scripts/build/keys.js\n${contents}`,
+        { parser: "babel-ts" }
+      )
+    );
   });
+
+  if (created.length) {
+    log(
+      [
+        "",
+        `Generated keys in ${chalk.bold(pkg.name)}:`,
+        `${created.join(", ")}`,
+      ].join("\n")
+    );
+  }
 }
 
 module.exports = {
