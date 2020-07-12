@@ -36,6 +36,10 @@ export type unstable_ComboboxState = CompositeState & {
    * Result of filtering `values` by `currentValue`.
    */
   matches: string[];
+  /**
+   * Indicates the type of the suggestions popup.
+   */
+  hasPopup: true | "menu" | "listbox" | "tree" | "grid" | "dialog";
 };
 
 export type unstable_ComboboxActions = CompositeActions & {
@@ -126,6 +130,7 @@ export function unstable_useComboboxState(
 
   return {
     ...composite,
+    hasPopup: "listbox",
     currentValue,
     selectedValue,
     autocomplete,

@@ -280,7 +280,7 @@ column and vice-versa.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>17 state props</summary>
+<details><summary>18 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -373,30 +373,35 @@ and `groupId` if any. This state is automatically updated when
 
   Moves focus to a given item ID.
 
-- **`selectedValue`**
-  <code>string | undefined</code>
-
-  Value of the item that is currently selected.
-
 - **`autocomplete`**
   <code>boolean</code>
 
   TODO.
 
-- **`setSelectedValue`**
-  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
+- **`hasPopup`**
+  <code title="true | &#34;menu&#34; | &#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;">true | &#34;menu&#34; | &#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;...</code>
 
-  Sets `selectedValue`.
+  Indicates the type of the suggestions popup.
 
 - **`currentValue`**
   <code>string</code>
 
   Current value that will be used to filter `values`.
 
+- **`selectedValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
 - **`setCurrentValue`**
   <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
 
   Sets `currentValue`.
+
+- **`setSelectedValue`**
+  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
+
+  Sets `selectedValue`.
 
 </details>
 
@@ -536,15 +541,15 @@ and `groupId` if any. This state is automatically updated when
 
   Moves focus to the item below.
 
-- **`setSelectedValue`**
-  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
-
-  Sets `selectedValue`.
-
 - **`setCurrentValue`**
   <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
 
   Sets `currentValue`.
+
+- **`setSelectedValue`**
+  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
+
+  Sets `selectedValue`.
 
 </details>
 

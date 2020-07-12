@@ -19,6 +19,7 @@ const COMBOBOX_STATE_KEYS = [
   "values",
   "limit",
   "matches",
+  "hasPopup",
   "unstable_setBaseId",
   "registerItem",
   "unregisterItem",
