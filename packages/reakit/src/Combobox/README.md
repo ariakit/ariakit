@@ -280,7 +280,7 @@ column and vice-versa.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -382,6 +382,11 @@ and `groupId` if any. This state is automatically updated when
   <code title="true | &#34;menu&#34; | &#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;">true | &#34;menu&#34; | &#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;...</code>
 
   Indicates the type of the suggestions popup.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether the suggestions popup is visible or not.
 
 - **`currentValue`**
   <code>string</code>

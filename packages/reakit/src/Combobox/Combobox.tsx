@@ -12,7 +12,10 @@ import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { getPopupId } from "./__utils";
 
 export type unstable_ComboboxOptions = CompositeOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "autocomplete" | "hasPopup"> &
+  Pick<
+    Partial<unstable_ComboboxStateReturn>,
+    "autocomplete" | "hasPopup" | "visible"
+  > &
   Pick<
     unstable_ComboboxStateReturn,
     | "baseId"
@@ -86,7 +89,7 @@ export const unstable_useCombobox = createHook<
       autoComplete: "off",
       "aria-controls": controls,
       "aria-haspopup": options.hasPopup,
-      "aria-expanded": true,
+      "aria-expanded": options.visible,
       "aria-autocomplete": options.autocomplete ? "both" : "list",
       value,
       onChange,

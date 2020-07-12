@@ -40,6 +40,10 @@ export type unstable_ComboboxState = CompositeState & {
    * Indicates the type of the suggestions popup.
    */
   hasPopup: true | "menu" | "listbox" | "tree" | "grid" | "dialog";
+  /**
+   * Whether the suggestions popup is visible or not.
+   */
+  visible: boolean;
 };
 
 export type unstable_ComboboxActions = CompositeActions & {
@@ -130,6 +134,7 @@ export function unstable_useComboboxState(
 
   return {
     ...composite,
+    visible: true,
     hasPopup: "listbox",
     currentValue,
     selectedValue,
