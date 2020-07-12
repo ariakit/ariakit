@@ -83,6 +83,7 @@ export const unstable_useCombobox = createHook<
       "aria-controls": controls,
       "aria-haspopup": "grid",
       "aria-expanded": true,
+      "aria-autocomplete": options.autocomplete ? "both" : "list",
       value,
       onChange,
       onKeyDown,
