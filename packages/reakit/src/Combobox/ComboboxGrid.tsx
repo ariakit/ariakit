@@ -3,9 +3,10 @@ import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { COMBOBOX_GRID_KEYS } from "./__keys";
+import { getPopupId } from "./__utils";
 
 export type unstable_ComboboxGridOptions = BoxOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "baseId">;
+  Pick<unstable_ComboboxStateReturn, "baseId">;
 
 export type unstable_ComboboxGridHTMLProps = BoxHTMLProps;
 
@@ -21,7 +22,7 @@ export const unstable_useComboboxGrid = createHook<
   keys: COMBOBOX_GRID_KEYS,
 
   useProps(options, htmlProps) {
-    return { role: "grid", id: `${options.baseId}-grid`, ...htmlProps };
+    return { role: "grid", id: getPopupId(options.baseId), ...htmlProps };
   },
 });
 

@@ -9,13 +9,18 @@ import {
 } from "../Composite/Composite";
 import { COMBOBOX_KEYS } from "./__keys";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
+import { getPopupId } from "./__utils";
 
 export type unstable_ComboboxOptions = CompositeOptions &
+  Pick<Partial<unstable_ComboboxStateReturn>, "autocomplete"> &
   Pick<
-    Partial<unstable_ComboboxStateReturn>,
-    "baseId" | "selectedValue" | "setSelectedValue" | "autocomplete"
-  > &
-  Pick<unstable_ComboboxStateReturn, "currentValue" | "setCurrentValue">;
+    unstable_ComboboxStateReturn,
+    | "baseId"
+    | "currentValue"
+    | "setCurrentValue"
+    | "selectedValue"
+    | "setSelectedValue"
+  >;
 
 export type unstable_ComboboxHTMLProps = CompositeHTMLProps &
   React.InputHTMLAttributes<any>;
@@ -48,8 +53,8 @@ export const unstable_useCombobox = createHook<
       : options.currentValue;
 
     const controls = ariaControls
-      ? `${ariaControls} ${options.baseId}-grid`
-      : `${options.baseId}-grid`;
+      ? `${ariaControls} ${getPopupId(options.baseId)}`
+      : getPopupId(options.baseId);
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +83,6 @@ export const unstable_useCombobox = createHook<
       "aria-controls": controls,
       "aria-haspopup": "grid",
       "aria-expanded": true,
-      "aria-owns": `${options.baseId}-grid`,
       value,
       onChange,
       onKeyDown,
@@ -96,6 +100,8 @@ export const unstable_useCombobox = createHook<
         const inputHasFocus = options.currentId === null;
         if (inputHasFocus) {
           if (["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+        } else if (event.key.length === 1) {
+          return;
         } else if (event.key.startsWith("Arrow")) {
           event.preventDefault();
         }
