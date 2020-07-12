@@ -42,9 +42,7 @@ export default function ComboboxWithGrid() {
                 value={value}
                 as="div"
                 style={style}
-              >
-                {value}
-              </ComboboxGridCell>
+              />
             ))}
           </ComboboxGridRow>
         ))}

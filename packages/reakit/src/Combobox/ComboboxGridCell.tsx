@@ -59,6 +59,7 @@ export const unstable_useComboboxGridCell = createHook<
     return {
       onClick,
       onFocus,
+      children: options.value,
       ...htmlProps,
     };
   },
