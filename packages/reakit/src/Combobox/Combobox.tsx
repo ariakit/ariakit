@@ -2,22 +2,23 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useForkRef } from "reakit-utils/useForkRef";
 import {
   CompositeOptions,
   CompositeHTMLProps,
   useComposite,
 } from "../Composite/Composite";
 import { COMBOBOX_KEYS } from "./__keys";
-import { unstable_ComboboxStateReturn } from "./ComboboxState";
-import { getPopupId } from "./__utils";
+import { unstable_ComboboxPopoverStateReturn } from "./ComboboxPopoverState";
+import { getMenuId } from "./__utils/getMenuId";
 
 export type unstable_ComboboxOptions = CompositeOptions &
   Pick<
-    Partial<unstable_ComboboxStateReturn>,
-    "autocomplete" | "hasPopup" | "visible"
+    Partial<unstable_ComboboxPopoverStateReturn>,
+    "autocomplete" | "menuRole" | "visible" | "show" | "unstable_referenceRef"
   > &
   Pick<
-    unstable_ComboboxStateReturn,
+    unstable_ComboboxPopoverStateReturn,
     | "baseId"
     | "currentValue"
     | "setCurrentValue"
@@ -39,16 +40,17 @@ export const unstable_useCombobox = createHook<
   compose: useComposite,
   keys: COMBOBOX_KEYS,
 
-  useOptions({ hasPopup = "listbox", ...options }) {
-    return { hasPopup, ...options };
+  useOptions({ menuRole = "listbox", ...options }) {
+    return { menuRole, ...options };
   },
 
   useProps(
     options,
     {
-      "aria-controls": ariaControls,
+      ref: htmlRef,
       onChange: htmlOnChange,
       onKeyDown: htmlOnKeyDown,
+      "aria-controls": ariaControls,
       ...htmlProps
     }
   ) {
@@ -60,8 +62,8 @@ export const unstable_useCombobox = createHook<
       : options.currentValue;
 
     const controls = ariaControls
-      ? `${ariaControls} ${getPopupId(options.baseId)}`
-      : getPopupId(options.baseId);
+      ? `${ariaControls} ${getMenuId(options.baseId)}`
+      : getMenuId(options.baseId);
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,10 +87,12 @@ export const unstable_useCombobox = createHook<
     );
 
     return {
+      ref: useForkRef(options.unstable_referenceRef, htmlRef),
       role: "combobox",
       autoComplete: "off",
+      "aria-owns": controls,
       "aria-controls": controls,
-      "aria-haspopup": options.hasPopup,
+      "aria-haspopup": options.menuRole,
       "aria-expanded": options.visible,
       "aria-autocomplete": options.autocomplete ? "both" : "list",
       value,
@@ -100,6 +104,7 @@ export const unstable_useCombobox = createHook<
 
   useComposeProps(options, htmlProps) {
     const compositeHTMLProps = useComposite(options, htmlProps);
+    // TODO: Somethings should be only onKeyDown
     const onKey = React.useCallback(
       (
         event: React.KeyboardEvent<HTMLInputElement>,
@@ -108,14 +113,26 @@ export const unstable_useCombobox = createHook<
         const inputHasFocus = options.currentId === null;
         if (inputHasFocus) {
           if (["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+          if (event.key === "Escape") {
+            options.hide?.();
+          }
+          // replace event.key.length === 1 by onKeyPress?
+          if (event.key.startsWith("Arrow") || event.key.length === 1) {
+            options.show?.();
+          }
         } else if (event.key.length === 1) {
           return;
-        } else if (event.key.startsWith("Arrow")) {
+        } else if (
+          event.key.startsWith("Arrow") &&
+          options.inputRole === "grid"
+        ) {
+          event.preventDefault();
+        } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
           event.preventDefault();
         }
         handler?.(event);
       },
-      [options.currentId]
+      [options.currentId, options.show]
     );
     return {
       ...compositeHTMLProps,

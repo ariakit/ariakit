@@ -19,7 +19,7 @@ const COMBOBOX_STATE_KEYS = [
   "values",
   "limit",
   "matches",
-  "hasPopup",
+  "menuRole",
   "visible",
   "unstable_setBaseId",
   "registerItem",
@@ -53,10 +53,37 @@ const COMBOBOX_GRID_STATE_KEYS = [
   "columns",
   "setColumns",
 ] as const;
-export const COMBOBOX_KEYS = COMBOBOX_GRID_STATE_KEYS;
-export const COMBOBOX_GRID_KEYS = COMBOBOX_KEYS;
-export const COMBOBOX_GRID_CELL_KEYS = [
-  ...COMBOBOX_GRID_KEYS,
-  "value",
+const COMBOBOX_POPOVER_STATE_KEYS = [
+  ...COMBOBOX_STATE_KEYS,
+  "animated",
+  "animating",
+  "modal",
+  "unstable_disclosureRef",
+  "unstable_referenceRef",
+  "unstable_popoverRef",
+  "unstable_arrowRef",
+  "unstable_popoverStyles",
+  "unstable_arrowStyles",
+  "unstable_originalPlacement",
+  "unstable_update",
+  "placement",
+  "show",
+  "hide",
+  "toggle",
+  "setVisible",
+  "setAnimated",
+  "stopAnimation",
+  "setModal",
+  "place",
 ] as const;
-export const COMBOBOX_GRID_ROW_KEYS = COMBOBOX_GRID_KEYS;
+const COMBOBOX_GRID_POPOVER_STATE_KEYS = [
+  ...COMBOBOX_GRID_STATE_KEYS,
+  ...COMBOBOX_POPOVER_STATE_KEYS,
+] as const;
+export const COMBOBOX_KEYS = COMBOBOX_GRID_POPOVER_STATE_KEYS;
+export const COMBOBOX_GRID_CELL_KEYS = COMBOBOX_KEYS;
+export const COMBOBOX_GRID_ROW_KEYS = COMBOBOX_GRID_CELL_KEYS;
+export const COMBOBOX_ITEM_KEYS = [...COMBOBOX_GRID_ROW_KEYS, "value"] as const;
+export const COMBOBOX_MENU_KEYS = COMBOBOX_GRID_ROW_KEYS;
+export const COMBOBOX_OPTION_KEYS = COMBOBOX_MENU_KEYS;
+export const COMBOBOX_POPOVER_KEYS = COMBOBOX_OPTION_KEYS;

@@ -61,7 +61,7 @@ export function unstable_useComboboxGridState(
 
   return {
     ...combobox,
-    hasPopup: "grid",
+    menuRole: "grid",
     columns,
     matches,
     setColumns,
