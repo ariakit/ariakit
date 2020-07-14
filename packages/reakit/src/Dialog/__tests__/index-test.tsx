@@ -1253,7 +1253,7 @@ test("nested modal dialog with backdrop markup", () => {
   click(disclosure2);
   expect(baseElement).toMatchInlineSnapshot(`
     <body
-      style="padding-right: 1024px; overflow: hidden;"
+      style="padding-right: 1024px;"
     >
       <div>
         <button
