@@ -94,6 +94,8 @@ export const unstable_useCombobox = createHook<
       "aria-controls": controls,
       "aria-haspopup": options.menuRole,
       "aria-expanded": options.visible,
+      // TODO
+      // Consider also autocompleting the first matching option
       "aria-autocomplete": options.autocomplete ? "both" : "list",
       value,
       onChange,
@@ -117,6 +119,7 @@ export const unstable_useCombobox = createHook<
             options.hide?.();
           }
           // replace event.key.length === 1 by onKeyPress?
+          // should show popover when deleting too
           if (event.key.startsWith("Arrow") || event.key.length === 1) {
             options.show?.();
           }

@@ -42,6 +42,9 @@ export function unstable_useComboboxPopoverState(
   return {
     ...combobox,
     ...popover,
+    // It should work well even if matches aren't visible.
+    // For people who want to render options statically
+    // Maybe we can pass registerItem down only when options.visible
     matches: popover.visible ? combobox.matches : [],
   };
 }
