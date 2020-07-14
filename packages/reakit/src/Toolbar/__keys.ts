@@ -13,7 +13,7 @@ const TOOLBAR_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
-  "unstable_setBaseId",
+  "setBaseId",
   "registerItem",
   "unregisterItem",
   "registerGroup",

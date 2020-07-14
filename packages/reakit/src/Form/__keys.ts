@@ -11,7 +11,7 @@ const FORM_STATE_KEYS = [
   "submitting",
   "submitSucceed",
   "submitFailed",
-  "unstable_setBaseId",
+  "setBaseId",
   "reset",
   "validate",
   "submit",
