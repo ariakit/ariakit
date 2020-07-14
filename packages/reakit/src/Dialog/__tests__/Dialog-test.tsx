@@ -79,7 +79,7 @@ test("render non-modal", () => {
   );
   expect(baseElement).toMatchInlineSnapshot(`
     <body
-      style="padding-right: 1024px; overflow: hidden;"
+      style="padding-right: 1024px;"
     >
       <div>
         <div
