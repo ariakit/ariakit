@@ -14,7 +14,7 @@ const RADIO_STATE_KEYS = [
   "unstable_angular",
   "unstable_hasActiveWidget",
   "state",
-  "unstable_setBaseId",
+  "setBaseId",
   "registerItem",
   "unregisterItem",
   "registerGroup",

@@ -14,7 +14,7 @@ const MENU_BAR_STATE_KEYS = [
   "unstable_angular",
   "unstable_hasActiveWidget",
   "unstable_values",
-  "unstable_setBaseId",
+  "setBaseId",
   "registerItem",
   "unregisterItem",
   "registerGroup",

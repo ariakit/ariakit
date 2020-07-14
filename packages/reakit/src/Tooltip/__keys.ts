@@ -5,7 +5,7 @@ const TOOLTIP_STATE_KEYS = [
   "visible",
   "animated",
   "animating",
-  "unstable_setBaseId",
+  "setBaseId",
   "show",
   "hide",
   "toggle",

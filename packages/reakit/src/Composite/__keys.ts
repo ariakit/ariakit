@@ -2,7 +2,7 @@
 const COMPOSITE_STATE_KEYS = [
   "baseId",
   "unstable_idCountRef",
-  "unstable_setBaseId",
+  "setBaseId",
   "unstable_virtual",
   "rtl",
   "orientation",

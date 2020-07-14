@@ -16,7 +16,7 @@ const TAB_STATE_KEYS = [
   "selectedId",
   "panels",
   "manual",
-  "unstable_setBaseId",
+  "setBaseId",
   "registerItem",
   "unregisterItem",
   "registerGroup",

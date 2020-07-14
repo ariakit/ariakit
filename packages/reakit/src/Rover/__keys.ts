@@ -8,7 +8,7 @@ const ROVER_STATE_KEYS = [
   "unstable_pastId",
   "unstable_moves",
   "loop",
-  "unstable_setBaseId",
+  "setBaseId",
   "register",
   "unregister",
   "move",

@@ -20,7 +20,7 @@ export type unstable_IdActions = {
   /**
    * Sets `baseId`.
    */
-  unstable_setBaseId: React.Dispatch<React.SetStateAction<string>>;
+  setBaseId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export type unstable_IdInitialState = Partial<Pick<unstable_IdState, "baseId">>;
@@ -36,10 +36,9 @@ export function unstable_useIdState(
   const [baseId, setBaseId] = React.useState(
     () => initialBaseId || generateId()
   );
-
   return {
     baseId,
-    unstable_setBaseId: setBaseId,
+    setBaseId,
     unstable_idCountRef: idCountRef,
   };
 }
