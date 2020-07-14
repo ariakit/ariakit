@@ -11,11 +11,12 @@ export function sortBasedOnDOMPosition<T extends Item>(items: T[]): T[] {
   copy.sort((a, b) => {
     const elementA = a.ref.current;
     const elementB = b.ref.current;
-    if (elementA && elementB && isElementPreceding(elementA, elementB)) {
+    if (!elementA || !elementB) return 0;
+    if (isElementPreceding(elementA, elementB)) {
       isOrderDifferent = true;
       return -1;
     }
-    return 0;
+    return 1;
   });
   if (isOrderDifferent) {
     return copy;
