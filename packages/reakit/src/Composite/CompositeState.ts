@@ -175,7 +175,7 @@ export type CompositeActions = unstable_IdActions & {
    * Sorts the composite items state. This is especially useful after modifying
    * the composite items order in the DOM.
    */
-  unstable_sort: () => void;
+  sort: () => void;
   /**
    * Sets `virtual`.
    */
@@ -690,7 +690,7 @@ export function useCompositeState(
     down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
     first: useAction(() => dispatch({ type: "first" })),
     last: useAction(() => dispatch({ type: "last" })),
-    unstable_sort: useAction(() => dispatch({ type: "sort" })),
+    sort: useAction(() => dispatch({ type: "sort" })),
     unstable_setVirtual: useAction((value) =>
       dispatch({ type: "setVirtual", virtual: value })
     ),

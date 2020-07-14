@@ -37,8 +37,8 @@ export default function DynamicComposite() {
   ]);
 
   React.useEffect(() => {
-    composite.unstable_sort();
-  }, [composite.unstable_sort, items]);
+    composite.sort();
+  }, [composite.sort, items]);
 
   const moveUp = (item: string) => setItems(move(item, -1));
   const moveDown = (item: string) => setItems(move(item, 1));
