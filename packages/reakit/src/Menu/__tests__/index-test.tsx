@@ -395,7 +395,7 @@ import {
       expect(menu).not.toBeVisible();
       press.ArrowUp();
       expect(menu).toBeVisible();
-      expect(item3).toHaveFocus();
+      await wait(expect(item3).toHaveFocus);
       press.ArrowDown();
       expect(menu).toBeVisible();
       expect(item3).toHaveFocus();
@@ -426,7 +426,7 @@ import {
       expect(menu).not.toBeVisible();
       press.ArrowUp();
       expect(menu).toBeVisible();
-      expect(item3).toHaveFocus();
+      await wait(expect(item3).toHaveFocus);
       press.ArrowDown();
       expect(menu).toBeVisible();
       expect(item3).toHaveFocus();
@@ -1201,7 +1201,7 @@ import {
       expect(submenu2).toBeVisible();
       expect(item2).toHaveFocus();
       press.ArrowUp();
-      expect(submenu2item3).toHaveFocus();
+      await wait(expect(submenu2item3).toHaveFocus);
       press.ArrowLeft();
       expect(submenu1).toBeVisible();
       expect(submenu2).not.toBeVisible();
@@ -1270,11 +1270,11 @@ import {
       const submenu2 = getByLabelText("submenu2");
       focus(item1);
       expect(submenu1).toBeVisible();
-      expect(item1).toHaveFocus();
+      await wait(expect(item1).toHaveFocus);
       press.ArrowDown();
       await wait(expect(submenu1item1).toHaveFocus);
       press.ArrowDown();
-      expect(item10).toHaveFocus();
+      await wait(expect(item10).toHaveFocus);
       press.ArrowRight();
       expect(submenu10).toBeVisible();
       await wait(expect(submenu10item1).toHaveFocus);
