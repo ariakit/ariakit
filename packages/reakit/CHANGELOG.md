@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/reakit/reakit/compare/reakit@1.1.0...reakit@1.1.1) (2020-06-21)
+
+
+### Bug Fixes
+
+* Restore missing `Composite` references ([9d9eff2](https://github.com/reakit/reakit/commit/9d9eff216328038b34af50cea03f45f8297e0756)), closes [#667 (comment)](https://github.com/reakit/reakit/pull/667#issuecomment-647108385)
+
+
+
+
+
 # [1.1.0](https://github.com/reakit/reakit/compare/reakit@1.0.5...reakit@1.1.0) (2020-06-17)
 
 

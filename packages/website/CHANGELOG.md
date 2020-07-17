@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.5...website@1.1.1) (2020-06-21)
+
+
+### Bug Fixes
+
+* **website:** Fix internal dependencies versions ([1168436](https://github.com/reakit/reakit/tree/master/packages/website/commit/11684363f698a57d3c974b8b7cd197bbc27d449d))
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/tree/master/packages/website/issues/671)) ([79d3926](https://github.com/reakit/reakit/tree/master/packages/website/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/tree/master/packages/website/issues/665)
+
+
+
+
+
 ## [1.0.5](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.4...website@1.0.5) (2020-06-17)
 
 **Note:** Version bump only for package website

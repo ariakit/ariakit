@@ -506,10 +506,12 @@ function Example() {
 
 ## Accessibility
 
-- `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
+- `Menu` has role `menu`.
+- `MenuBar` has role `menubar`.
+- `Menu` and `MenuBar` extend the accessibility features of [Composite](/docs/composite/#accessibility).
 - `MenuButton` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
-- `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
+- `MenuItem` extends the accessibility features of [CompositeItem](/docs/composite/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 - `MenuItemCheckbox` has role `menuitemcheckbox`.
 - `MenuItemRadio` has role `menuitemradio`.
 - Pressing <kbd>Enter</kbd> on `MenuButton` opens its menu (or submenu) and places focus on its first item.
