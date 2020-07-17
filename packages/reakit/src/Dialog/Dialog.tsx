@@ -172,7 +172,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
         onBlurRef.current?.(event);
         focusOnBlur(event);
       },
-      [options.visible, focusOnBlur]
+      [focusOnBlur]
     );
 
     const wrapElement = React.useCallback(
