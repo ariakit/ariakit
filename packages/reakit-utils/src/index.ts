@@ -10,6 +10,7 @@ export * from "./flatten";
 export * from "./getActiveElement";
 export * from "./getDefaultView";
 export * from "./getDocument";
+export * from "./getNextActiveElementOnBlur";
 export * from "./hasFocusWithin";
 export * from "./isButton";
 export * from "./isEmpty";
