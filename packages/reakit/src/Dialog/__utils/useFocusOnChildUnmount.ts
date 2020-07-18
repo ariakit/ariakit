@@ -24,10 +24,9 @@ export function useFocusOnChildUnmount(
       if (target !== dialog) return;
       const document = getDocument(dialog);
       const activeElement = getActiveElement(dialog);
-      // There's no need to check if the removed element had focus before.
-      // We can simply check if the current focused element is the document
-      // body. On IE 11, it's an empty object when the current document is
-      // in a frame/iframe.
+      // We can check if the current focused element is the document body. On
+      // IE 11, it's an empty object when the current document is in a frame or
+      // iframe.
       if (activeElement === document.body || isEmpty(activeElement)) {
         dialog.focus();
       }

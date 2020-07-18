@@ -25,8 +25,11 @@ export function useFocusOnBlur(
     const dialog = dialogRef.current;
     if (!options.visible) return;
     if (!blurred) return;
-    const activeElement = getActiveElement(dialog);
-    if (!isActualElement(activeElement)) {
+    // After blur, if the active element isn't an actual element, this probably
+    // means that element.blur() was called on an element inside the dialog.
+    // In this case, the browser will automatically focus the body element.
+    // So we move focus back to the dialog.
+    if (!isActualElement(getActiveElement(dialog))) {
       warning(
         !dialog,
         "Can't focus dialog after a nested element got blurred because `ref` wasn't passed to the component",
