@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.13.0...reakit-utils@0.13.1) (2020-07-18)
+
+
+### Bug Fixes
+
+* Fix `Dialog` focus loss ([#682](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/682)) ([8ae0da7](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/8ae0da741ca45fed6bc1a7c25a3fc9aa60340b44)), closes [#677](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/677)
+
+
+
+
+
 # [0.13.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.13.0-alpha.0...reakit-utils@0.13.0) (2020-06-17)
 
 **Note:** Version bump only for package reakit-utils

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/reakit/reakit/compare/reakit@1.1.1...reakit@1.1.2) (2020-07-18)
+
+
+### Bug Fixes
+
+* Fix `composite.unstable_sort` on Firefox ([f973f77](https://github.com/reakit/reakit/commit/f973f77ea58811ee009f2de649b6426aa98617c9))
+* Fix `Dialog` focus loss ([#682](https://github.com/reakit/reakit/issues/682)) ([8ae0da7](https://github.com/reakit/reakit/commit/8ae0da741ca45fed6bc1a7c25a3fc9aa60340b44)), closes [#677](https://github.com/reakit/reakit/issues/677)
+* Fix `MenuButton` not receiving focus after `Menu` closes ([#692](https://github.com/reakit/reakit/issues/692)) ([e649f20](https://github.com/reakit/reakit/commit/e649f203334468ceb23ef33be49b24098b4a0eab))
+
+
+
+
+
 ## [1.1.1](https://github.com/reakit/reakit/compare/reakit@1.1.0...reakit@1.1.1) (2020-06-21)
 
 

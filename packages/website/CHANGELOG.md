@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.1.1...website@1.1.2) (2020-07-18)
+
+
+### Features
+
+* **website:** Remove `Rover` from docs navigation ([66ac84f](https://github.com/reakit/reakit/tree/master/packages/website/commit/66ac84f10888df5b6bc5e637755ba71552b67dae))
+
+
+
+
+
 ## [1.1.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.5...website@1.1.1) (2020-06-21)
 
 
