@@ -9,7 +9,7 @@ test("open menu", async () => {
   expect(label("Edit")).not.toBeVisible();
   click(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(text("Undo")).toHaveFocus);
+  await wait(expect(label("Edit")).toHaveFocus);
 });
 
 test("open menu by pressing enter", async () => {

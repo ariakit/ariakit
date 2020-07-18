@@ -98,8 +98,8 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
               const last = options.last && (() => setTimeout(options.last));
               return {
                 Escape: hide,
-                Enter: hasParent && first,
-                " ": hasParent && first,
+                Enter: first,
+                " ": first,
                 ArrowUp: dir === "top" || dir === "bottom" ? last : false,
                 ArrowRight: dir === "right" && first,
                 ArrowDown: dir === "bottom" || dir === "top" ? first : false,

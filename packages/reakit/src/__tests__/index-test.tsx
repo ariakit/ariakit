@@ -114,7 +114,7 @@ import {
     expect(text("item4")).toHaveFocus();
   });
 
-  test(`${strategy} menu inside dialog closes only itself when pressing Esc`, () => {
+  test(`${strategy} menu inside dialog closes only itself when pressing Esc`, async () => {
     const Test = () => {
       const popover = usePopoverState();
       const menu = useMenuState({ unstable_virtual: virtual });
@@ -140,7 +140,7 @@ import {
     expect(label("popover")).toBeVisible();
     expect(label("menu")).not.toBeVisible();
     press.Enter();
-    expect(text("Item 1")).toHaveFocus();
+    await wait(expect(text("Item 1")).toHaveFocus);
     expect(label("popover")).toBeVisible();
     expect(label("menu")).toBeVisible();
     press.Escape();
@@ -153,7 +153,7 @@ import {
     expect(label("menu")).not.toBeVisible();
   });
 
-  test(`${strategy} menu inside dialog inside menu closes only itself when pressing Esc`, () => {
+  test(`${strategy} menu inside dialog inside menu closes only itself when pressing Esc`, async () => {
     const Test = () => {
       const popover = usePopoverState();
       const menu1 = useMenuState({ unstable_virtual: virtual });
@@ -188,7 +188,7 @@ import {
     expect(label("popover")).not.toBeVisible();
     expect(label("menu2")).not.toBeVisible();
     press.Enter();
-    expect(text("Open popover")).toHaveFocus();
+    await wait(expect(text("Open popover")).toHaveFocus);
     expect(label("menu1")).toBeVisible();
     expect(label("popover")).not.toBeVisible();
     expect(label("menu2")).not.toBeVisible();
@@ -198,7 +198,7 @@ import {
     expect(label("popover")).toBeVisible();
     expect(label("menu2")).not.toBeVisible();
     press.Enter();
-    expect(text("Item 1")).toHaveFocus();
+    await wait(expect(text("Item 1")).toHaveFocus);
     expect(label("menu1")).toBeVisible();
     expect(label("popover")).toBeVisible();
     expect(label("menu2")).toBeVisible();

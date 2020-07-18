@@ -1,11 +1,14 @@
 import * as React from "react";
-import { useWarning } from "reakit-warning";
+import { useWarning, warning } from "reakit-warning";
 import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { contains } from "reakit-utils/contains";
+import { useForkRef } from "reakit-utils/useForkRef";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -38,16 +41,17 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const parentIsMenuBar = parent?.role === "menubar";
 
     return {
-      unstable_autoFocusOnShow: !parent,
       unstable_autoFocusOnHide: !parentIsMenuBar,
       modal: false,
       ...options,
+      unstable_autoFocusOnShow: false,
       // will be handled differently from usePopover/useDialog
       hideOnEsc: false,
     };
   },
 
-  useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+    const ref = React.useRef<HTMLElement>(null);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const parent = React.useContext(MenuContext);
     const hasParent = !!parent;
@@ -60,6 +64,22 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const { next, previous, orientation } = ancestorMenuBar || {};
     const ancestorIsHorizontal = orientation === "horizontal";
     const dir = usePlacementDir(options.placement);
+
+    useUpdateEffect(() => {
+      if (hasParent) return;
+      if (!options.visible) return;
+      const self = ref.current;
+      if (!self) {
+        warning(
+          true,
+          "Can't focus the menu element because `ref` wasn't passed to the component",
+          "See https://reakit.io/docs/menu"
+        );
+        return;
+      }
+      if (hasFocusWithin(self)) return;
+      self.focus();
+    }, [options.visible, hasParent]);
 
     const onKeyDown = React.useMemo(
       () =>
@@ -95,7 +115,12 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
     );
 
-    return { role: "menu", onKeyDown, ...htmlProps };
+    return {
+      ref: useForkRef(ref, htmlRef),
+      role: "menu",
+      onKeyDown,
+      ...htmlProps,
+    };
   },
 });
 
