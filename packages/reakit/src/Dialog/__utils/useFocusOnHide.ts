@@ -8,7 +8,6 @@ import { DialogOptions } from "../Dialog";
 
 function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {
   const dialog = dialogRef.current;
-
   if (!dialog) return false;
 
   const activeElement = getActiveElement(dialog);
@@ -32,16 +31,13 @@ export function useFocusOnHide(
   useUpdateEffect(() => {
     if (!shouldFocus) return;
     if (animating) return;
-
     // Hide was triggered by a click/focus on a tabbable element outside
     // the dialog or on another dialog. We won't change focus then.
     if (hidByFocusingAnotherElement(dialogRef)) {
       return;
     }
-
     const finalFocusEl =
       options.unstable_finalFocusRef?.current || disclosureRef.current;
-
     if (finalFocusEl) {
       ensureFocus(finalFocusEl);
       return;

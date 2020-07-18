@@ -13,6 +13,7 @@
 /getActiveElement
 /getDefaultView
 /getDocument
+/getNextActiveElementOnBlur
 /hasFocusWithin
 /isButton
 /isEmpty

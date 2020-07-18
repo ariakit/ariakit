@@ -95,7 +95,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
               // prevents scroll jump
               const first = options.first && (() => setTimeout(options.first));
               const hide = options.hide && (() => options.hide?.());
-              const last = options.last && (() => options.last());
+              const last = options.last && (() => setTimeout(options.last));
               return {
                 Escape: hide,
                 Enter: hasParent && first,
