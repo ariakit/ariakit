@@ -10,6 +10,7 @@ import { fireEvent } from "reakit-utils/fireEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import { useBox } from "../Box/Box";
 import { CompositeStateReturn, useCompositeState } from "./CompositeState";
@@ -19,7 +20,6 @@ import { flatten } from "./__utils/flatten";
 import { findFirstEnabledItem } from "./__utils/findFirstEnabledItem";
 import { reverse } from "./__utils/reverse";
 import { getCurrentId } from "./__utils/getCurrentId";
-import { getNextActiveElementOnBlur } from "./__utils/getNextActiveElementOnBlur";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 
 export type CompositeOptions = TabbableOptions &
