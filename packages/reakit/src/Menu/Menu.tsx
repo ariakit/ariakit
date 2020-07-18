@@ -78,8 +78,8 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
         return;
       }
       if (hasFocusWithin(self)) return;
-      self.focus();
-    }, [options.visible, hasParent]);
+      options.move?.(null);
+    }, [options.visible, hasParent, options.move]);
 
     const onKeyDown = React.useMemo(
       () =>
