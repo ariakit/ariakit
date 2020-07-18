@@ -395,7 +395,7 @@ import {
       expect(menu).not.toBeVisible();
       press.ArrowUp();
       expect(menu).toBeVisible();
-      expect(item3).toHaveFocus();
+      await wait(expect(item3).toHaveFocus);
       press.ArrowDown();
       expect(menu).toBeVisible();
       expect(item3).toHaveFocus();
@@ -426,7 +426,7 @@ import {
       expect(menu).not.toBeVisible();
       press.ArrowUp();
       expect(menu).toBeVisible();
-      expect(item3).toHaveFocus();
+      await wait(expect(item3).toHaveFocus);
       press.ArrowDown();
       expect(menu).toBeVisible();
       expect(item3).toHaveFocus();
@@ -1201,7 +1201,7 @@ import {
       expect(submenu2).toBeVisible();
       expect(item2).toHaveFocus();
       press.ArrowUp();
-      expect(submenu2item3).toHaveFocus();
+      await wait(expect(submenu2item3).toHaveFocus);
       press.ArrowLeft();
       expect(submenu1).toBeVisible();
       expect(submenu2).not.toBeVisible();
