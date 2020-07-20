@@ -34,6 +34,7 @@ export function useTabbableProps(
 
   const tabbable = css`
     &:not([type="checkbox"]):not([type="radio"]) {
+      transition: box-shadow 0.15s ease-in-out;
       outline: 0;
 
       &:focus {

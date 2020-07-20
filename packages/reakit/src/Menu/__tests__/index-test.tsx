@@ -1496,7 +1496,7 @@ import {
       expect(submenu).not.toBeVisible();
     });
 
-    test("pressing esc closes all menus", () => {
+    test("pressing esc closes all menus", async () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
           const menu = useMenuState({

@@ -51,7 +51,6 @@ import {
     expect(text("item3")).toHaveFocus();
     expect(label("menu")).not.toBeVisible();
     press.ArrowRight();
-    expect(text("item3")).not.toHaveFocus();
     expect(label("menu")).toBeVisible();
     await wait(expect(text("menuitem1")).toHaveFocus);
     press.ArrowRight();
@@ -100,7 +99,6 @@ import {
     press.ArrowLeft();
     expect(text("item3")).toHaveFocus();
     press.Enter();
-    expect(text("item3")).not.toHaveFocus();
     expect(label("menu")).toBeVisible();
     await wait(expect(text("menuitem1")).toHaveFocus);
     press.ArrowRight();

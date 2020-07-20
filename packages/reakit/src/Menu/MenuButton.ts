@@ -23,6 +23,7 @@ export type MenuButtonOptions = PopoverDisclosureOptions &
     | "unstable_arrowStyles"
     | "currentId"
     | "unstable_moves"
+    | "move"
   > &
   Pick<MenuStateReturn, "show" | "placement" | "first" | "last">;
 
@@ -92,7 +93,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             shouldKeyDown: (event) => event.key === "Escape" || !disabled,
             onKey: () => options.show(),
             keyMap: () => {
-              // prevents scroll jump
+              // setTimeout prevents scroll jump
               const first = options.first && (() => setTimeout(options.first));
               const hide = options.hide && (() => options.hide?.());
               const last = options.last && (() => setTimeout(options.last));
@@ -150,6 +151,9 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         // or click, but we don't want both to trigger sequentially.
         // Otherwise, onClick would toggle (hide) the menu right after it got
         // shown on focus.
+        // This is also useful so we know if the menu button has been clicked
+        // using mouse or keyboard. On mouse click, we don't automatically
+        // focus the first menu item.
         hasPressedMouse.current = true;
         onMouseDownRef.current?.(event);
       }, []);
@@ -163,7 +167,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             options.show?.();
           }
         },
-        [parentIsMenuBar, options.show, disabled]
+        [parentIsMenuBar, disabled, options.show]
       );
 
       // If disclosure is rendered as a menu bar item, it's toggable
@@ -172,14 +176,29 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         (event: React.MouseEvent) => {
           onClickRef.current?.(event);
           if (event.defaultPrevented) return;
+          // If menu button is a menu item inside a menu (not menu bar), you
+          // can't close it by clicking on it again.
           if (hasParent && !parentIsMenuBar) {
             options.show?.();
           } else {
+            // Otherwise, if menu button is a menu bar item or an orphan menu
+            // button, it's toggable.
             options.toggle?.();
+            // Focus the menu popover when it's opened with mouse click.
+            if (hasPressedMouse.current && !options.visible) {
+              options.move?.(null);
+            }
           }
           hasPressedMouse.current = false;
         },
-        [hasParent, parentIsMenuBar, options.show, options.toggle]
+        [
+          hasParent,
+          parentIsMenuBar,
+          options.show,
+          options.toggle,
+          options.visible,
+          options.move,
+        ]
       );
 
       return {
