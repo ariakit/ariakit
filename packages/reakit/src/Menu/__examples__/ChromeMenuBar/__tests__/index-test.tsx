@@ -7,7 +7,7 @@ test("open and hover menus", async () => {
   expect(label("File")).not.toBeVisible();
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
-  expect(text("File")).toHaveFocus();
+  expect(label("File")).toHaveFocus();
   hover(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
   expect(text("Edit")).toHaveFocus();

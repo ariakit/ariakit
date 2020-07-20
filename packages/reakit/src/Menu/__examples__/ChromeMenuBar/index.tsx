@@ -12,9 +12,9 @@ import {
   useMenuState,
   MenuStateReturn,
 } from "reakit/Menu";
-import buttons from "./menuBar";
+import items from "./items";
 
-type MenuItemsProps = MenuStateReturn & { item: typeof buttons[number] };
+type MenuItemsProps = MenuStateReturn & { item: typeof items[number] };
 
 const MenuItems = React.memo(
   ({ item, ...menu }: MenuItemsProps) => (
@@ -67,7 +67,7 @@ const MenuItems = React.memo(
 );
 
 type MenuContainerProps = MenuButtonHTMLProps & {
-  item: typeof buttons[number];
+  item: typeof items[number];
 };
 
 const MenuContainer = React.memo(
@@ -92,7 +92,7 @@ export default function ChromeMenuBar() {
   const menuBar = useMenuBarState({ loop: true });
   return (
     <MenuBar {...menuBar}>
-      {buttons.map((item, i) => (
+      {items.map((item, i) => (
         <MenuItem
           {...menuBar}
           key={i}

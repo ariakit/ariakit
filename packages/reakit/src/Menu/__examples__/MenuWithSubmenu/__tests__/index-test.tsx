@@ -9,51 +9,7 @@ test("open menu", async () => {
   expect(label("Edit")).not.toBeVisible();
   click(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(text("Undo")).toHaveFocus);
-});
-
-test("open menu by pressing enter", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  expect(label("Edit")).not.toBeVisible();
-  focus(text("Edit"));
-  press.Enter();
-  await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(text("Undo")).toHaveFocus);
-});
-
-test("open menu by pressing space", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  expect(label("Edit")).not.toBeVisible();
-  focus(text("Edit"));
-  press.Space();
-  await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(text("Undo")).toHaveFocus);
-});
-
-test("open menu by pressing arrow down", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  expect(label("Edit")).not.toBeVisible();
-  focus(text("Edit"));
-  press.ArrowDown();
-  await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(text("Undo")).toHaveFocus);
-});
-
-test("open menu by pressing arrow up", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  expect(label("Edit")).not.toBeVisible();
-  focus(text("Edit"));
-  press.ArrowUp();
-  await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(text("Substitutions")).toHaveFocus);
+  await wait(expect(label("Edit")).toHaveFocus);
 });
 
 test("open submenu with click", async () => {
