@@ -32,101 +32,6 @@ import {
       expect(menu).toBeVisible();
     });
 
-    test("clicking on disclosure opens menu and focus the menu element", () => {
-      const Test = () => {
-        const menu = useMenuState({ unstable_virtual: virtual });
-        return (
-          <>
-            <MenuButton {...menu}>disclosure</MenuButton>
-            <Menu {...menu} aria-label="menu">
-              <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>item2</MenuItem>
-              <MenuItem {...menu}>item3</MenuItem>
-            </Menu>
-          </>
-        );
-      };
-      const { getByText, getByLabelText } = render(<Test />);
-      const disclosure = getByText("disclosure");
-      const menu = getByLabelText("menu");
-      expect(menu).not.toBeVisible();
-      click(disclosure);
-      expect(menu).toBeVisible();
-      expect(menu).toHaveFocus();
-    });
-
-    test("pressing enter on disclosure opens menu and focus the first menu item", async () => {
-      const Test = () => {
-        const menu = useMenuState({ unstable_virtual: virtual });
-        return (
-          <>
-            <MenuButton {...menu}>disclosure</MenuButton>
-            <Menu {...menu} aria-label="menu">
-              <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>item2</MenuItem>
-              <MenuItem {...menu}>item3</MenuItem>
-            </Menu>
-          </>
-        );
-      };
-      const { getByText, getByLabelText } = render(<Test />);
-      const disclosure = getByText("disclosure");
-      const menu = getByLabelText("menu");
-      const item1 = getByText("item1");
-      expect(menu).not.toBeVisible();
-      focus(disclosure);
-      press.Enter();
-      expect(menu).toBeVisible();
-      await wait(expect(item1).toHaveFocus);
-    });
-
-    test("pressing space on disclosure opens menu and focus the first menu item", async () => {
-      const Test = () => {
-        const menu = useMenuState({ unstable_virtual: virtual });
-        return (
-          <>
-            <MenuButton {...menu}>disclosure</MenuButton>
-            <Menu {...menu} aria-label="menu">
-              <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>item2</MenuItem>
-              <MenuItem {...menu}>item3</MenuItem>
-            </Menu>
-          </>
-        );
-      };
-      const { getByText, getByLabelText } = render(<Test />);
-      const disclosure = getByText("disclosure");
-      const menu = getByLabelText("menu");
-      const item1 = getByText("item1");
-      expect(menu).not.toBeVisible();
-      focus(disclosure);
-      press.Space();
-      expect(menu).toBeVisible();
-      await wait(expect(item1).toHaveFocus);
-    });
-
-    test("hovering menu item moves focus to it", () => {
-      const Test = () => {
-        const menu = useMenuState({ unstable_virtual: virtual, visible: true });
-        return (
-          <Menu {...menu} aria-label="menu">
-            <MenuItem {...menu}>item1</MenuItem>
-            <MenuItem {...menu}>item2</MenuItem>
-            <MenuItem {...menu}>item3</MenuItem>
-          </Menu>
-        );
-      };
-      const { getByText, getByLabelText } = render(<Test />);
-      const menu = getByLabelText("menu");
-      const item1 = getByText("item1");
-      expect(menu).toBeVisible();
-      expect(item1).not.toHaveFocus();
-      hover(item1);
-      expect(item1).toHaveFocus();
-      hover(menu);
-      expect(item1).not.toHaveFocus();
-    });
-
     test("clicking on menu item disclosure opens submenu without moving focus", () => {
       const Submenu = React.forwardRef(
         (props: MenuButtonHTMLProps, ref: React.RefObject<any>) => {
@@ -329,33 +234,6 @@ import {
       expect(submenu).not.toBeVisible();
       await wait(expect(submenu).toBeVisible);
       expect(subdisclosure).toHaveFocus();
-    });
-
-    test("pressing esc on menu item closes the menu and focus disclosure", async () => {
-      const Test = () => {
-        const menu = useMenuState({ unstable_virtual: virtual });
-        return (
-          <>
-            <MenuButton {...menu}>disclosure</MenuButton>
-            <Menu {...menu} aria-label="menu">
-              <MenuItem {...menu}>item1</MenuItem>
-              <MenuItem {...menu}>item2</MenuItem>
-              <MenuItem {...menu}>item3</MenuItem>
-            </Menu>
-          </>
-        );
-      };
-      const { getByText, getByLabelText } = render(<Test />);
-      const disclosure = getByText("disclosure");
-      const menu = getByLabelText("menu");
-      const item1 = getByText("item1");
-      focus(disclosure);
-      press.Enter();
-      expect(menu).toBeVisible();
-      await wait(expect(item1).toHaveFocus);
-      press.Escape();
-      expect(menu).not.toBeVisible();
-      expect(disclosure).toHaveFocus();
     });
 
     test("arrow down on disclosure opens bottom menu and focus first item", async () => {

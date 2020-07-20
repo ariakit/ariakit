@@ -26,6 +26,8 @@ test("open menus with click except the disabled one", async () => {
   await wait(expect(label("File")).toBeVisible);
   expect(label("File")).toHaveFocus();
   click(text("View"));
+  expect(text("View")).not.toHaveFocus();
+  expect(label("File")).not.toBeVisible();
   expect(label("View")).not.toBeVisible();
   click(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
