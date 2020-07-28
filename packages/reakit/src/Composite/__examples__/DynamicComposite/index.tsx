@@ -36,10 +36,6 @@ export default function DynamicComposite() {
     "item4",
   ]);
 
-  React.useEffect(() => {
-    composite.sort();
-  }, [composite.sort, items]);
-
   const moveUp = (item: string) => setItems(move(item, -1));
   const moveDown = (item: string) => setItems(move(item, 1));
   const remove = (item: string) => setItems(exclude(item));

@@ -27,6 +27,7 @@ import { getItemsInGroup } from "./__utils/getItemsInGroup";
 import { getOppositeOrientation } from "./__utils/getOppositeOrientation";
 import { addItemAtIndex } from "./__utils/addItemAtIndex";
 import { sortBasedOnDOMPosition } from "./__utils/sortBasedOnDOMPosition";
+import { useSortBasedOnDOMPosition } from "./__utils/useSortBasedOnDOMPosition";
 
 export type CompositeState = unstable_IdState & {
   /**
@@ -274,7 +275,8 @@ type CompositeReducerAction =
       type: "setWrap";
       wrap: React.SetStateAction<CompositeState["wrap"]>;
     }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "setItems"; items: CompositeState["items"] };
 
 type CompositeReducerState = Omit<
   CompositeState,
@@ -588,6 +590,9 @@ function reducer(
         unstable_moves: 0,
         pastIds: [],
       };
+    case "setItems": {
+      return { ...state, items: action.items };
+    }
     default:
       throw new Error();
   }
@@ -659,6 +664,12 @@ export function useCompositeState(
   // This only happens in a very specific situation.
   // See https://github.com/reakit/reakit/issues/650
   const isUnmountedRef = useIsUnmountedRef();
+
+  const setItems = React.useCallback(
+    (items: Item[]) => dispatch({ type: "setItems", items }),
+    []
+  );
+  useSortBasedOnDOMPosition(state.items, setItems);
 
   return {
     ...idState,
