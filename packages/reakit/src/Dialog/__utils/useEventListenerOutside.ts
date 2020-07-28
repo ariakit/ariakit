@@ -27,6 +27,14 @@ function isDisclosure(target: Element, disclosure: HTMLElement) {
   );
 }
 
+function isInDocument(target: Element) {
+  const document = getDocument(target);
+  if (target.tagName === "HTML") {
+    return true;
+  }
+  return contains(document.body, target);
+}
+
 export function useEventListenerOutside(
   containerRef: React.RefObject<HTMLElement>,
   disclosureRef: React.RefObject<HTMLElement>,
@@ -40,13 +48,11 @@ export function useEventListenerOutside(
   React.useEffect(() => {
     if (!shouldListen) return undefined;
 
-    const handleEvent = (event: Event) => {
+    const onEvent = (event: Event) => {
       if (!listenerRef.current) return;
-
       const container = containerRef.current;
       const disclosure = disclosureRef.current;
       const target = event.target as Element;
-
       if (!container) {
         warning(
           true,
@@ -55,27 +61,25 @@ export function useEventListenerOutside(
         );
         return;
       }
-
-      // Click inside dialog
+      // When an element is unmounted right after it receives focus, the focus
+      // event is triggered after that, when the element isn't part of the
+      // current document anymore. So we ignore it.
+      if (!isInDocument(target)) return;
+      // Event inside dialog
       if (contains(container, target)) return;
-
-      // Click on disclosure
-      if (disclosure && isDisclosure(target, disclosure)) {
-        return;
-      }
-
-      // Click inside a nested dialog or focus trap
+      // Event on disclosure
+      if (disclosure && isDisclosure(target, disclosure)) return;
+      // Event inside a nested dialog or focus trap
       if (isFocusTrap(target) || nestedDialogs.some(dialogContains(target))) {
         return;
       }
-
       listenerRef.current(event);
     };
 
     const document = getDocument(containerRef.current);
-    document.addEventListener(eventType, handleEvent, true);
+    document.addEventListener(eventType, onEvent, true);
     return () => {
-      document.removeEventListener(eventType, handleEvent, true);
+      document.removeEventListener(eventType, onEvent, true);
     };
   }, [
     containerRef,

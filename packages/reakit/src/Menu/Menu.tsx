@@ -38,10 +38,11 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const parentIsMenuBar = parent?.role === "menubar";
 
     return {
-      unstable_autoFocusOnShow: !parent,
       unstable_autoFocusOnHide: !parentIsMenuBar,
       modal: false,
       ...options,
+      // will be handled by MenuButton
+      unstable_autoFocusOnShow: false,
       // will be handled differently from usePopover/useDialog
       hideOnEsc: false,
     };

@@ -9,7 +9,7 @@ test("open menu", async () => {
   expect(label("Bookmarks")).not.toBeVisible();
   click(text("Bookmarks"));
   await wait(expect(label("Bookmarks")).toBeVisible);
-  await wait(expect(text("Bookmark Manager")).toHaveFocus);
+  await wait(expect(label("Bookmarks")).toHaveFocus);
 });
 
 test("open dialog", async () => {
@@ -28,6 +28,7 @@ test("close dialog", async () => {
   );
   click(text("Bookmarks"));
   press.ArrowDown();
+  press.ArrowDown();
   press.Enter();
   await wait(expect(label("Bookmark This Tab...")).toBeVisible);
   await wait(expect(text("Cancel")).toHaveFocus);
@@ -43,6 +44,7 @@ test("hover menu items with dialog open", async () => {
     <MenuWithSubmenu />
   );
   click(text("Bookmarks"));
+  press.ArrowDown();
   press.ArrowDown();
   press.Enter();
   await wait(expect(label("Bookmark This Tab...")).toBeVisible);

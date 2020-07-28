@@ -2,7 +2,7 @@
 const COMPOSITE_STATE_KEYS = [
   "baseId",
   "unstable_idCountRef",
-  "unstable_setBaseId",
+  "setBaseId",
   "unstable_virtual",
   "rtl",
   "orientation",
@@ -25,7 +25,7 @@ const COMPOSITE_STATE_KEYS = [
   "down",
   "first",
   "last",
-  "unstable_sort",
+  "sort",
   "unstable_setVirtual",
   "setRTL",
   "setOrientation",

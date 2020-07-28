@@ -22,6 +22,8 @@ import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
 import { DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
+import { useFocusOnChildUnmount } from "./__utils/useFocusOnChildUnmount";
+import { useFocusOnBlur } from "./__utils/useFocusOnBlur";
 import { DIALOG_KEYS } from "./__keys";
 
 export type DialogOptions = DisclosureContentOptions &
@@ -108,6 +110,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     {
       ref: htmlRef,
       onKeyDown: htmlOnKeyDown,
+      onBlur: htmlOnBlur,
       wrapElement: htmlWrapElement,
       tabIndex,
       ...htmlProps
@@ -118,6 +121,8 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const hasBackdrop = backdrop && backdrop === options.baseId;
     const disclosure = useDisclosureRef(dialog, options);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onBlurRef = useLiveRef(htmlOnBlur);
+    const focusOnBlur = useFocusOnBlur(dialog, options);
     const { dialogs, visibleModals, wrap } = useNestedDialogs(dialog, options);
     // VoiceOver/Safari accepts only one `aria-modal` container, so if there
     // are visible child modals, then we don't want to set aria-modal on the
@@ -126,6 +131,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
 
     usePreventBodyScroll(dialog, options);
     useFocusTrap(dialog, visibleModals, options);
+    useFocusOnChildUnmount(dialog, options);
     useFocusOnShow(dialog, dialogs, options);
     useFocusOnHide(dialog, disclosure, options);
     useHideOnClickOutside(dialog, disclosure, dialogs, options);
@@ -152,6 +158,14 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       [options.hideOnEsc, options.hide]
     );
 
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent<HTMLElement>) => {
+        onBlurRef.current?.(event);
+        focusOnBlur(event);
+      },
+      [focusOnBlur]
+    );
+
     const wrapElement = React.useCallback(
       (element: React.ReactNode) => {
         element = wrap(element);
@@ -176,6 +190,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       "aria-modal": modal,
       "data-dialog": true,
       onKeyDown,
+      onBlur,
       wrapElement,
       ...htmlProps,
     };
