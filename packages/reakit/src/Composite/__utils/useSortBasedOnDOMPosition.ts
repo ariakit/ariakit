@@ -11,6 +11,8 @@ function setItemsBasedOnDOMPosition(items: Item[], setItems: SetItems) {
   }
 }
 
+// istanbul ignore next: JSDOM doesn't support IntersectionObverser
+// See https://github.com/jsdom/jsdom/issues/2032
 function useIntersectionObserver(items: Item[], setItems: SetItems) {
   const previousItems = React.useRef<typeof items>([]);
 
