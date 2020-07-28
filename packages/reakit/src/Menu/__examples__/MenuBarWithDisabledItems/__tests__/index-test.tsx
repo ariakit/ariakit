@@ -19,16 +19,14 @@ test("open menus with hover except the disabled one", async () => {
 });
 
 test("open menus with click except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label } = render(
+  const { getByText: text, getByLabelText: label, baseElement } = render(
     <MenuBarWithDisabledItems />
   );
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
   expect(text("File")).toHaveFocus();
   click(text("View"));
-  expect(text("View")).not.toHaveFocus();
-  expect(label("File")).not.toBeVisible();
-  expect(label("View")).not.toBeVisible();
+  expect(baseElement).toHaveFocus();
   click(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
   expect(text("Edit")).toHaveFocus();
