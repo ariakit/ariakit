@@ -9,10 +9,10 @@ test("open menus with hover except the disabled one", async () => {
   expect(label("File")).not.toBeVisible();
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   hover(text("View"));
   expect(label("File")).toBeVisible();
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   hover(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
   expect(text("Edit")).toHaveFocus();
@@ -24,14 +24,14 @@ test("open menus with click except the disabled one", async () => {
   );
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   click(text("View"));
   expect(text("View")).not.toHaveFocus();
   expect(label("File")).not.toBeVisible();
   expect(label("View")).not.toBeVisible();
   click(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
-  expect(label("Edit")).toHaveFocus();
+  expect(text("Edit")).toHaveFocus();
 });
 
 test("open menus with keyboard except the disabled one", async () => {
