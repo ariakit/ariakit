@@ -185,7 +185,11 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             // button, it's toggable.
             options.toggle?.();
             // Focus the menu popover when it's opened with mouse click.
-            if (hasPressedMouse.current && !options.visible) {
+            if (
+              hasPressedMouse.current &&
+              !parentIsMenuBar &&
+              !options.visible
+            ) {
               options.move?.(null);
             }
           }
