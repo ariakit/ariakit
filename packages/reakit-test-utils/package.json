@@ -1,6 +1,6 @@
 {
   "name": "reakit-test-utils",
-  "version": "0.11.1",
+  "version": "0.13.1",
   "description": "Reakit test utils",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils",
@@ -30,12 +30,12 @@
   ],
   "dependencies": {
     "jest-axe": "3.4.0",
-    "reakit-utils": "^0.12.0",
-    "reakit-warning": "^0.3.0"
+    "reakit-utils": "^0.13.1",
+    "reakit-warning": "^0.4.1"
   },
   "peerDependencies": {
-    "@testing-library/dom": "^6.0.0",
-    "@testing-library/react": "^9.0.0",
+    "@testing-library/dom": "^7.0.0",
+    "@testing-library/react": "^10.0.0",
     "@testing-library/react-hooks": "^3.0.0",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"

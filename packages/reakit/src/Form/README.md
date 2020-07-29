@@ -10,7 +10,9 @@ redirect_from:
 # Form
 
 <blockquote experimental="true">
-  <strong>This is experimental</strong> and may have breaking changes in minor or patch version updates. Issues for this module will have lower priority. Even so, if you use it, feel free to <a href="https://github.com/reakit/reakit/issues/new/choose" target="_blank">give us feedback</a>.
+
+  **This is experimental** and may introduce **breaking changes** or be **removed altogether** in patch and minor versions without notice. Learn more in [Experimental features](/docs/experimental/).
+
 </blockquote>
 
 `Form` is an accessible component with a collection of other components, such as `FormLabel` and `FormInput`.
@@ -455,7 +457,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Form` uses [Box](/docs/box/).
 - `FormCheckbox` uses [Checkbox](/docs/checkbox/).
 - `FormGroup` uses [Group](/docs/group/).
-- `FormInput` uses [Tabbable](/docs/tabbable/).
+- `FormInput` uses [Input](/docs/input/).
 - `FormLabel` uses [Box](/docs/box/).
 - `FormMessage` uses [Box](/docs/box/).
 - `FormPushButton` uses [Button](/docs/button/).

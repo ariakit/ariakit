@@ -32,6 +32,18 @@ export const useMenuItemCheckbox = createHook<
   useState: useMenuState,
   keys: ["name"],
 
+  propsAreEqual(prev, next) {
+    if (prev.name !== next.name) {
+      return useMenuItem.unstable_propsAreEqual(prev, next);
+    }
+    const { unstable_values: prevValues, ...prevProps } = prev;
+    const { unstable_values: nextValues, ...nextProps } = next;
+    if (prevValues[next.name] !== nextValues[next.name]) {
+      return false;
+    }
+    return useMenuItem.unstable_propsAreEqual(prevProps, nextProps);
+  },
+
   useOptions(options) {
     const setState = React.useCallback(
       (value) => options.unstable_setValue(options.name, value),

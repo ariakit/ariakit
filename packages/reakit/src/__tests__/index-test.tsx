@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render, press, wait } from "reakit-test-utils";
 import {
-  unstable_useCompositeState as useCompositeState,
-  unstable_Composite as Composite,
-  unstable_CompositeItem as CompositeItem,
+  useCompositeState,
+  Composite,
+  CompositeItem,
   useMenuState,
   Menu,
   MenuButton,
@@ -57,7 +57,7 @@ import {
     press.ArrowRight();
     expect(text("item3")).not.toHaveFocus();
     expect(label("menu")).toBeVisible();
-    expect(text("menuitem1")).toHaveFocus();
+    await wait(expect(text("menuitem1")).toHaveFocus);
   });
 
   test(`${strategy} composite with menu button not controlling arrow keys`, async () => {

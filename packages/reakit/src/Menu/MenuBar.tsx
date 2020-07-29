@@ -5,9 +5,9 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import {
-  unstable_CompositeOptions as CompositeOptions,
-  unstable_CompositeHTMLProps as CompositeHTMLProps,
-  unstable_useComposite as useComposite,
+  CompositeOptions,
+  CompositeHTMLProps,
+  useComposite,
 } from "../Composite/Composite";
 import { useShortcuts } from "./__utils/useShortcuts";
 import { useMenuContext } from "./__utils/MenuContext";

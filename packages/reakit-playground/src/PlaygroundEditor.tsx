@@ -8,6 +8,7 @@ if (typeof navigator !== "undefined") {
   require("codemirror/mode/javascript/javascript");
   require("codemirror/mode/jsx/jsx");
   require("codemirror/mode/htmlmixed/htmlmixed");
+  require("codemirror/mode/diff/diff");
   require("codemirror/addon/edit/closebrackets");
   require("codemirror/addon/edit/matchbrackets");
   require("codemirror/addon/edit/matchtags");

@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.13.1...reakit-playground@0.13.2) (2020-07-18)
+
+
+### Bug Fixes
+
+* Fix `Dialog` focus loss ([#682](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/682)) ([8ae0da7](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/8ae0da741ca45fed6bc1a7c25a3fc9aa60340b44)), closes [#677](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/677)
+
+
+
+
+
+## [0.13.1](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.13.0...reakit-playground@0.13.1) (2020-06-21)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+# [0.13.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.5...reakit-playground@0.13.0) (2020-06-17)
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/671)) ([79d3926](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/665)
+
+
+
+
+
+## [0.12.5](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.4...reakit-playground@0.12.5) (2020-06-17)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+## [0.12.4](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.3...reakit-playground@0.12.4) (2020-06-06)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+## [0.12.3](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.2...reakit-playground@0.12.3) (2020-06-04)
+
+
+### Features
+
+* **reakit-test-utils:** Add `axe` utility ([#654](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/654)) ([db7f022](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/db7f02297e7c08c3e3085bd9677ad2b24fe5f09d))
+
+
+
+
+
 ## [0.12.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.12.1...reakit-playground@0.12.2) (2020-05-14)
 
 **Note:** Version bump only for package reakit-playground
@@ -113,14 +170,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   **Before:**
   ```jsx
   import { Tabbable } from "reakit/Tabbable";
-  <Tabbable />
+  
+  <Tabbable />;
   ```
   **After:**
   ```jsx
   import { Clickable } from "reakit/Clickable";
   // Tabbable is not going away, it just doesn't represent a clickable element
   // anymore
-  <Clickable />
+  <Clickable />;
   ```
 * Importing `Provider` from `reakit/utils` is not supported anymore. It should be imported from `reakit/Provider` or `reakit`.
 * `DisclosureRegion` has been renamed to `DisclosureContent`.

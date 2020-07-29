@@ -4,6 +4,7 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import { applyState } from "reakit-utils/applyState";
+import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -25,8 +26,9 @@ import { placeItemsAfter } from "./__utils/placeItemsAfter";
 import { getItemsInGroup } from "./__utils/getItemsInGroup";
 import { getOppositeOrientation } from "./__utils/getOppositeOrientation";
 import { addItemAtIndex } from "./__utils/addItemAtIndex";
+import { sortBasedOnDOMPosition } from "./__utils/sortBasedOnDOMPosition";
 
-export type unstable_CompositeState = unstable_IdState & {
+export type CompositeState = unstable_IdState & {
   /**
    * If enabled, the composite element will act as an
    * [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
@@ -120,7 +122,7 @@ export type unstable_CompositeState = unstable_IdState & {
   unstable_hasActiveWidget: boolean;
 };
 
-export type unstable_CompositeActions = unstable_IdActions & {
+export type CompositeActions = unstable_IdActions & {
   /**
    * Registers a composite item.
    */
@@ -166,39 +168,40 @@ export type unstable_CompositeActions = unstable_IdActions & {
    */
   last: () => void;
   /**
+   * Sorts the composite items state. This is especially useful after modifying
+   * the composite items order in the DOM.
+   */
+  unstable_sort: () => void;
+  /**
    * Sets `virtual`.
    */
   unstable_setVirtual: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["unstable_virtual"]>
+    React.SetStateAction<CompositeState["unstable_virtual"]>
   >;
   /**
    * Sets `rtl`.
    */
-  setRTL: React.Dispatch<React.SetStateAction<unstable_CompositeState["rtl"]>>;
+  setRTL: React.Dispatch<React.SetStateAction<CompositeState["rtl"]>>;
   /**
    * Sets `orientation`.
    */
   setOrientation: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["orientation"]>
+    React.SetStateAction<CompositeState["orientation"]>
   >;
   /**
    * Sets `currentId`.
    */
   setCurrentId: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["currentId"]>
+    React.SetStateAction<CompositeState["currentId"]>
   >;
   /**
    * Sets `loop`.
    */
-  setLoop: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["loop"]>
-  >;
+  setLoop: React.Dispatch<React.SetStateAction<CompositeState["loop"]>>;
   /**
    * Sets `wrap`.
    */
-  setWrap: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["wrap"]>
-  >;
+  setWrap: React.Dispatch<React.SetStateAction<CompositeState["wrap"]>>;
   /**
    * Resets to initial state.
    */
@@ -208,21 +211,21 @@ export type unstable_CompositeActions = unstable_IdActions & {
    * @private
    */
   unstable_setHasActiveWidget: React.Dispatch<
-    React.SetStateAction<unstable_CompositeState["unstable_hasActiveWidget"]>
+    React.SetStateAction<CompositeState["unstable_hasActiveWidget"]>
   >;
 };
 
-export type unstable_CompositeInitialState = unstable_IdInitialState &
+export type CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
-      unstable_CompositeState,
+      CompositeState,
       "unstable_virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
     >
   >;
 
-export type unstable_CompositeStateReturn = unstable_IdStateReturn &
-  unstable_CompositeState &
-  unstable_CompositeActions;
+export type CompositeStateReturn = unstable_IdStateReturn &
+  CompositeState &
+  CompositeActions;
 
 type CompositeReducerAction =
   | { type: "registerItem"; item: Item }
@@ -236,47 +239,45 @@ type CompositeReducerAction =
   | { type: "down"; allTheWay?: boolean }
   | { type: "first" }
   | { type: "last" }
+  | { type: "sort" }
   | {
       type: "setVirtual";
-      virtual: React.SetStateAction<
-        unstable_CompositeState["unstable_virtual"]
-      >;
+      virtual: React.SetStateAction<CompositeState["unstable_virtual"]>;
     }
   | {
       type: "setRTL";
-      rtl: React.SetStateAction<unstable_CompositeState["rtl"]>;
+      rtl: React.SetStateAction<CompositeState["rtl"]>;
     }
   | {
       type: "setOrientation";
-      orientation?: React.SetStateAction<
-        unstable_CompositeState["orientation"]
-      >;
+      orientation?: React.SetStateAction<CompositeState["orientation"]>;
     }
   | {
       type: "setCurrentId";
-      currentId?: React.SetStateAction<unstable_CompositeState["currentId"]>;
+      currentId?: React.SetStateAction<CompositeState["currentId"]>;
     }
   | {
       type: "setLoop";
-      loop: React.SetStateAction<unstable_CompositeState["loop"]>;
+      loop: React.SetStateAction<CompositeState["loop"]>;
     }
   | {
       type: "setWrap";
-      wrap: React.SetStateAction<unstable_CompositeState["wrap"]>;
+      wrap: React.SetStateAction<CompositeState["wrap"]>;
     }
   | { type: "reset" };
 
 type CompositeReducerState = Omit<
-  unstable_CompositeState,
+  CompositeState,
   "unstable_hasActiveWidget" | keyof unstable_IdState
 > & {
   pastIds: string[];
-  initialVirtual: unstable_CompositeState["unstable_virtual"];
-  initialRTL: unstable_CompositeState["rtl"];
-  initialOrientation: unstable_CompositeState["orientation"];
-  initialCurrentId: unstable_CompositeState["currentId"];
-  initialLoop: unstable_CompositeState["loop"];
-  initialWrap: unstable_CompositeState["wrap"];
+  initialVirtual: CompositeState["unstable_virtual"];
+  initialRTL: CompositeState["rtl"];
+  initialOrientation: CompositeState["orientation"];
+  initialCurrentId: CompositeState["currentId"];
+  initialLoop: CompositeState["loop"];
+  initialWrap: CompositeState["wrap"];
+  hasSetCurrentId?: boolean;
 };
 
 function reducer(
@@ -300,6 +301,7 @@ function reducer(
     initialCurrentId,
     initialLoop,
     initialWrap,
+    hasSetCurrentId,
   } = state;
 
   switch (action.type) {
@@ -331,10 +333,20 @@ function reducer(
       // Group will be null if it's a one-dimensional composite
       const nextItem = { groupId: group?.id, ...item };
       const index = findDOMIndex(items, nextItem);
-      return {
+      const nextState = {
         ...state,
         items: addItemAtIndex(items, nextItem, index),
       };
+      if (!hasSetCurrentId && !moves && initialCurrentId === undefined) {
+        // Sets currentId to the first enabled item. This runs whenever an item
+        // is registered because the first enabled item may be registered
+        // asynchronously.
+        return {
+          ...nextState,
+          currentId: findFirstEnabledItem(nextState.items)?.id,
+        };
+      }
+      return nextState;
     }
     case "unregisterItem": {
       const { id } = action;
@@ -376,21 +388,20 @@ function reducer(
       const nextPastIds = currentId
         ? [currentId, ...filteredPastIds]
         : filteredPastIds;
+      const nextState = { ...state, pastIds: nextPastIds };
       // move(null) will focus the composite element itself, not an item
       if (id === null) {
         return {
-          ...state,
-          pastIds: nextPastIds,
+          ...nextState,
           unstable_moves: moves + 1,
-          currentId: getCurrentId(state, id),
+          currentId: getCurrentId(nextState, id),
         };
       }
       const item = findEnabledItemById(items, id);
       return {
-        ...state,
-        pastIds: nextPastIds,
+        ...nextState,
         unstable_moves: item ? moves + 1 : moves,
-        currentId: getCurrentId(state, item?.id),
+        currentId: getCurrentId(nextState, item?.id),
       };
     }
     case "next": {
@@ -524,6 +535,13 @@ function reducer(
       );
       return { ...nextState, items };
     }
+    case "sort": {
+      return {
+        ...state,
+        items: sortBasedOnDOMPosition(items),
+        groups: sortBasedOnDOMPosition(groups),
+      };
+    }
     case "setVirtual":
       return {
         ...state,
@@ -541,7 +559,7 @@ function reducer(
         ...state,
         currentId: applyState(action.currentId, currentId),
       });
-      return { ...state, currentId: nextCurrentId };
+      return { ...state, currentId: nextCurrentId, hasSetCurrentId: true };
     }
     case "setLoop":
       return { ...state, loop: applyState(action.loop, loop) };
@@ -553,7 +571,7 @@ function reducer(
         unstable_virtual: initialVirtual,
         rtl: initialRTL,
         orientation: initialOrientation,
-        currentId: initialCurrentId,
+        currentId: getCurrentId({ ...state, currentId: initialCurrentId }),
         loop: initialLoop,
         wrap: initialWrap,
         unstable_moves: 0,
@@ -568,9 +586,19 @@ function useAction<T extends (...args: any[]) => any>(fn: T) {
   return React.useCallback(fn, []);
 }
 
-export function unstable_useCompositeState(
-  initialState: SealedInitialState<unstable_CompositeInitialState> = {}
-): unstable_CompositeStateReturn {
+function useIsUnmountedRef() {
+  const isUnmountedRef = React.useRef(false);
+  useIsomorphicEffect(() => {
+    return () => {
+      isUnmountedRef.current = true;
+    };
+  }, []);
+  return isUnmountedRef;
+}
+
+export function useCompositeState(
+  initialState: SealedInitialState<CompositeInitialState> = {}
+): CompositeStateReturn {
   const {
     unstable_virtual: virtual = false,
     rtl = false,
@@ -589,6 +617,7 @@ export function unstable_useCompositeState(
       initialCurrentId,
       initialLoop,
       initialWrap,
+      hasSetCurrentId,
       ...state
     },
     dispatch,
@@ -612,27 +641,33 @@ export function unstable_useCompositeState(
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   const idState = unstable_useIdState(sealed);
-
-  // When currentId is undefined, set it to the first enabled item.
-  React.useEffect(() => {
-    if (state.currentId !== undefined) return;
-    if (!state.items.length) return;
-    dispatch({ type: "setCurrentId" });
-  }, [state.currentId, state.items]);
+  // register/unregister may be called when this component is unmounted. We
+  // store the unmounted state here so we don't update the state if it's true.
+  // This only happens in a very specific situation.
+  // See https://github.com/reakit/reakit/issues/650
+  const isUnmountedRef = useIsUnmountedRef();
 
   return {
     ...idState,
     ...state,
     unstable_hasActiveWidget: hasActiveWidget,
     unstable_setHasActiveWidget: setHasActiveWidget,
-    registerItem: useAction((item) => dispatch({ type: "registerItem", item })),
-    unregisterItem: useAction((id) => dispatch({ type: "unregisterItem", id })),
-    registerGroup: useAction((group) =>
-      dispatch({ type: "registerGroup", group })
-    ),
-    unregisterGroup: useAction((id) =>
-      dispatch({ type: "unregisterGroup", id })
-    ),
+    registerItem: useAction((item) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "registerItem", item });
+    }),
+    unregisterItem: useAction((id) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "unregisterItem", id });
+    }),
+    registerGroup: useAction((group) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "registerGroup", group });
+    }),
+    unregisterGroup: useAction((id) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "unregisterGroup", id });
+    }),
     move: useAction((id) => dispatch({ type: "move", id })),
     next: useAction((allTheWay) => dispatch({ type: "next", allTheWay })),
     previous: useAction((allTheWay) =>
@@ -642,6 +677,7 @@ export function unstable_useCompositeState(
     down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
     first: useAction(() => dispatch({ type: "first" })),
     last: useAction(() => dispatch({ type: "last" })),
+    unstable_sort: useAction(() => dispatch({ type: "sort" })),
     unstable_setVirtual: useAction((value) =>
       dispatch({ type: "setVirtual", virtual: value })
     ),
@@ -658,7 +694,7 @@ export function unstable_useCompositeState(
   };
 }
 
-const keys: Array<keyof unstable_CompositeStateReturn> = [
+const keys: Array<keyof CompositeStateReturn> = [
   ...unstable_useIdState.__keys,
   "unstable_virtual",
   "rtl",
@@ -681,6 +717,7 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "down",
   "first",
   "last",
+  "unstable_sort",
   "unstable_setVirtual",
   "setRTL",
   "setOrientation",
@@ -691,4 +728,4 @@ const keys: Array<keyof unstable_CompositeStateReturn> = [
   "unstable_setHasActiveWidget",
 ];
 
-unstable_useCompositeState.__keys = keys;
+useCompositeState.__keys = keys;

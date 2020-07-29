@@ -18,3 +18,5 @@ Example:
   ```js
   const bar = Bar();
   ```
+  
+<!-- For new features, components, APIs use `next` branch as target. For bugfixes PR could be targeted to `master` directly -->

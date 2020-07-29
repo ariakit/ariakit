@@ -46,32 +46,62 @@ export default function Header({ transparent }: HeaderProps) {
   const boxShadowColor = useFade(foreground, 0.85);
   const dialog = useDialogState({ animated: true });
   const location = useLocation();
+  const headerZIndex = 910;
+  const narrowBreakpoint = 450;
 
   React.useEffect(dialog.hide, [location.pathname]);
 
   return (
     <>
+      <div
+        className={css`
+          background-color: black;
+          color: white;
+          position: fixed;
+          top: 0;
+          width: 100%;
+          padding: 17px 15px;
+          z-index: ${headerZIndex};
+          @media (min-width: 768px) {
+            padding: 15px 56px;
+          }
+        `}
+      >
+        Black Lives Matter.&nbsp;&nbsp;
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://support.eji.org/give/153413/#!/donation/checkout"
+          className={css`
+            text-decoration: none;
+            color: #61dafb;
+            @media (max-width: ${narrowBreakpoint}px) {
+              display: block;
+            }
+          `}
+        >
+          Support the Equal Justice Initiative.
+        </a>
+      </div>
       <header
         className={css`
           position: fixed;
-          top: -32px;
+          top: 48px;
           left: 0;
           width: 100%;
           z-index: 910;
-          height: calc(var(--header-height) + 32px);
+          height: calc(var(--header-height));
           box-sizing: border-box;
           background: ${background};
           display: flex;
           align-items: center;
-          padding: 32px 56px 0;
-          will-change: background, transform;
-          transition: transform 250ms ease-in-out;
+          padding: 0 56px;
+          will-change: background;
           ${!transparent && `box-shadow: 0 1px 2px ${boxShadowColor}`};
           ${transparent &&
           css`
             background: transparent;
             color: white;
-            transform: translateY(32px);
           `};
 
           & > *:not(:last-child) {
@@ -104,7 +134,6 @@ export default function Header({ transparent }: HeaderProps) {
           @media (max-width: 768px) {
             padding: 0 8px;
             transform: initial;
-            top: 0;
             height: var(--header-height);
             & > *:not(:last-child) {
               margin-right: 8px;
@@ -112,6 +141,10 @@ export default function Header({ transparent }: HeaderProps) {
             a {
               font-size: 1em !important;
             }
+          }
+
+          @media (max-width: ${narrowBreakpoint}px) {
+            top: 66px;
           }
         `}
       >

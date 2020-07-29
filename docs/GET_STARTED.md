@@ -7,7 +7,7 @@ redirect_from:
 
 # Get started
 
-Reakit is a low level component library for building accessible high level UI libraries, design systems and applications with React.
+Reakit is a lower level component library for building accessible high level UI libraries, design systems and applications with React.
 
 ## Installation
 

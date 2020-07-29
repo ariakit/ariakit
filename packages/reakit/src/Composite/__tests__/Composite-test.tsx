@@ -1,11 +1,8 @@
 import * as React from "react";
 import { render, press } from "reakit-test-utils";
-import {
-  unstable_Composite as Composite,
-  unstable_CompositeProps,
-} from "../Composite";
+import { Composite, CompositeProps } from "../Composite";
 
-const props: unstable_CompositeProps = {
+const props: CompositeProps = {
   id: "composite",
   items: [
     { id: "1", ref: { current: null } },

@@ -56,8 +56,11 @@ export function useHideOnClickOutside(
     nestedDialogs,
     "focus",
     (event) => {
+      const document = getDocument(dialogRef.current);
       // Fix for https://github.com/reakit/reakit/issues/619
-      if (event.target !== getDocument(dialogRef.current)) {
+      // On IE11, calling element.blur() triggers the focus event on
+      // document.body, so we make sure to ignore it as well.
+      if (event.target !== document && event.target !== document.body) {
         options.hide?.();
       }
     },

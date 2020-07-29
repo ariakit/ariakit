@@ -1,11 +1,8 @@
 import * as React from "react";
 import { render, focus, press, click } from "reakit-test-utils";
-import {
-  unstable_CompositeItemProps,
-  unstable_CompositeItem as CompositeItem,
-} from "../CompositeItem";
+import { CompositeItemProps, CompositeItem } from "../CompositeItem";
 
-const props: unstable_CompositeItemProps = {
+const props: CompositeItemProps = {
   items: [
     { id: "1", ref: { current: null } },
     { id: "2", ref: { current: null } },
@@ -98,4 +95,24 @@ test("render aria-activedescendant current", () => {
   />
 </div>
 `);
+});
+
+test("do not re-render if item is not the current or the previous active one", () => {
+  const onRender = jest.fn();
+  const Test = React.memo((itemProps: CompositeItemProps) => {
+    React.useEffect(onRender);
+    return <CompositeItem {...itemProps} />;
+  }, CompositeItem.unstable_propsAreEqual);
+  const { rerender } = render(<Test {...props} id="item-1" />);
+  expect(onRender).toHaveBeenCalledTimes(1);
+  rerender(<Test {...props} currentId="item-1" id="item-1" />);
+  expect(onRender).toHaveBeenCalledTimes(2);
+  rerender(<Test {...props} currentId="item-2" id="item-1" />);
+  expect(onRender).toHaveBeenCalledTimes(3);
+  rerender(<Test {...props} currentId="item-3" id="item-1" />);
+  expect(onRender).toHaveBeenCalledTimes(3);
+  rerender(<Test {...props} currentId="item-3" id="item-2" />);
+  expect(onRender).toHaveBeenCalledTimes(4);
+  rerender(<Test {...props} currentId="item-3" id="item-3" />);
+  expect(onRender).toHaveBeenCalledTimes(5);
 });

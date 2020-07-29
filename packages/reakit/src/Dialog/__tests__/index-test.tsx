@@ -1251,10 +1251,8 @@ test("nested modal dialog with backdrop markup", () => {
   const disclosure2 = getByText("disclosure2");
   click(disclosure1);
   click(disclosure2);
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body
-      style="padding-right: 1024px; overflow: hidden;"
-    >
+  expect(baseElement.children).toMatchInlineSnapshot(`
+    HTMLCollection [
       <div>
         <button
           aria-controls="dialog1"
@@ -1264,13 +1262,13 @@ test("nested modal dialog with backdrop markup", () => {
         >
           disclosure1
         </button>
-      </div>
+      </div>,
       <div
         aria-hidden="true"
         class="__reakit-focus-trap"
         style="position: fixed;"
         tabindex="0"
-      />
+      />,
       <div
         class="__reakit-portal"
       >
@@ -1321,14 +1319,14 @@ test("nested modal dialog with backdrop markup", () => {
           style="position: fixed;"
           tabindex="0"
         />
-      </div>
+      </div>,
       <div
         aria-hidden="true"
         class="__reakit-focus-trap"
         style="position: fixed;"
         tabindex="0"
-      />
-    </body>
+      />,
+    ]
   `);
 });
 

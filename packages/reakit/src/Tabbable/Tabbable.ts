@@ -6,9 +6,10 @@ import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { isButton } from "reakit-utils/isButton";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
+import { getActiveElement } from "reakit-utils/getActiveElement";
+import { getClosestFocusable } from "reakit-utils/tabbable";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type TabbableOptions = BoxOptions & {
@@ -30,43 +31,77 @@ export type TabbableHTMLProps = BoxHTMLProps & {
 
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
-function isUserAgent(string: string) {
+function isUA(string: string) {
   if (typeof window === "undefined") return false;
   return window.navigator.userAgent.indexOf(string) !== -1;
 }
 
 const isSafariOrFirefoxOnMac =
-  isUserAgent("Mac") &&
-  !isUserAgent("Chrome") &&
-  (isUserAgent("Safari") || isUserAgent("Firefox"));
+  isUA("Mac") && !isUA("Chrome") && (isUA("Safari") || isUA("Firefox"));
 
+function focusIfNeeded(element: HTMLElement) {
+  if (!hasFocusWithin(element)) {
+    element.focus();
+  }
+}
+
+// Safari and Firefox on MacOS don't focus on buttons on mouse down like other
+// browsers/platforms. Instead, they focus on the closest focusable ancestor
+// element, which is ultimately the body element. So we make sure to give focus
+// to the tabbable element on mouse down so it works consistently across
+// browsers.
+// istanbul ignore next
 function useFocusOnMouseDown() {
-  const [element, setElement] = React.useState<HTMLElement | null>(null);
+  if (!isSafariOrFirefoxOnMac) return undefined;
+  const [tabbable, scheduleFocus] = React.useState<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!tabbable) return;
+    focusIfNeeded(tabbable);
+    scheduleFocus(null);
+  }, [tabbable]);
 
   const onMouseDown = React.useCallback(
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      if (!isSafariOrFirefoxOnMac) return;
-      // Safari and Firefox on MacOS don't focus on buttons on mouse down
-      // like other browsers/platforms. Instead, they focus on the closest
-      // focusable parent element (ultimately, the body element). So we make
-      // sure to give focus to the tabbable element on mouse down.
-      // This also helps with VoiceOver, that doesn't focus on tabbable
-      // elements when pressing VO+Space (click).
+      const element = event.currentTarget;
       if (isPortalEvent(event)) return;
-      const self = event.currentTarget;
-      if (!isSelfTarget(event) && !isButton(self)) return;
-      setElement(self);
+      if (!isButton(element)) return;
+      const activeElement = getActiveElement(element);
+      if (!activeElement) return;
+      const activeElementIsBody = activeElement.tagName === "BODY";
+      const focusableAncestor = getClosestFocusable(element.parentElement);
+      if (
+        activeElement === focusableAncestor ||
+        (activeElementIsBody && !focusableAncestor)
+      ) {
+        // When the active element is the focusable ancestor, it'll not emit
+        // focus/blur events. After all, it's already focused. So we can't
+        // listen to those events to focus this tabbable element.
+        // When the active element is body and there's no focusable ancestor,
+        // we also don't have any other event to listen to since body never
+        // emits focus/blur events on itself.
+        // In both of these cases, we have to schedule focus on this tabbable
+        // element.
+        scheduleFocus(element);
+      } else if (focusableAncestor) {
+        // Clicking (mouse down) on the tabbable element on Safari and Firefox
+        // on MacOS will fire focus on the focusable ancestor element if
+        // there's any and if it's not the current active element. So we wait
+        // for this event to happen before moving focus to this element.
+        // Instead of moving focus right away, we have to schedule it,
+        // otherwise it's gonna prevent drag events from happening.
+        const onFocus = () => scheduleFocus(element);
+        focusableAncestor.addEventListener("focusin", onFocus, { once: true });
+      } else {
+        // Finally, if there's no focsuable ancestor and there's another
+        // element with focus, we wait for that element to get blurred before
+        // focusing this one.
+        const onBlur = () => focusIfNeeded(element);
+        activeElement.addEventListener("blur", onBlur, { once: true });
+      }
     },
     []
   );
-
-  React.useEffect(() => {
-    if (!element) return;
-    if (!hasFocusWithin(element)) {
-      element.focus();
-    }
-    setElement(null);
-  }, [element]);
 
   return onMouseDown;
 }
@@ -112,9 +147,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
-    const focusOnMouseDown = isSafariOrFirefoxOnMac
-      ? useFocusOnMouseDown()
-      : undefined;
+    const focusOnMouseDown = useFocusOnMouseDown();
 
     useIsomorphicEffect(() => {
       const tabbable = ref.current;

@@ -72,28 +72,24 @@ test("render visible", () => {
 });
 
 test("render non-modal", () => {
-  const { baseElement } = render(
+  const { container } = render(
     <Dialog {...props} modal={false}>
       test
     </Dialog>
   );
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body
-      style="padding-right: 1024px; overflow: hidden;"
-    >
-      <div>
-        <div
-          aria-label="dialog"
-          data-dialog="true"
-          hidden=""
-          id="base"
-          role="dialog"
-          style="display: none;"
-          tabindex="-1"
-        >
-          test
-        </div>
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        aria-label="dialog"
+        data-dialog="true"
+        hidden=""
+        id="base"
+        role="dialog"
+        style="display: none;"
+        tabindex="-1"
+      >
+        test
       </div>
-    </body>
+    </div>
   `);
 });

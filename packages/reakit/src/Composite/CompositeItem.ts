@@ -21,18 +21,15 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import {
-  unstable_CompositeStateReturn,
-  unstable_useCompositeState,
-} from "./CompositeState";
+import { CompositeStateReturn, useCompositeState } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
 import { Item } from "./__utils/types";
 
-export type unstable_CompositeItemOptions = ClickableOptions &
+export type CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
   Pick<
-    Partial<unstable_CompositeStateReturn>,
+    Partial<CompositeStateReturn>,
     | "unstable_virtual"
     | "baseId"
     | "orientation"
@@ -40,7 +37,7 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "unstable_hasActiveWidget"
   > &
   Pick<
-    unstable_CompositeStateReturn,
+    CompositeStateReturn,
     | "items"
     | "currentId"
     | "registerItem"
@@ -54,17 +51,15 @@ export type unstable_CompositeItemOptions = ClickableOptions &
     | "last"
   >;
 
-export type unstable_CompositeItemHTMLProps = ClickableHTMLProps &
-  unstable_IdHTMLProps;
+export type CompositeItemHTMLProps = ClickableHTMLProps & unstable_IdHTMLProps;
 
-export type unstable_CompositeItemProps = unstable_CompositeItemOptions &
-  unstable_CompositeItemHTMLProps;
+export type CompositeItemProps = CompositeItemOptions & CompositeItemHTMLProps;
 
 function getWidget(itemElement: Element) {
   return itemElement.querySelector<HTMLElement>("[data-composite-item-widget]");
 }
 
-function useItem(options: unstable_CompositeItemOptions) {
+function useItem(options: CompositeItemOptions) {
   return React.useMemo(
     () => options.items?.find((item) => options.id && item.id === options.id),
     [options.items, options.id]
@@ -81,13 +76,37 @@ function targetIsAnotherItem(event: React.SyntheticEvent, items: Item[]) {
   return false;
 }
 
-export const unstable_useCompositeItem = createHook<
-  unstable_CompositeItemOptions,
-  unstable_CompositeItemHTMLProps
+export const useCompositeItem = createHook<
+  CompositeItemOptions,
+  CompositeItemHTMLProps
 >({
   name: "CompositeItem",
   compose: [useClickable, unstable_useId],
-  useState: unstable_useCompositeState,
+  useState: useCompositeState,
+
+  propsAreEqual(prev, next) {
+    if (!next.id || prev.id !== next.id) {
+      return useClickable.unstable_propsAreEqual(prev, next);
+    }
+    const {
+      currentId: prevCurrentId,
+      unstable_moves: prevMoves,
+      ...prevProps
+    } = prev;
+    const {
+      currentId: nextCurrentId,
+      unstable_moves: nextMoves,
+      ...nextProps
+    } = next;
+    if (nextCurrentId !== prevCurrentId) {
+      if (next.id === nextCurrentId || next.id === prevCurrentId) {
+        return false;
+      }
+    } else if (prevMoves !== nextMoves) {
+      return false;
+    }
+    return useClickable.unstable_propsAreEqual(prevProps, nextProps);
+  },
 
   useOptions(options) {
     return {
@@ -140,8 +159,8 @@ export const unstable_useCompositeItem = createHook<
     }, [id, trulyDisabled, options.registerItem, options.unregisterItem]);
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) {
+      const element = ref.current;
+      if (!element) {
         warning(
           true,
           "Can't focus composite item component because `ref` wasn't passed to component.",
@@ -155,7 +174,7 @@ export const unstable_useCompositeItem = createHook<
       // isCurrentItemRef instead of isCurrentItem because we don't want to
       // focus the item if isCurrentItem changes (and options.moves doesn't).
       if (options.unstable_moves && isCurrentItemRef.current) {
-        self.focus();
+        element.focus();
       }
     }, [options.unstable_moves]);
 
@@ -166,16 +185,12 @@ export const unstable_useCompositeItem = createHook<
         if (isPortalEvent(event)) return;
         if (!id) return;
         if (targetIsAnotherItem(event, options.items)) return;
-        // Using originalCurrentId because currentId may be different due to
-        // getCurrentId call. If it's already set as the current id, we don't
-        // want to call setCurrentId again, which would cause an additional
-        // render.
         options.setCurrentId?.(id);
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (isSelfTarget(event) && options.unstable_virtual && options.baseId) {
+        if (options.unstable_virtual && options.baseId && isSelfTarget(event)) {
           const { target } = event;
           const composite = getDocument(target).getElementById(options.baseId);
           if (composite) {
@@ -310,8 +325,8 @@ export const unstable_useCompositeItem = createHook<
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        const self = event.currentTarget;
-        const widget = getWidget(self);
+        const element = event.currentTarget;
+        const widget = getWidget(element);
         if (widget && !hasFocusWithin(widget)) {
           // If there's a widget inside the composite item, we make sure it's
           // focused when pressing enter, space or clicking on the composite item.
@@ -336,8 +351,8 @@ export const unstable_useCompositeItem = createHook<
   },
 });
 
-export const unstable_CompositeItem = createComponent({
+export const CompositeItem = createComponent({
   as: "button",
   memo: true,
-  useHook: unstable_useCompositeItem,
+  useHook: useCompositeItem,
 });

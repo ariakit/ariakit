@@ -45,7 +45,7 @@ export const useCreateElement = <T extends As>(
     return context.useCreateElement(type, props, children);
   }
 
-  if (isRenderProp(children)) {
+  if (typeof type === "string" && isRenderProp(children)) {
     const { children: _, ...rest } = props;
     return children(rest);
   }

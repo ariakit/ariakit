@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/reakit/reakit/compare/reakit@1.1.1...reakit@1.1.2) (2020-07-18)
+
+
+### Bug Fixes
+
+* Fix `composite.unstable_sort` on Firefox ([f973f77](https://github.com/reakit/reakit/commit/f973f77ea58811ee009f2de649b6426aa98617c9))
+* Fix `Dialog` focus loss ([#682](https://github.com/reakit/reakit/issues/682)) ([8ae0da7](https://github.com/reakit/reakit/commit/8ae0da741ca45fed6bc1a7c25a3fc9aa60340b44)), closes [#677](https://github.com/reakit/reakit/issues/677)
+* Fix `MenuButton` not receiving focus after `Menu` closes ([#692](https://github.com/reakit/reakit/issues/692)) ([e649f20](https://github.com/reakit/reakit/commit/e649f203334468ceb23ef33be49b24098b4a0eab))
+
+
+
+
+
+## [1.1.1](https://github.com/reakit/reakit/compare/reakit@1.1.0...reakit@1.1.1) (2020-06-21)
+
+
+### Bug Fixes
+
+* Restore missing `Composite` references ([9d9eff2](https://github.com/reakit/reakit/commit/9d9eff216328038b34af50cea03f45f8297e0756)), closes [#667 (comment)](https://github.com/reakit/reakit/pull/667#issuecomment-647108385)
+
+
+
+
+
+# [1.1.0](https://github.com/reakit/reakit/compare/reakit@1.0.5...reakit@1.1.0) (2020-06-17)
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/issues/671)) ([79d3926](https://github.com/reakit/reakit/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/issues/665)
+* Add experimental `unstable_sort` method to `useCompositeState` ([57e409e](https://github.com/reakit/reakit/commit/57e409e1d656eec3c3959bfbb76e32841fe300ad))
+* Mark `Composite` as stable ([#667](https://github.com/reakit/reakit/issues/667)) ([5e01f4c](https://github.com/reakit/reakit/commit/5e01f4c1cdd23a55cb2d8d870b268310d0f42681))
+
+
+
+
+
+## [1.0.5](https://github.com/reakit/reakit/compare/reakit@1.0.4...reakit@1.0.5) (2020-06-17)
+
+
+### Bug Fixes
+
+* Fix `Composite` state update on unmounted components ([#672](https://github.com/reakit/reakit/issues/672)) ([1b1c9aa](https://github.com/reakit/reakit/commit/1b1c9aac60cc5b1c4dc440af6c4c5936fc57e333)), closes [#650](https://github.com/reakit/reakit/issues/650)
+
+
+
+
+
+## [1.0.4](https://github.com/reakit/reakit/compare/reakit@1.0.3...reakit@1.0.4) (2020-06-06)
+
+
+### Bug Fixes
+
+* Fix `Tabbable` preventing drag events on mouse down on Safari ([#670](https://github.com/reakit/reakit/issues/670)) ([6830c5a](https://github.com/reakit/reakit/commit/6830c5a649c55c6e1a418490fff4a9b70a92b9d8))
+
+
+
+
+
+## [1.0.3](https://github.com/reakit/reakit/compare/reakit@1.0.2...reakit@1.0.3) (2020-06-04)
+
+
+### Bug Fixes
+
+* Fix blur/focus events order on `Tabbable` on Safari and Firefox on MacOS ([#658](https://github.com/reakit/reakit/issues/658)) ([aad12ce](https://github.com/reakit/reakit/commit/aad12ced87dd3a94e4679a8e510a2e8d9fd3c1f8))
+
+
+### Performance Improvements
+
+* Improve `Composite` performance ([#660](https://github.com/reakit/reakit/issues/660)) ([f6656b6](https://github.com/reakit/reakit/commit/f6656b6b765bbec639754aa96a2f08b717413068))
+
+
+
+
+
 ## [1.0.2](https://github.com/reakit/reakit/compare/reakit@1.0.1...reakit@1.0.2) (2020-05-14)
 
 

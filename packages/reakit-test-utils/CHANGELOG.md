@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.13.0...reakit-test-utils@0.13.1) (2020-07-18)
+
+**Note:** Version bump only for package reakit-test-utils
+
+
+
+
+
+# [0.13.0](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.12.0...reakit-test-utils@0.13.0) (2020-06-17)
+
+**Note:** Version bump only for package reakit-test-utils
+
+
+
+
+
+# [0.12.0](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.11.2...reakit-test-utils@0.12.0) (2020-06-17)
+
+**Note:** Version bump only for package reakit-test-utils
+
+
+
+
+
+## [0.11.2](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.11.1...reakit-test-utils@0.11.2) (2020-06-04)
+
+
+### Features
+
+* **reakit-test-utils:** Add `axe` utility ([#654](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/654)) ([db7f022](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/db7f02297e7c08c3e3085bd9677ad2b24fe5f09d))
+
+
+
+
+
 ## [0.11.1](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.11.0...reakit-test-utils@0.11.1) (2020-05-12)
 
 

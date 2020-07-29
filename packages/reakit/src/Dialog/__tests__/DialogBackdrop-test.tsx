@@ -37,18 +37,16 @@ test("render visible", () => {
 });
 
 test("render no modal", () => {
-  const { baseElement } = render(
+  const { container } = render(
     <DialogBackdrop baseId="dialog" modal={false} />
   );
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <div
-          data-dialog-ref="dialog"
-          hidden=""
-          style="display: none;"
-        />
-      </div>
-    </body>
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <div
+        data-dialog-ref="dialog"
+        hidden=""
+        style="display: none;"
+      />
+    </div>
   `);
 });

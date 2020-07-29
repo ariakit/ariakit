@@ -14,6 +14,7 @@ export default {
   "reakit-utils/getActiveElement": require("reakit-utils/getActiveElement"),
   "reakit-utils/getDefaultView": require("reakit-utils/getDefaultView"),
   "reakit-utils/getDocument": require("reakit-utils/getDocument"),
+  "reakit-utils/getNextActiveElementOnBlur": require("reakit-utils/getNextActiveElementOnBlur"),
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/isButton": require("reakit-utils/isButton"),
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),

@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.1.1...website@1.1.2) (2020-07-18)
+
+
+### Features
+
+* **website:** Remove `Rover` from docs navigation ([66ac84f](https://github.com/reakit/reakit/tree/master/packages/website/commit/66ac84f10888df5b6bc5e637755ba71552b67dae))
+
+
+
+
+
+## [1.1.1](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.5...website@1.1.1) (2020-06-21)
+
+
+### Bug Fixes
+
+* **website:** Fix internal dependencies versions ([1168436](https://github.com/reakit/reakit/tree/master/packages/website/commit/11684363f698a57d3c974b8b7cd197bbc27d449d))
+
+
+### Features
+
+* Add `Input` component ([#671](https://github.com/reakit/reakit/tree/master/packages/website/issues/671)) ([79d3926](https://github.com/reakit/reakit/tree/master/packages/website/commit/79d3926f91a33f9a7f2ab0840aa3933a0a7724b9)), closes [#665](https://github.com/reakit/reakit/tree/master/packages/website/issues/665)
+
+
+
+
+
+## [1.0.5](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.4...website@1.0.5) (2020-06-17)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+## [1.0.4](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.3...website@1.0.4) (2020-06-06)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+## [1.0.3](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.2...website@1.0.3) (2020-06-04)
+
+
+### Features
+
+* **website:** Add BLM banner ([#663](https://github.com/reakit/reakit/tree/master/packages/website/issues/663)) ([c1d05de](https://github.com/reakit/reakit/tree/master/packages/website/commit/c1d05deb3261d526dd9cddb87aed2f2dd5054194))
+
+
+### Performance Improvements
+
+* Improve `Composite` performance ([#660](https://github.com/reakit/reakit/tree/master/packages/website/issues/660)) ([f6656b6](https://github.com/reakit/reakit/tree/master/packages/website/commit/f6656b6b765bbec639754aa96a2f08b717413068))
+
+
+
+
+
 ## [1.0.2](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.0.1...website@1.0.2) (2020-05-14)
 
 **Note:** Version bump only for package website

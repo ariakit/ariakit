@@ -6,9 +6,9 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { createEvent } from "reakit-utils/createEvent";
 import { warning } from "reakit-warning/warning";
 import {
-  unstable_CompositeItemOptions as CompositeItemOptions,
-  unstable_CompositeItemHTMLProps as CompositeItemHTMLProps,
-  unstable_useCompositeItem as useCompositeItem,
+  CompositeItemOptions,
+  CompositeItemHTMLProps,
+  useCompositeItem,
 } from "../Composite/CompositeItem";
 import { useRadioState, RadioStateReturn } from "./RadioState";
 
@@ -97,8 +97,8 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
     useInitialChecked(options);
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) {
+      const element = ref.current;
+      if (!element) {
         warning(
           true,
           "Can't determine whether the element is a native radio because `ref` wasn't passed to the component",
@@ -106,7 +106,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
         );
         return;
       }
-      if (self.tagName !== "INPUT" || self.type !== "radio") {
+      if (element.tagName !== "INPUT" || element.type !== "radio") {
         setIsNativeRadio(false);
       }
     }, []);
@@ -125,21 +125,20 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        const self = event.currentTarget;
-        fireChange(self, onChange);
+        fireChange(event.currentTarget, onChange);
       },
       [onChange]
     );
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) return;
+      const element = ref.current;
+      if (!element) return;
       if (
         options.unstable_moves &&
         isCurrentItemRef.current &&
         options.unstable_checkOnFocus
       ) {
-        fireChange(self, onChange);
+        fireChange(element, onChange);
       }
     }, [options.unstable_moves, options.unstable_checkOnFocus, onChange]);
 

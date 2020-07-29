@@ -60,8 +60,8 @@ function useIndeterminateState(
   options: CheckboxOptions
 ) {
   React.useEffect(() => {
-    const self = ref.current;
-    if (!self) {
+    const element = ref.current;
+    if (!element) {
       warning(
         options.state === "indeterminate",
         "Can't set indeterminate state because `ref` wasn't passed to component.",
@@ -71,9 +71,9 @@ function useIndeterminateState(
     }
 
     if (options.state === "indeterminate") {
-      self.indeterminate = true;
-    } else if (self.indeterminate) {
-      self.indeterminate = false;
+      element.indeterminate = true;
+    } else if (element.indeterminate) {
+      element.indeterminate = false;
     }
   }, [options.state, ref]);
 }
@@ -106,8 +106,8 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
     const onClickRef = useLiveRef(htmlOnClick);
 
     React.useEffect(() => {
-      const self = ref.current;
-      if (!self) {
+      const element = ref.current;
+      if (!element) {
         warning(
           true,
           "Can't determine whether the element is a native checkbox because `ref` wasn't passed to the component",
@@ -115,7 +115,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
         );
         return;
       }
-      if (self.tagName !== "INPUT" || self.type !== "checkbox") {
+      if (element.tagName !== "INPUT" || element.type !== "checkbox") {
         setIsNativeCheckbox(false);
       }
     }, []);
@@ -124,7 +124,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
-        const self = event.currentTarget;
+        const element = event.currentTarget;
 
         if (options.disabled) {
           event.stopPropagation();
@@ -136,7 +136,7 @@ export const useCheckbox = createHook<CheckboxOptions, CheckboxHTMLProps>({
           // If component is NOT rendered as a native input, it will not have
           // the `checked` property. So we assign it for consistency.
           if (!isNativeCheckbox) {
-            self.checked = !self.checked;
+            element.checked = !element.checked;
           }
           onChangeRef.current(event);
         }

@@ -1,7 +1,7 @@
-const babel = require("rollup-plugin-babel");
-const resolve = require("rollup-plugin-node-resolve");
-const replace = require("rollup-plugin-replace");
-const commonjs = require("rollup-plugin-commonjs");
+const { babel } = require("@rollup/plugin-babel");
+const { nodeResolve } = require("@rollup/plugin-node-resolve");
+const replace = require("@rollup/plugin-replace");
+const commonjs = require("@rollup/plugin-commonjs");
 const { terser } = require("rollup-plugin-terser");
 const ignore = require("rollup-plugin-ignore");
 const { camelCase, upperFirst } = require("lodash");
@@ -39,20 +39,16 @@ function getPlugins(isUMD) {
   const commonPlugins = [
     babel({
       extensions,
+      babelHelpers: "bundled",
       exclude: ["node_modules/**", "../../node_modules/**"],
     }),
-    resolve({ extensions, preferBuiltins: false }),
+    nodeResolve({ extensions, preferBuiltins: false }),
   ];
 
   if (isUMD) {
     return [
       ...commonPlugins,
-      commonjs({
-        include: /node_modules/,
-        namedExports: {
-          "body-scroll-lock": ["enableBodyScroll", "disableBodyScroll"],
-        },
-      }),
+      commonjs({ include: /node_modules/ }),
       ignore(["stream"]),
       terser(),
       replace({

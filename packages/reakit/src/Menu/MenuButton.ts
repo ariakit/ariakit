@@ -15,7 +15,14 @@ import { MenuContext } from "./__utils/MenuContext";
 import { findVisibleSubmenu } from "./__utils/findVisibleSubmenu";
 
 export type MenuButtonOptions = PopoverDisclosureOptions &
-  Pick<Partial<MenuStateReturn>, "hide"> &
+  Pick<
+    Partial<MenuStateReturn>,
+    | "hide"
+    | "unstable_popoverStyles"
+    | "unstable_arrowStyles"
+    | "currentId"
+    | "unstable_moves"
+  > &
   Pick<MenuStateReturn, "show" | "placement" | "first" | "last">;
 
 export type MenuButtonHTMLProps = PopoverDisclosureHTMLProps;
@@ -29,6 +36,24 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
     name: "MenuButton",
     compose: usePopoverDisclosure,
     useState: useMenuState,
+
+    propsAreEqual(prev, next) {
+      const {
+        unstable_popoverStyles: prevPopoverStyles,
+        unstable_arrowStyles: prevArrowStyles,
+        currentId: prevCurrentId,
+        unstable_moves: prevMoves,
+        ...prevProps
+      } = prev;
+      const {
+        unstable_popoverStyles: nextPopoverStyles,
+        unstable_arrowStyles: nextArrowStyles,
+        currentId: nextCurrentId,
+        unstable_moves: nextMoves,
+        ...nextProps
+      } = next;
+      return usePopoverDisclosure.unstable_propsAreEqual(prevProps, nextProps);
+    },
 
     useProps(
       options,
@@ -69,7 +94,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
               // prevents scroll jump
               const first = options.first && (() => setTimeout(options.first));
               const hide = options.hide && (() => options.hide?.());
-              const last = options.last && (() => options.last());
+              const last = options.last && (() => setTimeout(options.last));
               return {
                 Escape: hide,
                 Enter: hasParent && first,
@@ -99,18 +124,18 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
           // MenuButton's don't do anything on mouse over when they aren't
           // cointained within a Menu/MenuBar
           if (!parent) return;
-          const self = event.currentTarget;
+          const element = event.currentTarget;
           if (parentIsMenuBar) {
             // if MenuButton is an item inside a MenuBar, it'll only open
             // if there's already another sibling expanded MenuButton
             if (findVisibleSubmenu(parent.children)) {
-              self.focus();
+              element.focus();
             }
           } else {
             // If it's in a Menu, open after a short delay
             // TODO: Make the delay a prop?
             setTimeout(() => {
-              if (hasFocusWithin(self)) {
+              if (hasFocusWithin(element)) {
                 options.show?.();
               }
             }, 200);

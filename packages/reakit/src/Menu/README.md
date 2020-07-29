@@ -4,7 +4,7 @@ path: /docs/menu/
 
 # Menu
 
-Accessible `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuButton` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
+Accessible dropdown `Menu` component that follows the [WAI-ARIA Menu or Menu bar Pattern](https://www.w3.org/TR/wai-aria-practices/#menu). It also includes a `MenuButton` component that follows the [WAI-ARIA Menu Button Pattern](https://www.w3.org/TR/wai-aria-practices/#menubutton).
 
 <carbon-ad></carbon-ad>
 
@@ -457,12 +457,61 @@ function Example() {
 }
 ```
 
+## Performance
+
+If you notice performance issues when rendering several `MenuItem`s, you can do the following:
+
+1. Pass an `id` prop to each `MenuItem`.
+2. Memoize all non-primitive props that you're passing to `MenuItem`, including event handlers (e.g. `onClick`) and the `children` prop.
+
+`MenuItem` will compare the passed `id` with `menu.currentId` and, if the other props haven't been changed, it'll only re-render if it's the previous or the current active item.
+
+<!-- eslint-disable no-alert -->
+
+```jsx
+import React from "react";
+import { useMenuState, Menu, MenuButton, MenuItem } from "reakit/Menu";
+
+const items = Array.from({ length: 25 }).map((_, i) => `item-${i}`);
+
+function Example() {
+  const menu = useMenuState({ loop: true });
+  const onClick = React.useCallback((event) => {
+    window.alert(event.currentTarget.id);
+  }, []);
+  // If children aren't primitive values (like strings), memoize them with
+  // React.useCallback
+  const children = React.useCallback(
+    (itemProps) => (
+      <span {...itemProps}>
+        <span>{itemProps.id}</span>
+      </span>
+    ),
+    []
+  );
+  return (
+    <>
+      <MenuButton {...menu}>Performance</MenuButton>
+      <Menu {...menu} aria-label="Performance">
+        {items.map((id) => (
+          <MenuItem {...menu} key={id} id={id} onClick={onClick}>
+            {children}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+}
+```
+
 ## Accessibility
 
-- `MenuBar` and `Menu` have either role `menu` or `menubar` depending on the value of the `orientation` option (when it's `horizontal` it becomes `menubar`).
+- `Menu` has role `menu`.
+- `MenuBar` has role `menubar`.
+- `Menu` and `MenuBar` extend the accessibility features of [Composite](/docs/composite/#accessibility).
 - `MenuButton` extends the accessibility features of [PopoverDisclosure](/docs/popover/#accessibility), which means it sets `aria-haspopup` and `aria-expanded` attributes accordingly.
 - `MenuItem` has role `menuitem`.
-- `MenuItem` extends the accessibility features of [Rover](/docs/rover/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
+- `MenuItem` extends the accessibility features of [CompositeItem](/docs/composite/), which means it uses the [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_roving_tabindex) method to manage focus.
 - `MenuItemCheckbox` has role `menuitemcheckbox`.
 - `MenuItemRadio` has role `menuitemradio`.
 - Pressing <kbd>Enter</kbd> on `MenuButton` opens its menu (or submenu) and places focus on its first item.
@@ -1062,7 +1111,7 @@ and `groupId` if any. This state is automatically updated when
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>9 state props</summary>
+<details><summary>11 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1086,10 +1135,27 @@ similarly to `readOnly` on form elements. In this case, only
 
   The reference element.
 
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
 - **`hide`**
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -1127,7 +1193,7 @@ similarly to `readOnly` on form elements. In this case, only
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>9 state props</summary>
+<details><summary>11 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1151,10 +1217,27 @@ similarly to `readOnly` on form elements. In this case, only
 
   The reference element.
 
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
 - **`hide`**
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>

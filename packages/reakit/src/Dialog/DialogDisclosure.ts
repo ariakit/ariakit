@@ -37,17 +37,17 @@ export const useDialogDisclosure = createHook<
 
     // aria-expanded may be used for styling purposes, so we useLayoutEffect
     useIsomorphicEffect(() => {
-      const self = ref.current;
+      const element = ref.current;
       warning(
-        !self,
+        !element,
         "Can't determine whether the element is the current disclosure because `ref` wasn't passed to the component",
         "See https://reakit.io/docs/dialog"
       );
       if (disclosureRef && !disclosureRef.current) {
-        disclosureRef.current = self;
+        disclosureRef.current = element;
       }
       const isCurrentDisclosure =
-        !disclosureRef?.current || disclosureRef.current === self;
+        !disclosureRef?.current || disclosureRef.current === element;
       setExpanded(!!options.visible && isCurrentDisclosure);
     }, [options.visible, disclosureRef]);
 
