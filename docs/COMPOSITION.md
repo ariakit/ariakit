@@ -77,7 +77,7 @@ function Example() {
 
 ## State hooks
 
-State hooks are composable as well. For example, [`useTabState`](/docs/tab/) uses [`useRoverState`](/docs/rover/) underneath. You can take advantage of the same approach to create new fancy state hooks.
+State hooks are composable as well. For example, [`useTabState`](/docs/tab/) uses [`useCompositeState`](/docs/composite/) underneath. You can take advantage of the same approach to create new fancy state hooks.
 
 ```jsx
 import React from "react";
