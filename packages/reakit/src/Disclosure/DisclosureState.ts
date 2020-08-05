@@ -102,7 +102,8 @@ export function useDisclosureState(
     }
     if (process.env.NODE_ENV === 'development' && animating) {
       const timeout = setInterval(() => {
-        console.warn("[Reakit] It's been 8 seconds but stopAnimation has not been called. Does the discolusure element have a CSS transition?")
+        console.warn("[Reakit] It's been 8 seconds but stopAnimation has not been called. Does the discolusure element have a CSS transition?");
+        setAnimating(false);
       }, 8000)
       return () => {
         clearTimeout(timeout)
