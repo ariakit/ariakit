@@ -100,15 +100,16 @@ export function useDisclosureState(
       setTimeout(() => setAnimating(false), animated);
       return;
     }
-    if (process.env.NODE_ENV === 'development' && animating) {
+    if (process.env.NODE_ENV === "development" && animating) {
       const timeout = setInterval(() => {
         console.warn("[Reakit] It's been 8 seconds but stopAnimation has not been called. Does the discolusure element have a CSS transition?");
         setAnimating(false);
-      }, 8000)
+      }, 8000);
       return () => {
-        clearTimeout(timeout)
-      }
+        clearTimeout(timeout);
+      };
     }
+    return;
   }, [animated, animating]);
 
   const show = React.useCallback(() => setVisible(true), []);
