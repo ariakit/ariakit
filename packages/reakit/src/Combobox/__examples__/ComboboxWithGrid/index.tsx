@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
-  unstable_useComboboxPopoverState as useComboboxPopoverState,
-  unstable_useComboboxGridState as useComboboxGridState,
+  unstable_useComboboxState as useComboboxState,
+  unstable_useComboboxMenuGridState as useComboboxMenuGridState,
   unstable_Combobox as Combobox,
   unstable_ComboboxPopover as ComboboxPopover,
   unstable_ComboboxMenu as ComboboxMenu,
@@ -21,15 +21,15 @@ const style = {
 };
 
 export default function ComboboxWithGrid() {
-  const combobox = useComboboxGridState({
+  const combobox = useComboboxMenuGridState({
     columns: 3,
     limit: 15,
     values: initialValues,
-    // autocomplete: true,
+    autocomplete: true,
     unstable_angular: true,
   });
 
-  const combobox2 = useComboboxPopoverState({
+  const combobox2 = useComboboxState({
     values: initialValues,
     // autocomplete: true,
     limit: 15,

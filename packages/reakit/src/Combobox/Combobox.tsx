@@ -9,21 +9,26 @@ import {
   useComposite,
 } from "../Composite/Composite";
 import { COMBOBOX_KEYS } from "./__keys";
-import { unstable_ComboboxPopoverStateReturn } from "./ComboboxPopoverState";
+import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { getMenuId } from "./__utils/getMenuId";
 
 export type unstable_ComboboxOptions = CompositeOptions &
   Pick<
-    Partial<unstable_ComboboxPopoverStateReturn>,
-    "autocomplete" | "menuRole" | "visible" | "show" | "unstable_referenceRef"
+    Partial<unstable_ComboboxStateReturn>,
+    | "autocomplete"
+    | "menuRole"
+    | "visible"
+    | "show"
+    | "hide"
+    | "unstable_referenceRef"
   > &
   Pick<
-    unstable_ComboboxPopoverStateReturn,
+    unstable_ComboboxStateReturn,
     | "baseId"
+    | "inputValue"
+    | "setInputValue"
     | "currentValue"
     | "setCurrentValue"
-    | "selectedValue"
-    | "setSelectedValue"
   >;
 
 export type unstable_ComboboxHTMLProps = CompositeHTMLProps &
@@ -58,8 +63,8 @@ export const unstable_useCombobox = createHook<
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
 
     const value = options.autocomplete
-      ? options.selectedValue || options.currentValue
-      : options.currentValue;
+      ? options.currentValue || options.inputValue
+      : options.inputValue;
 
     const controls = ariaControls
       ? `${ariaControls} ${getMenuId(options.baseId)}`
@@ -69,10 +74,10 @@ export const unstable_useCombobox = createHook<
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onChangeRef.current?.(event);
         if (event.defaultPrevented) return;
-        options.setSelectedValue?.(undefined);
-        options.setCurrentValue?.(event.target.value);
+        options.setCurrentValue?.(undefined);
+        options.setInputValue?.(event.target.value);
       },
-      [options.setSelectedValue, options.setCurrentValue]
+      [options.setCurrentValue, options.setInputValue]
     );
 
     const onKeyDown = React.useCallback(
@@ -80,10 +85,10 @@ export const unstable_useCombobox = createHook<
         onKeyDownRef.current?.(event);
         if (event.defaultPrevented) return;
         if (event.key === "Escape") {
-          options.setSelectedValue?.(undefined);
+          options.setCurrentValue?.(undefined);
         }
       },
-      [options.setSelectedValue]
+      [options.setCurrentValue]
     );
 
     return {
@@ -127,7 +132,7 @@ export const unstable_useCombobox = createHook<
           return;
         } else if (
           event.key.startsWith("Arrow") &&
-          options.inputRole === "grid"
+          options.menuRole === "grid"
         ) {
           event.preventDefault();
         } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {

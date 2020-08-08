@@ -1,5 +1,5 @@
 // Automatically generated
-const COMBOBOX_STATE_KEYS = [
+const COMBOBOX_MENU_STATE_KEYS = [
   "baseId",
   "unstable_idCountRef",
   "unstable_virtual",
@@ -13,15 +13,15 @@ const COMBOBOX_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
+  "inputValue",
   "currentValue",
-  "selectedValue",
   "autocomplete",
   "values",
   "limit",
   "matches",
   "menuRole",
   "visible",
-  "unstable_setBaseId",
+  "setBaseId",
   "registerItem",
   "unregisterItem",
   "registerGroup",
@@ -33,7 +33,7 @@ const COMBOBOX_STATE_KEYS = [
   "down",
   "first",
   "last",
-  "unstable_sort",
+  "sort",
   "unstable_setVirtual",
   "setRTL",
   "setOrientation",
@@ -42,19 +42,19 @@ const COMBOBOX_STATE_KEYS = [
   "setWrap",
   "reset",
   "unstable_setHasActiveWidget",
+  "setInputValue",
   "setCurrentValue",
-  "setSelectedValue",
   "setAutocomplete",
   "setValues",
   "setLimit",
 ] as const;
-const COMBOBOX_GRID_STATE_KEYS = [
-  ...COMBOBOX_STATE_KEYS,
+const COMBOBOX_MENU_GRID_STATE_KEYS = [
+  ...COMBOBOX_MENU_STATE_KEYS,
   "columns",
   "setColumns",
 ] as const;
-const COMBOBOX_POPOVER_STATE_KEYS = [
-  ...COMBOBOX_STATE_KEYS,
+const COMBOBOX_STATE_KEYS = [
+  ...COMBOBOX_MENU_STATE_KEYS,
   "animated",
   "animating",
   "modal",
@@ -76,11 +76,11 @@ const COMBOBOX_POPOVER_STATE_KEYS = [
   "setModal",
   "place",
 ] as const;
-const COMBOBOX_GRID_POPOVER_STATE_KEYS = [
-  ...COMBOBOX_GRID_STATE_KEYS,
-  ...COMBOBOX_POPOVER_STATE_KEYS,
+const COMBOBOX_GRID_STATE_KEYS = [
+  ...COMBOBOX_MENU_GRID_STATE_KEYS,
+  ...COMBOBOX_STATE_KEYS,
 ] as const;
-export const COMBOBOX_KEYS = COMBOBOX_GRID_POPOVER_STATE_KEYS;
+export const COMBOBOX_KEYS = COMBOBOX_GRID_STATE_KEYS;
 export const COMBOBOX_GRID_CELL_KEYS = COMBOBOX_KEYS;
 export const COMBOBOX_GRID_ROW_KEYS = COMBOBOX_GRID_CELL_KEYS;
 export const COMBOBOX_ITEM_KEYS = [...COMBOBOX_GRID_ROW_KEYS, "value"] as const;
