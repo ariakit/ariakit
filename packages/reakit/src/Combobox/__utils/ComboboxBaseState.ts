@@ -1,10 +1,16 @@
 import * as React from "react";
 import { SetState } from "reakit-utils/types";
+import { removeItemFromArray } from "reakit-utils/removeItemFromArray";
 import { CompositeStateReturn } from "../../Composite/CompositeState";
 
 export type ComboboxBaseState = {
   /**
-   * Current value that will be used to filter `values`.
+   * Indicates the type of the suggestions popup.
+   */
+  menuRole: "listbox" | "tree" | "grid" | "dialog";
+  /**
+   * Combobox input value that will be used to filter `values` and populate
+   * the `matches` property.
    */
   inputValue: string;
   /**
@@ -12,9 +18,33 @@ export type ComboboxBaseState = {
    */
   currentValue?: string;
   /**
-   * TODO.
+   * Determines how the combobox autocomplete will behave and how the `matches`
+   * state will be populated:
+   *  - `none`: Values aren't automatically filtered.
+   *  - `inline`: Values aren't automatically filtered. The combobox input
+   * value will change inline to reflect the currently selected item value.
+   *  - `list`: Values are automatically filtered based on `inputValue`.
+   *  - `both`: Values are automatically filtered based on `inputValue`.
+   * The combobox input value will change inline to reflect the currently
+   * selected item value.
    */
-  autocomplete: boolean;
+  autocomplete: "none" | "inline" | "list" | "both";
+  /**
+   * Determines whether the first match will be automatically selected. When
+   * it's set to `true`, the exact behavior will depend on the value of
+   * `autocomplete`:
+   *  - `none`: The first value is automatically selected, but the input value
+   * remains the same.
+   *  - `inline`: The first value is automatically selected and the combobox
+   * input value will change inline to reflect this. The inline completion
+   * string will be highlighted and will have a selected state.
+   *  - `list`: The first match is automatically selected, but the input value
+   * remains the same.
+   *  - `both`: The first match is automatically selected and the combobox
+   * input value will change inline to reflect this. The inline completion
+   * string will be highlighted and will have a selected state.
+   */
+  autoSelect: boolean;
   /**
    * Values that will be used to produce `matches`.
    */
@@ -28,10 +58,6 @@ export type ComboboxBaseState = {
    */
   matches: string[];
   /**
-   * Indicates the type of the suggestions popup.
-   */
-  menuRole: "listbox" | "tree" | "grid" | "dialog";
-  /**
    * Whether the suggestions popup is visible or not.
    */
   visible: boolean;
@@ -39,7 +65,7 @@ export type ComboboxBaseState = {
 
 export type ComboboxBaseActions = {
   /**
-   * Sets `currentValue`.
+   * Sets `inputValue`.
    */
   setInputValue: SetState<ComboboxBaseState["inputValue"]>;
   /**
@@ -50,6 +76,10 @@ export type ComboboxBaseActions = {
    * Sets `autocomplete`.
    */
   setAutocomplete: SetState<ComboboxBaseState["autocomplete"]>;
+  /**
+   * Sets `autoSelect`.
+   */
+  setAutoSelect: SetState<ComboboxBaseState["autoSelect"]>;
   /**
    * Sets `values`.
    */
@@ -62,19 +92,42 @@ export type ComboboxBaseActions = {
 
 export type ComboboxBaseInitialState = Pick<
   Partial<ComboboxBaseState>,
-  "inputValue" | "currentValue" | "autocomplete" | "values" | "limit"
+  | "inputValue"
+  | "currentValue"
+  | "autocomplete"
+  | "autoSelect"
+  | "values"
+  | "limit"
 >;
 
 export type ComboboxBaseStateReturn = ComboboxBaseState & ComboboxBaseActions;
 
-function filter(
-  currentValue: ComboboxBaseState["inputValue"],
+function getMatches(
+  inputValue: ComboboxBaseState["inputValue"],
   values: ComboboxBaseState["values"],
-  limit: ComboboxBaseState["limit"]
+  limit: ComboboxBaseState["limit"],
+  autocomplete: ComboboxBaseState["autocomplete"],
+  autoSelect: ComboboxBaseState["autoSelect"]
 ) {
-  return values
-    .filter((value) => value.search(new RegExp(currentValue, "i")) !== -1)
-    .slice(0, limit);
+  if (autocomplete === "none" || autocomplete === "inline") {
+    return values.slice(0, limit);
+  }
+  const searchValue = new RegExp(inputValue, "i");
+  let matches = values
+    .filter((value) => value.search(searchValue) !== -1)
+    .slice(0, autoSelect && limit ? limit - 1 : limit);
+
+  if (autoSelect) {
+    const firstMatch = values.find(
+      (value) => value.search(new RegExp(`^${inputValue}`, "i")) !== -1
+    );
+    if (firstMatch) {
+      matches = removeItemFromArray(matches, firstMatch);
+      matches.unshift(firstMatch);
+    }
+  }
+
+  return matches;
 }
 
 export function useComboboxBaseState<T extends CompositeStateReturn>(
@@ -82,7 +135,8 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
   {
     inputValue: initialInputValue = "",
     currentValue: initialCurrentValue,
-    autocomplete: initialAutocomplete = false,
+    autocomplete: initialAutocomplete = "list",
+    autoSelect: initialAutoSelect = false,
     values: initialValues = [],
     limit: initialLimit,
   }: ComboboxBaseInitialState = {}
@@ -90,16 +144,22 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
   const [inputValue, setInputValue] = React.useState(initialInputValue);
   const [currentValue, setCurrentValue] = React.useState(initialCurrentValue);
   const [autocomplete, setAutocomplete] = React.useState(initialAutocomplete);
+  const [autoSelect, setAutoSelect] = React.useState(initialAutoSelect);
   const [values, setValues] = React.useState(initialValues);
   const [limit, setLimit] = React.useState(initialLimit);
-  const [matches, setMatches] = React.useState(() =>
-    filter(inputValue, values, limit)
+
+  const matches = React.useMemo(
+    () => getMatches(inputValue, values, limit, autocomplete, autoSelect),
+    [inputValue, values, limit, autocomplete, autoSelect]
   );
 
   React.useEffect(() => {
-    setMatches(filter(inputValue, values, limit));
-    composite.setCurrentId(null);
-  }, [inputValue, values, limit, composite.setCurrentId]);
+    if (autoSelect) {
+      composite.first();
+    } else {
+      composite.setCurrentId(null);
+    }
+  }, [matches, autoSelect, composite.first, composite.setCurrentId]);
 
   React.useEffect(() => {
     if (composite.currentId === null) {
@@ -113,12 +173,14 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     inputValue,
     currentValue,
     autocomplete,
+    autoSelect,
     values,
     limit,
     matches,
     setInputValue,
     setCurrentValue,
     setAutocomplete,
+    setAutoSelect,
     setValues,
     setLimit,
   };

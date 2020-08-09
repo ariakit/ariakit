@@ -2,12 +2,12 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { getMenuId } from "./__utils/getMenuId";
-import { unstable_ComboboxStateReturn as ComboboxStateReturn } from "./ComboboxState";
+import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { COMBOBOX_MENU_KEYS } from "./__keys";
 
 export type unstable_ComboboxMenuOptions = BoxOptions &
-  Pick<Partial<ComboboxStateReturn>, "menuRole"> &
-  Pick<ComboboxStateReturn, "baseId">;
+  Pick<Partial<unstable_ComboboxStateReturn>, "menuRole"> &
+  Pick<unstable_ComboboxStateReturn, "baseId">;
 
 export type unstable_ComboboxMenuHTMLProps = BoxHTMLProps;
 

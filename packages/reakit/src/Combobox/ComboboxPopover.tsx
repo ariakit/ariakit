@@ -43,6 +43,15 @@ export const unstable_useComboboxPopover = createHook<
   useProps(_, htmlProps) {
     return htmlProps;
   },
+
+  useComposeProps(options, { tabIndex, ...htmlProps }) {
+    htmlProps = useComboboxMenu(options, htmlProps, true);
+    htmlProps = usePopover(options, htmlProps, true);
+    return {
+      ...htmlProps,
+      tabIndex: tabIndex ?? undefined,
+    };
+  },
 });
 
 export const unstable_ComboboxPopover = createComponent({

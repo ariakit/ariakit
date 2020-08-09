@@ -25,13 +25,14 @@ export default function ComboboxWithGrid() {
     columns: 3,
     limit: 15,
     values: initialValues,
-    autocomplete: true,
+    // autocomplete: true,
     unstable_angular: true,
   });
 
   const combobox2 = useComboboxState({
     values: initialValues,
-    // autocomplete: true,
+    autocomplete: "both",
+    autoSelect: true,
     limit: 15,
   });
 
