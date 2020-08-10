@@ -17,8 +17,6 @@ export type ComboboxPopoverInitialState = PopoverInitialState;
 export type ComboboxPopoverStateReturn = ComboboxPopoverState &
   ComboboxPopoverActions;
 
-function noop() {}
-
 export function useComboboxPopoverState<
   T extends ComboboxMenuStateReturn | ComboboxMenuGridStateReturn
 >(
@@ -38,7 +36,5 @@ export function useComboboxPopoverState<
   return {
     ...combobox,
     ...popover,
-    registerGroup: popover.visible ? combobox.registerGroup : noop,
-    registerItem: popover.visible ? combobox.registerItem : noop,
   };
 }

@@ -28,6 +28,8 @@ export type ComboboxBaseState = {
    * The combobox input value will change inline to reflect the currently
    * selected item value.
    */
+  // TODO: Maybe inline doesn't make sense
+  // We can only inline autocomplete if the list is also autocompleting?
   autocomplete: "none" | "inline" | "list" | "both";
   /**
    * Determines whether the first match will be automatically selected. When
@@ -138,7 +140,7 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     autocomplete: initialAutocomplete = "list",
     autoSelect: initialAutoSelect = false,
     values: initialValues = [],
-    limit: initialLimit,
+    limit: initialLimit = 10,
   }: ComboboxBaseInitialState = {}
 ) {
   const [inputValue, setInputValue] = React.useState(initialInputValue);
@@ -153,6 +155,8 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     [inputValue, values, limit, autocomplete, autoSelect]
   );
 
+  // TODO: Create examples and test
+  // Test click outside with autoSelect should change inputValue
   React.useEffect(() => {
     if (autoSelect) {
       composite.first();
@@ -166,6 +170,7 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
       setCurrentValue(undefined);
     }
   }, [composite.currentId]);
+  // TODO Replace registerItem to get value
 
   return {
     ...composite,

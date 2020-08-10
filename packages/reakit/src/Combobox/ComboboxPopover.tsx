@@ -40,8 +40,11 @@ export const unstable_useComboboxPopover = createHook<
     };
   },
 
-  useProps(_, htmlProps) {
-    return htmlProps;
+  useProps(options, htmlProps) {
+    return {
+      ...htmlProps,
+      children: options.visible ? htmlProps.children : null,
+    };
   },
 
   useComposeProps(options, { tabIndex, ...htmlProps }) {
@@ -54,6 +57,7 @@ export const unstable_useComboboxPopover = createHook<
   },
 });
 
+// TODO: Should have aria-label
 export const unstable_ComboboxPopover = createComponent({
   as: "div",
   useHook: unstable_useComboboxPopover,

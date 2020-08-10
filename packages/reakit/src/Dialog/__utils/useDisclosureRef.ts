@@ -1,5 +1,6 @@
 import * as React from "react";
 import { getDocument } from "reakit-utils/getDocument";
+import { isButton } from "reakit-utils/isButton";
 import { DialogOptions } from "../Dialog";
 
 export function useDisclosureRef(
@@ -35,6 +36,7 @@ export function useDisclosureRef(
     // to close the dialog by clicking again on the disclosure.
     const onMouseDown = (event: MouseEvent) => {
       const element = event.currentTarget as HTMLElement;
+      if (!isButton(element)) return;
       event.preventDefault();
       element.focus();
     };

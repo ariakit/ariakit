@@ -3,11 +3,17 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import {
+  CompositeItemOptions,
+  CompositeItemHTMLProps,
+} from "../Composite/CompositeItem";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { COMBOBOX_ITEM_KEYS } from "./__keys";
+import { getItemId } from "./__utils/getItemId";
 
 export type unstable_ComboboxItemOptions = BoxOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "hide"> &
+  CompositeItemOptions &
+  Pick<Partial<unstable_ComboboxStateReturn>, "currentValue" | "hide"> &
   Pick<unstable_ComboboxStateReturn, "setInputValue" | "setCurrentValue"> & {
     /**
      * Item's value.
@@ -15,7 +21,8 @@ export type unstable_ComboboxItemOptions = BoxOptions &
     value: string;
   };
 
-export type unstable_ComboboxItemHTMLProps = BoxHTMLProps;
+export type unstable_ComboboxItemHTMLProps = BoxHTMLProps &
+  CompositeItemHTMLProps;
 
 export type unstable_ComboboxItemProps = unstable_ComboboxItemOptions &
   unstable_ComboboxItemHTMLProps;
@@ -27,6 +34,36 @@ export const unstable_useComboboxItem = createHook<
   name: "ComboboxItem",
   compose: useBox,
   keys: COMBOBOX_ITEM_KEYS,
+
+  // propsAreEqual(prev, next) {
+  //   if (prev.value !== next.value) {
+  //     return false;
+  //   }
+  //   if (!prev.baseId || !next.baseId) {
+  //     return useCompositeItem.unstable_propsAreEqual(prev, next);
+  //   }
+  //   const { currentValue: prevCurrentValue, ...prevProps } = prev;
+  //   const { currentValue: nextCurrentValue, ...nextProps } = prev;
+  //   // if (prevCurrentValue !== nextCurrentValue) {
+  //   //   if (next.value === prevCurrentValue || next.value === nextCurrentValue) {
+  //   //     return false;
+  //   //   }
+  //   // }
+  //   const prevId = getItemId(prev.baseId, prev.value);
+  //   const nextId = getItemId(next.baseId, next.value);
+  //   return useCompositeItem.unstable_propsAreEqual(
+  //     { ...prev, id: prevId },
+  //     { ...next, id: nextId }
+  //   );
+  // },
+
+  useOptions(options) {
+    if (!options.baseId || options.id) {
+      return options;
+    }
+    const id = getItemId(options.baseId, options.value);
+    return { ...options, id };
+  },
 
   useProps(
     options,

@@ -65,6 +65,8 @@ export const unstable_useCombobox = createHook<
     const onClickRef = useLiveRef(htmlOnClick);
     const onChangeRef = useLiveRef(htmlOnChange);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const menuId = getMenuId(options.baseId);
+    const controls = ariaControls ? `${ariaControls} ${menuId}` : menuId;
 
     const inline =
       options.autocomplete === "inline" || options.autocomplete === "both";
@@ -73,10 +75,7 @@ export const unstable_useCombobox = createHook<
       ? options.currentValue || options.inputValue
       : options.inputValue;
 
-    const controls = ariaControls
-      ? `${ariaControls} ${getMenuId(options.baseId)}`
-      : getMenuId(options.baseId);
-
+    // TODO: Highlight should only happen if autocompleting
     React.useEffect(() => {
       const firstId = options.items[0]?.id;
       if (
@@ -107,17 +106,17 @@ export const unstable_useCombobox = createHook<
         if (event.defaultPrevented) return;
         options.show?.();
       },
-      [options.show]
+      [options.visible, options.show]
     );
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onChangeRef.current?.(event);
         if (event.defaultPrevented) return;
-        options.setCurrentValue?.(undefined);
+        options.setCurrentId?.(undefined);
         options.setInputValue?.(event.target.value);
       },
-      [options.setCurrentValue, options.setInputValue]
+      [options.setCurrentId, options.setInputValue]
     );
 
     const onKeyDown = React.useCallback(
@@ -125,10 +124,10 @@ export const unstable_useCombobox = createHook<
         onKeyDownRef.current?.(event);
         if (event.defaultPrevented) return;
         if (event.key === "Escape") {
-          options.setCurrentValue?.(undefined);
+          options.setCurrentId?.(undefined);
         }
       },
-      [options.setCurrentValue]
+      [options.setCurrentId]
     );
 
     return {

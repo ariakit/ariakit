@@ -62,12 +62,18 @@ export function unstable_useComboboxMenuGridState(
   const {
     columns: initialColumns = 1,
     currentId = null,
+    loop = true,
     ...sealed
   } = useSealedState(initialState);
 
   const [columns, setColumns] = React.useState(initialColumns);
 
-  const grid = useGridState({ currentId, ...sealed, unstable_virtual: true });
+  const grid = useGridState({
+    currentId,
+    loop,
+    ...sealed,
+    unstable_virtual: true,
+  });
   const combobox = useComboboxBaseState(grid, sealed);
 
   const matches = React.useMemo(() => chunk(combobox.matches, columns), [

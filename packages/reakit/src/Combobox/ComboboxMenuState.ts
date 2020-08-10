@@ -35,12 +35,14 @@ export function unstable_useComboboxMenuState(
   const {
     currentId = null,
     orientation = "vertical",
+    loop = true,
     ...sealed
   } = useSealedState(initialState);
 
   const composite = useCompositeState({
     currentId,
     orientation,
+    loop,
     ...sealed,
     unstable_virtual: true,
   });

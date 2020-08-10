@@ -26,8 +26,12 @@ export const unstable_useComboboxOption = createHook<
   unstable_ComboboxOptionHTMLProps
 >({
   name: "ComboboxOption",
-  compose: [useCompositeItem, useComboboxItem],
+  compose: [useComboboxItem, useCompositeItem],
   keys: COMBOBOX_OPTION_KEYS,
+
+  // propsAreEqual(prev, next) {
+  //   return useComboboxItem.unstable_propsAreEqual(prev, next);
+  // },
 
   useProps(_, htmlProps) {
     return { role: "option", ...htmlProps };
