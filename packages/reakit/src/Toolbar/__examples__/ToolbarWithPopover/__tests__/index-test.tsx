@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press } from "reakit-test-utils";
+import { render, press, axe } from "reakit-test-utils";
 import ToolbarWithPopover from "..";
 
 test("renders toolbar items with closed popover", () => {
@@ -54,4 +54,11 @@ test("allows to open / close the popover through keyboard", () => {
   press.Escape();
   expect(labelText("Trip to Mars details")).not.toBeVisible();
   expect(text("Mars")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<ToolbarWithPopover />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });
