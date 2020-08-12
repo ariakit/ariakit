@@ -17,26 +17,29 @@ import {
   ComboboxBaseInitialState,
 } from "./__utils/ComboboxBaseState";
 
-export type unstable_ComboboxMenuGridState = GridState &
-  Omit<ComboboxBaseState, "matches"> & {
-    /**
-     * Number of columns by which `values` will be splitted to generate the
-     * `matches` 2D array.
-     */
-    columns: number;
-    /**
-     * Result of filtering `values` by `currentValue`.
-     */
-    matches: string[][];
-  };
+export type unstable_ComboboxMenuGridState = Omit<
+  ComboboxBaseState<GridState>,
+  "matches"
+> & {
+  /**
+   * Number of columns by which `values` will be splitted to generate the
+   * `matches` 2D array.
+   */
+  columns: number;
+  /**
+   * Result of filtering `values` by `currentValue`.
+   */
+  matches: string[][];
+};
 
-export type unstable_ComboboxMenuGridActions = GridActions &
-  ComboboxBaseActions & {
-    /**
-     * Sets `columns`.
-     */
-    setColumns: SetState<unstable_ComboboxMenuGridState["columns"]>;
-  };
+export type unstable_ComboboxMenuGridActions = ComboboxBaseActions<
+  GridActions
+> & {
+  /**
+   * Sets `columns`.
+   */
+  setColumns: SetState<unstable_ComboboxMenuGridState["columns"]>;
+};
 
 export type unstable_ComboboxMenuGridInitialState = Omit<
   GridInitialState,

@@ -5,7 +5,6 @@ const COMBOBOX_MENU_STATE_KEYS = [
   "unstable_virtual",
   "rtl",
   "orientation",
-  "items",
   "groups",
   "currentId",
   "loop",
@@ -13,17 +12,18 @@ const COMBOBOX_MENU_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
+  "items",
   "menuRole",
   "inputValue",
   "currentValue",
-  "autocomplete",
-  "autoSelect",
   "values",
   "limit",
   "matches",
+  "list",
+  "inline",
+  "autoSelect",
   "visible",
   "setBaseId",
-  "registerItem",
   "unregisterItem",
   "registerGroup",
   "unregisterGroup",
@@ -43,12 +43,13 @@ const COMBOBOX_MENU_STATE_KEYS = [
   "setWrap",
   "reset",
   "unstable_setHasActiveWidget",
+  "registerItem",
   "setInputValue",
-  "setCurrentValue",
-  "setAutocomplete",
-  "setAutoSelect",
   "setValues",
   "setLimit",
+  "setList",
+  "setInline",
+  "setAutoSelect",
 ] as const;
 const COMBOBOX_MENU_GRID_STATE_KEYS = [
   ...COMBOBOX_MENU_STATE_KEYS,
@@ -88,7 +89,4 @@ export const COMBOBOX_GRID_ROW_KEYS = COMBOBOX_GRID_CELL_KEYS;
 export const COMBOBOX_ITEM_KEYS = [...COMBOBOX_GRID_ROW_KEYS, "value"] as const;
 export const COMBOBOX_MENU_KEYS = COMBOBOX_GRID_ROW_KEYS;
 export const COMBOBOX_OPTION_KEYS = COMBOBOX_MENU_KEYS;
-export const COMBOBOX_POPOVER_KEYS = [
-  ...COMBOBOX_OPTION_KEYS,
-  "unstable_portal",
-] as const;
+export const COMBOBOX_POPOVER_KEYS = COMBOBOX_OPTION_KEYS;

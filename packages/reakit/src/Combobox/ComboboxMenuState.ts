@@ -15,10 +15,11 @@ import {
   useComboboxBaseState,
 } from "./__utils/ComboboxBaseState";
 
-export type unstable_ComboboxMenuState = CompositeState & ComboboxBaseState;
+export type unstable_ComboboxMenuState = ComboboxBaseState<CompositeState>;
 
-export type unstable_ComboboxMenuActions = CompositeActions &
-  ComboboxBaseActions;
+export type unstable_ComboboxMenuActions = ComboboxBaseActions<
+  CompositeActions
+>;
 
 export type unstable_ComboboxMenuInitialState = Omit<
   CompositeInitialState,
@@ -47,10 +48,5 @@ export function unstable_useComboboxMenuState(
     unstable_virtual: true,
   });
 
-  const combobox = useComboboxBaseState(composite, sealed);
-
-  return {
-    ...combobox,
-    menuRole: "listbox",
-  };
+  return useComboboxBaseState(composite, sealed);
 }

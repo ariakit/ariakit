@@ -31,7 +31,7 @@ export default function ComboboxWithGrid() {
 
   const combobox2 = useComboboxState({
     values: initialValues,
-    autocomplete: "both",
+    inline: true,
     autoSelect: true,
     limit: 15,
   });

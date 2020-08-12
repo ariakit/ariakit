@@ -16,7 +16,8 @@ export type unstable_ComboboxOptions = CompositeOptions &
   Pick<
     Partial<unstable_ComboboxStateReturn>,
     | "menuRole"
-    | "autocomplete"
+    | "list"
+    | "inline"
     | "autoSelect"
     | "visible"
     | "show"
@@ -25,11 +26,7 @@ export type unstable_ComboboxOptions = CompositeOptions &
   > &
   Pick<
     unstable_ComboboxStateReturn,
-    | "baseId"
-    | "inputValue"
-    | "setInputValue"
-    | "currentValue"
-    | "setCurrentValue"
+    "baseId" | "inputValue" | "setInputValue" | "currentValue"
   >;
 
 export type unstable_ComboboxHTMLProps = CompositeHTMLProps &
@@ -68,10 +65,16 @@ export const unstable_useCombobox = createHook<
     const menuId = getMenuId(options.baseId);
     const controls = ariaControls ? `${ariaControls} ${menuId}` : menuId;
 
-    const inline =
-      options.autocomplete === "inline" || options.autocomplete === "both";
+    const autocomplete =
+      options.list && options.inline
+        ? "both"
+        : options.list
+        ? "list"
+        : options.inline
+        ? "inline"
+        : "none";
 
-    const value = inline
+    const value = options.inline
       ? options.currentValue || options.inputValue
       : options.inputValue;
 
@@ -138,9 +141,7 @@ export const unstable_useCombobox = createHook<
       "aria-controls": controls,
       "aria-haspopup": options.menuRole,
       "aria-expanded": options.visible,
-      // TODO
-      // Consider also autocompleting the first matching option
-      "aria-autocomplete": options.autocomplete ? "both" : "list",
+      "aria-autocomplete": autocomplete,
       value,
       onClick,
       onChange,

@@ -192,17 +192,8 @@ column and vice-versa.
 - **`inputValue`**
   <code>string</code>
 
-  Current value that will be used to filter `values`.
-
-- **`currentValue`**
-  <code>string | undefined</code>
-
-  Value of the item that is currently selected.
-
-- **`autocomplete`**
-  <code>boolean</code>
-
-  TODO.
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`values`**
   <code>string[]</code>
@@ -213,6 +204,38 @@ column and vice-versa.
   <code>number | undefined</code>
 
   Maximum number of matches.
+
+- **`list`**
+  <code>boolean</code>
+
+  Determines how the combobox options behave: dynamically or statically.
+By default, it's `true` if `values` are provided. Otherwise, it's `false`:
+ - If it's `true` and `values` are provided, then they will be
+automatically filtered based on `inputValue` and will populate `matches`.
+ - If it's `true` and `values` aren't provided, this means that you'll
+provide and filter values by yourself. `matches` will be empty.
+ - If it's `false` and `values` are provided, then they won't be
+automatically filtered and `matches` will be the same as `values`.
+
+- **`inline`**
+  <code>boolean</code>
+
+  Determines whether focusing on an option will temporarily change the value
+of the combobox. If it's `true`, focusing on an option will temporarily
+change the combobox value to the option's value.
+
+- **`autoSelect`**
+  <code>boolean</code>
+
+  Determines whether the first option will be automatically selected. When
+it's set to `true`, the exact behavior will depend on the value of
+`inline`:
+ - If `inline` is `true`, the first option is automatically focused when
+the combobox popover opens and the input value changes to reflect this.
+The inline completion string will be highlighted and will have a selected
+state.
+ - If `inline` is `false`, the first option is automatically focused when
+the combobox popover opens, but the input value remains the same.
 
 - **`columns`**
   <code>number</code>
@@ -297,17 +320,8 @@ column and vice-versa.
 - **`inputValue`**
   <code>string</code>
 
-  Current value that will be used to filter `values`.
-
-- **`currentValue`**
-  <code>string | undefined</code>
-
-  Value of the item that is currently selected.
-
-- **`autocomplete`**
-  <code>boolean</code>
-
-  TODO.
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`values`**
   <code>string[]</code>
@@ -318,6 +332,38 @@ column and vice-versa.
   <code>number | undefined</code>
 
   Maximum number of matches.
+
+- **`list`**
+  <code>boolean</code>
+
+  Determines how the combobox options behave: dynamically or statically.
+By default, it's `true` if `values` are provided. Otherwise, it's `false`:
+ - If it's `true` and `values` are provided, then they will be
+automatically filtered based on `inputValue` and will populate `matches`.
+ - If it's `true` and `values` aren't provided, this means that you'll
+provide and filter values by yourself. `matches` will be empty.
+ - If it's `false` and `values` are provided, then they won't be
+automatically filtered and `matches` will be the same as `values`.
+
+- **`inline`**
+  <code>boolean</code>
+
+  Determines whether focusing on an option will temporarily change the value
+of the combobox. If it's `true`, focusing on an option will temporarily
+change the combobox value to the option's value.
+
+- **`autoSelect`**
+  <code>boolean</code>
+
+  Determines whether the first option will be automatically selected. When
+it's set to `true`, the exact behavior will depend on the value of
+`inline`:
+ - If `inline` is `true`, the first option is automatically focused when
+the combobox popover opens and the input value changes to reflect this.
+The inline completion string will be highlighted and will have a selected
+state.
+ - If `inline` is `false`, the first option is automatically focused when
+the combobox popover opens, but the input value remains the same.
 
 - **`columns`**
   <code>number</code>
@@ -402,17 +448,8 @@ column and vice-versa.
 - **`inputValue`**
   <code>string</code>
 
-  Current value that will be used to filter `values`.
-
-- **`currentValue`**
-  <code>string | undefined</code>
-
-  Value of the item that is currently selected.
-
-- **`autocomplete`**
-  <code>boolean</code>
-
-  TODO.
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`values`**
   <code>string[]</code>
@@ -423,6 +460,38 @@ column and vice-versa.
   <code>number | undefined</code>
 
   Maximum number of matches.
+
+- **`list`**
+  <code>boolean</code>
+
+  Determines how the combobox options behave: dynamically or statically.
+By default, it's `true` if `values` are provided. Otherwise, it's `false`:
+ - If it's `true` and `values` are provided, then they will be
+automatically filtered based on `inputValue` and will populate `matches`.
+ - If it's `true` and `values` aren't provided, this means that you'll
+provide and filter values by yourself. `matches` will be empty.
+ - If it's `false` and `values` are provided, then they won't be
+automatically filtered and `matches` will be the same as `values`.
+
+- **`inline`**
+  <code>boolean</code>
+
+  Determines whether focusing on an option will temporarily change the value
+of the combobox. If it's `true`, focusing on an option will temporarily
+change the combobox value to the option's value.
+
+- **`autoSelect`**
+  <code>boolean</code>
+
+  Determines whether the first option will be automatically selected. When
+it's set to `true`, the exact behavior will depend on the value of
+`inline`:
+ - If `inline` is `true`, the first option is automatically focused when
+the combobox popover opens and the input value changes to reflect this.
+The inline completion string will be highlighted and will have a selected
+state.
+ - If `inline` is `false`, the first option is automatically focused when
+the combobox popover opens, but the input value remains the same.
 
 ### `useComboboxState`
 
@@ -554,17 +623,8 @@ column and vice-versa.
 - **`inputValue`**
   <code>string</code>
 
-  Current value that will be used to filter `values`.
-
-- **`currentValue`**
-  <code>string | undefined</code>
-
-  Value of the item that is currently selected.
-
-- **`autocomplete`**
-  <code>boolean</code>
-
-  TODO.
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`values`**
   <code>string[]</code>
@@ -575,6 +635,38 @@ column and vice-versa.
   <code>number | undefined</code>
 
   Maximum number of matches.
+
+- **`list`**
+  <code>boolean</code>
+
+  Determines how the combobox options behave: dynamically or statically.
+By default, it's `true` if `values` are provided. Otherwise, it's `false`:
+ - If it's `true` and `values` are provided, then they will be
+automatically filtered based on `inputValue` and will populate `matches`.
+ - If it's `true` and `values` aren't provided, this means that you'll
+provide and filter values by yourself. `matches` will be empty.
+ - If it's `false` and `values` are provided, then they won't be
+automatically filtered and `matches` will be the same as `values`.
+
+- **`inline`**
+  <code>boolean</code>
+
+  Determines whether focusing on an option will temporarily change the value
+of the combobox. If it's `true`, focusing on an option will temporarily
+change the combobox value to the option's value.
+
+- **`autoSelect`**
+  <code>boolean</code>
+
+  Determines whether the first option will be automatically selected. When
+it's set to `true`, the exact behavior will depend on the value of
+`inline`:
+ - If `inline` is `true`, the first option is automatically focused when
+the combobox popover opens and the input value changes to reflect this.
+The inline completion string will be highlighted and will have a selected
+state.
+ - If `inline` is `false`, the first option is automatically focused when
+the combobox popover opens, but the input value remains the same.
 
 ### `Combobox`
 
@@ -590,7 +682,7 @@ column and vice-versa.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>22 state props</summary>
+<details><summary>23 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -663,10 +755,10 @@ called.
 and `groupId` if any. This state is automatically updated when
 `registerItem` and `unregisterItem` are called.
 
-- **`setCurrentId`**
-  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
 
-  Sets `currentId`.
+  Moves focus to a given item ID.
 
 - **`first`**
   <code>() =&#62; void</code>
@@ -678,20 +770,47 @@ and `groupId` if any. This state is automatically updated when
 
   Moves focus to the last item.
 
-- **`move`**
-  <code>(id: string | null) =&#62; void</code>
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
 
-  Moves focus to a given item ID.
+  Sets `currentId`.
 
 - **`visible`**
   <code>boolean</code>
 
   Whether it's visible or not.
 
-- **`autocomplete`**
+- **`list`**
   <code>boolean</code>
 
-  TODO.
+  Determines how the combobox options behave: dynamically or statically.
+By default, it's `true` if `values` are provided. Otherwise, it's `false`:
+ - If it's `true` and `values` are provided, then they will be
+automatically filtered based on `inputValue` and will populate `matches`.
+ - If it's `true` and `values` aren't provided, this means that you'll
+provide and filter values by yourself. `matches` will be empty.
+ - If it's `false` and `values` are provided, then they won't be
+automatically filtered and `matches` will be the same as `values`.
+
+- **`inline`**
+  <code>boolean</code>
+
+  Determines whether focusing on an option will temporarily change the value
+of the combobox. If it's `true`, focusing on an option will temporarily
+change the combobox value to the option's value.
+
+- **`autoSelect`**
+  <code>boolean</code>
+
+  Determines whether the first option will be automatically selected. When
+it's set to `true`, the exact behavior will depend on the value of
+`inline`:
+ - If `inline` is `true`, the first option is automatically focused when
+the combobox popover opens and the input value changes to reflect this.
+The inline completion string will be highlighted and will have a selected
+state.
+ - If `inline` is `false`, the first option is automatically focused when
+the combobox popover opens, but the input value remains the same.
 
 - **`menuRole`**
   <code>&#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;</code>
@@ -716,7 +835,8 @@ and `groupId` if any. This state is automatically updated when
 - **`inputValue`**
   <code>string</code>
 
-  Current value that will be used to filter `values`.
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`currentValue`**
   <code>string | undefined</code>
@@ -726,12 +846,7 @@ and `groupId` if any. This state is automatically updated when
 - **`setInputValue`**
   <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
 
-  Sets `currentValue`.
-
-- **`setCurrentValue`**
-  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
-
-  Sets `currentValue`.
+  Sets `inputValue`.
 
 </details>
 
@@ -755,7 +870,7 @@ similarly to `readOnly` on form elements. In this case, only
   Same as the HTML attribute.
 
 - **`value`**
-  <code>string</code>
+  <code>string | undefined</code>
 
   Item's value.
 
@@ -813,21 +928,6 @@ arrow keys.
 and `groupId` if any. This state is automatically updated when
 `registerItem` and `unregisterItem` are called.
 
-- **`setCurrentId`**
-  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
-
-  Sets `currentId`.
-
-- **`first`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the first item.
-
-- **`last`**
-  <code>() =&#62; void</code>
-
-  Moves focus to the last item.
-
 - **`registerItem`**
   <code>(item: Item) =&#62; void</code>
 
@@ -858,6 +958,26 @@ and `groupId` if any. This state is automatically updated when
 
   Moves focus to the item below.
 
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`currentValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
 - **`hide`**
   <code>() =&#62; void</code>
 
@@ -866,12 +986,7 @@ and `groupId` if any. This state is automatically updated when
 - **`setInputValue`**
   <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
 
-  Sets `currentValue`.
-
-- **`setCurrentValue`**
-  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
-
-  Sets `currentValue`.
+  Sets `inputValue`.
 
 </details>
 
@@ -929,52 +1044,6 @@ and `groupId` if any. This state is automatically updated when
 
 ### `ComboboxItem`
 
-- **`value`**
-  <code>string</code>
-
-  Item's value.
-
-<details><summary>3 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`hide`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `false`
-
-- **`setInputValue`**
-  <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
-
-  Sets `currentValue`.
-
-- **`setCurrentValue`**
-  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
-
-  Sets `currentValue`.
-
-</details>
-
-### `ComboboxMenu`
-
-<details><summary>2 state props</summary>
-
-> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
-
-- **`menuRole`**
-  <code>&#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;</code>
-
-  Indicates the type of the suggestions popup.
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
-
-</details>
-
-### `ComboboxOption`
-
 - **`disabled`**
   <code>boolean | undefined</code>
 
@@ -993,7 +1062,7 @@ similarly to `readOnly` on form elements. In this case, only
   Same as the HTML attribute.
 
 - **`value`**
-  <code>string</code>
+  <code>string | undefined</code>
 
   Item's value.
 
@@ -1051,10 +1120,35 @@ arrow keys.
 and `groupId` if any. This state is automatically updated when
 `registerItem` and `unregisterItem` are called.
 
-- **`setCurrentId`**
-  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+- **`registerItem`**
+  <code>(item: Item) =&#62; void</code>
 
-  Sets `currentId`.
+  Registers a composite item.
+
+- **`unregisterItem`**
+  <code>(id: string) =&#62; void</code>
+
+  Unregisters a composite item.
+
+- **`next`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the next item.
+
+- **`previous`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the previous item.
+
+- **`up`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item above.
+
+- **`down`**
+  <code>(unstable_allTheWay?: boolean | undefined) =&#62; void</code>
+
+  Moves focus to the item below.
 
 - **`first`**
   <code>() =&#62; void</code>
@@ -1065,6 +1159,124 @@ and `groupId` if any. This state is automatically updated when
   <code>() =&#62; void</code>
 
   Moves focus to the last item.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`currentValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
+- **`setInputValue`**
+  <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
+
+  Sets `inputValue`.
+
+</details>
+
+### `ComboboxMenu`
+
+<details><summary>2 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`menuRole`**
+  <code>&#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;</code>
+
+  Indicates the type of the suggestions popup.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+</details>
+
+### `ComboboxOption`
+
+- **`disabled`**
+  <code>boolean | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`focusable`**
+  <code>boolean | undefined</code>
+
+  When an element is `disabled`, it may still be `focusable`. It works
+similarly to `readOnly` on form elements. In this case, only
+`aria-disabled` will be set.
+
+- **`id`**
+  <code>string | undefined</code>
+
+  Same as the HTML attribute.
+
+- **`value`**
+  <code>string | undefined</code>
+
+  Item's value.
+
+<details><summary>18 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`unstable_virtual`** <span title="Experimental">⚠️</span>
+  <code>boolean</code>
+
+  If enabled, the composite element will act as an
+[aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+container instead of
+[roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+DOM focus will remain on the composite while its items receive virtual focus.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
+
+- **`unstable_moves`** <span title="Experimental">⚠️</span>
+  <code>number</code>
+
+  Stores the number of moves that have been performed by calling `move`,
+`next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the composite container and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`items`**
+  <code>Item[]</code>
+
+  Lists all the composite items with their `id`, DOM `ref`, `disabled` state
+and `groupId` if any. This state is automatically updated when
+`registerItem` and `unregisterItem` are called.
 
 - **`registerItem`**
   <code>(item: Item) =&#62; void</code>
@@ -1096,6 +1308,26 @@ and `groupId` if any. This state is automatically updated when
 
   Moves focus to the item below.
 
+- **`first`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the first item.
+
+- **`last`**
+  <code>() =&#62; void</code>
+
+  Moves focus to the last item.
+
+- **`setCurrentId`**
+  <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
+
+  Sets `currentId`.
+
+- **`currentValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
 - **`hide`**
   <code>() =&#62; void</code>
 
@@ -1104,12 +1336,7 @@ and `groupId` if any. This state is automatically updated when
 - **`setInputValue`**
   <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
 
-  Sets `currentValue`.
-
-- **`setCurrentValue`**
-  <code title="(value: SetStateAction&#60;string | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | undefined&#62;) =&#62; ...</code>
-
-  Sets `currentValue`.
+  Sets `inputValue`.
 
 </details>
 
