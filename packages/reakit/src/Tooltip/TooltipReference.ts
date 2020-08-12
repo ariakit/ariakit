@@ -4,7 +4,8 @@ import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { useTooltipState, TooltipStateReturn } from "./TooltipState";
+import { TooltipStateReturn } from "./TooltipState";
+import { TOOLTIP_REFERENCE_KEYS } from "./__keys";
 
 export type TooltipReferenceOptions = BoxOptions &
   Pick<Partial<TooltipStateReturn>, "unstable_referenceRef" | "baseId"> &
@@ -21,7 +22,7 @@ export const useTooltipReference = createHook<
 >({
   name: "TooltipReference",
   compose: useBox,
-  useState: useTooltipState,
+  keys: TOOLTIP_REFERENCE_KEYS,
 
   useProps(
     options,

@@ -800,6 +800,12 @@ Any function
 
 Type: function (...args: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>): any
 
+#### SetState
+
+State hook setter.
+
+Type: React.Dispatch&lt;React.SetStateAction&lt;T>>
+
 ### useAllCallbacks
 
 React custom hook that combines multiple callbacks into one.

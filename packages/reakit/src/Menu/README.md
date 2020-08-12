@@ -1111,7 +1111,7 @@ and `groupId` if any. This state is automatically updated when
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>11 state props</summary>
+<details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1156,6 +1156,11 @@ arrow keys.
 
   Stores the number of moves that have been performed by calling `move`,
 `next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
@@ -1193,7 +1198,7 @@ arrow keys.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-<details><summary>11 state props</summary>
+<details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1238,6 +1243,11 @@ arrow keys.
 
   Stores the number of moves that have been performed by calling `move`,
 `next`, `previous`, `up`, `down`, `first` or `last`.
+
+- **`move`**
+  <code>(id: string | null) =&#62; void</code>
+
+  Moves focus to a given item ID.
 
 - **`placement`**
   <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>

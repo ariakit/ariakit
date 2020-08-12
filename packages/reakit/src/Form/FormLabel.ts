@@ -6,7 +6,8 @@ import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
+import { FORM_LABEL_KEYS } from "./__keys";
 
 export type unstable_FormLabelOptions<
   V,
@@ -37,8 +38,7 @@ export const unstable_useFormLabel = createHook<
 >({
   name: "FormLabel",
   compose: useBox,
-  useState: unstable_useFormState,
-  keys: ["name", "label"],
+  keys: FORM_LABEL_KEYS,
 
   useProps(options, htmlProps) {
     return {

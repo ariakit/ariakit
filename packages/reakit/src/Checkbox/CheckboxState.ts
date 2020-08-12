@@ -34,7 +34,3 @@ export function useCheckboxState(
   const [state, setState] = React.useState(initialValue);
   return { state, setState };
 }
-
-const keys: Array<keyof CheckboxStateReturn> = ["state", "setState"];
-
-useCheckboxState.__keys = keys;

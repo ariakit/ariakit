@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.12.1...reakit-system-bootstrap@0.13.0) (2020-08-06)
+
+
+### Features
+
+* Add experimental `Grid` component ([#685](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/685)) ([51e17fb](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/51e17fbaab188a501dc267863f363e880cbba717))
+* Focus `Menu` instead of `MenuItem` on mouse click on `MenuButton` ([#694](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/694)) ([d57b97f](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/d57b97f2f64c883a95c73acf7ad0275dfdbd642a))
+
+
+
+
+
 ## [0.12.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.12.0...reakit-system-bootstrap@0.12.1) (2020-07-18)
 
 **Note:** Version bump only for package reakit-system-bootstrap

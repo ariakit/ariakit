@@ -9,8 +9,9 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import { CompositeStateReturn, useCompositeState } from "./CompositeState";
+import { CompositeStateReturn } from "./CompositeState";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
+import { COMPOSITE_GROUP_KEYS } from "./__keys";
 
 export type CompositeGroupOptions = GroupOptions &
   unstable_IdOptions &
@@ -28,7 +29,7 @@ export const useCompositeGroup = createHook<
 >({
   name: "CompositeGroup",
   compose: [useGroup, unstable_useId],
-  useState: useCompositeState,
+  keys: COMPOSITE_GROUP_KEYS,
 
   propsAreEqual(prev, next) {
     if (!next.id || prev.id !== next.id) {

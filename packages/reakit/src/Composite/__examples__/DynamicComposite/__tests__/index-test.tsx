@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, screen } from "reakit-test-utils";
+import { render, press, screen, act } from "reakit-test-utils";
 import NestedCompositeItems from "..";
 
 function cell(name: string) {
@@ -34,7 +34,12 @@ test("change order of grid rows", () => {
   expect(cell("item2")).toHaveFocus();
   press.ArrowRight();
   expect(button("Move item2 up")).toHaveFocus();
+  jest.useFakeTimers();
   press.Enter();
+  act(() => {
+    jest.runAllTimers();
+  });
+  jest.useRealTimers();
   press.ArrowRight();
   expect(button("Move item2 down")).toHaveFocus();
   press.ArrowRight();

@@ -1,7 +1,7 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { useMenuState } from "./MenuState";
+import { MENU_GROUP_KEYS } from "./__keys";
 
 export type MenuGroupOptions = BoxOptions;
 
@@ -12,7 +12,7 @@ export type MenuGroupProps = MenuGroupOptions & MenuGroupHTMLProps;
 export const useMenuGroup = createHook<MenuGroupOptions, MenuGroupHTMLProps>({
   name: "MenuGroup",
   compose: useBox,
-  useState: useMenuState,
+  keys: MENU_GROUP_KEYS,
 
   useProps(_, htmlProps) {
     return { role: "group", ...htmlProps };

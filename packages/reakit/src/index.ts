@@ -6,6 +6,7 @@ export * from "./Composite";
 export * from "./Dialog";
 export * from "./Disclosure";
 export * from "./Form";
+export * from "./Grid";
 export * from "./Group";
 export * from "./Id";
 export * from "./Input";

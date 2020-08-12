@@ -13,7 +13,7 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import { useBox } from "../Box/Box";
-import { CompositeStateReturn, useCompositeState } from "./CompositeState";
+import { CompositeStateReturn } from "./CompositeState";
 import { Item } from "./__utils/types";
 import { groupItems } from "./__utils/groupItems";
 import { flatten } from "./__utils/flatten";
@@ -21,6 +21,7 @@ import { findFirstEnabledItem } from "./__utils/findFirstEnabledItem";
 import { reverse } from "./__utils/reverse";
 import { getCurrentId } from "./__utils/getCurrentId";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
+import { COMPOSITE_KEYS } from "./__keys";
 
 export type CompositeOptions = TabbableOptions &
   Pick<
@@ -120,7 +121,7 @@ function isItem(items: Item[], element?: Element | EventTarget | null) {
 export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
   name: "Composite",
   compose: [useTabbable],
-  useState: useCompositeState,
+  keys: COMPOSITE_KEYS,
 
   useOptions(options) {
     return { ...options, currentId: getCurrentId(options) };

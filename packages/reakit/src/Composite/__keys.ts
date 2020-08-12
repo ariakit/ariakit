@@ -1,0 +1,41 @@
+// Automatically generated
+const COMPOSITE_STATE_KEYS = [
+  "baseId",
+  "unstable_idCountRef",
+  "setBaseId",
+  "unstable_virtual",
+  "rtl",
+  "orientation",
+  "items",
+  "groups",
+  "currentId",
+  "loop",
+  "wrap",
+  "unstable_moves",
+  "unstable_angular",
+  "unstable_hasActiveWidget",
+  "registerItem",
+  "unregisterItem",
+  "registerGroup",
+  "unregisterGroup",
+  "move",
+  "next",
+  "previous",
+  "up",
+  "down",
+  "first",
+  "last",
+  "sort",
+  "unstable_setVirtual",
+  "setRTL",
+  "setOrientation",
+  "setCurrentId",
+  "setLoop",
+  "setWrap",
+  "reset",
+  "unstable_setHasActiveWidget",
+] as const;
+export const COMPOSITE_KEYS = COMPOSITE_STATE_KEYS;
+export const COMPOSITE_GROUP_KEYS = COMPOSITE_KEYS;
+export const COMPOSITE_ITEM_KEYS = COMPOSITE_GROUP_KEYS;
+export const COMPOSITE_ITEM_WIDGET_KEYS = COMPOSITE_ITEM_KEYS;

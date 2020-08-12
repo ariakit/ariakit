@@ -10,7 +10,8 @@ import {
   DisclosureHTMLProps,
   useDisclosure,
 } from "../Disclosure/Disclosure";
-import { useDialogState, DialogStateReturn } from "./DialogState";
+import { DialogStateReturn } from "./DialogState";
+import { DIALOG_DISCLOSURE_KEYS } from "./__keys";
 
 export type DialogDisclosureOptions = DisclosureOptions &
   Pick<Partial<DialogStateReturn>, "unstable_disclosureRef"> &
@@ -27,7 +28,7 @@ export const useDialogDisclosure = createHook<
 >({
   name: "DialogDisclosure",
   compose: useDisclosure,
-  useState: useDialogState,
+  keys: DIALOG_DISCLOSURE_KEYS,
 
   useProps(options, { ref: htmlRef, onClick: htmlOnClick, ...htmlProps }) {
     const ref = React.useRef<HTMLElement>(null);

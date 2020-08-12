@@ -21,10 +21,11 @@ import {
   unstable_IdOptions,
   unstable_IdHTMLProps,
 } from "../Id/Id";
-import { CompositeStateReturn, useCompositeState } from "./CompositeState";
+import { CompositeStateReturn } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
 import { Item } from "./__utils/types";
+import { COMPOSITE_ITEM_KEYS } from "./__keys";
 
 export type CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
@@ -82,7 +83,7 @@ export const useCompositeItem = createHook<
 >({
   name: "CompositeItem",
   compose: [useClickable, unstable_useId],
-  useState: useCompositeState,
+  keys: COMPOSITE_ITEM_KEYS,
 
   propsAreEqual(prev, next) {
     if (!next.id || prev.id !== next.id) {
@@ -210,16 +211,14 @@ export const useCompositeItem = createHook<
 
     const onBlur = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
-        if (options.unstable_virtual) {
-          if (hasFocusedComposite.current) {
-            // When hasFocusedComposite is true, composite has been focused
-            // right after focusing this item. This is an intermediate blur
-            // event, so we ignore it.
-            hasFocusedComposite.current = false;
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
+        if (options.unstable_virtual && hasFocusedComposite.current) {
+          // When hasFocusedComposite is true, composite has been focused right
+          // after focusing this item. This is an intermediate blur event, so
+          // we ignore it.
+          hasFocusedComposite.current = false;
+          event.preventDefault();
+          event.stopPropagation();
+          return;
         }
         onBlurRef.current?.(event);
       },
@@ -235,8 +234,8 @@ export const useCompositeItem = createHook<
           if (widget && isTextField(widget)) {
             widget.focus();
             const { key } = event;
-            // Using RAF here because otherwise the key will be added twice
-            // to the input when using roving tabindex
+            // Using RAF here because otherwise the key will be added twice to
+            // the input when using roving tabindex
             window.requestAnimationFrame(() => {
               setTextFieldValue(widget, key);
             });

@@ -71,3 +71,10 @@ export type ArrayValue<T> = T extends Array<infer U> ? U : never;
  * @memberof types
  */
 export type AnyFunction = (...args: any[]) => any;
+
+/**
+ * State hook setter.
+ * @memberof types
+ * @template T Setter type
+ */
+export type SetState<T> = React.Dispatch<React.SetStateAction<T>>;

@@ -33,11 +33,10 @@ export type MenuStateReturn = MenuBarStateReturn &
 export function useMenuState(
   initialState: SealedInitialState<MenuInitialState> = {}
 ): MenuStateReturn {
+  const parent = React.useContext(MenuContext);
   const { orientation = "vertical", gutter = 0, ...sealed } = useSealedState(
     initialState
   );
-
-  const parent = React.useContext(MenuContext);
 
   const placement =
     sealed.placement ||
@@ -63,10 +62,3 @@ export function useMenuState(
     ...popover,
   };
 }
-
-const keys: Array<keyof MenuStateReturn> = [
-  ...useMenuBarState.__keys,
-  ...usePopoverState.__keys,
-];
-
-useMenuState.__keys = keys;

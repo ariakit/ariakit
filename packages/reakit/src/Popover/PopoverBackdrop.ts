@@ -5,7 +5,7 @@ import {
   DialogBackdropHTMLProps,
   useDialogBackdrop,
 } from "../Dialog/DialogBackdrop";
-import { usePopoverState } from "./PopoverState";
+import { POPOVER_BACKDROP_KEYS } from "./__keys";
 
 export type PopoverBackdropOptions = DialogBackdropOptions;
 
@@ -20,7 +20,7 @@ export const usePopoverBackdrop = createHook<
 >({
   name: "PopoverBackdrop",
   compose: useDialogBackdrop,
-  useState: usePopoverState,
+  keys: POPOVER_BACKDROP_KEYS,
 
   useOptions({ modal = false, ...options }) {
     return { modal, ...options };

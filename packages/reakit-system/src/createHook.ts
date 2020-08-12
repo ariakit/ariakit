@@ -19,7 +19,7 @@ type CreateHookOptions<O, P> = {
   useComposeOptions?: (options: O, htmlProps: P) => O;
   useComposeProps?: (options: O, htmlProps: P) => P;
   propsAreEqual?: (prev: O & P, next: O & P) => boolean;
-  keys?: ReadonlyArray<keyof O>;
+  keys?: ReadonlyArray<string>;
 };
 
 /**

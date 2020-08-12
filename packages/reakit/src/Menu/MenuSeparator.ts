@@ -5,7 +5,7 @@ import {
   SeparatorHTMLProps,
   useSeparator,
 } from "../Separator/Separator";
-import { useMenuState } from "./MenuState";
+import { MENU_SEPARATOR_KEYS } from "./__keys";
 
 export type MenuSeparatorOptions = SeparatorOptions;
 
@@ -19,7 +19,7 @@ export const useMenuSeparator = createHook<
 >({
   name: "MenuSeparator",
   compose: useSeparator,
-  useState: useMenuState,
+  keys: MENU_SEPARATOR_KEYS,
 
   useOptions({ orientation = "vertical", ...options }) {
     return {

@@ -19,11 +19,12 @@ import { useFocusTrap } from "./__utils/useFocusTrap";
 import { useFocusOnHide } from "./__utils/useFocusOnHide";
 import { useNestedDialogs } from "./__utils/useNestedDialogs";
 import { useHideOnClickOutside } from "./__utils/useHideOnClickOutside";
-import { useDialogState, DialogStateReturn } from "./DialogState";
+import { DialogStateReturn } from "./DialogState";
 import { useDisableHoverOutside } from "./__utils/useDisableHoverOutside";
 import { DialogBackdropContext } from "./__utils/DialogBackdropContext";
 import { useFocusOnChildUnmount } from "./__utils/useFocusOnChildUnmount";
 import { useFocusOnBlur } from "./__utils/useFocusOnBlur";
+import { DIALOG_KEYS } from "./__keys";
 
 export type DialogOptions = DisclosureContentOptions &
   Pick<
@@ -80,17 +81,7 @@ export type DialogProps = DialogOptions & DialogHTMLProps;
 export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
   name: "Dialog",
   compose: useDisclosureContent,
-  useState: useDialogState,
-  keys: [
-    "hideOnEsc",
-    "hideOnClickOutside",
-    "preventBodyScroll",
-    "unstable_initialFocusRef",
-    "unstable_finalFocusRef",
-    "unstable_orphan",
-    "unstable_autoFocusOnShow",
-    "unstable_autoFocusOnHide",
-  ],
+  keys: DIALOG_KEYS,
 
   useOptions({
     modal = true,

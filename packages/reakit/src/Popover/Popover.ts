@@ -4,7 +4,8 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { DialogOptions, DialogHTMLProps, useDialog } from "../Dialog/Dialog";
-import { PopoverStateReturn, usePopoverState } from "./PopoverState";
+import { PopoverStateReturn } from "./PopoverState";
+import { POPOVER_KEYS } from "./__keys";
 
 export type PopoverOptions = DialogOptions &
   Pick<
@@ -19,7 +20,7 @@ export type PopoverProps = PopoverOptions & PopoverHTMLProps;
 export const usePopover = createHook<PopoverOptions, PopoverHTMLProps>({
   name: "Popover",
   compose: useDialog,
-  useState: usePopoverState,
+  keys: POPOVER_KEYS,
 
   useOptions({ modal = false, ...options }) {
     return { modal, ...options };

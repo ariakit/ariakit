@@ -22,6 +22,7 @@ test("initial state", () => {
       "loop": false,
       "orientation": "horizontal",
       "rtl": false,
+      "unstable_angular": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,

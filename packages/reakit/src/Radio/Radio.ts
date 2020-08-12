@@ -10,7 +10,8 @@ import {
   CompositeItemHTMLProps,
   useCompositeItem,
 } from "../Composite/CompositeItem";
-import { useRadioState, RadioStateReturn } from "./RadioState";
+import { RadioStateReturn } from "./RadioState";
+import { RADIO_KEYS } from "./__keys";
 
 export type RadioOptions = CompositeItemOptions &
   Pick<Partial<RadioStateReturn>, "state" | "setState"> & {
@@ -67,8 +68,7 @@ function fireChange(element: HTMLElement, onChange?: React.ChangeEventHandler) {
 export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
   name: "Radio",
   compose: useCompositeItem,
-  useState: useRadioState,
-  keys: ["value", "checked", "unstable_checkOnFocus"],
+  keys: RADIO_KEYS,
 
   useOptions(
     { unstable_clickOnEnter = false, unstable_checkOnFocus = true, ...options },

@@ -27,6 +27,7 @@ import { getItemsInGroup } from "./__utils/getItemsInGroup";
 import { getOppositeOrientation } from "./__utils/getOppositeOrientation";
 import { addItemAtIndex } from "./__utils/addItemAtIndex";
 import { sortBasedOnDOMPosition } from "./__utils/sortBasedOnDOMPosition";
+import { useSortBasedOnDOMPosition } from "./__utils/useSortBasedOnDOMPosition";
 
 export type CompositeState = unstable_IdState & {
   /**
@@ -119,6 +120,10 @@ export type CompositeState = unstable_IdState & {
   /**
    * @private
    */
+  unstable_angular: boolean;
+  /**
+   * @private
+   */
   unstable_hasActiveWidget: boolean;
 };
 
@@ -171,7 +176,7 @@ export type CompositeActions = unstable_IdActions & {
    * Sorts the composite items state. This is especially useful after modifying
    * the composite items order in the DOM.
    */
-  unstable_sort: () => void;
+  sort: () => void;
   /**
    * Sets `virtual`.
    */
@@ -207,7 +212,7 @@ export type CompositeActions = unstable_IdActions & {
    */
   reset: () => void;
   /**
-   * Sets `hasFocusInsideItem`.
+   * Sets `hasActiveWidget`.
    * @private
    */
   unstable_setHasActiveWidget: React.Dispatch<
@@ -219,7 +224,13 @@ export type CompositeInitialState = unstable_IdInitialState &
   Partial<
     Pick<
       CompositeState,
-      "unstable_virtual" | "rtl" | "orientation" | "currentId" | "loop" | "wrap"
+      | "unstable_virtual"
+      | "rtl"
+      | "orientation"
+      | "currentId"
+      | "loop"
+      | "wrap"
+      | "unstable_angular"
     >
   >;
 
@@ -264,7 +275,8 @@ type CompositeReducerAction =
       type: "setWrap";
       wrap: React.SetStateAction<CompositeState["wrap"]>;
     }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "setItems"; items: CompositeState["items"] };
 
 type CompositeReducerState = Omit<
   CompositeState,
@@ -295,6 +307,7 @@ function reducer(
     wrap,
     pastIds,
     unstable_moves: moves,
+    unstable_angular: angular,
     initialVirtual,
     initialRTL,
     initialOrientation,
@@ -499,7 +512,7 @@ function reducer(
       // with disabled fake items. Then, we reorganize the items list so
       // [1-1, 1-2, 2-1, 2-2] becomes [1-1, 2-1, 1-2, 2-2].
       const verticalItems = verticalizeItems(
-        flatten(fillGroups(groupItems(items)))
+        flatten(fillGroups(groupItems(items), currentId, angular))
       );
       const canLoop = loop && loop !== "horizontal";
       // Pressing down arrow key will only focus the composite element if loop
@@ -513,7 +526,7 @@ function reducer(
     }
     case "up": {
       const verticalItems = verticalizeItems(
-        reverse(flatten(fillGroups(groupItems(items))))
+        reverse(flatten(fillGroups(groupItems(items), currentId, angular)))
       );
       // If currentId is initially set to null, we'll always focus the
       // composite element when the up arrow key is pressed in the first row.
@@ -577,6 +590,9 @@ function reducer(
         unstable_moves: 0,
         pastIds: [],
       };
+    case "setItems": {
+      return { ...state, items: action.items };
+    }
     default:
       throw new Error();
   }
@@ -606,6 +622,7 @@ export function useCompositeState(
     currentId,
     loop = false,
     wrap = false,
+    unstable_angular = false,
     ...sealed
   } = useSealedState(initialState);
   const [
@@ -632,6 +649,7 @@ export function useCompositeState(
     wrap,
     unstable_moves: 0,
     pastIds: [],
+    unstable_angular,
     initialVirtual: virtual,
     initialRTL: rtl,
     initialOrientation: orientation,
@@ -646,6 +664,12 @@ export function useCompositeState(
   // This only happens in a very specific situation.
   // See https://github.com/reakit/reakit/issues/650
   const isUnmountedRef = useIsUnmountedRef();
+
+  const setItems = React.useCallback(
+    (items: Item[]) => dispatch({ type: "setItems", items }),
+    []
+  );
+  useSortBasedOnDOMPosition(state.items, setItems);
 
   return {
     ...idState,
@@ -677,7 +701,7 @@ export function useCompositeState(
     down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
     first: useAction(() => dispatch({ type: "first" })),
     last: useAction(() => dispatch({ type: "last" })),
-    unstable_sort: useAction(() => dispatch({ type: "sort" })),
+    sort: useAction(() => dispatch({ type: "sort" })),
     unstable_setVirtual: useAction((value) =>
       dispatch({ type: "setVirtual", virtual: value })
     ),
@@ -693,39 +717,3 @@ export function useCompositeState(
     reset: useAction(() => dispatch({ type: "reset" })),
   };
 }
-
-const keys: Array<keyof CompositeStateReturn> = [
-  ...unstable_useIdState.__keys,
-  "unstable_virtual",
-  "rtl",
-  "orientation",
-  "items",
-  "groups",
-  "currentId",
-  "loop",
-  "wrap",
-  "unstable_moves",
-  "unstable_hasActiveWidget",
-  "registerItem",
-  "unregisterItem",
-  "registerGroup",
-  "unregisterGroup",
-  "move",
-  "next",
-  "previous",
-  "up",
-  "down",
-  "first",
-  "last",
-  "unstable_sort",
-  "unstable_setVirtual",
-  "setRTL",
-  "setOrientation",
-  "setCurrentId",
-  "setLoop",
-  "setWrap",
-  "reset",
-  "unstable_setHasActiveWidget",
-];
-
-useCompositeState.__keys = keys;

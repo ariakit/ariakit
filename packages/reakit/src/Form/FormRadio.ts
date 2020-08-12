@@ -6,10 +6,11 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { RadioHTMLProps, useRadio } from "../Radio/Radio";
 import { BoxOptions } from "../Box";
 import { FormRadioGroupContext } from "./FormRadioGroup";
-import { unstable_FormStateReturn, unstable_useFormState } from "./FormState";
+import { unstable_FormStateReturn } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
 import { formatInputName } from "./__utils/formatInputName";
 import { DeepPath, DeepPathValue } from "./__utils/types";
+import { FORM_RADIO_KEYS } from "./__keys";
 
 export type unstable_FormRadioOptions<
   V,
@@ -39,8 +40,7 @@ export const unstable_useFormRadio = createHook<
 >({
   name: "FormRadio",
   compose: useRadio,
-  useState: unstable_useFormState,
-  keys: ["name", "value"],
+  keys: FORM_RADIO_KEYS,
 
   useOptions(options, htmlProps) {
     const name = options.name || htmlProps.name;

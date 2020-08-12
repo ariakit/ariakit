@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, click } from "reakit-test-utils";
+import { render, press, click, wait } from "reakit-test-utils";
 import ToolbarWithMenu from "..";
 
 test("renders toolbar items with closed menu", () => {
@@ -14,7 +14,7 @@ test("renders toolbar items with closed menu", () => {
   expect(text("Lemons")).not.toBeVisible();
 });
 
-test("can navigate toolbar items through keyboard", () => {
+test("can navigate toolbar items through keyboard", async () => {
   const { getByText: text } = render(<ToolbarWithMenu />);
 
   press.Tab();
@@ -32,7 +32,7 @@ test("can navigate toolbar items through keyboard", () => {
 
   press.Enter();
   expect(text("Pears")).toBeVisible();
-  expect(text("Pears")).toHaveFocus();
+  await wait(expect(text("Pears")).toHaveFocus);
 });
 
 test("can open and close the menu through mouse", () => {
@@ -45,7 +45,7 @@ test("can open and close the menu through mouse", () => {
   expect(text("Pears")).not.toBeVisible();
 });
 
-test("can open menu, navigate it and close it through keyboard", () => {
+test("can open menu, navigate it and close it through keyboard", async () => {
   const { getByText: text } = render(<ToolbarWithMenu />);
 
   press.Tab();
@@ -55,7 +55,7 @@ test("can open menu, navigate it and close it through keyboard", () => {
   expect(text("Other Fruits")).toHaveFocus();
   press.Enter();
 
-  expect(text("Pears")).toHaveFocus();
+  await wait(expect(text("Pears")).toHaveFocus);
   expect(text("Pears")).toBeVisible();
   expect(text("Kiwis")).toBeVisible();
   expect(text("Lemons")).toBeVisible();

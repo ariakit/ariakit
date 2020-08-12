@@ -1,4 +1,8 @@
 #!/usr/bin/env node
-const { injectPropTypes } = require("./utils");
+const { hasTSConfig, injectPropTypes } = require("./utils");
 
-injectPropTypes(process.cwd());
+const cwd = process.cwd();
+
+if (hasTSConfig(cwd)) {
+  injectPropTypes(cwd);
+}

@@ -8,7 +8,7 @@ import {
   CompositeHTMLProps,
   useComposite,
 } from "../Composite/Composite";
-import { useRadioState } from "./RadioState";
+import { RADIO_GROUP_KEYS } from "./__keys";
 
 export type RadioGroupOptions = CompositeOptions;
 
@@ -20,7 +20,7 @@ export type RadioGroupProps = RadioGroupOptions & RadioGroupHTMLProps;
 const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
   name: "RadioGroup",
   compose: useComposite,
-  useState: useRadioState,
+  keys: RADIO_GROUP_KEYS,
 
   useProps(_, htmlProps) {
     return { role: "radiogroup", ...htmlProps };
