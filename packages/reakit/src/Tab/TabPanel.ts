@@ -53,17 +53,17 @@ function getPanelIndex(
 /**
  * When <TabPanel> is used without tabId:
  *
- *  - First render: getTabId will return undefined because options.panels
+ *   - First render: getTabId will return undefined because options.panels
  * doesn't contain the current panel yet (registerPanel wasn't called yet).
  * Thus registerPanel will be called without groupId (tabId).
  *
- *  - Second render: options.panels already contains the current panel (because
- * registerPanel was called in the previous render). This means that we'll be
- * able to get the related tabId with the tab panel index. Basically,
+ *   - Second render: options.panels already contains the current panel
+ * (because registerPanel was called in the previous render). This means that
+ * we'll be able to get the related tabId with the tab panel index. Basically,
  * we filter out all the tabs and panels that have already matched. In this
  * phase, registerPanel will be called again with the proper groupId (tabId).
  *
- *  - In the third render, panel.groupId will be already defined, so we just
+ *   - In the third render, panel.groupId will be already defined, so we just
  * return it. registerPanel is not called.
  */
 function getTabId(options: TabPanelOptions) {

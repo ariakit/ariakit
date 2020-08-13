@@ -46,11 +46,11 @@ export type ComboboxBaseState<T extends CompositeState = CompositeState> = Omit<
   /**
    * Determines how the combobox options behave: dynamically or statically.
    * By default, it's `true` if `values` are provided. Otherwise, it's `false`:
-   *  - If it's `true` and `values` are provided, then they will be
+   *   - If it's `true` and `values` are provided, then they will be
    * automatically filtered based on `inputValue` and will populate `matches`.
-   *  - If it's `true` and `values` aren't provided, this means that you'll
+   *   - If it's `true` and `values` aren't provided, this means that you'll
    * provide and filter values by yourself. `matches` will be empty.
-   *  - If it's `false` and `values` are provided, then they won't be
+   *   - If it's `false` and `values` are provided, then they won't be
    * automatically filtered and `matches` will be the same as `values`.
    */
   list: boolean;
@@ -64,11 +64,11 @@ export type ComboboxBaseState<T extends CompositeState = CompositeState> = Omit<
    * Determines whether the first option will be automatically selected. When
    * it's set to `true`, the exact behavior will depend on the value of
    * `inline`:
-   *  - If `inline` is `true`, the first option is automatically focused when
+   *   - If `inline` is `true`, the first option is automatically focused when
    * the combobox popover opens and the input value changes to reflect this.
    * The inline completion string will be highlighted and will have a selected
    * state.
-   *  - If `inline` is `false`, the first option is automatically focused when
+   *   - If `inline` is `false`, the first option is automatically focused when
    * the combobox popover opens, but the input value remains the same.
    */
   autoSelect: boolean;
