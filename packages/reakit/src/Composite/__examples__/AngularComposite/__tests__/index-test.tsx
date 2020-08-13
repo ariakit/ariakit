@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press } from "reakit-test-utils";
+import { render, press, axe } from "reakit-test-utils";
 import AngularComposite from "..";
 
 test("navigate through angular composite", () => {
@@ -22,4 +22,11 @@ test("navigate through angular composite", () => {
   expect(text("item-3-4")).toHaveFocus();
   press.ArrowDown();
   expect(text("item-4-3")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<AngularComposite />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

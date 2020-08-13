@@ -1,5 +1,5 @@
 import * as React from "react";
-import { click, focus, render, wait } from "reakit-test-utils";
+import { click, focus, render, wait, axe } from "reakit-test-utils";
 import DialogWithFocusLoss from "..";
 
 test("open dialog", () => {
@@ -51,4 +51,11 @@ test("nested unmount on focus", async () => {
   focus(text("Nested unmount on focus"));
   expect(label("Nested")).toBeVisible();
   await wait(expect(label("Nested")).toHaveFocus);
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<DialogWithFocusLoss />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });
