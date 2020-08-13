@@ -23,7 +23,7 @@ jobs:
       run: yarn
 
     - name: Upgrade to react@next
-      run: yarn upgrade react@next react-dom@next
+      run: yarn upgrade react@next react-dom@next react-test-renderer@next
 
     - name: Lint
       run: yarn lint
