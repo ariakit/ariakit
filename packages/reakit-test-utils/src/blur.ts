@@ -30,5 +30,4 @@ export function blur(element?: DirtiableElement | null) {
       element.blur();
     }
   });
-  fireEvent.focusOut(element);
 }

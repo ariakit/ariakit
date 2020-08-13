@@ -34,7 +34,7 @@
     "@types/buble": "0.19.2",
     "@types/codemirror": "0.0.97",
     "buble": "0.20.0",
-    "codemirror": "5.55.0",
+    "codemirror": "5.56.0",
     "emotion": "^10.0.27",
     "react-codemirror2": "7.2.1",
     "reakit": "^1.2.0",
@@ -44,7 +44,7 @@
     "reakit-utils": "^0.14.0"
   },
   "devDependencies": {
-    "raw.macro": "0.3.1"
+    "raw.macro": "0.4.2"
   },
   "peerDependencies": {
     "react": "^16.8.0",

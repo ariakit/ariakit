@@ -2,7 +2,7 @@
 import * as React from "react";
 
 export type IdProviderProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   unstable_prefix?: string;
 };
 

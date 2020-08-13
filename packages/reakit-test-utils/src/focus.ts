@@ -16,14 +16,9 @@ export function focus(element: Element) {
     activeElement.dirty = false;
   }
 
-  if (activeElement) {
-    fireEvent.focusOut(activeElement, { relatedTarget: element });
-  }
-
   act(() => {
     if (element instanceof HTMLElement || element instanceof SVGElement) {
       element.focus();
     }
   });
-  fireEvent.focusIn(element, { relatedTarget: activeElement });
 }
