@@ -18512,7 +18512,7 @@ react-dom@16.13.1, react-dom@^16.8.3:
 
 react-dom@17.0.0-rc.0:
   version "17.0.0-rc.0"
-  resolved "https://npm.testeposnowhq.com/react-dom/-/react-dom-17.0.0-rc.0.tgz#237b4cca9cf817329373424bde00736f11fd7541"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.0-rc.0.tgz#237b4cca9cf817329373424bde00736f11fd7541"
   integrity sha512-Ny2SlnMe+SxWRVDX2aLyWsv3ltbJC0gVyWtedfoJnV2265ePcM8BLY9fJjKb4ZXwcQ+pwZFdsURYarJ5qEEMeQ==
   dependencies:
     loose-envify "^1.1.0"
@@ -18610,7 +18610,7 @@ react-icons@3.10.0, react-icons@^3.0.1:
 
 react-is@17.0.0-rc.0:
   version "17.0.0-rc.0"
-  resolved "https://npm.testeposnowhq.com/react-is/-/react-is-17.0.0-rc.0.tgz#195c188a0e7c70120bf95f3e913b8febb0f2069d"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.0-rc.0.tgz#195c188a0e7c70120bf95f3e913b8febb0f2069d"
   integrity sha512-EBE+Rs9lpJHbZmJ9kmWQ0nA+TCsDH+7eQa804dvtJkbhLs3XeKNuDRriT+LZCmkzmBH9hO9j4IarK8bm6SJAVQ==
 
 react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.9.0:
@@ -18701,7 +18701,7 @@ react-remove-scroll@^2.3.0:
 
 react-shallow-renderer@^16.13.1:
   version "16.13.1"
-  resolved "https://npm.testeposnowhq.com/react-shallow-renderer/-/react-shallow-renderer-16.13.1.tgz#4cfd6dc0f05a8d4d261ff7a80e9b88f15491a00a"
+  resolved "https://registry.yarnpkg.com/react-shallow-renderer/-/react-shallow-renderer-16.13.1.tgz#4cfd6dc0f05a8d4d261ff7a80e9b88f15491a00a"
   integrity sha512-hLmExm5/ZnjodLgm/4oxYw4i7fL6LLPhbO9mF/4tmaZUurtLrp2aSeDHZmRk0SVCHXPz0VaEbb3Dqi5J7odz7Q==
   dependencies:
     object-assign "^4.1.1"
@@ -18763,7 +18763,7 @@ react-syntax-highlighter@^12.2.1:
 
 react-test-renderer@17.0.0-rc.0:
   version "17.0.0-rc.0"
-  resolved "https://npm.testeposnowhq.com/react-test-renderer/-/react-test-renderer-17.0.0-rc.0.tgz#069dc34427ffae2924aacfa09ca581b990c9ddd1"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-17.0.0-rc.0.tgz#069dc34427ffae2924aacfa09ca581b990c9ddd1"
   integrity sha512-G0G/QWk0KWRQ77oCJXuwtLKyO6KrVq5NJVGRU5ulE6UNYfeld5N6gwpASekZI3At711lxMGXcxDzHESZU/cxNQ==
   dependencies:
     object-assign "^4.1.1"
@@ -18799,7 +18799,7 @@ react@16.13.1, react@^16.8.0, react@^16.8.3:
 
 react@17.0.0-rc.0:
   version "17.0.0-rc.0"
-  resolved "https://npm.testeposnowhq.com/react/-/react-17.0.0-rc.0.tgz#91a4d2085f07b501175a2434bd65b35aa0e95686"
+  resolved "https://registry.yarnpkg.com/react/-/react-17.0.0-rc.0.tgz#91a4d2085f07b501175a2434bd65b35aa0e95686"
   integrity sha512-GPOdeCEE5HL9jRh7YIXoqBBxQVTqKtMm7tbH0Q//PJZV9EkFyUSDUglvIO/0i42PuUstEBcmOwlodTV2R9iStg==
   dependencies:
     loose-envify "^1.1.0"
@@ -19953,7 +19953,7 @@ saxes@^5.0.0:
 
 scheduler@0.20.0-rc.0:
   version "0.20.0-rc.0"
-  resolved "https://npm.testeposnowhq.com/scheduler/-/scheduler-0.20.0-rc.0.tgz#9cb397f88f9decea28d159d3aad068b54a6f35e4"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.0-rc.0.tgz#9cb397f88f9decea28d159d3aad068b54a6f35e4"
   integrity sha512-5CZiVhk9xI9VmqaodZH+eO3aKgqYwjZ8uf9lnfRlYEwaB4lbmIq0mzuNY5w52sbPlZP9pifXQaLGudKHMgQZcw==
   dependencies:
     loose-envify "^1.1.0"
