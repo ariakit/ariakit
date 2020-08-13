@@ -22,7 +22,6 @@ import {
   unstable_FormPushButton as FormPushButton,
   unstable_useFormState as useFormState,
   unstable_FormRadioGroup as FormRadioGroup,
-  unstable_useFormCheckbox as useFormCheckbox,
   unstable_useFormInput as useFormInput,
   unstable_useFormPushButton as useFormPushButton,
   unstable_useFormRadio as useFormRadio,
@@ -376,45 +375,6 @@ test("display group error", async () => {
   await wait(() => expect(error).toHaveTextContent("error"));
 });
 
-test("display group message", async () => {
-  const Test = () => {
-    const form = useFormState({
-      values: {
-        input: false,
-      },
-      onSubmit: (values) => {
-        if (!values.input) {
-          return { input: "nice" };
-        }
-        return {};
-      },
-    });
-    return (
-      <Form {...form}>
-        <FormGroup {...form} name="input">
-          <label>
-            <FormCheckbox {...form} name="input" />
-            checkbox
-          </label>
-        </FormGroup>
-        <FormMessage {...form} name="input" data-testid="message" />
-      </Form>
-    );
-  };
-  const { getByRole, getByLabelText, getByTestId } = render(<Test />);
-  const form = getByRole("form");
-  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
-  const message = getByTestId("message");
-  expect(message).toBeEmptyDOMElement();
-  fireEvent.submit(form);
-  await wait(() => expect(message).toHaveTextContent("nice"));
-  expect(checkbox.checked).toBe(false);
-  click(checkbox);
-  expect(checkbox.checked).toBe(true);
-  fireEvent.submit(form);
-  await wait(expect(message).toBeEmptyDOMElement);
-});
-
 test("focus the first invalid input on failed submit", async () => {
   const Test = () => {
     const form = useFormState({
@@ -659,35 +619,6 @@ test("push/remove button adds/removes entry and moves focus", async () => {
 
   click(remove1);
   await wait(expect(push).toHaveFocus);
-});
-
-test("useFormCheckbox passing name as htmlProps", async () => {
-  const onValidate = jest.fn();
-  const Test = () => {
-    const form = useFormState({
-      values: {
-        input: false,
-      },
-      onValidate,
-    });
-    // @ts-ignore
-    const checkbox = useFormCheckbox(form, { name: "input" });
-    return (
-      <Form {...form}>
-        <label>
-          <input {...checkbox} />
-          checkbox
-        </label>
-      </Form>
-    );
-  };
-  const { getByLabelText } = render(<Test />);
-  const checkbox = getByLabelText("checkbox") as HTMLInputElement;
-  expect(checkbox.checked).toBe(false);
-  expect(onValidate).not.toHaveBeenCalled();
-  click(checkbox);
-  expect(checkbox.checked).toBe(true);
-  await wait(() => expect(onValidate).toHaveBeenCalledWith({ input: true }));
 });
 
 test("useFormInput passing name as htmlProps", async () => {

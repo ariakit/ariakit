@@ -65,12 +65,12 @@ test("press enter on textarea", () => {
   press.Enter(textarea);
   expect(textarea.value).toBe("\n");
   expect(stack).toMatchInlineSnapshot(`
-Array [
-  "focusin textarea",
-  "keydown textarea",
-  "keyup textarea",
-]
-`);
+    Array [
+      "focusin textarea",
+      "keydown textarea",
+      "keyup textarea",
+    ]
+  `);
 });
 
 test("press enter on form input", () => {
@@ -226,30 +226,30 @@ test("press tab", async () => {
   expect(button2).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
-Array [
-  "focus button1",
-  "focusin button1",
-  "keyup button1",
-  "keydown button1",
-  "focusout button1",
-  "blur button1",
-  "focus button2",
-  "focusin button2",
-  "keyup button2",
-  "keydown button2",
-  "focusout button2",
-  "blur button2",
-  "focus button1",
-  "focusin button1",
-  "keyup button1",
-  "keydown button1",
-  "focusout button1",
-  "blur button1",
-  "focus button2",
-  "focusin button2",
-  "keyup button2",
-]
-`);
+    Array [
+      "focus button1",
+      "focusin button1",
+      "keyup button1",
+      "keydown button1",
+      "blur button1",
+      "focusout button1",
+      "focus button2",
+      "focusin button2",
+      "keyup button2",
+      "keydown button2",
+      "blur button2",
+      "focusout button2",
+      "focus button1",
+      "focusin button1",
+      "keyup button1",
+      "keydown button1",
+      "blur button1",
+      "focusout button1",
+      "focus button2",
+      "focusin button2",
+      "keyup button2",
+    ]
+  `);
 });
 
 test("press tab preventDefault", async () => {
@@ -288,18 +288,18 @@ test("press tab preventDefault", async () => {
   expect(button2).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
-Array [
-  "focus button1",
-  "focusin button1",
-  "keyup button1",
-  "keydown button1",
-  "keyup button1",
-  "keydown button1",
-  "focusout button1",
-  "blur button1",
-  "focus button2",
-  "focusin button2",
-  "keyup button2",
-]
-`);
+    Array [
+      "focus button1",
+      "focusin button1",
+      "keyup button1",
+      "keydown button1",
+      "keyup button1",
+      "keydown button1",
+      "blur button1",
+      "focusout button1",
+      "focus button2",
+      "focusin button2",
+      "keyup button2",
+    ]
+  `);
 });
