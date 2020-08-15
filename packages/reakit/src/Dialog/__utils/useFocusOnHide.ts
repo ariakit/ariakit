@@ -1,9 +1,10 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-warning";
-import { isTabbable, ensureFocus } from "reakit-utils/tabbable";
+import { isTabbable } from "reakit-utils/tabbable";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { contains } from "reakit-utils/contains";
+import { ensureFocus } from "reakit-utils/ensureFocus";
 import { DialogOptions } from "../Dialog";
 
 function hidByFocusingAnotherElement(dialogRef: React.RefObject<HTMLElement>) {

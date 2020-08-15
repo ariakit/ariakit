@@ -32,8 +32,8 @@
   ],
   "dependencies": {
     "emotion": "^10.0.27",
-    "reakit-system-palette": "^0.13.1",
-    "reakit-utils": "^0.14.1"
+    "reakit-system-palette": "0.13.1",
+    "reakit-utils": "0.14.1"
   },
   "peerDependencies": {
     "react": "^16.8.0",

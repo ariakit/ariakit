@@ -14,7 +14,6 @@ const isIE11 = typeof window !== "undefined" && "msCrypto" in window;
  * const element = document.getElementById("id");
  * element.addEventListener("blur", (event) => {
  *   const nextActiveElement = getNextActiveElementOnBlur(event);
- *   ...
  * });
  */
 export function getNextActiveElementOnBlur(
@@ -24,7 +23,7 @@ export function getNextActiveElementOnBlur(
   // document.activeElement points the the next active element.
   // On modern browsers, document.activeElement points to the current target.
   if (isIE11) {
-    const activeElement = getActiveElement(event.target as Element);
+    const activeElement = getActiveElement(event.currentTarget as Element);
     return activeElement as HTMLElement | null;
   }
   return event.relatedTarget as HTMLElement | null;

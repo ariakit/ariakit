@@ -1,8 +1,9 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-warning";
-import { getFirstTabbableIn, ensureFocus } from "reakit-utils/tabbable";
+import { getFirstTabbableIn } from "reakit-utils/tabbable";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { ensureFocus } from "reakit-utils/ensureFocus";
 import { DialogOptions } from "../Dialog";
 
 export function useFocusOnShow(

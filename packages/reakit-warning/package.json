@@ -29,7 +29,7 @@
     "warning"
   ],
   "dependencies": {
-    "reakit-utils": "^0.14.1"
+    "reakit-utils": "0.14.1"
   },
   "peerDependencies": {
     "react": "^16.8.0"

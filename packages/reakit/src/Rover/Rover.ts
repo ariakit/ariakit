@@ -5,7 +5,7 @@ import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { AnyFunction } from "reakit-utils/types";
 import {
   ClickableOptions,
   ClickableHTMLProps,
@@ -43,6 +43,15 @@ export type RoverOptions = ClickableOptions &
 export type RoverHTMLProps = ClickableHTMLProps & unstable_IdHTMLProps;
 
 export type RoverProps = RoverOptions & RoverHTMLProps;
+
+function useAllCallbacks(
+  ...callbacks: Array<AnyFunction | null | undefined>
+): AnyFunction {
+  return React.useCallback((...args: any[]) => {
+    const fns = callbacks.filter(Boolean) as Array<AnyFunction>;
+    for (const callback of fns) callback(...args);
+  }, callbacks);
+}
 
 export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",

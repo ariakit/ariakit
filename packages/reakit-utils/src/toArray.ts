@@ -1,3 +1,5 @@
+type ToArray<T> = T extends any[] ? T : T[];
+
 /**
  * Transforms `arg` into an array if it's not already.
  *
@@ -7,9 +9,9 @@
  * toArray("a"); // ["a"]
  * toArray(["a"]); // ["a"]
  */
-export function toArray(arg: any): any[] {
+export function toArray<T>(arg: T) {
   if (Array.isArray(arg)) {
-    return arg;
+    return arg as ToArray<T>;
   }
-  return typeof arg !== "undefined" ? [arg] : [];
+  return (typeof arg !== "undefined" ? [arg] : []) as ToArray<T>;
 }

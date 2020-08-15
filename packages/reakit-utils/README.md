@@ -29,6 +29,7 @@ yarn add reakit-utils
 -   [contains](#contains)
 -   [createEvent](#createevent)
 -   [createOnKeyDown](#createonkeydown)
+-   [ensureFocus](#ensurefocus)
 -   [fireBlurEvent](#fireblurevent)
 -   [fireEvent](#fireevent)
 -   [fireKeyboardEvent](#firekeyboardevent)
@@ -37,6 +38,7 @@ yarn add reakit-utils
 -   [getDefaultView](#getdefaultview)
 -   [getDocument](#getdocument)
 -   [getNextActiveElementOnBlur](#getnextactiveelementonblur)
+-   [hasFocus](#hasfocus)
 -   [hasFocusWithin](#hasfocuswithin)
 -   [isButton](#isbutton)
 -   [isEmpty](#isempty)
@@ -57,11 +59,9 @@ yarn add reakit-utils
 -   [tabbable](#tabbable)
 -   [toArray](#toarray)
 -   [types](#types)
--   [useAllCallbacks](#useallcallbacks)
 -   [useForkRef](#useforkref)
 -   [useIsomorphicEffect](#useisomorphiceffect)
 -   [useLiveRef](#useliveref)
--   [usePipe](#usepipe)
 -   [useSealedState](#usesealedstate)
 -   [useUpdateEffect](#useupdateeffect)
 
@@ -105,12 +105,21 @@ document.getElementById("id").closest("div");
 
 ### contains
 
-Similar to `Element.prototype.contains`.
+Similar to `Element.prototype.contains`, but a little bit faster when
+`element` is the same as `child`.
 
 #### Parameters
 
 -   `parent` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `child` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+#### Examples
+
+```javascript
+import { contains } from "reakit-utils";
+
+contains(document.getElementById("parent"), document.getElementById("child"));
+```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
@@ -122,7 +131,7 @@ Creates an `Event` in a way that also works on IE 11.
 
 -   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
 -   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `eventInit` **EventInit**  (optional, default `{}`)
+-   `eventInit` **EventInit?** 
 
 #### Examples
 
@@ -150,6 +159,38 @@ Returns an `onKeyDown` handler to be passed to a component.
     -   `options.preventDefault`   (optional, default `true`)
 
 Returns **React.KeyboardEventHandler** 
+
+### ensureFocus
+
+Ensures `element` will receive focus if it's not already.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `$1` **EnsureFocusOptions**  (optional, default `{}`)
+    -   `$1.preventScroll`  
+    -   `$1.isActive`   (optional, default `defaultIsActive`)
+
+#### Examples
+
+```javascript
+import { ensureFocus } from "reakit-utils";
+
+ensureFocus(document.activeElement); // does nothing
+
+const element = document.querySelector("input");
+
+ensureFocus(element); // focuses element
+ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
+
+function isActive(el) {
+  return el.dataset.active === "true";
+}
+
+ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
+```
+
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
 
 ### fireBlurEvent
 
@@ -273,13 +314,32 @@ import { getNextActiveElementOnBlur } from "reakit-utils";
 const element = document.getElementById("id");
 element.addEventListener("blur", (event) => {
   const nextActiveElement = getNextActiveElementOnBlur(event);
-  ...
 });
 ```
 
+### hasFocus
+
+Checks if `element` has focus. Elements that are referenced by
+`aria-activedescendant` are also considered.
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+#### Examples
+
+```javascript
+import { hasFocus } from "reakit-utils";
+
+hasFocus(document.getElementById("id"));
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### hasFocusWithin
 
-Checks if `element` has focus.
+Checks if `element` has focus within. Elements that are referenced by
+`aria-activedescendant` are also considered.
 
 #### Parameters
 
@@ -297,7 +357,7 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ### isButton
 
-Checks whether `element` is a native HTML button element or not.
+Checks whether `element` is a native HTML button element.
 
 #### Parameters
 
@@ -312,6 +372,7 @@ isButton(document.querySelector("button")); // true
 isButton(document.querySelector("input[type='button']")); // true
 isButton(document.querySelector("div")); // false
 isButton(document.querySelector("input[type='text']")); // false
+isButton(document.querySelector("div[role='button']")); // false
 ```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
@@ -421,6 +482,18 @@ by the ability to select within the input, or that it is contenteditable.
 
 -   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
 
+#### Examples
+
+```javascript
+import { isTextField } from "reakit-utils";
+
+isTextField(document.querySelector("div")); // false
+isTextField(document.querySelector("input")); // true
+isTextField(document.querySelector("input[type='button']")); // false
+isTextField(document.querySelector("textarea")); // true
+isTextField(document.querySelector("div[contenteditable='true']")); // true
+```
+
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### matches
@@ -479,8 +552,8 @@ Immutably removes an index from an array.
 
 #### Parameters
 
--   `array` **A** 
--   `idx` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+-   `array` **T** 
+-   `index` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
 
 #### Examples
 
@@ -692,45 +765,13 @@ Returns the closest focusable element.
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-#### ensureFocus
-
-Ensures `element` will receive focus if it's not already.
-
-##### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
--   `$1` **EnsureFocusOptions**  (optional, default `{}`)
-    -   `$1.isActive`   (optional, default `defaultIsActive`)
-    -   `$1.preventScroll`  
-
-##### Examples
-
-```javascript
-import { ensureFocus } from "reakit-utils";
-
-ensureFocus(document.activeElement); // does nothing
-
-const element = document.querySelector("input");
-
-ensureFocus(element); // focuses element
-ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
-
-function isActive(el) {
-  return el.dataset.active === "true";
-}
-
-ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
-```
-
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
-
 ### toArray
 
 Transforms `arg` into an array if it's not already.
 
 #### Parameters
 
--   `arg` **any** 
+-   `arg` **T** 
 
 #### Examples
 
@@ -740,8 +781,6 @@ import { toArray } from "reakit-utils";
 toArray("a"); // ["a"]
 toArray(["a"]); // ["a"]
 ```
-
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
 
 ### types
 
@@ -802,30 +841,6 @@ State hook setter.
 
 Type: React.Dispatch&lt;React.SetStateAction&lt;T>>
 
-### useAllCallbacks
-
-React custom hook that combines multiple callbacks into one.
-
-#### Parameters
-
--   `callbacks` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(AnyFunction | null | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
-
-#### Examples
-
-```javascript
-import React from "react";
-import { useAllCallbacks } from "reakit-utils";
-
-function Component(props) {
-  const onClick = () => {};
-  return (
-    <button onClick={useAllCallbacks(onClick, props.onClick)}>Button</button>
-  );
-}
-```
-
-Returns **AnyFunction** 
-
 ### useForkRef
 
 Merges up to two React Refs into a single memoized function React Ref so you
@@ -862,15 +877,6 @@ A `React.Ref` that keeps track of the passed `value`.
 -   `value` **T** 
 
 Returns **React.MutableRefObject&lt;T>** 
-
-### usePipe
-
-A React custom hook similar to [`useAllCallbacks`](#useallcallbacks), but
-it'll pass the returned value from a function to the next function.
-
-#### Parameters
-
--   `fns` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(AnyFunction | null | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
 
 ### useSealedState
 
