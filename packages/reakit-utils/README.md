@@ -28,8 +28,8 @@ yarn add reakit-utils
 -   [closest](#closest)
 -   [contains](#contains)
 -   [createEvent](#createevent)
--   [createKeyboardEvent](#createkeyboardevent)
 -   [createOnKeyDown](#createonkeydown)
+-   [fireBlurEvent](#fireblurevent)
 -   [fireEvent](#fireevent)
 -   [fireKeyboardEvent](#firekeyboardevent)
 -   [flatten](#flatten)
@@ -135,27 +135,6 @@ el.dispatchEvent(createEvent(el, "blur", { bubbles: false }));
 
 Returns **[Event](https://developer.mozilla.org/docs/Web/API/Event)** 
 
-### createKeyboardEvent
-
-Creates a `KeyboardEvent` in a way that also works on IE 11.
-
-#### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
--   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `eventInit` **KeyboardEventInit**  (optional, default `{}`)
-
-#### Examples
-
-```javascript
-import { createKeyboardEvent } from "reakit-utils";
-
-const el = document.getElementById("id");
-el.dispatchEvent(createKeyboardEvent(el, "keydown", { key: "ArrowDown" }));
-```
-
-Returns **[KeyboardEvent](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)** 
-
 ### createOnKeyDown
 
 Returns an `onKeyDown` handler to be passed to a component.
@@ -171,6 +150,23 @@ Returns an `onKeyDown` handler to be passed to a component.
     -   `options.preventDefault`   (optional, default `true`)
 
 Returns **React.KeyboardEventHandler** 
+
+### fireBlurEvent
+
+Creates and dispatches a blur event in a way that also works on IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `eventInit` **FocusEventInit?** 
+
+#### Examples
+
+```javascript
+import { fireBlurEvent } from "reakit-utils";
+
+fireBlurEvent(document.getElementById("id"));
+```
 
 ### fireEvent
 

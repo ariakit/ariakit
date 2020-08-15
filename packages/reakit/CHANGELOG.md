@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/reakit/reakit/compare/reakit@1.2.0...reakit@1.2.1) (2020-08-13)
+
+
+### Bug Fixes
+
+* Fix tabbing between multiple `RadioGroup`s ([#703](https://github.com/reakit/reakit/issues/703)) ([212adbd](https://github.com/reakit/reakit/commit/212adbd292702948ab71a44a22d9862117468668)), closes [#702](https://github.com/reakit/reakit/issues/702)
+
+
+
+
+
 # [1.2.0](https://github.com/reakit/reakit/compare/reakit@1.1.2...reakit@1.2.0) (2020-08-06)
 
 

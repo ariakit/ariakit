@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, hover, click, wait } from "reakit-test-utils";
+import { render, press, hover, click, wait, axe } from "reakit-test-utils";
 import MenuBarWithDisabledItems from "..";
 
 test("open menus with hover except the disabled one", async () => {
@@ -89,4 +89,11 @@ test("open submenus with hover except the disabled one", async () => {
   hover(text("Spelling and Grammar"));
   await wait(expect(label("Find")).not.toBeVisible);
   expect(label("Edit")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<MenuBarWithDisabledItems />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

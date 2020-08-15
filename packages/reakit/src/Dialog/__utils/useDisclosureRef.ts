@@ -14,9 +14,11 @@ export function useDisclosureRef(
     // focus back to it when the dialog closes.
     const onFocus = (event: FocusEvent) => {
       const target = event.target as HTMLElement;
-      ref.current = target;
-      if (options.unstable_disclosureRef) {
-        options.unstable_disclosureRef.current = target;
+      if ("focus" in target) {
+        ref.current = target;
+        if (options.unstable_disclosureRef) {
+          options.unstable_disclosureRef.current = target;
+        }
       }
     };
     const document = getDocument(dialogRef.current);

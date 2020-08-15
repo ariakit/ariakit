@@ -3,10 +3,10 @@
 /closest
 /contains
 /createEvent
-/createKeyboardEvent
 /createOnKeyDown
 /dist
 /es
+/fireBlurEvent
 /fireEvent
 /fireKeyboardEvent
 /flatten
