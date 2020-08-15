@@ -29,6 +29,7 @@ yarn add reakit-utils
 -   [contains](#contains)
 -   [createEvent](#createevent)
 -   [createOnKeyDown](#createonkeydown)
+-   [ensureFocus](#ensurefocus)
 -   [fireBlurEvent](#fireblurevent)
 -   [fireEvent](#fireevent)
 -   [fireKeyboardEvent](#firekeyboardevent)
@@ -58,11 +59,9 @@ yarn add reakit-utils
 -   [tabbable](#tabbable)
 -   [toArray](#toarray)
 -   [types](#types)
--   [useAllCallbacks](#useallcallbacks)
 -   [useForkRef](#useforkref)
 -   [useIsomorphicEffect](#useisomorphiceffect)
 -   [useLiveRef](#useliveref)
--   [usePipe](#usepipe)
 -   [useSealedState](#usesealedstate)
 -   [useUpdateEffect](#useupdateeffect)
 
@@ -160,6 +159,38 @@ Returns an `onKeyDown` handler to be passed to a component.
     -   `options.preventDefault`   (optional, default `true`)
 
 Returns **React.KeyboardEventHandler** 
+
+### ensureFocus
+
+Ensures `element` will receive focus if it's not already.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `$1` **EnsureFocusOptions**  (optional, default `{}`)
+    -   `$1.preventScroll`  
+    -   `$1.isActive`   (optional, default `defaultIsActive`)
+
+#### Examples
+
+```javascript
+import { ensureFocus } from "reakit-utils";
+
+ensureFocus(document.activeElement); // does nothing
+
+const element = document.querySelector("input");
+
+ensureFocus(element); // focuses element
+ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
+
+function isActive(el) {
+  return el.dataset.active === "true";
+}
+
+ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
+```
+
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
 
 ### fireBlurEvent
 
@@ -521,8 +552,8 @@ Immutably removes an index from an array.
 
 #### Parameters
 
--   `array` **A** 
--   `idx` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+-   `array` **T** 
+-   `index` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
 
 #### Examples
 
@@ -734,45 +765,13 @@ Returns the closest focusable element.
 
 Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
-#### ensureFocus
-
-Ensures `element` will receive focus if it's not already.
-
-##### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
--   `$1` **EnsureFocusOptions**  (optional, default `{}`)
-    -   `$1.isActive`   (optional, default `defaultIsActive`)
-    -   `$1.preventScroll`  
-
-##### Examples
-
-```javascript
-import { ensureFocus } from "reakit-utils";
-
-ensureFocus(document.activeElement); // does nothing
-
-const element = document.querySelector("input");
-
-ensureFocus(element); // focuses element
-ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
-
-function isActive(el) {
-  return el.dataset.active === "true";
-}
-
-ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
-```
-
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
-
 ### toArray
 
 Transforms `arg` into an array if it's not already.
 
 #### Parameters
 
--   `arg` **any** 
+-   `arg` **T** 
 
 #### Examples
 
@@ -782,8 +781,6 @@ import { toArray } from "reakit-utils";
 toArray("a"); // ["a"]
 toArray(["a"]); // ["a"]
 ```
-
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
 
 ### types
 
@@ -844,30 +841,6 @@ State hook setter.
 
 Type: React.Dispatch&lt;React.SetStateAction&lt;T>>
 
-### useAllCallbacks
-
-React custom hook that combines multiple callbacks into one.
-
-#### Parameters
-
--   `callbacks` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(AnyFunction | null | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
-
-#### Examples
-
-```javascript
-import React from "react";
-import { useAllCallbacks } from "reakit-utils";
-
-function Component(props) {
-  const onClick = () => {};
-  return (
-    <button onClick={useAllCallbacks(onClick, props.onClick)}>Button</button>
-  );
-}
-```
-
-Returns **AnyFunction** 
-
 ### useForkRef
 
 Merges up to two React Refs into a single memoized function React Ref so you
@@ -904,15 +877,6 @@ A `React.Ref` that keeps track of the passed `value`.
 -   `value` **T** 
 
 Returns **React.MutableRefObject&lt;T>** 
-
-### usePipe
-
-A React custom hook similar to [`useAllCallbacks`](#useallcallbacks), but
-it'll pass the returned value from a function to the next function.
-
-#### Parameters
-
--   `fns` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(AnyFunction | null | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
 
 ### useSealedState
 
