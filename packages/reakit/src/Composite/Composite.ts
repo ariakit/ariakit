@@ -6,7 +6,7 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { warning, useWarning } from "reakit-warning";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { getDocument } from "reakit-utils/getDocument";
-import { fireEvent } from "reakit-utils/fireEvent";
+import { fireBlurEvent } from "reakit-utils/fireBlurEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
@@ -254,7 +254,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
               // If there's a previous active item we fire a blur event on it
               // so it will work just like if it had DOM focus before (like when
               // using roving tabindex).
-              fireEvent(previousItem.current.ref.current, "blur", event);
+              fireBlurEvent(previousItem.current.ref.current, event);
             }
             previousItem.current = currentItem;
             event.stopPropagation();
@@ -265,7 +265,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             // composite container), we don't ignore the event, but we should
             // reset the previousItem reference.
             if (currentItem?.ref.current) {
-              fireEvent(currentItem.ref.current, "blur", event);
+              fireBlurEvent(currentItem.ref.current, event);
             }
             previousItem.current = undefined;
           } else {
