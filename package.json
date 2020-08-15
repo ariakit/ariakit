@@ -8,7 +8,7 @@
   "resolutions": {
     "**/react": "17.0.0-rc.0",
     "**/react-dom": "17.0.0-rc.0",
-    "**/react-test-renderer": "16.13.1"
+    "**/react-test-renderer": "17.0.0-rc.0"
   },
   "scripts": {
     "test": "jest",
