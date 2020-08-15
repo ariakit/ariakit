@@ -7,6 +7,7 @@ export default {
   "reakit-utils/contains": require("reakit-utils/contains"),
   "reakit-utils/createEvent": require("reakit-utils/createEvent"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
+  "reakit-utils/ensureFocus": require("reakit-utils/ensureFocus"),
   "reakit-utils/fireBlurEvent": require("reakit-utils/fireBlurEvent"),
   "reakit-utils/fireEvent": require("reakit-utils/fireEvent"),
   "reakit-utils/fireKeyboardEvent": require("reakit-utils/fireKeyboardEvent"),
@@ -15,6 +16,7 @@ export default {
   "reakit-utils/getDefaultView": require("reakit-utils/getDefaultView"),
   "reakit-utils/getDocument": require("reakit-utils/getDocument"),
   "reakit-utils/getNextActiveElementOnBlur": require("reakit-utils/getNextActiveElementOnBlur"),
+  "reakit-utils/hasFocus": require("reakit-utils/hasFocus"),
   "reakit-utils/hasFocusWithin": require("reakit-utils/hasFocusWithin"),
   "reakit-utils/isButton": require("reakit-utils/isButton"),
   "reakit-utils/isEmpty": require("reakit-utils/isEmpty"),
@@ -35,12 +37,9 @@ export default {
   "reakit-utils/tabbable": require("reakit-utils/tabbable"),
   "reakit-utils/toArray": require("reakit-utils/toArray"),
   "reakit-utils/types": require("reakit-utils/types"),
-  "reakit-utils/useAllCallbacks": require("reakit-utils/useAllCallbacks"),
   "reakit-utils/useForkRef": require("reakit-utils/useForkRef"),
-  "reakit-utils/useId": require("reakit-utils/useId"),
   "reakit-utils/useIsomorphicEffect": require("reakit-utils/useIsomorphicEffect"),
   "reakit-utils/useLiveRef": require("reakit-utils/useLiveRef"),
-  "reakit-utils/usePipe": require("reakit-utils/usePipe"),
   "reakit-utils/useSealedState": require("reakit-utils/useSealedState"),
   "reakit-utils/useUpdateEffect": require("reakit-utils/useUpdateEffect")
 };

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render } from "reakit-test-utils";
+import { render, screen } from "reakit-test-utils";
 import { isTextField } from "../isTextField";
 
 test("isTextField", () => {
-  const { getByLabelText } = render(
+  render(
     <>
       <div aria-label="item1" />
       <textarea aria-label="item2" />
@@ -13,10 +13,10 @@ test("isTextField", () => {
       <input type="text" readOnly aria-label="item6" />
     </>
   );
-  expect(isTextField(getByLabelText("item1"))).toBe(false);
-  expect(isTextField(getByLabelText("item2"))).toBe(true);
-  expect(isTextField(getByLabelText("item3"))).toBe(false);
-  expect(isTextField(getByLabelText("item4"))).toBe(true);
-  expect(isTextField(getByLabelText("item5"))).toBe(true);
-  expect(isTextField(getByLabelText("item6"))).toBe(true);
+  expect(isTextField(screen.getByLabelText("item1"))).toBe(false);
+  expect(isTextField(screen.getByLabelText("item2"))).toBe(true);
+  expect(isTextField(screen.getByLabelText("item3"))).toBe(false);
+  expect(isTextField(screen.getByLabelText("item4"))).toBe(true);
+  expect(isTextField(screen.getByLabelText("item5"))).toBe(true);
+  expect(isTextField(screen.getByLabelText("item6"))).toBe(true);
 });

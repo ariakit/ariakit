@@ -17,7 +17,6 @@ import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { MenuStateReturn } from "reakit/Menu/MenuState";
-import { usePipe } from "reakit-utils/usePipe";
 import { BootstrapBoxOptions } from "./Box";
 
 export type BootstrapMenuBarOptions = BootstrapBoxOptions & MenuBarOptions;
@@ -122,7 +121,7 @@ export function useMenuOptions({
 
 export function useMenuProps(
   options: BootstrapMenuOptions,
-  htmlProps: MenuHTMLProps = {}
+  { wrapElement: htmlWrapElement, ...htmlProps }: MenuHTMLProps = {}
 ): MenuHTMLProps {
   const menu = css`
     display: flex;
@@ -130,17 +129,22 @@ export function useMenuProps(
   `;
 
   const wrapElement = React.useCallback(
-    (element: React.ReactNode) => (
-      <OrientationContext.Provider value={options.orientation}>
-        {element}
-      </OrientationContext.Provider>
-    ),
-    [options.orientation]
+    (element: React.ReactNode) => {
+      if (htmlWrapElement) {
+        element = htmlWrapElement(element);
+      }
+      return (
+        <OrientationContext.Provider value={options.orientation}>
+          {element}
+        </OrientationContext.Provider>
+      );
+    },
+    [htmlWrapElement, options.orientation]
   );
 
   return {
     ...htmlProps,
-    wrapElement: usePipe(wrapElement, htmlProps.wrapElement),
+    wrapElement,
     className: cx(menu, htmlProps.className),
   };
 }

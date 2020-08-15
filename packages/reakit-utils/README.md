@@ -37,6 +37,7 @@ yarn add reakit-utils
 -   [getDefaultView](#getdefaultview)
 -   [getDocument](#getdocument)
 -   [getNextActiveElementOnBlur](#getnextactiveelementonblur)
+-   [hasFocus](#hasfocus)
 -   [hasFocusWithin](#hasfocuswithin)
 -   [isButton](#isbutton)
 -   [isEmpty](#isempty)
@@ -105,12 +106,21 @@ document.getElementById("id").closest("div");
 
 ### contains
 
-Similar to `Element.prototype.contains`.
+Similar to `Element.prototype.contains`, but a little bit faster when
+`element` is the same as `child`.
 
 #### Parameters
 
 -   `parent` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 -   `child` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+#### Examples
+
+```javascript
+import { contains } from "reakit-utils";
+
+contains(document.getElementById("parent"), document.getElementById("child"));
+```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
@@ -122,7 +132,7 @@ Creates an `Event` in a way that also works on IE 11.
 
 -   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
 -   `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `eventInit` **EventInit**  (optional, default `{}`)
+-   `eventInit` **EventInit?** 
 
 #### Examples
 
@@ -273,13 +283,32 @@ import { getNextActiveElementOnBlur } from "reakit-utils";
 const element = document.getElementById("id");
 element.addEventListener("blur", (event) => {
   const nextActiveElement = getNextActiveElementOnBlur(event);
-  ...
 });
 ```
 
+### hasFocus
+
+Checks if `element` has focus. Elements that are referenced by
+`aria-activedescendant` are also considered.
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+#### Examples
+
+```javascript
+import { hasFocus } from "reakit-utils";
+
+hasFocus(document.getElementById("id"));
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### hasFocusWithin
 
-Checks if `element` has focus.
+Checks if `element` has focus within. Elements that are referenced by
+`aria-activedescendant` are also considered.
 
 #### Parameters
 
@@ -297,7 +326,7 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ### isButton
 
-Checks whether `element` is a native HTML button element or not.
+Checks whether `element` is a native HTML button element.
 
 #### Parameters
 
@@ -312,6 +341,7 @@ isButton(document.querySelector("button")); // true
 isButton(document.querySelector("input[type='button']")); // true
 isButton(document.querySelector("div")); // false
 isButton(document.querySelector("input[type='text']")); // false
+isButton(document.querySelector("div[role='button']")); // false
 ```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
@@ -420,6 +450,18 @@ by the ability to select within the input, or that it is contenteditable.
 #### Parameters
 
 -   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+
+#### Examples
+
+```javascript
+import { isTextField } from "reakit-utils";
+
+isTextField(document.querySelector("div")); // false
+isTextField(document.querySelector("input")); // true
+isTextField(document.querySelector("input[type='button']")); // false
+isTextField(document.querySelector("textarea")); // true
+isTextField(document.querySelector("div[contenteditable='true']")); // true
+```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
