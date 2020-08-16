@@ -140,7 +140,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = findEnabledItemById(options.items, options.currentId);
-    const previousItem = React.useRef<HTMLElement | null>(null);
+    const previousElementRef = React.useRef<HTMLElement | null>(null);
     const onFocusRef = useLiveRef(htmlOnFocus);
     const onBlurRef = useLiveRef(htmlOnBlur);
     // IE 11 doesn't support event.relatedTarget, so we use the active element
@@ -262,16 +262,16 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
               // on an item other than the current one doesn't end up here as
               // the currentItem state will be updated only after it.
               if (
-                previousItem.current &&
-                previousItem.current !== nextActiveElement
+                previousElementRef.current &&
+                previousElementRef.current !== nextActiveElement
               ) {
                 // If there's a previous active item and it's not a click
                 // action, then we fire a blur event on it so it will work just
                 // like if it had DOM focus before (like when using roving
                 // tabindex).
-                fireBlurEvent(previousItem.current, event);
+                fireBlurEvent(previousElementRef.current, event);
               }
-              previousItem.current = currentElement;
+              previousElementRef.current = currentElement;
             } else if (currentElement) {
               // This will be true when the next active element is not the
               // current element, but there's a current item. This will only
@@ -280,7 +280,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
               // is the item that is getting blurred, and nextActiveElement is
               // the item that is being clicked.
               fireBlurEvent(currentElement, event);
-              previousItem.current = nextActiveElement;
+              previousElementRef.current = nextActiveElement;
             }
             // We want to ignore intermediate blur events, so we stop its
             // propagation and return early so onFocus will not be called.
