@@ -1,13 +1,23 @@
+For new features in the main package, use `next` branch as target. For other kinds of PRs, like bugfixes and chores, you can target `master` directly. [Learn more](https://github.com/reakit/reakit/blob/master/CONTRIBUTING.md#branches).
 
 Explain the motivation for making this change and try to link to an open issue for more information.
 
 Example: Closes #1
 
-**Does this PR introduce a breaking change?**
+**Screenshots**
 
-If so, describe it and provide a mini migration guide with code examples.
+If applicable, provide screenshots.
+
+**How to test?**
+
+Give instructions on how reviewers can test the proposed changes.
+
+**Does this PR introduce breaking changes?**
+
+If so, describe them and provide a mini migration guide with code examples.
 
 Example:
+
 - `Foo` has been replaced by `Bar`.
 
   **Before:**
@@ -18,5 +28,3 @@ Example:
   ```js
   const bar = Bar();
   ```
-  
-<!-- For new features, components, APIs use `next` branch as target. For bugfixes PR could be targeted to `master` directly -->
