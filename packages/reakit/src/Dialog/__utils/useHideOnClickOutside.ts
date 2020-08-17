@@ -17,9 +17,7 @@ function useMouseDownRef(
       mouseDownRef.current = event.target;
     };
     document.addEventListener("mousedown", onMouseDown);
-    return () => {
-      document.removeEventListener("mousedown", onMouseDown);
-    };
+    return () => document.removeEventListener("mousedown", onMouseDown);
   }, [options.visible, options.hideOnClickOutside, dialogRef]);
 
   return mouseDownRef;
@@ -54,7 +52,7 @@ export function useHideOnClickOutside(
     dialogRef,
     disclosureRef,
     nestedDialogs,
-    "focus",
+    "focusin",
     (event) => {
       const document = getDocument(dialogRef.current);
       // Fix for https://github.com/reakit/reakit/issues/619

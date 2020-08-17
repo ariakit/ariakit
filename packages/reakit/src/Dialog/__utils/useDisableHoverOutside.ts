@@ -17,7 +17,8 @@ export function useDisableHoverOutside(
         event.stopPropagation();
         event.preventDefault();
       },
-      options.visible && options.modal
+      options.visible && options.modal,
+      true
     );
   useEvent("mouseover");
   useEvent("mousemove");
