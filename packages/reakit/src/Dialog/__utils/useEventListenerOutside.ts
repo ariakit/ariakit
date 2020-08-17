@@ -20,11 +20,7 @@ function dialogContains(target: Element) {
 }
 
 function isDisclosure(target: Element, disclosure: HTMLElement) {
-  if (contains(disclosure, target)) return true;
-  return (
-    disclosure.id &&
-    disclosure.id === target.getAttribute?.("aria-activedescendant")
-  );
+  return contains(disclosure, target);
 }
 
 function isInDocument(target: Element) {

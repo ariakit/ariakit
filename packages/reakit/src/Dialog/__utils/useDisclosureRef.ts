@@ -22,10 +22,8 @@ export function useDisclosureRef(
       }
     };
     const document = getDocument(dialogRef.current);
-    document.addEventListener("focus", onFocus, true);
-    return () => {
-      document.removeEventListener("focus", onFocus, true);
-    };
+    document.addEventListener("focusin", onFocus);
+    return () => document.removeEventListener("focusin", onFocus);
   }, [options.visible, options.unstable_disclosureRef, dialogRef]);
 
   React.useEffect(() => {
