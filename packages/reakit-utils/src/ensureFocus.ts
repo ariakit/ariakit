@@ -1,11 +1,7 @@
 import { hasFocus } from "./hasFocus";
 
-function defaultIsActive(element: Element) {
-  return hasFocus(element);
-}
-
 type EnsureFocusOptions = FocusOptions & {
-  isActive?: typeof defaultIsActive;
+  isActive?: typeof hasFocus;
 };
 
 /**
@@ -31,7 +27,7 @@ type EnsureFocusOptions = FocusOptions & {
  */
 export function ensureFocus(
   element: HTMLElement,
-  { preventScroll, isActive = defaultIsActive }: EnsureFocusOptions = {}
+  { preventScroll, isActive = hasFocus }: EnsureFocusOptions = {}
 ) {
   if (isActive(element)) return -1;
 

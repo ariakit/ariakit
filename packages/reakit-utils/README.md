@@ -169,7 +169,7 @@ Ensures `element` will receive focus if it's not already.
 -   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
 -   `$1` **EnsureFocusOptions**  (optional, default `{}`)
     -   `$1.preventScroll`  
-    -   `$1.isActive`   (optional, default `defaultIsActive`)
+    -   `$1.isActive`   (optional, default `hasFocus`)
 
 #### Examples
 
