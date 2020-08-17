@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/reakit/reakit/compare/reakit@1.2.1...reakit@1.2.2) (2020-08-17)
+
+
+### Bug Fixes
+
+* Assert `focus` method exists on the dialog disclosure element ([#710](https://github.com/reakit/reakit/issues/710)) ([85dd073](https://github.com/reakit/reakit/commit/85dd073a4f3e5832340c4a05d9af6bb4798c69a1))
+* Fix blur event on `Composite` for React 17 ([#711](https://github.com/reakit/reakit/issues/711)) ([0ad76e6](https://github.com/reakit/reakit/commit/0ad76e61560da5f25e99a01d9842bf53e18d7993))
+* Fix disclosure detection when `unstable_virtual` is `true` on React 17 ([#715](https://github.com/reakit/reakit/issues/715)) ([81ec3a3](https://github.com/reakit/reakit/commit/81ec3a31c2e5fec4a8817acd3e10361247d95377))
+* Fix intermediate `focus`/`blur` event order in `Composite` ([#713](https://github.com/reakit/reakit/issues/713)) ([891976b](https://github.com/reakit/reakit/commit/891976b047aebe93e802a16b7aaf25708cc5c65a))
+
+
+
+
+
 ## [1.2.1](https://github.com/reakit/reakit/compare/reakit@1.2.0...reakit@1.2.1) (2020-08-13)
 
 

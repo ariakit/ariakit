@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.2](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.1...reakit-test-utils@0.14.2) (2020-08-17)
+
+
+### Bug Fixes
+
+* **reakit-test-utils:** Fix `fireEvent` when element has `pointer-events: none` ([#714](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/714)) ([a3f0749](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/a3f07497a9aa8f8cef7687feabd277bd69eddbb8))
+
+
+
+
+
 ## [0.14.1](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.0...reakit-test-utils@0.14.1) (2020-08-13)
 
 **Note:** Version bump only for package reakit-test-utils
