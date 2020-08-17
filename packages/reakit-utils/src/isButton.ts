@@ -8,7 +8,7 @@ const buttonInputTypes = [
 ];
 
 /**
- * Checks whether `element` is a native HTML button element or not.
+ * Checks whether `element` is a native HTML button element.
  *
  * @example
  * import { isButton } from "reakit-utils";
@@ -17,6 +17,7 @@ const buttonInputTypes = [
  * isButton(document.querySelector("input[type='button']")); // true
  * isButton(document.querySelector("div")); // false
  * isButton(document.querySelector("input[type='text']")); // false
+ * isButton(document.querySelector("div[role='button']")); // false
  *
  * @returns {boolean}
  */
@@ -28,6 +29,5 @@ export function isButton(
     const input = element as HTMLInputElement;
     return buttonInputTypes.indexOf(input.type) !== -1;
   }
-
   return false;
 }

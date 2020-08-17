@@ -20,11 +20,7 @@ function dialogContains(target: Element) {
 }
 
 function isDisclosure(target: Element, disclosure: HTMLElement) {
-  if (contains(disclosure, target)) return true;
-  return (
-    disclosure.id &&
-    disclosure.id === target.getAttribute?.("aria-activedescendant")
-  );
+  return contains(disclosure, target);
 }
 
 function isInDocument(target: Element) {
@@ -41,7 +37,8 @@ export function useEventListenerOutside(
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   eventType: string,
   listener?: (e: Event) => void,
-  shouldListen?: boolean
+  shouldListen?: boolean,
+  capture?: boolean
 ) {
   const listenerRef = useLiveRef(listener);
 
@@ -77,10 +74,8 @@ export function useEventListenerOutside(
     };
 
     const document = getDocument(containerRef.current);
-    document.addEventListener(eventType, onEvent, true);
-    return () => {
-      document.removeEventListener(eventType, onEvent, true);
-    };
+    document.addEventListener(eventType, onEvent, capture);
+    return () => document.removeEventListener(eventType, onEvent, capture);
   }, [
     containerRef,
     disclosureRef,

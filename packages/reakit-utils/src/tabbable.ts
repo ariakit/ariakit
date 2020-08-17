@@ -10,9 +10,10 @@ const selector =
   "[contenteditable]:not([contenteditable='false'])";
 
 function isVisible(element: Element) {
+  const htmlElement = element as HTMLElement;
   return (
-    (element as HTMLElement).offsetWidth > 0 ||
-    (element as HTMLElement).offsetHeight > 0 ||
+    htmlElement.offsetWidth > 0 ||
+    htmlElement.offsetHeight > 0 ||
     element.getClientRects().length > 0
   );
 }
@@ -81,8 +82,8 @@ export function getAllFocusableIn<T extends Element>(container: T) {
  * @returns {Element|null}
  */
 export function getFirstFocusableIn<T extends Element>(container: T) {
-  const allFocusable = getAllFocusableIn(container);
-  return allFocusable.length ? allFocusable[0] : null;
+  const [first] = getAllFocusableIn(container);
+  return first || null;
 }
 
 /**
@@ -217,50 +218,4 @@ export function getClosestFocusable<T extends Element>(
     element = closest(element, selector) as T;
   }
   return element;
-}
-
-function defaultIsActive(element: Element) {
-  return getActiveElement(element) === element;
-}
-
-type EnsureFocusOptions = FocusOptions & {
-  isActive?: typeof defaultIsActive;
-};
-
-/**
- * Ensures `element` will receive focus if it's not already.
- *
- * @memberof tabbable
- *
- * @example
- * import { ensureFocus } from "reakit-utils";
- *
- * ensureFocus(document.activeElement); // does nothing
- *
- * const element = document.querySelector("input");
- *
- * ensureFocus(element); // focuses element
- * ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
- *
- * function isActive(el) {
- *   return el.dataset.active === "true";
- * }
- *
- * ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
- *
- * @returns {number} `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
- */
-export function ensureFocus(
-  element: HTMLElement,
-  { isActive = defaultIsActive, preventScroll }: EnsureFocusOptions = {}
-) {
-  if (isActive(element)) return -1;
-
-  element.focus({ preventScroll });
-
-  if (isActive(element)) return -1;
-
-  return requestAnimationFrame(() => {
-    element.focus({ preventScroll });
-  });
 }

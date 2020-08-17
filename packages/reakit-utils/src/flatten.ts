@@ -8,13 +8,13 @@
  * // => [0, 1, 2, 3, 4, 5, 6]
  */
 export function flatten<T>(array: T[]) {
-  const flattened = [] as T[];
-  for (const possibleArray of array) {
-    if (Array.isArray(possibleArray)) {
-      flattened.push(...flatten(possibleArray));
+  const flat: T[] = [];
+  for (const maybeArray of array) {
+    if (Array.isArray(maybeArray)) {
+      flat.push(...flatten(maybeArray));
     } else {
-      flattened.push(possibleArray);
+      flat.push(maybeArray);
     }
   }
-  return flattened;
+  return flat;
 }

@@ -12,7 +12,7 @@ import { getDocument } from "./getDocument";
 export function createEvent(
   element: HTMLElement,
   type: string,
-  eventInit: EventInit = {}
+  eventInit?: EventInit
 ): Event {
   if (typeof Event === "function") {
     return new Event(type, eventInit);

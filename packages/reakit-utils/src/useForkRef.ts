@@ -3,7 +3,6 @@ import * as React from "react";
 
 function setRef(ref?: React.Ref<any>, value: any = null) {
   if (!ref) return;
-
   if (typeof ref === "function") {
     ref(value);
   } else {
