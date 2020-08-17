@@ -37,7 +37,8 @@ export function useEventListenerOutside(
   nestedDialogs: Array<React.RefObject<HTMLElement>>,
   eventType: string,
   listener?: (e: Event) => void,
-  shouldListen?: boolean
+  shouldListen?: boolean,
+  capture?: boolean
 ) {
   const listenerRef = useLiveRef(listener);
 
@@ -73,10 +74,8 @@ export function useEventListenerOutside(
     };
 
     const document = getDocument(containerRef.current);
-    document.addEventListener(eventType, onEvent, true);
-    return () => {
-      document.removeEventListener(eventType, onEvent, true);
-    };
+    document.addEventListener(eventType, onEvent, capture);
+    return () => document.removeEventListener(eventType, onEvent, capture);
   }, [
     containerRef,
     disclosureRef,
