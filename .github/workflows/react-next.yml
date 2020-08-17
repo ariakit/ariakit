@@ -1,9 +1,10 @@
 name: react-next
 
 on:
+  workflow_dispatch: true
   schedule:
-    # Runs at 00:00 UTC every day
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+  
 
 jobs:
   test:
