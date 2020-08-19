@@ -89,6 +89,8 @@ applyState(2, 1); // 2
 
 Returns `true` if it is running in a browser environment or `false` if it is not (SSR).
 
+Type: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
 #### Examples
 
 ```javascript
