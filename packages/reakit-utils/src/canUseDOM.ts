@@ -1,5 +1,5 @@
 /**
- * Returns `true` if it is running in a browser environment or `false` if it is not (SSR).
+ * It's `true` if it is running in a browser environment or `false` if it is not (SSR).
  *
  * @example
  * import { canUseDOM } from "reakit-utils";
