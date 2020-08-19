@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, click, wait } from "reakit-test-utils";
+import { render, press, click, wait, axe } from "reakit-test-utils";
 import ToolbarWithMenu from "..";
 
 test("renders toolbar items with closed menu", () => {
@@ -111,4 +111,11 @@ test("opens menu pressing arrow up focusing last item", async () => {
 
   expect(firstMenuItem).toHaveFocus();
   expect(firstMenuItem).toBeVisible();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<ToolbarWithMenu />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

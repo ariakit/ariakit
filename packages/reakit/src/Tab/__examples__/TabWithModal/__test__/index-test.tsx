@@ -1,5 +1,5 @@
 import * as React from "react";
-import { click, focus, press, render, wait } from "reakit-test-utils";
+import { click, focus, press, render, wait, axe } from "reakit-test-utils";
 import Tab from "../index";
 
 test("should open modal content tab", async () => {
@@ -34,4 +34,11 @@ test("should open modal content tab", async () => {
   });
 
   expect(name).toBeVisible();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<Tab />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

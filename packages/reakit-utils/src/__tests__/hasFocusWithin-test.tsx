@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render, focus } from "reakit-test-utils";
+import { render, focus, screen } from "reakit-test-utils";
 import { hasFocusWithin } from "../hasFocusWithin";
 
 test("hasFocusWithin", () => {
-  const { getByLabelText: $ } = render(
+  render(
     <>
       <div aria-label="item1">
         <button aria-label="item1-1" />
@@ -15,14 +15,14 @@ test("hasFocusWithin", () => {
       </div>
     </>
   );
-  expect(hasFocusWithin($("item1"))).toBe(false);
-  focus($("item1-1"));
-  expect(hasFocusWithin($("item1"))).toBe(true);
-  expect(hasFocusWithin($("item2"))).toBe(false);
-  focus($("item2"));
-  expect(hasFocusWithin($("item2"))).toBe(true);
-  expect(hasFocusWithin($("item3-1"))).toBe(false);
-  focus($("item3"));
-  expect(hasFocusWithin($("item3"))).toBe(true);
-  expect(hasFocusWithin($("item3-1"))).toBe(true);
+  expect(hasFocusWithin(screen.getByLabelText("item1"))).toBe(false);
+  focus(screen.getByLabelText("item1-1"));
+  expect(hasFocusWithin(screen.getByLabelText("item1"))).toBe(true);
+  expect(hasFocusWithin(screen.getByLabelText("item2"))).toBe(false);
+  focus(screen.getByLabelText("item2"));
+  expect(hasFocusWithin(screen.getByLabelText("item2"))).toBe(true);
+  expect(hasFocusWithin(screen.getByLabelText("item3-1"))).toBe(false);
+  focus(screen.getByLabelText("item3"));
+  expect(hasFocusWithin(screen.getByLabelText("item3"))).toBe(true);
+  expect(hasFocusWithin(screen.getByLabelText("item3-1"))).toBe(true);
 });

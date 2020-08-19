@@ -1,5 +1,13 @@
 import * as React from "react";
-import { click, focus, press, render, type, wait } from "reakit-test-utils";
+import {
+  click,
+  focus,
+  press,
+  render,
+  type,
+  wait,
+  axe,
+} from "reakit-test-utils";
 import DialogWithForm from "..";
 
 test("should rename", async () => {
@@ -20,4 +28,11 @@ test("should rename", async () => {
   });
   const newName = getByText("Name 2");
   expect(newName).toBeVisible();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<DialogWithForm />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

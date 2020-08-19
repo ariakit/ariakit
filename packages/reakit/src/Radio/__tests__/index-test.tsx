@@ -167,6 +167,7 @@ test("group", () => {
           <input
             aria-checked="false"
             id="base-1"
+            name="base"
             tabindex="0"
             type="radio"
             value="a"
@@ -177,6 +178,7 @@ test("group", () => {
           <input
             aria-checked="false"
             id="base-2"
+            name="base"
             tabindex="-1"
             type="radio"
             value="b"
@@ -187,6 +189,7 @@ test("group", () => {
           <input
             aria-checked="false"
             id="base-3"
+            name="base"
             tabindex="-1"
             type="radio"
             value="c"

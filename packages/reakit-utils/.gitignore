@@ -3,10 +3,11 @@
 /closest
 /contains
 /createEvent
-/createKeyboardEvent
 /createOnKeyDown
 /dist
+/ensureFocus
 /es
+/fireBlurEvent
 /fireEvent
 /fireKeyboardEvent
 /flatten
@@ -14,6 +15,7 @@
 /getDefaultView
 /getDocument
 /getNextActiveElementOnBlur
+/hasFocus
 /hasFocusWithin
 /isButton
 /isEmpty
@@ -36,11 +38,8 @@
 /toArray
 /ts
 /types
-/useAllCallbacks
 /useForkRef
-/useId
 /useIsomorphicEffect
 /useLiveRef
-/usePipe
 /useSealedState
 /useUpdateEffect

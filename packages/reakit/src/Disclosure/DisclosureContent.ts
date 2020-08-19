@@ -20,21 +20,6 @@ export type DisclosureContentProps = DisclosureContentOptions &
 
 type TransitionState = "enter" | "leave" | null;
 
-// To improve mounting performance, we're delaying the render of children when
-// the disclosure content element is initially not visible.
-function useDelayedChildren(children?: React.ReactNode, visible?: boolean) {
-  const [initialVisible] = React.useState(visible);
-  const [displayChildren, setDisplayChildren] = React.useState(initialVisible);
-
-  React.useEffect(() => {
-    if (!initialVisible) {
-      setDisplayChildren(true);
-    }
-  }, [initialVisible]);
-
-  return displayChildren ? children : null;
-}
-
 export const useDisclosureContent = createHook<
   DisclosureContentOptions,
   DisclosureContentHTMLProps
@@ -48,7 +33,6 @@ export const useDisclosureContent = createHook<
     {
       onTransitionEnd: htmlOnTransitionEnd,
       onAnimationEnd: htmlOnAnimationEnd,
-      children: htmlChildren,
       style: htmlStyle,
       ...htmlProps
     }
@@ -60,7 +44,6 @@ export const useDisclosureContent = createHook<
     const onTransitionEndRef = useLiveRef(htmlOnTransitionEnd);
     const onAnimationEndRef = useLiveRef(htmlOnAnimationEnd);
     const raf = React.useRef(0);
-    const children = useDelayedChildren(htmlChildren, options.visible);
 
     React.useEffect(() => {
       if (!options.animated) return undefined;
@@ -118,7 +101,6 @@ export const useDisclosureContent = createHook<
       onAnimationEnd,
       hidden,
       style,
-      children,
       ...htmlProps,
     };
   },

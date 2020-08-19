@@ -6,15 +6,8 @@ import { isObject } from "./isObject";
  * @returns {boolean}
  */
 export function isPlainObject(arg: any): arg is object {
-  if (!isObject(arg)) {
-    return false;
-  }
-
+  if (!isObject(arg)) return false;
   const proto = Object.getPrototypeOf(arg);
-
-  if (proto == null) {
-    return true;
-  }
-
+  if (proto == null) return true;
   return proto.constructor?.toString() === Object.toString();
 }

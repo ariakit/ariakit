@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, click, hover, wait } from "reakit-test-utils";
+import { render, press, click, hover, wait, axe } from "reakit-test-utils";
 import SimpleMenu from "..";
 
 test("open menu with click", async () => {
@@ -131,4 +131,11 @@ test("close menu by clicking outside menu", async () => {
   click(baseElement);
   expect(label("Preferences")).not.toBeVisible();
   expect(text("Preferences")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<SimpleMenu />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

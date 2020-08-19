@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press } from "reakit-test-utils";
+import { render, press, axe } from "reakit-test-utils";
 import VirtualNestedCompositeItems from "..";
 
 test("navigate through nested composite items", () => {
@@ -22,4 +22,11 @@ test("navigate through nested composite items", () => {
   expect(text("item2")).toHaveFocus();
   press.Home();
   expect(label("item0")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<VirtualNestedCompositeItems />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

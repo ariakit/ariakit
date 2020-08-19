@@ -147,6 +147,7 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       role: !isNativeRadio ? "radio" : undefined,
       type: isNativeRadio ? "radio" : undefined,
       value: isNativeRadio ? options.value : undefined,
+      name: isNativeRadio ? options.baseId : undefined,
       "aria-checked": checked,
       checked,
       onChange,

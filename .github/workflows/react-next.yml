@@ -1,9 +1,10 @@
 name: react-next
 
 on:
+  workflow_dispatch:
   schedule:
-    # Runs at 00:00 UTC every day
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+  
 
 jobs:
   test:
@@ -23,7 +24,7 @@ jobs:
       run: yarn
 
     - name: Upgrade to react@next
-      run: yarn upgrade react@next react-dom@next
+      run: yarn upgrade react@next react-dom@next react-test-renderer@next
 
     - name: Lint
       run: yarn lint

@@ -10,7 +10,7 @@ import { isTextField } from "reakit-utils/isTextField";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
-import { ensureFocus } from "reakit-utils/tabbable";
+import { ensureFocus } from "reakit-utils/ensureFocus";
 import {
   ClickableOptions,
   ClickableHTMLProps,

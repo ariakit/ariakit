@@ -4,6 +4,7 @@ import {
   SealedInitialState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { warning } from "reakit-warning";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -97,8 +98,23 @@ export function useDisclosureState(
 
   React.useEffect(() => {
     if (typeof animated === "number" && animating) {
-      setTimeout(() => setAnimating(false), animated);
+      const timeout = setTimeout(() => setAnimating(false), animated);
+      return () => {
+        clearTimeout(timeout);
+      };
     }
+    if (animated && animating && process.env.NODE_ENV === "development") {
+      const timeout = setTimeout(() => {
+        warning(
+          animating,
+          "It's been 8 seconds but stopAnimation has not been called. Does the disclousure element have a CSS transition?"
+        );
+      }, 8000);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    return () => {};
   }, [animated, animating]);
 
   const show = React.useCallback(() => setVisible(true), []);

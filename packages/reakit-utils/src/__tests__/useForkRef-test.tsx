@@ -7,7 +7,7 @@ test("useForkRef", () => {
   const externalRef = React.createRef<HTMLElement>();
 
   const Component = React.forwardRef((props, ref) => {
-    const internalRef = React.useRef<HTMLElement>();
+    const internalRef = React.useRef<HTMLElement>(null);
     React.useEffect(() => {
       expect(internalRef.current).toBeInTheDocument();
     }, []);

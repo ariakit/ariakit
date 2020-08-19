@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, hover } from "reakit-test-utils";
+import { render, press, hover, axe } from "reakit-test-utils";
 import CompositeWithTooltip from "..";
 
 test("show tooltip", () => {
@@ -16,4 +16,11 @@ test("show tooltip", () => {
   expect(text("item2tooltip")).not.toBeVisible();
   expect(text("item2")).toHaveFocus();
   expect(text("item3tooltip")).toBeVisible();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<CompositeWithTooltip />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

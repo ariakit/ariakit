@@ -1,5 +1,5 @@
 import * as React from "react";
-import { click, press, render } from "reakit-test-utils";
+import { click, press, render, axe } from "reakit-test-utils";
 import DialogWithMultipleDisclosures from "..";
 
 test("open and close dialog with multiple disclosures", () => {
@@ -23,4 +23,11 @@ test("open and close dialog with multiple disclosures", () => {
   click(text("Close"));
   expect(dialog).not.toBeVisible();
   expect(text("Button")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<DialogWithMultipleDisclosures />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

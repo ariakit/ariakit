@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/reakit/reakit/compare/reakit@1.2.1...reakit@1.2.2) (2020-08-17)
+
+
+### Bug Fixes
+
+* Assert `focus` method exists on the dialog disclosure element ([#710](https://github.com/reakit/reakit/issues/710)) ([85dd073](https://github.com/reakit/reakit/commit/85dd073a4f3e5832340c4a05d9af6bb4798c69a1))
+* Fix blur event on `Composite` for React 17 ([#711](https://github.com/reakit/reakit/issues/711)) ([0ad76e6](https://github.com/reakit/reakit/commit/0ad76e61560da5f25e99a01d9842bf53e18d7993))
+* Fix disclosure detection when `unstable_virtual` is `true` on React 17 ([#715](https://github.com/reakit/reakit/issues/715)) ([81ec3a3](https://github.com/reakit/reakit/commit/81ec3a31c2e5fec4a8817acd3e10361247d95377))
+* Fix intermediate `focus`/`blur` event order in `Composite` ([#713](https://github.com/reakit/reakit/issues/713)) ([891976b](https://github.com/reakit/reakit/commit/891976b047aebe93e802a16b7aaf25708cc5c65a))
+
+
+
+
+
+## [1.2.1](https://github.com/reakit/reakit/compare/reakit@1.2.0...reakit@1.2.1) (2020-08-13)
+
+
+### Bug Fixes
+
+* Fix tabbing between multiple `RadioGroup`s ([#703](https://github.com/reakit/reakit/issues/703)) ([212adbd](https://github.com/reakit/reakit/commit/212adbd292702948ab71a44a22d9862117468668)), closes [#702](https://github.com/reakit/reakit/issues/702)
+
+
+
+
+
+# [1.2.0](https://github.com/reakit/reakit/compare/reakit@1.1.2...reakit@1.2.0) (2020-08-06)
+
+
+### Features
+
+* Add experimental `Grid` component ([#685](https://github.com/reakit/reakit/issues/685)) ([51e17fb](https://github.com/reakit/reakit/commit/51e17fbaab188a501dc267863f363e880cbba717))
+* Add stable `composite.sort` method ([#690](https://github.com/reakit/reakit/issues/690)) ([1f66168](https://github.com/reakit/reakit/commit/1f6616883800eb2e367cbcee12dce7399d25e159))
+* Add stable `id.setBaseId` method ([#691](https://github.com/reakit/reakit/issues/691)) ([5c52c71](https://github.com/reakit/reakit/commit/5c52c712395c63f73284558dd84a230c6e2026c7))
+* Automatically sort composite items based on DOM position ([#696](https://github.com/reakit/reakit/issues/696)) ([bdaab5d](https://github.com/reakit/reakit/commit/bdaab5df2f6fd3445320a6f98975301ab7a84971))
+* Focus `Menu` instead of `MenuItem` on mouse click on `MenuButton` ([#694](https://github.com/reakit/reakit/issues/694)) ([d57b97f](https://github.com/reakit/reakit/commit/d57b97f2f64c883a95c73acf7ad0275dfdbd642a))
+
+
+
+
+
 ## [1.1.2](https://github.com/reakit/reakit/compare/reakit@1.1.1...reakit@1.1.2) (2020-07-18)
 
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, hover, click, wait } from "reakit-test-utils";
+import { render, press, hover, click, wait, axe } from "reakit-test-utils";
 import MenuBarWithDisabledItems from "..";
 
 test("open menus with hover except the disabled one", async () => {
@@ -9,29 +9,27 @@ test("open menus with hover except the disabled one", async () => {
   expect(label("File")).not.toBeVisible();
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   hover(text("View"));
   expect(label("File")).toBeVisible();
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   hover(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
   expect(text("Edit")).toHaveFocus();
 });
 
 test("open menus with click except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label } = render(
+  const { getByText: text, getByLabelText: label, baseElement } = render(
     <MenuBarWithDisabledItems />
   );
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   click(text("View"));
-  expect(text("View")).not.toHaveFocus();
-  expect(label("File")).not.toBeVisible();
-  expect(label("View")).not.toBeVisible();
+  expect(baseElement).toHaveFocus();
   click(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
-  expect(label("Edit")).toHaveFocus();
+  expect(text("Edit")).toHaveFocus();
 });
 
 test("open menus with keyboard except the disabled one", async () => {
@@ -91,4 +89,11 @@ test("open submenus with hover except the disabled one", async () => {
   hover(text("Spelling and Grammar"));
   await wait(expect(label("Find")).not.toBeVisible);
   expect(label("Edit")).toHaveFocus();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<MenuBarWithDisabledItems />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

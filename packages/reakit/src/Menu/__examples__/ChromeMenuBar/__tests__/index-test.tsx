@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, hover, click, wait, press } from "reakit-test-utils";
+import { render, hover, click, wait, press, axe } from "reakit-test-utils";
 import ChromeMenuBar from "..";
 
 test("open and hover menus", async () => {
@@ -7,7 +7,7 @@ test("open and hover menus", async () => {
   expect(label("File")).not.toBeVisible();
   click(text("File"));
   await wait(expect(label("File")).toBeVisible);
-  expect(label("File")).toHaveFocus();
+  expect(text("File")).toHaveFocus();
   hover(text("Edit"));
   await wait(expect(label("Edit")).toBeVisible);
   expect(text("Edit")).toHaveFocus();
@@ -43,4 +43,11 @@ test("navigate through the menu bar using keyboard", async () => {
   press.ArrowRight();
   expect(text("File")).toHaveFocus();
   expect(label("File")).toBeVisible();
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<ChromeMenuBar />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });

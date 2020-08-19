@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.14.1...reakit-playground@0.14.2) (2020-08-17)
+
+
+### Bug Fixes
+
+* Fix blur event on `Composite` for React 17 ([#711](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/711)) ([0ad76e6](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/0ad76e61560da5f25e99a01d9842bf53e18d7993))
+
+
+
+
+
+## [0.14.1](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.14.0...reakit-playground@0.14.1) (2020-08-13)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+# [0.14.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.13.2...reakit-playground@0.14.0) (2020-08-06)
+
+
+### Features
+
+* Add experimental `Grid` component ([#685](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/685)) ([51e17fb](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/51e17fbaab188a501dc267863f363e880cbba717))
+
+
+
+
+
 ## [0.13.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.13.1...reakit-playground@0.13.2) (2020-07-18)
 
 

@@ -4,5 +4,5 @@
  * @returns {boolean}
  */
 export function isPromise<T>(arg: T | Promise<T>): arg is Promise<T> {
-  return Boolean(arg && (arg as Promise<T>).then);
+  return Boolean(arg && "then" in arg && arg.then);
 }

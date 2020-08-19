@@ -6,7 +6,7 @@ import { useForkRef } from "reakit-utils/useForkRef";
 import { warning, useWarning } from "reakit-warning";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { getDocument } from "reakit-utils/getDocument";
-import { fireEvent } from "reakit-utils/fireEvent";
+import { fireBlurEvent } from "reakit-utils/fireBlurEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
@@ -140,7 +140,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = findEnabledItemById(options.items, options.currentId);
-    const previousItem = React.useRef<Item | undefined>(undefined);
+    const previousElementRef = React.useRef<HTMLElement | null>(null);
     const onFocusRef = useLiveRef(htmlOnFocus);
     const onBlurRef = useLiveRef(htmlOnBlur);
     // IE 11 doesn't support event.relatedTarget, so we use the active element
@@ -179,6 +179,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     const onFocus = React.useCallback(
       (event: React.FocusEvent) => {
         if (options.unstable_virtual) {
+          const currentElement = currentItem?.ref.current || null;
           // IE11 doesn't support event.relatedTarget, so we use the active
           // element ref instead.
           const previousActiveElement =
@@ -197,7 +198,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             // on the composite element, in which case hasItemWithFocus will be
             // true.
             onFocusRef.current?.(event);
-            currentItem?.ref.current?.focus();
+            currentElement?.focus();
             return;
           }
           if (previousActiveElementWasItem) {
@@ -240,7 +241,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
         // confusing, so we ignore intermediate focus and blurs by stopping its
         // propagation and not calling the passed onBlur handler (htmlOnBlur).
         if (options.unstable_virtual) {
-          const targetIsItem = isItem(options.items, event.target);
+          const currentElement = currentItem?.ref.current || null;
           const nextActiveElement = getNextActiveElementOnBlur(event);
           const nextActiveElementIsItem = isItem(
             options.items,
@@ -248,28 +249,52 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
           );
           if (isSelfTarget(event) && nextActiveElementIsItem) {
             // This is an intermediate blur event: blurring the composite
-            // container to focus an item (nextActiveElement). We ignore this
-            // event.
-            if (previousItem.current?.ref.current) {
-              // If there's a previous active item we fire a blur event on it
-              // so it will work just like if it had DOM focus before (like when
-              // using roving tabindex).
-              fireEvent(previousItem.current.ref.current, "blur", event);
+            // container to focus an item (nextActiveElement).
+            if (nextActiveElement === currentElement) {
+              // The next active element will be the same as the current item
+              // in the state in two scenarios:
+              //   - Moving focus with keyboard: the state is updated before
+              // the blur event is triggered, so here the current item is
+              // already pointing to the next active element.
+              //   - Clicking on the current active item with a pointer: this
+              // will trigger blur on the composite element and then the next
+              // active element will be the same as the current item. Clicking
+              // on an item other than the current one doesn't end up here as
+              // the currentItem state will be updated only after it.
+              if (
+                previousElementRef.current &&
+                previousElementRef.current !== nextActiveElement
+              ) {
+                // If there's a previous active item and it's not a click
+                // action, then we fire a blur event on it so it will work just
+                // like if it had DOM focus before (like when using roving
+                // tabindex).
+                fireBlurEvent(previousElementRef.current, event);
+              }
+              previousElementRef.current = currentElement;
+            } else if (currentElement) {
+              // This will be true when the next active element is not the
+              // current element, but there's a current item. This will only
+              // happen when clicking with a pointer on a different item, when
+              // there's already an item selected, in which case currentElement
+              // is the item that is getting blurred, and nextActiveElement is
+              // the item that is being clicked.
+              fireBlurEvent(currentElement, event);
+              previousElementRef.current = nextActiveElement;
             }
-            previousItem.current = currentItem;
+            // We want to ignore intermediate blur events, so we stop its
+            // propagation and return early so onFocus will not be called.
             event.stopPropagation();
             return;
           }
-          if (!targetIsItem) {
-            // If target is another thing (probably something outside of the
-            // composite container), we don't ignore the event, but we should
-            // reset the previousItem reference.
-            if (currentItem?.ref.current) {
-              fireEvent(currentItem.ref.current, "blur", event);
-            }
-            previousItem.current = undefined;
-          } else {
-            previousItem.current = currentItem;
+          const targetIsItem = isItem(options.items, event.target);
+          if (!targetIsItem && currentElement) {
+            // If target is not a composite item, it may be the composite
+            // element itself (isSelfTarget) or a tabbable element inside the
+            // composite widget. This may be triggered by clicking outside the
+            // composite widget or by tabbing out of it. In either cases we
+            // want to fire a blur event on the current item.
+            fireBlurEvent(currentElement, event);
           }
         }
         onBlurRef.current?.(event);

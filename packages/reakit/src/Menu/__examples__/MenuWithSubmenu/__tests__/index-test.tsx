@@ -1,5 +1,13 @@
 import * as React from "react";
-import { render, press, hover, click, wait, focus } from "reakit-test-utils";
+import {
+  render,
+  press,
+  hover,
+  click,
+  wait,
+  focus,
+  axe,
+} from "reakit-test-utils";
 import MenuWithSubmenu from "..";
 
 test("open menu", async () => {
@@ -63,4 +71,11 @@ test("open submenu by pressing arrow right", async () => {
   press.ArrowRight();
   await wait(expect(label("Find")).toBeVisible);
   await wait(expect(text("Search the Web...")).toHaveFocus);
+});
+
+test("renders with no a11y violations", async () => {
+  const { baseElement } = render(<MenuWithSubmenu />);
+  const results = await axe(baseElement);
+
+  expect(results).toHaveNoViolations();
 });
