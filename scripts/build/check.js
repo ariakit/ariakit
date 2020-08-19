@@ -1,4 +1,5 @@
 const { execSync } = require("child_process");
+const log = require("../log");
 
 const ALLOW_LIST = ["yarn.lock"];
 
@@ -14,11 +15,11 @@ function getModifiedFiles() {
 const modifiedFiles = getModifiedFiles();
 
 if (modifiedFiles.length === 0) {
-  console.log("Looks great!");
+  log("Looks great!");
   process.exit(0);
 }
 
-console.error(
+log(
   `${
     "here are modified files after running the build, did you forget to checkin after building?\n\n" +
     "Files changed:\n"
