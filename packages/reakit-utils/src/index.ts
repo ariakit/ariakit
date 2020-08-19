@@ -1,4 +1,5 @@
 export * from "./applyState";
+export * from "./canUseDOM";
 export * from "./closest";
 export * from "./contains";
 export * from "./createEvent";
