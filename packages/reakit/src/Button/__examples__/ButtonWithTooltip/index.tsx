@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Button } from "reakit/Button";
+import { VisuallyHidden } from "reakit/VisuallyHidden";
 import {
   Tooltip,
   TooltipReference,
   useTooltipState,
   TooltipReferenceHTMLProps,
 } from "reakit/Tooltip";
-import { VisuallyHidden } from "reakit/VisuallyHidden";
 
 type Props = TooltipReferenceHTMLProps & {
   isLocked?: boolean;

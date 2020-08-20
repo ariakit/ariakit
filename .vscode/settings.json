@@ -1,8 +1,10 @@
 {
-  "files.autoSave": "off",
-  "eslint.enable": true,
   "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": false,
+  "eslint.enable": true,
+  "stylelint.enable": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
   }
 }
