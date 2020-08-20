@@ -10,6 +10,7 @@ import { fireBlurEvent } from "reakit-utils/fireBlurEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
+import { canUseDOM } from "reakit-utils/canUseDOM";
 import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import { useBox } from "../Box/Box";
@@ -56,7 +57,7 @@ const validCompositeRoles = [
   "treegrid",
 ];
 
-const isIE11 = typeof window !== "undefined" && "msCrypto" in window;
+const isIE11 = canUseDOM && "msCrypto" in window;
 
 function canProxyKeyboardEvent(event: React.KeyboardEvent) {
   if (!isSelfTarget(event)) return false;

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { getActiveElement } from "./getActiveElement";
+import { canUseDOM } from "./canUseDOM";
 
-const isIE11 = typeof window !== "undefined" && "msCrypto" in window;
+const isIE11 = canUseDOM && "msCrypto" in window;
 
 /**
  * Cross-browser method that returns the next active element (the element that

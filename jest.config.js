@@ -4,7 +4,10 @@ module.exports = {
     "packages/reakit/src/**/*.{js,ts,tsx}",
     "!**/*-test.{js,ts,tsx}",
   ],
-  projects: ["<rootDir>/packages/*/jest*config.js"],
+  projects: ["<rootDir>/packages/*/jest.config.js"],
+  moduleNameMapper: {
+    "\\.css$": "<rootDir>/jest.mock.js",
+  },
   setupFilesAfterEnv: [
     "raf/polyfill",
     "@wordpress/jest-console",

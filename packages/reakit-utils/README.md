@@ -25,6 +25,7 @@ yarn add reakit-utils
 #### Table of Contents
 
 -   [applyState](#applystate)
+-   [canUseDOM](#canusedom)
 -   [closest](#closest)
 -   [contains](#contains)
 -   [createEvent](#createevent)
@@ -82,6 +83,20 @@ import { applyState } from "reakit-utils";
 
 applyState((value) => value + 1, 1); // 2
 applyState(2, 1); // 2
+```
+
+### canUseDOM
+
+It's `true` if it is running in a browser environment or `false` if it is not (SSR).
+
+Type: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+#### Examples
+
+```javascript
+import { canUseDOM } from "reakit-utils";
+
+const title = canUseDOM ? document.title : "";
 ```
 
 ### closest
