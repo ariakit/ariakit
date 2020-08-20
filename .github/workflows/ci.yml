@@ -49,7 +49,10 @@ jobs:
     - name: Test
       run: yarn test --coverage
 
+    - name: Check build output is checked in
+      run: node ./scripts/build/check.js
+
     - name: Upload coverage to Codecov
-      env: 
+      env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: bash <(curl -s https://codecov.io/bash)
