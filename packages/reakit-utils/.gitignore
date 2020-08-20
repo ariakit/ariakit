@@ -16,6 +16,7 @@
 /getDefaultView
 /getDocument
 /getNextActiveElementOnBlur
+/getWindow
 /hasFocus
 /hasFocusWithin
 /isButton
