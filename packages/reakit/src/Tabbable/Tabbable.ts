@@ -9,6 +9,7 @@ import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
+import { canUseDOM } from "reakit-utils/canUseDOM";
 import { getClosestFocusable } from "reakit-utils/tabbable";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { TABBABLE_KEYS } from "./__keys";
@@ -33,7 +34,7 @@ export type TabbableHTMLProps = BoxHTMLProps & {
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
 
 function isUA(string: string) {
-  if (typeof window === "undefined") return false;
+  if (!canUseDOM) return false;
   return window.navigator.userAgent.indexOf(string) !== -1;
 }
 

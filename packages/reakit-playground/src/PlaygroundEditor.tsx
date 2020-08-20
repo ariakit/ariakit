@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Controlled as CodeMirror } from "react-codemirror2";
 import { useOptions, useProps } from "reakit-system";
-import { useLiveRef } from "reakit-utils";
+import { useLiveRef, canUseDOM } from "reakit-utils";
 import { PlaygroundActions, PlaygroundStateReturn } from "./usePlaygroundState";
 
 if (typeof navigator !== "undefined") {
@@ -96,7 +96,7 @@ export function PlaygroundEditor({
 
   const value = options.readOnly ? options.code.trim() : options.code;
 
-  if (typeof window === "undefined" || !ready) {
+  if (!canUseDOM || !ready) {
     return (
       <pre className={className}>{options.readOnly ? value : `${value}\n`}</pre>
     );

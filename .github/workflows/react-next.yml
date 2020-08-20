@@ -4,14 +4,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
-  
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-
     - name: Checkout repository
       uses: actions/checkout@v2
 

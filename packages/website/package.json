@@ -17,7 +17,7 @@
     "serve": "gatsby serve -H 0.0.0.0 -p 9000"
   },
   "dependencies": {
-    "@emotion/core": "10.0.34",
+    "@emotion/core": "10.0.35",
     "@types/lodash": "4.14.159",
     "@types/qs": "6.9.4",
     "@types/react-helmet": "6.1.0",
@@ -50,7 +50,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-helmet": "6.1.0",
-    "react-icons": "3.10.0",
+    "react-icons": "3.11.0",
     "react-spring": "8.0.27",
     "reakit": "^1.2.2",
     "reakit-playground": "^0.14.2",

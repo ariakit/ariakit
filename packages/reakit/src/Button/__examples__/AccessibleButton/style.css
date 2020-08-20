@@ -1,0 +1,23 @@
+button {
+  position: relative;
+  background-color: var(--background-color-0, #fff);
+  color: var(--color-primary-700, #1976d2);
+  border: 0;
+  font-size: var(--font-size-medium, 16px);
+  padding: 0.7em 1.4em;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: 0;
+}
+
+button:hover {
+  background-color: var(--color-primary-50, #e3f2fd);
+}
+
+button:active {
+  background-color: var(--color-primary-100, #bbdefb);
+}
+
+button:focus {
+  box-shadow: 0 0 0 2px var(--color-primary-700, #1976d2);
+}

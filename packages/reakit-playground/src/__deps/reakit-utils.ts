@@ -3,6 +3,7 @@
 export default {
   "reakit-utils": require("reakit-utils"),
   "reakit-utils/applyState": require("reakit-utils/applyState"),
+  "reakit-utils/canUseDOM": require("reakit-utils/canUseDOM"),
   "reakit-utils/closest": require("reakit-utils/closest"),
   "reakit-utils/contains": require("reakit-utils/contains"),
   "reakit-utils/createEvent": require("reakit-utils/createEvent"),
