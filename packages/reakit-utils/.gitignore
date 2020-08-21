@@ -13,7 +13,6 @@
 /fireKeyboardEvent
 /flatten
 /getActiveElement
-/getDefaultView
 /getDocument
 /getNextActiveElementOnBlur
 /getWindow

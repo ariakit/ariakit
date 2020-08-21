@@ -14,7 +14,6 @@ export default {
   "reakit-utils/fireKeyboardEvent": require("reakit-utils/fireKeyboardEvent"),
   "reakit-utils/flatten": require("reakit-utils/flatten"),
   "reakit-utils/getActiveElement": require("reakit-utils/getActiveElement"),
-  "reakit-utils/getDefaultView": require("reakit-utils/getDefaultView"),
   "reakit-utils/getDocument": require("reakit-utils/getDocument"),
   "reakit-utils/getNextActiveElementOnBlur": require("reakit-utils/getNextActiveElementOnBlur"),
   "reakit-utils/getWindow": require("reakit-utils/getWindow"),

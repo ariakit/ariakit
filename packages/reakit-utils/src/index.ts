@@ -10,7 +10,7 @@ export * from "./fireBlurEvent";
 export * from "./fireKeyboardEvent";
 export * from "./flatten";
 export * from "./getActiveElement";
-export * from "./getDefaultView";
+export * from "./getWindow";
 export * from "./getDocument";
 export * from "./getNextActiveElementOnBlur";
 export * from "./hasFocus";
