@@ -1,11 +1,13 @@
 button {
+  font-family: var(--font-family, sans-serif);
   position: relative;
-  background-color: var(--background-color-0, #fff);
+  background-color: var(--color-grayscale-0, #fff);
   color: var(--color-primary-700, #1976d2);
   border: 0;
-  font-size: var(--font-size-medium, 16px);
-  padding: 0.7em 1.4em;
-  border-radius: 999px;
+  font-size: var(--font-size-body, 16px);
+  padding: 0 1em;
+  line-height: 2.5em;
+  border-radius: 4px;
   cursor: pointer;
   outline: 0;
 }

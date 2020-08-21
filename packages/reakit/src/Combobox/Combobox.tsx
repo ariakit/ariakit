@@ -159,7 +159,13 @@ export const unstable_useCombobox = createHook<
         handler?: React.KeyboardEventHandler<HTMLInputElement>
       ) => {
         const inputHasFocus = options.currentId === null;
-        if (inputHasFocus) {
+        if (
+          inputHasFocus &&
+          !event.shiftKey &&
+          !event.ctrlKey &&
+          !event.shiftKey &&
+          !event.metaKey
+        ) {
           if (["ArrowLeft", "ArrowRight"].includes(event.key)) return;
           if (event.key === "Escape") {
             options.hide?.();
