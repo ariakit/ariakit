@@ -60,6 +60,21 @@ test("close combobox popover by clicking outside", () => {
   expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
 });
 
+test("close combobox popover by tabbing out", () => {
+  render(
+    <>
+      <AccessibleCombobox />
+      <button>button</button>
+    </>
+  );
+  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  click(screen.getByLabelText("Fruits"));
+  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  press.Tab();
+  expect(screen.getByText("button")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+});
+
 test("close combobox popover by pressing esc", () => {
   render(<AccessibleCombobox />);
   expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
@@ -90,6 +105,18 @@ test("open combobox popover after pressing esc", () => {
   press.Escape();
   expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
   type("\b");
+  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+});
+
+test("open combobox popover after pressing esc twice", () => {
+  render(<AccessibleCombobox />);
+  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  click(screen.getByLabelText("Fruits"));
+  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  press.Escape();
+  press.Escape();
+  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  press.ArrowDown();
   expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
 });
 
@@ -167,4 +194,16 @@ test("do not select combobox option by pressing space on it", () => {
   press.Space();
   expect(screen.getByLabelText("Fruits")).toHaveValue("");
   expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+});
+
+test("unselect combobox option when typing on the combobox", () => {
+  render(<AccessibleCombobox />);
+  click(screen.getByLabelText("Fruits"));
+  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  press.ArrowDown();
+  expect(screen.getByText("Apple")).toHaveFocus();
+  type("a");
+  expect(screen.getByText("Apple")).not.toHaveFocus();
+  press.ArrowDown();
+  expect(screen.getByText("Apple")).toHaveFocus();
 });

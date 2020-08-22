@@ -120,6 +120,10 @@ export type ComboboxBaseStateReturn<
   T extends CompositeStateReturn
 > = ComboboxBaseState<T> & ComboboxBaseActions<T>;
 
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function getMatches(
   inputValue: ComboboxBaseState["inputValue"],
   values: ComboboxBaseState["values"],
@@ -130,14 +134,15 @@ function getMatches(
   if (!list) {
     return values.slice(0, limit);
   }
-  const searchValue = new RegExp(inputValue, "i");
+  const searchValue = new RegExp(escapeRegExp(inputValue), "i");
   let matches = values
     .filter((value) => value.search(searchValue) !== -1)
     .slice(0, autoSelect && limit ? limit - 1 : limit);
 
   if (autoSelect) {
     const firstMatch = values.find(
-      (value) => value.search(new RegExp(`^${inputValue}`, "i")) !== -1
+      (value) =>
+        value.search(new RegExp(`^${escapeRegExp(inputValue)}`, "i")) !== -1
     );
     if (firstMatch) {
       matches = removeItemFromArray(matches, firstMatch);

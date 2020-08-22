@@ -49,8 +49,8 @@ export const unstable_useComboboxItem = createHook<
         return false;
       }
     }
-    const prevId = getItemId(prev.baseId, prev.value);
-    const nextId = getItemId(next.baseId, next.value);
+    const prevId = getItemId(prev.baseId, prev.value, prev.id);
+    const nextId = getItemId(next.baseId, next.value, prev.id);
     return useCompositeItem.unstable_propsAreEqual(
       { ...prevProps, id: prevId },
       { ...nextProps, id: nextId }
@@ -70,7 +70,7 @@ export const unstable_useComboboxItem = createHook<
       return { ...options, registerItem };
     }
 
-    const id = getItemId(options.baseId, options.value);
+    const id = getItemId(options.baseId, options.value, options.id);
     return { ...options, registerItem, id };
   },
 
