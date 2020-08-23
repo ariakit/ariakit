@@ -1,5 +1,5 @@
 import { getDocument } from "./getDocument";
-import { getDefaultView } from "./getDefaultView";
+import { getWindow } from "./getWindow";
 
 function createKeyboardEvent(
   element: HTMLElement,
@@ -15,7 +15,7 @@ function createKeyboardEvent(
     type,
     eventInit.bubbles,
     eventInit.cancelable,
-    getDefaultView(element),
+    getWindow(element),
     eventInit.key,
     eventInit.location,
     eventInit.ctrlKey,

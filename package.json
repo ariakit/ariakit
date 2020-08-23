@@ -37,7 +37,7 @@
     "*.{js,ts,tsx}": [
       "eslint --ext js,ts,tsx --fix"
     ],
-    "*.{css}": [
+    "*.css": [
       "stylelint --fix"
     ],
     "{README,CHANGELOG}.md": [
