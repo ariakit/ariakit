@@ -37,7 +37,7 @@
     "*.{js,ts,tsx}": [
       "eslint --ext js,ts,tsx --fix"
     ],
-    "*.{css}": [
+    "*.css": [
       "stylelint --fix"
     ],
     "{README,CHANGELOG}.md": [
@@ -104,6 +104,7 @@
     "md-node-inject": "1.0.1",
     "open-cli": "6.0.1",
     "patch-package": "6.2.2",
+    "postcss-import": "12.0.1",
     "postcss-scopify": "0.1.9",
     "prettier": "2.0.5",
     "raf": "3.4.1",
