@@ -1,10 +1,20 @@
+:root {
+  --font-family: var(--font-family-body, sans-serif);
+  --font-size: var(--font-size-body, 16px);
+  --button-color: var(--color-primary-700, #1976d2);
+  --button-background: transparent;
+  --button-background-hover: var(--color-primary-50, #e3f2fd);
+  --button-background-active: var(--color-primary-100, #bbdefb);
+  --button-border-focus: var(--color-primary-700, #1976d2);
+}
+
 button {
-  font-family: var(--font-family, sans-serif);
+  font-family: var(--font-family);
+  background-color: var(--button-background);
+  color: var(--button-color);
+  font-size: var(--font-size);
   position: relative;
-  background-color: var(--color-grayscale-0, #fff);
-  color: var(--color-primary-700, #1976d2);
   border: 0;
-  font-size: var(--font-size-body, 16px);
   padding: 0 1em;
   line-height: 2.5em;
   border-radius: 4px;
@@ -13,13 +23,13 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-primary-50, #e3f2fd);
+  background-color: var(--button-background-hover);
 }
 
 button:active {
-  background-color: var(--color-primary-100, #bbdefb);
+  background-color: var(--button-background-active);
 }
 
 button:focus {
-  box-shadow: 0 0 0 2px var(--color-primary-700, #1976d2);
+  box-shadow: 0 0 0 2px var(--button-border-focus);
 }

@@ -1,80 +1,46 @@
 import * as React from "react";
-import {
-  render,
-  press,
-  focus,
-  click,
-  fireEvent,
-  screen,
-} from "reakit-test-utils";
-import ComboboxWithInlineAutocomplete from "..";
+import { render, press, focus, click, type, screen } from "reakit-test-utils";
+import ComboboxWithListAutocomplete from "..";
 
-test("change combobox value by focusing on combobox options", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+test("do not change combobox value by focusing on combobox options", () => {
+  render(<ComboboxWithListAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
-  focus(screen.getByText("Red"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("Red");
-});
-
-test("change combobox value by arrowing through combobox options", () => {
-  render(<ComboboxWithInlineAutocomplete />);
-  click(screen.getByLabelText("Colors"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
-  press.ArrowDown();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Red");
-  press.ArrowDown();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Green");
-  press.ArrowDown();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Blue");
-  press.ArrowDown();
+  focus(screen.getByText("AliceBlue"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
 });
 
-test("revert combobox value after closing combobox popover with esc", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+test("do not change combobox value by arrowing through combobox options", () => {
+  render(<ComboboxWithListAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
-  press.ArrowUp();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Blue");
-  press.Escape();
+  press.ArrowDown();
   expect(screen.getByLabelText("Colors")).toHaveValue("");
-});
-
-test("keep combobox value after closing combobox popover by tabbing out", () => {
-  render(
-    <>
-      <ComboboxWithInlineAutocomplete />
-      <button>button</button>
-    </>
-  );
-  click(screen.getByLabelText("Colors"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
-  press.Home();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Red");
-  press.Tab();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Red");
-});
-
-test("keep combobox value after closing combobox popover by clicking outside", () => {
-  const { baseElement } = render(<ComboboxWithInlineAutocomplete />);
-  click(screen.getByLabelText("Colors"));
+  press.ArrowDown();
   expect(screen.getByLabelText("Colors")).toHaveValue("");
   press.End();
-  expect(screen.getByLabelText("Colors")).toHaveValue("Blue");
-  click(baseElement);
-  expect(screen.getByLabelText("Colors")).toHaveValue("Blue");
+  expect(screen.getByLabelText("Colors")).toHaveValue("");
 });
 
-test("unselect combobox option when cleaning combobox value", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+test("change combobox value by clicking on the combobox option", () => {
+  render(<ComboboxWithListAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
-  focus(screen.getByText("Red"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("Red");
-  fireEvent.change(screen.getByLabelText("Colors"), { target: { value: "" } });
-  expect(screen.getByText("Red")).not.toHaveFocus();
-  expect(screen.getByText("Green")).not.toHaveFocus();
-  expect(screen.getByText("Blue")).not.toHaveFocus();
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  click(screen.getByText("AliceBlue"));
+  expect(screen.getByLabelText("Colors")).toHaveValue("AliceBlue");
+});
+
+test("filter combobox options by typing on the combobox", () => {
+  render(<ComboboxWithListAutocomplete />);
+  press.Tab();
+  type("bla");
+  expect(screen.queryByText("Black")).toBeInTheDocument();
+  expect(screen.queryByText("BlanchedAlmond")).toBeInTheDocument();
+});
+
+test("display no results when there is no option match", () => {
+  render(<ComboboxWithListAutocomplete />);
+  press.Tab();
+  type("1");
+  expect(screen.queryByText("No results")).toBeInTheDocument();
 });
