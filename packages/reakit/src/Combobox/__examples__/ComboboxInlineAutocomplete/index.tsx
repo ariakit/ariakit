@@ -8,7 +8,7 @@ import {
 
 import "./style.css";
 
-export default function ComboboxWithInlineAutocomplete() {
+export default function ComboboxInlineAutocomplete() {
   const combobox = useComboboxState({ inline: true, gutter: 8 });
   return (
     <>

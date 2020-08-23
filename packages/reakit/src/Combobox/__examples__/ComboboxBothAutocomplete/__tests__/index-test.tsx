@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render, press, focus, click, type, screen } from "reakit-test-utils";
-import ComboboxWithBothAutocomplete from "..";
+import ComboboxBothAutocomplete from "..";
 
 test("change combobox value by focusing on combobox options", () => {
-  render(<ComboboxWithBothAutocomplete />);
+  render(<ComboboxBothAutocomplete />);
   click(screen.getByLabelText("Fruits"));
   expect(screen.getByLabelText("Fruits")).toHaveValue("");
   focus(screen.getByText("Acerola"));
@@ -11,7 +11,7 @@ test("change combobox value by focusing on combobox options", () => {
 });
 
 test("change combobox value by arrowing through combobox options", () => {
-  render(<ComboboxWithBothAutocomplete />);
+  render(<ComboboxBothAutocomplete />);
   click(screen.getByLabelText("Fruits"));
   expect(screen.getByLabelText("Fruits")).toHaveValue("");
   press.ArrowDown();
@@ -26,7 +26,7 @@ test("change combobox value by arrowing through combobox options", () => {
 });
 
 test("filter combobox options by typing on the combobox", () => {
-  render(<ComboboxWithBothAutocomplete />);
+  render(<ComboboxBothAutocomplete />);
   press.Tab();
   type("bla");
   expect(screen.queryByText("Blackberries")).toBeInTheDocument();
@@ -34,7 +34,7 @@ test("filter combobox options by typing on the combobox", () => {
 });
 
 test("display no results when there is no option match", () => {
-  render(<ComboboxWithBothAutocomplete />);
+  render(<ComboboxBothAutocomplete />);
   press.Tab();
   type("1");
   expect(screen.queryByText("No results")).toBeInTheDocument();

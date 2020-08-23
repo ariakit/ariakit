@@ -9,7 +9,7 @@ import { fruits } from "./fruits";
 
 import "./style.css";
 
-export default function ComboboxWithBothAutocomplete() {
+export default function ComboboxBothAutocomplete() {
   const combobox = useComboboxState({
     values: fruits,
     inline: true,

@@ -7,10 +7,10 @@ import {
   fireEvent,
   screen,
 } from "reakit-test-utils";
-import ComboboxWithInlineAutocomplete from "..";
+import ComboboxInlineAutocomplete from "..";
 
 test("change combobox value by focusing on combobox options", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+  render(<ComboboxInlineAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
   focus(screen.getByText("Red"));
@@ -18,7 +18,7 @@ test("change combobox value by focusing on combobox options", () => {
 });
 
 test("change combobox value by arrowing through combobox options", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+  render(<ComboboxInlineAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
   press.ArrowDown();
@@ -32,7 +32,7 @@ test("change combobox value by arrowing through combobox options", () => {
 });
 
 test("revert combobox value after closing combobox popover with esc", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+  render(<ComboboxInlineAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
   press.ArrowUp();
@@ -44,7 +44,7 @@ test("revert combobox value after closing combobox popover with esc", () => {
 test("keep combobox value after closing combobox popover by tabbing out", () => {
   render(
     <>
-      <ComboboxWithInlineAutocomplete />
+      <ComboboxInlineAutocomplete />
       <button>button</button>
     </>
   );
@@ -57,7 +57,7 @@ test("keep combobox value after closing combobox popover by tabbing out", () => 
 });
 
 test("keep combobox value after closing combobox popover by clicking outside", () => {
-  const { baseElement } = render(<ComboboxWithInlineAutocomplete />);
+  const { baseElement } = render(<ComboboxInlineAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
   press.End();
@@ -67,7 +67,7 @@ test("keep combobox value after closing combobox popover by clicking outside", (
 });
 
 test("unselect combobox option when cleaning combobox value", () => {
-  render(<ComboboxWithInlineAutocomplete />);
+  render(<ComboboxInlineAutocomplete />);
   click(screen.getByLabelText("Colors"));
   expect(screen.getByLabelText("Colors")).toHaveValue("");
   focus(screen.getByText("Red"));
