@@ -31,8 +31,8 @@ type Options<T extends As, O> = {
 };
 
 export type Component<T extends As, O> = {
-  (props: Omit<PropsWithAs<O, T>, "as">): JSX.Element;
-  <TT extends As = T>(props: PropsWithAs<O, TT>): JSX.Element;
+  <TT extends As>(props: PropsWithAs<O, TT> & { as: TT }): JSX.Element;
+  (props: PropsWithAs<O, T>): JSX.Element;
   displayName?: string;
   unstable_propsAreEqual: (
     prev: PropsWithAs<O, T>,
