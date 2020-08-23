@@ -36,9 +36,9 @@ yarn add reakit-utils
 -   [fireKeyboardEvent](#firekeyboardevent)
 -   [flatten](#flatten)
 -   [getActiveElement](#getactiveelement)
--   [getDefaultView](#getdefaultview)
 -   [getDocument](#getdocument)
 -   [getNextActiveElementOnBlur](#getnextactiveelementonblur)
+-   [getWindow](#getwindow)
 -   [hasFocus](#hasfocus)
 -   [hasFocusWithin](#hasfocuswithin)
 -   [isButton](#isbutton)
@@ -88,8 +88,6 @@ applyState(2, 1); // 2
 ### canUseDOM
 
 It's `true` if it is running in a browser environment or `false` if it is not (SSR).
-
-Type: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 #### Examples
 
@@ -291,19 +289,9 @@ Returns `element.ownerDocument.activeElement`.
 
 -   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
 
-### getDefaultView
-
-Returns `element.ownerDocument.defaultView || window`.
-
-#### Parameters
-
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)?** 
-
-Returns **[Window](https://developer.mozilla.org/docs/Web/API/Window)** 
-
 ### getDocument
 
-Returns `element.ownerDocument || window.document`.
+Returns `element.ownerDocument || document`.
 
 #### Parameters
 
@@ -331,6 +319,16 @@ element.addEventListener("blur", (event) => {
   const nextActiveElement = getNextActiveElementOnBlur(event);
 });
 ```
+
+### getWindow
+
+Returns `element.ownerDocument.defaultView || window`.
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)?** 
+
+Returns **[Window](https://developer.mozilla.org/docs/Web/API/Window)** 
 
 ### hasFocus
 
