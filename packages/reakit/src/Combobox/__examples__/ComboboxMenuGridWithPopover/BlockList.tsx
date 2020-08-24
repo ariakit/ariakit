@@ -38,6 +38,7 @@ function BlockList(
     limit: initialValues.length,
     columns: 3,
     wrap: "horizontal",
+    autoSelect: true,
     unstable_angular: true,
   });
   return (
@@ -54,7 +55,7 @@ function BlockList(
           <ComboboxMenu {...combobox} aria-label="Block suggestions">
             {combobox.matches.map((values, i) => (
               <ComboboxGridRow {...combobox} key={i}>
-                {values.map((val, j) => (
+                {values.map((val) => (
                   <ComboboxGridCell
                     {...combobox}
                     as={Block}
@@ -63,7 +64,6 @@ function BlockList(
                     title={val}
                     icon={getIconFromValue(initialItems, val)}
                     onClick={onOptionClick}
-                    isTabbable={i + j === 0 && combobox.currentId === null}
                   />
                 ))}
               </ComboboxGridRow>
