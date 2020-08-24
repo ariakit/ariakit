@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.3](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.14.2...reakit-utils@0.14.3) (2020-08-24)
+
+
+### Bug Fixes
+
+* **reakit-utils:** Fix `canUseDOM` to support IE11 window object ([#720](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/720)) ([ca9d94a](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/ca9d94aae947e88aae872ce15d7bc82712e1056f))
+* Fix SSR check ([#717](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/717)) ([1f09fc9](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/1f09fc9879ecd9516d514c7a848b7a62a1b93358))
+
+
+
+
+
 ## [0.14.2](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.14.1...reakit-utils@0.14.2) (2020-08-17)
 
 
