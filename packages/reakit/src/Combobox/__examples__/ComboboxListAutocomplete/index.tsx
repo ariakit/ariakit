@@ -19,7 +19,7 @@ export default function ComboboxListAutocomplete() {
           ? combobox.matches.map((value) => (
               <ComboboxOption {...combobox} key={value} value={value} />
             ))
-          : "No results"}
+          : "No results found"}
       </ComboboxPopover>
     </>
   );

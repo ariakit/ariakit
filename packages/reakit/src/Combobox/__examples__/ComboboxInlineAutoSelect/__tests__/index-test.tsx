@@ -43,11 +43,11 @@ test("open combobox popover on type and auto select", () => {
   type("a");
   expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
   expect(screen.getByText("Apple")).toHaveFocus();
-  expect(combobox).toHaveValue("Apple");
+  expect(combobox).toHaveValue("apple");
   expectSelectionValue(combobox, "pple");
   type("pp");
   expect(screen.getByText("Apple")).toHaveFocus();
-  expect(combobox).toHaveValue("Apple");
+  expect(combobox).toHaveValue("apple");
   expectSelectionValue(combobox, "le");
   type("\b");
   expect(screen.getByText("Apple")).not.toHaveFocus();
@@ -59,7 +59,7 @@ test("open combobox popover on type and auto select", () => {
   expectSelectionValue(combobox, "");
   type("pp");
   expect(screen.getByText("Apple")).toHaveFocus();
-  expect(combobox).toHaveValue("Apple");
+  expect(combobox).toHaveValue("apple");
   expectSelectionValue(combobox, "le");
 });
 
@@ -67,10 +67,10 @@ test("keep combobox value after closing combobox popover by clicking outside", (
   const { baseElement } = render(<ComboboxInlineAutoSelect />);
   click(screen.getByLabelText("Fruits"));
   type("a");
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
   expectSelectionValue(screen.getByLabelText("Fruits"), "pple");
   click(baseElement);
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
   expectSelectionValue(screen.getByLabelText("Fruits"), "");
 });
 
@@ -78,7 +78,7 @@ test("move through combobox options by pressing arrow keys", () => {
   render(<ComboboxInlineAutoSelect />);
   press.Tab();
   type("a");
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
   expectSelectionValue(screen.getByLabelText("Fruits"), "pple");
   press.ArrowDown();
   expect(screen.getByLabelText("Fruits")).toHaveValue("Orange");
@@ -90,6 +90,6 @@ test("move through combobox options by pressing arrow keys", () => {
   expect(screen.getByLabelText("Fruits")).toHaveValue("a");
   expectSelectionValue(screen.getByLabelText("Fruits"), "");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
   expectSelectionValue(screen.getByLabelText("Fruits"), "pple");
 });

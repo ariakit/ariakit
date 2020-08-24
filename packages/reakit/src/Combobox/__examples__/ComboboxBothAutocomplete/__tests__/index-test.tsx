@@ -37,5 +37,5 @@ test("display no results when there is no option match", () => {
   render(<ComboboxBothAutocomplete />);
   press.Tab();
   type("1");
-  expect(screen.queryByText("No results")).toBeInTheDocument();
+  expect(screen.queryByText("No results found")).toBeInTheDocument();
 });

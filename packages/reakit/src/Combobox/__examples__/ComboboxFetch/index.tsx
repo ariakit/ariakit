@@ -5,22 +5,32 @@ import {
   unstable_ComboboxPopover as ComboboxPopover,
   unstable_ComboboxOption as ComboboxOption,
 } from "reakit/Combobox";
-import { fruits } from "./fruits";
+import { fetchFruits } from "./api";
 
 import "./style.css";
 
-export default function ComboboxBothAutocomplete() {
+export default function ComboboxFetch() {
+  const [matches, setMatches] = React.useState<string[]>([]);
   const combobox = useComboboxState({
-    values: fruits,
+    list: true,
     inline: true,
+    autoSelect: true,
     gutter: 8,
   });
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchFruits(combobox.inputValue).then(setMatches);
+    }, 250);
+    return () => clearTimeout(timeout);
+  }, [combobox.inputValue]);
+
   return (
     <>
       <Combobox {...combobox} aria-label="Fruits" placeholder="Enter a fruit" />
       <ComboboxPopover {...combobox} aria-label="Fruits suggestions">
-        {combobox.matches.length
-          ? combobox.matches.map((value) => (
+        {matches.length
+          ? matches.map((value) => (
               <ComboboxOption {...combobox} key={value} value={value} />
             ))
           : "No results found"}
