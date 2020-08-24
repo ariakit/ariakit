@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.3](https://github.com/reakit/reakit/compare/reakit@1.2.2...reakit@1.2.3) (2020-08-24)
+
+
+### Bug Fixes
+
+* Fix SSR check ([#717](https://github.com/reakit/reakit/issues/717)) ([1f09fc9](https://github.com/reakit/reakit/commit/1f09fc9879ecd9516d514c7a848b7a62a1b93358))
+
+
+
+
+
 ## [1.2.2](https://github.com/reakit/reakit/compare/reakit@1.2.1...reakit@1.2.2) (2020-08-17)
 
 
