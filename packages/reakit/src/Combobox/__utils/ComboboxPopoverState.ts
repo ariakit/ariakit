@@ -8,15 +8,6 @@ import {
 import { unstable_ComboboxMenuStateReturn as ComboboxMenuStateReturn } from "../ComboboxMenuState";
 import { unstable_ComboboxMenuGridStateReturn as ComboboxMenuGridStateReturn } from "../ComboboxMenuGridState";
 
-export type ComboboxPopoverState = PopoverState;
-
-export type ComboboxPopoverActions = PopoverActions;
-
-export type ComboboxPopoverInitialState = PopoverInitialState;
-
-export type ComboboxPopoverStateReturn = ComboboxPopoverState &
-  ComboboxPopoverActions;
-
 export function useComboboxPopoverState<
   T extends ComboboxMenuStateReturn | ComboboxMenuGridStateReturn
 >(
@@ -38,3 +29,12 @@ export function useComboboxPopoverState<
     ...popover,
   };
 }
+
+export type ComboboxPopoverState = PopoverState;
+
+export type ComboboxPopoverActions = PopoverActions;
+
+export type ComboboxPopoverInitialState = PopoverInitialState;
+
+export type ComboboxPopoverStateReturn = ComboboxPopoverState &
+  ComboboxPopoverActions;

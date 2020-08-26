@@ -4,60 +4,60 @@ import AccessibleCombobox from "..";
 
 test("open combobox popover on click", () => {
   render(<AccessibleCombobox />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).not.toHaveFocus();
 });
 
 test("open combobox popover on arrow down", () => {
   render(<AccessibleCombobox />);
   press.Tab();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).not.toHaveFocus();
 });
 
 test("open combobox popover on arrow up", () => {
   render(<AccessibleCombobox />);
   press.Tab();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowUp();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Banana")).not.toHaveFocus();
 });
 
 test("open combobox popover by typing on the combobox", () => {
   render(<AccessibleCombobox />);
   press.Tab();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("a");
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).not.toHaveFocus();
 });
 
 test("do not open combobox popover on arrow right/left", () => {
   render(<AccessibleCombobox />);
   press.Tab();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowLeft();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowRight();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
 });
 
 test("close combobox popover by clicking outside", () => {
   const { baseElement } = render(<AccessibleCombobox />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   click(baseElement);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
 });
 
 test("close combobox popover by tabbing out", () => {
@@ -67,71 +67,71 @@ test("close combobox popover by tabbing out", () => {
       <button>button</button>
     </>
   );
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Tab();
   expect(screen.getByText("button")).toHaveFocus();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
 });
 
 test("close combobox popover by pressing esc", () => {
   render(<AccessibleCombobox />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
 });
 
 test("open combobox popover after pressing esc", () => {
   render(<AccessibleCombobox />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowUp();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("a");
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("\b");
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
 });
 
 test("open combobox popover after pressing esc twice", () => {
   render(<AccessibleCombobox />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
   press.Escape();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
 });
 
 test("move through combobox options with keyboard", () => {
   render(<AccessibleCombobox />);
-  click(screen.getByLabelText("Fruits"));
+  click(screen.getByLabelText("Fruit"));
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
   expect(screen.getByText("Apple")).toHaveFocus();
   press.ArrowDown();
   expect(screen.getByText("Orange")).toHaveFocus();
   press.ArrowDown();
   expect(screen.getByText("Banana")).toHaveFocus();
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
   expect(screen.getByText("Apple")).not.toHaveFocus();
   expect(screen.getByText("Orange")).not.toHaveFocus();
   expect(screen.getByText("Banana")).not.toHaveFocus();
@@ -142,7 +142,7 @@ test("move through combobox options with keyboard", () => {
   press.ArrowUp();
   expect(screen.getByText("Apple")).toHaveFocus();
   press.ArrowUp();
-  expect(screen.getByLabelText("Fruits")).toHaveFocus();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
   expect(screen.getByText("Apple")).not.toHaveFocus();
   expect(screen.getByText("Orange")).not.toHaveFocus();
   expect(screen.getByText("Banana")).not.toHaveFocus();
@@ -160,46 +160,46 @@ test("move through combobox options with keyboard", () => {
 
 test("select combobox option by clicking on it", () => {
   render(<AccessibleCombobox />);
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
   click(screen.getByText("Orange"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Orange");
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Orange");
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("\b\b\b\b\b\ba");
-  expect(screen.getByLabelText("Fruits")).toHaveValue("a");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("a");
   click(screen.getByText("Apple"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Apple");
 });
 
 test("select combobox option by pressing enter on it", () => {
   render(<AccessibleCombobox />);
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
   press.End();
   press.Enter();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Banana");
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Banana");
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("\b\b\b\b\b\ba");
-  expect(screen.getByLabelText("Fruits")).toHaveValue("a");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("a");
   press.Home();
   press.Enter();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Apple");
 });
 
 test("do not select combobox option by pressing space on it", () => {
   render(<AccessibleCombobox />);
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
   press.ArrowDown();
   press.Space();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
 });
 
 test("unselect combobox option when typing on the combobox", () => {
   render(<AccessibleCombobox />);
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
   press.ArrowDown();
   expect(screen.getByText("Apple")).toHaveFocus();
   type("a");

@@ -8,8 +8,8 @@ import {
 
 import "./style.css";
 
-export default function AccessibleCombobox() {
-  const combobox = useComboboxState({ gutter: 8 });
+export default function ComboboxMinValueLength() {
+  const combobox = useComboboxState({ minValueLength: 2, gutter: 8 });
   return (
     <>
       <Combobox {...combobox} aria-label="Fruit" />

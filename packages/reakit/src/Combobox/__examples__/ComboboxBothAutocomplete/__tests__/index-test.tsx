@@ -4,25 +4,25 @@ import ComboboxBothAutocomplete from "..";
 
 test("change combobox value by focusing on combobox options", () => {
   render(<ComboboxBothAutocomplete />);
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
   focus(screen.getByText("Acerola"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Acerola");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Acerola");
 });
 
 test("change combobox value by arrowing through combobox options", () => {
   render(<ComboboxBothAutocomplete />);
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Acerola");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Acerola");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apple");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Apple");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Apricots");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Apricots");
   press.Home();
   press.ArrowUp();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("");
 });
 
 test("filter combobox options by typing on the combobox", () => {

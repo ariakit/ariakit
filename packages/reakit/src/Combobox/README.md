@@ -195,26 +195,33 @@ column and vice-versa.
   Combobox input value that will be used to filter `values` and populate
 the `matches` property.
 
+- **`minValueLength`**
+  <code>number</code>
+
+  How many characters are needed for opening the combobox popover and
+populating `matches` with filtered values.
+
 - **`values`**
   <code>string[]</code>
 
   Values that will be used to produce `matches`.
 
 - **`limit`**
-  <code>number | undefined</code>
+  <code>number | false</code>
 
-  Maximum number of matches.
+  Maximum number of `matches`. If it's set to `false`, there will be no
+limit.
 
 - **`list`**
   <code>boolean</code>
 
   Determines how the combobox options behave: dynamically or statically.
 By default, it's `true` if `values` are provided. Otherwise, it's `false`:
- - If it's `true` and `values` are provided, then they will be
+  - If it's `true` and `values` are provided, then they will be
 automatically filtered based on `inputValue` and will populate `matches`.
- - If it's `true` and `values` aren't provided, this means that you'll
+  - If it's `true` and `values` aren't provided, this means that you'll
 provide and filter values by yourself. `matches` will be empty.
- - If it's `false` and `values` are provided, then they won't be
+  - If it's `false` and `values` are provided, then they won't be
 automatically filtered and `matches` will be the same as `values`.
 
 - **`inline`**
@@ -230,11 +237,11 @@ change the combobox value to the option's value.
   Determines whether the first option will be automatically selected. When
 it's set to `true`, the exact behavior will depend on the value of
 `inline`:
- - If `inline` is `true`, the first option is automatically focused when
+  - If `inline` is `true`, the first option is automatically focused when
 the combobox popover opens and the input value changes to reflect this.
 The inline completion string will be highlighted and will have a selected
 state.
- - If `inline` is `false`, the first option is automatically focused when
+  - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
 
 - **`columns`**
@@ -323,26 +330,33 @@ column and vice-versa.
   Combobox input value that will be used to filter `values` and populate
 the `matches` property.
 
+- **`minValueLength`**
+  <code>number</code>
+
+  How many characters are needed for opening the combobox popover and
+populating `matches` with filtered values.
+
 - **`values`**
   <code>string[]</code>
 
   Values that will be used to produce `matches`.
 
 - **`limit`**
-  <code>number | undefined</code>
+  <code>number | false</code>
 
-  Maximum number of matches.
+  Maximum number of `matches`. If it's set to `false`, there will be no
+limit.
 
 - **`list`**
   <code>boolean</code>
 
   Determines how the combobox options behave: dynamically or statically.
 By default, it's `true` if `values` are provided. Otherwise, it's `false`:
- - If it's `true` and `values` are provided, then they will be
+  - If it's `true` and `values` are provided, then they will be
 automatically filtered based on `inputValue` and will populate `matches`.
- - If it's `true` and `values` aren't provided, this means that you'll
+  - If it's `true` and `values` aren't provided, this means that you'll
 provide and filter values by yourself. `matches` will be empty.
- - If it's `false` and `values` are provided, then they won't be
+  - If it's `false` and `values` are provided, then they won't be
 automatically filtered and `matches` will be the same as `values`.
 
 - **`inline`**
@@ -358,11 +372,11 @@ change the combobox value to the option's value.
   Determines whether the first option will be automatically selected. When
 it's set to `true`, the exact behavior will depend on the value of
 `inline`:
- - If `inline` is `true`, the first option is automatically focused when
+  - If `inline` is `true`, the first option is automatically focused when
 the combobox popover opens and the input value changes to reflect this.
 The inline completion string will be highlighted and will have a selected
 state.
- - If `inline` is `false`, the first option is automatically focused when
+  - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
 
 - **`columns`**
@@ -451,26 +465,33 @@ column and vice-versa.
   Combobox input value that will be used to filter `values` and populate
 the `matches` property.
 
+- **`minValueLength`**
+  <code>number</code>
+
+  How many characters are needed for opening the combobox popover and
+populating `matches` with filtered values.
+
 - **`values`**
   <code>string[]</code>
 
   Values that will be used to produce `matches`.
 
 - **`limit`**
-  <code>number | undefined</code>
+  <code>number | false</code>
 
-  Maximum number of matches.
+  Maximum number of `matches`. If it's set to `false`, there will be no
+limit.
 
 - **`list`**
   <code>boolean</code>
 
   Determines how the combobox options behave: dynamically or statically.
 By default, it's `true` if `values` are provided. Otherwise, it's `false`:
- - If it's `true` and `values` are provided, then they will be
+  - If it's `true` and `values` are provided, then they will be
 automatically filtered based on `inputValue` and will populate `matches`.
- - If it's `true` and `values` aren't provided, this means that you'll
+  - If it's `true` and `values` aren't provided, this means that you'll
 provide and filter values by yourself. `matches` will be empty.
- - If it's `false` and `values` are provided, then they won't be
+  - If it's `false` and `values` are provided, then they won't be
 automatically filtered and `matches` will be the same as `values`.
 
 - **`inline`**
@@ -486,11 +507,11 @@ change the combobox value to the option's value.
   Determines whether the first option will be automatically selected. When
 it's set to `true`, the exact behavior will depend on the value of
 `inline`:
- - If `inline` is `true`, the first option is automatically focused when
+  - If `inline` is `true`, the first option is automatically focused when
 the combobox popover opens and the input value changes to reflect this.
 The inline completion string will be highlighted and will have a selected
 state.
- - If `inline` is `false`, the first option is automatically focused when
+  - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
 
 ### `useComboboxState`
@@ -626,26 +647,33 @@ column and vice-versa.
   Combobox input value that will be used to filter `values` and populate
 the `matches` property.
 
+- **`minValueLength`**
+  <code>number</code>
+
+  How many characters are needed for opening the combobox popover and
+populating `matches` with filtered values.
+
 - **`values`**
   <code>string[]</code>
 
   Values that will be used to produce `matches`.
 
 - **`limit`**
-  <code>number | undefined</code>
+  <code>number | false</code>
 
-  Maximum number of matches.
+  Maximum number of `matches`. If it's set to `false`, there will be no
+limit.
 
 - **`list`**
   <code>boolean</code>
 
   Determines how the combobox options behave: dynamically or statically.
 By default, it's `true` if `values` are provided. Otherwise, it's `false`:
- - If it's `true` and `values` are provided, then they will be
+  - If it's `true` and `values` are provided, then they will be
 automatically filtered based on `inputValue` and will populate `matches`.
- - If it's `true` and `values` aren't provided, this means that you'll
+  - If it's `true` and `values` aren't provided, this means that you'll
 provide and filter values by yourself. `matches` will be empty.
- - If it's `false` and `values` are provided, then they won't be
+  - If it's `false` and `values` are provided, then they won't be
 automatically filtered and `matches` will be the same as `values`.
 
 - **`inline`**
@@ -661,11 +689,11 @@ change the combobox value to the option's value.
   Determines whether the first option will be automatically selected. When
 it's set to `true`, the exact behavior will depend on the value of
 `inline`:
- - If `inline` is `true`, the first option is automatically focused when
+  - If `inline` is `true`, the first option is automatically focused when
 the combobox popover opens and the input value changes to reflect this.
 The inline completion string will be highlighted and will have a selected
 state.
- - If `inline` is `false`, the first option is automatically focused when
+  - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
 
 ### `Combobox`
@@ -785,11 +813,11 @@ and `groupId` if any. This state is automatically updated when
 
   Determines how the combobox options behave: dynamically or statically.
 By default, it's `true` if `values` are provided. Otherwise, it's `false`:
- - If it's `true` and `values` are provided, then they will be
+  - If it's `true` and `values` are provided, then they will be
 automatically filtered based on `inputValue` and will populate `matches`.
- - If it's `true` and `values` aren't provided, this means that you'll
+  - If it's `true` and `values` aren't provided, this means that you'll
 provide and filter values by yourself. `matches` will be empty.
- - If it's `false` and `values` are provided, then they won't be
+  - If it's `false` and `values` are provided, then they won't be
 automatically filtered and `matches` will be the same as `values`.
 
 - **`inline`**
@@ -805,11 +833,11 @@ change the combobox value to the option's value.
   Determines whether the first option will be automatically selected. When
 it's set to `true`, the exact behavior will depend on the value of
 `inline`:
- - If `inline` is `true`, the first option is automatically focused when
+  - If `inline` is `true`, the first option is automatically focused when
 the combobox popover opens and the input value changes to reflect this.
 The inline completion string will be highlighted and will have a selected
 state.
- - If `inline` is `false`, the first option is automatically focused when
+  - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
 
 - **`menuRole`**

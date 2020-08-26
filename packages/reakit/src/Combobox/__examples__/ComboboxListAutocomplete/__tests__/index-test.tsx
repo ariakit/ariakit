@@ -4,30 +4,30 @@ import ComboboxListAutocomplete from "..";
 
 test("do not change combobox value by focusing on combobox options", () => {
   render(<ComboboxListAutocomplete />);
-  click(screen.getByLabelText("Colors"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  click(screen.getByLabelText("Color"));
+  expect(screen.getByLabelText("Color")).toHaveValue("");
   focus(screen.getByText("AliceBlue"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  expect(screen.getByLabelText("Color")).toHaveValue("");
 });
 
 test("do not change combobox value by arrowing through combobox options", () => {
   render(<ComboboxListAutocomplete />);
-  click(screen.getByLabelText("Colors"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  click(screen.getByLabelText("Color"));
+  expect(screen.getByLabelText("Color")).toHaveValue("");
   press.ArrowDown();
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  expect(screen.getByLabelText("Color")).toHaveValue("");
   press.ArrowDown();
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  expect(screen.getByLabelText("Color")).toHaveValue("");
   press.End();
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  expect(screen.getByLabelText("Color")).toHaveValue("");
 });
 
 test("change combobox value by clicking on the combobox option", () => {
   render(<ComboboxListAutocomplete />);
-  click(screen.getByLabelText("Colors"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("");
+  click(screen.getByLabelText("Color"));
+  expect(screen.getByLabelText("Color")).toHaveValue("");
   click(screen.getByText("AliceBlue"));
-  expect(screen.getByLabelText("Colors")).toHaveValue("AliceBlue");
+  expect(screen.getByLabelText("Color")).toHaveValue("AliceBlue");
 });
 
 test("filter combobox options by typing on the combobox", () => {

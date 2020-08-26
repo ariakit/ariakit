@@ -16,8 +16,8 @@ export default function ComboboxInlineAutoSelect() {
   });
   return (
     <>
-      <Combobox {...combobox} aria-label="Fruits" />
-      <ComboboxPopover {...combobox} aria-label="Fruits suggestions">
+      <Combobox {...combobox} aria-label="Fruit" />
+      <ComboboxPopover {...combobox} aria-label="Fruits">
         <ComboboxOption {...combobox} value="Apple" />
         <ComboboxOption {...combobox} value="Orange" />
         <ComboboxOption {...combobox} value="Banana" />

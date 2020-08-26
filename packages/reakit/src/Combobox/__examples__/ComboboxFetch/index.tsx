@@ -27,8 +27,8 @@ export default function ComboboxFetch() {
 
   return (
     <>
-      <Combobox {...combobox} aria-label="Fruits" placeholder="Enter a fruit" />
-      <ComboboxPopover {...combobox} aria-label="Fruits suggestions">
+      <Combobox {...combobox} aria-label="Fruit" placeholder="Enter a fruit" />
+      <ComboboxPopover {...combobox} aria-label="Fruits">
         {matches.length
           ? matches.map((value) => (
               <ComboboxOption {...combobox} key={value} value={value} />

@@ -11,24 +11,24 @@ function expectSelectionValue(element: Element, value: string) {
 
 test("open combobox popover on click", async () => {
   render(<ComboboxFetch />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   await wait(() => expect(screen.getByText("Acerola")).not.toHaveFocus());
 });
 
 test("type on combobox", async () => {
   render(<ComboboxFetch />);
-  click(screen.getByLabelText("Fruits"));
-  await wait(() => expect(screen.getByText("Acerola")).not.toHaveFocus);
+  click(screen.getByLabelText("Fruit"));
+  await wait(() => expect(screen.getByText("Acerola")).not.toHaveFocus());
   type("bl");
   await wait(() =>
-    expect(screen.getByLabelText("Fruits")).toHaveValue("blackberries")
+    expect(screen.getByLabelText("Fruit")).toHaveValue("blackberries")
   );
-  expectSelectionValue(screen.getByLabelText("Fruits"), "ackberries");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "ackberries");
   expect(screen.getByText("Blackberries")).toHaveFocus();
   type("\b");
-  await wait(() => expect(screen.getByLabelText("Fruits")).toHaveValue("b"));
+  await wait(() => expect(screen.getByLabelText("Fruit")).toHaveValue("b"));
   await wait(() => expect(screen.getByText("Blackberries")).not.toHaveFocus());
   await wait(() => expect(screen.getByText("Banana")).not.toHaveFocus());
 });

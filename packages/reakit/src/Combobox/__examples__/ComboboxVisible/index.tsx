@@ -12,8 +12,8 @@ export default function ComboboxVisible() {
   const combobox = useComboboxState({ visible: true, gutter: 8 });
   return (
     <>
-      <Combobox {...combobox} aria-label="Colors" />
-      <ComboboxPopover {...combobox} aria-label="Colors suggestions">
+      <Combobox {...combobox} aria-label="Color" />
+      <ComboboxPopover {...combobox} aria-label="Colors">
         <ComboboxOption {...combobox} value="Red" />
         <ComboboxOption {...combobox} value="Green" />
         <ComboboxOption {...combobox} value="Blue" />

@@ -11,37 +11,37 @@ function expectSelectionValue(element: Element, value: string) {
 
 test("open combobox popover on click and do not auto select", () => {
   render(<ComboboxInlineAutoSelect />);
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
-  click(screen.getByLabelText("Fruits"));
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).not.toHaveFocus();
 });
 
 test("open combobox popover on arrow down and do not auto select", () => {
   render(<ComboboxInlineAutoSelect />);
   press.Tab();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).not.toHaveFocus();
 });
 
 test("open combobox popover on arrow up and do not auto select", () => {
   render(<ComboboxInlineAutoSelect />);
   press.Tab();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   press.ArrowUp();
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).not.toHaveFocus();
 });
 
 test("open combobox popover on type and auto select", () => {
   render(<ComboboxInlineAutoSelect />);
-  const combobox = screen.getByLabelText("Fruits");
+  const combobox = screen.getByLabelText("Fruit");
   press.Tab();
-  expect(screen.getByLabelText("Fruits suggestions")).not.toBeVisible();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("a");
-  expect(screen.getByLabelText("Fruits suggestions")).toBeVisible();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
   expect(screen.getByText("Apple")).toHaveFocus();
   expect(combobox).toHaveValue("apple");
   expectSelectionValue(combobox, "pple");
@@ -65,31 +65,31 @@ test("open combobox popover on type and auto select", () => {
 
 test("keep combobox value after closing combobox popover by clicking outside", () => {
   const { baseElement } = render(<ComboboxInlineAutoSelect />);
-  click(screen.getByLabelText("Fruits"));
+  click(screen.getByLabelText("Fruit"));
   type("a");
-  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "pple");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("apple");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "pple");
   click(baseElement);
-  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("apple");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "");
 });
 
 test("move through combobox options by pressing arrow keys", () => {
   render(<ComboboxInlineAutoSelect />);
   press.Tab();
   type("a");
-  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "pple");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("apple");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "pple");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Orange");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Orange");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("Banana");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("Banana");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("a");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("a");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "");
   press.ArrowDown();
-  expect(screen.getByLabelText("Fruits")).toHaveValue("apple");
-  expectSelectionValue(screen.getByLabelText("Fruits"), "pple");
+  expect(screen.getByLabelText("Fruit")).toHaveValue("apple");
+  expectSelectionValue(screen.getByLabelText("Fruit"), "pple");
 });

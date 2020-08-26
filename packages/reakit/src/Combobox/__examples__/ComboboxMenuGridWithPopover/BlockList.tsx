@@ -35,7 +35,7 @@ function BlockList(
   ]);
   const combobox = useComboboxMenuGridState({
     values: initialValues,
-    limit: initialValues.length,
+    limit: false,
     columns: 3,
     wrap: "horizontal",
     autoSelect: true,
