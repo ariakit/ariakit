@@ -120,6 +120,15 @@ function isNativeTabbable(element: Element) {
   );
 }
 
+function getHasDisabled(element: Element) {
+  return (
+    element.tagName === "BUTTON" ||
+    element.tagName === "INPUT" ||
+    element.tagName === "SELECT" ||
+    element.tagName === "TEXTAREA"
+  );
+}
+
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
   compose: useBox,
@@ -145,6 +154,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const trulyDisabled = options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
+    const [hasDisabled, setHasDisabled] = React.useState(false);
     const tabIndex = nativeTabbable ? htmlTabIndex : htmlTabIndex || 0;
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
@@ -163,6 +173,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       }
       if (!isNativeTabbable(tabbable)) {
         setNativeTabbable(false);
+      }
+      if (getHasDisabled(tabbable)) {
+        setHasDisabled(true);
       }
     }, []);
 
@@ -195,8 +208,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     return {
       ref: useForkRef(ref, htmlRef),
       style,
-      tabIndex: !trulyDisabled ? tabIndex : undefined,
-      disabled: trulyDisabled && nativeTabbable ? true : undefined,
+      tabIndex: !trulyDisabled ? tabIndex : !hasDisabled ? -1 : undefined,
+      disabled:
+        trulyDisabled && nativeTabbable && hasDisabled ? true : undefined,
       "aria-disabled": options.disabled ? true : undefined,
       onClick,
       onMouseDown,
