@@ -42,6 +42,98 @@ test("render disabled focusable", () => {
   `);
 });
 
+test("render button", () => {
+  const { getByText } = render(<Tabbable as="button">tabbable</Tabbable>);
+  expect(getByText("tabbable")).toMatchInlineSnapshot(`
+    <button>
+      tabbable
+    </button>
+  `);
+});
+
+test("render button disabled", () => {
+  const { getByText } = render(
+    <Tabbable as="button" disabled>
+      tabbable
+    </Tabbable>
+  );
+  expect(getByText("tabbable")).toMatchInlineSnapshot(`
+    <button
+      aria-disabled="true"
+      disabled=""
+      style="pointer-events: none;"
+    >
+      tabbable
+    </button>
+  `);
+});
+
+test("render button disabled focusable", () => {
+  const { getByText } = render(
+    <Tabbable as="button" disabled focusable>
+      tabbable
+    </Tabbable>
+  );
+  expect(getByText("tabbable")).toMatchInlineSnapshot(`
+    <button
+      aria-disabled="true"
+      style="pointer-events: none;"
+    >
+      tabbable
+    </button>
+  `);
+});
+
+test("render link", () => {
+  const { getByText } = render(
+    <Tabbable as="a" href="https://reakit.io/docs/tabbable/">
+      tabbable
+    </Tabbable>
+  );
+  expect(getByText("tabbable")).toMatchInlineSnapshot(`
+    <a
+      href="https://reakit.io/docs/tabbable/"
+    >
+      tabbable
+    </a>
+  `);
+});
+
+test("render link disabled", () => {
+  const { getByText } = render(
+    <Tabbable as="a" href="https://reakit.io/docs/tabbable/" disabled>
+      tabbable
+    </Tabbable>
+  );
+  expect(getByText("tabbable")).toMatchInlineSnapshot(`
+    <a
+      aria-disabled="true"
+      href="https://reakit.io/docs/tabbable/"
+      style="pointer-events: none;"
+      tabindex="-1"
+    >
+      tabbable
+    </a>
+  `);
+});
+
+test("render link disabled focusable", () => {
+  const { getByText } = render(
+    <Tabbable as="a" href="https://reakit.io/docs/tabbable/" disabled focusable>
+      tabbable
+    </Tabbable>
+  );
+  expect(getByText("tabbable")).toMatchInlineSnapshot(`
+    <a
+      aria-disabled="true"
+      href="https://reakit.io/docs/tabbable/"
+      style="pointer-events: none;"
+    >
+      tabbable
+    </a>
+  `);
+});
+
 test("focus", () => {
   const { getByText } = render(<Tabbable>tabbable</Tabbable>);
   const tabbable = getByText("tabbable");
@@ -70,7 +162,7 @@ test("focus disabled focusable", () => {
   expect(tabbable).toHaveFocus();
 });
 
-test("native button focus", () => {
+test("focus native button", () => {
   const { getByText } = render(<Tabbable as="button">tabbable</Tabbable>);
   const tabbable = getByText("tabbable");
   expect(tabbable).not.toHaveFocus();
@@ -78,7 +170,7 @@ test("native button focus", () => {
   expect(tabbable).toHaveFocus();
 });
 
-test("native button focus disabled", () => {
+test("focus native button disabled", () => {
   const { getByText } = render(
     <Tabbable as="button" disabled>
       tabbable
@@ -90,9 +182,45 @@ test("native button focus disabled", () => {
   expect(tabbable).not.toHaveFocus();
 });
 
-test("native button focus disabled focusable", () => {
+test("focus native button disabled focusable", () => {
   const { getByText } = render(
     <Tabbable as="button" disabled focusable>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  expect(tabbable).not.toHaveFocus();
+  focus(tabbable);
+  expect(tabbable).toHaveFocus();
+});
+
+test("focus native link", () => {
+  const { getByText } = render(
+    <Tabbable as="a" href="https://reakit.io/docs/tabbable/">
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  expect(tabbable).not.toHaveFocus();
+  focus(tabbable);
+  expect(tabbable).toHaveFocus();
+});
+
+test("focus native link disabled", () => {
+  const { getByText } = render(
+    <Tabbable as="a" href="https://reakit.io/docs/tabbable/" disabled>
+      tabbable
+    </Tabbable>
+  );
+  const tabbable = getByText("tabbable");
+  expect(tabbable).not.toHaveFocus();
+  focus(tabbable);
+  expect(tabbable).not.toHaveFocus();
+});
+
+test("focus native link disabled focusable", () => {
+  const { getByText } = render(
+    <Tabbable as="a" href="https://reakit.io/docs/tabbable/" disabled focusable>
       tabbable
     </Tabbable>
   );
