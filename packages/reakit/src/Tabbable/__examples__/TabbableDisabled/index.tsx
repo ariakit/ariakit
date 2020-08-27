@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Input } from "../../../Input";
 import { Tabbable } from "../../Tabbable";
 
 export default function TabbableDisabled() {
@@ -10,13 +11,16 @@ export default function TabbableDisabled() {
       <Tabbable as="button" disabled style={{ display: "block" }}>
         Button
       </Tabbable>
-      <Tabbable
-        as="input"
-        type="text"
-        disabled
-        style={{ display: "block" }}
-        value="input"
-      />
+      <label htmlFor="input">
+        <Tabbable
+          as={Input}
+          id="input"
+          type="text"
+          disabled
+          style={{ display: "block" }}
+          value="input"
+        />
+      </label>
       <Tabbable
         as="a"
         href="https://github.com/reakit/reakit/issues/722"
