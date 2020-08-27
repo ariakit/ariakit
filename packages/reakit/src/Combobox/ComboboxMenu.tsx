@@ -5,15 +5,6 @@ import { getMenuId } from "./__utils/getMenuId";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { COMBOBOX_MENU_KEYS } from "./__keys";
 
-export type unstable_ComboboxMenuOptions = BoxOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "menuRole"> &
-  Pick<unstable_ComboboxStateReturn, "baseId">;
-
-export type unstable_ComboboxMenuHTMLProps = BoxHTMLProps;
-
-export type unstable_ComboboxMenuProps = unstable_ComboboxMenuOptions &
-  unstable_ComboboxMenuHTMLProps;
-
 export const unstable_useComboboxMenu = createHook<
   unstable_ComboboxMenuOptions,
   unstable_ComboboxMenuHTMLProps
@@ -40,3 +31,12 @@ export const unstable_ComboboxMenu = createComponent({
   as: "div",
   useHook: unstable_useComboboxMenu,
 });
+
+export type unstable_ComboboxMenuOptions = BoxOptions &
+  Pick<Partial<unstable_ComboboxStateReturn>, "menuRole"> &
+  Pick<unstable_ComboboxStateReturn, "baseId">;
+
+export type unstable_ComboboxMenuHTMLProps = BoxHTMLProps;
+
+export type unstable_ComboboxMenuProps = unstable_ComboboxMenuOptions &
+  unstable_ComboboxMenuHTMLProps;

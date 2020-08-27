@@ -12,28 +12,27 @@ import { COMBOBOX_KEYS } from "./__keys";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { getMenuId } from "./__utils/getMenuId";
 
-export type unstable_ComboboxOptions = CompositeOptions &
-  Pick<
-    Partial<unstable_ComboboxStateReturn>,
-    | "menuRole"
-    | "list"
-    | "inline"
-    | "autoSelect"
-    | "visible"
-    | "show"
-    | "hide"
-    | "unstable_referenceRef"
-  > &
-  Pick<
-    unstable_ComboboxStateReturn,
-    "baseId" | "inputValue" | "setInputValue" | "currentValue"
-  >;
+function getControls(baseId: string, ariaControls?: string) {
+  const menuId = getMenuId(baseId);
+  if (ariaControls) {
+    return `${ariaControls} ${menuId}`;
+  }
+  return menuId;
+}
 
-export type unstable_ComboboxHTMLProps = CompositeHTMLProps &
-  React.InputHTMLAttributes<any>;
+function getAutocomplete(options: unstable_ComboboxOptions) {
+  if (options.list && options.inline) return "both";
+  if (options.list) return "list";
+  if (options.inline) return "inline";
+  return "none";
+}
 
-export type unstable_ComboboxProps = unstable_ComboboxOptions &
-  unstable_ComboboxHTMLProps;
+function getValue(options: unstable_ComboboxOptions) {
+  if (options.inline) {
+    return options.currentValue || options.inputValue;
+  }
+  return options.inputValue;
+}
 
 export const unstable_useCombobox = createHook<
   unstable_ComboboxOptions,
@@ -53,7 +52,6 @@ export const unstable_useCombobox = createHook<
       ref: htmlRef,
       onClick: htmlOnClick,
       onChange: htmlOnChange,
-      onKeyDown: htmlOnKeyDown,
       "aria-controls": ariaControls,
       ...htmlProps
     }
@@ -61,47 +59,32 @@ export const unstable_useCombobox = createHook<
     const ref = React.useRef<HTMLInputElement>(null);
     const onClickRef = useLiveRef(htmlOnClick);
     const onChangeRef = useLiveRef(htmlOnChange);
-    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
-    const menuId = getMenuId(options.baseId);
-    const controls = ariaControls ? `${ariaControls} ${menuId}` : menuId;
-
-    const autocomplete =
-      options.list && options.inline
-        ? "both"
-        : options.list
-        ? "list"
-        : options.inline
-        ? "inline"
-        : "none";
-
-    const value = options.inline
-      ? options.currentValue || options.inputValue
-      : options.inputValue;
+    const value = getValue(options);
 
     // TODO: Highlight should only happen if autocompleting
-    React.useEffect(() => {
-      const firstId = options.items[0]?.id;
-      if (
-        options.currentValue &&
-        options.autoSelect &&
-        options.currentId === firstId
-      ) {
-        const index = value.indexOf(options.currentValue);
-        if (index !== -1) {
-          ref.current?.setSelectionRange(
-            options.inputValue.length,
-            value.length
-          );
-        }
-      }
-    }, [
-      value,
-      options.inputValue,
-      options.items,
-      options.currentValue,
-      options.autoSelect,
-      options.currentId,
-    ]);
+    // React.useEffect(() => {
+    //   const firstId = options.items[0]?.id;
+    //   if (
+    //     options.currentValue &&
+    //     options.autoSelect &&
+    //     options.currentId === firstId
+    //   ) {
+    //     const index = value.indexOf(options.currentValue);
+    //     if (index !== -1) {
+    //       ref.current?.setSelectionRange(
+    //         options.inputValue.length,
+    //         value.length
+    //       );
+    //     }
+    //   }
+    // }, [
+    //   value,
+    //   options.inputValue,
+    //   options.items,
+    //   options.currentValue,
+    //   options.autoSelect,
+    //   options.currentId,
+    // ]);
 
     const onClick = React.useCallback(
       (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
@@ -116,36 +99,23 @@ export const unstable_useCombobox = createHook<
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onChangeRef.current?.(event);
         if (event.defaultPrevented) return;
-        options.setCurrentId?.(undefined);
+        options.setCurrentId?.(null);
         options.setInputValue?.(event.target.value);
       },
       [options.setCurrentId, options.setInputValue]
-    );
-
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLInputElement>) => {
-        onKeyDownRef.current?.(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape") {
-          options.setCurrentId?.(undefined);
-        }
-      },
-      [options.setCurrentId]
     );
 
     return {
       ref: useForkRef(ref, useForkRef(options.unstable_referenceRef, htmlRef)),
       role: "combobox",
       autoComplete: "off",
-      "aria-owns": controls,
-      "aria-controls": controls,
+      "aria-controls": getControls(options.baseId, ariaControls),
       "aria-haspopup": options.menuRole,
       "aria-expanded": options.visible,
-      "aria-autocomplete": autocomplete,
+      "aria-autocomplete": getAutocomplete(options),
       value,
       onClick,
       onChange,
-      onKeyDown,
       ...htmlProps,
     };
   },
@@ -168,7 +138,7 @@ export const unstable_useCombobox = createHook<
         ) {
           if (["ArrowLeft", "ArrowRight"].includes(event.key)) return;
           if (event.key === "Escape") {
-            options.hide?.();
+            options.hide?.(true);
           }
           // replace event.key.length === 1 by onKeyPress?
           // should show popover when deleting too
@@ -212,3 +182,26 @@ export const unstable_Combobox = createComponent({
   memo: true,
   useHook: unstable_useCombobox,
 });
+
+export type unstable_ComboboxOptions = CompositeOptions &
+  Pick<
+    Partial<unstable_ComboboxStateReturn>,
+    | "menuRole"
+    | "list"
+    | "inline"
+    | "autoSelect"
+    | "visible"
+    | "show"
+    | "hide"
+    | "unstable_referenceRef"
+  > &
+  Pick<
+    unstable_ComboboxStateReturn,
+    "baseId" | "inputValue" | "setInputValue" | "currentValue"
+  >;
+
+export type unstable_ComboboxHTMLProps = CompositeHTMLProps &
+  React.InputHTMLAttributes<any>;
+
+export type unstable_ComboboxProps = unstable_ComboboxOptions &
+  unstable_ComboboxHTMLProps;

@@ -29,10 +29,6 @@ export const unstable_useComboboxOption = createHook<
   compose: [useComboboxItem, useCompositeItem],
   keys: COMBOBOX_OPTION_KEYS,
 
-  // propsAreEqual(prev, next) {
-  //   return useComboboxItem.unstable_propsAreEqual(prev, next);
-  // },
-
   useProps(_, htmlProps) {
     return { role: "option", ...htmlProps };
   },

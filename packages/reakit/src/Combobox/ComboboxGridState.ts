@@ -15,6 +15,14 @@ import {
   useComboboxPopoverState,
 } from "./__utils/ComboboxPopoverState";
 
+export function unstable_useComboboxGridState(
+  initialState: SealedInitialState<unstable_ComboboxGridInitialState> = {}
+): unstable_ComboboxGridStateReturn {
+  const sealed = useSealedState(initialState);
+  const combobox = useComboboxMenuGridState(sealed);
+  return useComboboxPopoverState(combobox, sealed);
+}
+
 export type unstable_ComboboxGridState = ComboboxPopoverState &
   ComboboxMenuGridState;
 
@@ -26,11 +34,3 @@ export type unstable_ComboboxGridInitialState = ComboboxPopoverInitialState &
 
 export type unstable_ComboboxGridStateReturn = unstable_ComboboxGridState &
   unstable_ComboboxGridActions;
-
-export function unstable_useComboboxGridState(
-  initialState: SealedInitialState<unstable_ComboboxGridInitialState> = {}
-): unstable_ComboboxGridStateReturn {
-  const sealed = useSealedState(initialState);
-  const combobox = useComboboxMenuGridState(sealed);
-  return useComboboxPopoverState(combobox, sealed);
-}

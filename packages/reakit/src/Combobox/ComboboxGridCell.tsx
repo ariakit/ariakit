@@ -12,15 +12,6 @@ import {
   unstable_useComboboxItem as useComboboxItem,
 } from "./ComboboxItem";
 
-export type unstable_ComboboxGridCellOptions = GridCellOptions &
-  ComboboxItemOptions;
-
-export type unstable_ComboboxGridCellHTMLProps = GridCellHTMLProps &
-  ComboboxItemHTMLProps;
-
-export type unstable_ComboboxGridCellProps = unstable_ComboboxGridCellOptions &
-  unstable_ComboboxGridCellHTMLProps;
-
 export const unstable_useComboboxGridCell = createHook<
   unstable_ComboboxGridCellOptions,
   unstable_ComboboxGridCellHTMLProps
@@ -35,3 +26,12 @@ export const unstable_ComboboxGridCell = createComponent({
   memo: true,
   useHook: unstable_useComboboxGridCell,
 });
+
+export type unstable_ComboboxGridCellOptions = GridCellOptions &
+  ComboboxItemOptions;
+
+export type unstable_ComboboxGridCellHTMLProps = GridCellHTMLProps &
+  ComboboxItemHTMLProps;
+
+export type unstable_ComboboxGridCellProps = unstable_ComboboxGridCellOptions &
+  unstable_ComboboxGridCellHTMLProps;

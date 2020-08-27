@@ -13,22 +13,6 @@ import { COMBOBOX_ITEM_KEYS } from "./__keys";
 import { getItemId } from "./__utils/getItemId";
 import { Item } from "./__utils/types";
 
-export type unstable_ComboboxItemOptions = BoxOptions &
-  CompositeItemOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "currentValue" | "hide"> &
-  Pick<unstable_ComboboxStateReturn, "setInputValue" | "registerItem"> & {
-    /**
-     * Item's value.
-     */
-    value?: string;
-  };
-
-export type unstable_ComboboxItemHTMLProps = BoxHTMLProps &
-  CompositeItemHTMLProps;
-
-export type unstable_ComboboxItemProps = unstable_ComboboxItemOptions &
-  unstable_ComboboxItemHTMLProps;
-
 export const unstable_useComboboxItem = createHook<
   unstable_ComboboxItemOptions,
   unstable_ComboboxItemHTMLProps
@@ -101,3 +85,21 @@ export const unstable_ComboboxItem = createComponent({
   memo: true,
   useHook: unstable_useComboboxItem,
 });
+
+export type unstable_ComboboxItemOptions = BoxOptions &
+  CompositeItemOptions &
+  Pick<Partial<unstable_ComboboxStateReturn>, "currentValue" | "hide"> &
+  Pick<unstable_ComboboxStateReturn, "setInputValue" | "registerItem"> & {
+    /**
+     * Item's value that will be used to fill input value and filter `matches`
+     * based on the input value. You can omit this for items that perform
+     * actions other than filling a form. For example, items may open a dialog.
+     */
+    value?: string;
+  };
+
+export type unstable_ComboboxItemHTMLProps = BoxHTMLProps &
+  CompositeItemHTMLProps;
+
+export type unstable_ComboboxItemProps = unstable_ComboboxItemOptions &
+  unstable_ComboboxItemHTMLProps;

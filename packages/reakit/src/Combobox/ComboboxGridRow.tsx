@@ -7,13 +7,6 @@ import {
 } from "../Grid/GridRow";
 import { COMBOBOX_GRID_ROW_KEYS } from "./__keys";
 
-export type unstable_ComboboxGridRowOptions = GridRowOptions;
-
-export type unstable_ComboboxGridRowHTMLProps = GridRowHTMLProps;
-
-export type unstable_ComboboxGridRowProps = unstable_ComboboxGridRowOptions &
-  unstable_ComboboxGridRowHTMLProps;
-
 export const unstable_useComboboxGridRow = createHook<
   unstable_ComboboxGridRowOptions,
   unstable_ComboboxGridRowHTMLProps
@@ -27,3 +20,10 @@ export const unstable_ComboboxGridRow = createComponent({
   as: "div",
   useHook: unstable_useComboboxGridRow,
 });
+
+export type unstable_ComboboxGridRowOptions = GridRowOptions;
+
+export type unstable_ComboboxGridRowHTMLProps = GridRowHTMLProps;
+
+export type unstable_ComboboxGridRowProps = unstable_ComboboxGridRowOptions &
+  unstable_ComboboxGridRowHTMLProps;

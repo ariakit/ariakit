@@ -15,21 +15,6 @@ import {
   useComboboxBaseState,
 } from "./__utils/ComboboxBaseState";
 
-export type unstable_ComboboxMenuState = ComboboxBaseState<CompositeState>;
-
-export type unstable_ComboboxMenuActions = ComboboxBaseActions<
-  CompositeActions
->;
-
-export type unstable_ComboboxMenuInitialState = Omit<
-  CompositeInitialState,
-  "unstable_virtual"
-> &
-  ComboboxBaseInitialState;
-
-export type unstable_ComboboxMenuStateReturn = unstable_ComboboxMenuState &
-  unstable_ComboboxMenuActions;
-
 export function unstable_useComboboxMenuState(
   initialState: SealedInitialState<unstable_ComboboxMenuInitialState> = {}
 ): unstable_ComboboxMenuStateReturn {
@@ -50,3 +35,18 @@ export function unstable_useComboboxMenuState(
 
   return useComboboxBaseState(composite, sealed);
 }
+
+export type unstable_ComboboxMenuState = ComboboxBaseState<CompositeState>;
+
+export type unstable_ComboboxMenuActions = ComboboxBaseActions<
+  CompositeActions
+>;
+
+export type unstable_ComboboxMenuInitialState = Omit<
+  CompositeInitialState,
+  "unstable_virtual"
+> &
+  ComboboxBaseInitialState;
+
+export type unstable_ComboboxMenuStateReturn = unstable_ComboboxMenuState &
+  unstable_ComboboxMenuActions;

@@ -1,5 +1,7 @@
+import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -11,18 +13,7 @@ import {
   unstable_ComboboxMenuHTMLProps as ComboboxMenuHTMLProps,
   unstable_useComboboxMenu as useComboboxMenu,
 } from "./ComboboxMenu";
-
-export type unstable_ComboboxPopoverOptions = Omit<
-  PopoverOptions,
-  "unstable_autoFocusOnHide" | "unstable_autoFocusOnShow"
-> &
-  ComboboxMenuOptions;
-
-export type unstable_ComboboxPopoverHTMLProps = PopoverHTMLProps &
-  ComboboxMenuHTMLProps;
-
-export type unstable_ComboboxPopoverProps = unstable_ComboboxPopoverOptions &
-  unstable_ComboboxPopoverHTMLProps;
+import { ComboboxPopoverStateReturn } from "./__utils/ComboboxPopoverState";
 
 export const unstable_useComboboxPopover = createHook<
   unstable_ComboboxPopoverOptions,
@@ -40,8 +31,21 @@ export const unstable_useComboboxPopover = createHook<
     };
   },
 
-  useProps(options, htmlProps) {
+  useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (!options.hideOnEsc) return;
+        if (event.key === "Escape") {
+          options.hide?.(true);
+        }
+      },
+      [options.hideOnEsc, options.hide]
+    );
     return {
+      onKeyDown,
       ...htmlProps,
       children: options.visible ? htmlProps.children : null,
     };
@@ -49,7 +53,7 @@ export const unstable_useComboboxPopover = createHook<
 
   useComposeProps(options, { tabIndex, ...htmlProps }) {
     htmlProps = useComboboxMenu(options, htmlProps, true);
-    htmlProps = usePopover(options, htmlProps, true);
+    htmlProps = usePopover({ ...options, hideOnEsc: false }, htmlProps, true);
     return {
       ...htmlProps,
       tabIndex: tabIndex ?? undefined,
@@ -62,3 +66,16 @@ export const unstable_ComboboxPopover = createComponent({
   as: "div",
   useHook: unstable_useComboboxPopover,
 });
+
+export type unstable_ComboboxPopoverOptions = Omit<
+  PopoverOptions,
+  "unstable_autoFocusOnHide" | "unstable_autoFocusOnShow" | "hide"
+> &
+  Pick<ComboboxPopoverStateReturn, "hide"> &
+  ComboboxMenuOptions;
+
+export type unstable_ComboboxPopoverHTMLProps = PopoverHTMLProps &
+  ComboboxMenuHTMLProps;
+
+export type unstable_ComboboxPopoverProps = unstable_ComboboxPopoverOptions &
+  unstable_ComboboxPopoverHTMLProps;

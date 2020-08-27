@@ -17,40 +17,6 @@ import {
   ComboboxBaseInitialState,
 } from "./__utils/ComboboxBaseState";
 
-export type unstable_ComboboxMenuGridState = Omit<
-  ComboboxBaseState<GridState>,
-  "matches"
-> & {
-  /**
-   * Number of columns by which `values` will be splitted to generate the
-   * `matches` 2D array.
-   */
-  columns: number;
-  /**
-   * Result of filtering `values` by `currentValue`.
-   */
-  matches: string[][];
-};
-
-export type unstable_ComboboxMenuGridActions = ComboboxBaseActions<
-  GridActions
-> & {
-  /**
-   * Sets `columns`.
-   */
-  setColumns: SetState<unstable_ComboboxMenuGridState["columns"]>;
-};
-
-export type unstable_ComboboxMenuGridInitialState = Omit<
-  GridInitialState,
-  "unstable_virtual"
-> &
-  ComboboxBaseInitialState &
-  Pick<Partial<unstable_ComboboxMenuGridState>, "columns">;
-
-export type unstable_ComboboxMenuGridStateReturn = unstable_ComboboxMenuGridState &
-  unstable_ComboboxMenuGridActions;
-
 function chunk<T>(array: T[], size: number) {
   const chunks: T[][] = [];
   for (let i = 0, j = array.length; i < j; i += size) {
@@ -92,3 +58,47 @@ export function unstable_useComboboxMenuGridState(
     setColumns,
   };
 }
+
+export type unstable_ComboboxMenuGridState = Omit<
+  ComboboxBaseState<GridState>,
+  "matches"
+> & {
+  /**
+   * Number of columns by which `values` will be splitted to generate the
+   * `matches` 2D array.
+   */
+  columns: number;
+  /**
+   * Result of filtering `values` based on `inputValue`.
+   * @default []
+   * @example
+   * const combobox = useComboboxState({
+   *   values: ["Red", "Green", "Blue"],
+   *   columns: 2,
+   * });
+   * combobox.matches; // [["Red", "Green"], ["Blue"]]
+   * combobox.setInputValue("g");
+   * // On next render
+   * combobox.matches; // [["Green"]]
+   */
+  matches: string[][];
+};
+
+export type unstable_ComboboxMenuGridActions = ComboboxBaseActions<
+  GridActions
+> & {
+  /**
+   * Sets `columns`.
+   */
+  setColumns: SetState<unstable_ComboboxMenuGridState["columns"]>;
+};
+
+export type unstable_ComboboxMenuGridInitialState = Omit<
+  GridInitialState,
+  "unstable_virtual"
+> &
+  ComboboxBaseInitialState &
+  Pick<Partial<unstable_ComboboxMenuGridState>, "columns">;
+
+export type unstable_ComboboxMenuGridStateReturn = unstable_ComboboxMenuGridState &
+  unstable_ComboboxMenuGridActions;

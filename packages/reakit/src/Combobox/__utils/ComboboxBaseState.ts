@@ -17,9 +17,13 @@ function getMatches(
   values: ComboboxBaseState["values"],
   limit: ComboboxBaseState["limit"],
   list: ComboboxBaseState["list"],
-  autoSelect: ComboboxBaseState["autoSelect"]
+  autoSelect: ComboboxBaseState["autoSelect"],
+  minValueLength: ComboboxBaseState["minValueLength"]
 ) {
   const length = limit === false ? undefined : limit;
+  if (inputValue.length < minValueLength) {
+    return [];
+  }
   if (!list) {
     return values.slice(0, length);
   }
@@ -65,8 +69,9 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
   const [autoSelect, setAutoSelect] = React.useState(initialAutoSelect);
 
   const matches = React.useMemo(
-    () => getMatches(inputValue, values, limit, list, autoSelect),
-    [inputValue, values, limit, list, autoSelect]
+    () =>
+      getMatches(inputValue, values, limit, list, autoSelect, minValueLength),
+    [inputValue, values, limit, list, autoSelect, minValueLength]
   );
 
   const currentValue = React.useMemo(
@@ -74,15 +79,14 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
       composite.currentId ? valuesById.current[composite.currentId] : undefined,
     [valuesById, composite.currentId]
   );
-  // TODO: Create examples and test
-  // Test click outside with autoSelect should change inputValue
-  React.useEffect(() => {
-    if (autoSelect) {
-      composite.first();
-    } else {
-      composite.setCurrentId(null);
-    }
-  }, [matches, autoSelect, composite.first, composite.setCurrentId]);
+
+  // React.useEffect(() => {
+  //   if (autoSelect) {
+  //     composite.first();
+  //   } else {
+  //     composite.setCurrentId(null);
+  //   }
+  // }, [matches, autoSelect, composite.first, composite.setCurrentId]);
 
   const items = React.useMemo(() => {
     composite.items.forEach((item) => {

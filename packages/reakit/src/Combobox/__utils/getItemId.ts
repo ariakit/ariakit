@@ -1,4 +1,7 @@
+function kebabCase(string: string) {
+  return string.toLowerCase().replace(/[^a-z0-9]/g, "-");
+}
+
 export function getItemId(baseId: string, value: string, id?: string) {
-  // TODO: kebabCase on value
-  return id || `${baseId}-${value}`;
+  return id || `${baseId}-${kebabCase(value)}`;
 }
