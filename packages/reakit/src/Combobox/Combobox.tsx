@@ -100,6 +100,8 @@ export const unstable_useCombobox = createHook<
         onChangeRef.current?.(event);
         if (event.defaultPrevented) return;
         options.setCurrentId?.(null);
+        // TODO: compare event.target.value with options.inputValue
+        // So we can determine if we have to auto select
         options.setInputValue?.(event.target.value);
       },
       [options.setCurrentId, options.setInputValue]
