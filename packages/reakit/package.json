@@ -41,9 +41,9 @@
   "dependencies": {
     "@popperjs/core": "^2.4.4",
     "body-scroll-lock": "^3.0.2",
-    "reakit-system": "^0.14.3",
-    "reakit-utils": "^0.14.3",
-    "reakit-warning": "^0.5.3"
+    "reakit-system": "0.14.3",
+    "reakit-utils": "0.14.3",
+    "reakit-warning": "0.5.3"
   },
   "peerDependencies": {
     "react": "^16.8.0",
