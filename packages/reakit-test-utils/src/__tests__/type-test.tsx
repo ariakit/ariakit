@@ -192,3 +192,50 @@ test("type on focusable non-typeable element", () => {
   expect(console).toHaveWarned();
   expect(stack).toEqual([]);
 });
+
+test("selection", () => {
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    useAllEvents(ref, stack);
+    return <input ref={ref} aria-label="input" />;
+  };
+  const { getByLabelText } = render(<Test />);
+  const input = getByLabelText("input") as HTMLInputElement;
+
+  type("abcde", input);
+
+  input.setSelectionRange(1, 3);
+
+  type("\bf");
+
+  expect(input).toHaveValue("afde");
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "focus input",
+      "focusin input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "select input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+    ]
+  `);
+});
