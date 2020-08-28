@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "color": "3.1.2",
-    "reakit-system": "^0.14.3"
+    "reakit-system": "0.14.3"
   },
   "devDependencies": {
     "@types/color": "3.0.1"

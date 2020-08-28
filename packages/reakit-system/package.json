@@ -31,7 +31,7 @@
     "system"
   ],
   "dependencies": {
-    "reakit-utils": "^0.14.3"
+    "reakit-utils": "0.14.3"
   },
   "peerDependencies": {
     "react": "^16.8.0",
