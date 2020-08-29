@@ -22,7 +22,7 @@ test("initial state", () => {
       "panels": Array [],
       "rtl": false,
       "selectedId": undefined,
-      "unstable_angular": false,
+      "shift": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
