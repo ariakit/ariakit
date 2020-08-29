@@ -13,6 +13,7 @@ const GRID_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
+  "unstable_includesBaseElement",
   "setBaseId",
   "registerItem",
   "unregisterItem",
@@ -33,6 +34,7 @@ const GRID_STATE_KEYS = [
   "setLoop",
   "setWrap",
   "reset",
+  "unstable_setIncludesBaseElement",
   "unstable_setHasActiveWidget",
 ] as const;
 export const GRID_KEYS = GRID_STATE_KEYS;

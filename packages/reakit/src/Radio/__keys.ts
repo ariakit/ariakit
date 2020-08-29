@@ -13,6 +13,7 @@ const RADIO_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
+  "unstable_includesBaseElement",
   "state",
   "setBaseId",
   "registerItem",
@@ -34,6 +35,7 @@ const RADIO_STATE_KEYS = [
   "setLoop",
   "setWrap",
   "reset",
+  "unstable_setIncludesBaseElement",
   "unstable_setHasActiveWidget",
   "setState",
 ] as const;

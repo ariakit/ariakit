@@ -13,6 +13,7 @@ const MENU_BAR_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
+  "unstable_includesBaseElement",
   "unstable_values",
   "setBaseId",
   "registerItem",
@@ -34,6 +35,7 @@ const MENU_BAR_STATE_KEYS = [
   "setLoop",
   "setWrap",
   "reset",
+  "unstable_setIncludesBaseElement",
   "unstable_setHasActiveWidget",
   "unstable_setValue",
 ] as const;

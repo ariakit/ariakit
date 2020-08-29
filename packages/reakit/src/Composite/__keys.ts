@@ -14,6 +14,7 @@ const COMPOSITE_STATE_KEYS = [
   "unstable_moves",
   "unstable_angular",
   "unstable_hasActiveWidget",
+  "unstable_includesBaseElement",
   "registerItem",
   "unregisterItem",
   "registerGroup",
@@ -33,6 +34,7 @@ const COMPOSITE_STATE_KEYS = [
   "setLoop",
   "setWrap",
   "reset",
+  "unstable_setIncludesBaseElement",
   "unstable_setHasActiveWidget",
 ] as const;
 export const COMPOSITE_KEYS = COMPOSITE_STATE_KEYS;
