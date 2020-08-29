@@ -29,6 +29,528 @@ import { addItemAtIndex } from "./__utils/addItemAtIndex";
 import { sortBasedOnDOMPosition } from "./__utils/sortBasedOnDOMPosition";
 import { useSortBasedOnDOMPosition } from "./__utils/useSortBasedOnDOMPosition";
 
+type CompositeReducerAction =
+  | { type: "registerItem"; item: Item }
+  | { type: "unregisterItem"; id: string | null }
+  | { type: "registerGroup"; group: Group }
+  | { type: "unregisterGroup"; id: string | null }
+  | { type: "move"; id?: string | null }
+  | { type: "next"; allTheWay?: boolean; hasNullItem?: boolean }
+  | { type: "previous"; allTheWay?: boolean }
+  | { type: "up"; allTheWay?: boolean }
+  | { type: "down"; allTheWay?: boolean }
+  | { type: "first" }
+  | { type: "last" }
+  | { type: "sort" }
+  | {
+      type: "setVirtual";
+      virtual: React.SetStateAction<CompositeState["unstable_virtual"]>;
+    }
+  | {
+      type: "setRTL";
+      rtl: React.SetStateAction<CompositeState["rtl"]>;
+    }
+  | {
+      type: "setOrientation";
+      orientation?: React.SetStateAction<CompositeState["orientation"]>;
+    }
+  | {
+      type: "setCurrentId";
+      currentId?: React.SetStateAction<CompositeState["currentId"]>;
+    }
+  | {
+      type: "setLoop";
+      loop: React.SetStateAction<CompositeState["loop"]>;
+    }
+  | {
+      type: "setWrap";
+      wrap: React.SetStateAction<CompositeState["wrap"]>;
+    }
+  | { type: "reset" }
+  | { type: "setItems"; items: CompositeState["items"] }
+  | {
+      type: "setIncludesBaseElement";
+      includesBaseElement: React.SetStateAction<
+        CompositeState["unstable_includesBaseElement"]
+      >;
+    };
+
+type CompositeReducerState = Omit<
+  CompositeState,
+  "unstable_hasActiveWidget" | keyof unstable_IdState
+> & {
+  pastIds: string[];
+  initialVirtual: CompositeState["unstable_virtual"];
+  initialRTL: CompositeState["rtl"];
+  initialOrientation: CompositeState["orientation"];
+  initialCurrentId: CompositeState["currentId"];
+  initialLoop: CompositeState["loop"];
+  initialWrap: CompositeState["wrap"];
+  hasSetCurrentId?: boolean;
+};
+
+function reducer(
+  state: CompositeReducerState,
+  action: CompositeReducerAction
+): CompositeReducerState {
+  const {
+    unstable_virtual: virtual,
+    rtl,
+    orientation,
+    items,
+    groups,
+    currentId,
+    loop,
+    wrap,
+    pastIds,
+    unstable_moves: moves,
+    unstable_angular: angular,
+    unstable_includesBaseElement: includesBaseElement,
+    initialVirtual,
+    initialRTL,
+    initialOrientation,
+    initialCurrentId,
+    initialLoop,
+    initialWrap,
+    hasSetCurrentId,
+  } = state;
+
+  switch (action.type) {
+    case "registerGroup": {
+      const { group } = action;
+      // If there are no groups yet, just add it as the first one
+      if (groups.length === 0) {
+        return { ...state, groups: [group] };
+      }
+      // Finds the group index based on DOM position
+      const index = findDOMIndex(groups, group);
+      return { ...state, groups: addItemAtIndex(groups, group, index) };
+    }
+
+    case "unregisterGroup": {
+      const { id } = action;
+      const nextGroups = groups.filter((group) => group.id !== id);
+      // The group isn't registered, so do nothing
+      if (nextGroups.length === groups.length) {
+        return state;
+      }
+      return { ...state, groups: nextGroups };
+    }
+
+    case "registerItem": {
+      const { item } = action;
+      // Finds the item group based on the DOM hierarchy
+      const group = groups.find((r) =>
+        r.ref.current?.contains(item.ref.current)
+      );
+      // Group will be null if it's a one-dimensional composite
+      const nextItem = { groupId: group?.id, ...item };
+      const index = findDOMIndex(items, nextItem);
+      const nextState = {
+        ...state,
+        items: addItemAtIndex(items, nextItem, index),
+      };
+      if (!hasSetCurrentId && !moves && initialCurrentId === undefined) {
+        // Sets currentId to the first enabled item. This runs whenever an item
+        // is registered because the first enabled item may be registered
+        // asynchronously.
+        return {
+          ...nextState,
+          currentId: findFirstEnabledItem(nextState.items)?.id,
+        };
+      }
+      return nextState;
+    }
+
+    case "unregisterItem": {
+      const { id } = action;
+      const nextItems = items.filter((item) => item.id !== id);
+      // The item isn't registered, so do nothing
+      if (nextItems.length === items.length) {
+        return state;
+      }
+      // Filters out the item that is being removed from the pastIds list
+      const nextPastIds = pastIds.filter((pastId) => pastId !== id);
+      const nextState = {
+        ...state,
+        pastIds: nextPastIds,
+        items: nextItems,
+      };
+      // If the current item is the item that is being removed, focus pastId
+      if (currentId && currentId === id) {
+        const nextId = getCurrentId({
+          ...nextState,
+          currentId: nextPastIds[0],
+        });
+        return { ...nextState, currentId: nextId };
+      }
+      return nextState;
+    }
+
+    case "move": {
+      const { id } = action;
+      // move() does nothing
+      if (id === undefined) {
+        return state;
+      }
+      // Removes the current item and the item that is receiving focus from the
+      // pastIds list
+      const filteredPastIds = pastIds.filter(
+        (pastId) => pastId !== currentId && pastId !== id
+      );
+      // If there's a currentId, add it to the pastIds list so it can be focused
+      // if the new item gets removed or disabled
+      const nextPastIds = currentId
+        ? [currentId, ...filteredPastIds]
+        : filteredPastIds;
+      const nextState = { ...state, pastIds: nextPastIds };
+      // move(null) will focus the composite element itself, not an item
+      if (id === null) {
+        return {
+          ...nextState,
+          unstable_moves: moves + 1,
+          currentId: getCurrentId(nextState, id),
+        };
+      }
+      const item = findEnabledItemById(items, id);
+      return {
+        ...nextState,
+        unstable_moves: item ? moves + 1 : moves,
+        currentId: getCurrentId(nextState, item?.id),
+      };
+    }
+
+    case "next": {
+      // If there's no item focused, we just move the first one
+      if (currentId == null) {
+        return reducer(state, { ...action, type: "first" });
+      }
+      // RTL doesn't make sense on vertical navigation
+      const isHorizontal = orientation !== "vertical";
+      const isRTL = rtl && isHorizontal;
+      const allItems = isRTL ? reverse(items) : items;
+      const currentItem = allItems.find((item) => item.id === currentId);
+      // If there's no item focused, we just move the first one
+      if (!currentItem) {
+        return reducer(state, { ...action, type: "first" });
+      }
+      const isGrid = !!currentItem.groupId;
+      const currentIndex = allItems.indexOf(currentItem);
+      const nextItems = allItems.slice(currentIndex + 1);
+      const nextItemsInGroup = getItemsInGroup(nextItems, currentItem.groupId);
+      // Home, End
+      if (action.allTheWay) {
+        // We reverse so we can get the last enabled item in the group. If it's
+        // RTL, nextItems and nextItemsInGroup are already reversed and don't
+        // have the items before the current one anymore. So we have to get
+        // items in group again with allItems.
+        const nextItem = findFirstEnabledItem(
+          isRTL
+            ? getItemsInGroup(allItems, currentItem.groupId)
+            : reverse(nextItemsInGroup)
+        );
+        return reducer(state, { ...action, type: "move", id: nextItem?.id });
+      }
+      const oppositeOrientation = getOppositeOrientation(
+        // If it's a grid and orientation is not set, it's a next/previous
+        // call, which is inherently horizontal. up/down will call next with
+        // orientation set to vertical by default (see below on up/down cases).
+        isGrid ? orientation || "horizontal" : orientation
+      );
+      const canLoop = loop && loop !== oppositeOrientation;
+      const canWrap = isGrid && wrap && wrap !== oppositeOrientation;
+      const hasNullItem =
+        // `previous` and `up` will set action.hasNullItem, but when calling
+        // next directly, hasNullItem will only be true if it's not a grid and
+        // loop is set to true, which means that pressing right or down keys on
+        // grids will never focus the composite element. On one-dimensional
+        // composites that don't loop, pressing right or down keys also doesn't
+        // focus the composite element.
+        action.hasNullItem || (!isGrid && canLoop && includesBaseElement);
+
+      if (canLoop) {
+        const loopItems =
+          canWrap && !hasNullItem
+            ? allItems
+            : getItemsInGroup(allItems, currentItem.groupId);
+        // Turns [0, 1, current, 3, 4] into [3, 4, 0, 1]
+        const sortedItems = placeItemsAfter(loopItems, currentId, hasNullItem);
+        const nextItem = findFirstEnabledItem(sortedItems, currentId);
+        return reducer(state, { ...action, type: "move", id: nextItem?.id });
+      }
+      if (canWrap) {
+        const nextItem = findFirstEnabledItem(
+          // We can use nextItems, which contains all the next items, including
+          // items from other groups, to wrap between groups. However, if there
+          // is a null item (the composite element), we'll only use the next
+          // items in the group. So moving next from the last item will focus
+          // the composite element (null). On grid composites, horizontal
+          // navigation never focuses the composite element, only vertical.
+          hasNullItem ? nextItemsInGroup : nextItems,
+          currentId
+        );
+        const nextId = hasNullItem ? nextItem?.id || null : nextItem?.id;
+        return reducer(state, { ...action, type: "move", id: nextId });
+      }
+      const nextItem = findFirstEnabledItem(nextItemsInGroup, currentId);
+      if (!nextItem && hasNullItem) {
+        return reducer(state, { ...action, type: "move", id: null });
+      }
+      return reducer(state, { ...action, type: "move", id: nextItem?.id });
+    }
+
+    case "previous": {
+      // If currentId is initially set to null, the composite element will be
+      // focusable while navigating with arrow keys. But, if it's a grid, we
+      // don't want to focus the composite element with horizontal navigation.
+      const isGrid = !!groups.length;
+      const hasNullItem = !isGrid && includesBaseElement;
+      const nextState = reducer(
+        { ...state, items: reverse(items) },
+        { ...action, type: "next", hasNullItem }
+      );
+      return { ...nextState, items };
+    }
+
+    case "down": {
+      // First, we make sure groups have the same number of items by filling it
+      // with disabled fake items. Then, we reorganize the items list so
+      // [1-1, 1-2, 2-1, 2-2] becomes [1-1, 2-1, 1-2, 2-2].
+      const verticalItems = verticalizeItems(
+        flatten(fillGroups(groupItems(items), currentId, angular))
+      );
+      const canLoop = loop && loop !== "horizontal";
+      // Pressing down arrow key will only focus the composite element if loop
+      // is true or vertical.
+      const hasNullItem = canLoop && includesBaseElement;
+      const nextState = reducer(
+        { ...state, orientation: "vertical", items: verticalItems },
+        { ...action, type: "next", hasNullItem }
+      );
+      return { ...nextState, orientation, items };
+    }
+
+    case "up": {
+      const verticalItems = verticalizeItems(
+        reverse(flatten(fillGroups(groupItems(items), currentId, angular)))
+      );
+      // If currentId is initially set to null, we'll always focus the
+      // composite element when the up arrow key is pressed in the first row.
+      const hasNullItem = includesBaseElement;
+      const nextState = reducer(
+        { ...state, orientation: "vertical", items: verticalItems },
+        { ...action, type: "next", hasNullItem }
+      );
+      return { ...nextState, orientation, items };
+    }
+
+    case "first": {
+      const firstItem = findFirstEnabledItem(items);
+      return reducer(state, { ...action, type: "move", id: firstItem?.id });
+    }
+
+    case "last": {
+      const nextState = reducer(
+        { ...state, items: reverse(items) },
+        { ...action, type: "first" }
+      );
+      return { ...nextState, items };
+    }
+
+    case "sort": {
+      return {
+        ...state,
+        items: sortBasedOnDOMPosition(items),
+        groups: sortBasedOnDOMPosition(groups),
+      };
+    }
+
+    case "setVirtual":
+      return {
+        ...state,
+        unstable_virtual: applyState(action.virtual, virtual),
+      };
+
+    case "setRTL":
+      return { ...state, rtl: applyState(action.rtl, rtl) };
+
+    case "setOrientation":
+      return {
+        ...state,
+        orientation: applyState(action.orientation, orientation),
+      };
+
+    case "setCurrentId": {
+      const nextCurrentId = getCurrentId({
+        ...state,
+        currentId: applyState(action.currentId, currentId),
+      });
+      return { ...state, currentId: nextCurrentId, hasSetCurrentId: true };
+    }
+
+    case "setLoop":
+      return { ...state, loop: applyState(action.loop, loop) };
+
+    case "setWrap":
+      return { ...state, wrap: applyState(action.wrap, wrap) };
+
+    case "setIncludesBaseElement": {
+      return {
+        ...state,
+        unstable_includesBaseElement: applyState(
+          action.includesBaseElement,
+          includesBaseElement
+        ),
+      };
+    }
+
+    case "reset":
+      return {
+        ...state,
+        unstable_virtual: initialVirtual,
+        rtl: initialRTL,
+        orientation: initialOrientation,
+        currentId: getCurrentId({ ...state, currentId: initialCurrentId }),
+        loop: initialLoop,
+        wrap: initialWrap,
+        unstable_moves: 0,
+        pastIds: [],
+      };
+
+    case "setItems": {
+      return { ...state, items: action.items };
+    }
+    default:
+      throw new Error();
+  }
+}
+
+function useAction<T extends (...args: any[]) => any>(fn: T) {
+  return React.useCallback(fn, []);
+}
+
+function useIsUnmountedRef() {
+  const isUnmountedRef = React.useRef(false);
+  useIsomorphicEffect(() => {
+    return () => {
+      isUnmountedRef.current = true;
+    };
+  }, []);
+  return isUnmountedRef;
+}
+
+export function useCompositeState(
+  initialState: SealedInitialState<CompositeInitialState> = {}
+): CompositeStateReturn {
+  const {
+    unstable_virtual: virtual = false,
+    rtl = false,
+    orientation,
+    currentId,
+    loop = false,
+    wrap = false,
+    unstable_angular = false,
+    unstable_includesBaseElement,
+    ...sealed
+  } = useSealedState(initialState);
+  const idState = unstable_useIdState(sealed);
+  const [
+    {
+      pastIds,
+      initialVirtual,
+      initialRTL,
+      initialOrientation,
+      initialCurrentId,
+      initialLoop,
+      initialWrap,
+      hasSetCurrentId,
+      ...state
+    },
+    dispatch,
+  ] = React.useReducer(reducer, {
+    unstable_virtual: virtual,
+    rtl,
+    orientation,
+    items: [],
+    groups: [],
+    currentId,
+    loop,
+    wrap,
+    unstable_moves: 0,
+    pastIds: [],
+    unstable_angular,
+    unstable_includesBaseElement:
+      unstable_includesBaseElement ?? currentId === null,
+    initialVirtual: virtual,
+    initialRTL: rtl,
+    initialOrientation: orientation,
+    initialCurrentId: currentId,
+    initialLoop: loop,
+    initialWrap: wrap,
+  });
+  const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
+  // register/unregister may be called when this component is unmounted. We
+  // store the unmounted state here so we don't update the state if it's true.
+  // This only happens in a very specific situation.
+  // See https://github.com/reakit/reakit/issues/650
+  const isUnmountedRef = useIsUnmountedRef();
+
+  const setItems = React.useCallback(
+    (items: Item[]) => dispatch({ type: "setItems", items }),
+    []
+  );
+  useSortBasedOnDOMPosition(state.items, setItems);
+
+  return {
+    ...idState,
+    ...state,
+    unstable_hasActiveWidget: hasActiveWidget,
+    unstable_setHasActiveWidget: setHasActiveWidget,
+    registerItem: useAction((item) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "registerItem", item });
+    }),
+    unregisterItem: useAction((id) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "unregisterItem", id });
+    }),
+    registerGroup: useAction((group) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "registerGroup", group });
+    }),
+    unregisterGroup: useAction((id) => {
+      if (isUnmountedRef.current) return;
+      dispatch({ type: "unregisterGroup", id });
+    }),
+    move: useAction((id) => dispatch({ type: "move", id })),
+    next: useAction((allTheWay) => dispatch({ type: "next", allTheWay })),
+    previous: useAction((allTheWay) =>
+      dispatch({ type: "previous", allTheWay })
+    ),
+    up: useAction((allTheWay) => dispatch({ type: "up", allTheWay })),
+    down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
+    first: useAction(() => dispatch({ type: "first" })),
+    last: useAction(() => dispatch({ type: "last" })),
+    sort: useAction(() => dispatch({ type: "sort" })),
+    unstable_setVirtual: useAction((value) =>
+      dispatch({ type: "setVirtual", virtual: value })
+    ),
+    setRTL: useAction((value) => dispatch({ type: "setRTL", rtl: value })),
+    setOrientation: useAction((value) =>
+      dispatch({ type: "setOrientation", orientation: value })
+    ),
+    setCurrentId: useAction((value) =>
+      dispatch({ type: "setCurrentId", currentId: value })
+    ),
+    setLoop: useAction((value) => dispatch({ type: "setLoop", loop: value })),
+    setWrap: useAction((value) => dispatch({ type: "setWrap", wrap: value })),
+    unstable_setIncludesBaseElement: useAction((value) =>
+      dispatch({ type: "setIncludesBaseElement", includesBaseElement: value })
+    ),
+    reset: useAction(() => dispatch({ type: "reset" })),
+  };
+}
+
 export type CompositeState = unstable_IdState & {
   /**
    * If enabled, the composite element will act as an
@@ -125,6 +647,10 @@ export type CompositeState = unstable_IdState & {
    * @private
    */
   unstable_hasActiveWidget: boolean;
+  /**
+   * @private
+   */
+  unstable_includesBaseElement: boolean;
 };
 
 export type CompositeActions = unstable_IdActions & {
@@ -212,6 +738,13 @@ export type CompositeActions = unstable_IdActions & {
    */
   reset: () => void;
   /**
+   * Sets `includesBaseElement`.
+   * @private
+   */
+  unstable_setIncludesBaseElement: React.Dispatch<
+    React.SetStateAction<CompositeState["unstable_includesBaseElement"]>
+  >;
+  /**
    * Sets `hasActiveWidget`.
    * @private
    */
@@ -231,489 +764,10 @@ export type CompositeInitialState = unstable_IdInitialState &
       | "loop"
       | "wrap"
       | "unstable_angular"
+      | "unstable_includesBaseElement"
     >
   >;
 
 export type CompositeStateReturn = unstable_IdStateReturn &
   CompositeState &
   CompositeActions;
-
-type CompositeReducerAction =
-  | { type: "registerItem"; item: Item }
-  | { type: "unregisterItem"; id: string | null }
-  | { type: "registerGroup"; group: Group }
-  | { type: "unregisterGroup"; id: string | null }
-  | { type: "move"; id?: string | null }
-  | { type: "next"; allTheWay?: boolean; hasNullItem?: boolean }
-  | { type: "previous"; allTheWay?: boolean }
-  | { type: "up"; allTheWay?: boolean }
-  | { type: "down"; allTheWay?: boolean }
-  | { type: "first" }
-  | { type: "last" }
-  | { type: "sort" }
-  | {
-      type: "setVirtual";
-      virtual: React.SetStateAction<CompositeState["unstable_virtual"]>;
-    }
-  | {
-      type: "setRTL";
-      rtl: React.SetStateAction<CompositeState["rtl"]>;
-    }
-  | {
-      type: "setOrientation";
-      orientation?: React.SetStateAction<CompositeState["orientation"]>;
-    }
-  | {
-      type: "setCurrentId";
-      currentId?: React.SetStateAction<CompositeState["currentId"]>;
-    }
-  | {
-      type: "setLoop";
-      loop: React.SetStateAction<CompositeState["loop"]>;
-    }
-  | {
-      type: "setWrap";
-      wrap: React.SetStateAction<CompositeState["wrap"]>;
-    }
-  | { type: "reset" }
-  | { type: "setItems"; items: CompositeState["items"] };
-
-type CompositeReducerState = Omit<
-  CompositeState,
-  "unstable_hasActiveWidget" | keyof unstable_IdState
-> & {
-  pastIds: string[];
-  initialVirtual: CompositeState["unstable_virtual"];
-  initialRTL: CompositeState["rtl"];
-  initialOrientation: CompositeState["orientation"];
-  initialCurrentId: CompositeState["currentId"];
-  initialLoop: CompositeState["loop"];
-  initialWrap: CompositeState["wrap"];
-  hasSetCurrentId?: boolean;
-};
-
-function reducer(
-  state: CompositeReducerState,
-  action: CompositeReducerAction
-): CompositeReducerState {
-  const {
-    unstable_virtual: virtual,
-    rtl,
-    orientation,
-    items,
-    groups,
-    currentId,
-    loop,
-    wrap,
-    pastIds,
-    unstable_moves: moves,
-    unstable_angular: angular,
-    initialVirtual,
-    initialRTL,
-    initialOrientation,
-    initialCurrentId,
-    initialLoop,
-    initialWrap,
-    hasSetCurrentId,
-  } = state;
-
-  switch (action.type) {
-    case "registerGroup": {
-      const { group } = action;
-      // If there are no groups yet, just add it as the first one
-      if (groups.length === 0) {
-        return { ...state, groups: [group] };
-      }
-      // Finds the group index based on DOM position
-      const index = findDOMIndex(groups, group);
-      return { ...state, groups: addItemAtIndex(groups, group, index) };
-    }
-    case "unregisterGroup": {
-      const { id } = action;
-      const nextGroups = groups.filter((group) => group.id !== id);
-      // The group isn't registered, so do nothing
-      if (nextGroups.length === groups.length) {
-        return state;
-      }
-      return { ...state, groups: nextGroups };
-    }
-    case "registerItem": {
-      const { item } = action;
-      // Finds the item group based on the DOM hierarchy
-      const group = groups.find((r) =>
-        r.ref.current?.contains(item.ref.current)
-      );
-      // Group will be null if it's a one-dimensional composite
-      const nextItem = { groupId: group?.id, ...item };
-      const index = findDOMIndex(items, nextItem);
-      const nextState = {
-        ...state,
-        items: addItemAtIndex(items, nextItem, index),
-      };
-      if (!hasSetCurrentId && !moves && initialCurrentId === undefined) {
-        // Sets currentId to the first enabled item. This runs whenever an item
-        // is registered because the first enabled item may be registered
-        // asynchronously.
-        return {
-          ...nextState,
-          currentId: findFirstEnabledItem(nextState.items)?.id,
-        };
-      }
-      return nextState;
-    }
-    case "unregisterItem": {
-      const { id } = action;
-      const nextItems = items.filter((item) => item.id !== id);
-      // The item isn't registered, so do nothing
-      if (nextItems.length === items.length) {
-        return state;
-      }
-      // Filters out the item that is being removed from the pastIds list
-      const nextPastIds = pastIds.filter((pastId) => pastId !== id);
-      const nextState = {
-        ...state,
-        pastIds: nextPastIds,
-        items: nextItems,
-      };
-      // If the current item is the item that is being removed, focus pastId
-      if (currentId && currentId === id) {
-        const nextId = getCurrentId({
-          ...nextState,
-          currentId: nextPastIds[0],
-        });
-        return { ...nextState, currentId: nextId };
-      }
-      return nextState;
-    }
-    case "move": {
-      const { id } = action;
-      // move() does nothing
-      if (id === undefined) {
-        return state;
-      }
-      // Removes the current item and the item that is receiving focus from the
-      // pastIds list
-      const filteredPastIds = pastIds.filter(
-        (pastId) => pastId !== currentId && pastId !== id
-      );
-      // If there's a currentId, add it to the pastIds list so it can be focused
-      // if the new item gets removed or disabled
-      const nextPastIds = currentId
-        ? [currentId, ...filteredPastIds]
-        : filteredPastIds;
-      const nextState = { ...state, pastIds: nextPastIds };
-      // move(null) will focus the composite element itself, not an item
-      if (id === null) {
-        return {
-          ...nextState,
-          unstable_moves: moves + 1,
-          currentId: getCurrentId(nextState, id),
-        };
-      }
-      const item = findEnabledItemById(items, id);
-      return {
-        ...nextState,
-        unstable_moves: item ? moves + 1 : moves,
-        currentId: getCurrentId(nextState, item?.id),
-      };
-    }
-    case "next": {
-      // If there's no item focused, we just move the first one
-      if (currentId == null) {
-        return reducer(state, { ...action, type: "first" });
-      }
-      // RTL doesn't make sense on vertical navigation
-      const isHorizontal = orientation !== "vertical";
-      const isRTL = rtl && isHorizontal;
-      const allItems = isRTL ? reverse(items) : items;
-      const currentItem = allItems.find((item) => item.id === currentId);
-      // If there's no item focused, we just move the first one
-      if (!currentItem) {
-        return reducer(state, { ...action, type: "first" });
-      }
-      const isGrid = !!currentItem.groupId;
-      const currentIndex = allItems.indexOf(currentItem);
-      const nextItems = allItems.slice(currentIndex + 1);
-      const nextItemsInGroup = getItemsInGroup(nextItems, currentItem.groupId);
-      // Home, End
-      if (action.allTheWay) {
-        // We reverse so we can get the last enabled item in the group. If it's
-        // RTL, nextItems and nextItemsInGroup are already reversed and don't
-        // have the items before the current one anymore. So we have to get
-        // items in group again with allItems.
-        const nextItem = findFirstEnabledItem(
-          isRTL
-            ? getItemsInGroup(allItems, currentItem.groupId)
-            : reverse(nextItemsInGroup)
-        );
-        return reducer(state, { ...action, type: "move", id: nextItem?.id });
-      }
-      const oppositeOrientation = getOppositeOrientation(
-        // If it's a grid and orientation is not set, it's a next/previous
-        // call, which is inherently horizontal. up/down will call next with
-        // orientation set to vertical by default (see below on up/down cases).
-        isGrid ? orientation || "horizontal" : orientation
-      );
-      const canLoop = loop && loop !== oppositeOrientation;
-      const canWrap = isGrid && wrap && wrap !== oppositeOrientation;
-      const hasNullItem =
-        // `previous` and `up` will set action.hasNullItem, but when calling
-        // next directly, hasNullItem will only be true if it's not a grid and
-        // loop is set to true, which means that pressing right or down keys on
-        // grids will never focus the composite element. On one-dimensional
-        // composites that don't loop, pressing right or down keys also doesn't
-        // focus the composite element.
-        action.hasNullItem || (!isGrid && canLoop && initialCurrentId === null);
-
-      if (canLoop) {
-        const loopItems =
-          canWrap && !hasNullItem
-            ? allItems
-            : getItemsInGroup(allItems, currentItem.groupId);
-        // Turns [0, 1, current, 3, 4] into [3, 4, 0, 1]
-        const sortedItems = placeItemsAfter(loopItems, currentId, hasNullItem);
-        const nextItem = findFirstEnabledItem(sortedItems, currentId);
-        return reducer(state, { ...action, type: "move", id: nextItem?.id });
-      }
-      if (canWrap) {
-        const nextItem = findFirstEnabledItem(
-          // We can use nextItems, which contains all the next items, including
-          // items from other groups, to wrap between groups. However, if there
-          // is a null item (the composite element), we'll only use the next
-          // items in the group. So moving next from the last item will focus
-          // the composite element (null). On grid composites, horizontal
-          // navigation never focuses the composite element, only vertical.
-          hasNullItem ? nextItemsInGroup : nextItems,
-          currentId
-        );
-        const nextId = hasNullItem ? nextItem?.id || null : nextItem?.id;
-        return reducer(state, { ...action, type: "move", id: nextId });
-      }
-      const nextItem = findFirstEnabledItem(nextItemsInGroup, currentId);
-      if (!nextItem && hasNullItem) {
-        return reducer(state, { ...action, type: "move", id: null });
-      }
-      return reducer(state, { ...action, type: "move", id: nextItem?.id });
-    }
-    case "previous": {
-      // If currentId is initially set to null, the composite element will be
-      // focusable while navigating with arrow keys. But, if it's a grid, we
-      // don't want to focus the composite element with horizontal navigation.
-      const isGrid = !!groups.length;
-      const hasNullItem = !isGrid && initialCurrentId === null;
-      const nextState = reducer(
-        { ...state, items: reverse(items) },
-        { ...action, type: "next", hasNullItem }
-      );
-      return { ...nextState, items };
-    }
-    case "down": {
-      // First, we make sure groups have the same number of items by filling it
-      // with disabled fake items. Then, we reorganize the items list so
-      // [1-1, 1-2, 2-1, 2-2] becomes [1-1, 2-1, 1-2, 2-2].
-      const verticalItems = verticalizeItems(
-        flatten(fillGroups(groupItems(items), currentId, angular))
-      );
-      const canLoop = loop && loop !== "horizontal";
-      // Pressing down arrow key will only focus the composite element if loop
-      // is true or vertical.
-      const hasNullItem = canLoop && initialCurrentId === null;
-      const nextState = reducer(
-        { ...state, orientation: "vertical", items: verticalItems },
-        { ...action, type: "next", hasNullItem }
-      );
-      return { ...nextState, orientation, items };
-    }
-    case "up": {
-      const verticalItems = verticalizeItems(
-        reverse(flatten(fillGroups(groupItems(items), currentId, angular)))
-      );
-      // If currentId is initially set to null, we'll always focus the
-      // composite element when the up arrow key is pressed in the first row.
-      const hasNullItem = initialCurrentId === null;
-      const nextState = reducer(
-        { ...state, orientation: "vertical", items: verticalItems },
-        { ...action, type: "next", hasNullItem }
-      );
-      return { ...nextState, orientation, items };
-    }
-    case "first": {
-      const firstItem = findFirstEnabledItem(items);
-      return reducer(state, { ...action, type: "move", id: firstItem?.id });
-    }
-    case "last": {
-      const nextState = reducer(
-        { ...state, items: reverse(items) },
-        { ...action, type: "first" }
-      );
-      return { ...nextState, items };
-    }
-    case "sort": {
-      return {
-        ...state,
-        items: sortBasedOnDOMPosition(items),
-        groups: sortBasedOnDOMPosition(groups),
-      };
-    }
-    case "setVirtual":
-      return {
-        ...state,
-        unstable_virtual: applyState(action.virtual, virtual),
-      };
-    case "setRTL":
-      return { ...state, rtl: applyState(action.rtl, rtl) };
-    case "setOrientation":
-      return {
-        ...state,
-        orientation: applyState(action.orientation, orientation),
-      };
-    case "setCurrentId": {
-      const nextCurrentId = getCurrentId({
-        ...state,
-        currentId: applyState(action.currentId, currentId),
-      });
-      return { ...state, currentId: nextCurrentId, hasSetCurrentId: true };
-    }
-    case "setLoop":
-      return { ...state, loop: applyState(action.loop, loop) };
-    case "setWrap":
-      return { ...state, wrap: applyState(action.wrap, wrap) };
-    case "reset":
-      return {
-        ...state,
-        unstable_virtual: initialVirtual,
-        rtl: initialRTL,
-        orientation: initialOrientation,
-        currentId: getCurrentId({ ...state, currentId: initialCurrentId }),
-        loop: initialLoop,
-        wrap: initialWrap,
-        unstable_moves: 0,
-        pastIds: [],
-      };
-    case "setItems": {
-      return { ...state, items: action.items };
-    }
-    default:
-      throw new Error();
-  }
-}
-
-function useAction<T extends (...args: any[]) => any>(fn: T) {
-  return React.useCallback(fn, []);
-}
-
-function useIsUnmountedRef() {
-  const isUnmountedRef = React.useRef(false);
-  useIsomorphicEffect(() => {
-    return () => {
-      isUnmountedRef.current = true;
-    };
-  }, []);
-  return isUnmountedRef;
-}
-
-export function useCompositeState(
-  initialState: SealedInitialState<CompositeInitialState> = {}
-): CompositeStateReturn {
-  const {
-    unstable_virtual: virtual = false,
-    rtl = false,
-    orientation,
-    currentId,
-    loop = false,
-    wrap = false,
-    unstable_angular = false,
-    ...sealed
-  } = useSealedState(initialState);
-  const [
-    {
-      pastIds,
-      initialVirtual,
-      initialRTL,
-      initialOrientation,
-      initialCurrentId,
-      initialLoop,
-      initialWrap,
-      hasSetCurrentId,
-      ...state
-    },
-    dispatch,
-  ] = React.useReducer(reducer, {
-    unstable_virtual: virtual,
-    rtl,
-    orientation,
-    items: [],
-    groups: [],
-    currentId,
-    loop,
-    wrap,
-    unstable_moves: 0,
-    pastIds: [],
-    unstable_angular,
-    initialVirtual: virtual,
-    initialRTL: rtl,
-    initialOrientation: orientation,
-    initialCurrentId: currentId,
-    initialLoop: loop,
-    initialWrap: wrap,
-  });
-  const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
-  const idState = unstable_useIdState(sealed);
-  // register/unregister may be called when this component is unmounted. We
-  // store the unmounted state here so we don't update the state if it's true.
-  // This only happens in a very specific situation.
-  // See https://github.com/reakit/reakit/issues/650
-  const isUnmountedRef = useIsUnmountedRef();
-
-  const setItems = React.useCallback(
-    (items: Item[]) => dispatch({ type: "setItems", items }),
-    []
-  );
-  useSortBasedOnDOMPosition(state.items, setItems);
-
-  return {
-    ...idState,
-    ...state,
-    unstable_hasActiveWidget: hasActiveWidget,
-    unstable_setHasActiveWidget: setHasActiveWidget,
-    registerItem: useAction((item) => {
-      if (isUnmountedRef.current) return;
-      dispatch({ type: "registerItem", item });
-    }),
-    unregisterItem: useAction((id) => {
-      if (isUnmountedRef.current) return;
-      dispatch({ type: "unregisterItem", id });
-    }),
-    registerGroup: useAction((group) => {
-      if (isUnmountedRef.current) return;
-      dispatch({ type: "registerGroup", group });
-    }),
-    unregisterGroup: useAction((id) => {
-      if (isUnmountedRef.current) return;
-      dispatch({ type: "unregisterGroup", id });
-    }),
-    move: useAction((id) => dispatch({ type: "move", id })),
-    next: useAction((allTheWay) => dispatch({ type: "next", allTheWay })),
-    previous: useAction((allTheWay) =>
-      dispatch({ type: "previous", allTheWay })
-    ),
-    up: useAction((allTheWay) => dispatch({ type: "up", allTheWay })),
-    down: useAction((allTheWay) => dispatch({ type: "down", allTheWay })),
-    first: useAction(() => dispatch({ type: "first" })),
-    last: useAction(() => dispatch({ type: "last" })),
-    sort: useAction(() => dispatch({ type: "sort" })),
-    unstable_setVirtual: useAction((value) =>
-      dispatch({ type: "setVirtual", virtual: value })
-    ),
-    setRTL: useAction((value) => dispatch({ type: "setRTL", rtl: value })),
-    setOrientation: useAction((value) =>
-      dispatch({ type: "setOrientation", orientation: value })
-    ),
-    setCurrentId: useAction((value) =>
-      dispatch({ type: "setCurrentId", currentId: value })
-    ),
-    setLoop: useAction((value) => dispatch({ type: "setLoop", loop: value })),
-    setWrap: useAction((value) => dispatch({ type: "setWrap", wrap: value })),
-    reset: useAction(() => dispatch({ type: "reset" })),
-  };
-}

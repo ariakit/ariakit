@@ -35,6 +35,7 @@ test("initial state", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
+      "unstable_includesBaseElement": false,
       "unstable_moves": 0,
       "unstable_virtual": false,
       "wrap": false,
@@ -101,6 +102,7 @@ test("registerItem", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
+      "unstable_includesBaseElement": false,
       "unstable_moves": 0,
       "unstable_virtual": false,
       "wrap": false,
@@ -135,6 +137,7 @@ test("unregisterItem", () => {
       "unstable_idCountRef": Object {
         "current": 0,
       },
+      "unstable_includesBaseElement": false,
       "unstable_moves": 0,
       "unstable_virtual": false,
       "wrap": false,
