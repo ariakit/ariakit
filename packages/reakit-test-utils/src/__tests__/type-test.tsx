@@ -193,7 +193,7 @@ test("type on focusable non-typeable element", () => {
   expect(stack).toEqual([]);
 });
 
-test("clear selection", () => {
+test("selection", () => {
   const stack = [] as string[];
   const Test = () => {
     const ref = React.useRef<HTMLInputElement>(null);

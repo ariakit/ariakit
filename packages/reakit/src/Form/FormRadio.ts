@@ -4,7 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { RadioHTMLProps, useRadio } from "../Radio/Radio";
-import { BoxOptions } from "../Box";
+import { RoleOptions } from "../Role";
 import { FormRadioGroupContext } from "./FormRadioGroup";
 import { unstable_FormStateReturn } from "./FormState";
 import { unstable_getIn } from "./utils/getIn";
@@ -15,7 +15,7 @@ import { FORM_RADIO_KEYS } from "./__keys";
 export type unstable_FormRadioOptions<
   V,
   P extends DeepPath<V, P>
-> = BoxOptions &
+> = RoleOptions &
   Pick<unstable_FormStateReturn<V>, "values" | "update" | "blur"> & {
     /**
      * FormRadio's name as in form values.

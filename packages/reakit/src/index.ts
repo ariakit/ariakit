@@ -15,6 +15,7 @@ export * from "./Menu";
 export * from "./Popover";
 export * from "./Portal";
 export * from "./Radio";
+export * from "./Role";
 export * from "./Rover";
 export * from "./Separator";
 export * from "./Tab";

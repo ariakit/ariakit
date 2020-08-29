@@ -13,7 +13,7 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { canUseDOM } from "reakit-utils/canUseDOM";
 import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
-import { useBox } from "../Box/Box";
+import { useRole } from "../Role/Role";
 import { CompositeStateReturn } from "./CompositeState";
 import { Item } from "./__utils/types";
 import { groupItems } from "./__utils/groupItems";
@@ -365,7 +365,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
   },
 
   useComposeProps(options, htmlProps) {
-    htmlProps = useBox(options, htmlProps, true);
+    htmlProps = useRole(options, htmlProps, true);
     const tabbableHTMLProps = useTabbable(options, htmlProps, true);
     if (options.unstable_virtual || options.currentId === null) {
       // Composite will only be tabbable by default if the focus is managed

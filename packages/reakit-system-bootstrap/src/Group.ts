@@ -1,8 +1,8 @@
 import { css, cx } from "emotion";
 import { GroupHTMLProps, GroupOptions } from "reakit/Group/Group";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapGroupOptions = BootstrapBoxOptions & GroupOptions;
+export type BootstrapGroupOptions = BootstrapRoleOptions & GroupOptions;
 
 export function useGroupProps(
   _: BootstrapGroupOptions,

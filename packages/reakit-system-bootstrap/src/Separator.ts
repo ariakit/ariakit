@@ -5,9 +5,9 @@ import {
 } from "reakit/Separator/Separator";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { useFade } from "reakit-system-palette/utils/fade";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapSeparatorOptions = BootstrapBoxOptions & SeparatorOptions;
+export type BootstrapSeparatorOptions = BootstrapRoleOptions & SeparatorOptions;
 
 export function useSeparatorProps(
   _: BootstrapSeparatorOptions,

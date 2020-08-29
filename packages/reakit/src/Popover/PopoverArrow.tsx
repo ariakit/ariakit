@@ -2,11 +2,11 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { PopoverStateReturn } from "./PopoverState";
 import { POPOVER_ARROW_KEYS } from "./__keys";
 
-export type PopoverArrowOptions = BoxOptions &
+export type PopoverArrowOptions = RoleOptions &
   Pick<
     Partial<PopoverStateReturn>,
     "unstable_arrowRef" | "unstable_arrowStyles"
@@ -16,7 +16,7 @@ export type PopoverArrowOptions = BoxOptions &
     size?: number | string;
   };
 
-export type PopoverArrowHTMLProps = BoxHTMLProps;
+export type PopoverArrowHTMLProps = RoleHTMLProps;
 
 export type PopoverArrowProps = PopoverArrowOptions & PopoverArrowHTMLProps;
 
@@ -25,7 +25,7 @@ export const usePopoverArrow = createHook<
   PopoverArrowHTMLProps
 >({
   name: "PopoverArrow",
-  compose: useBox,
+  compose: useRole,
   keys: POPOVER_ARROW_KEYS,
 
   useOptions({ size = 30, ...options }) {

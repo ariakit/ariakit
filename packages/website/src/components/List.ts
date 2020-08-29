@@ -1,14 +1,14 @@
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 
-export type ListOptions = BoxOptions;
-export type ListHTMLProps = BoxHTMLProps;
+export type ListOptions = RoleOptions;
+export type ListHTMLProps = RoleHTMLProps;
 export type ListProps = ListOptions & ListHTMLProps;
 
 export const useList = createHook<ListOptions, ListHTMLProps>({
   name: "List",
-  compose: useBox,
+  compose: useRole,
 
   useProps(_, htmlProps) {
     const list = css`

@@ -44,7 +44,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Group` uses [Box](/docs/box/).
+- `Group` uses [Role](/docs/role/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

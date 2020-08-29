@@ -454,12 +454,12 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Form` uses [Box](/docs/box/).
+- `Form` uses [Role](/docs/role/).
 - `FormCheckbox` uses [Checkbox](/docs/checkbox/).
 - `FormGroup` uses [Group](/docs/group/).
 - `FormInput` uses [Input](/docs/input/).
-- `FormLabel` uses [Box](/docs/box/).
-- `FormMessage` uses [Box](/docs/box/).
+- `FormLabel` uses [Role](/docs/role/).
+- `FormMessage` uses [Role](/docs/role/).
 - `FormPushButton` uses [Button](/docs/button/).
 - `FormRadio` uses [Radio](/docs/radio/).
 - `FormRadioGroup` uses `FormGroup`.

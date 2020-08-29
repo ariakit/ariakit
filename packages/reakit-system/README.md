@@ -21,10 +21,10 @@ yarn add reakit-system
 ## Usage
 
 ```jsx
-import { useBox } from "reakit/Box";
+import { useRole } from "reakit/Role";
 import { createHook } from "reakit-system";
 
-const useA = createHook({ name: "A", compose: useBox });
+const useA = createHook({ name: "A", compose: useRole });
 ```
 
 ## API

@@ -1,17 +1,17 @@
-import { BoxHTMLProps, BoxOptions } from "reakit/Box/Box";
+import { RoleHTMLProps, RoleOptions } from "reakit/Role/Role";
 import { usePalette } from "./utils/palette";
 import { useContrast } from "./utils/contrast";
 
-export type PaletteBoxOptions = BoxOptions & {
+export type PaletteRoleOptions = RoleOptions & {
   unstable_system: {
     palette?: string;
     fill?: "opaque" | "outline";
   };
 };
 
-export function useBoxProps(
-  { unstable_system: system = {} }: PaletteBoxOptions,
-  { style: htmlStyle, ...htmlProps }: BoxHTMLProps = {}
+export function useRoleProps(
+  { unstable_system: system = {} }: PaletteRoleOptions,
+  { style: htmlStyle, ...htmlProps }: RoleHTMLProps = {}
 ) {
   const color = usePalette(system.palette);
   const contrast = useContrast(color);

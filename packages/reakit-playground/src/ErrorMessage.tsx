@@ -1,13 +1,13 @@
 import * as React from "react";
-import { BoxOptions, BoxHTMLProps, useBox } from "reakit";
+import { RoleOptions, RoleHTMLProps, useRole } from "reakit";
 import { useOptions, useProps } from "reakit-system";
 
-export type ErrorMessageOptions = BoxOptions & {
+export type ErrorMessageOptions = RoleOptions & {
   /** TODO: Description */
   error: Error;
 };
 
-export type ErrorMessageHTMLProps = BoxHTMLProps;
+export type ErrorMessageHTMLProps = RoleHTMLProps;
 
 export function ErrorMessage({
   error,
@@ -21,7 +21,7 @@ export function ErrorMessage({
   );
 
   htmlProps = useProps("ErrorMessage", options, htmlProps);
-  htmlProps = useBox(options, htmlProps);
+  htmlProps = useRole(options, htmlProps);
 
   return <pre {...htmlProps}>{options.error.toString()}</pre>;
 }

@@ -1,12 +1,12 @@
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 
-export type HiddenMediaQueryOptions = BoxOptions & {
+export type HiddenMediaQueryOptions = RoleOptions & {
   query: string;
 };
 
-export type HiddenMediaQueryHTMLProps = BoxHTMLProps;
+export type HiddenMediaQueryHTMLProps = RoleHTMLProps;
 
 export type HiddenMediaQueryProps = HiddenMediaQueryOptions &
   HiddenMediaQueryHTMLProps;
@@ -16,7 +16,7 @@ export const useHiddenMediaQuery = createHook<
   HiddenMediaQueryHTMLProps
 >({
   name: "HiddenMediaQuery",
-  compose: useBox,
+  compose: useRole,
   keys: ["query"],
 
   useProps(options, htmlProps) {
