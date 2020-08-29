@@ -6,10 +6,10 @@ import {
 } from "reakit/Popover/PopoverArrow";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
-import { BootstrapBoxOptions } from "./Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapPopoverOptions = BootstrapBoxOptions & PopoverOptions;
+export type BootstrapPopoverOptions = BootstrapRoleOptions & PopoverOptions;
 
 export function usePopoverOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
@@ -27,7 +27,7 @@ export function usePopoverProps(
 ): PopoverHTMLProps {
   const {
     style: { backgroundColor },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";
   const borderColor = useFade(foreground, 0.75);
@@ -47,7 +47,7 @@ export function usePopoverProps(
   return { ...htmlProps, className: cx(popover, htmlProps.className) };
 }
 
-export type BootstrapPopoverArrowOptions = BootstrapBoxOptions &
+export type BootstrapPopoverArrowOptions = BootstrapRoleOptions &
   PopoverArrowOptions;
 
 export function usePopoverArrowProps(

@@ -1,19 +1,19 @@
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 import { useAnchor } from "./Anchor";
 
-export type SummaryOptions = BoxOptions & {
+export type SummaryOptions = RoleOptions & {
   experimental?: "true" | "false";
 };
 
-export type SummaryHTMLProps = BoxHTMLProps;
+export type SummaryHTMLProps = RoleHTMLProps;
 
 export type SummaryProps = SummaryOptions & SummaryHTMLProps;
 
 export const useSummary = createHook<SummaryOptions, SummaryHTMLProps>({
   name: "Summary",
-  compose: useBox,
+  compose: useRole,
 
   useProps(options, htmlProps) {
     const anchor = useAnchor(options, htmlProps);

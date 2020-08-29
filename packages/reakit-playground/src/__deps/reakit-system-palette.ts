@@ -2,7 +2,7 @@
 // Automatically generated
 export default {
   "reakit-system-palette": require("reakit-system-palette"),
-  "reakit-system-palette/Box": require("reakit-system-palette/Box"),
+  "reakit-system-palette/Role": require("reakit-system-palette/Role"),
   "reakit-system-palette/palette": require("reakit-system-palette/palette"),
   "reakit-system-palette/utils": require("reakit-system-palette/utils"),
   "reakit-system-palette/utils/contrast": require("reakit-system-palette/utils/contrast"),

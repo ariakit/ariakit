@@ -1,15 +1,15 @@
 import { css, cx } from "emotion";
 import { TabbableHTMLProps, TabbableOptions } from "reakit/Tabbable/Tabbable";
 import { useFade } from "reakit-system-palette/utils/fade";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { useIsLight } from "reakit-system-palette/utils/isLight";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { useLighten } from "reakit-system-palette/utils/lighten";
 import { useContrastRatio } from "reakit-system-palette/utils/contrast";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapTabbableOptions = BootstrapBoxOptions & TabbableOptions;
+export type BootstrapTabbableOptions = BootstrapRoleOptions & TabbableOptions;
 
 export function useTabbableProps(
   {
@@ -21,7 +21,7 @@ export function useTabbableProps(
 ): TabbableHTMLProps {
   const {
     style: { color, backgroundColor },
-  } = usePaletteBoxProps({ unstable_system: { palette, ...system } });
+  } = usePaletteRoleProps({ unstable_system: { palette, ...system } });
 
   const dark = usePalette("dark") || "black";
   const background = usePalette("background") || "white";

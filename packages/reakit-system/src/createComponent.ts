@@ -6,13 +6,13 @@ import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 import { memo } from "./__utils/memo";
 
-type BoxHTMLProps = React.HTMLAttributes<any> &
+type RoleHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
     wrapElement?: (element: React.ReactNode) => React.ReactNode;
   };
 
 type Hook<O> = {
-  (options?: O, props?: BoxHTMLProps): BoxHTMLProps;
+  (options?: O, props?: RoleHTMLProps): RoleHTMLProps;
   unstable_propsAreEqual?: (prev: O, next: O) => boolean;
   __keys?: ReadonlyArray<any>;
 };

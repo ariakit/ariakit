@@ -42,7 +42,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `VisuallyHidden` uses [Box](/docs/box/).
+- `VisuallyHidden` uses [Role](/docs/role/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

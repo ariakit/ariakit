@@ -11,10 +11,10 @@ import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { canUseDOM } from "reakit-utils/canUseDOM";
 import { getClosestFocusable } from "reakit-utils/tabbable";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { TABBABLE_KEYS } from "./__keys";
 
-export type TabbableOptions = BoxOptions & {
+export type TabbableOptions = RoleOptions & {
   /**
    * Same as the HTML attribute.
    */
@@ -27,7 +27,7 @@ export type TabbableOptions = BoxOptions & {
   focusable?: boolean;
 };
 
-export type TabbableHTMLProps = BoxHTMLProps & {
+export type TabbableHTMLProps = RoleHTMLProps & {
   disabled?: boolean;
 };
 
@@ -122,7 +122,7 @@ function isNativeTabbable(element: Element) {
 
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
-  compose: useBox,
+  compose: useRole,
   keys: TABBABLE_KEYS,
 
   useOptions(options, { disabled }) {

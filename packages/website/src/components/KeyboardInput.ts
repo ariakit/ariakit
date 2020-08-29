@@ -1,10 +1,10 @@
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 import { usePalette, useDarken } from "reakit-system-palette/utils";
 
-export type KeyboardInputOptions = BoxOptions;
-export type KeyboardInputHTMLProps = BoxHTMLProps;
+export type KeyboardInputOptions = RoleOptions;
+export type KeyboardInputHTMLProps = RoleHTMLProps;
 export type KeyboardInputProps = KeyboardInputOptions & KeyboardInputHTMLProps;
 
 export const useKeyboardInput = createHook<
@@ -12,7 +12,7 @@ export const useKeyboardInput = createHook<
   KeyboardInputHTMLProps
 >({
   name: "KeyboardInput",
-  compose: useBox,
+  compose: useRole,
 
   useProps(_, htmlProps) {
     const background = usePalette("background");

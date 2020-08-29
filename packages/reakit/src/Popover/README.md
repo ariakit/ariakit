@@ -214,7 +214,11 @@ function Popover({ disclosure, ...props }) {
   const popover = usePopoverState();
   return (
     <>
-      <PopoverDisclosure {...popover} ref={disclosure.ref} {...disclosure.props}>
+      <PopoverDisclosure
+        {...popover}
+        ref={disclosure.ref}
+        {...disclosure.props}
+      >
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </PopoverDisclosure>
       <BasePopover {...popover} {...props}>
@@ -247,7 +251,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 ## Composition
 
 - `Popover` uses [Dialog](/docs/dialog/), and is used by [Menu](/docs/menu/).
-- `PopoverArrow` uses [Box](/docs/box/), and is used by [TooltipArrow](/docs/tooltip/).
+- `PopoverArrow` uses [Role](/docs/role/), and is used by [TooltipArrow](/docs/tooltip/).
 - `PopoverBackdrop` uses [DialogBackdrop](/docs/dialog/).
 - `PopoverDisclosure` uses [DialogDisclosure](/docs/dialog/), and is used by [MenuButton](/docs/menu/).
 

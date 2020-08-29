@@ -1,14 +1,14 @@
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 
-export type ParagraphOptions = BoxOptions;
-export type ParagraphHTMLProps = BoxHTMLProps;
+export type ParagraphOptions = RoleOptions;
+export type ParagraphHTMLProps = RoleHTMLProps;
 export type ParagraphProps = ParagraphOptions & ParagraphHTMLProps;
 
 export const useParagraph = createHook<ParagraphOptions, ParagraphHTMLProps>({
   name: "Paragraph",
-  compose: useBox,
+  compose: useRole,
 
   useProps(_, htmlProps) {
     const paragraph = css`

@@ -17,9 +17,9 @@ import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { MenuStateReturn } from "reakit/Menu/MenuState";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapMenuBarOptions = BootstrapBoxOptions & MenuBarOptions;
+export type BootstrapMenuBarOptions = BootstrapRoleOptions & MenuBarOptions;
 
 export function useMenuBarProps(
   options: BootstrapMenuBarOptions,
@@ -46,7 +46,7 @@ export function useMenuBarProps(
   return { ...htmlProps, className: cx(menuBar, htmlProps.className) };
 }
 
-export type BootstrapMenuItemOptions = BootstrapBoxOptions & MenuItemOptions;
+export type BootstrapMenuItemOptions = BootstrapRoleOptions & MenuItemOptions;
 
 export function useMenuItemProps(
   { unstable_system, ...options }: BootstrapMenuItemOptions,
@@ -91,7 +91,7 @@ export function useMenuItemProps(
   return { ...htmlProps, className: cx(menuItem, htmlProps.className) };
 }
 
-export type BootstrapMenuOptions = BootstrapBoxOptions & MenuOptions;
+export type BootstrapMenuOptions = BootstrapRoleOptions & MenuOptions;
 
 const OrientationContext = React.createContext<
   "horizontal" | "vertical" | undefined
@@ -149,7 +149,7 @@ export function useMenuProps(
   };
 }
 
-export type BootstrapMenuButtonOptions = BootstrapBoxOptions &
+export type BootstrapMenuButtonOptions = BootstrapRoleOptions &
   MenuButtonOptions &
   Pick<Partial<MenuStateReturn>, "unstable_originalPlacement">;
 
@@ -246,7 +246,7 @@ export function useMenuButtonProps(
   };
 }
 
-export type BootstrapMenuItemCheckboxOptions = BootstrapBoxOptions &
+export type BootstrapMenuItemCheckboxOptions = BootstrapRoleOptions &
   MenuItemCheckboxOptions;
 
 export function useMenuItemCheckboxProps(
@@ -272,7 +272,7 @@ export function useMenuItemCheckboxProps(
   return { ...htmlProps, className: cx(menuItemCheckbox, htmlProps.className) };
 }
 
-export type BootstrapMenuItemRadioOptions = BootstrapBoxOptions &
+export type BootstrapMenuItemRadioOptions = BootstrapRoleOptions &
   MenuItemRadioOptions;
 
 export function useMenuItemRadioProps(
@@ -299,7 +299,7 @@ export function useMenuItemRadioProps(
   return { ...htmlProps, className: cx(menuItemRadio, htmlProps.className) };
 }
 
-export type BootstrapMenuGroupOptions = BootstrapBoxOptions & MenuGroupOptions;
+export type BootstrapMenuGroupOptions = BootstrapRoleOptions & MenuGroupOptions;
 
 export function useMenuGroupProps(
   _: BootstrapMenuGroupOptions,
