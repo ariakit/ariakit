@@ -1,14 +1,14 @@
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 
-export type HeadingOptions = BoxOptions;
-export type HeadingHTMLProps = BoxHTMLProps;
+export type HeadingOptions = RoleOptions;
+export type HeadingHTMLProps = RoleHTMLProps;
 export type HeadingProps = HeadingOptions & HeadingHTMLProps;
 
 export const useHeading = createHook<HeadingOptions, HeadingHTMLProps>({
   name: "Heading",
-  compose: useBox,
+  compose: useRole,
 
   useProps(_, htmlProps) {
     const heading = css`

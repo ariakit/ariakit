@@ -3,17 +3,17 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { DisclosureStateReturn } from "./DisclosureState";
 import { DISCLOSURE_CONTENT_KEYS } from "./__keys";
 
-export type DisclosureContentOptions = BoxOptions &
+export type DisclosureContentOptions = RoleOptions &
   Pick<
     Partial<DisclosureStateReturn>,
     "baseId" | "visible" | "animating" | "animated" | "stopAnimation"
   >;
 
-export type DisclosureContentHTMLProps = BoxHTMLProps;
+export type DisclosureContentHTMLProps = RoleHTMLProps;
 
 export type DisclosureContentProps = DisclosureContentOptions &
   DisclosureContentHTMLProps;
@@ -25,7 +25,7 @@ export const useDisclosureContent = createHook<
   DisclosureContentHTMLProps
 >({
   name: "DisclosureContent",
-  compose: useBox,
+  compose: useRole,
   keys: DISCLOSURE_CONTENT_KEYS,
 
   useProps(

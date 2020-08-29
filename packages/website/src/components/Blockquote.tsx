@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { createHook, createComponent } from "reakit-system";
 import {
   usePalette,
@@ -9,11 +9,11 @@ import {
 } from "reakit-system-palette/utils";
 import TestTube from "../icons/TestTube";
 
-export type BlockquoteOptions = BoxOptions & {
+export type BlockquoteOptions = RoleOptions & {
   experimental?: "true" | "false";
 };
 
-export type BlockquoteHTMLProps = BoxHTMLProps &
+export type BlockquoteHTMLProps = RoleHTMLProps &
   React.BlockquoteHTMLAttributes<any>;
 
 export type BlockquoteProps = BlockquoteOptions & BlockquoteHTMLProps;
@@ -21,7 +21,7 @@ export type BlockquoteProps = BlockquoteOptions & BlockquoteHTMLProps;
 export const useBlockquote = createHook<BlockquoteOptions, BlockquoteHTMLProps>(
   {
     name: "Blockquote",
-    compose: useBox,
+    compose: useRole,
     keys: ["experimental"],
 
     useProps(options, htmlProps) {

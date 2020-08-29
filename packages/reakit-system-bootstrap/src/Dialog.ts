@@ -7,10 +7,10 @@ import {
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { usePalette } from "reakit-system-palette/utils/palette";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
-import { BootstrapBoxOptions } from "./Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapDialogOptions = BootstrapBoxOptions & DialogOptions;
+export type BootstrapDialogOptions = BootstrapRoleOptions & DialogOptions;
 
 export function useDialogOptions({
   unstable_system: { palette = "background", fill = "opaque", ...system } = {},
@@ -28,7 +28,7 @@ export function useDialogProps(
 ): DialogHTMLProps {
   const {
     style: { color, backgroundColor },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";
   const primaryColor = usePalette("primary");
@@ -56,7 +56,7 @@ export function useDialogProps(
   return { ...htmlProps, className: cx(dialog, htmlProps.className) };
 }
 
-export type BootstrapDialogBackdropOptions = BootstrapBoxOptions &
+export type BootstrapDialogBackdropOptions = BootstrapRoleOptions &
   DialogBackdropOptions;
 
 export function useDialogBackdropProps(

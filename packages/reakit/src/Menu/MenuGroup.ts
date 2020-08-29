@@ -1,17 +1,17 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { MENU_GROUP_KEYS } from "./__keys";
 
-export type MenuGroupOptions = BoxOptions;
+export type MenuGroupOptions = RoleOptions;
 
-export type MenuGroupHTMLProps = BoxHTMLProps;
+export type MenuGroupHTMLProps = RoleHTMLProps;
 
 export type MenuGroupProps = MenuGroupOptions & MenuGroupHTMLProps;
 
 export const useMenuGroup = createHook<MenuGroupOptions, MenuGroupHTMLProps>({
   name: "MenuGroup",
-  compose: useBox,
+  compose: useRole,
   keys: MENU_GROUP_KEYS,
 
   useProps(_, htmlProps) {

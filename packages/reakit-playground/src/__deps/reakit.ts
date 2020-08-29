@@ -82,6 +82,8 @@ export default {
   "reakit/Radio/Radio": require("reakit/Radio/Radio"),
   "reakit/Radio/RadioGroup": require("reakit/Radio/RadioGroup"),
   "reakit/Radio/RadioState": require("reakit/Radio/RadioState"),
+  "reakit/Role": require("reakit/Role"),
+  "reakit/Role/Role": require("reakit/Role/Role"),
   "reakit/Rover": require("reakit/Rover"),
   "reakit/Rover/Rover": require("reakit/Rover/Rover"),
   "reakit/Rover/RoverState": require("reakit/Rover/RoverState"),

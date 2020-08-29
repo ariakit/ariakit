@@ -1,5 +1,4 @@
 # Automatically generated
-/Box
 /Button
 /Composite
 /Dialog
@@ -8,6 +7,7 @@
 /Input
 /Menu
 /Popover
+/Role
 /Separator
 /Tab
 /Tabbable

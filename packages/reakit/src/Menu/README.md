@@ -526,7 +526,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 - `Menu` uses `MenuBar` and [Popover](/docs/popover/).
 - `MenuArrow` uses [PopoverArrow](/docs/popover/).
 - `MenuButton` uses [PopoverDisclosure](/docs/popover/).
-- `MenuGroup` uses [Box](/docs/box/).
+- `MenuGroup` uses [Role](/docs/role/).
 - `MenuItem` uses [CompositeItem](/docs/composite/).
 - `MenuItemCheckbox` uses `MenuItem` and [Checkbox](/docs/checkbox/).
 - `MenuItemRadio` uses `MenuItem` and [Radio](/docs/radio/).

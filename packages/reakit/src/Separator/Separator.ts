@@ -1,22 +1,22 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { SEPARATOR_KEYS } from "./__keys";
 
-export type SeparatorOptions = BoxOptions & {
+export type SeparatorOptions = RoleOptions & {
   /**
    * Separator's orientation.
    */
   orientation?: "horizontal" | "vertical";
 };
 
-export type SeparatorHTMLProps = BoxHTMLProps;
+export type SeparatorHTMLProps = RoleHTMLProps;
 
 export type SeparatorProps = SeparatorOptions & SeparatorHTMLProps;
 
 export const useSeparator = createHook<SeparatorOptions, SeparatorHTMLProps>({
   name: "Separator",
-  compose: useBox,
+  compose: useRole,
   keys: SEPARATOR_KEYS,
 
   useOptions({ orientation = "horizontal", ...options }) {

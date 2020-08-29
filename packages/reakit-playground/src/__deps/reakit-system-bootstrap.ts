@@ -2,7 +2,6 @@
 // Automatically generated
 export default {
   "reakit-system-bootstrap": require("reakit-system-bootstrap"),
-  "reakit-system-bootstrap/Box": require("reakit-system-bootstrap/Box"),
   "reakit-system-bootstrap/Button": require("reakit-system-bootstrap/Button"),
   "reakit-system-bootstrap/Composite": require("reakit-system-bootstrap/Composite"),
   "reakit-system-bootstrap/Dialog": require("reakit-system-bootstrap/Dialog"),
@@ -11,6 +10,7 @@ export default {
   "reakit-system-bootstrap/Input": require("reakit-system-bootstrap/Input"),
   "reakit-system-bootstrap/Menu": require("reakit-system-bootstrap/Menu"),
   "reakit-system-bootstrap/Popover": require("reakit-system-bootstrap/Popover"),
+  "reakit-system-bootstrap/Role": require("reakit-system-bootstrap/Role"),
   "reakit-system-bootstrap/Separator": require("reakit-system-bootstrap/Separator"),
   "reakit-system-bootstrap/Tab": require("reakit-system-bootstrap/Tab"),
   "reakit-system-bootstrap/Tabbable": require("reakit-system-bootstrap/Tabbable"),

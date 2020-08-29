@@ -180,7 +180,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 - `Tooltip` uses [DisclosureContent](/docs/disclosure/).
 - `TooltipArrow` uses [PopoverArrow](/docs/popover/).
-- `TooltipReference` uses [Box](/docs/box/).
+- `TooltipReference` uses [Role](/docs/role/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

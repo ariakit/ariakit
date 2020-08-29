@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { BoxHTMLProps } from "../Box/Box";
+import { RoleHTMLProps } from "../Role/Role";
 import { unstable_IdStateReturn } from "./IdState";
 import { unstable_IdContext } from "./IdProvider";
 import { ID_KEYS } from "./__keys";
@@ -16,7 +16,7 @@ export type unstable_IdOptions = Pick<
   id?: string;
 };
 
-export type unstable_IdHTMLProps = BoxHTMLProps;
+export type unstable_IdHTMLProps = RoleHTMLProps;
 
 export type unstable_IdProps = unstable_IdOptions & unstable_IdHTMLProps;
 

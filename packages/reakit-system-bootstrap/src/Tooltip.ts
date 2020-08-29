@@ -1,10 +1,10 @@
 import { css, cx } from "emotion";
 import { TooltipHTMLProps, TooltipOptions } from "reakit/Tooltip/Tooltip";
 import { useFade } from "reakit-system-palette/utils/fade";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
-import { BootstrapBoxOptions } from "./Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapTooltipOptions = BootstrapBoxOptions & TooltipOptions;
+export type BootstrapTooltipOptions = BootstrapRoleOptions & TooltipOptions;
 
 export function useTooltipOptions({
   unstable_system: { palette = "foreground", fill = "opaque", ...system } = {},
@@ -19,7 +19,7 @@ export function useTooltipProps(
 ): TooltipHTMLProps {
   const {
     style: { backgroundColor },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const fadeBackgroundColor = useFade(backgroundColor || "black", 0.1);
 

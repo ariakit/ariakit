@@ -1,2 +1,2 @@
 export * from "./palette";
-export * from "./Box";
+export * from "./Role";

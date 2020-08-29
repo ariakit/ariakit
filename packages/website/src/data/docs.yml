@@ -27,7 +27,7 @@
     - /docs/visually-hidden/
 - section: Abstract components
   paths:
-    - /docs/box/
+    - /docs/role/
     - /docs/clickable/
     - /docs/composite/
     - /docs/id/

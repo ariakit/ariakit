@@ -3,15 +3,15 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { TooltipStateReturn } from "./TooltipState";
 import { TOOLTIP_REFERENCE_KEYS } from "./__keys";
 
-export type TooltipReferenceOptions = BoxOptions &
+export type TooltipReferenceOptions = RoleOptions &
   Pick<Partial<TooltipStateReturn>, "unstable_referenceRef" | "baseId"> &
   Pick<TooltipStateReturn, "show" | "hide">;
 
-export type TooltipReferenceHTMLProps = BoxHTMLProps;
+export type TooltipReferenceHTMLProps = RoleHTMLProps;
 
 export type TooltipReferenceProps = TooltipReferenceOptions &
   TooltipReferenceHTMLProps;
@@ -21,7 +21,7 @@ export const useTooltipReference = createHook<
   TooltipReferenceHTMLProps
 >({
   name: "TooltipReference",
-  compose: useBox,
+  compose: useRole,
   keys: TOOLTIP_REFERENCE_KEYS,
 
   useProps(

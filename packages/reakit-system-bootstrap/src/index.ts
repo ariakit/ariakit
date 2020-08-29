@@ -1,4 +1,4 @@
-export * from "./Box";
+export * from "./Role";
 export * from "./Button";
 export * from "./Composite";
 export * from "./Dialog";
