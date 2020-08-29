@@ -66,6 +66,10 @@ type CompositeReducerAction =
       type: "setWrap";
       wrap: React.SetStateAction<CompositeState["wrap"]>;
     }
+  | {
+      type: "setShift";
+      shift: React.SetStateAction<CompositeState["shift"]>;
+    }
   | { type: "reset" }
   | { type: "setItems"; items: CompositeState["items"] }
   | {
@@ -86,6 +90,7 @@ type CompositeReducerState = Omit<
   initialCurrentId: CompositeState["currentId"];
   initialLoop: CompositeState["loop"];
   initialWrap: CompositeState["wrap"];
+  initialShift: CompositeState["shift"];
   hasSetCurrentId?: boolean;
 };
 
@@ -103,8 +108,8 @@ function reducer(
     loop,
     wrap,
     pastIds,
+    shift,
     unstable_moves: moves,
-    unstable_angular: angular,
     unstable_includesBaseElement: includesBaseElement,
     initialVirtual,
     initialRTL,
@@ -112,6 +117,7 @@ function reducer(
     initialCurrentId,
     initialLoop,
     initialWrap,
+    initialShift,
     hasSetCurrentId,
   } = state;
 
@@ -317,7 +323,7 @@ function reducer(
       // with disabled fake items. Then, we reorganize the items list so
       // [1-1, 1-2, 2-1, 2-2] becomes [1-1, 2-1, 1-2, 2-2].
       const verticalItems = verticalizeItems(
-        flatten(fillGroups(groupItems(items), currentId, angular))
+        flatten(fillGroups(groupItems(items), currentId, shift))
       );
       const canLoop = loop && loop !== "horizontal";
       // Pressing down arrow key will only focus the composite element if loop
@@ -332,7 +338,7 @@ function reducer(
 
     case "up": {
       const verticalItems = verticalizeItems(
-        reverse(flatten(fillGroups(groupItems(items), currentId, angular)))
+        reverse(flatten(fillGroups(groupItems(items), currentId, shift)))
       );
       // If currentId is initially set to null, we'll always focus the
       // composite element when the up arrow key is pressed in the first row.
@@ -394,6 +400,9 @@ function reducer(
     case "setWrap":
       return { ...state, wrap: applyState(action.wrap, wrap) };
 
+    case "setShift":
+      return { ...state, shift: applyState(action.shift, shift) };
+
     case "setIncludesBaseElement": {
       return {
         ...state,
@@ -413,6 +422,7 @@ function reducer(
         currentId: getCurrentId({ ...state, currentId: initialCurrentId }),
         loop: initialLoop,
         wrap: initialWrap,
+        shift: initialShift,
         unstable_moves: 0,
         pastIds: [],
       };
@@ -449,7 +459,7 @@ export function useCompositeState(
     currentId,
     loop = false,
     wrap = false,
-    unstable_angular = false,
+    shift = false,
     unstable_includesBaseElement,
     ...sealed
   } = useSealedState(initialState);
@@ -463,6 +473,7 @@ export function useCompositeState(
       initialCurrentId,
       initialLoop,
       initialWrap,
+      initialShift,
       hasSetCurrentId,
       ...state
     },
@@ -476,9 +487,9 @@ export function useCompositeState(
     currentId,
     loop,
     wrap,
+    shift,
     unstable_moves: 0,
     pastIds: [],
-    unstable_angular,
     unstable_includesBaseElement:
       unstable_includesBaseElement ?? currentId === null,
     initialVirtual: virtual,
@@ -487,6 +498,7 @@ export function useCompositeState(
     initialCurrentId: currentId,
     initialLoop: loop,
     initialWrap: wrap,
+    initialShift: shift,
   });
   const [hasActiveWidget, setHasActiveWidget] = React.useState(false);
   // register/unregister may be called when this component is unmounted. We
@@ -544,6 +556,9 @@ export function useCompositeState(
     ),
     setLoop: useAction((value) => dispatch({ type: "setLoop", loop: value })),
     setWrap: useAction((value) => dispatch({ type: "setWrap", wrap: value })),
+    setShift: useAction((value) =>
+      dispatch({ type: "setShift", shift: value })
+    ),
     unstable_setIncludesBaseElement: useAction((value) =>
       dispatch({ type: "setIncludesBaseElement", includesBaseElement: value })
     ),
@@ -558,12 +573,14 @@ export type CompositeState = unstable_IdState & {
    * container instead of
    * [roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
    * DOM focus will remain on the composite while its items receive virtual focus.
+   * @default false
    */
   unstable_virtual: boolean;
   /**
    * Determines how `next` and `previous` functions will behave. If `rtl` is
-   * set to `true`, they will be inverted. You still need to set `dir="rtl"` on
-   * HTML/CSS.
+   * set to `true`, they will be inverted. This only affects the composite
+   * widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
+   * @default false
    */
   rtl: boolean;
   /**
@@ -575,28 +592,49 @@ export type CompositeState = unstable_IdState & {
    *   - `vertical`: only up and down arrow keys work.
    *
    * It doesn't have any effect on two-dimensional composites.
+   * @default undefined
    */
   orientation?: Orientation;
   /**
    * Lists all the composite items with their `id`, DOM `ref`, `disabled` state
    * and `groupId` if any. This state is automatically updated when
    * `registerItem` and `unregisterItem` are called.
+   * @example
+   * const composite = useCompositeState();
+   * composite.items.forEach((item) => {
+   *   const { id, ref, disabled, groupId } = item;
+   *   ...
+   * });
    */
   items: Item[];
   /**
    * Lists all the composite groups with their `id` and DOM `ref`. This state
    * is automatically updated when `registerGroup` and `unregisterGroup` are
    * called.
+   * @example
+   * const composite = useCompositeState();
+   * composite.groups.forEach((group) => {
+   *   const { id, ref } = group;
+   *   ...
+   * });
    */
   groups: Group[];
   /**
    * The current focused item `id`.
    *   - `undefined` will automatically focus the first enabled composite item.
-   *   - `null` will focus the composite container and users will be able to
+   *   - `null` will focus the base composite element and users will be able to
    * navigate out of it using arrow keys.
-   *   - If `currentId` is initially set to `null`, the composite element
+   *   - If `currentId` is initially set to `null`, the base composite element
    * itself will have focus and users will be able to navigate to it using
    * arrow keys.
+   * @default undefined
+   * @example
+   * // First enabled item has initial focus
+   * useCompositeState();
+   * // Base composite element has initial focus
+   * useCompositeState({ currentId: null });
+   * // Specific composite item element has initial focus
+   * useCompositeState({ currentId: "item-id" });
    */
   currentId?: string | null;
   /**
@@ -621,33 +659,42 @@ export type CompositeState = unstable_IdState & {
    *   - If `wrap` matches the value of `loop`, it'll wrap between the last
    * item in the last row or column and the first item in the first row or
    * column and vice-versa.
+   * @default false
    */
   loop: boolean | Orientation;
   /**
-   * If enabled, moving to the next item from the last one in a row or column
-   * will focus the first item in the next row or column and vice-versa.
+   * **Has effect only on two-dimensional composites**. If enabled, moving to
+   * the next item from the last one in a row or column will focus the first
+   * item in the next row or column and vice-versa.
    *   - `true` wraps between rows and columns.
    *   - `horizontal` wraps only between rows.
    *   - `vertical` wraps only between columns.
    *   - If `loop` matches the value of `wrap`, it'll wrap between the last
    * item in the last row or column and the first item in the first row or
    * column and vice-versa.
+   * @default false
    */
   wrap: boolean | Orientation;
   /**
+   * **Has effect only on two-dimensional composites**. If enabled, moving up
+   * or down when there's no next item or the next item is disabled will shift
+   * to the item right before it.
+   * @default false
+   */
+  shift: boolean;
+  /**
    * Stores the number of moves that have been performed by calling `move`,
    * `next`, `previous`, `up`, `down`, `first` or `last`.
+   * @default 0
    */
   unstable_moves: number;
   /**
-   * @private
-   */
-  unstable_angular: boolean;
-  /**
+   * @default false
    * @private
    */
   unstable_hasActiveWidget: boolean;
   /**
+   * @default false
    * @private
    */
   unstable_includesBaseElement: boolean;
@@ -656,22 +703,53 @@ export type CompositeState = unstable_IdState & {
 export type CompositeActions = unstable_IdActions & {
   /**
    * Registers a composite item.
+   * @example
+   * const ref = React.useRef();
+   * const composite = useCompositeState();
+   * React.useEffect(() => {
+   *   composite.registerItem({ ref, id: "id" });
+   *   return () => composite.unregisterItem("id");
+   * }, []);
    */
   registerItem: (item: Item) => void;
   /**
    * Unregisters a composite item.
+   * @example
+   * const ref = React.useRef();
+   * const composite = useCompositeState();
+   * React.useEffect(() => {
+   *   composite.registerItem({ ref, id: "id" });
+   *   return () => composite.unregisterItem("id");
+   * }, []);
    */
   unregisterItem: (id: string) => void;
   /**
    * Registers a composite group.
+   * @example
+   * const ref = React.useRef();
+   * const composite = useCompositeState();
+   * React.useEffect(() => {
+   *   composite.registerGroup({ ref, id: "id" });
+   *   return () => composite.unregisterGroup("id");
+   * }, []);
    */
   registerGroup: (group: Group) => void;
   /**
    * Unregisters a composite group.
+   * @example
+   * const ref = React.useRef();
+   * const composite = useCompositeState();
+   * React.useEffect(() => {
+   *   composite.registerGroup({ ref, id: "id" });
+   *   return () => composite.unregisterGroup("id");
+   * }, []);
    */
   unregisterGroup: (id: string) => void;
   /**
    * Moves focus to a given item ID.
+   * @example
+   * const composite = useCompositeState();
+   * composite.move("item-2"); // focus item 2
    */
   move: (id: string | null) => void;
   /**
@@ -699,8 +777,10 @@ export type CompositeActions = unstable_IdActions & {
    */
   last: () => void;
   /**
-   * Sorts the composite items state. This is especially useful after modifying
-   * the composite items order in the DOM.
+   * Sorts the `composite.items` based on the items position in the DOM. This
+   * is especially useful after modifying the composite items order in the DOM.
+   * Most of the time, though, you don't need to manually call this function as
+   * the re-ordering happens automatically.
    */
   sort: () => void;
   /**
@@ -711,6 +791,9 @@ export type CompositeActions = unstable_IdActions & {
   >;
   /**
    * Sets `rtl`.
+   * @example
+   * const composite = useCompositeState({ rtl: true });
+   * composite.setRTL(false);
    */
   setRTL: React.Dispatch<React.SetStateAction<CompositeState["rtl"]>>;
   /**
@@ -720,7 +803,14 @@ export type CompositeActions = unstable_IdActions & {
     React.SetStateAction<CompositeState["orientation"]>
   >;
   /**
-   * Sets `currentId`.
+   * Sets `currentId`. This is different from `composite.move` as this only
+   * updates the `currentId` state without moving focus. When the composite
+   * widget gets focused by the user, the item referred by the `currentId`
+   * state will get focus.
+   * @example
+   * const composite = useCompositeState({ currentId: "item-1" });
+   * // Updates `composite.currentId` to `item-2`
+   * composite.setCurrentId("item-2");
    */
   setCurrentId: React.Dispatch<
     React.SetStateAction<CompositeState["currentId"]>
@@ -734,7 +824,22 @@ export type CompositeActions = unstable_IdActions & {
    */
   setWrap: React.Dispatch<React.SetStateAction<CompositeState["wrap"]>>;
   /**
+   * Sets `shift`.
+   */
+  setShift: React.Dispatch<React.SetStateAction<CompositeState["shift"]>>;
+  /**
    * Resets to initial state.
+   * @example
+   * // On initial render, currentId will be item-1 and loop will be true
+   * const composite = useCompositeState({
+   *   currentId: "item-1",
+   *   loop: true,
+   * });
+   * // On next render, currentId will be item-2 and loop will be false
+   * composite.setCurrentId("item-2");
+   * composite.setLoop(false);
+   * // On next render, currentId will be item-1 and loop will be true
+   * composite.reset();
    */
   reset: () => void;
   /**
@@ -763,7 +868,7 @@ export type CompositeInitialState = unstable_IdInitialState &
       | "currentId"
       | "loop"
       | "wrap"
-      | "unstable_angular"
+      | "shift"
       | "unstable_includesBaseElement"
     >
   >;

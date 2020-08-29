@@ -6,8 +6,8 @@ import {
   CompositeItem,
 } from "reakit/Composite";
 
-export default function AngularComposite() {
-  const composite = useCompositeState({ unstable_angular: true });
+export default function CompositeShift() {
+  const composite = useCompositeState({ shift: true });
   return (
     <Composite {...composite} role="grid" aria-label="composite">
       <CompositeGroup {...composite} role="row">

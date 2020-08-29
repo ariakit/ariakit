@@ -228,8 +228,8 @@ DOM focus will remain on the composite while its items receive virtual focus.
   <code>boolean</code>
 
   Determines how `next` and `previous` functions will behave. If `rtl` is
-set to `true`, they will be inverted. You still need to set `dir="rtl"` on
-HTML/CSS.
+set to `true`, they will be inverted. This only affects the composite
+widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
 
 - **`orientation`**
   <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
@@ -248,9 +248,9 @@ which arrow keys can be used to move focus:
 
   The current focused item `id`.
   - `undefined` will automatically focus the first enabled composite item.
-  - `null` will focus the composite container and users will be able to
+  - `null` will focus the base composite element and users will be able to
 navigate out of it using arrow keys.
-  - If `currentId` is initially set to `null`, the composite element
+  - If `currentId` is initially set to `null`, the base composite element
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
@@ -282,14 +282,22 @@ column and vice-versa.
 - **`wrap`**
   <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
 
-  If enabled, moving to the next item from the last one in a row or column
-will focus the first item in the next row or column and vice-versa.
+  **Has effect only on two-dimensional composites**. If enabled, moving to
+the next item from the last one in a row or column will focus the first
+item in the next row or column and vice-versa.
   - `true` wraps between rows and columns.
   - `horizontal` wraps only between rows.
   - `vertical` wraps only between columns.
   - If `loop` matches the value of `wrap`, it'll wrap between the last
 item in the last row or column and the first item in the first row or
 column and vice-versa.
+
+- **`shift`**
+  <code>boolean</code>
+
+  **Has effect only on two-dimensional composites**. If enabled, moving up
+or down when there's no next item or the next item is disabled will shift
+to the item right before it.
 
 ### `Composite`
 
@@ -340,17 +348,18 @@ which arrow keys can be used to move focus:
 
   The current focused item `id`.
   - `undefined` will automatically focus the first enabled composite item.
-  - `null` will focus the composite container and users will be able to
+  - `null` will focus the base composite element and users will be able to
 navigate out of it using arrow keys.
-  - If `currentId` is initially set to `null`, the composite element
+  - If `currentId` is initially set to `null`, the base composite element
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`wrap`**
   <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
 
-  If enabled, moving to the next item from the last one in a row or column
-will focus the first item in the next row or column and vice-versa.
+  **Has effect only on two-dimensional composites**. If enabled, moving to
+the next item from the last one in a row or column will focus the first
+item in the next row or column and vice-versa.
   - `true` wraps between rows and columns.
   - `horizontal` wraps only between rows.
   - `vertical` wraps only between columns.
@@ -381,7 +390,10 @@ and `groupId` if any. This state is automatically updated when
 - **`setCurrentId`**
   <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
 
-  Sets `currentId`.
+  Sets `currentId`. This is different from `composite.move` as this only
+updates the `currentId` state without moving focus. When the composite
+widget gets focused by the user, the item referred by the `currentId`
+state will get focus.
 
 - **`first`**
   <code>() =&#62; void</code>
@@ -431,9 +443,9 @@ and `groupId` if any. This state is automatically updated when
 
   The current focused item `id`.
   - `undefined` will automatically focus the first enabled composite item.
-  - `null` will focus the composite container and users will be able to
+  - `null` will focus the base composite element and users will be able to
 navigate out of it using arrow keys.
-  - If `currentId` is initially set to `null`, the composite element
+  - If `currentId` is initially set to `null`, the base composite element
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
@@ -512,9 +524,9 @@ which arrow keys can be used to move focus:
 
   The current focused item `id`.
   - `undefined` will automatically focus the first enabled composite item.
-  - `null` will focus the composite container and users will be able to
+  - `null` will focus the base composite element and users will be able to
 navigate out of it using arrow keys.
-  - If `currentId` is initially set to `null`, the composite element
+  - If `currentId` is initially set to `null`, the base composite element
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 
@@ -528,7 +540,10 @@ and `groupId` if any. This state is automatically updated when
 - **`setCurrentId`**
   <code title="(value: SetStateAction&#60;string | null | undefined&#62;) =&#62; void">(value: SetStateAction&#60;string | null | undefine...</code>
 
-  Sets `currentId`.
+  Sets `currentId`. This is different from `composite.move` as this only
+updates the `currentId` state without moving focus. When the composite
+widget gets focused by the user, the item referred by the `currentId`
+state will get focus.
 
 - **`first`**
   <code>() =&#62; void</code>
@@ -581,8 +596,9 @@ and `groupId` if any. This state is automatically updated when
 - **`wrap`**
   <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
 
-  If enabled, moving to the next item from the last one in a row or column
-will focus the first item in the next row or column and vice-versa.
+  **Has effect only on two-dimensional composites**. If enabled, moving to
+the next item from the last one in a row or column will focus the first
+item in the next row or column and vice-versa.
   - `true` wraps between rows and columns.
   - `horizontal` wraps only between rows.
   - `vertical` wraps only between columns.
@@ -595,9 +611,9 @@ column and vice-versa.
 
   The current focused item `id`.
   - `undefined` will automatically focus the first enabled composite item.
-  - `null` will focus the composite container and users will be able to
+  - `null` will focus the base composite element and users will be able to
 navigate out of it using arrow keys.
-  - If `currentId` is initially set to `null`, the composite element
+  - If `currentId` is initially set to `null`, the base composite element
 itself will have focus and users will be able to navigate to it using
 arrow keys.
 

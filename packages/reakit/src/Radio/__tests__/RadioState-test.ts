@@ -15,8 +15,8 @@ test("initial state", () => {
       "loop": true,
       "orientation": undefined,
       "rtl": false,
+      "shift": false,
       "state": undefined,
-      "unstable_angular": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,

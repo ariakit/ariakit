@@ -17,19 +17,19 @@ function createEmptyItem(groupId?: string) {
 export function fillGroups(
   groups: Item[][],
   currentId?: string | null,
-  angular?: boolean
+  shift?: boolean
 ) {
   const maxLength = getMaxLength(groups);
 
   for (const group of groups) {
     for (let i = 0; i < maxLength; i += 1) {
       const item = group[i];
-      if (!item || (angular && item.disabled)) {
+      if (!item || (shift && item.disabled)) {
         const isFrist = i === 0;
         const previousItem =
-          isFrist && angular ? findFirstEnabledItem(group) : group[i - 1];
+          isFrist && shift ? findFirstEnabledItem(group) : group[i - 1];
         group[i] =
-          previousItem && currentId !== previousItem?.id && angular
+          previousItem && currentId !== previousItem?.id && shift
             ? previousItem
             : createEmptyItem(previousItem?.groupId);
       }

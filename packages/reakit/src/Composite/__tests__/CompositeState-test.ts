@@ -30,7 +30,7 @@ test("initial state", () => {
       "loop": false,
       "orientation": undefined,
       "rtl": false,
-      "unstable_angular": false,
+      "shift": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
@@ -97,7 +97,7 @@ test("registerItem", () => {
       "loop": false,
       "orientation": undefined,
       "rtl": false,
-      "unstable_angular": false,
+      "shift": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
@@ -132,7 +132,7 @@ test("unregisterItem", () => {
       "loop": false,
       "orientation": undefined,
       "rtl": false,
-      "unstable_angular": false,
+      "shift": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
