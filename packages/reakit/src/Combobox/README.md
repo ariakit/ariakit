@@ -881,15 +881,15 @@ the combobox popover opens, but the input value remains the same.
 
   Indicates the type of the suggestions popup.
 
-- **`hide`**
-  <code>(revertValue?: boolean | undefined) =&#62; void</code>
-
-  Changes the `visible` state to `false`
-
 - **`show`**
   <code>() =&#62; void</code>
 
   Changes the `visible` state to `true`
+
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
 
 - **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>
@@ -1048,7 +1048,7 @@ state will get focus.
   Value of the item that is currently selected.
 
 - **`hide`**
-  <code>(revertValue?: boolean | undefined) =&#62; void</code>
+  <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
 
@@ -1245,7 +1245,7 @@ state will get focus.
   Value of the item that is currently selected.
 
 - **`hide`**
-  <code>(revertValue?: boolean | undefined) =&#62; void</code>
+  <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
 
@@ -1408,7 +1408,7 @@ state will get focus.
   Value of the item that is currently selected.
 
 - **`hide`**
-  <code>(revertValue?: boolean | undefined) =&#62; void</code>
+  <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
 
@@ -1457,7 +1457,7 @@ Opening a nested orphan dialog will close its parent dialog if
 `hideOnClickOutside` is set to `true` on the parent.
 It will be set to `false` if `modal` is `false`.
 
-<details><summary>8 state props</summary>
+<details><summary>9 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1488,20 +1488,25 @@ after the same number of milliseconds have passed.
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
 
-- **`stopAnimation`**
-  <code>() =&#62; void</code>
-
-  Stops animation. It's called automatically if there's a CSS transition.
-
 - **`animating`**
   <code>boolean</code>
 
   Whether it's animating or not.
 
+- **`stopAnimation`**
+  <code>() =&#62; void</code>
+
+  Stops animation. It's called automatically if there's a CSS transition.
+
 - **`hide`**
-  <code>(revertValue?: boolean | undefined) =&#62; void</code>
+  <code>() =&#62; void</code>
 
   Changes the `visible` state to `false`
+
+- **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
+  <code>RefObject&#60;HTMLElement | null&#62;</code>
+
+  The reference element.
 
 - **`menuRole`**
   <code>&#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;</code>

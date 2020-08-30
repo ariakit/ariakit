@@ -76,13 +76,13 @@ const COMBOBOX_STATE_KEYS = [
   "unstable_update",
   "placement",
   "show",
+  "hide",
   "toggle",
   "setVisible",
   "setAnimated",
   "stopAnimation",
   "setModal",
   "place",
-  "hide",
 ] as const;
 const COMBOBOX_GRID_STATE_KEYS = [
   ...COMBOBOX_MENU_GRID_STATE_KEYS,
