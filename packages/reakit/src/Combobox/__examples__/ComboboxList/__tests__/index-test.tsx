@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render, press, focus, click, type, screen } from "reakit-test-utils";
-import ComboboxListAutocomplete from "..";
+import ComboboxList from "..";
 
 test("do not change combobox value by focusing on combobox options", () => {
-  render(<ComboboxListAutocomplete />);
+  render(<ComboboxList />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   focus(screen.getByText("AliceBlue"));
@@ -11,7 +11,7 @@ test("do not change combobox value by focusing on combobox options", () => {
 });
 
 test("do not change combobox value by arrowing through combobox options", () => {
-  render(<ComboboxListAutocomplete />);
+  render(<ComboboxList />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   press.ArrowDown();
@@ -23,7 +23,7 @@ test("do not change combobox value by arrowing through combobox options", () => 
 });
 
 test("change combobox value by clicking on the combobox option", () => {
-  render(<ComboboxListAutocomplete />);
+  render(<ComboboxList />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   click(screen.getByText("AliceBlue"));
@@ -31,7 +31,7 @@ test("change combobox value by clicking on the combobox option", () => {
 });
 
 test("filter combobox options by typing on the combobox", () => {
-  render(<ComboboxListAutocomplete />);
+  render(<ComboboxList />);
   press.Tab();
   type("bla");
   expect(screen.queryByText("Black")).toBeInTheDocument();
@@ -39,7 +39,7 @@ test("filter combobox options by typing on the combobox", () => {
 });
 
 test("display no results when there is no option match", () => {
-  render(<ComboboxListAutocomplete />);
+  render(<ComboboxList />);
   press.Tab();
   type("1");
   expect(screen.queryByText("No results found")).toBeInTheDocument();

@@ -37,9 +37,10 @@ function BlockList(
     values: initialValues,
     limit: false,
     columns: 3,
-    wrap: "horizontal",
     autoSelect: true,
-    unstable_angular: true,
+    wrap: "horizontal",
+    shift: true,
+    minValueLength: 1,
   });
   return (
     <>

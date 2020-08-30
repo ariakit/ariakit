@@ -9,7 +9,7 @@ import { colors } from "./colors";
 
 import "./style.css";
 
-export default function ComboboxListAutocomplete() {
+export default function ComboboxList() {
   const combobox = useComboboxState({ values: colors, gutter: 8 });
   return (
     <>

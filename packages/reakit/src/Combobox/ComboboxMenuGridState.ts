@@ -42,6 +42,7 @@ export function unstable_useComboboxMenuGridState(
     loop,
     ...sealed,
     unstable_virtual: true,
+    unstable_includesBaseElement: true,
   });
   const combobox = useComboboxBaseState(grid, sealed);
 
@@ -95,7 +96,7 @@ export type unstable_ComboboxMenuGridActions = ComboboxBaseActions<
 
 export type unstable_ComboboxMenuGridInitialState = Omit<
   GridInitialState,
-  "unstable_virtual"
+  "unstable_virtual" | "unstable_includesBaseElement"
 > &
   ComboboxBaseInitialState &
   Pick<Partial<unstable_ComboboxMenuGridState>, "columns">;

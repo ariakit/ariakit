@@ -31,6 +31,7 @@ export function unstable_useComboboxMenuState(
     loop,
     ...sealed,
     unstable_virtual: true,
+    unstable_includesBaseElement: true,
   });
 
   return useComboboxBaseState(composite, sealed);
@@ -44,7 +45,7 @@ export type unstable_ComboboxMenuActions = ComboboxBaseActions<
 
 export type unstable_ComboboxMenuInitialState = Omit<
   CompositeInitialState,
-  "unstable_virtual"
+  "unstable_virtual" | "unstable_includesBaseElement"
 > &
   ComboboxBaseInitialState;
 

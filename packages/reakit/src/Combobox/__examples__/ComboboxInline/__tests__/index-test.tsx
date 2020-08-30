@@ -7,10 +7,10 @@ import {
   fireEvent,
   screen,
 } from "reakit-test-utils";
-import ComboboxInlineAutocomplete from "..";
+import ComboboxInline from "..";
 
 test("change combobox value by focusing on combobox options", () => {
-  render(<ComboboxInlineAutocomplete />);
+  render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   focus(screen.getByText("Red"));
@@ -18,7 +18,7 @@ test("change combobox value by focusing on combobox options", () => {
 });
 
 test("change combobox value by arrowing through combobox options", () => {
-  render(<ComboboxInlineAutocomplete />);
+  render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   press.ArrowDown();
@@ -32,7 +32,7 @@ test("change combobox value by arrowing through combobox options", () => {
 });
 
 test("revert combobox value after closing combobox popover with esc", () => {
-  render(<ComboboxInlineAutocomplete />);
+  render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   press.ArrowUp();
@@ -44,7 +44,7 @@ test("revert combobox value after closing combobox popover with esc", () => {
 test("keep combobox value after closing combobox popover by tabbing out", () => {
   render(
     <>
-      <ComboboxInlineAutocomplete />
+      <ComboboxInline />
       <button>button</button>
     </>
   );
@@ -57,7 +57,7 @@ test("keep combobox value after closing combobox popover by tabbing out", () => 
 });
 
 test("keep combobox value after closing combobox popover by clicking outside", () => {
-  const { baseElement } = render(<ComboboxInlineAutocomplete />);
+  const { baseElement } = render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   press.End();
@@ -67,7 +67,7 @@ test("keep combobox value after closing combobox popover by clicking outside", (
 });
 
 test("unselect combobox option when cleaning combobox value", () => {
-  render(<ComboboxInlineAutocomplete />);
+  render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
   focus(screen.getByText("Red"));
