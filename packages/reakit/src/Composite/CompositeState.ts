@@ -319,11 +319,12 @@ function reducer(
     }
 
     case "down": {
+      const shouldShift = shift && !action.allTheWay;
       // First, we make sure groups have the same number of items by filling it
       // with disabled fake items. Then, we reorganize the items list so
       // [1-1, 1-2, 2-1, 2-2] becomes [1-1, 2-1, 1-2, 2-2].
       const verticalItems = verticalizeItems(
-        flatten(fillGroups(groupItems(items), currentId, shift))
+        flatten(fillGroups(groupItems(items), currentId, shouldShift))
       );
       const canLoop = loop && loop !== "horizontal";
       // Pressing down arrow key will only focus the composite element if loop
@@ -337,8 +338,9 @@ function reducer(
     }
 
     case "up": {
+      const shouldShift = shift && !action.allTheWay;
       const verticalItems = verticalizeItems(
-        reverse(flatten(fillGroups(groupItems(items), currentId, shift)))
+        reverse(flatten(fillGroups(groupItems(items), currentId, shouldShift)))
       );
       // If currentId is initially set to null, we'll always focus the
       // composite element when the up arrow key is pressed in the first row.
