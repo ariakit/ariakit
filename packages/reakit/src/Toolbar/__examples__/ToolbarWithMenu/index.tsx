@@ -29,7 +29,7 @@ const MoreItems = React.forwardRef<HTMLButtonElement, ToolbarProps>(
 export default function ToolbarWithMenu() {
   const toolbar = useToolbarState();
   return (
-    <Toolbar {...toolbar} aria-label="Fruit">
+    <Toolbar {...toolbar} aria-label="Fruits">
       <ToolbarItem {...toolbar} as={Button}>
         Apples
       </ToolbarItem>

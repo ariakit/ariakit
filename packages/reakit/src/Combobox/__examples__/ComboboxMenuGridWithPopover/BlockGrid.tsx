@@ -38,7 +38,7 @@ function getId(baseId: string, token: string) {
 }
 
 function BlockGrid({ items, ...props }: Props, ref: React.Ref<HTMLDivElement>) {
-  const grid = useGridState({ wrap: "horizontal", unstable_angular: true });
+  const grid = useGridState({ wrap: "horizontal", shift: true });
   const categories = React.useMemo(() => groupItemsByCategory(items), [items]);
   return (
     <Grid {...grid} {...props} ref={ref}>

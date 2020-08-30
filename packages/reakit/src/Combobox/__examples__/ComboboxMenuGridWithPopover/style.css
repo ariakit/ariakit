@@ -103,13 +103,11 @@ button:focus {
   margin: 1em -1em;
   padding: 0 1em;
   overflow-y: auto;
-
-  /* max-height: calc(100vh - 200px); */
   box-sizing: border-box;
 }
 
 [role="grid"] h3 {
-  font-size: 0.95em;
+  font-size: 0.9em;
   text-transform: uppercase;
   font-weight: 500;
   color: var(--grid-title-color);
@@ -119,10 +117,10 @@ button:focus {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   cursor: default;
-  padding: 1.5em;
+  padding: 1.5em 1em;
   border-radius: 4px;
+  font-size: 0.9em;
   width: calc(100% / 3);
   box-sizing: border-box;
   text-align: center;

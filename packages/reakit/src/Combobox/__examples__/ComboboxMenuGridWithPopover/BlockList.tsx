@@ -87,7 +87,7 @@ function BlockList(
         />
       )}
       <footer>
-        💡 Move through items with arrow key. Press any character to search.
+        💡 Move through items with arrow keys. Press any character to search.
       </footer>
     </>
   );
