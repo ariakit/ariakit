@@ -175,13 +175,13 @@ test("select combobox option by pressing enter on it", () => {
   render(<AccessibleCombobox />);
   click(screen.getByLabelText("Fruit"));
   expect(screen.getByLabelText("Fruit")).toHaveValue("");
-  press.End();
+  press.ArrowUp();
   press.Enter();
   expect(screen.getByLabelText("Fruit")).toHaveValue("Banana");
   expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("\b\b\b\b\b\ba");
   expect(screen.getByLabelText("Fruit")).toHaveValue("a");
-  press.Home();
+  press.ArrowDown();
   press.Enter();
   expect(screen.getByLabelText("Fruit")).toHaveValue("Apple");
 });

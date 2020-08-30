@@ -26,6 +26,7 @@ export const unstable_useComboboxPopover = createHook<
   useOptions(options) {
     return {
       ...options,
+      unstable_disclosureRef: options.unstable_referenceRef,
       unstable_autoFocusOnShow: false,
       unstable_autoFocusOnHide: false,
     };
@@ -39,7 +40,7 @@ export const unstable_useComboboxPopover = createHook<
         if (event.defaultPrevented) return;
         if (!options.hideOnEsc) return;
         if (event.key === "Escape") {
-          options.hide?.(true);
+          options.hide?.();
         }
       },
       [options.hideOnEsc, options.hide]
@@ -72,6 +73,7 @@ export type unstable_ComboboxPopoverOptions = Omit<
   "unstable_autoFocusOnHide" | "unstable_autoFocusOnShow" | "hide"
 > &
   Pick<ComboboxPopoverStateReturn, "hide"> &
+  Pick<Partial<ComboboxPopoverStateReturn>, "unstable_referenceRef"> &
   ComboboxMenuOptions;
 
 export type unstable_ComboboxPopoverHTMLProps = PopoverHTMLProps &

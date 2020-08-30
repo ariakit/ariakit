@@ -3,6 +3,7 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useForkRef } from "reakit-utils/useForkRef";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   CompositeOptions,
   CompositeHTMLProps,
@@ -27,8 +28,41 @@ function getAutocomplete(options: unstable_ComboboxOptions) {
   return "none";
 }
 
+function isFirstItemAutoSelected(options: unstable_ComboboxOptions) {
+  const firstItem = options.items.find((item) => !item.disabled);
+  return (
+    options.autoSelect &&
+    options.currentId &&
+    firstItem?.id === options.currentId
+  );
+}
+
+function hasCompletionString(inputValue: string, currentValue: string) {
+  return (
+    currentValue.length > inputValue.length &&
+    currentValue.toLowerCase().indexOf(inputValue.toLowerCase()) === 0
+  );
+}
+
+function getCompletionString(inputValue: string, currentValue: string) {
+  const index = currentValue.toLowerCase().indexOf(inputValue.toLowerCase());
+  return currentValue.slice(index + inputValue.length);
+}
+
 function getValue(options: unstable_ComboboxOptions) {
   if (options.inline) {
+    if (options.autoSelect && isFirstItemAutoSelected(options)) {
+      if (
+        options.currentValue &&
+        hasCompletionString(options.inputValue, options.currentValue)
+      ) {
+        return (
+          options.inputValue +
+          getCompletionString(options.inputValue, options.currentValue)
+        );
+      }
+      return options.inputValue;
+    }
     return options.currentValue || options.inputValue;
   }
   return options.inputValue;
@@ -52,6 +86,7 @@ export const unstable_useCombobox = createHook<
       ref: htmlRef,
       onClick: htmlOnClick,
       onChange: htmlOnChange,
+      onBlur: htmlOnBlur,
       "aria-controls": ariaControls,
       ...htmlProps
     }
@@ -59,32 +94,43 @@ export const unstable_useCombobox = createHook<
     const ref = React.useRef<HTMLInputElement>(null);
     const onClickRef = useLiveRef(htmlOnClick);
     const onChangeRef = useLiveRef(htmlOnChange);
+    const onBlurRef = useLiveRef(htmlOnBlur);
     const value = getValue(options);
 
-    // TODO: Highlight should only happen if autocompleting
-    // React.useEffect(() => {
-    //   const firstId = options.items[0]?.id;
-    //   if (
-    //     options.currentValue &&
-    //     options.autoSelect &&
-    //     options.currentId === firstId
-    //   ) {
-    //     const index = value.indexOf(options.currentValue);
-    //     if (index !== -1) {
-    //       ref.current?.setSelectionRange(
-    //         options.inputValue.length,
-    //         value.length
-    //       );
-    //     }
-    //   }
-    // }, [
-    //   value,
-    //   options.inputValue,
-    //   options.items,
-    //   options.currentValue,
-    //   options.autoSelect,
-    //   options.currentId,
-    // ]);
+    React.useEffect(() => {
+      const firstId = options.items.find((item) => !item.disabled)?.id;
+      if (
+        options.currentValue &&
+        options.autoSelect &&
+        options.currentId === firstId
+      ) {
+        const index = value
+          .toLowerCase()
+          .indexOf(options.currentValue.toLowerCase());
+        if (index !== -1) {
+          ref.current?.setSelectionRange(
+            options.inputValue.length,
+            value.length
+          );
+        }
+      }
+    }, [
+      value,
+      options.inputValue,
+      options.items,
+      options.currentValue,
+      options.autoSelect,
+      options.currentId,
+    ]);
+
+    const [changed, setChanged] = React.useState(false);
+
+    useUpdateEffect(() => {
+      if (options.autoSelect && changed) {
+        options.setCurrentId?.(undefined);
+        setChanged(false);
+      }
+    }, [changed, options.autoSelect, options.setCurrentId]);
 
     const onClick = React.useCallback(
       (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
@@ -92,19 +138,36 @@ export const unstable_useCombobox = createHook<
         if (event.defaultPrevented) return;
         options.show?.();
       },
-      [options.visible, options.show]
+      [options.show]
     );
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onChangeRef.current?.(event);
         if (event.defaultPrevented) return;
+        options.show?.();
         options.setCurrentId?.(null);
-        // TODO: compare event.target.value with options.inputValue
-        // So we can determine if we have to auto select
         options.setInputValue?.(event.target.value);
+        const nativeEvent = event.nativeEvent as InputEvent;
+        if (
+          event.target.value.length >= options.inputValue.length &&
+          nativeEvent.inputType === "insertText"
+        ) {
+          setChanged(true);
+        }
       },
-      [options.setCurrentId, options.setInputValue]
+      [options.show, options.setCurrentId, options.setInputValue]
+    );
+
+    const onBlur = React.useCallback(
+      (event: React.FocusEvent<HTMLInputElement>) => {
+        onBlurRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.currentValue) {
+          options.setInputValue(value);
+        }
+      },
+      [options.setInputValue, value]
     );
 
     return {
@@ -118,6 +181,7 @@ export const unstable_useCombobox = createHook<
       value,
       onClick,
       onChange,
+      onBlur,
       ...htmlProps,
     };
   },
@@ -138,19 +202,28 @@ export const unstable_useCombobox = createHook<
           !event.shiftKey &&
           !event.metaKey
         ) {
-          if (["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+          if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
+            return;
           if (event.key === "Escape") {
-            options.hide?.(true);
+            options.hide?.();
           }
           // replace event.key.length === 1 by onKeyPress?
           // should show popover when deleting too
-          if (event.key.startsWith("Arrow") || event.key.length === 1) {
+          if (
+            event.key.startsWith("Arrow") ||
+            event.key === "Backspace" ||
+            event.key.length === 1
+          ) {
             options.show?.();
           }
+        } else if (event.key === "Home" || event.key === "End") {
+          event.preventDefault();
         } else if (event.key.length === 1) {
           return;
         } else if (
-          event.key.startsWith("Arrow") &&
+          (event.key.startsWith("Arrow") ||
+            event.key === "Home" ||
+            event.key === "End") &&
           options.menuRole === "grid"
         ) {
           event.preventDefault();

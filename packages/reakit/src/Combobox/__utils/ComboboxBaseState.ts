@@ -80,13 +80,16 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     [valuesById, composite.currentId]
   );
 
-  // React.useEffect(() => {
-  //   if (autoSelect) {
-  //     composite.first();
-  //   } else {
-  //     composite.setCurrentId(null);
-  //   }
-  // }, [matches, autoSelect, composite.first, composite.setCurrentId]);
+  const lastInputValue = React.useRef("");
+
+  React.useEffect(() => {
+    if (autoSelect && inputValue.length >= lastInputValue.current.length) {
+      composite.setCurrentId(undefined);
+    } else {
+      composite.setCurrentId(null);
+    }
+    lastInputValue.current = inputValue;
+  }, [inputValue, matches, autoSelect, composite.setCurrentId]);
 
   const items = React.useMemo(() => {
     composite.items.forEach((item) => {

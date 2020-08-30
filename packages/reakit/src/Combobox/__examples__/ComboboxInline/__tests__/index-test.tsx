@@ -50,7 +50,7 @@ test("keep combobox value after closing combobox popover by tabbing out", () => 
   );
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
-  press.Home();
+  press.ArrowDown();
   expect(screen.getByLabelText("Color")).toHaveValue("Red");
   press.Tab();
   expect(screen.getByLabelText("Color")).toHaveValue("Red");
@@ -60,7 +60,7 @@ test("keep combobox value after closing combobox popover by clicking outside", (
   const { baseElement } = render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
-  press.End();
+  press.ArrowUp();
   expect(screen.getByLabelText("Color")).toHaveValue("Blue");
   click(baseElement);
   expect(screen.getByLabelText("Color")).toHaveValue("Blue");

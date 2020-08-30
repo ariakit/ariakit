@@ -51,13 +51,13 @@ test("open combobox popover on type and auto select", () => {
   expectSelectionValue(combobox, "le");
   type("\b");
   expect(screen.getByText("Apple")).not.toHaveFocus();
-  expect(combobox).toHaveValue("ap");
+  expect(combobox).toHaveValue("app");
   expectSelectionValue(combobox, "");
   type("\b");
   expect(screen.getByText("Apple")).not.toHaveFocus();
-  expect(combobox).toHaveValue("a");
+  expect(combobox).toHaveValue("ap");
   expectSelectionValue(combobox, "");
-  type("pp");
+  type("p");
   expect(screen.getByText("Apple")).toHaveFocus();
   expect(combobox).toHaveValue("apple");
   expectSelectionValue(combobox, "le");

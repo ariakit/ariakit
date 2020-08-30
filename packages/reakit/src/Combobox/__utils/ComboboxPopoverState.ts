@@ -24,19 +24,9 @@ export function useComboboxPopoverState<
       combobox.reset();
     }
   }, [popover.visible, combobox.reset]);
-  const hide = React.useCallback(
-    (revertValue?: boolean) => {
-      popover.hide();
-      if (!revertValue && combobox.currentValue) {
-        combobox.setInputValue(combobox.currentValue);
-      }
-    },
-    [popover.hide, combobox.currentValue]
-  );
   return {
     ...combobox,
     ...popover,
-    hide,
     visible:
       popover.visible && combobox.inputValue.length >= combobox.minValueLength,
   };
@@ -44,12 +34,7 @@ export function useComboboxPopoverState<
 
 export type ComboboxPopoverState = PopoverState;
 
-export type ComboboxPopoverActions = Omit<PopoverActions, "hide"> & {
-  /**
-   * Changes the `visible` state to `false`
-   */
-  hide: (revertValue?: boolean) => void;
-};
+export type ComboboxPopoverActions = PopoverActions;
 
 export type ComboboxPopoverInitialState = PopoverInitialState;
 

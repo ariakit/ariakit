@@ -80,8 +80,10 @@ function BlockList(
           onKeyDown={(event) => {
             const { key } = event;
             if (key && key.length === 1) {
-              combobox.move(null);
-              requestAnimationFrame(() => combobox.setInputValue(key));
+              combobox.setInputValue(key);
+              requestAnimationFrame(() => {
+                document.getElementById(combobox.baseId)?.focus();
+              });
             }
           }}
         />

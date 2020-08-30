@@ -17,7 +17,7 @@ export const unstable_useComboboxGridCell = createHook<
   unstable_ComboboxGridCellHTMLProps
 >({
   name: "ComboboxGridCell",
-  compose: [useGridCell, useComboboxItem],
+  compose: [useComboboxItem, useGridCell],
   keys: COMBOBOX_GRID_CELL_KEYS,
 });
 

@@ -28,7 +28,6 @@ test("type on combobox", async () => {
   expectSelectionValue(screen.getByLabelText("Fruit"), "ackberries");
   expect(screen.getByText("Blackberries")).toHaveFocus();
   type("\b");
-  await wait(() => expect(screen.getByLabelText("Fruit")).toHaveValue("b"));
+  await wait(() => expect(screen.getByLabelText("Fruit")).toHaveValue("bl"));
   await wait(() => expect(screen.getByText("Blackberries")).not.toHaveFocus());
-  await wait(() => expect(screen.getByText("Banana")).not.toHaveFocus());
 });
