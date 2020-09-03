@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4](https://github.com/reakit/reakit/compare/reakit@1.2.3...reakit@1.2.4) (2020-09-03)
+
+
+### Bug Fixes
+
+* Fix internal dependency versions ([3d4cb42](https://github.com/reakit/reakit/commit/3d4cb4217a52ec719e8a2823d21e08c7cc42dd30))
+
+
+
+
+
 ## [1.2.3](https://github.com/reakit/reakit/compare/reakit@1.2.2...reakit@1.2.3) (2020-08-24)
 
 

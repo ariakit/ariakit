@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.4](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.3...reakit-test-utils@0.14.4) (2020-09-03)
+
+
+### Bug Fixes
+
+* Fix internal dependency versions ([3d4cb42](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/3d4cb4217a52ec719e8a2823d21e08c7cc42dd30))
+* **reakit-test-utils:** Fix `type` selection and caret position ([2a5e60d](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/2a5e60dcf639f64d7e588e5fba49397f4fd6a75d))
+
+
+
+
+
 ## [0.14.3](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.2...reakit-test-utils@0.14.3) (2020-08-24)
 
 **Note:** Version bump only for package reakit-test-utils

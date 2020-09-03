@@ -95,50 +95,44 @@ export default function CoreLayout(props: CoreLayoutProps) {
             font-size: 0.875em;
             padding: 0.2em 0.4em;
           }
-          ${
-            isHome &&
-            css`
-              @media (max-width: 768px) {
-                margin-top: 50px;
-              }
-            `
-          }
-          ${
-            !title &&
-            !isHome &&
-            css`
-              margin: 100px auto 72px;
-              max-width: 1200px;
-            `
-          }
-          ${
-            title &&
-            css`
-              margin-top: 100px;
-              margin-right: calc(var(--aside-width) + var(--horizontal-gutter));
-              margin-bottom: 72px;
-              margin-left: calc(var(--nav-width) + var(--horizontal-gutter));
-              padding: 8px;
-              box-sizing: border-box;
+          ${isHome &&
+          css`
+            @media (max-width: 768px) {
+              margin-top: 50px;
+            }
+          `}
+          ${!title &&
+          !isHome &&
+          css`
+            margin: 100px auto 72px;
+            max-width: 1200px;
+          `}
+          ${title &&
+          css`
+            margin-top: 100px;
+            margin-right: calc(var(--aside-width) + var(--horizontal-gutter));
+            margin-bottom: 72px;
+            margin-left: calc(var(--nav-width) + var(--horizontal-gutter));
+            padding: 8px;
+            box-sizing: border-box;
 
-              @media (max-width: 1024px) {
-                margin-right: 0;
-              }
-              @media (max-width: 768px) {
-                margin-left: 0;
-                margin-top: 120px;
-              }
-              @media (min-width: 1440px) {
-                max-width: calc(
-                  1440px - var(--aside-width) - var(--nav-width) -
-                    var(--horizontal-gutter) * 2 -
-                    (var(--nav-width) - var(--aside-width))
-                );
-                margin-right: auto;
-                margin-left: auto;
-              }
-            `
-          }
+            @media (max-width: 1024px) {
+              margin-right: 0;
+            }
+            @media (max-width: 768px) {
+              margin-left: 0;
+              margin-top: 120px;
+            }
+            @media (min-width: 1440px) {
+              max-width: calc(
+                1440px - var(--aside-width) - var(--nav-width) -
+                  var(--horizontal-gutter) * 2 -
+                  (var(--nav-width) - var(--aside-width))
+              );
+              margin-right: auto;
+              margin-left: auto;
+            }
+          `}
         `}
       >
         {props.children}
