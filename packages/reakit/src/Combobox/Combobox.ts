@@ -296,7 +296,7 @@ export type unstable_ComboboxOptions = CompositeOptions &
   > & {
     /**
      * When enabled, user can hide the combobox popover by pressing
-     * <kbd>Esc<kbd> while focusing on the combobox input.
+     * <kbd>Esc</kbd> while focusing on the combobox input.
      * @default true
      */
     hideOnEsc?: boolean;

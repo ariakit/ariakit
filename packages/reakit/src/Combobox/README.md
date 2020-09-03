@@ -11,7 +11,7 @@ experimental: true
 
 </blockquote>
 
-Accessible `Combobox` component that enables users to navigate the information or interactive elements it contains using directional navigation keys. The items are organized in a two-dimensional container. It follows the [WAI-ARIA Combobox Pattern](https://www.w3.org/TR/wai-aria-practices/#combobox).
+Accessible `Combobox` component. It follows the [WAI-ARIA Combobox Pattern](https://www.w3.org/TR/wai-aria-practices/#combobox).
 
 <carbon-ad></carbon-ad>
 
@@ -29,34 +29,46 @@ Learn more in [Get started](/docs/get-started/).
 import {
   unstable_useComboboxState as useComboboxState,
   unstable_Combobox as Combobox,
-  unstable_ComboboxRow as ComboboxRow,
-  unstable_ComboboxCell as ComboboxCell,
+  unstable_ComboboxPopover as ComboboxPopover,
+  unstable_ComboboxOption as ComboboxOption,
 } from "reakit/Combobox";
 
 function Example() {
   const combobox = useComboboxState();
-  return <Combobox {...combobox} />;
+  return (
+    <>
+      <Combobox {...combobox} aria-label="Fruit" />
+      <ComboboxPopover {...combobox} aria-label="Fruits">
+        <ComboboxOption {...combobox} value="Apple" />
+        <ComboboxOption {...combobox} value="Banana" />
+        <ComboboxOption {...combobox} value="Orange" />
+      </ComboboxPopover>
+    </>
+  );
 }
 ```
 
 ## Accessibility
 
 - `Combobox` has role `combobox`.
-- `Combobox` extends the accessibility features of [Composite](/docs/composite/#accessibility).
-- `ComboboxRow` has role `row`.
-- `ComboboxRow` extends the accessibility features of [CompositeGroup](/docs/composite/#accessibility).
-- `ComboboxCell` has role `comboboxcell`.
-- `ComboboxCell` extends the accessibility features of [CompositeItem](/docs/composite/#accessibility).
+- `ComboboxPopover` has role `listbox` by default.
+- `ComboboxOption` has role `option`.
+- When focus is on the combobox input:
+  - <kbd>Esc</kbd> closes the combobox popover if it's visible.
+  - <kbd>↑</kbd> and <kbd>↓</kbd> opens the combobox popover.
+  - <kbd>↓</kbd> moves focus to the first combobox option if the combobox popover is visible.
+  - <kbd>↑</kbd> moves focus to the last combobox option if the combobox popover is visible.
+  - <kbd>PageUp</kbd> moves focus to the first combobox option.
+  - <kbd>PageDown</kbd> moves focus to the last combobox option.
+- When focus is on a combobox option:
+  - If the combobox option has a `value` prop, <kbd>Enter</kbd> updates the combobox input value with the option value and closes the combobox popover.
+  - <kbd>Esc</kbd> closes the combobox popover and revert the combobox input to the original value.
+  - <kbd>↓</kbd> moves focus to the next option.
+  - <kbd>↑</kbd> moves focus to the previous option.
+  - <kbd>PageUp</kbd> moves focus to the first option.
+  - <kbd>PageDown</kbd> moves focus to the last option.
 
 Learn more in [Accessibility](/docs/accessibility/).
-
-## Composition
-
-- `Combobox` uses [Composite](/docs/composite/).
-- `ComboboxRow` uses [CompositeGroup](/docs/composite/).
-- `ComboboxCell` uses [CompositeItem](/docs/composite/).
-
-Learn more in [Composition](/docs/composition/#props-hooks).
 
 ## Props
 
@@ -746,7 +758,7 @@ similarly to `readOnly` on form elements. In this case, only
   <code>boolean | undefined</code>
 
   When enabled, user can hide the combobox popover by pressing
-<kbd>Esc<kbd> while focusing on the combobox input.
+<kbd>Esc</kbd> while focusing on the combobox input.
 
 <details><summary>23 state props</summary>
 
