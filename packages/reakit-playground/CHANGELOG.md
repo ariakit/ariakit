@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.4](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.14.3...reakit-playground@0.14.4) (2020-09-03)
+
+
+### Bug Fixes
+
+* Fix internal dependency versions ([3d4cb42](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/3d4cb4217a52ec719e8a2823d21e08c7cc42dd30))
+
+
+
+
+
 ## [0.14.3](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.14.2...reakit-playground@0.14.3) (2020-08-24)
 
 
