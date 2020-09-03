@@ -1,7 +1,7 @@
-import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useWarning } from "reakit-warning";
+import { useCreateElement } from "reakit-system/useCreateElement";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -32,21 +32,8 @@ export const unstable_useComboboxPopover = createHook<
     };
   },
 
-  useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
-    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent) => {
-        onKeyDownRef.current?.(event);
-        if (event.defaultPrevented) return;
-        if (!options.hideOnEsc) return;
-        if (event.key === "Escape") {
-          options.hide?.();
-        }
-      },
-      [options.hideOnEsc, options.hide]
-    );
+  useProps(options, htmlProps) {
     return {
-      onKeyDown,
       ...htmlProps,
       children: options.visible ? htmlProps.children : null,
     };
@@ -54,7 +41,7 @@ export const unstable_useComboboxPopover = createHook<
 
   useComposeProps(options, { tabIndex, ...htmlProps }) {
     htmlProps = useComboboxMenu(options, htmlProps, true);
-    htmlProps = usePopover({ ...options, hideOnEsc: false }, htmlProps, true);
+    htmlProps = usePopover(options, htmlProps, true);
     return {
       ...htmlProps,
       tabIndex: tabIndex ?? undefined,
@@ -62,19 +49,27 @@ export const unstable_useComboboxPopover = createHook<
   },
 });
 
-// TODO: Should have aria-label
 export const unstable_ComboboxPopover = createComponent({
   as: "div",
   useHook: unstable_useComboboxPopover,
+  useCreateElement: (type, props, children) => {
+    useWarning(
+      !props["aria-label"] && !props["aria-labelledby"],
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/combobox"
+    );
+    return useCreateElement(type, props, children);
+  },
 });
 
-export type unstable_ComboboxPopoverOptions = Omit<
-  PopoverOptions,
-  "unstable_autoFocusOnHide" | "unstable_autoFocusOnShow" | "hide"
-> &
-  Pick<ComboboxPopoverStateReturn, "hide"> &
-  Pick<Partial<ComboboxPopoverStateReturn>, "unstable_referenceRef"> &
-  ComboboxMenuOptions;
+export type unstable_ComboboxPopoverOptions = ComboboxMenuOptions &
+  Omit<
+    PopoverOptions,
+    | "unstable_disclosureRef"
+    | "unstable_autoFocusOnHide"
+    | "unstable_autoFocusOnShow"
+  > &
+  Pick<Partial<ComboboxPopoverStateReturn>, "unstable_referenceRef">;
 
 export type unstable_ComboboxPopoverHTMLProps = PopoverHTMLProps &
   ComboboxMenuHTMLProps;

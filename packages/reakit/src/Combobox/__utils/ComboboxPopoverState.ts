@@ -19,16 +19,21 @@ export function useComboboxPopoverState<
   }: ComboboxPopoverInitialState = {}
 ) {
   const popover = usePopoverState({ gutter, placement, ...initialState });
+  const visible =
+    popover.visible && combobox.inputValue.length >= combobox.minValueLength;
+
   React.useEffect(() => {
-    if (!popover.visible) {
+    if (!visible) {
+      // We don't want to persist the current selected suggestion when toggling
+      // the suggestions popover.
       combobox.reset();
     }
-  }, [popover.visible, combobox.reset]);
+  }, [visible, combobox.reset]);
+
   return {
     ...combobox,
     ...popover,
-    visible:
-      popover.visible && combobox.inputValue.length >= combobox.minValueLength,
+    visible,
   };
 }
 

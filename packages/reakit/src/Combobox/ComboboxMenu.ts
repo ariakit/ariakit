@@ -1,5 +1,7 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
+import { useWarning } from "reakit-warning";
+import { useCreateElement } from "reakit-system/useCreateElement";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { getMenuId } from "./__utils/getMenuId";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
@@ -26,10 +28,17 @@ export const unstable_useComboboxMenu = createHook<
   },
 });
 
-// TODO: Should have aria label
 export const unstable_ComboboxMenu = createComponent({
   as: "div",
   useHook: unstable_useComboboxMenu,
+  useCreateElement: (type, props, children) => {
+    useWarning(
+      !props["aria-label"] && !props["aria-labelledby"],
+      "You should provide either `aria-label` or `aria-labelledby` props.",
+      "See https://reakit.io/docs/combobox"
+    );
+    return useCreateElement(type, props, children);
+  },
 });
 
 export type unstable_ComboboxMenuOptions = BoxOptions &

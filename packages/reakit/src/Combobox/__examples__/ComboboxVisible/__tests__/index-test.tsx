@@ -45,7 +45,7 @@ test("move through combobox options with keyboard", () => {
   press.ArrowDown();
   expect(screen.getByText("Blue")).toHaveFocus();
   press.Home();
-  expect(screen.getByText("Red")).toHaveFocus();
+  expect(screen.getByText("Blue")).toHaveFocus();
   press.End();
   expect(screen.getByText("Blue")).toHaveFocus();
 });

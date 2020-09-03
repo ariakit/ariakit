@@ -12,15 +12,6 @@ import {
   unstable_useComboboxItem as useComboboxItem,
 } from "./ComboboxItem";
 
-export type unstable_ComboboxOptionOptions = CompositeItemOptions &
-  ComboboxItemOptions;
-
-export type unstable_ComboboxOptionHTMLProps = CompositeItemHTMLProps &
-  ComboboxItemHTMLProps;
-
-export type unstable_ComboboxOptionProps = unstable_ComboboxOptionOptions &
-  unstable_ComboboxOptionHTMLProps;
-
 export const unstable_useComboboxOption = createHook<
   unstable_ComboboxOptionOptions,
   unstable_ComboboxOptionHTMLProps
@@ -39,3 +30,12 @@ export const unstable_ComboboxOption = createComponent({
   memo: true,
   useHook: unstable_useComboboxOption,
 });
+
+export type unstable_ComboboxOptionOptions = CompositeItemOptions &
+  ComboboxItemOptions;
+
+export type unstable_ComboboxOptionHTMLProps = CompositeItemHTMLProps &
+  ComboboxItemHTMLProps;
+
+export type unstable_ComboboxOptionProps = unstable_ComboboxOptionOptions &
+  unstable_ComboboxOptionHTMLProps;

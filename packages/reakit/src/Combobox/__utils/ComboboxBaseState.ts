@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SetState } from "reakit-utils/types";
-import { removeItemFromArray } from "reakit-utils/removeItemFromArray";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   CompositeStateReturn,
   CompositeState,
@@ -20,28 +20,61 @@ function getMatches(
   autoSelect: ComboboxBaseState["autoSelect"],
   minValueLength: ComboboxBaseState["minValueLength"]
 ) {
-  const length = limit === false ? undefined : limit;
-  if (inputValue.length < minValueLength) {
+  if (limit === 0 || inputValue.length < minValueLength) {
+    // We don't want to populate combobox.matches if inputValue doesn't have
+    // enough characters.
     return [];
   }
+  const length = limit === false ? undefined : limit;
   if (!list) {
+    // If list is false, this means that values aren't expected to be filtered.
     return values.slice(0, length);
   }
-  const searchValue = new RegExp(escapeRegExp(inputValue), "i");
-  let matches = values
-    .filter((value) => value.search(searchValue) !== -1)
-    .slice(0, autoSelect && length ? length - 1 : length);
+  const regex = new RegExp(escapeRegExp(inputValue), "i");
+  const matches: string[] = [];
   if (autoSelect) {
-    const firstMatch = values.find(
-      (value) =>
-        value.search(new RegExp(`^${escapeRegExp(inputValue)}`, "i")) !== -1
-    );
-    if (firstMatch) {
-      matches = removeItemFromArray(matches, firstMatch);
-      matches.unshift(firstMatch);
+    const match = values.find((value) => value.search(regex) === 0);
+    if (match) {
+      matches.push(match);
+    }
+  }
+  for (const value of values) {
+    if (length && matches.length >= length) {
+      break;
+    }
+    // Excludes first match, that can be auto selected
+    if (value !== matches[0] && value.search(regex) !== -1) {
+      matches.push(value);
     }
   }
   return matches;
+}
+
+function useSelectOnType(
+  items: ComboboxBaseState["items"],
+  inputValue: ComboboxBaseState["inputValue"],
+  autoSelect: ComboboxBaseState["autoSelect"],
+  setCurrentId: CompositeStateReturn["setCurrentId"]
+) {
+  const previousInputValueRef = React.useRef("");
+  const hasTypedCharacterRef = React.useRef(false);
+
+  useUpdateEffect(() => {
+    hasTypedCharacterRef.current =
+      inputValue.length > previousInputValueRef.current.length;
+    previousInputValueRef.current = inputValue;
+  }, [inputValue]);
+
+  useUpdateEffect(() => {
+    if (items.length && autoSelect && hasTypedCharacterRef.current) {
+      // Auto selects first suggestion
+      setCurrentId(undefined);
+    } else {
+      // Unselects suggestion and keep focus on the input
+      setCurrentId(null);
+    }
+    previousInputValueRef.current = inputValue;
+  }, [items, inputValue, autoSelect, setCurrentId]);
 }
 
 export function useComboboxBaseState<T extends CompositeStateReturn>(
@@ -80,17 +113,6 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     [valuesById, composite.currentId]
   );
 
-  const lastInputValue = React.useRef("");
-
-  React.useEffect(() => {
-    if (autoSelect && inputValue.length >= lastInputValue.current.length) {
-      composite.setCurrentId(undefined);
-    } else {
-      composite.setCurrentId(null);
-    }
-    lastInputValue.current = inputValue;
-  }, [inputValue, matches, autoSelect, composite.setCurrentId]);
-
   const items = React.useMemo(() => {
     composite.items.forEach((item) => {
       if (item.id) {
@@ -117,6 +139,8 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     },
     [composite.unregisterItem]
   );
+
+  useSelectOnType(items, inputValue, autoSelect, composite.setCurrentId);
 
   return {
     ...composite,

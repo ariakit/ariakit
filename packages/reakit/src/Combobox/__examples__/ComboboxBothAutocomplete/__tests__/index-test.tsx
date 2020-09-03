@@ -20,7 +20,8 @@ test("change combobox value by arrowing through combobox options", () => {
   expect(screen.getByLabelText("Fruit")).toHaveValue("Apple");
   press.ArrowDown();
   expect(screen.getByLabelText("Fruit")).toHaveValue("Apricots");
-  press.Home();
+  press.ArrowUp();
+  press.ArrowUp();
   press.ArrowUp();
   expect(screen.getByLabelText("Fruit")).toHaveValue("");
 });

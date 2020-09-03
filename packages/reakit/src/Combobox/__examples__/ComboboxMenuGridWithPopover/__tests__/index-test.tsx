@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, click, type, wait, screen } from "reakit-test-utils";
+import { render, press, click, type, screen } from "reakit-test-utils";
 import ComboboxMenuGridWithPopover from "..";
 
 function getPopoverDisclosure() {
@@ -47,19 +47,19 @@ test("keyboard navigation on grid", () => {
   expect(screen.getByText("Shortcode")).toHaveFocus();
 });
 
-test("pressing character key while focusing grid item", async () => {
+test("pressing character key while focusing grid item", () => {
   render(<ComboboxMenuGridWithPopover />);
   click(getPopoverDisclosure());
   press.Tab();
   expect(screen.getByText("Paragraph")).toHaveFocus();
   press("l");
-  await wait(expect(getComboboxInput()).toHaveFocus);
+  expect(getComboboxInput()).toHaveFocus();
   type("a");
   expect(getComboboxInput()).toHaveValue("la");
   expect(screen.getByText("Latest Comments")).toHaveFocus();
 });
 
-test("keyboard navigation on combobox grid", async () => {
+test("keyboard navigation on combobox grid", () => {
   render(<ComboboxMenuGridWithPopover />);
   click(getPopoverDisclosure());
   type("r");

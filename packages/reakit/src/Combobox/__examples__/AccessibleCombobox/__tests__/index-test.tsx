@@ -51,6 +51,15 @@ test("do not open combobox popover on arrow right/left", () => {
   expect(screen.getByLabelText("Fruits")).not.toBeVisible();
 });
 
+test("do not open combobox popover on backspace on empty input", () => {
+  render(<AccessibleCombobox />);
+  press.Tab();
+  expect(screen.getByLabelText("Fruit")).toHaveFocus();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  type("\b");
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+});
+
 test("close combobox popover by clicking outside", () => {
   const { baseElement } = render(<AccessibleCombobox />);
   expect(screen.getByLabelText("Fruits")).not.toBeVisible();
@@ -104,6 +113,14 @@ test("open combobox popover after pressing esc", () => {
   expect(screen.getByLabelText("Fruits")).toBeVisible();
   press.Escape();
   expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  press.ArrowDown();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
+  press.Escape();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  press.ArrowDown();
+  expect(screen.getByLabelText("Fruits")).toBeVisible();
+  press.Escape();
+  expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   type("\b");
   expect(screen.getByLabelText("Fruits")).toBeVisible();
 });
@@ -153,7 +170,7 @@ test("move through combobox options with keyboard", () => {
   press.ArrowLeft();
   expect(screen.getByText("Banana")).toHaveFocus();
   press.Home();
-  expect(screen.getByText("Apple")).toHaveFocus();
+  expect(screen.getByText("Banana")).toHaveFocus();
   press.End();
   expect(screen.getByText("Banana")).toHaveFocus();
 });

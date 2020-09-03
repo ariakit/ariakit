@@ -37,11 +37,11 @@ function getId(baseId: string, token: string) {
   return `${baseId}-${kebabCase(token)}`;
 }
 
-function BlockGrid({ items, ...props }: Props, ref: React.Ref<HTMLDivElement>) {
+export default function BlockGrid({ items, ...props }: Props) {
   const grid = useGridState({ wrap: "horizontal", shift: true });
   const categories = React.useMemo(() => groupItemsByCategory(items), [items]);
   return (
-    <Grid {...grid} {...props} ref={ref}>
+    <Grid {...grid} {...props}>
       {categories.map((category) => {
         const titleId = getId(grid.baseId, category.title);
         return (
@@ -68,5 +68,3 @@ function BlockGrid({ items, ...props }: Props, ref: React.Ref<HTMLDivElement>) {
     </Grid>
   );
 }
-
-export default React.forwardRef(BlockGrid);

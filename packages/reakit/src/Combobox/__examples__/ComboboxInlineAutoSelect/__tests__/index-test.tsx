@@ -71,7 +71,6 @@ test("keep combobox value after closing combobox popover by clicking outside", (
   expectSelectionValue(screen.getByLabelText("Fruit"), "pple");
   click(baseElement);
   expect(screen.getByLabelText("Fruit")).toHaveValue("apple");
-  expectSelectionValue(screen.getByLabelText("Fruit"), "");
 });
 
 test("move through combobox options by pressing arrow keys", () => {

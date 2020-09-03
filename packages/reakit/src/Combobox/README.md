@@ -742,6 +742,12 @@ the combobox popover opens, but the input value remains the same.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`hideOnEsc`**
+  <code>boolean | undefined</code>
+
+  When enabled, user can hide the combobox popover by pressing
+<kbd>Esc<kbd> while focusing on the combobox input.
+
 <details><summary>23 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
@@ -881,6 +887,11 @@ the combobox popover opens, but the input value remains the same.
 
   Indicates the type of the suggestions popup.
 
+- **`currentValue`**
+  <code>string | undefined</code>
+
+  Value of the item that is currently selected.
+
 - **`show`**
   <code>() =&#62; void</code>
 
@@ -901,11 +912,6 @@ the combobox popover opens, but the input value remains the same.
 
   Combobox input value that will be used to filter `values` and populate
 the `matches` property.
-
-- **`currentValue`**
-  <code>string | undefined</code>
-
-  Value of the item that is currently selected.
 
 - **`setInputValue`**
   <code>(value: SetStateAction&#60;string&#62;) =&#62; void</code>
@@ -1461,6 +1467,11 @@ It will be set to `false` if `modal` is `false`.
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
+- **`menuRole`**
+  <code>&#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;</code>
+
+  Indicates the type of the suggestions popup.
+
 - **`baseId`**
   <code>string</code>
 
@@ -1488,6 +1499,11 @@ after the same number of milliseconds have passed.
 trapped within the dialog and the dialog is rendered within a `Portal`
 by default.
 
+- **`hide`**
+  <code>() =&#62; void</code>
+
+  Changes the `visible` state to `false`
+
 - **`animating`**
   <code>boolean</code>
 
@@ -1498,19 +1514,9 @@ by default.
 
   Stops animation. It's called automatically if there's a CSS transition.
 
-- **`hide`**
-  <code>() =&#62; void</code>
-
-  Changes the `visible` state to `false`
-
 - **`unstable_referenceRef`** <span title="Experimental">⚠️</span>
   <code>RefObject&#60;HTMLElement | null&#62;</code>
 
   The reference element.
-
-- **`menuRole`**
-  <code>&#34;listbox&#34; | &#34;tree&#34; | &#34;grid&#34; | &#34;dialog&#34;</code>
-
-  Indicates the type of the suggestions popup.
 
 </details>

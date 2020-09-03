@@ -26,10 +26,8 @@ function onOptionClick(event: React.MouseEvent) {
   event.preventDefault();
 }
 
-function BlockList(
-  { initialItems, ...props }: Props,
-  ref: React.Ref<HTMLInputElement>
-) {
+export default function BlockList({ initialItems, ...props }: Props) {
+  const ref = React.useRef<HTMLInputElement>(null);
   const initialValues = React.useMemo(() => getValues(initialItems), [
     initialItems,
   ]);
@@ -81,9 +79,7 @@ function BlockList(
             const { key } = event;
             if (key && key.length === 1) {
               combobox.setInputValue(key);
-              requestAnimationFrame(() => {
-                document.getElementById(combobox.baseId)?.focus();
-              });
+              ref.current?.focus();
             }
           }}
         />
@@ -94,5 +90,3 @@ function BlockList(
     </>
   );
 }
-
-export default React.forwardRef(BlockList);
