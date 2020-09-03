@@ -39,7 +39,9 @@ test("render visible", () => {
     </Dialog>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body>
+    <body
+      style="padding-right: 1024px;"
+    >
       <div />
       <div
         aria-hidden="true"
