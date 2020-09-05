@@ -4,6 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { warning } from "reakit-warning";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   CompositeOptions,
   CompositeHTMLProps,
@@ -99,6 +100,63 @@ function useCompletionString(
   }, [autoSelect, currentValue, inputValue, currentId, items]);
 }
 
+function useSelectOnType(options: unstable_ComboboxOptions) {
+  type InputType =
+    | "insertText"
+    | "deleteContentBackward"
+    | "insertFromPaste"
+    | undefined;
+  const previousInputValueRef = React.useRef("");
+  const hasTypedCharacterRef = React.useRef(false);
+  const inputTypeRef = React.useRef<InputType>();
+  const changeValueRef = React.useRef("");
+
+  useUpdateEffect(() => {
+    const isUserInput = changeValueRef.current === options.inputValue;
+    if (isUserInput && inputTypeRef.current) {
+      hasTypedCharacterRef.current = inputTypeRef.current === "insertText";
+    } else {
+      hasTypedCharacterRef.current =
+        options.inputValue.length > previousInputValueRef.current.length;
+    }
+    previousInputValueRef.current = options.inputValue;
+  }, [options.inputValue]);
+
+  useUpdateEffect(() => {
+    if (
+      options.items.length &&
+      options.autoSelect &&
+      hasTypedCharacterRef.current
+    ) {
+      // Auto selects first suggestion
+      options.setCurrentId(undefined);
+    } else {
+      // Unselects suggestion and keep focus on the input
+      options.setCurrentId(null);
+    }
+  }, [
+    options.items,
+    options.inputValue,
+    options.autoSelect,
+    options.setCurrentId,
+  ]);
+
+  const onChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const nativeEvent = event.nativeEvent as InputEvent;
+      const inputType = nativeEvent.inputType as InputType;
+      inputTypeRef.current = inputType;
+      changeValueRef.current = event.target.value;
+      if (inputType && inputType !== "insertText") {
+        hasTypedCharacterRef.current = false;
+      }
+    },
+    []
+  );
+
+  return onChange;
+}
+
 export const unstable_useCombobox = createHook<
   unstable_ComboboxOptions,
   unstable_ComboboxHTMLProps
@@ -128,6 +186,7 @@ export const unstable_useCombobox = createHook<
     const onChangeRef = useLiveRef(htmlOnChange);
     const onBlurRef = useLiveRef(htmlOnBlur);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onType = useSelectOnType(options);
     const value = getValue(options);
 
     useCompletionString(ref, options);
@@ -137,19 +196,33 @@ export const unstable_useCombobox = createHook<
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
         options.show?.();
+        options.setCurrentId?.(null);
+        options.setInputValue(value);
       },
-      [options.show]
+      [options.show, options.setCurrentId, options.setInputValue, value]
     );
 
     const onChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onChangeRef.current?.(event);
+        onType(event);
         if (event.defaultPrevented) return;
         options.show?.();
-        options.setCurrentId?.(null);
         options.setInputValue?.(event.target.value);
+        const nativeEvent = event.nativeEvent as InputEvent;
+        if (!options.autoSelect || nativeEvent.inputType !== "insertText") {
+          // If autoSelect is set to true, we don't want to unselect the
+          // option. Unless the change doesn't represent an insertion of text.
+          options.setCurrentId?.(null);
+        }
       },
-      [options.show, options.setCurrentId, options.setInputValue]
+      [
+        onType,
+        options.show,
+        options.autoSelect,
+        options.setCurrentId,
+        options.setInputValue,
+      ]
     );
 
     const onBlur = React.useCallback(

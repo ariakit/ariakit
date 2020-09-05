@@ -24,8 +24,7 @@ export function useComboboxPopoverState<
 
   React.useEffect(() => {
     if (!visible) {
-      // We don't want to persist the current selected suggestion when toggling
-      // the suggestions popover.
+      // We need to reset combobox.moves
       combobox.reset();
     }
   }, [visible, combobox.reset]);
