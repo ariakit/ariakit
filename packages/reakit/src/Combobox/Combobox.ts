@@ -4,6 +4,7 @@ import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { warning } from "reakit-warning";
+import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   CompositeOptions,
   CompositeHTMLProps,
@@ -115,30 +116,71 @@ export const unstable_useCombobox = createHook<
     options,
     {
       ref: htmlRef,
-      onClick: htmlOnClick,
-      onChange: htmlOnChange,
-      onBlur: htmlOnBlur,
       onKeyDown: htmlOnKeyDown,
+      onKeyPress: htmlOnKeyPress,
+      onChange: htmlOnChange,
+      onClick: htmlOnClick,
+      onBlur: htmlOnBlur,
       "aria-controls": ariaControls,
       ...htmlProps
     }
   ) {
     const ref = React.useRef<HTMLInputElement>(null);
-    const onClickRef = useLiveRef(htmlOnClick);
-    const onChangeRef = useLiveRef(htmlOnChange);
-    const onBlurRef = useLiveRef(htmlOnBlur);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const onKeyPressRef = useLiveRef(htmlOnKeyPress);
+    const onChangeRef = useLiveRef(htmlOnChange);
+    const onClickRef = useLiveRef(htmlOnClick);
+    const onBlurRef = useLiveRef(htmlOnBlur);
     const value = getValue(options);
+    const hasInsertedTextRef = React.useRef(false);
 
     useCompletionString(ref, options);
 
-    const onClick = React.useCallback(
-      (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-        onClickRef.current?.(event);
+    useUpdateEffect(() => {
+      if (
+        options.items.length &&
+        options.autoSelect &&
+        hasInsertedTextRef.current
+      ) {
+        // If autoSelect is set to true and the last change was a text
+        // insertion, we want to automatically focus on the first suggestion.
+        // This effect will run both when inputValue changes and when items
+        // change so we can also catch async items.
+        options.setCurrentId(undefined);
+      } else {
+        // Without autoSelect, we'll always blur the combobox option and move
+        // focus onto the combobox input.
+        options.setCurrentId(null);
+      }
+    }, [
+      options.items,
+      options.inputValue,
+      options.autoSelect,
+      options.setCurrentId,
+    ]);
+
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        onKeyDownRef.current?.(event);
+        // Resets the reference on key down so we can figure it out later on
+        // key press.
+        hasInsertedTextRef.current = false;
         if (event.defaultPrevented) return;
-        options.show?.();
+        if (event.key === "Escape" && options.hideOnEsc) {
+          options.hide?.();
+        }
       },
-      [options.show]
+      [options.hideOnEsc, options.hide]
+    );
+
+    const onKeyPress = React.useCallback(
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        onKeyPressRef.current?.(event);
+        // onKeyPress will catch only printable character presses, so we skip
+        // text removal and paste.
+        hasInsertedTextRef.current = true;
+      },
+      []
     );
 
     const onChange = React.useCallback(
@@ -146,10 +188,30 @@ export const unstable_useCombobox = createHook<
         onChangeRef.current?.(event);
         if (event.defaultPrevented) return;
         options.show?.();
-        options.setCurrentId?.(null);
         options.setInputValue?.(event.target.value);
+        if (!options.autoSelect || !hasInsertedTextRef.current) {
+          // If autoSelect is set to true, we don't want to unselect the
+          // option. Unless the change doesn't represent an insertion of text.
+          options.setCurrentId?.(null);
+        }
       },
-      [options.show, options.setCurrentId, options.setInputValue]
+      [
+        options.show,
+        options.autoSelect,
+        options.setCurrentId,
+        options.setInputValue,
+      ]
+    );
+
+    const onClick = React.useCallback(
+      (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+        onClickRef.current?.(event);
+        if (event.defaultPrevented) return;
+        options.show?.();
+        options.setCurrentId?.(null);
+        options.setInputValue(value);
+      },
+      [options.show, options.setCurrentId, options.setInputValue, value]
     );
 
     const onBlur = React.useCallback(
@@ -161,17 +223,6 @@ export const unstable_useCombobox = createHook<
       [options.setInputValue, value]
     );
 
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLInputElement>) => {
-        onKeyDownRef.current?.(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape" && options.hideOnEsc) {
-          options.hide?.();
-        }
-      },
-      [options.hideOnEsc, options.hide]
-    );
-
     return {
       ref: useForkRef(ref, useForkRef(options.unstable_referenceRef, htmlRef)),
       role: "combobox",
@@ -181,10 +232,11 @@ export const unstable_useCombobox = createHook<
       "aria-expanded": options.visible,
       "aria-autocomplete": getAutocomplete(options),
       value,
-      onClick,
-      onChange,
-      onBlur,
       onKeyDown,
+      onKeyPress,
+      onChange,
+      onClick,
+      onBlur,
       ...htmlProps,
     };
   },

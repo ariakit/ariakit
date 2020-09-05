@@ -78,3 +78,13 @@ test("unselect combobox option when cleaning combobox value", () => {
   expect(screen.getByText("Blue")).not.toHaveFocus();
   expect(screen.getByLabelText("Color")).toHaveValue("");
 });
+
+test("clicking on combobox input does not revert current value", () => {
+  render(<ComboboxInline />);
+  click(screen.getByLabelText("Color"));
+  expect(screen.getByLabelText("Color")).toHaveValue("");
+  press.ArrowDown();
+  expect(screen.getByLabelText("Color")).toHaveValue("Red");
+  click(screen.getByLabelText("Color"));
+  expect(screen.getByLabelText("Color")).toHaveValue("Red");
+});

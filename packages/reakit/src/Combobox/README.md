@@ -958,7 +958,7 @@ similarly to `readOnly` on form elements. In this case, only
 based on the input value. You can omit this for items that perform
 actions other than filling a form. For example, items may open a dialog.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1059,6 +1059,12 @@ and `groupId` if any. This state is automatically updated when
 updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
+
+- **`inputValue`**
+  <code>string</code>
+
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`currentValue`**
   <code>string | undefined</code>
@@ -1155,7 +1161,7 @@ similarly to `readOnly` on form elements. In this case, only
 based on the input value. You can omit this for items that perform
 actions other than filling a form. For example, items may open a dialog.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1256,6 +1262,12 @@ and `groupId` if any. This state is automatically updated when
 updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
+
+- **`inputValue`**
+  <code>string</code>
+
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`currentValue`**
   <code>string | undefined</code>
@@ -1318,7 +1330,7 @@ similarly to `readOnly` on form elements. In this case, only
 based on the input value. You can omit this for items that perform
 actions other than filling a form. For example, items may open a dialog.
 
-<details><summary>18 state props</summary>
+<details><summary>19 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1419,6 +1431,12 @@ and `groupId` if any. This state is automatically updated when
 updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
+
+- **`inputValue`**
+  <code>string</code>
+
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
 
 - **`currentValue`**
   <code>string | undefined</code>

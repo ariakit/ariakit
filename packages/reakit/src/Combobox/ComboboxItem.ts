@@ -26,8 +26,20 @@ export const unstable_useComboboxItem = createHook<
     if (!prev.value || !next.value || !prev.baseId || !next.baseId) {
       return useCompositeItem.unstable_propsAreEqual(prev, next);
     }
-    const { currentValue: prevCurrentValue, ...prevProps } = prev;
-    const { currentValue: nextCurrentValue, ...nextProps } = next;
+    const {
+      currentValue: prevCurrentValue,
+      inputValue: prevInputValue,
+      // @ts-ignore
+      matches: prevMatches,
+      ...prevProps
+    } = prev;
+    const {
+      currentValue: nextCurrentValue,
+      inputValue: nextInputValue,
+      // @ts-ignore
+      matches: nextMatches,
+      ...nextProps
+    } = next;
     if (prevCurrentValue !== nextCurrentValue) {
       if (next.value === prevCurrentValue || next.value === nextCurrentValue) {
         return false;
@@ -88,7 +100,10 @@ export const unstable_ComboboxItem = createComponent({
 
 export type unstable_ComboboxItemOptions = BoxOptions &
   CompositeItemOptions &
-  Pick<Partial<unstable_ComboboxStateReturn>, "currentValue" | "hide"> &
+  Pick<
+    Partial<unstable_ComboboxStateReturn>,
+    "currentValue" | "inputValue" | "hide"
+  > &
   Pick<unstable_ComboboxStateReturn, "setInputValue" | "registerItem"> & {
     /**
      * Item's value that will be used to fill input value and filter `matches`

@@ -79,9 +79,10 @@ test("close combobox popover by tabbing out", () => {
   expect(screen.getByLabelText("Fruits")).not.toBeVisible();
   click(screen.getByLabelText("Fruit"));
   expect(screen.getByLabelText("Fruits")).toBeVisible();
+  press.ArrowDown();
   press.Tab();
-  expect(screen.getByText("button")).toHaveFocus();
   expect(screen.getByLabelText("Fruits")).not.toBeVisible();
+  expect(screen.getByText("button")).toHaveFocus();
 });
 
 test("close combobox popover by pressing esc", () => {
@@ -223,4 +224,13 @@ test("unselect combobox option when typing on the combobox", () => {
   expect(screen.getByText("Apple")).not.toHaveFocus();
   press.ArrowDown();
   expect(screen.getByText("Apple")).toHaveFocus();
+});
+
+test("clicking on combobox input unselects combobox option", () => {
+  render(<AccessibleCombobox />);
+  click(screen.getByLabelText("Fruit"));
+  press.ArrowDown();
+  expect(screen.getByText("Apple")).toHaveFocus();
+  click(screen.getByLabelText("Fruit"));
+  expect(screen.getByText("Apple")).not.toHaveFocus();
 });

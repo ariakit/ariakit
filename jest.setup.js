@@ -8,7 +8,7 @@ const matchers = require("@testing-library/jest-dom/matchers");
 
 // Consider [aria-activedescendant="${id}"] #${id} as the focused element.
 function toHaveFocus(element) {
-  const result = matchers.toHaveFocus(element);
+  const result = matchers.toHaveFocus.call(this, element);
   const { activeElement } = element.ownerDocument;
   const activeId =
     activeElement && activeElement.getAttribute("aria-activedescendant");

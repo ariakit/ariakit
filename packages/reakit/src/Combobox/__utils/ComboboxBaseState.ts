@@ -1,6 +1,5 @@
 import * as React from "react";
 import { SetState } from "reakit-utils/types";
-import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   CompositeStateReturn,
   CompositeState,
@@ -48,33 +47,6 @@ function getMatches(
     }
   }
   return matches;
-}
-
-function useSelectOnType(
-  items: ComboboxBaseState["items"],
-  inputValue: ComboboxBaseState["inputValue"],
-  autoSelect: ComboboxBaseState["autoSelect"],
-  setCurrentId: CompositeStateReturn["setCurrentId"]
-) {
-  const previousInputValueRef = React.useRef("");
-  const hasTypedCharacterRef = React.useRef(false);
-
-  useUpdateEffect(() => {
-    hasTypedCharacterRef.current =
-      inputValue.length > previousInputValueRef.current.length;
-    previousInputValueRef.current = inputValue;
-  }, [inputValue]);
-
-  useUpdateEffect(() => {
-    if (items.length && autoSelect && hasTypedCharacterRef.current) {
-      // Auto selects first suggestion
-      setCurrentId(undefined);
-    } else {
-      // Unselects suggestion and keep focus on the input
-      setCurrentId(null);
-    }
-    previousInputValueRef.current = inputValue;
-  }, [items, inputValue, autoSelect, setCurrentId]);
 }
 
 export function useComboboxBaseState<T extends CompositeStateReturn>(
@@ -139,8 +111,6 @@ export function useComboboxBaseState<T extends CompositeStateReturn>(
     },
     [composite.unregisterItem]
   );
-
-  useSelectOnType(items, inputValue, autoSelect, composite.setCurrentId);
 
   return {
     ...composite,
