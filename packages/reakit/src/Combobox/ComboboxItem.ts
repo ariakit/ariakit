@@ -29,12 +29,14 @@ export const unstable_useComboboxItem = createHook<
     const {
       currentValue: prevCurrentValue,
       inputValue: prevInputValue,
+      // @ts-ignore
       matches: prevMatches,
       ...prevProps
     } = prev;
     const {
       currentValue: nextCurrentValue,
       inputValue: nextInputValue,
+      // @ts-ignore
       matches: nextMatches,
       ...nextProps
     } = next;
@@ -100,7 +102,7 @@ export type unstable_ComboboxItemOptions = BoxOptions &
   CompositeItemOptions &
   Pick<
     Partial<unstable_ComboboxStateReturn>,
-    "currentValue" | "inputValue" | "matches" | "hide"
+    "currentValue" | "inputValue" | "hide"
   > &
   Pick<unstable_ComboboxStateReturn, "setInputValue" | "registerItem"> & {
     /**
