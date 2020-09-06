@@ -29,13 +29,14 @@ function getAutocomplete(options: unstable_ComboboxOptions) {
   return "none";
 }
 
-function isFirstItemAutoSelected(options: unstable_ComboboxOptions) {
-  const firstItem = options.items.find((item) => !item.disabled);
-  return (
-    options.autoSelect &&
-    options.currentId &&
-    firstItem?.id === options.currentId
-  );
+function isFirstItemAutoSelected(
+  items: unstable_ComboboxOptions["items"],
+  autoSelect: unstable_ComboboxOptions["autoSelect"],
+  currentId: unstable_ComboboxOptions["currentId"]
+) {
+  if (!autoSelect) return false;
+  const firstItem = items.find((item) => !item.disabled);
+  return currentId && firstItem?.id === currentId;
 }
 
 function hasCompletionString(inputValue: string, currentValue?: string) {
@@ -52,52 +53,38 @@ function getCompletionString(inputValue: string, currentValue?: string) {
   return currentValue.slice(index + inputValue.length);
 }
 
-function getValue(options: unstable_ComboboxOptions) {
-  if (!options.inline) {
-    return options.inputValue;
-  }
-  if (options.autoSelect && isFirstItemAutoSelected(options)) {
-    if (hasCompletionString(options.inputValue, options.currentValue)) {
-      return (
-        options.inputValue +
-        getCompletionString(options.inputValue, options.currentValue)
-      );
+function useValue(options: unstable_ComboboxOptions) {
+  return React.useMemo(() => {
+    if (!options.inline) {
+      return options.inputValue;
     }
-    return options.inputValue;
-  }
-  return options.currentValue || options.inputValue;
+    const firstItemAutoSelected = isFirstItemAutoSelected(
+      options.items,
+      options.autoSelect,
+      options.currentId
+    );
+    if (firstItemAutoSelected) {
+      if (hasCompletionString(options.inputValue, options.currentValue)) {
+        return (
+          options.inputValue +
+          getCompletionString(options.inputValue, options.currentValue)
+        );
+      }
+      return options.inputValue;
+    }
+    return options.currentValue || options.inputValue;
+  }, [
+    options.inline,
+    options.inputValue,
+    options.autoSelect,
+    options.items,
+    options.currentId,
+    options.currentValue,
+  ]);
 }
 
 function getFirstEnabledItemId(items: unstable_ComboboxOptions["items"]) {
   return items.find((item) => !item.disabled)?.id;
-}
-
-function useCompletionString(
-  ref: React.RefObject<HTMLInputElement>,
-  {
-    items,
-    inputValue,
-    currentValue,
-    autoSelect,
-    currentId,
-  }: unstable_ComboboxOptions
-) {
-  React.useEffect(() => {
-    if (!autoSelect) return;
-    if (!currentValue) return;
-    if (!hasCompletionString(inputValue, currentValue)) return;
-    if (currentId !== getFirstEnabledItemId(items)) return;
-    const element = ref.current;
-    if (!element) {
-      warning(
-        true,
-        "Can't auto select combobox because `ref` wasn't passed to the component",
-        "See https://reakit.io/docs/combobox"
-      );
-      return;
-    }
-    element.setSelectionRange(inputValue.length, currentValue.length);
-  }, [autoSelect, currentValue, inputValue, currentId, items]);
 }
 
 export const unstable_useCombobox = createHook<
@@ -126,16 +113,46 @@ export const unstable_useCombobox = createHook<
     }
   ) {
     const ref = React.useRef<HTMLInputElement>(null);
+    const [updated, update] = React.useReducer(() => ({}), {});
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const onKeyPressRef = useLiveRef(htmlOnKeyPress);
     const onChangeRef = useLiveRef(htmlOnChange);
     const onClickRef = useLiveRef(htmlOnClick);
     const onBlurRef = useLiveRef(htmlOnBlur);
-    const value = getValue(options);
+    const value = useValue(options);
     const hasInsertedTextRef = React.useRef(false);
 
-    useCompletionString(ref, options);
+    // Completion string
+    React.useEffect(() => {
+      if (!options.autoSelect) return;
+      if (!options.currentValue) return;
+      if (options.currentId !== getFirstEnabledItemId(options.items)) return;
+      if (!hasCompletionString(options.inputValue, options.currentValue)) {
+        return;
+      }
+      const element = ref.current;
+      if (!element) {
+        warning(
+          true,
+          "Can't auto select combobox because `ref` wasn't passed to the component",
+          "See https://reakit.io/docs/combobox"
+        );
+        return;
+      }
+      element.setSelectionRange(
+        options.inputValue.length,
+        options.currentValue.length
+      );
+    }, [
+      updated,
+      options.autoSelect,
+      options.currentValue,
+      options.inputValue,
+      options.currentId,
+      options.items,
+    ]);
 
+    // Auto select on type
     useUpdateEffect(() => {
       if (
         options.items.length &&
@@ -189,10 +206,14 @@ export const unstable_useCombobox = createHook<
         if (event.defaultPrevented) return;
         options.show?.();
         options.setInputValue?.(event.target.value);
+        update();
         if (!options.autoSelect || !hasInsertedTextRef.current) {
-          // If autoSelect is set to true, we don't want to unselect the
-          // option. Unless the change doesn't represent an insertion of text.
+          // If autoSelect is not set or it's not an insertion of text, focus
+          // on the combobox input after changing the value.
           options.setCurrentId?.(null);
+        } else {
+          // Selects first item
+          options.setCurrentId?.(undefined);
         }
       },
       [
