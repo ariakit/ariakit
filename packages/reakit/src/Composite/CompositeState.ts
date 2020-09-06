@@ -184,10 +184,12 @@ function reducer(
       };
       // If the current item is the item that is being removed, focus pastId
       if (currentId && currentId === id) {
-        const nextId = getCurrentId({
-          ...nextState,
-          currentId: nextPastIds[0],
-        });
+        const nextId = includesBaseElement
+          ? null
+          : getCurrentId({
+              ...nextState,
+              currentId: nextPastIds[0],
+            });
         return { ...nextState, currentId: nextId };
       }
       return nextState;
