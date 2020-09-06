@@ -9,3 +9,4 @@ yarn-debug.log*
 yarn-error.log*
 *.tgz
 report.*.json
+.env
