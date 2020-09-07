@@ -62,22 +62,24 @@ export function type(
       value = `${firstPart}${char}${lastPart}`;
     }
 
-    const defaultAllowed = fireEvent.keyDown(input, { key, ...options });
+    let defaultAllowed = fireEvent.keyDown(input, { key, ...options });
 
     if (defaultAllowed && !input.readOnly) {
       if (inputType === "insertText") {
-        fireEvent.keyPress(input, {
+        defaultAllowed = fireEvent.keyPress(input, {
           key,
           charCode: key.charCodeAt(0),
           ...options,
         });
       }
-      fireEvent.input(input, {
-        data: char,
-        target: { value },
-        inputType,
-        ...options,
-      });
+      if (defaultAllowed) {
+        fireEvent.input(input, {
+          data: char,
+          target: { value },
+          inputType,
+          ...options,
+        });
+      }
     }
 
     fireEvent.keyUp(input, { key, ...options });
