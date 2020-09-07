@@ -4,6 +4,7 @@ import { Builder, WebDriver } from "selenium-webdriver";
 require("dotenv").config();
 
 function getExampleUrl(exampleName: string) {
+  // TODO: If CI, use netlify deploy preview
   const STORYBOOK_HOST = "http://localhost:6006/iframe.html";
   const snakeCaseExampleName = _.kebabCase(exampleName);
   const url = new URL(STORYBOOK_HOST);
