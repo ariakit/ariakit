@@ -13,6 +13,7 @@ function getExampleUrl(exampleName: string) {
 }
 
 // From https://www.browserstack.com/docs/automate/selenium/getting-started/nodejs
+// TODO: Make the configurable externally?
 const DEVICE_CONFIG = [
   {
     device: "iPhone 11",
@@ -35,6 +36,8 @@ interface Device {
 
 let cachedDevices: null | Device[] = null;
 
+// TODO: Custom Jest environment to automatically do this once per test run like jest-puppeteer
+// This could potentially remove the devices param of runTest.
 export async function getDevices() {
   if (!cachedDevices) {
     cachedDevices = await Promise.all(
