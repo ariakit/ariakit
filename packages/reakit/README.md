@@ -142,6 +142,12 @@ This project exists thanks to all the people who contribute. Learn more on the [
 <img src="https://user-images.githubusercontent.com/3068563/55114952-118f6b00-50c2-11e9-8879-d047e5686284.png" alt="reakit" height="12" /> [Logo](https://github.com/reakit/reakit/tree/master/logo) by [**Leonardo Elias**](https://github.com/leonardoelias).
 
 
+## Attribution
+
+Browser testing provided by 
+<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" height="80" align="center"></a>
+
+
 ## License
 
 MIT © [Diego Haz](https://github.com/diegohaz)
