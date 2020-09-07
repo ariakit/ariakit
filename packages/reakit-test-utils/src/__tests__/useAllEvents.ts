@@ -7,6 +7,7 @@ const eventNames = [
   "animationiteration",
   "animationstart",
   "auxclick",
+  "beforeinput",
   "blur",
   "cancel",
   "canplay",

@@ -41,6 +41,23 @@ test("type", () => {
       "focus input",
       "focusin input",
       "keydown input",
+      "keypress input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "keypress input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "keypress input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "keypress input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "keydown input",
@@ -50,21 +67,11 @@ test("type", () => {
       "input input",
       "keyup input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "keydown input",
-      "input input",
-      "keyup input",
-      "keydown input",
-      "input input",
-      "keyup input",
-      "keydown input",
-      "input input",
-      "keyup input",
-      "keydown input",
-      "input input",
-      "keyup input",
-      "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
     ]
@@ -119,7 +126,7 @@ test("type readOnly", () => {
   `);
 });
 
-test("type preventDefault", () => {
+test("type preventDefault on key down", () => {
   const values = [] as string[];
   const stack = [] as string[];
   const Test = () => {
@@ -156,6 +163,54 @@ test("type preventDefault", () => {
       "keydown input",
       "keyup input",
       "keydown input",
+      "keypress input",
+      "input input",
+      "keyup input",
+    ]
+  `);
+});
+
+test("type preventDefault on key press", () => {
+  const values = [] as string[];
+  const stack = [] as string[];
+  const Test = () => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <input
+        ref={ref}
+        aria-label="input"
+        onChange={(event) => values.push(event.target.value)}
+        onKeyPress={(event) => {
+          if (event.key !== "e") {
+            event.preventDefault();
+          }
+        }}
+      />
+    );
+  };
+  const { getByLabelText } = render(<Test />);
+  const input = getByLabelText("input");
+
+  type("ab\be", input);
+
+  expect(values).toEqual(["e"]);
+
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "focus input",
+      "focusin input",
+      "keydown input",
+      "keypress input",
+      "keyup input",
+      "keydown input",
+      "keypress input",
+      "keyup input",
+      "keydown input",
+      "input input",
+      "keyup input",
+      "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
     ]
@@ -215,18 +270,23 @@ test("selection", () => {
       "focus input",
       "focusin input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
       "select input",
@@ -234,6 +294,7 @@ test("selection", () => {
       "input input",
       "keyup input",
       "keydown input",
+      "keypress input",
       "input input",
       "keyup input",
     ]

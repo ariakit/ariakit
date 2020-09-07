@@ -48,9 +48,7 @@ export function type(
         start === end ? Math.max(start - 1, 0) : start;
       const firstPart = input.value.slice(0, startAfterBackspace);
       const lastPart = input.value.slice(end, input.value.length);
-      if (start !== end) {
-        setSelectionRange(input, startAfterBackspace);
-      }
+      setSelectionRange(input, startAfterBackspace);
       key = "Backspace";
       value = `${firstPart}${lastPart}`;
       inputType = "deleteContentBackward";
@@ -59,22 +57,29 @@ export function type(
       // there.
       const firstPart = input.value.slice(0, start);
       const lastPart = input.value.slice(end, input.value.length);
-      if (start !== end) {
-        // Increment caret position
-        setSelectionRange(input, start + 1);
-      }
+      // Increment caret position
+      setSelectionRange(input, start + 1);
       value = `${firstPart}${char}${lastPart}`;
     }
 
-    const defaultAllowed = fireEvent.keyDown(input, { key, ...options });
+    let defaultAllowed = fireEvent.keyDown(input, { key, ...options });
 
     if (defaultAllowed && !input.readOnly) {
-      fireEvent.input(input, {
-        data: char,
-        target: { value },
-        inputType,
-        ...options,
-      });
+      if (inputType === "insertText") {
+        defaultAllowed = fireEvent.keyPress(input, {
+          key,
+          charCode: key.charCodeAt(0),
+          ...options,
+        });
+      }
+      if (defaultAllowed) {
+        fireEvent.input(input, {
+          data: char,
+          target: { value },
+          inputType,
+          ...options,
+        });
+      }
     }
 
     fireEvent.keyUp(input, { key, ...options });
