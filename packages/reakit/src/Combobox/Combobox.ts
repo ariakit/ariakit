@@ -155,8 +155,8 @@ export const unstable_useCombobox = createHook<
     // Auto select on type
     useUpdateEffect(() => {
       if (
-        options.items.length &&
         options.autoSelect &&
+        options.items.length &&
         hasInsertedTextRef.current
       ) {
         // If autoSelect is set to true and the last change was a text
