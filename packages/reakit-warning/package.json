@@ -1,6 +1,6 @@
 {
   "name": "reakit-warning",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Reakit warning",
   "license": "MIT",
   "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-warning",
@@ -29,7 +29,7 @@
     "warning"
   ],
   "dependencies": {
-    "reakit-utils": "^0.14.3"
+    "reakit-utils": "0.14.3"
   },
   "peerDependencies": {
     "react": "^16.8.0"

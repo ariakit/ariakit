@@ -20,7 +20,7 @@ function toHaveFocus(element) {
         return [
           matcherHint(`${this.isNot ? ".not" : ""}.toHaveFocus`, "element", ""),
           "",
-          "Expected",
+          "Expected:",
           `  ${printExpected(element)}`,
           "Received:",
           `  ${printReceived(element.ownerDocument.getElementById(activeId))}`,

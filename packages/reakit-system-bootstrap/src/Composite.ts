@@ -33,6 +33,11 @@ export function useCompositeItemProps(
     color: inherit;
     background-color: inherit;
 
+    &:not([aria-selected="true"]) {
+      color: inherit;
+      background-color: inherit;
+    }
+
     [aria-activedescendant="${id}"]:focus &[aria-selected="true"],
     [aria-activedescendant="${id}"]:focus ~ * &[aria-selected="true"] {
       color: ${color};

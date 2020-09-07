@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.13.3...reakit-system-bootstrap@0.13.4) (2020-09-03)
+
+
+### Bug Fixes
+
+* Fix internal dependency versions ([3d4cb42](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/3d4cb4217a52ec719e8a2823d21e08c7cc42dd30))
+* **reakit-system-bootstrap:** Increase specificity on `Composite` styles ([01e73ea](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/01e73eaff9405ecf8838906684811ef70970b867))
+
+
+
+
+
 ## [0.13.3](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.13.2...reakit-system-bootstrap@0.13.3) (2020-08-24)
 
 **Note:** Version bump only for package reakit-system-bootstrap
