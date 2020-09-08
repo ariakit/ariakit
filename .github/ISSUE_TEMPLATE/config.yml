@@ -1,7 +1,4 @@
 contact_links:
-  - name: Spectrum
-    url: https://spectrum.chat/reakit
-    about: If you have questions, please use our community on Spectrum or StackOverflow.
-  - name: StackOverflow
-    url: https://stackoverflow.com/questions/tagged/reakit
-    about: If you have questions, please use our community on Spectrum or StackOverflow.
+  - name: Ask a question
+    url: https://github.com/reakit/reakit/discussions/new
+    about: about: Ask the community for help
