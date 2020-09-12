@@ -166,17 +166,19 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex,
-      onClick: htmlOnClick,
+      onClickCapture: htmlOnClickCapture,
+      onMouseDownCapture: htmlOnMouseDownCapture,
       onMouseDown: htmlOnMouseDown,
-      onKeyPress: htmlOnKeyPress,
+      onKeyPressCapture: htmlOnKeyPressCapture,
       style: htmlStyle,
       ...htmlProps
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
-    const onClickRef = useLiveRef(htmlOnClick);
+    const onClickCaptureRef = useLiveRef(htmlOnClickCapture);
+    const onMouseDownCaptureRef = useLiveRef(htmlOnMouseDownCapture);
     const onMouseDownRef = useLiveRef(htmlOnMouseDown);
-    const onKeyPressRef = useLiveRef(htmlOnKeyPress);
+    const onKeyPressCaptureRef = useLiveRef(htmlOnKeyPressCapture);
     const trulyDisabled = !!options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const [supportsDisabled, setSupportsDisabled] = React.useState(true);
@@ -203,25 +205,32 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       }
     }, []);
 
-    const onClick = React.useCallback(
+    const onClickCapture = React.useCallback(
       (event: React.MouseEvent) => {
+        onClickCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (options.disabled) {
           event.stopPropagation();
           event.preventDefault();
-          return;
         }
-        onClickRef.current?.(event);
       },
       [options.disabled]
     );
 
-    const onMouseDown = React.useCallback(
+    const onMouseDownCapture = React.useCallback(
       (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onMouseDownCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (options.disabled) {
           event.stopPropagation();
           event.preventDefault();
-          return;
         }
+      },
+      [options.disabled, focusOnMouseDown]
+    );
+
+    const onMouseDown = React.useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         onMouseDownRef.current?.(event);
         if (event.defaultPrevented) return;
         focusOnMouseDown?.(event);
@@ -229,14 +238,14 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       [options.disabled, focusOnMouseDown]
     );
 
-    const onKeyPress = React.useCallback(
+    const onKeyPressCapture = React.useCallback(
       (event: React.KeyboardEvent) => {
+        onKeyPressCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (options.disabled) {
           event.stopPropagation();
           event.preventDefault();
-          return;
         }
-        onKeyPressRef.current?.(event);
       },
       [options.disabled]
     );
@@ -252,9 +261,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       ),
       disabled: trulyDisabled && supportsDisabled ? true : undefined,
       "aria-disabled": options.disabled ? true : undefined,
-      onClick,
+      onClickCapture,
+      onMouseDownCapture,
       onMouseDown,
-      onKeyPress,
+      onKeyPressCapture,
       ...htmlProps,
     };
   },
