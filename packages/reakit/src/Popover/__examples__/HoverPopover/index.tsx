@@ -8,6 +8,7 @@ import {
   PopoverInitialState,
 } from "reakit/Popover";
 import { Separator } from "reakit/Separator";
+import { VisuallyHidden } from "reakit/VisuallyHidden";
 
 function useHoverPopoverState(initialState?: PopoverInitialState) {
   const timeout = 300;
@@ -60,6 +61,7 @@ const user: User = {
 };
 
 export default function HoverPopover() {
+  const [isFollowing, setFollowing] = React.useState(false);
   const popover = useHoverPopoverState();
   const popoverProps = {
     onMouseEnter: popover.show,
@@ -68,27 +70,37 @@ export default function HoverPopover() {
   return (
     <>
       <PopoverDisclosure
-        {...popover}
-        {...popoverProps}
         as="a"
         href="#"
-        aria-label={`See ${user.username}'s profile`}
+        aria-label={`See the complete profile of ${user.username}`}
+        {...popover}
+        {...popoverProps}
       >
         {user.username}
       </PopoverDisclosure>
+      <VisuallyHidden>
+        <PopoverDisclosure {...popover}>
+          See the preview of the profile of {user.username}
+        </PopoverDisclosure>
+      </VisuallyHidden>
       <Popover
         {...popover}
         {...popoverProps}
         unstable_autoFocusOnShow={false}
-        aria-label={`Preview of ${user.fullname}'s profile`}
+        aria-label={`Preview of the profile of ${user.fullname} (${user.username})`}
       >
         <PopoverArrow {...popover} />
         <header>
           {user.fullname} <small>({user.username})</small>
         </header>
         <p>{user.description}</p>
-        <Separator />
-        <Button>follow</Button>
+        <footer>
+          <Separator />
+          <Button onClick={() => setFollowing(!isFollowing)}>
+            {isFollowing ? "unfollow" : "follow"}
+          </Button>
+          {isFollowing && `You follow ${user.username}!`}
+        </footer>
       </Popover>
     </>
   );
