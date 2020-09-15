@@ -110,14 +110,13 @@ export const useCompositeItem = createHook<
   },
 
   useOptions(options) {
-    return {
-      ...options,
+    return Object.assign({}, options, {
       id: options.id,
       currentId: getCurrentId(options),
       unstable_clickOnSpace: options.unstable_hasActiveWidget
         ? false
         : options.unstable_clickOnSpace,
-    };
+    });
   },
 
   useProps(
@@ -335,18 +334,20 @@ export const useCompositeItem = createHook<
       []
     );
 
-    return {
-      ref: useForkRef(ref, htmlRef),
-      id,
-      tabIndex: shouldTabIndex ? htmlTabIndex : -1,
-      "aria-selected":
-        options.unstable_virtual && isCurrentItem ? true : undefined,
-      onFocus,
-      onBlur,
-      onKeyDown,
-      onClick,
-      ...htmlProps,
-    };
+    return Object.assign(
+      {
+        ref: useForkRef(ref, htmlRef),
+        id,
+        tabIndex: shouldTabIndex ? htmlTabIndex : -1,
+        "aria-selected":
+          options.unstable_virtual && isCurrentItem ? true : undefined,
+        onFocus,
+        onBlur,
+        onKeyDown,
+        onClick,
+      },
+      htmlProps
+    );
   },
 });
 

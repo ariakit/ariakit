@@ -18,6 +18,7 @@ module.exports = {
   },
   rules: {
     camelcase: "off",
+    "prefer-object-spread": "off",
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
     "no-param-reassign": "off",

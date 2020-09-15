@@ -158,7 +158,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   keys: TABBABLE_KEYS,
 
   useOptions(options, { disabled }) {
-    return { disabled, ...options };
+    return Object.assign({ disabled }, options);
   },
 
   useProps(
@@ -241,22 +241,24 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       [options.disabled]
     );
 
-    return {
-      ref: useForkRef(ref, htmlRef),
-      style,
-      tabIndex: getTabIndex(
-        trulyDisabled,
-        nativeTabbable,
-        supportsDisabled,
-        htmlTabIndex
-      ),
-      disabled: trulyDisabled && supportsDisabled ? true : undefined,
-      "aria-disabled": options.disabled ? true : undefined,
-      onClick,
-      onMouseDown,
-      onKeyPress,
-      ...htmlProps,
-    };
+    return Object.assign(
+      {
+        ref: useForkRef(ref, htmlRef),
+        style,
+        tabIndex: getTabIndex(
+          trulyDisabled,
+          nativeTabbable,
+          supportsDisabled,
+          htmlTabIndex
+        ),
+        disabled: trulyDisabled && supportsDisabled ? true : undefined,
+        "aria-disabled": options.disabled ? true : undefined,
+        onClick,
+        onMouseDown,
+        onKeyPress,
+      },
+      htmlProps
+    );
   },
 });
 

@@ -135,13 +135,15 @@ export const useMenuItem = createHook<MenuItemOptions, MenuItemHTMLProps>({
       [menu?.role, menu?.children, options.items, options.move]
     );
 
-    return {
-      role: "menuitem",
-      onMouseEnter,
-      onMouseMove,
-      onMouseLeave,
-      ...htmlProps,
-    };
+    return Object.assign(
+      {
+        role: "menuitem",
+        onMouseEnter,
+        onMouseMove,
+        onMouseLeave,
+      },
+      htmlProps
+    );
   },
 });
 

@@ -51,11 +51,13 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
     unstable_clickOnSpace = true,
     ...options
   }) {
-    return {
-      unstable_clickOnEnter,
-      unstable_clickOnSpace,
-      ...options,
-    };
+    return Object.assign(
+      {
+        unstable_clickOnEnter,
+        unstable_clickOnSpace,
+      },
+      options
+    );
   },
 
   useProps(
@@ -113,12 +115,14 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
       [options.disabled, options.unstable_clickOnSpace, active]
     );
 
-    return {
-      "data-active": active || undefined,
-      onKeyDown,
-      onKeyUp,
-      ...htmlProps,
-    };
+    return Object.assign(
+      {
+        "data-active": active || undefined,
+        onKeyDown,
+        onKeyUp,
+      },
+      htmlProps
+    );
   },
 });
 

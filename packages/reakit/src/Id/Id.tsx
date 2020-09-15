@@ -54,11 +54,11 @@ export const unstable_useId = createHook<
 
     const id = htmlProps.id || options.id || `${baseId}${suffix}`;
 
-    return { ...options, id };
+    return Object.assign({}, options, { id });
   },
 
   useProps(options, htmlProps) {
-    return { id: options.id, ...htmlProps };
+    return Object.assign({ id: options.id }, htmlProps);
   },
 });
 
