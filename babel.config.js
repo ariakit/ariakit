@@ -36,8 +36,7 @@ module.exports = {
     "reakit-warning/babel-plugin",
     "babel-plugin-macros",
     "@babel/plugin-proposal-class-properties",
-    // Use Object.assign instead of object spread for performance reasons
-    ["@babel/plugin-proposal-object-rest-spread", { loose: true }],
+    "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-proposal-optional-chaining",
     !prod && [
       "babel-plugin-module-resolver",
