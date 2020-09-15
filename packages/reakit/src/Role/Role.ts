@@ -27,9 +27,6 @@ export const useRole = createHook<RoleOptions, RoleHTMLProps>({
   name: "Role",
   keys: ROLE_KEYS,
   propsAreEqual(prev, next) {
-    if (prev.unstable_system === next.unstable_system) {
-      return shallowEqual(prev, next);
-    }
     const { unstable_system: prevSystem, ...prevProps } = prev;
     const { unstable_system: nextSystem, ...nextProps } = next;
     if (prevSystem !== nextSystem && !shallowEqual(prevSystem, nextSystem)) {

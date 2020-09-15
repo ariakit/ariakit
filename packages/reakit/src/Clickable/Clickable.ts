@@ -46,11 +46,15 @@ export const useClickable = createHook<ClickableOptions, ClickableHTMLProps>({
   compose: useTabbable,
   keys: CLICKABLE_KEYS,
 
-  useOptions(options) {
+  useOptions({
+    unstable_clickOnEnter = true,
+    unstable_clickOnSpace = true,
+    ...options
+  }) {
     return {
+      unstable_clickOnEnter,
+      unstable_clickOnSpace,
       ...options,
-      unstable_clickOnEnter: options.unstable_clickOnEnter ?? true,
-      unstable_clickOnSpace: options.unstable_clickOnSpace ?? true,
     };
   },
 
