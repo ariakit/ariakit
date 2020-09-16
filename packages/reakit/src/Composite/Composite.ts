@@ -353,6 +353,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     );
 
     return {
+      role: options.role,
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
       onFocus,
