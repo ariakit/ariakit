@@ -35,7 +35,7 @@ const COMPOSITE_STATE_KEYS = [
   "reset",
   "unstable_setHasActiveWidget",
 ] as const;
-export const COMPOSITE_KEYS = COMPOSITE_STATE_KEYS;
-export const COMPOSITE_GROUP_KEYS = COMPOSITE_KEYS;
+export const COMPOSITE_KEYS = [...COMPOSITE_STATE_KEYS, "role"] as const;
+export const COMPOSITE_GROUP_KEYS = COMPOSITE_STATE_KEYS;
 export const COMPOSITE_ITEM_KEYS = COMPOSITE_GROUP_KEYS;
 export const COMPOSITE_ITEM_WIDGET_KEYS = COMPOSITE_ITEM_KEYS;
