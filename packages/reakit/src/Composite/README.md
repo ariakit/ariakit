@@ -241,7 +241,7 @@ which arrow keys can be used to move focus:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-  It doesn't have any effect on two-dimensional composites.
+It doesn't have any effect on two-dimensional composites.
 
 - **`currentId`**
   <code>string | null | undefined</code>
@@ -264,7 +264,8 @@ arrow keys.
   - If `currentId` is initially set to `null`, the composite element will
 be focused in between the last and first items.
 
-  On two-dimensional composites:
+On two-dimensional composites:
+
   - `true` loops from the last row/column item to the first item in the
 same row/column and vice-versa. If it's the last item in the last row, it
 moves to the first item in the first row and vice-versa.
@@ -305,6 +306,11 @@ column and vice-versa.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`role`**
+  <code title="&#34;combobox&#34; | &#34;grid&#34; | &#34;tablist&#34; | &#34;listbox&#34; | &#34;menu&#34; | &#34;menubar&#34; | &#34;toolbar&#34; | &#34;radiogroup&#34; | &#34;tree&#34; | &#34;treegrid&#34; | undefined">&#34;combobox&#34; | &#34;grid&#34; | &#34;tablist&#34; | &#34;listbox&#34; | &#34;...</code>
+
+  
+
 <details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
@@ -333,7 +339,7 @@ which arrow keys can be used to move focus:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-  It doesn't have any effect on two-dimensional composites.
+It doesn't have any effect on two-dimensional composites.
 
 - **`currentId`**
   <code>string | null | undefined</code>
@@ -499,7 +505,7 @@ which arrow keys can be used to move focus:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-  It doesn't have any effect on two-dimensional composites.
+It doesn't have any effect on two-dimensional composites.
 
 - **`unstable_moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
