@@ -74,6 +74,8 @@ function useKeyboardEventProxy(
   const eventHandlerRef = useLiveRef(htmlEventHandler);
   return React.useCallback(
     (event: React.KeyboardEvent) => {
+      eventHandlerRef.current?.(event);
+      if (event.defaultPrevented) return;
       if (virtual && canProxyKeyboardEvent(event)) {
         const currentElement = currentItem?.ref.current;
         if (currentElement) {
@@ -84,11 +86,9 @@ function useKeyboardEventProxy(
           if (event.currentTarget.contains(currentElement)) {
             event.stopPropagation();
             event.preventDefault();
-            return;
           }
         }
       }
-      eventHandlerRef.current?.(event);
     },
     [virtual, currentItem]
   );
@@ -135,13 +135,15 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       onFocus: htmlOnFocus,
       onBlur: htmlOnBlur,
       onKeyDown: htmlOnKeyDown,
-      onKeyUp: htmlOnKeyUp,
+      onKeyDownCapture: htmlOnKeyDownCapture,
+      onKeyUpCapture: htmlOnKeyUpCapture,
       ...htmlProps
     }
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const currentItem = findEnabledItemById(options.items, options.currentId);
     const previousElementRef = React.useRef<HTMLElement | null>(null);
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const onFocusRef = useLiveRef(htmlOnFocus);
     const onBlurRef = useLiveRef(htmlOnBlur);
     // IE 11 doesn't support event.relatedTarget, so we use the active element
@@ -165,16 +167,16 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       }
     }, [options.unstable_moves, currentItem]);
 
-    const onKeyDown = useKeyboardEventProxy(
+    const onKeyDownCapture = useKeyboardEventProxy(
       options.unstable_virtual,
       currentItem,
-      htmlOnKeyDown
+      htmlOnKeyDownCapture
     );
 
-    const onKeyUp = useKeyboardEventProxy(
+    const onKeyUpCapture = useKeyboardEventProxy(
       options.unstable_virtual,
       currentItem,
-      htmlOnKeyUp
+      htmlOnKeyUpCapture
     );
 
     const onFocus = React.useCallback(
@@ -306,7 +308,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     const onMove = React.useMemo(
       () =>
         createOnKeyDown({
-          onKeyDown,
           stopPropagation: true,
           shouldKeyDown: (event) =>
             isSelfTarget(event) && options.currentId === null,
@@ -339,7 +340,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
           },
         }),
       [
-        onKeyDown,
         options.currentId,
         options.orientation,
         options.groups,
@@ -350,13 +350,23 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       ]
     );
 
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLElement>) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        onMove(event);
+      },
+      [onMove]
+    );
+
     return {
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
       onFocus,
       onBlur,
-      onKeyDown: onMove,
-      onKeyUp,
+      onKeyDownCapture,
+      onKeyDown,
+      onKeyUpCapture,
       "aria-activedescendant": options.unstable_virtual
         ? currentItem?.id || undefined
         : undefined,

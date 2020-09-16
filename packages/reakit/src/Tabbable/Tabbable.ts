@@ -152,6 +152,25 @@ function getTabIndex(
   return htmlTabIndex || 0;
 }
 
+function useDisableEvent(
+  htmlEventRef: React.RefObject<
+    React.EventHandler<React.SyntheticEvent> | undefined
+  >,
+  disabled?: boolean
+) {
+  return React.useCallback(
+    (event: React.SyntheticEvent) => {
+      htmlEventRef.current?.(event);
+      if (event.defaultPrevented) return;
+      if (disabled) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
+    [htmlEventRef, disabled]
+  );
+}
+
 export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   name: "Tabbable",
   compose: useBox,
@@ -205,28 +224,16 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       }
     }, []);
 
-    const onClickCapture = React.useCallback(
-      (event: React.MouseEvent) => {
-        onClickCaptureRef.current?.(event);
-        if (event.defaultPrevented) return;
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      },
-      [options.disabled]
+    const onClickCapture = useDisableEvent(onClickCaptureRef, options.disabled);
+
+    const onMouseDownCapture = useDisableEvent(
+      onMouseDownCaptureRef,
+      options.disabled
     );
 
-    const onMouseDownCapture = React.useCallback(
-      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        onMouseDownCaptureRef.current?.(event);
-        if (event.defaultPrevented) return;
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      },
-      [options.disabled, focusOnMouseDown]
+    const onKeyPressCapture = useDisableEvent(
+      onKeyPressCaptureRef,
+      options.disabled
     );
 
     const onMouseDown = React.useCallback(
@@ -236,18 +243,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         focusOnMouseDown?.(event);
       },
       [options.disabled, focusOnMouseDown]
-    );
-
-    const onKeyPressCapture = React.useCallback(
-      (event: React.KeyboardEvent) => {
-        onKeyPressCaptureRef.current?.(event);
-        if (event.defaultPrevented) return;
-        if (options.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      },
-      [options.disabled]
     );
 
     return {

@@ -8,6 +8,12 @@ function onClick(event: React.MouseEvent) {
   alert(label);
 }
 
+const CustomComponent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+  // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+>((props, ref) => <div ref={ref} {...props} onClick={onClick} />);
+
 export default function TabbableElements() {
   return (
     <div style={{ display: "inline-flex", flexDirection: "column" }}>
@@ -25,6 +31,8 @@ export default function TabbableElements() {
         Default anchor
       </Tabbable>
 
+      <Tabbable as={CustomComponent}>Default custom</Tabbable>
+
       <h2>Disabled</h2>
 
       <Tabbable disabled>Disabled div</Tabbable>
@@ -37,6 +45,10 @@ export default function TabbableElements() {
 
       <Tabbable as="a" href="#" onClick={onClick} disabled>
         Disabled anchor
+      </Tabbable>
+
+      <Tabbable as={CustomComponent} disabled>
+        Disabled custom
       </Tabbable>
 
       <h2>Disabled focusable</h2>
@@ -58,6 +70,10 @@ export default function TabbableElements() {
 
       <Tabbable as="a" href="#" onClick={onClick} disabled focusable>
         Disabled focusable anchor
+      </Tabbable>
+
+      <Tabbable as={CustomComponent} disabled focusable>
+        Disabled focusable custom
       </Tabbable>
     </div>
   );

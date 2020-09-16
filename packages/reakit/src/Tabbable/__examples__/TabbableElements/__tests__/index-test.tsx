@@ -13,6 +13,8 @@ test("tab", () => {
   press.Tab();
   expect(screen.getByText("Default anchor")).toHaveFocus();
   press.Tab();
+  expect(screen.getByText("Default custom")).toHaveFocus();
+  press.Tab();
   expect(screen.getByText("Disabled focusable div")).toHaveFocus();
   press.Tab();
   expect(screen.getByText("Disabled focusable button")).toHaveFocus();
@@ -20,6 +22,8 @@ test("tab", () => {
   expect(screen.getByLabelText("Disabled focusable input")).toHaveFocus();
   press.Tab();
   expect(screen.getByText("Disabled focusable anchor")).toHaveFocus();
+  press.Tab();
+  expect(screen.getByText("Disabled focusable custom")).toHaveFocus();
 });
 
 test("click", () => {
@@ -29,14 +33,20 @@ test("click", () => {
   expect(window.alert).toHaveBeenCalledWith("Default button");
   click(screen.getByText("Default anchor"));
   expect(window.alert).toHaveBeenCalledWith("Default anchor");
+  click(screen.getByText("Default custom"));
+  expect(window.alert).toHaveBeenCalledWith("Default custom");
   click(screen.getByText("Disabled button"));
   expect(window.alert).not.toHaveBeenCalledWith("Disabled button");
   click(screen.getByText("Disabled anchor"));
   expect(window.alert).not.toHaveBeenCalledWith("Disabled anchor");
+  click(screen.getByText("Disabled custom"));
+  expect(window.alert).not.toHaveBeenCalledWith("Disabled custom");
   click(screen.getByText("Disabled focusable button"));
   expect(window.alert).not.toHaveBeenCalledWith("Disabled focusable button");
   click(screen.getByText("Disabled focusable anchor"));
   expect(window.alert).not.toHaveBeenCalledWith("Disabled focusable anchor");
+  click(screen.getByText("Disabled focusable custom"));
+  expect(window.alert).not.toHaveBeenCalledWith("Disabled focusable custom");
 });
 
 test("type on input", () => {
@@ -80,6 +90,11 @@ test("markup", () => {
         >
           Default anchor
         </a>
+        <div
+          tabindex="0"
+        >
+          Default custom
+        </div>
         <h2>
           Disabled
         </h2>
@@ -110,6 +125,12 @@ test("markup", () => {
         >
           Disabled anchor
         </a>
+        <div
+          aria-disabled="true"
+          style="pointer-events: none;"
+        >
+          Disabled custom
+        </div>
         <h2>
           Disabled focusable
         </h2>
@@ -138,6 +159,13 @@ test("markup", () => {
         >
           Disabled focusable anchor
         </a>
+        <div
+          aria-disabled="true"
+          style="pointer-events: none;"
+          tabindex="0"
+        >
+          Disabled focusable custom
+        </div>
       </div>
     </div>
   `);
