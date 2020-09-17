@@ -24,21 +24,6 @@ import { getCurrentId } from "./__utils/getCurrentId";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 import { COMPOSITE_KEYS } from "./__keys";
 
-const validCompositeRoles = [
-  "combobox",
-  "grid",
-  "tablist",
-  "listbox",
-  "menu",
-  "menubar",
-  "toolbar",
-  "radiogroup",
-  "tree",
-  "treegrid",
-] as const;
-
-type CompositeRoles = typeof validCompositeRoles[number];
-
 export type CompositeOptions = TabbableOptions &
   Pick<
     Partial<CompositeStateReturn>,
@@ -53,11 +38,24 @@ export type CompositeOptions = TabbableOptions &
   Pick<
     CompositeStateReturn,
     "items" | "setCurrentId" | "first" | "last" | "move"
-  > & { role?: CompositeRoles };
+  >;
 
 export type CompositeHTMLProps = TabbableHTMLProps;
 
 export type CompositeProps = CompositeOptions & CompositeHTMLProps;
+
+const validCompositeRoles = [
+  "combobox",
+  "grid",
+  "tablist",
+  "listbox",
+  "menu",
+  "menubar",
+  "toolbar",
+  "radiogroup",
+  "tree",
+  "treegrid",
+];
 
 const isIE11 = canUseDOM && "msCrypto" in window;
 
@@ -353,7 +351,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     );
 
     return {
-      role: options.role,
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
       onFocus,

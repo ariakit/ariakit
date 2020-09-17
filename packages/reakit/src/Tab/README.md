@@ -545,11 +545,6 @@ state will get focus.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
-- **`role`**
-  <code title="&#34;combobox&#34; | &#34;grid&#34; | &#34;tablist&#34; | &#34;listbox&#34; | &#34;menu&#34; | &#34;menubar&#34; | &#34;toolbar&#34; | &#34;radiogroup&#34; | &#34;tree&#34; | &#34;treegrid&#34; | undefined">&#34;combobox&#34; | &#34;grid&#34; | &#34;tablist&#34; | &#34;listbox&#34; | &#34;...</code>
-
-  
-
 <details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.

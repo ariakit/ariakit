@@ -48,7 +48,6 @@ function template(value: string) {
       const Test = () => {
         const composite = useCompositeState({ unstable_virtual: virtual });
         return (
-          // @ts-expect-error
           <Composite {...composite} role="button" aria-label="composite">
             <CompositeItem {...composite}>item1</CompositeItem>
             <CompositeItem {...composite}>item2</CompositeItem>
