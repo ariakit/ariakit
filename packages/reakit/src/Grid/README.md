@@ -113,7 +113,7 @@ which arrow keys can be used to move focus:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-It doesn't have any effect on two-dimensional composites.
+  It doesn't have any effect on two-dimensional composites.
 
 - **`currentId`**
   <code>string | null | undefined</code>
@@ -136,8 +136,7 @@ arrow keys.
   - If `currentId` is initially set to `null`, the composite element will
 be focused in between the last and first items.
 
-On two-dimensional composites:
-
+  On two-dimensional composites:
   - `true` loops from the last row/column item to the first item in the
 same row/column and vice-versa. If it's the last item in the last row, it
 moves to the first item in the first row and vice-versa.
@@ -211,7 +210,7 @@ which arrow keys can be used to move focus:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-It doesn't have any effect on two-dimensional composites.
+  It doesn't have any effect on two-dimensional composites.
 
 - **`currentId`**
   <code>string | null | undefined</code>
@@ -325,7 +324,7 @@ which arrow keys can be used to move focus:
   - `horizontal`: only left and right arrow keys work.
   - `vertical`: only up and down arrow keys work.
 
-It doesn't have any effect on two-dimensional composites.
+  It doesn't have any effect on two-dimensional composites.
 
 - **`unstable_moves`** <span title="Experimental">⚠️</span>
   <code>number</code>
