@@ -19,13 +19,12 @@ export const useSeparator = createHook<SeparatorOptions, SeparatorHTMLProps>({
   compose: useBox,
   keys: SEPARATOR_KEYS,
 
-  useOptions({ orientation = "horizontal", ...options }) {
-    return { orientation, ...options };
-  },
-
   useProps(options, htmlProps) {
+    const { as } = options;
+    const isHr = isString(as) && as === "hr";
+
     return {
-      role: "separator",
+      role: !isHr ? "separator" : undefined,
       "aria-orientation": options.orientation,
       ...htmlProps,
     };
@@ -37,3 +36,7 @@ export const Separator = createComponent({
   memo: true,
   useHook: useSeparator,
 });
+
+function isString(value: any): value is string {
+  return Object.prototype.toString.call(value) === "[object String]";
+}

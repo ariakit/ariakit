@@ -9,7 +9,6 @@ test("render", () => {
       <div>
         <hr
           aria-orientation="horizontal"
-          role="separator"
         />
       </div>
     </body>
@@ -23,7 +22,6 @@ test("render orientation", () => {
       <div>
         <hr
           aria-orientation="vertical"
-          role="separator"
         />
       </div>
     </body>
