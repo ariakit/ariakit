@@ -24,9 +24,15 @@ export default function SeparatorExample() {
     <div>
       <Separator />
       <br />
+      <Separator orientation="vertical" />
+      <br />
       <Separator as="div" className={hrStyle} />
       <br />
+      <Separator as="div" className={hrStyle} orientation="vertical" />
+      <br />
       <Separator as={ButtonComp} className={hrStyle} />
+      <br />
+      <Separator as={ButtonComp} className={hrStyle} orientation="vertical" />
     </div>
   );
 }
