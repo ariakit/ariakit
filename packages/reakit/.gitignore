@@ -3,6 +3,7 @@
 /Button
 /Checkbox
 /Clickable
+/Combobox
 /Composite
 /Dialog
 /Disclosure
@@ -16,6 +17,7 @@
 /Portal
 /Provider
 /Radio
+/Role
 /Rover
 /Separator
 /Tab

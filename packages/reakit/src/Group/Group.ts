@@ -1,17 +1,17 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { GROUP_KEYS } from "./__keys";
 
-export type GroupOptions = BoxOptions;
+export type GroupOptions = RoleOptions;
 
-export type GroupHTMLProps = BoxHTMLProps;
+export type GroupHTMLProps = RoleHTMLProps;
 
 export type GroupProps = GroupOptions & GroupHTMLProps;
 
 export const useGroup = createHook<GroupOptions, GroupHTMLProps>({
   name: "Group",
-  compose: useBox,
+  compose: useRole,
   keys: GROUP_KEYS,
 
   useProps(_, htmlProps) {

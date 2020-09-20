@@ -1,11 +1,11 @@
 import { css, cx } from "emotion";
 import { ButtonHTMLProps, ButtonOptions } from "reakit/Button/Button";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
 import { useDarken } from "reakit-system-palette/utils/darken";
 import { useContrast } from "reakit-system-palette/utils/contrast";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapButtonOptions = BootstrapBoxOptions & ButtonOptions;
+export type BootstrapButtonOptions = BootstrapRoleOptions & ButtonOptions;
 
 export function useButtonOptions({
   unstable_system: { fill = "opaque", palette = "primary", ...system } = {},
@@ -20,7 +20,7 @@ export function useButtonProps(
 ): ButtonHTMLProps {
   const {
     style: { color, backgroundColor, borderColor = "transparent" },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const hoverBackgroundColor = useDarken(
     backgroundColor || color,

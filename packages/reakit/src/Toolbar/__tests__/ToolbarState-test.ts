@@ -22,11 +22,12 @@ test("initial state", () => {
       "loop": false,
       "orientation": "horizontal",
       "rtl": false,
-      "unstable_angular": false,
+      "shift": false,
       "unstable_hasActiveWidget": false,
       "unstable_idCountRef": Object {
         "current": 0,
       },
+      "unstable_includesBaseElement": false,
       "unstable_moves": 0,
       "unstable_virtual": false,
       "wrap": false,

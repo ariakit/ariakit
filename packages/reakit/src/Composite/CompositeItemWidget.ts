@@ -5,19 +5,19 @@ import { isTextField } from "reakit-utils/isTextField";
 import { getDocument } from "reakit-utils/getDocument";
 import { isSelfTarget } from "reakit-utils/isSelfTarget";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import { useBox, BoxOptions, BoxHTMLProps } from "../Box/Box";
+import { useRole, RoleOptions, RoleHTMLProps } from "../Role/Role";
 import { CompositeStateReturn } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { COMPOSITE_ITEM_WIDGET_KEYS } from "./__keys";
 
-export type unstable_CompositeItemWidgetOptions = BoxOptions &
+export type unstable_CompositeItemWidgetOptions = RoleOptions &
   Pick<Partial<CompositeStateReturn>, "wrap"> &
   Pick<
     CompositeStateReturn,
     "unstable_hasActiveWidget" | "unstable_setHasActiveWidget" | "currentId"
   >;
 
-export type unstable_CompositeItemWidgetHTMLProps = BoxHTMLProps;
+export type unstable_CompositeItemWidgetHTMLProps = RoleHTMLProps;
 
 export type unstable_CompositeItemWidgetProps = unstable_CompositeItemWidgetOptions &
   unstable_CompositeItemWidgetHTMLProps;
@@ -37,7 +37,7 @@ export const unstable_useCompositeItemWidget = createHook<
   unstable_CompositeItemWidgetHTMLProps
 >({
   name: "CompositeItemWidget",
-  compose: useBox,
+  compose: useRole,
   keys: COMPOSITE_ITEM_WIDGET_KEYS,
 
   useProps(

@@ -255,7 +255,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 ## Composition
 
 - `Disclosure` uses [Button](/docs/button/), and is used by [DialogDisclosure](/docs/dialog/).
-- `DisclosureContent` uses [Box](/docs/box/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
+- `DisclosureContent` uses [Role](/docs/role/), and is used by [Dialog](/docs/dialog/), [DialogBackdrop](/docs/dialog/), [TabPanel](/docs/tab/), [Tooltip](/docs/tooltip/) and all their derivatives.
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

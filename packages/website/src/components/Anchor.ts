@@ -1,17 +1,17 @@
 import * as React from "react";
 import { css, cx } from "emotion";
-import { useBox, BoxHTMLProps, BoxOptions } from "reakit";
+import { useRole, RoleHTMLProps, RoleOptions } from "reakit";
 import { usePalette } from "reakit-system-palette/utils";
 import { createHook, createComponent, useCreateElement } from "reakit-system";
 import { Link } from "gatsby";
 
-export type AnchorOptions = BoxOptions;
-export type AnchorHTMLProps = BoxHTMLProps & React.AnchorHTMLAttributes<any>;
+export type AnchorOptions = RoleOptions;
+export type AnchorHTMLProps = RoleHTMLProps & React.AnchorHTMLAttributes<any>;
 export type AnchorProps = AnchorOptions & AnchorHTMLProps;
 
 export const useAnchor = createHook<AnchorOptions, AnchorHTMLProps>({
   name: "Anchor",
-  compose: useBox,
+  compose: useRole,
 
   useProps(_, htmlProps) {
     const color = usePalette("link");

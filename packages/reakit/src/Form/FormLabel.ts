@@ -2,7 +2,7 @@ import * as React from "react";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";
 import { getLabelId } from "./__utils/getLabelId";
@@ -12,7 +12,7 @@ import { FORM_LABEL_KEYS } from "./__keys";
 export type unstable_FormLabelOptions<
   V,
   P extends DeepPath<V, P>
-> = BoxOptions &
+> = RoleOptions &
   Pick<unstable_FormStateReturn<V>, "baseId" | "values"> & {
     /**
      * FormInput's name as in form values.
@@ -24,7 +24,7 @@ export type unstable_FormLabelOptions<
     label?: any;
   };
 
-export type unstable_FormLabelHTMLProps = BoxHTMLProps &
+export type unstable_FormLabelHTMLProps = RoleHTMLProps &
   React.LabelHTMLAttributes<any>;
 
 export type unstable_FormLabelProps<
@@ -37,7 +37,7 @@ export const unstable_useFormLabel = createHook<
   unstable_FormLabelHTMLProps
 >({
   name: "FormLabel",
-  compose: useBox,
+  compose: useRole,
   keys: FORM_LABEL_KEYS,
 
   useProps(options, htmlProps) {

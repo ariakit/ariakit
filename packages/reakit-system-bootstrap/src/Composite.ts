@@ -3,10 +3,10 @@ import {
   CompositeItemHTMLProps,
   CompositeItemOptions,
 } from "reakit/Composite/CompositeItem";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
-import { BootstrapBoxOptions } from "./Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapCompositeItemOptions = BootstrapBoxOptions &
+export type BootstrapCompositeItemOptions = BootstrapRoleOptions &
   CompositeItemOptions;
 
 export function useCompositeItemOptions({
@@ -22,7 +22,7 @@ export function useCompositeItemProps(
 ): CompositeItemHTMLProps {
   const {
     style: { color, backgroundColor },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const compositeItem = css`
     align-items: center;

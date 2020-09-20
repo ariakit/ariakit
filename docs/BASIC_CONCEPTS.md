@@ -91,11 +91,11 @@ Learn more in [Managing state](/docs/managing-state/).
 
 ## Props hooks
 
-Finally, as the **lowest level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [DisclosureContent](/docs/disclosure/), which in turn uses [Box](/docs/box/).
+Finally, as the **lowest level API**, Reakit exposes props hooks. These hooks hold most of the logic behind components and are heavily used within Reakit's source code as a means to compose behaviors without the hassle of polluting the tree with multiple components. For example, [Dialog](/docs/dialog/) uses [DisclosureContent](/docs/disclosure/), which in turn uses [Role](/docs/role/).
 
 ```jsx
 import {
-  Box,
+  Role,
   useDisclosureState,
   useDisclosureContent,
   useDisclosure,
@@ -107,10 +107,10 @@ function Example() {
   const disclosureProps = useDisclosure(state);
   return (
     <>
-      <Box as="button" {...disclosureProps}>
+      <Role as="button" {...disclosureProps}>
         Disclosure
-      </Box>
-      <Box {...contentProps}>Content</Box>
+      </Role>
+      <Role {...contentProps}>Content</Role>
     </>
   );
 }

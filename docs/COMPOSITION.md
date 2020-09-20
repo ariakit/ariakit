@@ -6,7 +6,7 @@ redirect_from:
 
 # Composition
 
-Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Box](/docs/box/), [Tabbable](/docs/tabbable/) and [Composite](/docs/composite/).
+Reakit has been built with composition in mind. In fact, its own components are composed by a few other abstract ones, like [Role](/docs/role/), [Tabbable](/docs/tabbable/) and [Composite](/docs/composite/).
 
 The API isn't different. It's designed so you can create new things based on any existing module.
 
@@ -61,16 +61,16 @@ Props hooks receive two arguments: `options` and `htmlProps`; and return new `ht
 Props will be merged automatically. If there's any conflict between props, the topmost hook (in the case below, `useButton`) will take precedence.
 
 ```jsx
-import { Box, useCheckboxState, useCheckbox, useButton } from "reakit";
+import { Role, useCheckboxState, useCheckbox, useButton } from "reakit";
 
 function Example() {
   const options = useCheckboxState();
   // Composing Checkbox and Button together
   const htmlProps = useCheckbox(options, useButton());
   return (
-    <Box as="button" {...htmlProps}>
+    <Role as="button" {...htmlProps}>
       {options.state ? "😄 Happy" : "😞 Sad"}
-    </Box>
+    </Role>
   );
 }
 ```

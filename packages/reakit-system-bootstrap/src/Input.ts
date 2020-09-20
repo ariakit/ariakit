@@ -1,21 +1,21 @@
 import { css, cx } from "emotion";
 import { InputHTMLProps, InputOptions } from "reakit/Input/Input";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { usePalette } from "reakit-system-palette/utils/palette";
 import { useLighten } from "reakit-system-palette/utils/lighten";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapInputOptions = BootstrapBoxOptions & InputOptions;
+export type BootstrapInputOptions = BootstrapRoleOptions & InputOptions;
 
 export function useInputProps(
-  { unstable_system }: BootstrapBoxOptions,
+  { unstable_system }: BootstrapRoleOptions,
   htmlProps: InputHTMLProps = {}
 ): InputHTMLProps {
   const {
     style: { backgroundColor, borderColor: originalBorderColor },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";
   const color = useLighten(foreground, 0.3);

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render, press, axe } from "reakit-test-utils";
-import AngularComposite from "..";
+import CompositeShift from "..";
 
-test("navigate through angular composite", () => {
-  const { getByText: text } = render(<AngularComposite />);
+test("keyboard navigation", () => {
+  const { getByText: text } = render(<CompositeShift />);
   press.Tab();
   expect(text("item-1-1")).toHaveFocus();
   press.ArrowRight();
@@ -22,11 +22,19 @@ test("navigate through angular composite", () => {
   expect(text("item-3-4")).toHaveFocus();
   press.ArrowDown();
   expect(text("item-4-3")).toHaveFocus();
+  press.PageUp();
+  expect(text("item-1-3")).toHaveFocus();
+  press.ArrowDown();
+  press.ArrowDown();
+  press.End();
+  expect(text("item-3-4")).toHaveFocus();
+  press.PageDown();
+  expect(text("item-3-4")).toHaveFocus();
+  press.PageUp();
+  expect(text("item-3-4")).toHaveFocus();
 });
 
-test("renders with no a11y violations", async () => {
-  const { baseElement } = render(<AngularComposite />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+test("a11y", async () => {
+  const { baseElement } = render(<CompositeShift />);
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

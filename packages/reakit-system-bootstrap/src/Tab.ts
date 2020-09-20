@@ -3,9 +3,9 @@ import { TabHTMLProps, TabOptions } from "reakit/Tab/Tab";
 import { TabListHTMLProps, TabListOptions } from "reakit/Tab/TabList";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { usePalette } from "reakit-system-palette/utils/palette";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapTabOptions = BootstrapBoxOptions & TabOptions;
+export type BootstrapTabOptions = BootstrapRoleOptions & TabOptions;
 
 export function useTabProps(
   _: BootstrapTabOptions,
@@ -39,7 +39,7 @@ export function useTabProps(
   return { ...htmlProps, className: cx(tab, htmlProps.className) };
 }
 
-export type BootstrapTabListOptions = BootstrapBoxOptions & TabListOptions;
+export type BootstrapTabListOptions = BootstrapRoleOptions & TabListOptions;
 
 export function useTabListProps(
   _: BootstrapTabListOptions,

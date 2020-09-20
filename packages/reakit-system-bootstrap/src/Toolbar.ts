@@ -1,8 +1,8 @@
 import { css, cx } from "emotion";
 import { ToolbarHTMLProps, ToolbarOptions } from "reakit/Toolbar/Toolbar";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapToolbarOptions = BootstrapBoxOptions & ToolbarOptions;
+export type BootstrapToolbarOptions = BootstrapRoleOptions & ToolbarOptions;
 
 export function useToolbarProps(
   _: BootstrapToolbarOptions,

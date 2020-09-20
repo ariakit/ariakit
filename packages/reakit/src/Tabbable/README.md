@@ -47,7 +47,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Tabbable` uses [Box](/docs/box/), and is used by [Clickable](/docs/clickable/), [Composite](/docs/composite/), and [FormInput](/docs/form/).
+- `Tabbable` uses [Role](/docs/role/), and is used by [Clickable](/docs/clickable/), [Composite](/docs/composite/), and [FormInput](/docs/form/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

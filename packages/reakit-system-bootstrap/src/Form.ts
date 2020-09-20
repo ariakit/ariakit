@@ -15,13 +15,13 @@ import {
 } from "reakit/Form/FormGroup";
 import { unstable_FormRemoveButtonOptions } from "reakit/Form/FormRemoveButton";
 import { unstable_getIn } from "reakit/Form/utils/getIn";
-import { useBoxProps as usePaletteBoxProps } from "reakit-system-palette/Box";
+import { useRoleProps as usePaletteRoleProps } from "reakit-system-palette/Role";
 import { useContrast } from "reakit-system-palette/utils/contrast";
 import { useFade } from "reakit-system-palette/utils/fade";
 import { useLighten } from "reakit-system-palette/utils/lighten";
-import { BootstrapBoxOptions } from "./Box";
+import { BootstrapRoleOptions } from "./Role";
 
-export type BootstrapFormOptions = BootstrapBoxOptions & unstable_FormOptions;
+export type BootstrapFormOptions = BootstrapRoleOptions & unstable_FormOptions;
 
 export function useFormProps(
   _: BootstrapFormOptions,
@@ -36,7 +36,7 @@ export function useFormProps(
   return { ...htmlProps, className: cx(form, htmlProps.className) };
 }
 
-export type BootstrapFormInputOptions = BootstrapBoxOptions &
+export type BootstrapFormInputOptions = BootstrapRoleOptions &
   unstable_FormInputOptions<any, any>;
 
 export function useFormInputOptions({
@@ -57,7 +57,7 @@ export function useFormInputOptions({
   };
 }
 
-export type BootstrapFormMessageOptions = BootstrapBoxOptions &
+export type BootstrapFormMessageOptions = BootstrapRoleOptions &
   unstable_FormMessageOptions<any, any>;
 
 export function useFormMessageOptions({
@@ -86,7 +86,7 @@ export function useFormMessageProps(
   return { ...htmlProps, className: cx(formMessage, htmlProps.className) };
 }
 
-export type BootstrapFormLabelOptions = BootstrapBoxOptions &
+export type BootstrapFormLabelOptions = BootstrapRoleOptions &
   unstable_FormLabelOptions<any, any>;
 
 export function useFormLabelProps(
@@ -107,7 +107,7 @@ export function useFormLabelProps(
   return { ...htmlProps, className: cx(formLabel, htmlProps.className) };
 }
 
-export type BootstrapFormGroupOptions = BootstrapBoxOptions &
+export type BootstrapFormGroupOptions = BootstrapRoleOptions &
   unstable_FormGroupOptions<any, any>;
 
 export function useFormGroupOptions({
@@ -134,7 +134,7 @@ export function useFormGroupProps(
 ): unstable_FormGroupHTMLProps {
   const {
     style: { backgroundColor, borderColor: originalBorderColor },
-  } = usePaletteBoxProps({ unstable_system });
+  } = usePaletteRoleProps({ unstable_system });
 
   const foreground = useContrast(backgroundColor) || "black";
   const color = useLighten(foreground, 0.3);
@@ -154,7 +154,7 @@ export function useFormGroupProps(
   return { ...htmlProps, className: cx(formGroup, htmlProps.className) };
 }
 
-export type BootstrapFormRemoveButtonOptions = BootstrapBoxOptions &
+export type BootstrapFormRemoveButtonOptions = BootstrapRoleOptions &
   unstable_FormRemoveButtonOptions<any, any>;
 
 export function useFormRemoveButtonOptions({

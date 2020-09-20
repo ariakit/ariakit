@@ -36,7 +36,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Separator` uses [Box](/docs/box/), and is used by [MenuSeparator](/docs/menu/) and [ToolbarSeparator](/docs/toolbar/).
+- `Separator` uses [Role](/docs/role/), and is used by [MenuSeparator](/docs/menu/) and [ToolbarSeparator](/docs/toolbar/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 
