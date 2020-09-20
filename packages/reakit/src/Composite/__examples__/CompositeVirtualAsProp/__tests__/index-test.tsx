@@ -3,7 +3,6 @@ import { render, press, screen, axe } from "reakit-test-utils";
 import CompositeVirtualAsProp from "..";
 
 test("navigate through composite items", () => {
-  jest.spyOn(window, "alert").mockImplementation();
   render(<CompositeVirtualAsProp />);
   press.Tab();
   press.ArrowDown();

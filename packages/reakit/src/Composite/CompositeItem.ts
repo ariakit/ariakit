@@ -249,7 +249,6 @@ export const useCompositeItem = createHook<
       () =>
         createOnKeyDown({
           onKeyDown: onCharacterKeyDown,
-          // stopPropagation: false,
           // We don't want to listen to focusable elements inside the composite
           // item, such as a CompositeItemWidget.
           shouldKeyDown: isSelfTarget,
