@@ -15,12 +15,21 @@ function mergeEvent<
   };
 }
 
+function getLabel(element: Element) {
+  return element.getAttribute("aria-label") || element.textContent;
+}
+
 function onEvent(setEvents: React.Dispatch<React.SetStateAction<string[]>>) {
-  return (event: React.SyntheticEvent) => {
+  return (event: React.SyntheticEvent | React.KeyboardEvent) => {
     const { type } = event;
     const target = event.target as HTMLElement;
-    const label = target.getAttribute("aria-label") || target.textContent;
-    setEvents((prevEvents) => [...prevEvents, `${type} ${label}`]);
+    const label =
+      target !== event.currentTarget
+        ? `${getLabel(event.currentTarget)} - ${getLabel(target)}`
+        : getLabel(target);
+
+    const key = "key" in event ? ` (${event.key})` : "";
+    setEvents((prevEvents) => [...prevEvents, `${type} ${label}${key}`]);
   };
 }
 
@@ -32,8 +41,8 @@ const CustomContainer = React.forwardRef<HTMLDivElement, Props<HTMLDivElement>>(
       {...props}
       onKeyDown={mergeEvent(onEvent(setEvents), props.onKeyDown)}
       onKeyUp={mergeEvent(onEvent(setEvents), props.onKeyUp)}
-      // onFocus={mergeEvent(onEvent(setEvents), props.onFocus)}
-      // onBlur={mergeEvent(onEvent(setEvents), props.onBlur)}
+      onFocus={mergeEvent(onEvent(setEvents), props.onFocus)}
+      onBlur={mergeEvent(onEvent(setEvents), props.onBlur)}
     />
   )
 );
@@ -45,11 +54,14 @@ const CustomItem = React.forwardRef<
   <button
     ref={ref}
     {...props}
-    // onBlur={mergeEvent(onEvent(setEvents), props.onBlur)}
+    onKeyDown={mergeEvent(onEvent(setEvents), props.onKeyDown)}
+    onKeyUp={mergeEvent(onEvent(setEvents), props.onKeyUp)}
+    onFocus={mergeEvent(onEvent(setEvents), props.onFocus)}
+    onBlur={mergeEvent(onEvent(setEvents), props.onBlur)}
   />
 ));
 
-export default function CompositeAsProp() {
+export default function CompositeVirtualAsProp() {
   const composite = useCompositeState({ unstable_virtual: true });
   const [events, setEvents] = React.useState<string[]>([]);
   return (
@@ -86,7 +98,11 @@ export default function CompositeAsProp() {
           Item 3
         </CompositeItem>
       </Composite>
-      <div aria-label="events">{events}</div>
+      <ul aria-label="events">
+        {events.map((event, i) => (
+          <li key={i}>{event}</li>
+        ))}
+      </ul>
     </>
   );
 }

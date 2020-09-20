@@ -132,8 +132,8 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     options,
     {
       ref: htmlRef,
-      onFocus: htmlOnFocus,
-      onBlur: htmlOnBlur,
+      onFocusCapture: htmlOnFocusCapture,
+      onBlurCapture: htmlOnBlurCapture,
       onKeyDown: htmlOnKeyDown,
       onKeyDownCapture: htmlOnKeyDownCapture,
       onKeyUpCapture: htmlOnKeyUpCapture,
@@ -144,8 +144,8 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     const currentItem = findEnabledItemById(options.items, options.currentId);
     const previousElementRef = React.useRef<HTMLElement | null>(null);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
-    const onFocusRef = useLiveRef(htmlOnFocus);
-    const onBlurRef = useLiveRef(htmlOnBlur);
+    const onFocusCaptureRef = useLiveRef(htmlOnFocusCapture);
+    const onBlurCaptureRef = useLiveRef(htmlOnBlurCapture);
     // IE 11 doesn't support event.relatedTarget, so we use the active element
     // ref instead.
     const activeElementRef = isIE11 ? useActiveElementRef(ref) : undefined;
@@ -179,8 +179,10 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       htmlOnKeyUpCapture
     );
 
-    const onFocus = React.useCallback(
+    const onFocusCapture = React.useCallback(
       (event: React.FocusEvent) => {
+        onFocusCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (options.unstable_virtual) {
           const currentElement = currentItem?.ref.current || null;
           // IE11 doesn't support event.relatedTarget, so we use the active
@@ -191,29 +193,26 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             options.items,
             previousActiveElement
           );
-          if (isSelfTarget(event) && !previousActiveElementWasItem) {
-            // This means that the composite element has been focused while the
-            // composite item has not. For example, by clicking on the
-            // composite element without touching any item, or by tabbing into
-            // the composite element. In this case, we want to trigger focus on
-            // the item, just like it would happen with roving tabindex.
-            // When it receives focus, the composite item will put focus back
-            // on the composite element, in which case hasItemWithFocus will be
-            // true.
-            onFocusRef.current?.(event);
-            currentElement?.focus();
-            return;
-          }
-          if (previousActiveElementWasItem) {
-            // Composite has been focused as a result of an item receiving
-            // focus. The composite item will move focus back to the composite
-            // container. In this case, we don't want to propagate this
-            // additional event nor call the onFocus handler passed to
-            // <Composite onFocus={...} /> (htmlOnFocus). Unless users add DOM
-            // event handlers to the composite element directly, this will be
-            // like this event has never existed.
-            event.stopPropagation();
-            return;
+          if (isSelfTarget(event)) {
+            if (previousActiveElementWasItem) {
+              // Composite has been focused as a result of an item receiving
+              // focus. The composite item will move focus back to the composite
+              // container. In this case, we don't want to propagate this
+              // additional event nor call the onFocus handler passed to
+              // <Composite onFocus={...} />.
+              event.stopPropagation();
+            } else {
+              // This means that the composite element has been focused while the
+              // composite item has not. For example, by clicking on the
+              // composite element without touching any item, or by tabbing into
+              // the composite element. In this case, we want to trigger focus on
+              // the item, just like it would happen with roving tabindex.
+              // When it receives focus, the composite item will put focus back
+              // on the composite element, in which case hasItemWithFocus will be
+              // true.
+              onFocusCaptureRef.current?.(event);
+              currentElement?.focus();
+            }
           }
         } else if (isSelfTarget(event)) {
           // When the roving tabindex composite gets intentionally focused (for
@@ -222,7 +221,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
           // itself is focused).
           options.setCurrentId?.(null);
         }
-        onFocusRef.current?.(event);
       },
       [
         options.unstable_virtual,
@@ -232,8 +230,10 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       ]
     );
 
-    const onBlur = React.useCallback(
+    const onBlurCapture = React.useCallback(
       (event: React.FocusEvent) => {
+        onBlurCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         // When virtual is set to true, we move focus from the composite
         // container (this component) to the composite item that is being
         // selected. Then we move focus back to the composite container. This
@@ -300,14 +300,14 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             fireBlurEvent(currentElement, event);
           }
         }
-        onBlurRef.current?.(event);
       },
       [options.unstable_virtual, options.items, currentItem]
     );
 
-    const onMove = React.useMemo(
+    const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
+          onKeyDown: onKeyDownRef,
           stopPropagation: true,
           shouldKeyDown: (event) =>
             isSelfTarget(event) && options.currentId === null,
@@ -350,20 +350,11 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       ]
     );
 
-    const onKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLElement>) => {
-        onKeyDownRef.current?.(event);
-        if (event.defaultPrevented) return;
-        onMove(event);
-      },
-      [onMove]
-    );
-
     return {
       ref: useForkRef(ref, htmlRef),
       id: options.baseId,
-      onFocus,
-      onBlur,
+      onFocusCapture,
+      onBlurCapture,
       onKeyDownCapture,
       onKeyDown,
       onKeyUpCapture,

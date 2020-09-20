@@ -8,17 +8,46 @@ test("navigate through composite items", () => {
   press.Tab();
   press.ArrowDown();
   expect(screen.getByLabelText("events")).toMatchInlineSnapshot(`
-    <div
+    <ul
       aria-label="events"
     >
-      focus Item 1
-      keyup Item 1
-      keydown Item 1
-      blur Item 1
-      blur Item 1
-      focus Item 2
-      keyup Item 2
-    </div>
+      <li>
+        focus Item 1
+      </li>
+      <li>
+        focus composite - Item 1
+      </li>
+      <li>
+        focus composite
+      </li>
+      <li>
+        keyup composite (Tab)
+      </li>
+      <li>
+        keydown Item 1 (ArrowDown)
+      </li>
+      <li>
+        keydown composite - Item 1 (ArrowDown)
+      </li>
+      <li>
+        blur Item 1
+      </li>
+      <li>
+        blur composite - Item 1
+      </li>
+      <li>
+        focus Item 2
+      </li>
+      <li>
+        focus composite - Item 2
+      </li>
+      <li>
+        keyup Item 2 (ArrowDown)
+      </li>
+      <li>
+        keyup composite - Item 2 (ArrowDown)
+      </li>
+    </ul>
   `);
 });
 

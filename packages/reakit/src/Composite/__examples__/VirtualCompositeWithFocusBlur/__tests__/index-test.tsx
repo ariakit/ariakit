@@ -77,13 +77,13 @@ test("focus/blur on virtual composite with keyboard", () => {
     >
       <ul>
         <li>
-          focus container
-        </li>
-        <li>
           focus item-0
         </li>
         <li>
           focus container - item-0
+        </li>
+        <li>
+          focus container
         </li>
         <li>
           blur item-0
