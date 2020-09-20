@@ -544,9 +544,9 @@ function template(value: string) {
       press.Tab();
       if (virtual) {
         expect(stack.splice(0)).toEqual([
-          "focus composite composite",
           "focus item3 item3",
           "focus composite item3",
+          "focus composite composite",
         ]);
       } else {
         expect(stack.splice(0)).toEqual([
@@ -2691,8 +2691,8 @@ test("block intermediate focus/blur events when composite container is not the p
   const { getByLabelText: $, baseElement } = render(<Test />);
   press.Tab();
   expect(stack.splice(0)).toEqual([
-    "focus composite composite",
     "focus item1 item1",
+    "focus composite composite",
   ]);
   press.ArrowDown();
   expect(stack.splice(0)).toEqual(["blur item1 item1", "focus item2 item2"]);
@@ -2705,7 +2705,7 @@ test("block intermediate focus/blur events when composite container is not the p
   ]);
   press.Tab();
   expect(stack.splice(0)).toEqual([
-    "focus composite composite",
     "focus item3 item3",
+    "focus composite composite",
   ]);
 });

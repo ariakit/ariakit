@@ -126,7 +126,7 @@ export const useCompositeItem = createHook<
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
       onFocus: htmlOnFocus,
-      onBlur: htmlOnBlur,
+      onBlurCapture: htmlOnBlurCapture,
       onKeyDown: htmlOnKeyDown,
       onClick: htmlOnClick,
       ...htmlProps
@@ -140,7 +140,7 @@ export const useCompositeItem = createHook<
     const hasFocusedComposite = React.useRef(false);
     const item = useItem(options);
     const onFocusRef = useLiveRef(htmlOnFocus);
-    const onBlurRef = useLiveRef(htmlOnBlur);
+    const onBlurCaptureRef = useLiveRef(htmlOnBlurCapture);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const onClickRef = useLiveRef(htmlOnClick);
     const shouldTabIndex =
@@ -209,8 +209,10 @@ export const useCompositeItem = createHook<
       ]
     );
 
-    const onBlur = React.useCallback(
+    const onBlurCapture = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
+        onBlurCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (options.unstable_virtual && hasFocusedComposite.current) {
           // When hasFocusedComposite is true, composite has been focused right
           // after focusing this item. This is an intermediate blur event, so
@@ -218,9 +220,7 @@ export const useCompositeItem = createHook<
           hasFocusedComposite.current = false;
           event.preventDefault();
           event.stopPropagation();
-          return;
         }
-        onBlurRef.current?.(event);
       },
       [options.unstable_virtual]
     );
@@ -249,7 +249,6 @@ export const useCompositeItem = createHook<
       () =>
         createOnKeyDown({
           onKeyDown: onCharacterKeyDown,
-          stopPropagation: true,
           // We don't want to listen to focusable elements inside the composite
           // item, such as a CompositeItemWidget.
           shouldKeyDown: isSelfTarget,
@@ -342,7 +341,7 @@ export const useCompositeItem = createHook<
       "aria-selected":
         options.unstable_virtual && isCurrentItem ? true : undefined,
       onFocus,
-      onBlur,
+      onBlurCapture,
       onKeyDown,
       onClick,
       ...htmlProps,
