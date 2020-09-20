@@ -202,14 +202,14 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
               // <Composite onFocus={...} />.
               event.stopPropagation();
             } else {
-              // This means that the composite element has been focused while the
-              // composite item has not. For example, by clicking on the
-              // composite element without touching any item, or by tabbing into
-              // the composite element. In this case, we want to trigger focus on
-              // the item, just like it would happen with roving tabindex.
-              // When it receives focus, the composite item will put focus back
-              // on the composite element, in which case hasItemWithFocus will be
-              // true.
+              // This means that the composite element has been focused while
+              // the composite item has not. For example, by clicking on the
+              // composite element without touching any item, or by tabbing
+              // into the composite element. In this case, we want to trigger
+              // focus on the item, just like it would happen with roving
+              // tabindex. When it receives focus, the composite item will put
+              // focus back on the composite element, in which case
+              // hasItemWithFocus will be true.
               onFocusCaptureRef.current?.(event);
               currentElement?.focus();
             }
@@ -288,16 +288,16 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             // We want to ignore intermediate blur events, so we stop its
             // propagation and return early so onFocus will not be called.
             event.stopPropagation();
-            return;
-          }
-          const targetIsItem = isItem(options.items, event.target);
-          if (!targetIsItem && currentElement) {
-            // If target is not a composite item, it may be the composite
-            // element itself (isSelfTarget) or a tabbable element inside the
-            // composite widget. This may be triggered by clicking outside the
-            // composite widget or by tabbing out of it. In either cases we
-            // want to fire a blur event on the current item.
-            fireBlurEvent(currentElement, event);
+          } else {
+            const targetIsItem = isItem(options.items, event.target);
+            if (!targetIsItem && currentElement) {
+              // If target is not a composite item, it may be the composite
+              // element itself (isSelfTarget) or a tabbable element inside the
+              // composite widget. This may be triggered by clicking outside
+              // the composite widget or by tabbing out of it. In either cases
+              // we want to fire a blur event on the current item.
+              fireBlurEvent(currentElement, event);
+            }
           }
         }
       },
