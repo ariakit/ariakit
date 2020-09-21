@@ -84,7 +84,10 @@ function useKeyboardEventProxy(
           // that it wasn't called on this component in the first place.
           if (event.currentTarget.contains(currentElement)) {
             event.stopPropagation();
-            event.preventDefault();
+            // TODO: Test
+            if (event.key.length !== 1) {
+              event.preventDefault();
+            }
           }
         }
       }

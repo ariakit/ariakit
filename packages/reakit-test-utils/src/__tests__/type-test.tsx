@@ -237,15 +237,21 @@ test("type on focusable non-typeable element", () => {
   const Test = () => {
     const ref = React.useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
-    return <button ref={ref} aria-label="input" />;
+    return <button ref={ref} aria-label="button" />;
   };
   const { getByLabelText } = render(<Test />);
-  const input = getByLabelText("input");
+  const button = getByLabelText("button");
 
-  type("a", input);
+  type("a", button);
 
   expect(console).toHaveWarned();
-  expect(stack).toEqual([]);
+  expect(stack).toMatchInlineSnapshot(`
+    Array [
+      "focus button",
+      "focusin button",
+      "keydown button",
+    ]
+  `);
 });
 
 test("selection", () => {

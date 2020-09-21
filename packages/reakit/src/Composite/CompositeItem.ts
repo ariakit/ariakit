@@ -227,70 +227,64 @@ export const useCompositeItem = createHook<
     const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
         if (!isSelfTarget(event)) return;
-        const { key } = event;
-        if (key.length === 1 && key !== " ") {
+        const isVertical = options.orientation !== "horizontal";
+        const isHorizontal = options.orientation !== "vertical";
+        const isGrid = !!item?.groupId;
+        const keyMap = {
+          ArrowUp: (isGrid || isVertical) && options.up,
+          ArrowRight: (isGrid || isHorizontal) && options.next,
+          ArrowDown: (isGrid || isVertical) && options.down,
+          ArrowLeft: (isGrid || isHorizontal) && options.previous,
+          Home: () => {
+            if (!isGrid || event.ctrlKey) {
+              options.first?.();
+            } else {
+              options.previous?.(true);
+            }
+          },
+          End: () => {
+            if (!isGrid || event.ctrlKey) {
+              options.last?.();
+            } else {
+              options.next?.(true);
+            }
+          },
+          PageUp: () => {
+            if (isGrid) {
+              options.up?.(true);
+            } else {
+              options.first?.();
+            }
+          },
+          PageDown: () => {
+            if (isGrid) {
+              options.down?.(true);
+            } else {
+              options.last?.();
+            }
+          },
+        };
+        const action = keyMap[event.key as keyof typeof keyMap];
+        if (action) {
+          event.preventDefault();
+          action();
+          return;
+        }
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (event.key.length === 1 && event.key !== " ") {
           const widget = getWidget(event.currentTarget);
           if (widget && isTextField(widget)) {
-            event.preventDefault();
             widget.focus();
-            // Using RAF here because otherwise the key will be added twice to
-            // the input when using roving tabindex
-            window.requestAnimationFrame(() => {
-              setTextFieldValue(widget, key);
-            });
+            setTextFieldValue(widget, "");
           }
-        } else if (key === "Delete" || key === "Backspace") {
+        } else if (event.key === "Delete" || event.key === "Backspace") {
           const widget = getWidget(event.currentTarget);
           if (widget && isTextField(widget)) {
             event.preventDefault();
             setTextFieldValue(widget, "");
           }
-        } else {
-          const isVertical = options.orientation !== "horizontal";
-          const isHorizontal = options.orientation !== "vertical";
-          const isGrid = !!item?.groupId;
-          const keyMap = {
-            ArrowUp: (isGrid || isVertical) && options.up,
-            ArrowRight: (isGrid || isHorizontal) && options.next,
-            ArrowDown: (isGrid || isVertical) && options.down,
-            ArrowLeft: (isGrid || isHorizontal) && options.previous,
-            Home: () => {
-              if (!isGrid || event.ctrlKey) {
-                options.first?.();
-              } else {
-                options.previous?.(true);
-              }
-            },
-            End: () => {
-              if (!isGrid || event.ctrlKey) {
-                options.last?.();
-              } else {
-                options.next?.(true);
-              }
-            },
-            PageUp: () => {
-              if (isGrid) {
-                options.up?.(true);
-              } else {
-                options.first?.();
-              }
-            },
-            PageDown: () => {
-              if (isGrid) {
-                options.down?.(true);
-              } else {
-                options.last?.();
-              }
-            },
-          };
-          const action = keyMap[key as keyof typeof keyMap];
-          if (action) {
-            event.preventDefault();
-            action();
-            return;
-          }
         }
-        onKeyDownRef.current?.(event);
       },
       [
         options.orientation,
