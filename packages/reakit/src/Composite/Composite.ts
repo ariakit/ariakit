@@ -4,7 +4,6 @@ import { createHook } from "reakit-system/createHook";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { warning, useWarning } from "reakit-warning";
-import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { getDocument } from "reakit-utils/getDocument";
 import { fireBlurEvent } from "reakit-utils/fireBlurEvent";
 import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
@@ -306,41 +305,41 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       [options.unstable_virtual, options.items, currentItem]
     );
 
-    const onKeyDown = React.useMemo(
-      () =>
-        createOnKeyDown({
-          onKeyDown: onKeyDownRef,
-          stopPropagation: true,
-          shouldKeyDown: (event) =>
-            isSelfTarget(event) && options.currentId === null,
-          keyMap: () => {
-            const isVertical = options.orientation !== "horizontal";
-            const isHorizontal = options.orientation !== "vertical";
-            const isGrid = !!options.groups?.length;
-            const up = () => {
-              if (isGrid) {
-                const item = findFirstEnabledItemInTheLastRow(options.items);
-                if (item?.id) {
-                  options.move?.(item.id);
-                }
-              } else {
-                options.last?.();
-              }
-            };
-            const first = options.first && (() => options.first());
-            const last = options.last && (() => options.last());
-            return {
-              ArrowUp: (isGrid || isVertical) && up,
-              ArrowRight: (isGrid || isHorizontal) && first,
-              ArrowDown: (isGrid || isVertical) && first,
-              ArrowLeft: (isGrid || isHorizontal) && last,
-              Home: first,
-              End: last,
-              PageUp: first,
-              PageDown: last,
-            };
-          },
-        }),
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLElement>) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.currentId !== null) return;
+        if (!isSelfTarget(event)) return;
+        const isVertical = options.orientation !== "horizontal";
+        const isHorizontal = options.orientation !== "vertical";
+        const isGrid = !!options.groups?.length;
+        const up = () => {
+          if (isGrid) {
+            const item = findFirstEnabledItemInTheLastRow(options.items);
+            if (item?.id) {
+              options.move?.(item.id);
+            }
+          } else {
+            options.last?.();
+          }
+        };
+        const keyMap = {
+          ArrowUp: (isGrid || isVertical) && up,
+          ArrowRight: (isGrid || isHorizontal) && options.first,
+          ArrowDown: (isGrid || isVertical) && options.first,
+          ArrowLeft: (isGrid || isHorizontal) && options.last,
+          Home: options.first,
+          End: options.last,
+          PageUp: options.first,
+          PageDown: options.last,
+        };
+        const action = keyMap[event.key as keyof typeof keyMap];
+        if (action) {
+          event.preventDefault();
+          action();
+        }
+      },
       [
         options.currentId,
         options.orientation,

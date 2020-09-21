@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
@@ -225,89 +224,75 @@ export const useCompositeItem = createHook<
       [options.unstable_virtual]
     );
 
-    const onCharacterKeyDown = React.useCallback(
+    const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
-        onKeyDownRef.current?.(event);
         if (!isSelfTarget(event)) return;
-        if (event.key.length === 1 && event.key !== " ") {
+        const { key } = event;
+        if (key.length === 1 && key !== " ") {
           const widget = getWidget(event.currentTarget);
           if (widget && isTextField(widget)) {
+            event.preventDefault();
             widget.focus();
-            const { key } = event;
             // Using RAF here because otherwise the key will be added twice to
             // the input when using roving tabindex
             window.requestAnimationFrame(() => {
               setTextFieldValue(widget, key);
             });
           }
-        }
-      },
-      []
-    );
-
-    const onKeyDown = React.useMemo(
-      () =>
-        createOnKeyDown({
-          onKeyDown: onCharacterKeyDown,
-          // We don't want to listen to focusable elements inside the composite
-          // item, such as a CompositeItemWidget.
-          shouldKeyDown: isSelfTarget,
-          keyMap: () => {
-            // `options.orientation` can also be undefined, which means that
-            // both `isVertical` and `isHorizontal` will be `true`.
-            const isVertical = options.orientation !== "horizontal";
-            const isHorizontal = options.orientation !== "vertical";
-            const isGrid = !!item?.groupId;
-            const Delete = (event: React.KeyboardEvent) => {
-              const widget = getWidget(event.currentTarget);
-              if (widget && isTextField(widget)) {
-                setTextFieldValue(widget, "");
+        } else if (key === "Delete" || key === "Backspace") {
+          const widget = getWidget(event.currentTarget);
+          if (widget && isTextField(widget)) {
+            event.preventDefault();
+            setTextFieldValue(widget, "");
+          }
+        } else {
+          const isVertical = options.orientation !== "horizontal";
+          const isHorizontal = options.orientation !== "vertical";
+          const isGrid = !!item?.groupId;
+          const keyMap = {
+            ArrowUp: (isGrid || isVertical) && options.up,
+            ArrowRight: (isGrid || isHorizontal) && options.next,
+            ArrowDown: (isGrid || isVertical) && options.down,
+            ArrowLeft: (isGrid || isHorizontal) && options.previous,
+            Home: () => {
+              if (!isGrid || event.ctrlKey) {
+                options.first?.();
+              } else {
+                options.previous?.(true);
               }
-            };
-            const up = options.up && (() => options.up());
-            const next = options.next && (() => options.next());
-            const down = options.down && (() => options.down());
-            const previous = options.previous && (() => options.previous());
-            return {
-              Delete,
-              Backspace: Delete,
-              ArrowUp: (isGrid || isVertical) && up,
-              ArrowRight: (isGrid || isHorizontal) && next,
-              ArrowDown: (isGrid || isVertical) && down,
-              ArrowLeft: (isGrid || isHorizontal) && previous,
-              Home: (event) => {
-                if (!isGrid || event.ctrlKey) {
-                  options.first?.();
-                } else {
-                  options.previous?.(true);
-                }
-              },
-              End: (event) => {
-                if (!isGrid || event.ctrlKey) {
-                  options.last?.();
-                } else {
-                  options.next?.(true);
-                }
-              },
-              PageUp: () => {
-                if (isGrid) {
-                  options.up?.(true);
-                } else {
-                  options.first?.();
-                }
-              },
-              PageDown: () => {
-                if (isGrid) {
-                  options.down?.(true);
-                } else {
-                  options.last?.();
-                }
-              },
-            };
-          },
-        }),
+            },
+            End: () => {
+              if (!isGrid || event.ctrlKey) {
+                options.last?.();
+              } else {
+                options.next?.(true);
+              }
+            },
+            PageUp: () => {
+              if (isGrid) {
+                options.up?.(true);
+              } else {
+                options.first?.();
+              }
+            },
+            PageDown: () => {
+              if (isGrid) {
+                options.down?.(true);
+              } else {
+                options.last?.();
+              }
+            },
+          };
+          const action = keyMap[key as keyof typeof keyMap];
+          if (action) {
+            event.preventDefault();
+            action();
+            return;
+          }
+        }
+        onKeyDownRef.current?.(event);
+      },
       [
-        onCharacterKeyDown,
         options.orientation,
         item,
         options.up,
