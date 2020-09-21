@@ -4,7 +4,6 @@ import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import { contains } from "reakit-utils/contains";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import {
   PopoverOptions,
