@@ -1,4 +1,4 @@
-import { isFocusable, isTextField } from "reakit-utils";
+import { isFocusable, isTextField, getActiveElement } from "reakit-utils";
 import { warning } from "reakit-warning";
 import { DirtiableElement, TextField } from "./__utils/types";
 import { fireEvent } from "./fireEvent";
@@ -18,26 +18,31 @@ export function type(
 
   if (!element || !isFocusable(element)) return;
 
-  if (!isTextField(element)) {
-    warning(
-      true,
-      "[reakit-test-utils/type]",
-      "You're trying to type on an element that is not able of being typed on a keyboard."
-    );
-    return;
-  }
-
   focus(element);
 
   // Set element dirty so blur() can dispatch a change event
   element.dirty = true;
 
-  const input = element as TextField;
-
   for (const char of text) {
-    let key = char;
+    const key = char === "\b" ? "Backspace" : char;
     let value = "";
     let inputType = "insertText";
+    let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
+
+    // After key down, focus may change and be on a text field, so we get the
+    // active element again.
+    element = (getActiveElement(element) || element) as HTMLElement;
+
+    if (!isTextField(element)) {
+      warning(
+        true,
+        "[reakit-test-utils/type]",
+        "You're trying to type on an element that is not able of being typed on a keyboard."
+      );
+      return;
+    }
+
+    const input = element as TextField;
     const [start, end] = getSelectionRange(input);
 
     if (char === "\b") {
@@ -49,7 +54,6 @@ export function type(
       const firstPart = input.value.slice(0, startAfterBackspace);
       const lastPart = input.value.slice(end, input.value.length);
       setSelectionRange(input, startAfterBackspace);
-      key = "Backspace";
       value = `${firstPart}${lastPart}`;
       inputType = "deleteContentBackward";
     } else {
@@ -61,8 +65,6 @@ export function type(
       setSelectionRange(input, start + 1);
       value = `${firstPart}${char}${lastPart}`;
     }
-
-    let defaultAllowed = fireEvent.keyDown(input, { key, ...options });
 
     if (defaultAllowed && !input.readOnly) {
       if (inputType === "insertText") {

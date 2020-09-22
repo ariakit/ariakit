@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, focus, press, click, type, wait } from "reakit-test-utils";
+import { render, focus, press, click, type } from "reakit-test-utils";
 import {
   useCompositeState,
   Composite,
@@ -713,7 +713,7 @@ function template(value: string) {
       });
     });
 
-    test("list item with tabbable content inside", async () => {
+    test("list item with tabbable content inside", () => {
       const Test = () => {
         const composite = useCompositeState({ unstable_virtual: virtual });
         return (
@@ -778,41 +778,41 @@ function template(value: string) {
       expect(input).not.toHaveFocus();
       press.Space();
       expect(input).toHaveFocus();
-      await wait(() => expect(input).toHaveValue(""));
+      expect(input).toHaveValue("");
       press.Escape();
       expect(input).not.toHaveFocus();
-      press("a");
+      type("a");
       expect(input).toHaveFocus();
-      await wait(() => expect(input).toHaveValue("a"));
+      expect(input).toHaveValue("a");
       type("bc d");
-      await wait(() => expect(input).toHaveValue("abc d"));
+      expect(input).toHaveValue("abc d");
       press.Escape();
       expect(input).not.toHaveFocus();
-      await wait(() => expect(input).toHaveValue(""));
-      press("b");
+      expect(input).toHaveValue("");
+      type("b");
       expect(input).toHaveFocus();
-      await wait(() => expect(input).toHaveValue("b"));
+      expect(input).toHaveValue("b");
       type("c");
-      await wait(() => expect(input).toHaveValue("bc"));
+      expect(input).toHaveValue("bc");
       press.Enter();
       expect(item2).toHaveFocus();
-      await wait(() => expect(input).toHaveValue("bc"));
-      press("b");
+      expect(input).toHaveValue("bc");
+      type("b");
       expect(input).toHaveFocus();
-      await wait(() => expect(input).toHaveValue("b"));
+      expect(input).toHaveValue("b");
       press.Escape();
       expect(item2).toHaveFocus();
-      await wait(() => expect(input).toHaveValue("bc"));
+      expect(input).toHaveValue("bc");
       press.Backspace();
       expect(item2).toHaveFocus();
-      await wait(() => expect(input).toHaveValue(""));
-      press("#");
+      expect(input).toHaveValue("");
+      type("#");
       expect(input).toHaveFocus();
-      await wait(() => expect(input).toHaveValue("#"));
+      expect(input).toHaveValue("#");
       press.Escape();
       press.Delete();
       expect(item2).toHaveFocus();
-      await wait(() => expect(input).toHaveValue(""));
+      expect(input).toHaveValue("");
     });
 
     test("move grid focus with arrow keys", () => {

@@ -1,6 +1,5 @@
 import { fireEvent as domFireEvent } from "@testing-library/dom";
 import { fireEvent } from "./fireEvent";
-import { act } from "./act";
 
 type DocumentWithLastHovered = Document & {
   lastHovered?: Element | null;
@@ -30,10 +29,8 @@ export function hover(element: Element, options?: MouseEventInit) {
     fireEvent.mouseOut(lastHovered, options);
 
     if (!isElementWithinLastHovered) {
-      act(() => {
-        // fireEvent.mouseLeave would be the same as fireEvent.mouseOut
-        domFireEvent.mouseLeave(lastHovered, options);
-      });
+      // fireEvent.mouseLeave would be the same as fireEvent.mouseOut
+      domFireEvent.mouseLeave(lastHovered, options);
     }
   }
 
@@ -43,10 +40,8 @@ export function hover(element: Element, options?: MouseEventInit) {
   fireEvent.pointerEnter(element, options);
   if (!disabled) {
     fireEvent.mouseOver(element, options);
-    act(() => {
-      // fireEvent.mouseEnter would be the same as fireEvent.mouseOver
-      domFireEvent.mouseEnter(element, options);
-    });
+    // fireEvent.mouseEnter would be the same as fireEvent.mouseOver
+    domFireEvent.mouseEnter(element, options);
   }
   fireEvent.pointerMove(element, options);
   if (!disabled) {

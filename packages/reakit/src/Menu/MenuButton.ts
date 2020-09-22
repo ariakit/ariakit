@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
-import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { useLiveRef } from "reakit-utils/useLiveRef";
@@ -82,41 +81,36 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
       const onMouseDownRef = useLiveRef(htmlOnMouseDown);
 
-      const onKeyDown = React.useMemo(
-        () =>
-          createOnKeyDown({
-            onKeyDown: onKeyDownRef,
+      const onKeyDown = React.useCallback(
+        (event: React.KeyboardEvent<HTMLElement>) => {
+          if (event.key === "Escape") {
             // Doesn't prevent default on Escape, otherwise we can't close
             // dialogs when MenuButton is focused
-            preventDefault: (event) => event.key !== "Escape",
-            stopPropagation: (event) => event.key !== "Escape",
-            shouldKeyDown: (event) => event.key === "Escape" || !disabled,
-            onKey: () => options.show(),
-            keyMap: () => {
-              // setTimeout prevents scroll jump
-              const first = options.first && (() => setTimeout(options.first));
-              const hide = options.hide && (() => options.hide?.());
-              const last = options.last && (() => setTimeout(options.last));
-              return {
-                Escape: hide,
-                Enter: first,
-                " ": first,
-                ArrowUp: dir === "top" || dir === "bottom" ? last : false,
-                ArrowRight: dir === "right" && first,
-                ArrowDown: dir === "bottom" || dir === "top" ? first : false,
-                ArrowLeft: dir === "left" && first,
-              };
-            },
-          }),
-        [
-          disabled,
-          dir,
-          hasParent,
-          options.show,
-          options.hide,
-          options.first,
-          options.last,
-        ]
+            options.hide?.();
+          } else if (!disabled) {
+            // setTimeout prevents scroll jump
+            const first = options.first && (() => setTimeout(options.first));
+            const last = options.last && (() => setTimeout(options.last));
+            const keyMap = {
+              Enter: first,
+              " ": first,
+              ArrowUp: (dir === "top" || dir === "bottom") && last,
+              ArrowRight: dir === "right" && first,
+              ArrowDown: (dir === "bottom" || dir === "top") && first,
+              ArrowLeft: dir === "left" && first,
+            };
+            const action = keyMap[event.key as keyof typeof keyMap];
+            if (action) {
+              event.preventDefault();
+              event.stopPropagation();
+              options.show?.();
+              action();
+              return;
+            }
+          }
+          onKeyDownRef.current?.(event);
+        },
+        [disabled, options.hide, options.first, options.last, dir, options.show]
       );
 
       const onMouseEnter = React.useCallback(
