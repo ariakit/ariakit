@@ -52,7 +52,7 @@ test("pressing character key while focusing grid item", () => {
   click(getPopoverDisclosure());
   press.Tab();
   expect(screen.getByText("Paragraph")).toHaveFocus();
-  press("l");
+  type("l");
   expect(getComboboxInput()).toHaveFocus();
   type("a");
   expect(getComboboxInput()).toHaveValue("la");
@@ -76,4 +76,11 @@ test("keyboard navigation on combobox grid", () => {
   expect(screen.getByText("Spacer")).toHaveFocus();
   press.ArrowDown();
   expect(screen.getByText("Verse")).toHaveFocus();
+  press.PageUp();
+  expect(screen.getByText("RSS")).toHaveFocus();
+  press.ArrowUp();
+  expect(screen.getByText("RSS")).not.toHaveFocus();
+  press.ArrowRight();
+  press.ArrowDown();
+  expect(screen.getByText("RSS")).toHaveFocus();
 });
