@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.5](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.4...reakit-test-utils@0.14.5) (2020-09-22)
+
+
+### Bug Fixes
+
+* **reakit-test-utils:** Fix `type` not triggering keypress ([6569f05](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/6569f052bdc7cbd44d68f31038b0843003a063f4))
+
+
+
+
+
 ## [0.14.4](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.3...reakit-test-utils@0.14.4) (2020-09-03)
 
 

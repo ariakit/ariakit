@@ -1,4 +1,4 @@
-import { fireEvent } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
 
 const pointerEvents = [
   "mouseMove",
