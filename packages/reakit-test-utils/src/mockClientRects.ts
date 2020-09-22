@@ -7,13 +7,12 @@ window.Element.prototype.getClientRects = function getClientRects() {
     if (!(element instanceof HTMLElement)) {
       return false;
     }
-    return (
-      element.style.display === "none" ||
-      element.style.visibility === "hidden" ||
-      element.hidden
-    );
+    if (element.hidden) {
+      return true;
+    }
+    const style = getComputedStyle(element);
+    return style.display === "none" || style.visibility === "hidden";
   };
-
   if (isHidden(this)) {
     return [];
   }
