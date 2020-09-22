@@ -29,6 +29,8 @@ export function type(
     let inputType = "insertText";
     let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 
+    // After key down, focus may change and be on a text field, so we get the
+    // active element again.
     element = (getActiveElement(element) || element) as HTMLElement;
 
     if (!isTextField(element)) {

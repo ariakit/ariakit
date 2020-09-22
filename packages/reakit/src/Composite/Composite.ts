@@ -78,16 +78,14 @@ function useKeyboardEventProxy(
       if (virtual && canProxyKeyboardEvent(event)) {
         const currentElement = currentItem?.ref.current;
         if (currentElement) {
-          fireKeyboardEvent(currentElement, event.type, event);
+          if (!fireKeyboardEvent(currentElement, event.type, event)) {
+            event.preventDefault();
+          }
           // The event will be triggered on the composite item and then
           // propagated up to this composite element again, so we can pretend
           // that it wasn't called on this component in the first place.
           if (event.currentTarget.contains(currentElement)) {
             event.stopPropagation();
-            // TODO: Test
-            if (event.key.length !== 1) {
-              event.preventDefault();
-            }
           }
         }
       }
@@ -156,18 +154,15 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
 
     React.useEffect(() => {
       const element = ref.current;
-      if (!element) {
+      if (options.unstable_moves && !currentItem) {
         warning(
-          true,
+          !element,
           "Can't focus composite component because `ref` wasn't passed to component.",
           "See https://reakit.io/docs/composite"
         );
-        return;
-      }
-      if (options.unstable_moves && !currentItem) {
         // If composite.move(null) has been called, the composite container
         // will receive focus.
-        element.focus();
+        element?.focus();
       }
     }, [options.unstable_moves, currentItem]);
 
