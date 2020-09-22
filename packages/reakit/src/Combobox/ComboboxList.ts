@@ -7,11 +7,11 @@ import { getMenuId } from "./__utils/getMenuId";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
 import { COMBOBOX_MENU_KEYS } from "./__keys";
 
-export const unstable_useComboboxMenu = createHook<
-  unstable_ComboboxMenuOptions,
-  unstable_ComboboxMenuHTMLProps
+export const unstable_useComboboxList = createHook<
+  unstable_ComboboxListOptions,
+  unstable_ComboboxListHTMLProps
 >({
-  name: "ComboboxMenu",
+  name: "ComboboxList",
   compose: useBox,
   keys: COMBOBOX_MENU_KEYS,
 
@@ -28,9 +28,9 @@ export const unstable_useComboboxMenu = createHook<
   },
 });
 
-export const unstable_ComboboxMenu = createComponent({
+export const unstable_ComboboxList = createComponent({
   as: "div",
-  useHook: unstable_useComboboxMenu,
+  useHook: unstable_useComboboxList,
   useCreateElement: (type, props, children) => {
     useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
@@ -41,11 +41,11 @@ export const unstable_ComboboxMenu = createComponent({
   },
 });
 
-export type unstable_ComboboxMenuOptions = BoxOptions &
+export type unstable_ComboboxListOptions = BoxOptions &
   Pick<Partial<unstable_ComboboxStateReturn>, "menuRole"> &
   Pick<unstable_ComboboxStateReturn, "baseId">;
 
-export type unstable_ComboboxMenuHTMLProps = BoxHTMLProps;
+export type unstable_ComboboxListHTMLProps = BoxHTMLProps;
 
-export type unstable_ComboboxMenuProps = unstable_ComboboxMenuOptions &
-  unstable_ComboboxMenuHTMLProps;
+export type unstable_ComboboxListProps = unstable_ComboboxListOptions &
+  unstable_ComboboxListHTMLProps;

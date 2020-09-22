@@ -3,11 +3,11 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import {
-  unstable_ComboboxMenuState as ComboboxMenuState,
-  unstable_ComboboxMenuActions as ComboboxMenuActions,
-  unstable_ComboboxMenuInitialState as ComboboxMenuInitialState,
-  unstable_useComboboxMenuState as useComboboxMenuState,
-} from "./ComboboxMenuState";
+  unstable_ComboboxListState as ComboboxListState,
+  unstable_ComboboxListActions as ComboboxListActions,
+  unstable_ComboboxListInitialState as ComboboxListInitialState,
+  unstable_useComboboxListState as useComboboxListState,
+} from "./ComboboxListState";
 import {
   ComboboxPopoverState,
   ComboboxPopoverActions,
@@ -19,17 +19,17 @@ export function unstable_useComboboxState(
   initialState: SealedInitialState<unstable_ComboboxInitialState> = {}
 ): unstable_ComboboxStateReturn {
   const sealed = useSealedState(initialState);
-  const combobox = useComboboxMenuState(sealed);
+  const combobox = useComboboxListState(sealed);
   return useComboboxPopoverState(combobox, sealed);
 }
 
-export type unstable_ComboboxState = ComboboxPopoverState & ComboboxMenuState;
+export type unstable_ComboboxState = ComboboxPopoverState & ComboboxListState;
 
 export type unstable_ComboboxActions = ComboboxPopoverActions &
-  ComboboxMenuActions;
+  ComboboxListActions;
 
 export type unstable_ComboboxInitialState = ComboboxPopoverInitialState &
-  ComboboxMenuInitialState;
+  ComboboxListInitialState;
 
 export type unstable_ComboboxStateReturn = unstable_ComboboxState &
   unstable_ComboboxActions;

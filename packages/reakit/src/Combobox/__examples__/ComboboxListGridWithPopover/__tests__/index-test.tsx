@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render, press, click, type, screen } from "reakit-test-utils";
-import ComboboxMenuGridWithPopover from "..";
+import ComboboxListGridWithPopover from "..";
 
 function getPopoverDisclosure() {
   return screen.getByText("Blocks");
@@ -15,7 +15,7 @@ function getComboboxInput() {
 }
 
 test("open popover on click", () => {
-  render(<ComboboxMenuGridWithPopover />);
+  render(<ComboboxListGridWithPopover />);
   expect(getPopover()).not.toBeInTheDocument();
   click(getPopoverDisclosure());
   expect(getPopover()).toBeVisible();
@@ -23,7 +23,7 @@ test("open popover on click", () => {
 });
 
 test("keyboard navigation on grid", () => {
-  render(<ComboboxMenuGridWithPopover />);
+  render(<ComboboxListGridWithPopover />);
   click(getPopoverDisclosure());
   expect(getComboboxInput()).toHaveFocus();
   press.Tab();
@@ -48,7 +48,7 @@ test("keyboard navigation on grid", () => {
 });
 
 test("pressing character key while focusing grid item", () => {
-  render(<ComboboxMenuGridWithPopover />);
+  render(<ComboboxListGridWithPopover />);
   click(getPopoverDisclosure());
   press.Tab();
   expect(screen.getByText("Paragraph")).toHaveFocus();
@@ -60,7 +60,7 @@ test("pressing character key while focusing grid item", () => {
 });
 
 test("keyboard navigation on combobox grid", () => {
-  render(<ComboboxMenuGridWithPopover />);
+  render(<ComboboxListGridWithPopover />);
   click(getPopoverDisclosure());
   type("r");
   expect(screen.getByText("RSS")).toHaveFocus();

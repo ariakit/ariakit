@@ -15,9 +15,9 @@ import {
   useComboboxBaseState,
 } from "./__utils/ComboboxBaseState";
 
-export function unstable_useComboboxMenuState(
-  initialState: SealedInitialState<unstable_ComboboxMenuInitialState> = {}
-): unstable_ComboboxMenuStateReturn {
+export function unstable_useComboboxListState(
+  initialState: SealedInitialState<unstable_ComboboxListInitialState> = {}
+): unstable_ComboboxListStateReturn {
   const {
     currentId = null,
     orientation = "vertical",
@@ -37,17 +37,17 @@ export function unstable_useComboboxMenuState(
   return useComboboxBaseState(composite, sealed);
 }
 
-export type unstable_ComboboxMenuState = ComboboxBaseState<CompositeState>;
+export type unstable_ComboboxListState = ComboboxBaseState<CompositeState>;
 
-export type unstable_ComboboxMenuActions = ComboboxBaseActions<
+export type unstable_ComboboxListActions = ComboboxBaseActions<
   CompositeActions
 >;
 
-export type unstable_ComboboxMenuInitialState = Omit<
+export type unstable_ComboboxListInitialState = Omit<
   CompositeInitialState,
   "unstable_virtual" | "unstable_includesBaseElement"
 > &
   ComboboxBaseInitialState;
 
-export type unstable_ComboboxMenuStateReturn = unstable_ComboboxMenuState &
-  unstable_ComboboxMenuActions;
+export type unstable_ComboboxListStateReturn = unstable_ComboboxListState &
+  unstable_ComboboxListActions;

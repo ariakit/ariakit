@@ -270,7 +270,7 @@ the combobox popover opens, but the input value remains the same.
   Number of columns by which `values` will be splitted to generate the
 `matches` 2D array.
 
-### `useComboboxMenuGridState`
+### `useComboboxListGridState`
 
 - **`baseId`**
   <code>string</code>
@@ -413,7 +413,7 @@ the combobox popover opens, but the input value remains the same.
   Number of columns by which `values` will be splitted to generate the
 `matches` 2D array.
 
-### `useComboboxMenuState`
+### `useComboboxListState`
 
 - **`baseId`**
   <code>string</code>
@@ -1286,7 +1286,7 @@ the `matches` property.
 
 </details>
 
-### `ComboboxMenu`
+### `ComboboxList`
 
 <details><summary>2 state props</summary>
 

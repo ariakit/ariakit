@@ -25,9 +25,9 @@ function chunk<T>(array: T[], size: number) {
   return chunks;
 }
 
-export function unstable_useComboboxMenuGridState(
-  initialState: SealedInitialState<unstable_ComboboxMenuGridInitialState> = {}
-): unstable_ComboboxMenuGridStateReturn {
+export function unstable_useComboboxListGridState(
+  initialState: SealedInitialState<unstable_ComboboxListGridInitialState> = {}
+): unstable_ComboboxListGridStateReturn {
   const {
     columns: initialColumns = 1,
     currentId = null,
@@ -60,7 +60,7 @@ export function unstable_useComboboxMenuGridState(
   };
 }
 
-export type unstable_ComboboxMenuGridState = Omit<
+export type unstable_ComboboxListGridState = Omit<
   ComboboxBaseState<GridState>,
   "matches"
 > & {
@@ -85,21 +85,21 @@ export type unstable_ComboboxMenuGridState = Omit<
   matches: string[][];
 };
 
-export type unstable_ComboboxMenuGridActions = ComboboxBaseActions<
+export type unstable_ComboboxListGridActions = ComboboxBaseActions<
   GridActions
 > & {
   /**
    * Sets `columns`.
    */
-  setColumns: SetState<unstable_ComboboxMenuGridState["columns"]>;
+  setColumns: SetState<unstable_ComboboxListGridState["columns"]>;
 };
 
-export type unstable_ComboboxMenuGridInitialState = Omit<
+export type unstable_ComboboxListGridInitialState = Omit<
   GridInitialState,
   "unstable_virtual" | "unstable_includesBaseElement"
 > &
   ComboboxBaseInitialState &
-  Pick<Partial<unstable_ComboboxMenuGridState>, "columns">;
+  Pick<Partial<unstable_ComboboxListGridState>, "columns">;
 
-export type unstable_ComboboxMenuGridStateReturn = unstable_ComboboxMenuGridState &
-  unstable_ComboboxMenuGridActions;
+export type unstable_ComboboxListGridStateReturn = unstable_ComboboxListGridState &
+  unstable_ComboboxListGridActions;
