@@ -32,13 +32,6 @@ export const unstable_useComboboxPopover = createHook<
     };
   },
 
-  useProps(options, htmlProps) {
-    return {
-      ...htmlProps,
-      children: options.visible ? htmlProps.children : null,
-    };
-  },
-
   useComposeProps(options, { tabIndex, ...htmlProps }) {
     htmlProps = useComboboxList(options, htmlProps, true);
     htmlProps = usePopover(options, htmlProps, true);
