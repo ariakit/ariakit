@@ -5,7 +5,7 @@ import { useCreateElement } from "reakit-system/useCreateElement";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 import { getMenuId } from "./__utils/getMenuId";
 import { unstable_ComboboxStateReturn } from "./ComboboxState";
-import { COMBOBOX_MENU_KEYS } from "./__keys";
+import { COMBOBOX_LIST_KEYS } from "./__keys";
 
 export const unstable_useComboboxList = createHook<
   unstable_ComboboxListOptions,
@@ -13,7 +13,7 @@ export const unstable_useComboboxList = createHook<
 >({
   name: "ComboboxList",
   compose: useBox,
-  keys: COMBOBOX_MENU_KEYS,
+  keys: COMBOBOX_LIST_KEYS,
 
   useOptions({ menuRole = "listbox", ...options }) {
     return { menuRole, ...options };
