@@ -1,19 +1,20 @@
 import * as React from "react";
 import { render, screen, axe } from "reakit-test-utils";
-import AccessibleButton from "..";
+import ButtonAsDiv from "..";
 
 test("a11y", async () => {
-  const { baseElement } = render(<AccessibleButton />);
+  const { baseElement } = render(<ButtonAsDiv />);
   expect(await axe(baseElement)).toHaveNoViolations();
 });
 
 test("markup", () => {
-  render(<AccessibleButton />);
+  render(<ButtonAsDiv />);
   expect(screen.getByRole("button")).toMatchInlineSnapshot(`
-    <button
-      type="button"
+    <div
+      role="button"
+      tabindex="0"
     >
-      Button
-    </button>
+      Div
+    </div>
   `);
 });
