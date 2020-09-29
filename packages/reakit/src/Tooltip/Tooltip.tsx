@@ -20,7 +20,6 @@ export type TooltipOptions = DisclosureContentOptions &
   > & {
     /**
      * Whether or not the dialog should be rendered within `Portal`.
-     * It's `true` by default if `modal` is `true`.
      */
     unstable_portal?: boolean;
   };
