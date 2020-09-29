@@ -245,7 +245,6 @@ element.
   <code>boolean | undefined</code>
 
   Whether or not the dialog should be rendered within `Portal`.
-It's `true` by default if `modal` is `true`.
 
 <details><summary>5 state props</summary>
 
