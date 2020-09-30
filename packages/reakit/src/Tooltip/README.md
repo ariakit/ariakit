@@ -244,7 +244,7 @@ element.
 - **`unstable_portal`** <span title="Experimental">⚠️</span>
   <code>boolean | undefined</code>
 
-  Whether or not the dialog should be rendered within `Portal`.
+  Whether or not the tooltip should be rendered within `Portal`.
 
 <details><summary>5 state props</summary>
 
