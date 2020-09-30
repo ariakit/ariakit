@@ -9,10 +9,10 @@ import {
 } from "../Popover/Popover";
 import { COMBOBOX_POPOVER_KEYS } from "./__keys";
 import {
-  unstable_ComboboxMenuOptions as ComboboxMenuOptions,
-  unstable_ComboboxMenuHTMLProps as ComboboxMenuHTMLProps,
-  unstable_useComboboxMenu as useComboboxMenu,
-} from "./ComboboxMenu";
+  unstable_ComboboxListOptions as ComboboxListOptions,
+  unstable_ComboboxListHTMLProps as ComboboxListHTMLProps,
+  unstable_useComboboxList as useComboboxList,
+} from "./ComboboxList";
 import { ComboboxPopoverStateReturn } from "./__utils/ComboboxPopoverState";
 
 export const unstable_useComboboxPopover = createHook<
@@ -20,7 +20,7 @@ export const unstable_useComboboxPopover = createHook<
   unstable_ComboboxPopoverHTMLProps
 >({
   name: "ComboboxPopover",
-  compose: [useComboboxMenu, usePopover],
+  compose: [useComboboxList, usePopover],
   keys: COMBOBOX_POPOVER_KEYS,
 
   useOptions(options) {
@@ -32,15 +32,8 @@ export const unstable_useComboboxPopover = createHook<
     };
   },
 
-  useProps(options, htmlProps) {
-    return {
-      ...htmlProps,
-      children: options.visible ? htmlProps.children : null,
-    };
-  },
-
   useComposeProps(options, { tabIndex, ...htmlProps }) {
-    htmlProps = useComboboxMenu(options, htmlProps, true);
+    htmlProps = useComboboxList(options, htmlProps, true);
     htmlProps = usePopover(options, htmlProps, true);
     return {
       ...htmlProps,
@@ -62,7 +55,7 @@ export const unstable_ComboboxPopover = createComponent({
   },
 });
 
-export type unstable_ComboboxPopoverOptions = ComboboxMenuOptions &
+export type unstable_ComboboxPopoverOptions = ComboboxListOptions &
   Omit<
     PopoverOptions,
     | "unstable_disclosureRef"
@@ -72,7 +65,7 @@ export type unstable_ComboboxPopoverOptions = ComboboxMenuOptions &
   Pick<Partial<ComboboxPopoverStateReturn>, "unstable_referenceRef">;
 
 export type unstable_ComboboxPopoverHTMLProps = PopoverHTMLProps &
-  ComboboxMenuHTMLProps;
+  ComboboxListHTMLProps;
 
 export type unstable_ComboboxPopoverProps = unstable_ComboboxPopoverOptions &
   unstable_ComboboxPopoverHTMLProps;

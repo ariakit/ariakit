@@ -58,8 +58,12 @@ export const unstable_useComboboxItem = createHook<
     const value = trulyDisabled ? undefined : options.value;
 
     const registerItem = React.useCallback(
-      (item: Item) => options.registerItem({ ...item, value }),
-      [options.registerItem, value]
+      (item: Item) => {
+        if (options.visible) {
+          options.registerItem?.({ ...item, value });
+        }
+      },
+      [options.registerItem, options.visible, value]
     );
 
     if (options.id || !options.baseId || !options.value) {
@@ -87,6 +91,7 @@ export const unstable_useComboboxItem = createHook<
     return {
       children: options.value,
       onClick,
+      tabIndex: -1,
       ...htmlProps,
     };
   },
@@ -102,7 +107,7 @@ export type unstable_ComboboxItemOptions = BoxOptions &
   CompositeItemOptions &
   Pick<
     Partial<unstable_ComboboxStateReturn>,
-    "currentValue" | "inputValue" | "hide"
+    "currentValue" | "inputValue" | "hide" | "visible"
   > &
   Pick<unstable_ComboboxStateReturn, "setInputValue" | "registerItem"> & {
     /**

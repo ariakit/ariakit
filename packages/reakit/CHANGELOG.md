@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.5](https://github.com/reakit/reakit/compare/reakit@1.2.4...reakit@1.2.5) (2020-09-22)
+
+
+### Bug Fixes
+
+* Fix `Composite` infinite loop on Firefox ([#748](https://github.com/reakit/reakit/issues/748)) ([4a1c644](https://github.com/reakit/reakit/commit/4a1c644a758264f4da77a3f4e2bc28aed6a16a48)), closes [#747](https://github.com/reakit/reakit/issues/747)
+* Fix `disabled` prop being passed to elements that don't support it ([#725](https://github.com/reakit/reakit/issues/725)) ([d982a61](https://github.com/reakit/reakit/commit/d982a61074bf3ed899ebe4a6e4744cec32191b57)), closes [#722](https://github.com/reakit/reakit/issues/722)
+* Fix disabled events when using the `as` prop ([#736](https://github.com/reakit/reakit/issues/736)) ([c594166](https://github.com/reakit/reakit/commit/c5941668d0ebc69f04171f2f6cfb44ecf8917495))
+
+
+
+
+
 ## [1.2.4](https://github.com/reakit/reakit/compare/reakit@1.2.3...reakit@1.2.4) (2020-09-03)
 
 

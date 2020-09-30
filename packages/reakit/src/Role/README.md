@@ -4,7 +4,7 @@ path: /docs/role/
 
 # Role
 
-`Role` is the most abstract component on top of which all other Reakit components are built. By default, it renders a `div` element.
+`Role` is the most abstract component on top of which all other Reakit components are built. It's inspired by the [WAI-ARIA RoleType Role](https://www.w3.org/TR/wai-aria-1.1/#roletype). By default, it renders a `div` element.
 
 <carbon-ad></carbon-ad>
 

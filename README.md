@@ -23,7 +23,6 @@
   <a href="https://codecov.io/gh/reakit/reakit"><img src="https://codecov.io/gh/reakit/reakit/branch/master/graph/badge.svg" /></a><br>
   <a href="https://opencollective.com/reakit"><img alt="Sponsors" src="https://opencollective.com/reakit/sponsor/badge.svg?label=sponsors" /></a>
   <a href="https://opencollective.com/reakit"><img alt="Backers" src="https://opencollective.com/reakit/backer/badge.svg?label=backers" /></a>
-  <a href="https://spectrum.chat/reakit"><img src="https://withspectrum.github.io/badge/badge.svg" alt="Spectrum" /></a>
   <a href="https://twitter.com/reakitjs">
     <img alt="Follow Reakit on Twitter" src="https://img.shields.io/twitter/follow/reakitjs.svg"></a>
 </p>

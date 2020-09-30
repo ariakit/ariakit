@@ -5,7 +5,7 @@ import BlockList from "./BlockList";
 import ArrowDown from "./ArrowDown";
 import "./style.css";
 
-export default function ComboboxMenuGridWithPopover() {
+export default function ComboboxListGridWithPopover() {
   const popover = usePopoverState({ placement: "bottom-start", gutter: 8 });
   return (
     <>

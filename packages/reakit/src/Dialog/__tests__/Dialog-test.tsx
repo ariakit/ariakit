@@ -2,6 +2,8 @@ import * as React from "react";
 import { render } from "reakit-test-utils";
 import { Dialog } from "../Dialog";
 
+jest.mock("body-scroll-lock");
+
 const props: Parameters<typeof Dialog>[0] = {
   baseId: "base",
   "aria-label": "dialog",
@@ -39,9 +41,7 @@ test("render visible", () => {
     </Dialog>
   );
   expect(baseElement).toMatchInlineSnapshot(`
-    <body
-      style="padding-right: 1024px;"
-    >
+    <body>
       <div />
       <div
         aria-hidden="true"

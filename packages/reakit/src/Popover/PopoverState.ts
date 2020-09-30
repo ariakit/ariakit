@@ -221,15 +221,7 @@ export function usePopoverState(
         popper.current = null;
       }
     };
-  }, [
-    originalPlacement,
-    fixed,
-    dialog.visible,
-    dialog.animated,
-    flip,
-    offset,
-    preventOverflow,
-  ]);
+  }, [originalPlacement, fixed, dialog.visible, flip, offset, preventOverflow]);
 
   // Ensure that the popover will be correctly positioned with an additional
   // update.

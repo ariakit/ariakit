@@ -3,9 +3,8 @@ import { useWarning } from "reakit-warning";
 import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
-import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { useLiveRef } from "reakit-utils/useLiveRef";
-import { contains } from "reakit-utils/contains";
+import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -62,37 +61,39 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     const ancestorIsHorizontal = orientation === "horizontal";
     const dir = usePlacementDir(options.placement);
 
-    const onKeyDown = React.useMemo(
-      () =>
-        createOnKeyDown({
-          onKeyDown: onKeyDownRef,
-          stopPropagation: (event) => {
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLElement>) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (event.key === "Escape") {
+          if (!hasParent) {
             // On Esc, only stop propagation if there's no parent menu.
             // Otherwise, pressing Esc should close all menus
+            event.stopPropagation();
+          }
+          options.hide?.();
+        } else if (hasParent && !isPortalEvent(event)) {
+          // Moves to the next menu button in a horizontal menu bar or close
+          // the menu if it's a sub menu
+          const ArrowRight =
+            ancestorIsHorizontal && dir !== "left"
+              ? next
+              : dir === "left" && options.hide;
+          const ArrowLeft =
+            ancestorIsHorizontal && dir !== "right"
+              ? previous
+              : dir === "right" && options.hide;
+          const keyMap = { ArrowRight, ArrowLeft };
+          const action = keyMap[event.key as keyof typeof keyMap];
+          if (action) {
+            event.preventDefault();
             if (hasParent) {
-              return event.key !== "Escape";
+              event.stopPropagation();
             }
-            return event.key === "Escape";
-          },
-          keyMap: ({ currentTarget, target }) => {
-            const { hide } = options;
-            const close = hide && (() => hide());
-            if (hasParent && contains(currentTarget, target as Element)) {
-              // Moves to the next menu button in a horizontal menu bar or
-              // close the menu if it's a sub menu
-              const ArrowRight =
-                ancestorIsHorizontal && dir !== "left"
-                  ? next && (() => next())
-                  : dir === "left" && close;
-              const ArrowLeft =
-                ancestorIsHorizontal && dir !== "right"
-                  ? previous && (() => previous())
-                  : dir === "right" && close;
-              return { Escape: close, ArrowRight, ArrowLeft };
-            }
-            return { Escape: close };
-          },
-        }),
+            action();
+          }
+        }
+      },
       [hasParent, ancestorIsHorizontal, next, previous, dir, options.hide]
     );
 

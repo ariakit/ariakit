@@ -1,8 +1,8 @@
 import * as React from "react";
 import {
-  unstable_useComboboxMenuGridState as useComboboxMenuGridState,
+  unstable_useComboboxListGridState as useComboboxListGridState,
   unstable_Combobox as Combobox,
-  unstable_ComboboxMenu as ComboboxMenu,
+  unstable_ComboboxList as ComboboxList,
   unstable_ComboboxGridRow as ComboboxGridRow,
   unstable_ComboboxGridCell as ComboboxGridCell,
 } from "reakit/Combobox";
@@ -31,7 +31,7 @@ export default function BlockList({ initialItems, ...props }: Props) {
   const initialValues = React.useMemo(() => getValues(initialItems), [
     initialItems,
   ]);
-  const combobox = useComboboxMenuGridState({
+  const combobox = useComboboxListGridState({
     values: initialValues,
     limit: false,
     columns: 3,
@@ -51,7 +51,7 @@ export default function BlockList({ initialItems, ...props }: Props) {
       />
       {combobox.inputValue ? (
         combobox.matches.length ? (
-          <ComboboxMenu {...combobox} aria-label="Block suggestions">
+          <ComboboxList {...combobox} aria-label="Block suggestions">
             {combobox.matches.map((values, i) => (
               <ComboboxGridRow {...combobox} key={i}>
                 {values.map((val) => (
@@ -67,7 +67,7 @@ export default function BlockList({ initialItems, ...props }: Props) {
                 ))}
               </ComboboxGridRow>
             ))}
-          </ComboboxMenu>
+          </ComboboxList>
         ) : (
           <span>No results found</span>
         )
@@ -78,7 +78,6 @@ export default function BlockList({ initialItems, ...props }: Props) {
           onKeyDown={(event) => {
             const { key } = event;
             if (key && key.length === 1) {
-              combobox.setInputValue(key);
               ref.current?.focus();
             }
           }}

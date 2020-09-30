@@ -3,11 +3,11 @@ import {
   useSealedState,
 } from "reakit-utils/useSealedState";
 import {
-  unstable_ComboboxMenuGridState as ComboboxMenuGridState,
-  unstable_ComboboxMenuGridActions as ComboboxMenuGridActions,
-  unstable_ComboboxMenuGridInitialState as ComboboxMenuGridInitialState,
-  unstable_useComboboxMenuGridState as useComboboxMenuGridState,
-} from "./ComboboxMenuGridState";
+  unstable_ComboboxListGridState as ComboboxListGridState,
+  unstable_ComboboxListGridActions as ComboboxListGridActions,
+  unstable_ComboboxListGridInitialState as ComboboxListGridInitialState,
+  unstable_useComboboxListGridState as useComboboxListGridState,
+} from "./ComboboxListGridState";
 import {
   ComboboxPopoverState,
   ComboboxPopoverActions,
@@ -19,18 +19,18 @@ export function unstable_useComboboxGridState(
   initialState: SealedInitialState<unstable_ComboboxGridInitialState> = {}
 ): unstable_ComboboxGridStateReturn {
   const sealed = useSealedState(initialState);
-  const combobox = useComboboxMenuGridState(sealed);
+  const combobox = useComboboxListGridState(sealed);
   return useComboboxPopoverState(combobox, sealed);
 }
 
 export type unstable_ComboboxGridState = ComboboxPopoverState &
-  ComboboxMenuGridState;
+  ComboboxListGridState;
 
 export type unstable_ComboboxGridActions = ComboboxPopoverActions &
-  ComboboxMenuGridActions;
+  ComboboxListGridActions;
 
 export type unstable_ComboboxGridInitialState = ComboboxPopoverInitialState &
-  ComboboxMenuGridInitialState;
+  ComboboxListGridInitialState;
 
 export type unstable_ComboboxGridStateReturn = unstable_ComboboxGridState &
   unstable_ComboboxGridActions;

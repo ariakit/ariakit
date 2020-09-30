@@ -5,11 +5,11 @@ import {
   PopoverInitialState,
   usePopoverState,
 } from "../../Popover/PopoverState";
-import { unstable_ComboboxMenuStateReturn as ComboboxMenuStateReturn } from "../ComboboxMenuState";
-import { unstable_ComboboxMenuGridStateReturn as ComboboxMenuGridStateReturn } from "../ComboboxMenuGridState";
+import { unstable_ComboboxListStateReturn as ComboboxListStateReturn } from "../ComboboxListState";
+import { unstable_ComboboxListGridStateReturn as ComboboxListGridStateReturn } from "../ComboboxListGridState";
 
 export function useComboboxPopoverState<
-  T extends ComboboxMenuStateReturn | ComboboxMenuGridStateReturn
+  T extends ComboboxListStateReturn | ComboboxListGridStateReturn
 >(
   combobox: T,
   {

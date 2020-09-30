@@ -11,13 +11,6 @@ import {
 } from "../Clickable/Clickable";
 import { BUTTON_KEYS } from "./__keys";
 
-export type ButtonOptions = ClickableOptions;
-
-export type ButtonHTMLProps = ClickableHTMLProps &
-  React.ButtonHTMLAttributes<any>;
-
-export type ButtonProps = ButtonOptions & ButtonHTMLProps;
-
 export const useButton = createHook<ButtonOptions, ButtonHTMLProps>({
   name: "Button",
   compose: useClickable,
@@ -60,3 +53,10 @@ export const Button = createComponent({
   memo: true,
   useHook: useButton,
 });
+
+export type ButtonOptions = ClickableOptions;
+
+export type ButtonHTMLProps = ClickableHTMLProps &
+  React.ButtonHTMLAttributes<any>;
+
+export type ButtonProps = ButtonOptions & ButtonHTMLProps;

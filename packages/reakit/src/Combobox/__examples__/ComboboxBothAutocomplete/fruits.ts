@@ -32,7 +32,6 @@ export const fruits = [
   "Kiwifruit",
   "Kumquat",
   "Lemon",
-  "lime",
   "Lime",
   "Longan",
   "Loquat",

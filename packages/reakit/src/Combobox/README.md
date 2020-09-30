@@ -270,7 +270,7 @@ the combobox popover opens, but the input value remains the same.
   Number of columns by which `values` will be splitted to generate the
 `matches` 2D array.
 
-### `useComboboxMenuGridState`
+### `useComboboxListGridState`
 
 - **`baseId`**
   <code>string</code>
@@ -413,7 +413,7 @@ the combobox popover opens, but the input value remains the same.
   Number of columns by which `values` will be splitted to generate the
 `matches` 2D array.
 
-### `useComboboxMenuState`
+### `useComboboxListState`
 
 - **`baseId`**
   <code>string</code>
@@ -958,7 +958,7 @@ similarly to `readOnly` on form elements. In this case, only
 based on the input value. You can omit this for items that perform
 actions other than filling a form. For example, items may open a dialog.
 
-<details><summary>19 state props</summary>
+<details><summary>20 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1059,6 +1059,11 @@ and `groupId` if any. This state is automatically updated when
 updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
 
 - **`inputValue`**
   <code>string</code>
@@ -1161,7 +1166,7 @@ similarly to `readOnly` on form elements. In this case, only
 based on the input value. You can omit this for items that perform
 actions other than filling a form. For example, items may open a dialog.
 
-<details><summary>19 state props</summary>
+<details><summary>20 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1263,6 +1268,11 @@ updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
 
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
 - **`inputValue`**
   <code>string</code>
 
@@ -1286,7 +1296,7 @@ the `matches` property.
 
 </details>
 
-### `ComboboxMenu`
+### `ComboboxList`
 
 <details><summary>2 state props</summary>
 
@@ -1330,7 +1340,7 @@ similarly to `readOnly` on form elements. In this case, only
 based on the input value. You can omit this for items that perform
 actions other than filling a form. For example, items may open a dialog.
 
-<details><summary>19 state props</summary>
+<details><summary>20 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -1431,6 +1441,11 @@ and `groupId` if any. This state is automatically updated when
 updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
 
 - **`inputValue`**
   <code>string</code>

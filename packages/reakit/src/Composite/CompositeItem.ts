@@ -1,7 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-warning";
 import { useForkRef } from "reakit-utils/useForkRef";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
@@ -126,7 +125,7 @@ export const useCompositeItem = createHook<
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
       onFocus: htmlOnFocus,
-      onBlur: htmlOnBlur,
+      onBlurCapture: htmlOnBlurCapture,
       onKeyDown: htmlOnKeyDown,
       onClick: htmlOnClick,
       ...htmlProps
@@ -140,7 +139,7 @@ export const useCompositeItem = createHook<
     const hasFocusedComposite = React.useRef(false);
     const item = useItem(options);
     const onFocusRef = useLiveRef(htmlOnFocus);
-    const onBlurRef = useLiveRef(htmlOnBlur);
+    const onBlurCaptureRef = useLiveRef(htmlOnBlurCapture);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
     const onClickRef = useLiveRef(htmlOnClick);
     const shouldTabIndex =
@@ -209,8 +208,10 @@ export const useCompositeItem = createHook<
       ]
     );
 
-    const onBlur = React.useCallback(
+    const onBlurCapture = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
+        onBlurCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (options.unstable_virtual && hasFocusedComposite.current) {
           // When hasFocusedComposite is true, composite has been focused right
           // after focusing this item. This is an intermediate blur event, so
@@ -218,97 +219,74 @@ export const useCompositeItem = createHook<
           hasFocusedComposite.current = false;
           event.preventDefault();
           event.stopPropagation();
-          return;
         }
-        onBlurRef.current?.(event);
       },
       [options.unstable_virtual]
     );
 
-    const onCharacterKeyDown = React.useCallback(
+    const onKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLElement>) => {
-        onKeyDownRef.current?.(event);
         if (!isSelfTarget(event)) return;
+        const isVertical = options.orientation !== "horizontal";
+        const isHorizontal = options.orientation !== "vertical";
+        const isGrid = !!item?.groupId;
+        const keyMap = {
+          ArrowUp: (isGrid || isVertical) && options.up,
+          ArrowRight: (isGrid || isHorizontal) && options.next,
+          ArrowDown: (isGrid || isVertical) && options.down,
+          ArrowLeft: (isGrid || isHorizontal) && options.previous,
+          Home: () => {
+            if (!isGrid || event.ctrlKey) {
+              options.first?.();
+            } else {
+              options.previous?.(true);
+            }
+          },
+          End: () => {
+            if (!isGrid || event.ctrlKey) {
+              options.last?.();
+            } else {
+              options.next?.(true);
+            }
+          },
+          PageUp: () => {
+            if (isGrid) {
+              options.up?.(true);
+            } else {
+              options.first?.();
+            }
+          },
+          PageDown: () => {
+            if (isGrid) {
+              options.down?.(true);
+            } else {
+              options.last?.();
+            }
+          },
+        };
+        const action = keyMap[event.key as keyof typeof keyMap];
+        if (action) {
+          event.preventDefault();
+          action();
+          return;
+        }
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
         if (event.key.length === 1 && event.key !== " ") {
           const widget = getWidget(event.currentTarget);
           if (widget && isTextField(widget)) {
             widget.focus();
-            const { key } = event;
-            // Using RAF here because otherwise the key will be added twice to
-            // the input when using roving tabindex
-            window.requestAnimationFrame(() => {
-              setTextFieldValue(widget, key);
-            });
+            setTextFieldValue(widget, "");
+          }
+        } else if (event.key === "Delete" || event.key === "Backspace") {
+          const widget = getWidget(event.currentTarget);
+          if (widget && isTextField(widget)) {
+            event.preventDefault();
+            setTextFieldValue(widget, "");
           }
         }
       },
-      []
-    );
-
-    const onKeyDown = React.useMemo(
-      () =>
-        createOnKeyDown({
-          onKeyDown: onCharacterKeyDown,
-          stopPropagation: true,
-          // We don't want to listen to focusable elements inside the composite
-          // item, such as a CompositeItemWidget.
-          shouldKeyDown: isSelfTarget,
-          keyMap: () => {
-            // `options.orientation` can also be undefined, which means that
-            // both `isVertical` and `isHorizontal` will be `true`.
-            const isVertical = options.orientation !== "horizontal";
-            const isHorizontal = options.orientation !== "vertical";
-            const isGrid = !!item?.groupId;
-            const Delete = (event: React.KeyboardEvent) => {
-              const widget = getWidget(event.currentTarget);
-              if (widget && isTextField(widget)) {
-                setTextFieldValue(widget, "");
-              }
-            };
-            const up = options.up && (() => options.up());
-            const next = options.next && (() => options.next());
-            const down = options.down && (() => options.down());
-            const previous = options.previous && (() => options.previous());
-            return {
-              Delete,
-              Backspace: Delete,
-              ArrowUp: (isGrid || isVertical) && up,
-              ArrowRight: (isGrid || isHorizontal) && next,
-              ArrowDown: (isGrid || isVertical) && down,
-              ArrowLeft: (isGrid || isHorizontal) && previous,
-              Home: (event) => {
-                if (!isGrid || event.ctrlKey) {
-                  options.first?.();
-                } else {
-                  options.previous?.(true);
-                }
-              },
-              End: (event) => {
-                if (!isGrid || event.ctrlKey) {
-                  options.last?.();
-                } else {
-                  options.next?.(true);
-                }
-              },
-              PageUp: () => {
-                if (isGrid) {
-                  options.up?.(true);
-                } else {
-                  options.first?.();
-                }
-              },
-              PageDown: () => {
-                if (isGrid) {
-                  options.down?.(true);
-                } else {
-                  options.last?.();
-                }
-              },
-            };
-          },
-        }),
       [
-        onCharacterKeyDown,
         options.orientation,
         item,
         options.up,
@@ -342,7 +320,7 @@ export const useCompositeItem = createHook<
       "aria-selected":
         options.unstable_virtual && isCurrentItem ? true : undefined,
       onFocus,
-      onBlur,
+      onBlurCapture,
       onKeyDown,
       onClick,
       ...htmlProps,

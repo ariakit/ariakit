@@ -1,26 +1,42 @@
 import * as React from "react";
-import { click, press, render, axe } from "reakit-test-utils";
+import { render, axe } from "reakit-test-utils";
+import { Provider } from "../../../../Provider";
 import ButtonWithTooltip from "..";
 
-test("two-state button with tooltip", () => {
-  const { getByText: text } = render(<ButtonWithTooltip />);
-  const buttonUnlocked = text("🔓");
-  expect(buttonUnlocked).toBeVisible();
-  press.Tab();
-  expect(text("Click to lock")).toBeVisible();
-  expect(text("It's unlocked!")).toBeVisible();
-  click(buttonUnlocked);
-  const buttonLocked = text("🔒");
-  expect(buttonLocked).toBeVisible();
-  expect(text("Click to unlock")).toBeVisible();
-  expect(text("It's locked!")).toBeVisible();
-  press.Space();
-  expect(buttonUnlocked).toBeVisible();
+test("a11y", async () => {
+  const { baseElement } = render(<ButtonWithTooltip />);
+  expect(await axe(baseElement)).toHaveNoViolations();
 });
 
-test("renders with no a11y violations", async () => {
-  const { baseElement } = render(<ButtonWithTooltip />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+test("markup", () => {
+  const { baseElement } = render(
+    <Provider>
+      <ButtonWithTooltip />
+    </Provider>
+  );
+  expect(baseElement).toMatchInlineSnapshot(`
+    <body>
+      <div>
+        <button
+          aria-describedby="id-1"
+          tabindex="0"
+          type="button"
+        >
+          Button
+        </button>
+      </div>
+      <div
+        class="__reakit-portal"
+      >
+        <div
+          hidden=""
+          id="id-1"
+          role="tooltip"
+          style="display: none; pointer-events: none;"
+        >
+          Tooltip
+        </div>
+      </div>
+    </body>
+  `);
 });

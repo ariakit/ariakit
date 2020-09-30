@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.4](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.14.3...reakit-utils@0.14.4) (2020-09-22)
+
+
+### Bug Fixes
+
+* **reakit-utils:** Fix `getActiveElement` returning an empty object on IE 11 ([b7516c0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/b7516c01cc923d8e179743a07eba74a083132229))
+
+
+
+
+
 ## [0.14.3](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.14.2...reakit-utils@0.14.3) (2020-08-24)
 
 

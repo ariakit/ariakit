@@ -124,6 +124,7 @@ export const unstable_useCombobox = createHook<
 
     // Completion string
     React.useEffect(() => {
+      if (!options.inline) return;
       if (!options.autoSelect) return;
       if (!options.currentValue) return;
       if (options.currentId !== getFirstEnabledItemId(options.items)) return;
@@ -131,20 +132,18 @@ export const unstable_useCombobox = createHook<
         return;
       }
       const element = ref.current;
-      if (!element) {
-        warning(
-          true,
-          "Can't auto select combobox because `ref` wasn't passed to the component",
-          "See https://reakit.io/docs/combobox"
-        );
-        return;
-      }
-      element.setSelectionRange(
+      warning(
+        !element,
+        "Can't auto select combobox because `ref` wasn't passed to the component",
+        "See https://reakit.io/docs/combobox"
+      );
+      element?.setSelectionRange(
         options.inputValue.length,
         options.currentValue.length
       );
     }, [
       updated,
+      options.inline,
       options.autoSelect,
       options.currentValue,
       options.inputValue,
@@ -264,80 +263,69 @@ export const unstable_useCombobox = createHook<
 
   useComposeProps(
     options,
-    { onKeyUp, onKeyDown: htmlOnKeyDown, ...htmlProps }
+    {
+      onKeyUp,
+      onKeyDownCapture: htmlOnKeyDownCapture,
+      onKeyDown: htmlOnKeyDown,
+      ...htmlProps
+    }
   ) {
     const compositeHTMLProps = useComposite(options, htmlProps, true);
+    const onKeyDownCaptureRef = useLiveRef(htmlOnKeyDownCapture);
+    const onKeyDownRef = useLiveRef(htmlOnKeyDown);
 
-    const onKeyDown = React.useCallback(
+    const onKeyDownCapture = React.useCallback(
       (event: React.KeyboardEvent<HTMLInputElement>) => {
-        const inputHasFocus = options.currentId === null;
-        htmlOnKeyDown?.(event);
-        if (inputHasFocus) {
-          if (
-            event.key === "ArrowLeft" ||
-            event.key === "ArrowRight" ||
-            event.key === "Home" ||
-            event.key === "End"
-          ) {
-            // Do not perform list actions when pressing horizontal arrow keys
-            // when focusing the combobox input while no option has focus.
-            return;
-          }
-          if (
-            !event.defaultPrevented &&
-            !event.ctrlKey &&
-            !event.altKey &&
-            !event.shiftKey &&
-            !event.metaKey &&
-            (event.key === "ArrowUp" ||
-              event.key === "ArrowDown" ||
-              event.key.length === 1)
-          ) {
-            // Up/Down arrow keys and printable characters should open the
-            // combobox popover.
-            options.show?.();
-          }
-        } else if (options.menuRole === "grid") {
-          // If menu is a grid and there's an option with focus, we don't want
-          // navigation keys to move the caret on the combobox input.
-          if (
-            event.key === "ArrowUp" ||
-            event.key === "ArrowDown" ||
-            event.key === "ArrowLeft" ||
-            event.key === "ArrowRight" ||
-            event.key === "Home" ||
-            event.key === "End" ||
-            event.key === "PageUp" ||
-            event.key === "PageDown"
-          ) {
-            event.preventDefault();
-          }
-        } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-          // If menu is a one-dimensional list and there's an option with
-          // focus, we don't want Up/Down arrow keys to move the caret on the
-          // combobox input.
-          event.preventDefault();
-        } else if (
-          event.key === "Home" ||
-          event.key === "End" ||
-          event.key.length === 1
-        ) {
+        onKeyDownCaptureRef.current?.(event);
+        if (event.defaultPrevented) return;
+        if (options.menuRole !== "grid") {
           // If menu is a one-dimensional list and there's an option with
           // focus, we don't want Home/End and printable characters to perform
           // actions on the option, only on the combobox input.
-          return;
+          if (event.key === "Home") return;
+          if (event.key === "End") return;
+          if (event.key.length === 1) return;
+        }
+        // Composite's onKeyDownCapture will proxy this event to the active
+        // item.
+        compositeHTMLProps.onKeyDownCapture?.(event);
+      },
+      [options.menuRole, compositeHTMLProps.onKeyDownCapture]
+    );
+
+    const onKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        onKeyDownRef.current?.(event);
+        if (event.defaultPrevented) return;
+        const onlyInputHasFocus = options.currentId === null;
+        if (!onlyInputHasFocus) return;
+        // Do not perform list actions when pressing horizontal arrow keys when
+        // focusing the combobox input while no option has focus.
+        if (event.key === "ArrowLeft") return;
+        if (event.key === "ArrowRight") return;
+        if (event.key === "Home") return;
+        if (event.key === "End") return;
+        if (
+          !event.ctrlKey &&
+          !event.altKey &&
+          !event.shiftKey &&
+          !event.metaKey &&
+          (event.key === "ArrowUp" ||
+            event.key === "ArrowDown" ||
+            event.key.length === 1)
+        ) {
+          // Up/Down arrow keys and printable characters should open the
+          // combobox popover.
+          options.show?.();
         }
         compositeHTMLProps.onKeyDown?.(event);
       },
-      [
-        htmlOnKeyDown,
-        options.show,
-        options.menuRole,
-        compositeHTMLProps.onKeyDown,
-      ]
+      [options.currentId, options.show, compositeHTMLProps.onKeyDown]
     );
+
     return {
       ...compositeHTMLProps,
+      onKeyDownCapture,
       onKeyDown,
       onKeyUp,
     };
