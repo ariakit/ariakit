@@ -17,8 +17,16 @@ export default function InputWithPasswordToggle() {
         href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
         rel="stylesheet"
       />
+      <label
+        className="block text-sm font-bold text-gray-700 mb-2"
+        htmlFor="password"
+      >
+        Password
+      </label>
       <div className="relative h-10 max-w-sm">
         <Input
+          id="password"
+          name="password"
           className="rounded border border-gray-400 h-full w-full pl-2 pr-20 focus:outline-none focus:shadow-outline focus:border-blue-600"
           placeholder="Enter password"
           type={inputType}
