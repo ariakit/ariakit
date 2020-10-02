@@ -1,5 +1,5 @@
 import * as React from "react";
-import { click, focus, press, render, wait, axe } from "reakit-test-utils";
+import { click, render, axe } from "reakit-test-utils";
 import Input from "../index";
 
 test("should open modal content tab", async () => {
