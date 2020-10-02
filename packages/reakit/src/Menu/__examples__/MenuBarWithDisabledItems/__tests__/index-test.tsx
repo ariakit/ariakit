@@ -1,99 +1,95 @@
 import * as React from "react";
-import { render, press, hover, click, wait, axe } from "reakit-test-utils";
+import {
+  render,
+  screen,
+  press,
+  hover,
+  click,
+  wait,
+  axe,
+} from "reakit-test-utils";
 import MenuBarWithDisabledItems from "..";
 
 test("open menus with hover except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuBarWithDisabledItems />
-  );
-  expect(label("File")).not.toBeVisible();
-  click(text("File"));
-  await wait(expect(label("File")).toBeVisible);
-  expect(text("File")).toHaveFocus();
-  hover(text("View"));
-  expect(label("File")).toBeVisible();
-  expect(text("File")).toHaveFocus();
-  hover(text("Edit"));
-  await wait(expect(label("Edit")).toBeVisible);
-  expect(text("Edit")).toHaveFocus();
+  render(<MenuBarWithDisabledItems />);
+  expect(screen.getByLabelText("File")).not.toBeVisible();
+  click(screen.getByText("File"));
+  await wait(expect(screen.getByLabelText("File")).toBeVisible);
+  expect(screen.getByText("File")).toHaveFocus();
+  hover(screen.getByText("View"));
+  expect(screen.getByLabelText("File")).toBeVisible();
+  expect(screen.getByText("File")).toHaveFocus();
+  hover(screen.getByText("Edit"));
+  await wait(expect(screen.getByLabelText("Edit")).toBeVisible);
+  expect(screen.getByText("Edit")).toHaveFocus();
 });
 
 test("open menus with click except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label, baseElement } = render(
-    <MenuBarWithDisabledItems />
-  );
-  click(text("File"));
-  await wait(expect(label("File")).toBeVisible);
-  expect(text("File")).toHaveFocus();
-  click(text("View"));
+  const { baseElement } = render(<MenuBarWithDisabledItems />);
+  click(screen.getByText("File"));
+  await wait(expect(screen.getByLabelText("File")).toBeVisible);
+  expect(screen.getByText("File")).toHaveFocus();
+  click(screen.getByText("View"));
   expect(baseElement).toHaveFocus();
-  click(text("Edit"));
-  await wait(expect(label("Edit")).toBeVisible);
-  expect(text("Edit")).toHaveFocus();
+  click(screen.getByText("Edit"));
+  await wait(expect(screen.getByLabelText("Edit")).toBeVisible);
+  expect(screen.getByText("Edit")).toHaveFocus();
 });
 
 test("open menus with keyboard except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuBarWithDisabledItems />
-  );
+  render(<MenuBarWithDisabledItems />);
   press.Tab();
-  expect(text("File")).toHaveFocus();
-  await wait(expect(label("File")).toBeVisible);
+  expect(screen.getByText("File")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("File")).toBeVisible);
   press.ArrowRight();
-  expect(text("View")).toHaveFocus();
-  await wait(expect(label("File")).not.toBeVisible);
-  await wait(expect(label("View")).not.toBeVisible);
+  expect(screen.getByText("View")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("File")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("View")).not.toBeVisible);
   press.ArrowDown();
-  await wait(expect(label("File")).not.toBeVisible);
-  await wait(expect(label("View")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("File")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("View")).not.toBeVisible);
   press.ArrowUp();
-  await wait(expect(label("File")).not.toBeVisible);
-  await wait(expect(label("View")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("File")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("View")).not.toBeVisible);
   press.Enter();
-  await wait(expect(label("File")).not.toBeVisible);
-  await wait(expect(label("View")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("File")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("View")).not.toBeVisible);
   press.Space();
-  await wait(expect(label("File")).not.toBeVisible);
-  await wait(expect(label("View")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("File")).not.toBeVisible);
+  await wait(expect(screen.getByLabelText("View")).not.toBeVisible);
   press.ArrowRight();
-  expect(text("Edit")).toHaveFocus();
-  await wait(expect(label("Edit")).toBeVisible);
+  expect(screen.getByText("Edit")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("Edit")).toBeVisible);
   press.ArrowRight();
-  expect(text("File")).toHaveFocus();
-  await wait(expect(label("File")).toBeVisible);
+  expect(screen.getByText("File")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("File")).toBeVisible);
 });
 
 test("open submenus with click except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuBarWithDisabledItems />
-  );
-  click(text("Edit"));
-  click(text("Find"));
-  expect(text("Find")).toHaveFocus();
-  await wait(expect(label("Find")).toBeVisible);
-  expect(text("Find")).toHaveFocus();
-  click(text("Spelling and Grammar"));
-  await wait(expect(label("Find")).not.toBeVisible);
-  expect(label("Edit")).toHaveFocus();
+  render(<MenuBarWithDisabledItems />);
+  click(screen.getByText("Edit"));
+  click(screen.getByText("Find"));
+  expect(screen.getByText("Find")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  expect(screen.getByText("Find")).toHaveFocus();
+  click(screen.getByText("Spelling and Grammar"));
+  await wait(expect(screen.getByLabelText("Find")).not.toBeVisible);
+  expect(screen.getByLabelText("Edit")).toHaveFocus();
 });
 
 test("open submenus with hover except the disabled one", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuBarWithDisabledItems />
-  );
-  click(text("Edit"));
-  hover(text("Find"));
-  expect(text("Find")).toHaveFocus();
-  await wait(expect(label("Find")).toBeVisible);
-  expect(text("Find")).toHaveFocus();
-  hover(text("Spelling and Grammar"));
-  await wait(expect(label("Find")).not.toBeVisible);
-  expect(label("Edit")).toHaveFocus();
+  render(<MenuBarWithDisabledItems />);
+  click(screen.getByText("Edit"));
+  hover(screen.getByText("Find"));
+  expect(screen.getByText("Find")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  expect(screen.getByText("Find")).toHaveFocus();
+  hover(screen.getByText("Spelling and Grammar"));
+  await wait(expect(screen.getByLabelText("Find")).not.toBeVisible);
+  expect(screen.getByLabelText("Edit")).toHaveFocus();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<MenuBarWithDisabledItems />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

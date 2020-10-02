@@ -19,8 +19,7 @@ export type TooltipOptions = DisclosureContentOptions &
     "unstable_popoverRef" | "unstable_popoverStyles"
   > & {
     /**
-     * Whether or not the dialog should be rendered within `Portal`.
-     * It's `true` by default if `modal` is `true`.
+     * Whether or not the tooltip should be rendered within `Portal`.
      */
     unstable_portal?: boolean;
   };

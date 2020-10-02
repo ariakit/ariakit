@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   render,
+  screen,
   press,
   hover,
   click,
@@ -11,71 +12,57 @@ import {
 import MenuWithSubmenu from "..";
 
 test("open menu", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  expect(label("Edit")).not.toBeVisible();
-  click(text("Edit"));
-  await wait(expect(label("Edit")).toBeVisible);
-  await wait(expect(label("Edit")).toHaveFocus);
+  render(<MenuWithSubmenu />);
+  expect(screen.getByLabelText("Edit")).not.toBeVisible();
+  click(screen.getByText("Edit"));
+  await wait(expect(screen.getByLabelText("Edit")).toBeVisible);
+  await wait(expect(screen.getByLabelText("Edit")).toHaveFocus);
 });
 
 test("open submenu with click", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Edit"));
-  click(text("Find"));
-  await wait(expect(label("Find")).toBeVisible);
-  await wait(expect(text("Find")).toHaveFocus);
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Edit"));
+  click(screen.getByText("Find"));
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  await wait(expect(screen.getByText("Find")).toHaveFocus);
 });
 
 test("open submenu with hover", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Edit"));
-  hover(text("Find"));
-  await wait(expect(label("Find")).toBeVisible);
-  await wait(expect(text("Find")).toHaveFocus);
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Edit"));
+  hover(screen.getByText("Find"));
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  await wait(expect(screen.getByText("Find")).toHaveFocus);
 });
 
 test("open submenu by pressing enter", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Edit"));
-  focus(text("Find"));
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Edit"));
+  focus(screen.getByText("Find"));
   press.Enter();
-  await wait(expect(label("Find")).toBeVisible);
-  await wait(expect(text("Search the Web...")).toHaveFocus);
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  await wait(expect(screen.getByText("Search the Web...")).toHaveFocus);
 });
 
 test("open submenu by pressing space", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Edit"));
-  focus(text("Find"));
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Edit"));
+  focus(screen.getByText("Find"));
   press.Space();
-  await wait(expect(label("Find")).toBeVisible);
-  await wait(expect(text("Search the Web...")).toHaveFocus);
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  await wait(expect(screen.getByText("Search the Web...")).toHaveFocus);
 });
 
 test("open submenu by pressing arrow right", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Edit"));
-  focus(text("Find"));
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Edit"));
+  focus(screen.getByText("Find"));
   press.ArrowRight();
-  await wait(expect(label("Find")).toBeVisible);
-  await wait(expect(text("Search the Web...")).toHaveFocus);
+  await wait(expect(screen.getByLabelText("Find")).toBeVisible);
+  await wait(expect(screen.getByText("Search the Web...")).toHaveFocus);
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<MenuWithSubmenu />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

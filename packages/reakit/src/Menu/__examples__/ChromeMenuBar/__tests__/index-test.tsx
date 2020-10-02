@@ -1,53 +1,59 @@
 import * as React from "react";
-import { render, hover, click, wait, press, axe } from "reakit-test-utils";
+import {
+  render,
+  screen,
+  hover,
+  click,
+  wait,
+  press,
+  axe,
+} from "reakit-test-utils";
 import ChromeMenuBar from "..";
 
 test("open and hover menus", async () => {
-  const { getByText: text, getByLabelText: label } = render(<ChromeMenuBar />);
-  expect(label("File")).not.toBeVisible();
-  click(text("File"));
-  await wait(expect(label("File")).toBeVisible);
-  expect(text("File")).toHaveFocus();
-  hover(text("Edit"));
-  await wait(expect(label("Edit")).toBeVisible);
-  expect(text("Edit")).toHaveFocus();
+  render(<ChromeMenuBar />);
+  expect(screen.getByLabelText("File")).not.toBeVisible();
+  click(screen.getByText("File"));
+  await wait(expect(screen.getByLabelText("File")).toBeVisible);
+  expect(screen.getByText("File")).toHaveFocus();
+  hover(screen.getByText("Edit"));
+  await wait(expect(screen.getByLabelText("Edit")).toBeVisible);
+  expect(screen.getByText("Edit")).toHaveFocus();
 });
 
 test("navigate through the menu bar using keyboard", async () => {
-  const { getByText: text, getByLabelText: label } = render(<ChromeMenuBar />);
-  expect(text("Chrome")).not.toHaveFocus();
-  expect(label("Chrome")).not.toBeVisible();
+  render(<ChromeMenuBar />);
+  expect(screen.getByText("Chrome")).not.toHaveFocus();
+  expect(screen.getByLabelText("Chrome")).not.toBeVisible();
   press.Tab();
-  expect(text("Chrome")).toHaveFocus();
-  expect(label("Chrome")).toBeVisible();
+  expect(screen.getByText("Chrome")).toHaveFocus();
+  expect(screen.getByLabelText("Chrome")).toBeVisible();
   press.ArrowRight();
-  expect(text("Chrome")).not.toHaveFocus();
-  expect(label("Chrome")).not.toBeVisible();
-  expect(text("File")).toHaveFocus();
-  expect(label("File")).toBeVisible();
+  expect(screen.getByText("Chrome")).not.toHaveFocus();
+  expect(screen.getByLabelText("Chrome")).not.toBeVisible();
+  expect(screen.getByText("File")).toHaveFocus();
+  expect(screen.getByLabelText("File")).toBeVisible();
   press.End();
-  expect(text("Help")).toHaveFocus();
-  expect(label("Help")).toBeVisible();
+  expect(screen.getByText("Help")).toHaveFocus();
+  expect(screen.getByLabelText("Help")).toBeVisible();
   press.ArrowRight();
-  expect(text("Chrome")).toHaveFocus();
-  await wait(expect(label("Chrome")).toBeVisible);
+  expect(screen.getByText("Chrome")).toHaveFocus();
+  await wait(expect(screen.getByLabelText("Chrome")).toBeVisible);
   press.ArrowDown();
-  await wait(expect(text("About Google Chrome")).toHaveFocus);
-  press.ArrowDown();
-  press.ArrowDown();
+  await wait(expect(screen.getByText("About Google Chrome")).toHaveFocus);
   press.ArrowDown();
   press.ArrowDown();
-  expect(text("Services")).toHaveFocus();
+  press.ArrowDown();
+  press.ArrowDown();
+  expect(screen.getByText("Services")).toHaveFocus();
   press.ArrowRight();
-  await wait(expect(text("Activity Monitor")).toHaveFocus);
+  await wait(expect(screen.getByText("Activity Monitor")).toHaveFocus);
   press.ArrowRight();
-  expect(text("File")).toHaveFocus();
-  expect(label("File")).toBeVisible();
+  expect(screen.getByText("File")).toHaveFocus();
+  expect(screen.getByLabelText("File")).toBeVisible();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<ChromeMenuBar />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

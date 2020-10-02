@@ -1,21 +1,17 @@
 import * as React from "react";
-import { render, click, axe } from "reakit-test-utils";
+import { render, screen, click, axe } from "reakit-test-utils";
 import DillUpComposite from "..";
 
 test("mount and unmount", () => {
-  const { getByText: text, queryByLabelText: label } = render(
-    <DillUpComposite />
-  );
-  expect(label("composite")).toBeInTheDocument();
-  click(text("Toggle Toolbar"));
-  expect(label("composite")).not.toBeInTheDocument();
-  click(text("Toggle Toolbar"));
-  expect(label("composite")).toBeInTheDocument();
+  render(<DillUpComposite />);
+  expect(screen.queryByLabelText("composite")).toBeInTheDocument();
+  click(screen.getByText("Toggle Toolbar"));
+  expect(screen.queryByLabelText("composite")).not.toBeInTheDocument();
+  click(screen.getByText("Toggle Toolbar"));
+  expect(screen.queryByLabelText("composite")).toBeInTheDocument();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<DillUpComposite />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

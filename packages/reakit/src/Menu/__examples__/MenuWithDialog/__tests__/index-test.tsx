@@ -1,53 +1,48 @@
 import * as React from "react";
-import { render, press, hover, click, wait } from "reakit-test-utils";
+import { render, screen, press, hover, click, wait } from "reakit-test-utils";
 import MenuWithSubmenu from "..";
 
 test("open menu", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  expect(label("Bookmarks")).not.toBeVisible();
-  click(text("Bookmarks"));
-  await wait(expect(label("Bookmarks")).toBeVisible);
-  await wait(expect(label("Bookmarks")).toHaveFocus);
+  render(<MenuWithSubmenu />);
+  expect(screen.getByLabelText("Bookmarks")).not.toBeVisible();
+  click(screen.getByText("Bookmarks"));
+  await wait(expect(screen.getByLabelText("Bookmarks")).toBeVisible);
+  await wait(expect(screen.getByLabelText("Bookmarks")).toHaveFocus);
 });
 
 test("open dialog", async () => {
-  const { getByText: text, getByLabelText: label, getByRole: role } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Bookmarks"));
-  click(role("menuitem", { name: "Bookmark This Tab..." }));
-  await wait(expect(label("Bookmark This Tab...")).toBeVisible);
-  await wait(expect(text("Cancel")).toHaveFocus);
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Bookmarks"));
+  click(screen.getByRole("menuitem", { name: "Bookmark This Tab..." }));
+  await wait(expect(screen.getByLabelText("Bookmark This Tab...")).toBeVisible);
+  await wait(expect(screen.getByText("Cancel")).toHaveFocus);
 });
 
 test("close dialog", async () => {
-  const { getByText: text, getByLabelText: label, getByRole: role } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Bookmarks"));
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Bookmarks"));
   press.ArrowDown();
   press.ArrowDown();
   press.Enter();
-  await wait(expect(label("Bookmark This Tab...")).toBeVisible);
-  await wait(expect(text("Cancel")).toHaveFocus);
+  await wait(expect(screen.getByLabelText("Bookmark This Tab...")).toBeVisible);
+  await wait(expect(screen.getByText("Cancel")).toHaveFocus);
   press.Enter();
-  await wait(expect(label("Bookmark This Tab...")).not.toBeVisible);
   await wait(
-    expect(role("menuitem", { name: "Bookmark This Tab..." })).toHaveFocus
+    expect(screen.getByLabelText("Bookmark This Tab...")).not.toBeVisible
+  );
+  await wait(
+    expect(screen.getByRole("menuitem", { name: "Bookmark This Tab..." }))
+      .toHaveFocus
   );
 });
 
 test("hover menu items with dialog open", async () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <MenuWithSubmenu />
-  );
-  click(text("Bookmarks"));
+  render(<MenuWithSubmenu />);
+  click(screen.getByText("Bookmarks"));
   press.ArrowDown();
   press.ArrowDown();
   press.Enter();
-  await wait(expect(label("Bookmark This Tab...")).toBeVisible);
-  hover(text("Bookmark Manager"));
-  expect(label("Bookmark This Tab...")).toBeVisible();
+  await wait(expect(screen.getByLabelText("Bookmark This Tab...")).toBeVisible);
+  hover(screen.getByText("Bookmark Manager"));
+  expect(screen.getByLabelText("Bookmark This Tab...")).toBeVisible();
 });

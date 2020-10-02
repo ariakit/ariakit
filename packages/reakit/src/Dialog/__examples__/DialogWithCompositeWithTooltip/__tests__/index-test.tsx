@@ -1,20 +1,16 @@
 import * as React from "react";
-import { click, render, axe } from "reakit-test-utils";
+import { click, screen, render, axe } from "reakit-test-utils";
 import DialogWithCompositeWithTooltip from "..";
 
 test("open dialog with composite with tooltip", () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <DialogWithCompositeWithTooltip />
-  );
-  click(text("Disclosure"));
-  expect(label("Dialog")).toBeVisible();
-  expect(text("item1")).toHaveFocus();
-  expect(text("item1tooltip")).toBeVisible();
+  render(<DialogWithCompositeWithTooltip />);
+  click(screen.getByText("Disclosure"));
+  expect(screen.getByLabelText("Dialog")).toBeVisible();
+  expect(screen.getByText("item1")).toHaveFocus();
+  expect(screen.getByText("item1tooltip")).toBeVisible();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<DialogWithCompositeWithTooltip />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

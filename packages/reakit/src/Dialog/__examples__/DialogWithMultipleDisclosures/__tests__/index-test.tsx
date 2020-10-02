@@ -1,33 +1,29 @@
 import * as React from "react";
-import { click, press, render, axe } from "reakit-test-utils";
+import { click, screen, press, render, axe } from "reakit-test-utils";
 import DialogWithMultipleDisclosures from "..";
 
 test("open and close dialog with multiple disclosures", () => {
-  const { getByText: text, getByLabelText: label } = render(
-    <DialogWithMultipleDisclosures />
-  );
-  const dialog = label("Dialog with multiple disclosures");
+  render(<DialogWithMultipleDisclosures />);
+  const dialog = screen.getByLabelText("Dialog with multiple disclosures");
   expect(dialog).not.toBeVisible();
-  click(text("Disclosure 1"));
+  click(screen.getByText("Disclosure 1"));
   expect(dialog).toBeVisible();
-  expect(text("Close")).toHaveFocus();
-  click(text("Disclosure 2"));
+  expect(screen.getByText("Close")).toHaveFocus();
+  click(screen.getByText("Disclosure 2"));
   expect(dialog).toBeVisible();
-  expect(text("Close")).toHaveFocus();
+  expect(screen.getByText("Close")).toHaveFocus();
   press.Escape();
   expect(dialog).not.toBeVisible();
-  expect(text("Disclosure 2")).toHaveFocus();
-  click(text("Button"));
+  expect(screen.getByText("Disclosure 2")).toHaveFocus();
+  click(screen.getByText("Button"));
   expect(dialog).toBeVisible();
-  expect(text("Close")).toHaveFocus();
-  click(text("Close"));
+  expect(screen.getByText("Close")).toHaveFocus();
+  click(screen.getByText("Close"));
   expect(dialog).not.toBeVisible();
-  expect(text("Button")).toHaveFocus();
+  expect(screen.getByText("Button")).toHaveFocus();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<DialogWithMultipleDisclosures />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

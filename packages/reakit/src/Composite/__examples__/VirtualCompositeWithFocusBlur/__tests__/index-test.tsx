@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, press, click, screen } from "reakit-test-utils";
+import { render, screen, press, click } from "reakit-test-utils";
 import VirtualCompositeWithFocusBlur from "..";
 
 test("focus/blur on virtual composite with mouse click", () => {
