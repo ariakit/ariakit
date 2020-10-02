@@ -8,7 +8,9 @@ export default function InputWithPasswordToggle() {
   const buttonText = inputType === "password" ? "Show" : "Hide";
 
   const handleToggle = () => {
-    setInputType((curr) => (curr === "password" ? "text" : "password"));
+    setInputType((prevInputType) =>
+      prevInputType === "password" ? "text" : "password"
+    );
   };
 
   return (
