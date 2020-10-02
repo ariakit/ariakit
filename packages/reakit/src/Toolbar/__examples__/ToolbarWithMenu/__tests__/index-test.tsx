@@ -1,121 +1,93 @@
 import * as React from "react";
-import { render, press, click, wait, axe } from "reakit-test-utils";
+import { render, screen, press, click, wait, axe } from "reakit-test-utils";
 import ToolbarWithMenu from "..";
 
 test("renders toolbar items with closed menu", () => {
-  const { getByText: text } = render(<ToolbarWithMenu />);
-
-  expect(text("Apples")).toBeVisible();
-  expect(text("Oranges")).toBeVisible();
-  expect(text("Other Fruits")).toBeVisible();
-
-  expect(text("Pears")).not.toBeVisible();
-  expect(text("Kiwis")).not.toBeVisible();
-  expect(text("Lemons")).not.toBeVisible();
+  render(<ToolbarWithMenu />);
+  expect(screen.getByText("Apples")).toBeVisible();
+  expect(screen.getByText("Oranges")).toBeVisible();
+  expect(screen.getByText("Other Fruits")).toBeVisible();
+  expect(screen.getByText("Pears")).not.toBeVisible();
+  expect(screen.getByText("Kiwis")).not.toBeVisible();
+  expect(screen.getByText("Lemons")).not.toBeVisible();
 });
 
 test("can navigate toolbar items through keyboard", async () => {
-  const { getByText: text } = render(<ToolbarWithMenu />);
-
+  render(<ToolbarWithMenu />);
   press.Tab();
-  expect(text("Apples")).toHaveFocus();
-
+  expect(screen.getByText("Apples")).toHaveFocus();
   press.ArrowRight();
-  expect(text("Oranges")).toHaveFocus();
-
+  expect(screen.getByText("Oranges")).toHaveFocus();
   press.ArrowLeft();
-  expect(text("Apples")).toHaveFocus();
-
+  expect(screen.getByText("Apples")).toHaveFocus();
   press.ArrowRight();
   press.ArrowRight();
-  expect(text("Other Fruits")).toHaveFocus();
-
+  expect(screen.getByText("Other Fruits")).toHaveFocus();
   press.Enter();
-  expect(text("Pears")).toBeVisible();
-  await wait(expect(text("Pears")).toHaveFocus);
+  expect(screen.getByText("Pears")).toBeVisible();
+  await wait(expect(screen.getByText("Pears")).toHaveFocus);
 });
 
 test("can open and close the menu through mouse", () => {
-  const { getByText: text } = render(<ToolbarWithMenu />);
-
-  click(text("Other Fruits"));
-  expect(text("Pears")).toBeVisible();
-
-  click(text("Oranges"));
-  expect(text("Pears")).not.toBeVisible();
+  render(<ToolbarWithMenu />);
+  click(screen.getByText("Other Fruits"));
+  expect(screen.getByText("Pears")).toBeVisible();
+  click(screen.getByText("Oranges"));
+  expect(screen.getByText("Pears")).not.toBeVisible();
 });
 
 test("can open menu, navigate it and close it through keyboard", async () => {
-  const { getByText: text } = render(<ToolbarWithMenu />);
-
+  render(<ToolbarWithMenu />);
   press.Tab();
-  expect(text("Apples")).toHaveFocus();
+  expect(screen.getByText("Apples")).toHaveFocus();
   press.ArrowRight();
   press.ArrowRight();
-  expect(text("Other Fruits")).toHaveFocus();
+  expect(screen.getByText("Other Fruits")).toHaveFocus();
   press.Enter();
-
-  await wait(expect(text("Pears")).toHaveFocus);
-  expect(text("Pears")).toBeVisible();
-  expect(text("Kiwis")).toBeVisible();
-  expect(text("Lemons")).toBeVisible();
-
+  await wait(expect(screen.getByText("Pears")).toHaveFocus);
+  expect(screen.getByText("Pears")).toBeVisible();
+  expect(screen.getByText("Kiwis")).toBeVisible();
+  expect(screen.getByText("Lemons")).toBeVisible();
   press.ArrowDown();
-  expect(text("Kiwis")).toHaveFocus();
+  expect(screen.getByText("Kiwis")).toHaveFocus();
   press.ArrowDown();
-  expect(text("Lemons")).toHaveFocus();
+  expect(screen.getByText("Lemons")).toHaveFocus();
   press.ArrowUp();
-  expect(text("Kiwis")).toHaveFocus();
-
+  expect(screen.getByText("Kiwis")).toHaveFocus();
   press.Escape();
-
-  expect(text("Pears")).not.toBeVisible();
-  expect(text("Kiwis")).not.toBeVisible();
-  expect(text("Lemons")).not.toBeVisible();
-  expect(text("Other Fruits")).toHaveFocus();
+  expect(screen.getByText("Pears")).not.toBeVisible();
+  expect(screen.getByText("Kiwis")).not.toBeVisible();
+  expect(screen.getByText("Lemons")).not.toBeVisible();
+  expect(screen.getByText("Other Fruits")).toHaveFocus();
 });
 
 test("opens menu pressing arrow down focusing first item", async () => {
-  const { getByText: getText, findByText: findText } = render(
-    <ToolbarWithMenu />
-  );
-
+  render(<ToolbarWithMenu />);
   press.Tab();
-  expect(getText("Apples")).toHaveFocus();
+  expect(screen.getByText("Apples")).toHaveFocus();
   press.ArrowRight();
   press.ArrowRight();
-  expect(getText("Other Fruits")).toHaveFocus();
-
+  expect(screen.getByText("Other Fruits")).toHaveFocus();
   press.ArrowDown();
-
-  const firstMenuItem = await findText("Pears");
-
+  const firstMenuItem = await screen.findByText("Pears");
   expect(firstMenuItem).toHaveFocus();
   expect(firstMenuItem).toBeVisible();
 });
 
 test("opens menu pressing arrow up focusing last item", async () => {
-  const { getByText: getText, findByText: findText } = render(
-    <ToolbarWithMenu />
-  );
-
+  render(<ToolbarWithMenu />);
   press.Tab();
-  expect(getText("Apples")).toHaveFocus();
+  expect(screen.getByText("Apples")).toHaveFocus();
   press.ArrowRight();
   press.ArrowRight();
-  expect(getText("Other Fruits")).toHaveFocus();
-
+  expect(screen.getByText("Other Fruits")).toHaveFocus();
   press.ArrowUp();
-
-  const firstMenuItem = await findText("Lemons");
-
+  const firstMenuItem = await screen.findByText("Lemons");
   expect(firstMenuItem).toHaveFocus();
   expect(firstMenuItem).toBeVisible();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<ToolbarWithMenu />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });

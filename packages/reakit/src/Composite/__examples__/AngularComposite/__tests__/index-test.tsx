@@ -1,32 +1,30 @@
 import * as React from "react";
-import { render, press, axe } from "reakit-test-utils";
+import { render, screen, press, axe } from "reakit-test-utils";
 import AngularComposite from "..";
 
 test("navigate through angular composite", () => {
-  const { getByText: text } = render(<AngularComposite />);
+  render(<AngularComposite />);
   press.Tab();
-  expect(text("item-1-1")).toHaveFocus();
+  expect(screen.getByText("item-1-1")).toHaveFocus();
   press.ArrowRight();
-  expect(text("item-1-2")).toHaveFocus();
+  expect(screen.getByText("item-1-2")).toHaveFocus();
   press.ArrowRight();
-  expect(text("item-1-3")).toHaveFocus();
+  expect(screen.getByText("item-1-3")).toHaveFocus();
   press.ArrowDown();
-  expect(text("item-2-2")).toHaveFocus();
+  expect(screen.getByText("item-2-2")).toHaveFocus();
   press.ArrowUp();
-  expect(text("item-1-2")).toHaveFocus();
+  expect(screen.getByText("item-1-2")).toHaveFocus();
   press.End(null, { ctrlKey: true });
-  expect(text("item-4-3")).toHaveFocus();
+  expect(screen.getByText("item-4-3")).toHaveFocus();
   press.ArrowUp();
-  expect(text("item-3-2")).toHaveFocus();
+  expect(screen.getByText("item-3-2")).toHaveFocus();
   press.ArrowRight();
-  expect(text("item-3-4")).toHaveFocus();
+  expect(screen.getByText("item-3-4")).toHaveFocus();
   press.ArrowDown();
-  expect(text("item-4-3")).toHaveFocus();
+  expect(screen.getByText("item-4-3")).toHaveFocus();
 });
 
-test("renders with no a11y violations", async () => {
+test("a11y", async () => {
   const { baseElement } = render(<AngularComposite />);
-  const results = await axe(baseElement);
-
-  expect(results).toHaveNoViolations();
+  expect(await axe(baseElement)).toHaveNoViolations();
 });
