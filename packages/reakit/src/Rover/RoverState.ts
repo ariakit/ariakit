@@ -286,26 +286,20 @@ export function useRoverState(
   return {
     ...idState,
     ...state,
-    register: React.useCallback(
-      (id, ref) => dispatch({ type: "register", id, ref }),
-      []
-    ),
-    unregister: React.useCallback(
-      (id) => dispatch({ type: "unregister", id }),
-      []
-    ),
-    move: React.useCallback(
-      (id, silent) => dispatch({ type: "move", id, silent }),
-      []
-    ),
-    next: React.useCallback(() => dispatch({ type: "next" }), []),
-    previous: React.useCallback(() => dispatch({ type: "previous" }), []),
-    first: React.useCallback(() => dispatch({ type: "first" }), []),
-    last: React.useCallback(() => dispatch({ type: "last" }), []),
-    unstable_reset: React.useCallback(() => dispatch({ type: "reset" }), []),
-    unstable_orientate: React.useCallback(
-      (o) => dispatch({ type: "orientate", orientation: o }),
-      []
+    register: useAction((id, ref) => dispatch({ type: "register", id, ref })),
+    unregister: useAction((id) => dispatch({ type: "unregister", id })),
+    move: useAction((id, silent) => dispatch({ type: "move", id, silent })),
+    next: useAction(() => dispatch({ type: "next" })),
+    previous: useAction(() => dispatch({ type: "previous" })),
+    first: useAction(() => dispatch({ type: "first" })),
+    last: useAction(() => dispatch({ type: "last" })),
+    unstable_reset: useAction(() => dispatch({ type: "reset" })),
+    unstable_orientate: useAction((o) =>
+      dispatch({ type: "orientate", orientation: o })
     ),
   };
+}
+
+function useAction<T extends (...args: any[]) => any>(fn: T) {
+  return React.useCallback(fn, []);
 }
