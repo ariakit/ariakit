@@ -35,6 +35,19 @@ function Example() {
 }
 ```
 
+## CSS Modules
+
+Assuming you've set up CSS modules (default in create-react-app but easy to hand roll via [css-loader](https://webpack.js.org/loaders/css-loader/#modules)), you can simply import your css module and apply to `className`.
+
+```jsx static
+import { Button } from "reakit";
+import styles from "./Example.module.css";
+
+function Example() {
+  return <Button className={styles.buttonStyles}>Button</Button>;
+}
+```
+
 ## CSS in JS
 
 Example with emotion:
