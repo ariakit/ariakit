@@ -3,9 +3,11 @@ const { join } = require("path");
 const spawn = require("cross-spawn");
 const {
   hasTSConfig,
+  makeTSConfigProd,
   makeProxies,
   makeGitignore,
   makePlaygroundDeps,
+  onExit,
 } = require("./utils");
 
 require("./clean");
@@ -25,6 +27,7 @@ makePlaygroundDeps(cwd);
 makeProxies(cwd);
 
 if (hasTSConfig(cwd)) {
+  onExit(makeTSConfigProd(cwd));
   spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
 }
 

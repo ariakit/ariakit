@@ -356,6 +356,21 @@ function hasTSConfig(rootPath) {
 }
 
 /**
+ * @param {string} rootPath
+ */
+function makeTSConfigProd(rootPath) {
+  const filepath = join(rootPath, "tsconfig.json");
+  const contents = readFileSync(filepath);
+  const json = JSON.parse(contents);
+  json.extends = json.extends.replace("tsconfig.json", "tsconfig.prod.json");
+  json.exclude = [...(json.exlcude || []), "src/**/__*"];
+  writeFileSync(filepath, JSON.stringify(json, null, 2));
+  return function restoreTSConfig() {
+    writeFileSync(filepath, contents);
+  };
+}
+
+/**
  * @param {import("ts-morph").Node<Node>} node
  */
 function getEscapedName(node) {
@@ -820,6 +835,17 @@ function makeKeys(rootPath) {
   }
 }
 
+/**
+ * @param {Function} callback
+ */
+function onExit(callback) {
+  process.on("exit", callback);
+  process.on("SIGINT", callback);
+  process.on("SIGUSR1", callback);
+  process.on("SIGUSR2", callback);
+  process.on("uncaughtException", callback);
+}
+
 module.exports = {
   getPackage,
   getModuleDir,
@@ -836,6 +862,8 @@ module.exports = {
   makePlaygroundDeps,
   makeProxies,
   hasTSConfig,
+  makeTSConfigProd,
   injectPropTypes,
   makeKeys,
+  onExit,
 };
