@@ -6,7 +6,7 @@ path: /docs/composite/
 
 `Composite` is a component that may contain navigable items represented by `CompositeItem`. It's inspired by the [WAI-ARIA Composite Role](https://www.w3.org/TR/wai-aria-1.1/#composite) and implements all the [keyboard navigation mechanisms](https://www.w3.org/TR/wai-aria-practices/#kbd_general_within) to ensure that there's only one tab stop for the whole `Composite` element. This means that it can behave as a [roving tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex) or [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices/#kbd_focus_activedescendant) container.
 
-Since this a very abstract component, it's recommended that you use more concrete ones like `Menu`, `Toolbar`, `Grid` and other derivative components, or build your own on top of `Composite`.
+Since this a very abstract component, it's recommended that you use more concrete ones like `Menu`, `Toolbar`, `TabList` and other derivative components, or build your own on top of `Composite`.
 
 <carbon-ad></carbon-ad>
 
