@@ -10,6 +10,9 @@ function propsAreEqual(
 const normalized = normalizePropsAreEqual(propsAreEqual);
 
 test("normalizePropsAreEqual", () => {
+  expect(propsAreEqual).not.toStrictEqual(normalized);
+  expect(normalizePropsAreEqual(normalized)).toStrictEqual(normalized);
+
   expect(propsAreEqual({ a: "a" }, { a: "a" })).toBe(true);
   expect(propsAreEqual({ a: "a" }, { a: "b" })).toBe(false);
 
