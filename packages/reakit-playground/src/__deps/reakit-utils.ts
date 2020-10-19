@@ -29,6 +29,7 @@ export default {
   "reakit-utils/isSelfTarget": require("reakit-utils/isSelfTarget"),
   "reakit-utils/isTextField": require("reakit-utils/isTextField"),
   "reakit-utils/matches": require("reakit-utils/matches"),
+  "reakit-utils/normalizePropsAreEqual": require("reakit-utils/normalizePropsAreEqual"),
   "reakit-utils/omit": require("reakit-utils/omit"),
   "reakit-utils/pick": require("reakit-utils/pick"),
   "reakit-utils/removeIndexFromArray": require("reakit-utils/removeIndexFromArray"),
