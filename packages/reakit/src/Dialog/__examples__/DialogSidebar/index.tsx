@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, ButtonProps } from "reakit/Button";
+import { Button } from "reakit/Button";
 import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
 import { DialogBackdrop } from "reakit/Dialog/DialogBackdrop";
 
