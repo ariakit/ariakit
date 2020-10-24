@@ -53,8 +53,12 @@ export type UnionToIntersection<U> = (
  * @template P Additional props
  * @template T React component or string element
  */
-export type PropsWithAs<P, T extends As> = P &
-  Omit<React.ComponentProps<T>, "as" | keyof P> & {
+export type PropsWithAs<P, T extends As> = {
+  // Some components (Checkbox) are using `state` as a prop
+  // to avoid type checking errors, we also allow `unknown`
+  state?: P | unknown;
+} & Partial<P> &
+  Omit<React.ComponentProps<T>, "as" | "state" | keyof P> & {
     as?: T;
     children?: React.ReactNode | RenderProp<ExtractHTMLAttributes<any>>;
   };

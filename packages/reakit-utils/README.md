@@ -51,11 +51,13 @@ yarn add reakit-utils
 -   [isSelfTarget](#isselftarget)
 -   [isTextField](#istextfield)
 -   [matches](#matches)
+-   [normalizePropsAreEqual](#normalizepropsareequal)
 -   [omit](#omit)
 -   [pick](#pick)
 -   [removeIndexFromArray](#removeindexfromarray)
 -   [removeItemFromArray](#removeitemfromarray)
 -   [shallowEqual](#shallowequal)
+-   [\_\_deprecatedSplitProps](#__deprecatedsplitprops)
 -   [splitProps](#splitprops)
 -   [tabbable](#tabbable)
 -   [toArray](#toarray)
@@ -523,6 +525,26 @@ Ponyfill for `Element.prototype.matches`
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
+### normalizePropsAreEqual
+
+This higher order functions take `propsAreEqual` function and
+returns a new function which normalizes the props.
+
+Normalizing in our case is making sure the `propsAreEqual` works with
+both version 1 (object spreading) and version 2 (state object) state passing.
+
+To achieve this, the returned function in case of a state object
+will spread the state object in both `prev` and \`next props.
+
+Other case it just returns the function as is which makes sure
+that we are still backward compatible
+
+#### Parameters
+
+-   `propsAreEqual` **function (prev: O, next: O): [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+Returns **function (prev: PropsWithAs&lt;O, T>, next: PropsWithAs&lt;O, T>): [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### omit
 
 Omits specific keys from an object.
@@ -624,7 +646,7 @@ shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### splitProps
+### \_\_deprecatedSplitProps
 
 Splits an object (`props`) into a tuple where the first item is an object
 with the passed `keys`, and the second item is an object with these keys
@@ -641,6 +663,42 @@ omitted.
 import { splitProps } from "reakit-utils";
 
 splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
+```
+
+Returns **\[any, Omit&lt;T, K>]** 
+
+**Meta**
+
+-   **deprecated**: will be removed in version 2
+
+
+### splitProps
+
+Splits an object (`props`) into a tuple where the first item
+is the `state` property, and the second item is the rest of the properties.
+
+It is also backward compatible with version 1. If `keys` are passed then
+splits an object (`props`) into a tuple where the first item is an object
+with the passed `keys`, and the second item is an object with these keys
+omitted.
+
+#### Parameters
+
+-   `props` **T** 
+-   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)?** 
+
+#### Examples
+
+```javascript
+import { splitProps } from "reakit-utils";
+
+splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
+```
+
+```javascript
+import { splitProps } from "reakit-utils";
+
+splitProps({ state: { a: "a" }, b: "b" }); // [{ a: "a" }, { b: "b" }]
 ```
 
 Returns **\[any, Omit&lt;T, K>]** 

@@ -1,14 +1,21 @@
+import { isPlainObject } from "./isPlainObject";
+
 /**
  * Splits an object (`props`) into a tuple where the first item is an object
  * with the passed `keys`, and the second item is an object with these keys
  * omitted.
+ *
+ * @deprecated will be removed in version 2
  *
  * @example
  * import { splitProps } from "reakit-utils";
  *
  * splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
  */
-export function splitProps<T extends Record<string, any>, K extends keyof T>(
+function __deprecatedSplitProps<
+  T extends Record<string, any>,
+  K extends keyof T
+>(
   props: T,
   keys: ReadonlyArray<K> | Array<K>
 ): [{ [P in K]: T[P] }, Omit<T, K>] {
@@ -25,4 +32,38 @@ export function splitProps<T extends Record<string, any>, K extends keyof T>(
   }
 
   return [picked, omitted];
+}
+
+/**
+ * Splits an object (`props`) into a tuple where the first item
+ * is the `state` property, and the second item is the rest of the properties.
+ *
+ * It is also backward compatible with version 1. If `keys` are passed then
+ * splits an object (`props`) into a tuple where the first item is an object
+ * with the passed `keys`, and the second item is an object with these keys
+ * omitted.
+ *
+ * @example
+ * import { splitProps } from "reakit-utils";
+ *
+ * splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
+ *
+ * @example
+ * import { splitProps } from "reakit-utils";
+ *
+ * splitProps({ state: { a: "a" }, b: "b" }); // [{ a: "a" }, { b: "b" }]
+ */
+export function splitProps<T extends Record<string, any>, K extends keyof T>(
+  props: T,
+  keys?: ReadonlyArray<K> | Array<K>
+): [{ [P in K]: T["state"][P] }, Omit<T, K>] {
+  if (!isPlainObject(props.state) && keys) {
+    return __deprecatedSplitProps(props, keys);
+  }
+
+  const { state, ...restProps } = props;
+  return [
+    props.state as { [P in K]: T["state"][P] },
+    (restProps as unknown) as Omit<T, K>,
+  ];
 }

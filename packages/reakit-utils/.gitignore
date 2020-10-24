@@ -29,6 +29,7 @@
 /isTextField
 /lib
 /matches
+/normalizePropsAreEqual
 /omit
 /pick
 /removeIndexFromArray

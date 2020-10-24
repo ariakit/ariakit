@@ -24,6 +24,7 @@ export * from "./isPortalEvent";
 export * from "./isPromise";
 export * from "./isSelfTarget";
 export * from "./isTextField";
+export * from "./normalizePropsAreEqual";
 export * from "./matches";
 export * from "./omit";
 export * from "./pick";
