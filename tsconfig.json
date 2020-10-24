@@ -1,45 +1,30 @@
 {
+  "extends": "./tsconfig.prod.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "jsx": "react",
-    "lib": ["dom"],
-    "strict": true,
-    "strictFunctionTypes": false,
-    "declaration": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "stripInternal": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
     "paths": {
-      "reakit": ["./node_modules/reakit/src"],
-      "reakit/*": ["./node_modules/reakit/src/*"],
+      "reakit": ["packages/reakit/src"],
+      "reakit/*": ["packages/reakit/src/*"],
       
-      "reakit-playground": ["./node_modules/reakit-playground/src"],
-      "reakit-playground/*": ["./node_modules/reakit-playground/src/*"],
+      "reakit-playground": ["packages/reakit-playground/src"],
+      "reakit-playground/*": ["packages/reakit-playground/src/*"],
 
-      "reakit-system": ["./node_modules/reakit-system/src"],
-      "reakit-system/*": ["./node_modules/reakit-system/src/*"],
+      "reakit-system": ["packages/reakit-system/src"],
+      "reakit-system/*": ["packages/reakit-system/src/*"],
       
-      "reakit-system-palette": ["./node_modules/reakit-system-palette/src"],
-      "reakit-system-palette/*": ["./node_modules/reakit-system-palette/src/*"],
+      "reakit-system-palette": ["packages/reakit-system-palette/src"],
+      "reakit-system-palette/*": ["packages/reakit-system-palette/src/*"],
 
-      "reakit-system-bootstrap": ["./node_modules/reakit-system-bootstrap/src"],
-      "reakit-system-bootstrap/*": ["./node_modules/reakit-system-bootstrap/src/*"],
+      "reakit-system-bootstrap": ["packages/reakit-system-bootstrap/src"],
+      "reakit-system-bootstrap/*": ["packages/reakit-system-bootstrap/src/*"],
 
-      "reakit-test-utils": ["./node_modules/reakit-test-utils/src"],
-      "reakit-test-utils/*": ["./node_modules/reakit-test-utils/src/*"],
+      "reakit-test-utils": ["packages/reakit-test-utils/src"],
+      "reakit-test-utils/*": ["packages/reakit-test-utils/src/*"],
 
-      "reakit-utils": ["./node_modules/reakit-utils/src"],
-      "reakit-utils/*": ["./node_modules/reakit-utils/src/*"],
+      "reakit-utils": ["packages/reakit-utils/src"],
+      "reakit-utils/*": ["packages/reakit-utils/src/*"],
 
-      "reakit-warning": ["./node_modules/reakit-warning/src"],
-      "reakit-warning/*": ["./node_modules/reakit-warning/src/*"]
+      "reakit-warning": ["packages/reakit-warning/src"],
+      "reakit-warning/*": ["packages/reakit-warning/src/*"]
     }
   }
 }
