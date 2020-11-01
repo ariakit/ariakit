@@ -1,7 +1,11 @@
 import * as React from "react";
 import { Button } from "reakit/Button";
-import { useDialogState, Dialog, DialogDisclosure } from "reakit/Dialog";
-import { DialogBackdrop } from "reakit/Dialog/DialogBackdrop";
+import {
+  useDialogState,
+  Dialog,
+  DialogDisclosure,
+  DialogBackdrop,
+} from "reakit/Dialog";
 
 export default function DialogSidebar() {
   const dialog = useDialogState();
