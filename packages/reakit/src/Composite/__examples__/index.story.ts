@@ -1,8 +1,8 @@
 import { Composite } from "../Composite";
 
 export { default as AngularComposite } from "./AngularComposite";
-export { default as ButtonAsDiv } from "./CompositeVirtualAsProp";
-export { default as ButtonAsLink } from "./CompositeWithTooltip";
+export { default as CompositeVirtualAsProp } from "./CompositeVirtualAsProp";
+export { default as CompositeWithTooltip } from "./CompositeWithTooltip";
 export { default as DrillUpComposite } from "./DrillUpComposite";
 export { default as DynamicComposite } from "./DynamicComposite";
 export { default as NestedCompositeItems } from "./NestedCompositeItems";
