@@ -1,5 +1,7 @@
 module.exports = {
-  stories: ["./stories.js"],
+  stories: [
+    `${__dirname}/../packages/reakit/src/**/__examples__/**/*.story.ts`,
+  ],
 
   webpackFinal: async (config) => {
     config.module.rules.push({
