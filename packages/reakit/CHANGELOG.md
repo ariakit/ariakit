@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.6](https://github.com/reakit/reakit/compare/reakit@1.2.5...reakit@1.2.6) (2020-11-12)
+
+
+### Bug Fixes
+
+* Fix Composite `unstable_virtual` option on mobile devices ([#783](https://github.com/reakit/reakit/issues/783)) ([ecdc4ef](https://github.com/reakit/reakit/commit/ecdc4ef8ddd72ef136d8c72d969a3fe73505fd74))
+* Stop warning when using invalid composite roles on `Composite` ([#784](https://github.com/reakit/reakit/issues/784)) ([9bcbfe6](https://github.com/reakit/reakit/commit/9bcbfe6740c6e5e3e7ff6d51bb081a7ecc7af08d))
+
+
+
+
+
 ## [1.2.5](https://github.com/reakit/reakit/compare/reakit@1.2.4...reakit@1.2.5) (2020-09-22)
 
 

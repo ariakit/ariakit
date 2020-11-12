@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.6](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.5...reakit-test-utils@0.14.6) (2020-11-12)
+
+
+### Bug Fixes
+
+* Fix Composite `unstable_virtual` option on mobile devices ([#783](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/783)) ([ecdc4ef](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/ecdc4ef8ddd72ef136d8c72d969a3fe73505fd74))
+
+
+
+
+
 ## [0.14.5](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.4...reakit-test-utils@0.14.5) (2020-09-22)
 
 
