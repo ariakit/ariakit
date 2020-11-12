@@ -142,16 +142,21 @@ export function click(element: Element, options?: MouseEventInit) {
 
   // Do not enter this if event.preventDefault() has been called on
   // pointerdown or mousedown.
-  if (defaultAllowed && isFocusable(element)) {
-    focus(element);
-  } else if (element.parentElement) {
-    // If the element is not focusable, focus the closest focusable parent
-    const closestFocusable = getClosestFocusable(element.parentElement);
-    if (closestFocusable) {
-      focus(closestFocusable);
-    } else {
-      // This will automatically set document.body as the activeElement
-      blur();
+  if (defaultAllowed) {
+    if (
+      isFocusable(element) &&
+      getComputedStyle(element).pointerEvents !== "none"
+    ) {
+      focus(element);
+    } else if (element.parentElement) {
+      // If the element is not focusable, focus the closest focusable parent
+      const closestFocusable = getClosestFocusable(element.parentElement);
+      if (closestFocusable) {
+        focus(closestFocusable);
+      } else {
+        // This will automatically set document.body as the activeElement
+        blur();
+      }
     }
   }
 

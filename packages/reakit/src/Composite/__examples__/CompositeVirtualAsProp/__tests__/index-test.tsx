@@ -11,13 +11,13 @@ test("navigate through composite items", () => {
       aria-label="events"
     >
       <li>
+        focus composite
+      </li>
+      <li>
         focus Item 1
       </li>
       <li>
         focus composite - Item 1
-      </li>
-      <li>
-        focus composite
       </li>
       <li>
         keyup composite (Tab)
