@@ -44,21 +44,6 @@ function template(value: string) {
 
 [true, false].forEach((virtual) => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
-    test("warning when there's no composite role", () => {
-      const Test = () => {
-        const composite = useCompositeState({ unstable_virtual: virtual });
-        return (
-          <Composite {...composite} role="button" aria-label="composite">
-            <CompositeItem {...composite}>item1</CompositeItem>
-            <CompositeItem {...composite}>item2</CompositeItem>
-            <CompositeItem {...composite}>item3</CompositeItem>
-          </Composite>
-        );
-      };
-      render(<Test />);
-      expect(console).toHaveWarned();
-    });
-
     test("warning when there's no label", () => {
       const Test = () => {
         const composite = useCompositeState({ unstable_virtual: virtual });
