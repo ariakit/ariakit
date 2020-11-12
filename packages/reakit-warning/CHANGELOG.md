@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/reakit/reakit/tree/master/packages/reakit-warning/compare/reakit-warning@0.5.5...reakit-warning@0.6.0) (2020-11-12)
+
+**Note:** Version bump only for package reakit-warning
+
+
+
+
+
 ## [0.5.5](https://github.com/reakit/reakit/tree/master/packages/reakit-warning/compare/reakit-warning@0.5.4...reakit-warning@0.5.5) (2020-09-22)
 
 **Note:** Version bump only for package reakit-warning

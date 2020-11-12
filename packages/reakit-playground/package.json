@@ -1,6 +1,6 @@
 {
   "name": "reakit-playground",
-  "version": "0.14.6",
+  "version": "0.15.0",
   "description": "Reakit Playground",
   "sideEffects": false,
   "license": "MIT",
@@ -37,11 +37,11 @@
     "codemirror": "5.58.2",
     "emotion": "^10.0.27",
     "react-codemirror2": "7.2.1",
-    "reakit": "^1.2.6",
-    "reakit-system": "^0.14.5",
-    "reakit-system-bootstrap": "^0.13.6",
-    "reakit-system-palette": "^0.13.6",
-    "reakit-utils": "^0.14.4"
+    "reakit": "^1.3.0",
+    "reakit-system": "^0.15.0",
+    "reakit-system-bootstrap": "^0.14.0",
+    "reakit-system-palette": "^0.14.0",
+    "reakit-utils": "^0.15.0"
   },
   "devDependencies": {
     "raw.macro": "0.4.2"

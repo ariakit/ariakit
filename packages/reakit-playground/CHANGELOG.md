@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.14.6...reakit-playground@0.15.0) (2020-11-12)
+
+
+### Features
+
+* Add `Role` component ([#728](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/728)) ([5fa51a7](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/5fa51a7891085aeeb6a0e3ea44ef3d294fccc8ba))
+* Add `state` prop on all components ([#771](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/771)) ([4ed846d](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/4ed846d0a17e655d726572910b57b9ad3ebc235d)), closes [#744](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/744)
+* Add experimental `Combobox` component ([#688](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/688)) ([ad7063b](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/ad7063b0096c19e3295a74213a4ec821683f12ff))
+
+
+
+
+
 ## [0.14.6](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.14.5...reakit-playground@0.14.6) (2020-11-12)
 
 **Note:** Version bump only for package reakit-playground

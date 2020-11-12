@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.2.6...website@1.3.0) (2020-11-12)
+
+
+### Features
+
+* Add `Role` component ([#728](https://github.com/reakit/reakit/tree/master/packages/website/issues/728)) ([5fa51a7](https://github.com/reakit/reakit/tree/master/packages/website/commit/5fa51a7891085aeeb6a0e3ea44ef3d294fccc8ba))
+
+
+
+
+
 ## [1.2.6](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.2.5...website@1.2.6) (2020-11-12)
 
 **Note:** Version bump only for package website

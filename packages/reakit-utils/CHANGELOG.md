@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.14.4...reakit-utils@0.15.0) (2020-11-12)
+
+
+### Features
+
+* Add `state` prop on all components ([#771](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/771)) ([4ed846d](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/commit/4ed846d0a17e655d726572910b57b9ad3ebc235d)), closes [#744](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/issues/744)
+
+
+
+
+
 ## [0.14.4](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.14.3...reakit-utils@0.14.4) (2020-09-22)
 
 

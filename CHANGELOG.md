@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/reakit/reakit/compare/reakit@1.2.6...reakit@1.3.0) (2020-11-12)
+
+
+### Features
+
+* Add `Role` component ([#728](https://github.com/reakit/reakit/issues/728)) ([5fa51a7](https://github.com/reakit/reakit/commit/5fa51a7891085aeeb6a0e3ea44ef3d294fccc8ba))
+* Add `shift` option to `useCompositeState` ([#727](https://github.com/reakit/reakit/issues/727)) ([7861395](https://github.com/reakit/reakit/commit/7861395ac8c1eaf979b5e4835ae99c001c39f312))
+* Add experimental `Combobox` component ([#688](https://github.com/reakit/reakit/issues/688)) ([ad7063b](https://github.com/reakit/reakit/commit/ad7063b0096c19e3295a74213a4ec821683f12ff))
+* Add experimental `includesBaseElement` option to `useCompositeState` ([#726](https://github.com/reakit/reakit/issues/726)) ([cf3ba56](https://github.com/reakit/reakit/commit/cf3ba5687ea339de0f8917d2b1e83797403cdddc))
+* Show warning if disclosure stopAnimation is not called in time ([#701](https://github.com/reakit/reakit/issues/701)) ([0dd2683](https://github.com/reakit/reakit/commit/0dd2683c99f68ae0f3b32b25b9c989dc4b012ba6)), closes [#698](https://github.com/reakit/reakit/issues/698)
+* Trigger `onChange` when setting `CompositeItemWidget` value ([0b5b3cb](https://github.com/reakit/reakit/commit/0b5b3cb64ba5cc6cba000d0cdc972ab81fe4247e))
+
+
+
+
+
 ## [1.2.6](https://github.com/reakit/reakit/compare/reakit@1.2.5...reakit@1.2.6) (2020-11-12)
 
 

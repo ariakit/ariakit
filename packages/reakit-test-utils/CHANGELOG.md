@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.6...reakit-test-utils@0.15.0) (2020-11-12)
+
+**Note:** Version bump only for package reakit-test-utils
+
+
+
+
+
 ## [0.14.6](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.5...reakit-test-utils@0.14.6) (2020-11-12)
 
 

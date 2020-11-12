@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.13.6...reakit-system-bootstrap@0.14.0) (2020-11-12)
+
+
+### Features
+
+* Add `Role` component ([#728](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/issues/728)) ([5fa51a7](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/commit/5fa51a7891085aeeb6a0e3ea44ef3d294fccc8ba))
+
+
+
+
+
 ## [0.13.6](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.13.5...reakit-system-bootstrap@0.13.6) (2020-11-12)
 
 **Note:** Version bump only for package reakit-system-bootstrap
