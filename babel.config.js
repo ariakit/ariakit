@@ -36,6 +36,7 @@ module.exports = {
     "reakit-warning/babel-plugin",
     "babel-plugin-macros",
     "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-private-methods",
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-proposal-optional-chaining",
     !prod && [
