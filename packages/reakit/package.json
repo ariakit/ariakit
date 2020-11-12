@@ -1,6 +1,6 @@
 {
   "name": "reakit",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Toolkit for building accessible rich web apps with React",
   "sideEffects": false,
   "license": "MIT",
