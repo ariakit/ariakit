@@ -22,6 +22,7 @@ import { reverse } from "./__utils/reverse";
 import { getCurrentId } from "./__utils/getCurrentId";
 import { findEnabledItemById } from "./__utils/findEnabledItemById";
 import { COMPOSITE_KEYS } from "./__keys";
+import { userFocus } from "./__utils/userFocus";
 
 export type CompositeOptions = TabbableOptions &
   Pick<
@@ -119,6 +120,20 @@ function isItem(items: Item[], element?: Element | EventTarget | null) {
   return items?.some((item) => !!element && item.ref.current === element);
 }
 
+function useScheduleUserFocus(currentItem?: Item) {
+  const currentItemRef = useLiveRef(currentItem);
+  const [scheduled, schedule] = React.useReducer((n: number) => n + 1, 0);
+
+  React.useEffect(() => {
+    const currentElement = currentItemRef.current?.ref.current;
+    if (scheduled && currentElement) {
+      userFocus(currentElement);
+    }
+  }, [scheduled]);
+
+  return schedule;
+}
+
 export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
   name: "Composite",
   compose: [useTabbable],
@@ -148,6 +163,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
     const onFocusRef = useLiveRef(htmlOnFocus);
     const onBlurCaptureRef = useLiveRef(htmlOnBlurCapture);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+    const scheduleUserFocus = useScheduleUserFocus(currentItem);
     // IE 11 doesn't support event.relatedTarget, so we use the active element
     // ref instead.
     const activeElementRef = isIE11 ? useActiveElementRef(ref) : undefined;
@@ -208,7 +224,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
         onFocusRef.current?.(event);
         if (event.defaultPrevented) return;
         if (options.unstable_virtual) {
-          const currentElement = currentItem?.ref.current || null;
           if (isSelfTarget(event)) {
             // This means that the composite element has been focused while the
             // composite item has not. For example, by clicking on the
@@ -218,7 +233,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             // When it receives focus, the composite item will put focus back
             // on the composite element, in which case hasItemWithFocus will be
             // true.
-            currentElement?.focus();
+            scheduleUserFocus();
           }
         } else if (isSelfTarget(event)) {
           // When the roving tabindex composite gets intentionally focused (for
@@ -228,7 +243,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
           options.setCurrentId?.(null);
         }
       },
-      [options.unstable_virtual, currentItem, options.setCurrentId]
+      [options.unstable_virtual, options.setCurrentId]
     );
 
     const onBlurCapture = React.useCallback(
@@ -372,7 +387,7 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
       // Composite will only be tabbable by default if the focus is managed
       // using aria-activedescendant, which requires DOM focus on the container
       // element (the composite)
-      return tabbableHTMLProps;
+      return { tabIndex: 0, ...tabbableHTMLProps };
     }
     return { ...htmlProps, ref: tabbableHTMLProps.ref };
   },

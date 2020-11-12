@@ -26,11 +26,11 @@ for (const event of pointerEvents) {
       const style = getComputedStyle(element);
       if (style.pointerEvents === "none") {
         if (element.parentElement) {
-          // Recursive so we'll repeat the process the parent element also has
-          // pointerEvents: none
-          fireEvent[event](element.parentElement, options);
+          // Recursive so we'll repeat the process if the parent element also
+          // has pointerEvents: none
+          return fireEvent[event](element.parentElement, options);
         }
-        return false;
+        return true;
       }
     }
     return baseFireEvent(element, options);
