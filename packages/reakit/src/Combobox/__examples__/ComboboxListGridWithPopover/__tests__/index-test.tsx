@@ -11,7 +11,9 @@ function getPopover() {
 }
 
 function getComboboxInput() {
-  return screen.queryByRole("combobox", { name: "Block search" });
+  return screen.queryByRole("combobox", {
+    name: "Block search",
+  }) as HTMLInputElement | null;
 }
 
 test("open popover on click", () => {
@@ -57,6 +59,13 @@ test("pressing character key while focusing grid item", () => {
   type("a");
   expect(getComboboxInput()).toHaveValue("la");
   expect(screen.getByText("Latest Comments")).toHaveFocus();
+  getComboboxInput()?.setSelectionRange(1, 1);
+  type("\b");
+  expect(getComboboxInput()).toHaveValue("a");
+  getComboboxInput()?.setSelectionRange(1, 1);
+  type(" ");
+  expect(getComboboxInput()).toHaveValue("a ");
+  expect(screen.getByText("Media & Text")).toHaveFocus();
 });
 
 test("keyboard navigation on combobox grid", () => {

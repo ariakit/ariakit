@@ -284,8 +284,8 @@ export const unstable_useCombobox = createHook<
           // actions on the option, only on the combobox input.
           if (event.key === "Home") return;
           if (event.key === "End") return;
-          if (event.key.length === 1) return;
         }
+        if (event.key.length === 1) return;
         // Composite's onKeyDownCapture will proxy this event to the active
         // item.
         compositeHTMLProps.onKeyDownCapture?.(event);
