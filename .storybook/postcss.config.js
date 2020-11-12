@@ -19,8 +19,11 @@ function rewriteRootRule() {
 function addIdScope() {
   return (root) => {
     const filename = root.source.input.file;
+    const componentName = path.basename(
+      path.dirname(path.dirname(path.dirname(filename)))
+    );
     const basename = path.basename(path.dirname(filename));
-    const id = `examples--${kebabCase(basename)}`;
+    const id = `${kebabCase(componentName)}--${kebabCase(basename)}`;
     return scopify(`#${id}`)(root);
   };
 }

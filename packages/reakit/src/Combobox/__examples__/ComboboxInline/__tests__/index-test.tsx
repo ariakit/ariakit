@@ -70,7 +70,7 @@ test("unselect combobox option when cleaning combobox value", () => {
   render(<ComboboxInline />);
   click(screen.getByLabelText("Color"));
   expect(screen.getByLabelText("Color")).toHaveValue("");
-  focus(screen.getByText("Red"));
+  press.ArrowDown();
   expect(screen.getByLabelText("Color")).toHaveValue("Red");
   fireEvent.change(screen.getByLabelText("Color"), { target: { value: "" } });
   expect(screen.getByText("Red")).not.toHaveFocus();

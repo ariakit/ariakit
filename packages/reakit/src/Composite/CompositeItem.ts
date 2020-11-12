@@ -25,6 +25,7 @@ import { setTextFieldValue } from "./__utils/setTextFieldValue";
 import { getCurrentId } from "./__utils/getCurrentId";
 import { Item } from "./__utils/types";
 import { COMPOSITE_ITEM_KEYS } from "./__keys";
+import { userFocus, setUserFocus, hasUserFocus } from "./__utils/userFocus";
 
 export type CompositeItemOptions = ClickableOptions &
   unstable_IdOptions &
@@ -124,6 +125,7 @@ export const useCompositeItem = createHook<
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex = 0,
+      onMouseDown: htmlOnMouseDown,
       onFocus: htmlOnFocus,
       onBlurCapture: htmlOnBlurCapture,
       onKeyDown: htmlOnKeyDown,
@@ -138,6 +140,7 @@ export const useCompositeItem = createHook<
     const isCurrentItemRef = useLiveRef(isCurrentItem);
     const hasFocusedComposite = React.useRef(false);
     const item = useItem(options);
+    const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const onFocusRef = useLiveRef(htmlOnFocus);
     const onBlurCaptureRef = useLiveRef(htmlOnBlurCapture);
     const onKeyDownRef = useLiveRef(htmlOnKeyDown);
@@ -174,12 +177,22 @@ export const useCompositeItem = createHook<
       // isCurrentItemRef instead of isCurrentItem because we don't want to
       // focus the item if isCurrentItem changes (and options.moves doesn't).
       if (options.unstable_moves && isCurrentItemRef.current) {
-        element.focus();
+        userFocus(element);
       }
     }, [options.unstable_moves]);
 
+    const onMouseDown = React.useCallback(
+      (event: React.MouseEvent<HTMLElement>) => {
+        onMouseDownRef.current?.(event);
+        setUserFocus(event.currentTarget, true);
+      },
+      []
+    );
+
     const onFocus = React.useCallback(
       (event: React.FocusEvent<HTMLElement>) => {
+        const shouldFocusComposite = hasUserFocus(event.currentTarget);
+        setUserFocus(event.currentTarget, false);
         onFocusRef.current?.(event);
         if (event.defaultPrevented) return;
         if (isPortalEvent(event)) return;
@@ -190,7 +203,12 @@ export const useCompositeItem = createHook<
         // composite container receives focus, not the composite item.
         // But we don't want to do this if the target is another focusable
         // element inside the composite item, such as CompositeItemWidget.
-        if (options.unstable_virtual && options.baseId && isSelfTarget(event)) {
+        if (
+          shouldFocusComposite &&
+          options.unstable_virtual &&
+          options.baseId &&
+          isSelfTarget(event)
+        ) {
           const { target } = event;
           const composite = getDocument(target).getElementById(options.baseId);
           if (composite) {
@@ -319,6 +337,7 @@ export const useCompositeItem = createHook<
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       "aria-selected":
         options.unstable_virtual && isCurrentItem ? true : undefined,
+      onMouseDown,
       onFocus,
       onBlurCapture,
       onKeyDown,
