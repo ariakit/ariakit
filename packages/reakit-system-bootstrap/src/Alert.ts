@@ -28,7 +28,5 @@ export function useAlertProps(
     }
   `;
 
-  console.log("?");
-
   return { ...htmlProps, className: cx(alert, htmlProps.className) };
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { shallowEqual } from "reakit-utils/shallowEqual";
-import { useDisclosure, useDisclosureContent } from "reakit/Disclosure";
+import { useDisclosureContent } from "reakit/Disclosure";
 import { ALERT_KEYS } from "./__keys";
 
 export type AlertOptions = {
@@ -21,7 +21,7 @@ export type AlertHTMLProps = React.HTMLAttributes<any> &
      * will be passed.
      */
     wrapElement?: (element: React.ReactNode) => React.ReactNode;
-    open: boolean;
+    open?: boolean;
   };
 
 export type AlertProps = AlertOptions & AlertHTMLProps;
