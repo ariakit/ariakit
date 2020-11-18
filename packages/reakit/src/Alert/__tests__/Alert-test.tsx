@@ -3,11 +3,11 @@ import { render } from "reakit-test-utils";
 import { Alert, AlertProps } from "../Alert";
 
 test("render", () => {
-  const { getByText } = render(<Alert>box</Alert>);
+  const { getByText } = render(<Alert>alert</Alert>);
   expect(getByText("box")).toMatchInlineSnapshot(`
-    <div>
-      box
-    </div>
+    <dialog>
+      alert
+    </dialog>
   `);
 });
 
