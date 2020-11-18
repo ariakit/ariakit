@@ -34,8 +34,8 @@ export const useAlert = createHook<AlertOptions, AlertHTMLProps>({
     }
     return shallowEqual(prevProps, nextProps);
   },
-  useProps(options, { role = "alert", ...htmlProps }) {
-    return { ...htmlProps, ...options, role };
+  useProps(_, { role = "alert", ...htmlProps }) {
+    return { ...htmlProps, role };
   },
 });
 
