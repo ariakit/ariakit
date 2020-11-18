@@ -2,6 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { shallowEqual } from "reakit-utils/shallowEqual";
+import { useDisclosure, useDisclosureContent } from "reakit/Disclosure";
 import { ALERT_KEYS } from "./__keys";
 
 export type AlertOptions = {
@@ -10,6 +11,7 @@ export type AlertOptions = {
    * @private
    */
   unstable_system?: any;
+  visible: boolean;
 };
 
 export type AlertHTMLProps = React.HTMLAttributes<any> &
@@ -25,6 +27,10 @@ export type AlertProps = AlertOptions & AlertHTMLProps;
 
 export const useAlert = createHook<AlertOptions, AlertHTMLProps>({
   name: "Alert",
+  compose: useDisclosureContent,
+  useComposeOptions({ visible = true, ...options }) {
+    return { ...options, visible };
+  },
   keys: ALERT_KEYS,
   propsAreEqual(prev, next) {
     const { unstable_system: prevSystem, ...prevProps } = prev;
