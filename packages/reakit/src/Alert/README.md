@@ -4,25 +4,28 @@ path: /docs/alert/
 
 # Alert
 
-`Alert` is the most abstract component on top of which all other Reakit components are built. By default, it renders a `div` element.
+TODO
 
 <carbon-ad></carbon-ad>
 
 ## Installation
 
-```sh
-npm install reakit
-```
-
-Learn more in [Get started](/docs/get-started/).
+TODO
 
 ## Usage
 
 ```jsx
-import { Alert } from "reakit/Alert";
+import { Alert, useAlertState } from "reakit/Alert";
+import { Button } from "reakit/Button";
 
 function Example() {
-  return <Alert>Alert</Alert>;
+  const alert = useAlertState({ visible: false });
+  return (
+    <>
+      <Button onClick={alert.toggle}>Toggle</Button>
+      <Alert {...alert}>Alert</Alert>
+    </>
+  );
 }
 ```
 
@@ -31,10 +34,15 @@ function Example() {
 Learn more about the `as` prop in [Composition](/docs/composition/#as-prop).
 
 ```jsx
-import { Alert } from "reakit/Alert";
+import { Alert, useAlertState } from "reakit/Alert";
 
 function Example() {
-  return <Alert as="aside">Button</Alert>;
+  const alert = useAlertState();
+  return (
+    <Alert {...alert} as="aside">
+      Alert
+    </Alert>
+  );
 }
 ```
 
@@ -43,18 +51,17 @@ function Example() {
 Learn more about render props in [Composition](/docs/composition/#render-props).
 
 ```jsx
-import { Alert } from "reakit/Alert";
+import { Alert, useAlertState } from "reakit/Alert";
 
 function Example() {
-  return <Alert>{(props) => <button {...props}>Button</button>}</Alert>;
+  const alert = useAlertState();
+  return <Alert {...alert}>{(props) => <div {...props}>Alert</div>}</Alert>;
 }
 ```
 
 ## Composition
 
-- `Alert` is used by all Reakit components.
-
-Learn more in [Composition](/docs/composition/#props-hooks).
+TODO
 
 ## Props
 
@@ -80,7 +87,5 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 - **`visible`**
   <code>boolean</code>
-
-  
 
 </details>
