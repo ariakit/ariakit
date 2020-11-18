@@ -4,13 +4,6 @@ import { BootstrapRoleOptions } from "./Role";
 
 export type BootstrapAlertOptions = BootstrapRoleOptions & AlertOptions;
 
-export function useAlertOptions({
-  unstable_system: { fill = "opaque", palette = "primary", ...system } = {},
-  ...options
-}: BootstrapAlertOptions): BootstrapAlertOptions {
-  return { unstable_system: { fill, palette, ...system }, ...options };
-}
-
 export function useAlertProps(
   _: BootstrapAlertOptions,
   htmlProps: AlertHTMLProps = {}

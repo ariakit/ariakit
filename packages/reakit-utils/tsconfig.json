@@ -1,13 +1,10 @@
 {
-  "extends": "../../tsconfig.prod.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "ts"
   },
   "include": [
     "src",
     "../../types"
-  ],
-  "exclude": [
-    "src/**/__*"
   ]
 }
