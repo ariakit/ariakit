@@ -17,6 +17,7 @@ test("render visible", () => {
   const { getByText } = render(<Alert visible>alert</Alert>);
   expect(getByText("alert")).toMatchInlineSnapshot(`
     <dialog
+      open=""
       role="alert"
     >
       alert
