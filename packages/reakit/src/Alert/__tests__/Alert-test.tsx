@@ -4,7 +4,7 @@ import { Alert, AlertProps } from "../Alert";
 
 test("render", () => {
   const { getByText } = render(<Alert>alert</Alert>);
-  expect(getByText("box")).toMatchInlineSnapshot(`
+  expect(getByText("alert")).toMatchInlineSnapshot(`
     <dialog>
       alert
     </dialog>
