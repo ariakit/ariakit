@@ -1,3 +1,4 @@
+export * from "./Alert";
 export * from "./Role";
 export * from "./Button";
 export * from "./Composite";
