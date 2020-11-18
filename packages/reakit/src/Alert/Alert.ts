@@ -21,6 +21,7 @@ export type AlertHTMLProps = React.HTMLAttributes<any> &
      * will be passed.
      */
     wrapElement?: (element: React.ReactNode) => React.ReactNode;
+    open: boolean;
   };
 
 export type AlertProps = AlertOptions & AlertHTMLProps;
@@ -30,6 +31,9 @@ export const useAlert = createHook<AlertOptions, AlertHTMLProps>({
   compose: useDisclosureContent,
   useComposeOptions({ visible = true, ...options }) {
     return { ...options, visible };
+  },
+  useComposeProps({ visible }, { open = visible, ...htmlProps }) {
+    return { ...htmlProps, open };
   },
   keys: ALERT_KEYS,
   propsAreEqual(prev, next) {
