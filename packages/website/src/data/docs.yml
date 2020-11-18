@@ -10,6 +10,7 @@
     - /docs/experimental/
 - section: Components
   paths:
+    - /docs/alert/
     - /docs/button/
     - /docs/checkbox/
     - /docs/dialog/
