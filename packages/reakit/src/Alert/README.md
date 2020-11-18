@@ -1,5 +1,5 @@
 ---
-path: /docs/Alert/
+path: /docs/alert/
 ---
 
 # Alert
@@ -60,6 +60,27 @@ Learn more in [Composition](/docs/composition/#props-hooks).
 
 <!-- Automatically generated -->
 
+### `useAlertState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
 ### `Alert`
 
-No props to show
+<details><summary>1 state props</summary>
+
+> These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
+
+- **`visible`**
+  <code>boolean</code>
+
+  
+
+</details>
