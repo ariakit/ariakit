@@ -22,6 +22,7 @@ export type AlertHTMLProps = React.HTMLAttributes<any> &
      */
     wrapElement?: (element: React.ReactNode) => React.ReactNode;
     open?: boolean;
+    role?: "alert" | "status" | React.HTMLAttributes<any>["role"];
   };
 
 export type AlertProps = AlertOptions & AlertHTMLProps;

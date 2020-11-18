@@ -16,14 +16,12 @@ export function useAlertProps(
   htmlProps: AlertHTMLProps = {}
 ): AlertHTMLProps {
   const alert = css`
-    [role="alert"] {
-      padding: 10px;
-      border: 2px solid hsl(206, 74%, 54%);
-      border-radius: 4px;
-      background: hsl(206, 74%, 90%);
-    }
+    padding: 10px;
+    border: 2px solid hsl(206, 74%, 54%);
+    border-radius: 4px;
+    background: hsl(206, 74%, 90%);
 
-    [role="alert"]:empty {
+    &:empty {
       display: none;
     }
   `;
