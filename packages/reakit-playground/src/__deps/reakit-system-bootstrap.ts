@@ -2,6 +2,7 @@
 // Automatically generated
 export default {
   "reakit-system-bootstrap": require("reakit-system-bootstrap"),
+  "reakit-system-bootstrap/Alert": require("reakit-system-bootstrap/Alert"),
   "reakit-system-bootstrap/Button": require("reakit-system-bootstrap/Button"),
   "reakit-system-bootstrap/Composite": require("reakit-system-bootstrap/Composite"),
   "reakit-system-bootstrap/Dialog": require("reakit-system-bootstrap/Dialog"),
