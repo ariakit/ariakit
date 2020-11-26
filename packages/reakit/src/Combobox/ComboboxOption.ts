@@ -11,6 +11,7 @@ import {
   unstable_ComboboxItemHTMLProps as ComboboxItemHTMLProps,
   unstable_useComboboxItem as useComboboxItem,
 } from "./ComboboxItem";
+import { Context } from "./ComboboxPopover";
 
 export const unstable_useComboboxOption = createHook<
   unstable_ComboboxOptionOptions,
@@ -29,6 +30,7 @@ export const unstable_ComboboxOption = createComponent({
   as: "div",
   memo: true,
   useHook: unstable_useComboboxOption,
+  context: Context,
 });
 
 export type unstable_ComboboxOptionOptions = CompositeItemOptions &

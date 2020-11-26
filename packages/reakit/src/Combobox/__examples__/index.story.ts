@@ -11,6 +11,7 @@ export { default as ComboboxList } from "./ComboboxList";
 export { default as ComboboxListGridWithPopover } from "./ComboboxListGridWithPopover";
 export { default as ComboboxMinValueLength } from "./ComboboxMinValueLength";
 export { default as ComboboxVisible } from "./ComboboxVisible";
+export { default as ComboboxNonContextVsContext } from "./ComboboxNonContextVsContext";
 
 export default {
   title: "Combobox",
