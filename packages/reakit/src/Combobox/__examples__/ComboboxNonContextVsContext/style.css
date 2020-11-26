@@ -1,1 +1,10 @@
 @import "../AccessibleCombobox/style.css";
+
+#combobox--combobox-non-context-vs-context {
+  display: flex;
+}
+
+#combobox--combobox-non-context-vs-context > div {
+  flex: 1;
+  padding: 1rem;
+}

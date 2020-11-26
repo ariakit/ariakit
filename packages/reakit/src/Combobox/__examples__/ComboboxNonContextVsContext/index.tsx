@@ -56,9 +56,9 @@ export default function ComboBoxNonContextVsContext() {
     <>
       <div>
         <p>
-          Original Combobox, clicking on it may take some time. Use arrows (hold
-          down your down-arrow key) to navigate between elements. You will
-          notice how slow it is.
+          <strong>Original Combobox</strong>, clicking on it may take some time.
+          Use arrows (hold down your down-arrow key) to navigate between
+          elements. You will notice how slow it is.
         </p>
 
         <ComboboxOriginal />
@@ -66,9 +66,9 @@ export default function ComboBoxNonContextVsContext() {
 
       <div>
         <p>
-          New Combobox using Context, clicking on it takes less time. Use arrows
-          (hold down your down-arrow key) to navigate between elements. You will
-          notice how fast it is compared to the original.
+          <strong>New Combobox using Context</strong>, clicking on it takes less
+          time. Use arrows (hold down your down-arrow key) to navigate between
+          elements. You will notice how fast it is compared to the original.
         </p>
 
         <ComboboxContext />
