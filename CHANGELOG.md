@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/reakit/reakit/compare/reakit@1.3.0...reakit@1.3.1) (2020-11-26)
+
+
+### Bug Fixes
+
+* Add missing quote in querySelector in `Dialog` ([#793](https://github.com/reakit/reakit/issues/793)) ([d9a49ef](https://github.com/reakit/reakit/commit/d9a49efa432b4dc8df51dc62f0d1b5023236dff4))
+* Native radio input firing onChange callback twice on click ([#791](https://github.com/reakit/reakit/issues/791)) ([6a436bb](https://github.com/reakit/reakit/commit/6a436bb5adccd53e37604195980bd67e7119972e)), closes [#790](https://github.com/reakit/reakit/issues/790)
+
+
+
+
+
 # [1.3.0](https://github.com/reakit/reakit/compare/reakit@1.2.6...reakit@1.3.0) (2020-11-12)
 
 
