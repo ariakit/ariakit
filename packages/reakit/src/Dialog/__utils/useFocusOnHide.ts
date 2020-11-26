@@ -45,7 +45,7 @@ export function useFocusOnHide(
       if (finalFocusEl.id) {
         const document = getDocument(finalFocusEl);
         const compositeElement = document.querySelector<HTMLElement>(
-          `[aria-activedescendant=${finalFocusEl.id}]`
+          `[aria-activedescendant='${finalFocusEl.id}']`
         );
         if (compositeElement) {
           ensureFocus(compositeElement);
