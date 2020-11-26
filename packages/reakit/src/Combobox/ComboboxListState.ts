@@ -39,9 +39,7 @@ export function unstable_useComboboxListState(
 
 export type unstable_ComboboxListState = ComboboxBaseState<CompositeState>;
 
-export type unstable_ComboboxListActions = ComboboxBaseActions<
-  CompositeActions
->;
+export type unstable_ComboboxListActions = ComboboxBaseActions<CompositeActions>;
 
 export type unstable_ComboboxListInitialState = Omit<
   CompositeInitialState,

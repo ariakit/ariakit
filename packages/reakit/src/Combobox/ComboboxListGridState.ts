@@ -85,9 +85,7 @@ export type unstable_ComboboxListGridState = Omit<
   matches: string[][];
 };
 
-export type unstable_ComboboxListGridActions = ComboboxBaseActions<
-  GridActions
-> & {
+export type unstable_ComboboxListGridActions = ComboboxBaseActions<GridActions> & {
   /**
    * Sets `columns`.
    */
