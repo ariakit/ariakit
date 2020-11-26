@@ -125,9 +125,10 @@ export const useRadio = createHook<RadioOptions, RadioHTMLProps>({
       (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
+        if (isNativeRadio) return;
         fireChange(event.currentTarget, onChange);
       },
-      [onChange]
+      [onChange, isNativeRadio]
     );
 
     React.useEffect(() => {
