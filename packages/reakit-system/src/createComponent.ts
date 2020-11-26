@@ -6,6 +6,7 @@ import { normalizePropsAreEqual } from "reakit-utils/normalizePropsAreEqual";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 import { memo } from "./__utils/memo";
+import { StateContextHoc } from "./StateContextHoc";
 
 type RoleHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
@@ -18,11 +19,13 @@ type Hook<O> = {
   __keys?: ReadonlyArray<any>;
 };
 
-type Options<T extends As, O> = {
+type Options<T extends As, O, C = {}> = {
   as: T;
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
   memo?: boolean;
+  context?: React.Context<C>;
+  isContextProvider?: boolean;
   propsAreEqual?: (prev: O, next: O) => boolean;
   useCreateElement?: (
     type: T,
@@ -56,6 +59,8 @@ export function createComponent<T extends As, O>({
   as: type,
   useHook,
   memo: shouldMemo,
+  context,
+  isContextProvider = false,
   propsAreEqual = useHook?.unstable_propsAreEqual,
   keys = useHook?.__keys || [],
   useCreateElement = defaultUseCreateElement,
@@ -64,8 +69,13 @@ export function createComponent<T extends As, O>({
     { as = type, ...props }: PropsWithAs<O, T>,
     ref: React.Ref<T>
   ) => {
+    const initialState = React.useRef();
+
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
+      if (!initialState.current) {
+        initialState.current = options;
+      }
       const { wrapElement, ...elementProps } = useHook(options, {
         ref,
         ...htmlProps,
@@ -73,10 +83,43 @@ export function createComponent<T extends As, O>({
       // @ts-ignore
       const asKeys = as.render?.__keys || as.__keys;
       const asOptions = asKeys && splitProps(props, asKeys)[0];
-      const allProps = asOptions
-        ? { ...elementProps, ...asOptions }
-        : elementProps;
-      const element = useCreateElement(as, allProps as typeof props);
+
+      const allProps =
+        // If `as` is a string, then that means it's an element not a component
+        // we don't need to pass the state in this case.
+        // If a component is passed, then the component can decide
+        // what should happen with the state prop.
+        isPlainObject(props.state) && typeof as !== "string"
+          ? { state: props.state, ...elementProps }
+          : asOptions
+          ? { ...elementProps, ...asOptions }
+          : elementProps;
+
+      let element = useCreateElement(as, allProps as typeof props);
+      if (context && isContextProvider) {
+        if (isContextProvider) {
+          const listenersRef = React.useRef(new Set());
+
+          const subscribe = React.useCallback((listener) => {
+            listenersRef.current.add(listener);
+            return () => listenersRef.current.delete(listener);
+          }, []);
+
+          React.useEffect(() => {
+            for (const listener of listenersRef.current) {
+              listener(options);
+            }
+          }, [options]);
+
+          const value = React.useMemo(
+            () => ({ ...initialState.current, subscribe }),
+            [initialState.current, subscribe]
+          );
+
+          element = React.createElement(context.Provider, { value }, element);
+        }
+      }
+
       if (wrapElement) {
         return wrapElement(element);
       }
@@ -90,6 +133,10 @@ export function createComponent<T extends As, O>({
   }
 
   Comp = forwardRef(Comp);
+
+  if (context && !isContextProvider) {
+    Comp = StateContextHoc(Comp, context);
+  }
 
   if (shouldMemo) {
     Comp = memo(Comp, propsAreEqual && normalizePropsAreEqual(propsAreEqual));

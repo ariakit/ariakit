@@ -1,3 +1,4 @@
+import React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useWarning } from "reakit-warning";
@@ -42,9 +43,13 @@ export const unstable_useComboboxPopover = createHook<
   },
 });
 
+export const Context = React.createContext({});
+
 export const unstable_ComboboxPopover = createComponent({
   as: "div",
   useHook: unstable_useComboboxPopover,
+  context: Context,
+  isContextProvider: true,
   useCreateElement: (type, props, children) => {
     useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
