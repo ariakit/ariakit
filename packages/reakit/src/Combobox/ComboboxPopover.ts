@@ -3,6 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import { useWarning } from "reakit-warning";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createStateContext } from "reakit-system/createStateContext";
+import { useStateContextProvider } from "reakit-system/withStateContextSubscriber";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -16,12 +17,14 @@ import {
 } from "./ComboboxList";
 import { ComboboxPopoverStateReturn } from "./__utils/ComboboxPopoverState";
 
+export const StateContext = createStateContext();
+
 export const unstable_useComboboxPopover = createHook<
   unstable_ComboboxPopoverOptions,
   unstable_ComboboxPopoverHTMLProps
 >({
   name: "ComboboxPopover",
-  compose: [useComboboxList, usePopover],
+  compose: [useComboboxList, usePopover, useStateContextProvider(StateContext)],
   keys: COMBOBOX_POPOVER_KEYS,
 
   useOptions(options) {
@@ -36,6 +39,7 @@ export const unstable_useComboboxPopover = createHook<
   useComposeProps(options, { tabIndex, ...htmlProps }) {
     htmlProps = useComboboxList(options, htmlProps, true);
     htmlProps = usePopover(options, htmlProps, true);
+    htmlProps = useStateContextProvider(StateContext)(options, htmlProps, true);
     return {
       ...htmlProps,
       tabIndex: tabIndex ?? undefined,
@@ -43,13 +47,9 @@ export const unstable_useComboboxPopover = createHook<
   },
 });
 
-export const StateContext = createStateContext();
-
 export const unstable_ComboboxPopover = createComponent({
   as: "div",
   useHook: unstable_useComboboxPopover,
-  context: StateContext,
-  isContextProvider: true,
   useCreateElement: (type, props, children) => {
     useWarning(
       !props["aria-label"] && !props["aria-labelledby"],
