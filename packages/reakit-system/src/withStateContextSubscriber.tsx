@@ -9,7 +9,7 @@ export type StateContextValue<O> = {
 export type StateContextListener<O> = (options: O) => void;
 export type StateContextSubscribe<O> = (callback: (options: O) => any) => any;
 
-export function StateContextHoc<
+export function withStateContextSubscriber<
   T extends React.ComponentType<any>,
   O extends React.HTMLAttributes<any>
 >(Comp: T, ctx: StateContext<O>): T {
