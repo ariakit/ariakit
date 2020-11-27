@@ -1,5 +1,6 @@
 export * from "./createComponent";
 export * from "./createHook";
+export * from "./createStateContext";
 export * from "./mergeSystem";
 export * from "./SystemContext";
 export * from "./SystemProvider";
