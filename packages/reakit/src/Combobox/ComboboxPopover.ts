@@ -1,8 +1,8 @@
-import React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useWarning } from "reakit-warning";
 import { useCreateElement } from "reakit-system/useCreateElement";
+import { createStateContext } from "reakit-system/createStateContext";
 import {
   PopoverOptions,
   PopoverHTMLProps,
@@ -43,12 +43,12 @@ export const unstable_useComboboxPopover = createHook<
   },
 });
 
-export const Context = React.createContext({});
+export const StateContext = createStateContext();
 
 export const unstable_ComboboxPopover = createComponent({
   as: "div",
   useHook: unstable_useComboboxPopover,
-  context: Context,
+  context: StateContext,
   isContextProvider: true,
   useCreateElement: (type, props, children) => {
     useWarning(
