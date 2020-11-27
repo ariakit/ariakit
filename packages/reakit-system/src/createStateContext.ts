@@ -1,5 +1,5 @@
 import React from "react";
-import { StateContext } from "./StateContextHoc";
+import { StateContext } from "./withStateContextSubscriber";
 
 export function createStateContext<O>(): StateContext<O> {
   return (React.createContext({

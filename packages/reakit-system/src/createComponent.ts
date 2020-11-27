@@ -8,10 +8,10 @@ import { useCreateElement as defaultUseCreateElement } from "./useCreateElement"
 import { memo } from "./__utils/memo";
 import {
   StateContext,
-  StateContextHoc,
+  withStateContextSubscriber,
   StateContextListener,
   StateContextSubscribe,
-} from "./StateContextHoc";
+} from "./withStateContextSubscriber";
 
 type RoleHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
@@ -142,7 +142,7 @@ export function createComponent<T extends As, O>({
   Comp = forwardRef(Comp);
 
   if (context && !isContextProvider) {
-    Comp = StateContextHoc(Comp, context);
+    Comp = withStateContextSubscriber(Comp, context);
   }
 
   if (shouldMemo) {
