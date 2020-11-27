@@ -6,7 +6,7 @@ import {
   StateContextSubscribe,
 } from "./useStateContext";
 
-export type useStateContextProviderHTMLProps = React.HTMLAttributes<any> &
+export type UseStateContextProviderHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
     /**
      * Function returned by the hook to wrap the element to which html props
@@ -16,7 +16,7 @@ export type useStateContextProviderHTMLProps = React.HTMLAttributes<any> &
   };
 
 export const useStateContextProvider = <O,>(context: StateContext<O>) =>
-  createHook<O, useStateContextProviderHTMLProps>({
+  createHook<O, UseStateContextProviderHTMLProps>({
     name: "StateContextProvider",
     useProps: (options, htmlProps) => {
       const wrapElement = (element: React.ReactNode) => {

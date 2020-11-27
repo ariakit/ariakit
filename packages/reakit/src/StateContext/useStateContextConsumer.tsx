@@ -8,7 +8,7 @@ import {
 } from "./useStateContext";
 
 export const useStateContextConsumer = <O,>(ctx: StateContext<O>) =>
-  createHook<{}, React.HTMLAttributes<any>>({
+  createHook<O, React.HTMLAttributes<any>>({
     name: "StateContextSubscribe",
 
     useOptions(options, htmlProps) {
