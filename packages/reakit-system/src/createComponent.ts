@@ -6,7 +6,12 @@ import { isPlainObject, normalizePropsAreEqual } from "reakit-utils";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 import { memo } from "./__utils/memo";
-import { StateContextHoc } from "./StateContextHoc";
+import {
+  StateContext,
+  StateContextHoc,
+  StateContextListener,
+  StateContextSubscribe,
+} from "./StateContextHoc";
 
 type RoleHTMLProps = React.HTMLAttributes<any> &
   React.RefAttributes<any> & {
@@ -19,12 +24,12 @@ type Hook<O> = {
   __keys?: ReadonlyArray<any>;
 };
 
-type Options<T extends As, O, C = {}> = {
+type Options<T extends As, O> = {
   as: T;
   useHook?: Hook<O>;
   keys?: ReadonlyArray<any>;
   memo?: boolean;
-  context?: React.Context<C>;
+  context?: StateContext<O>;
   isContextProvider?: boolean;
   propsAreEqual?: (prev: O, next: O) => boolean;
   useCreateElement?: (
@@ -69,7 +74,7 @@ export function createComponent<T extends As, O>({
     { as = type, ...props }: PropsWithAs<O, T>,
     ref: React.Ref<T>
   ) => {
-    const initialState = React.useRef();
+    const initialState = React.useRef<O>();
 
     if (useHook) {
       const [options, htmlProps] = splitProps(props, keys);
@@ -97,12 +102,15 @@ export function createComponent<T extends As, O>({
       let element = useCreateElement(as, allProps as typeof props);
       if (context && isContextProvider) {
         if (isContextProvider) {
-          const listenersRef = React.useRef(new Set());
+          const listenersRef = React.useRef(new Set<StateContextListener<O>>());
 
-          const subscribe = React.useCallback((listener) => {
-            listenersRef.current.add(listener);
-            return () => listenersRef.current.delete(listener);
-          }, []);
+          const subscribe: StateContextSubscribe<O> = React.useCallback(
+            (listener: StateContextListener<O>) => {
+              listenersRef.current.add(listener);
+              return () => listenersRef.current.delete(listener);
+            },
+            []
+          );
 
           React.useEffect(() => {
             for (const listener of listenersRef.current) {
@@ -111,7 +119,7 @@ export function createComponent<T extends As, O>({
           }, [options]);
 
           const value = React.useMemo(
-            () => ({ ...initialState.current, subscribe }),
+            () => ({ initialState: initialState.current as O, subscribe }),
             [initialState.current, subscribe]
           );
 
