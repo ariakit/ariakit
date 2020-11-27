@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useStateContextSubscribe } from "reakit-system/withStateContextSubscriber";
+import { useStateContextConsumer } from "reakit-system/useStateContextConsumer";
 import {
   CompositeItemOptions,
   CompositeItemHTMLProps,
@@ -22,7 +22,7 @@ export const unstable_useComboboxOption = createHook<
   compose: [
     useComboboxItem,
     useCompositeItem,
-    useStateContextSubscribe(StateContext),
+    useStateContextConsumer(StateContext),
   ],
   keys: COMBOBOX_OPTION_KEYS,
 

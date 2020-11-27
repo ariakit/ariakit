@@ -3,7 +3,7 @@ import { createHook } from "reakit-system/createHook";
 import { useWarning } from "reakit-warning";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createStateContext } from "reakit-system/createStateContext";
-import { useStateContextProvider } from "reakit-system/withStateContextSubscriber";
+import { useStateContextProvider } from "reakit-system/useStateContextProvider";
 import {
   PopoverOptions,
   PopoverHTMLProps,
