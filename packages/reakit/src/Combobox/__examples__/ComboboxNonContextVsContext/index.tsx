@@ -21,7 +21,7 @@ function ComboboxOriginal() {
     <>
       <Combobox {...combobox} aria-label="Color" placeholder="Type a color" />
       <ComboboxPopover {...combobox} aria-label="Colors">
-        {items.map((value) => (
+        {combobox.matches.map((value) => (
           <ComboboxOption {...combobox} key={value} value={value} />
         ))}
       </ComboboxPopover>
@@ -43,7 +43,7 @@ function ComboboxContext() {
     <>
       <Combobox {...combobox} aria-label="Color" placeholder="Type a color" />
       <ComboboxPopover {...combobox} aria-label="Colors">
-        {items.map((value) => (
+        {combobox.matches.map((value) => (
           <ComboboxOption key={value} value={value} />
         ))}
       </ComboboxPopover>
