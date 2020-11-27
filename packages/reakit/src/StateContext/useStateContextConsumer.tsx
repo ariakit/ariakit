@@ -9,7 +9,7 @@ import {
 
 export const useStateContextConsumer = <O,>(ctx: StateContext<O>) =>
   createHook<O, React.HTMLAttributes<any>>({
-    name: "StateContextSubscribe",
+    name: "StateContextConsumer",
 
     useOptions(options, htmlProps) {
       const context = useStateContext(ctx);
