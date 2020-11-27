@@ -56,8 +56,6 @@ export function createComponent<T extends As, O>({
   as: type,
   useHook,
   memo: shouldMemo,
-  context,
-  isContextProvider = false,
   propsAreEqual = useHook?.unstable_propsAreEqual,
   keys = useHook?.__keys || [],
   useCreateElement = defaultUseCreateElement,
@@ -86,7 +84,6 @@ export function createComponent<T extends As, O>({
           : asOptions
           ? { ...elementProps, ...asOptions }
           : elementProps;
-
       const element = useCreateElement(as, allProps as typeof props);
       if (wrapElement) {
         return wrapElement(element);
