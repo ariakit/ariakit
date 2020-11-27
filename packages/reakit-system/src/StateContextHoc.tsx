@@ -8,13 +8,12 @@ export type StateContextValue<O> = {
 };
 export type StateContextListener<O> = (options: O) => void;
 export type StateContextSubscribe<O> = (callback: (options: O) => any) => any;
-export type HOCInner<T, O> = (props: O) => T;
 
 export function StateContextHoc<
   T extends React.ComponentType<any>,
   O extends React.HTMLAttributes<any>
->(Comp: T, ctx: StateContext<O>): HOCInner<T, O> {
-  const inner: HOCInner<T, O> = (props: O) => {
+>(Comp: T, ctx: StateContext<O>): T {
+  const inner = (props: O) => {
     const context = React.useContext(ctx);
 
     let subscribe: StateContextSubscribe<O> | null = null;
@@ -44,8 +43,8 @@ export function StateContextHoc<
       [subscribe, state?.currentId, id, props.id]
     );
 
-    return ((<Comp {...state} {...props} id={id} />) as unknown) as T;
+    return <Comp {...state} {...props} id={id} />;
   };
 
-  return inner;
+  return (inner as unknown) as T;
 }
