@@ -7,17 +7,25 @@ import {
   useStateContext,
 } from "./useStateContext";
 
-export const useStateContextConsumer = <O,>(ctx: StateContext<O>) =>
+export const useStateContextConsumer = <O,>({
+  context,
+  shouldUpdate,
+  updateDependencies = () => [],
+}: {
+  context: StateContext<O>;
+  shouldUpdate: (id: string | undefined, state: O, nextState: O) => boolean;
+  updateDependencies: (state: O) => any[];
+}) =>
   createHook<O, React.HTMLAttributes<any>>({
     name: "StateContextConsumer",
 
     useOptions(options, htmlProps) {
-      const context = useStateContext(ctx);
+      const ctx = useStateContext(context);
 
       let subscribe: StateContextSubscribe<O> | null = null;
       let initialState: O = {} as O;
-      if (context) {
-        const { subscribe: _subscribe, initialState: _initialState } = context;
+      if (ctx) {
+        const { subscribe: _subscribe, initialState: _initialState } = ctx;
         subscribe = _subscribe;
         initialState = _initialState;
       }
@@ -29,16 +37,12 @@ export const useStateContextConsumer = <O,>(ctx: StateContext<O>) =>
         () =>
           subscribe
             ? subscribe((nextState: any) => {
-                if (
-                  state.currentId === null ||
-                  id === state.currentId ||
-                  id === nextState.currentId
-                ) {
+                if (shouldUpdate(id, state, nextState)) {
                   setState(nextState);
                 }
               })
             : undefined,
-        [subscribe, state?.currentId, id, htmlProps.id]
+        [subscribe, id, htmlProps.id, ...updateDependencies(state)]
       );
 
       return { ...options, ...state };

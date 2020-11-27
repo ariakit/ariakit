@@ -22,7 +22,14 @@ export const unstable_useComboboxOption = createHook<
   compose: [
     useComboboxItem,
     useCompositeItem,
-    useStateContextConsumer(StateContext),
+    useStateContextConsumer({
+      context: StateContext,
+      shouldUpdate: (id, state, nextState) =>
+        state.currentId === null ||
+        id === state.currentId ||
+        id === nextState.currentId,
+      updateDependencies: (state) => [state?.currentId],
+    }),
   ],
   keys: COMBOBOX_OPTION_KEYS,
 

@@ -16,8 +16,11 @@ import {
   unstable_useComboboxList as useComboboxList,
 } from "./ComboboxList";
 import { ComboboxPopoverStateReturn } from "./__utils/ComboboxPopoverState";
+import { unstable_ComboboxState } from "./ComboboxState";
 
-export const StateContext = createStateContext();
+export const StateContext = createStateContext<
+  Partial<unstable_ComboboxState>
+>();
 
 export const unstable_useComboboxPopover = createHook<
   unstable_ComboboxPopoverOptions,
