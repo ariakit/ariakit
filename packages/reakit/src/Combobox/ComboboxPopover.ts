@@ -2,8 +2,8 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useWarning } from "reakit-warning";
 import { useCreateElement } from "reakit-system/useCreateElement";
-import { createStateContext } from "reakit-system/createStateContext";
-import { useStateContextProvider } from "reakit-system/useStateContextProvider";
+import { useStateContextProvider } from "reakit/StateContext/useStateContextProvider";
+import { createStateContext } from "reakit/StateContext/createStateContext";
 import {
   PopoverOptions,
   PopoverHTMLProps,

@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useStateContextConsumer } from "reakit-system/useStateContextConsumer";
+import { useStateContextConsumer } from "reakit/StateContext/useStateContextConsumer";
 import {
   CompositeItemOptions,
   CompositeItemHTMLProps,

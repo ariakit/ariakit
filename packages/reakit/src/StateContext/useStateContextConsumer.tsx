@@ -1,6 +1,6 @@
 import React from "react";
 import { unstable_useId as useId } from "reakit/Id";
-import { createHook } from "./createHook";
+import { createHook } from "reakit-system/createHook";
 import {
   StateContext,
   StateContextSubscribe,

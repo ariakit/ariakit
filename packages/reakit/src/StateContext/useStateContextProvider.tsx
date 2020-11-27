@@ -1,16 +1,25 @@
 import React from "react";
-import { createHook } from "./createHook";
+import { createHook } from "reakit-system/createHook";
 import {
   StateContext,
   StateContextListener,
   StateContextSubscribe,
 } from "./useStateContext";
 
+export type useStateContextProviderHTMLProps = React.HTMLAttributes<any> &
+  React.RefAttributes<any> & {
+    /**
+     * Function returned by the hook to wrap the element to which html props
+     * will be passed.
+     */
+    wrapElement?: (element: React.ReactNode) => React.ReactNode;
+  };
+
 export const useStateContextProvider = <O,>(context: StateContext<O>) =>
-  createHook<{}, {}>({
+  createHook<O, useStateContextProviderHTMLProps>({
     name: "StateContextProvider",
     useProps: (options, htmlProps) => {
-      const wrapElement = (element) => {
+      const wrapElement = (element: React.ReactNode) => {
         const initialState = React.useRef<O>();
         if (!initialState.current) {
           initialState.current = options;
