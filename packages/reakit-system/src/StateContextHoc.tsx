@@ -1,10 +1,11 @@
 import React from "react";
 import { unstable_useId as useId } from "reakit/Id";
 
-export type StateContext<O> = React.Context<{
+export type StateContext<O> = React.Context<StateContextValue<O>>;
+export type StateContextValue<O> = {
   initialState: O;
   subscribe: StateContextSubscribe<O>;
-}>;
+};
 export type StateContextListener<O> = (options: O) => void;
 export type StateContextSubscribe<O> = (callback: (options: O) => any) => any;
 export type HOCInner<T, O> = (props: O) => T;
