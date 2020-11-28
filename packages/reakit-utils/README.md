@@ -685,7 +685,7 @@ omitted.
 #### Parameters
 
 -   `props` **T** 
--   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)?** 
+-   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)**  (optional, default `[]`)
 
 #### Examples
 
