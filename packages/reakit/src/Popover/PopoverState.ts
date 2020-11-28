@@ -199,7 +199,7 @@ export function usePopoverState(
           {
             // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
             name: "updateState",
-            phase: "write",
+            phase: "main",
             requires: ["computeStyles"],
             enabled:
               // Safari needs styles to be applied in the first render
