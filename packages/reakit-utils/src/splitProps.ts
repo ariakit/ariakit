@@ -56,7 +56,7 @@ function __deprecatedSplitProps<
 export function splitProps<T extends Record<string, any>, K extends keyof T>(
   props: T,
   keys: ReadonlyArray<K> | Array<K> = []
-): [{ [P in K]: T[P] }, Omit<T, K>] {
+): [{ [P in K]: T["state"][P] }, Omit<T, K>] {
   if (!isPlainObject(props.state)) {
     return __deprecatedSplitProps(props, keys);
   }
