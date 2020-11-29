@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { canUseDOM } from "reakit-utils/canUseDOM";
 
 export type PortalProps = {
@@ -25,7 +24,7 @@ export function Portal({ children }: PortalProps) {
   const context = React.useContext(PortalContext) || getBodyElement();
   const [hostNode, setHostNode] = React.useState<HTMLDivElement | null>(null);
 
-  useIsomorphicEffect(() => {
+  React.useEffect(() => {
     if (!context) return undefined;
     const element = document.createElement("div");
     element.className = Portal.__className;
