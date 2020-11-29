@@ -1,11 +1,12 @@
 import * as React from "react";
-import { createPopper, Instance } from "@popperjs/core";
+import { createPopper, Instance, State } from "@popperjs/core";
 import {
   SealedInitialState,
   useSealedState,
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { shallowEqual } from "reakit-utils/shallowEqual";
+import { canUseDOM } from "reakit-utils/canUseDOM";
 import {
   DialogState,
   DialogActions,
@@ -13,6 +14,13 @@ import {
   useDialogState,
   DialogStateReturn,
 } from "../Dialog/DialogState";
+
+function isUA(string: string) {
+  if (!canUseDOM) return false;
+  return window.navigator.userAgent.indexOf(string) !== -1;
+}
+
+const isSafari = isUA("Mac") && !isUA("Chrome") && isUA("Safari");
 
 type Placement =
   | "auto-start"
@@ -154,12 +162,26 @@ export function usePopoverState(
     return false;
   }, []);
 
+  const updateState = React.useCallback((state: Partial<State>) => {
+    if (state.placement) {
+      setPlacement(state.placement);
+    }
+    if (state.styles) {
+      setPopoverStyles(applyStyles(state.styles.popper));
+      if (arrowRef.current) {
+        setArrowStyles(applyStyles(state.styles.arrow));
+      }
+    }
+  }, []);
+
   useIsomorphicEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = createPopper(referenceRef.current, popoverRef.current, {
         // https://popper.js.org/docs/v2/constructors/#options
         placement: originalPlacement,
         strategy: fixed ? "fixed" : "absolute",
+        // Safari needs styles to be applied in the first render
+        onFirstUpdate: isSafari ? updateState : undefined,
         modifiers: [
           {
             // https://popper.js.org/docs/v2/modifiers/event-listeners/
@@ -199,17 +221,10 @@ export function usePopoverState(
           {
             // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
             name: "updateState",
-            phase: "main",
+            phase: "write",
             requires: ["computeStyles"],
-            enabled:
-              // Safari needs styles to be applied in the first render
-              (!popperCreated.current || dialog.visible) &&
-              process.env.NODE_ENV !== "test",
-            fn({ state }) {
-              setPlacement(state.placement);
-              setPopoverStyles(applyStyles(state.styles.popper));
-              setArrowStyles(applyStyles(state.styles.arrow));
-            },
+            enabled: dialog.visible && process.env.NODE_ENV !== "test",
+            fn: ({ state }) => updateState(state),
           },
         ],
       });
