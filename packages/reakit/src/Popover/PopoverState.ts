@@ -142,7 +142,6 @@ export function usePopoverState(
   const referenceRef = React.useRef<HTMLElement>(null);
   const popoverRef = React.useRef<HTMLElement>(null);
   const arrowRef = React.useRef<HTMLElement>(null);
-  const popperCreated = React.useRef(false);
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);
@@ -228,7 +227,6 @@ export function usePopoverState(
           },
         ],
       });
-      popperCreated.current = true;
     }
     return () => {
       if (popper.current) {
