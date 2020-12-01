@@ -10,7 +10,10 @@ test("splitProps backward compatibility", () => {
 test("splitProps options passed as state object", () => {
   expect(
     splitProps({ state: { a: "aa" }, a: "a", b: "b", c: "c" }, ["b"])
-  ).toEqual([{ a: "aa" }, { a: "a", b: "b", c: "c" }]);
+  ).toEqual([
+    { a: "aa", b: "b" },
+    { a: "a", c: "c" },
+  ]);
 });
 
 test("splitProps should fallback to the deprecated version if state is not a plain object", () => {
