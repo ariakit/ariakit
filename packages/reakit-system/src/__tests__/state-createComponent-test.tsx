@@ -51,23 +51,6 @@ test("as generic component", () => {
   `);
 });
 
-test("as other component created with createComponent", () => {
-  const useA = ({ a }: { a: string }, h: any) => ({ children: a, ...h });
-  const A = createComponent({ as: "div", useHook: useA });
-
-  const useB = ({ b }: { b: string }, h: any) => ({ id: b, ...h });
-  const B = createComponent({ as: "div", useHook: useB });
-
-  const { getByText } = render(<A as={B} state={{ a: "a", b: "b" }} />);
-  expect(getByText("a")).toMatchInlineSnapshot(`
-            <div
-              id="b"
-            >
-              a
-            </div>
-      `);
-});
-
 test("wrap", () => {
   const useA = (_: any, h: any) => ({
     wrapElement: (element: React.ReactNode) => (

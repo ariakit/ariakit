@@ -2,7 +2,7 @@ import * as React from "react";
 import { As, PropsWithAs } from "reakit-utils/types";
 import { splitProps } from "reakit-utils/splitProps";
 import { shallowEqual } from "reakit-utils/shallowEqual";
-import { isPlainObject, normalizePropsAreEqual } from "reakit-utils";
+import { normalizePropsAreEqual } from "reakit-utils/normalizePropsAreEqual";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 import { memo } from "./__utils/memo";
@@ -73,16 +73,9 @@ export function createComponent<T extends As, O>({
       // @ts-ignore
       const asKeys = as.render?.__keys || as.__keys;
       const asOptions = asKeys && splitProps(props, asKeys)[0];
-      const allProps =
-        // If `as` is a string, then that means it's an element not a component
-        // we don't need to pass the state in this case.
-        // If a component is passed, then the component can decide
-        // what should happen with the state prop.
-        isPlainObject(props.state) && typeof as !== "string"
-          ? { state: props.state, ...elementProps }
-          : asOptions
-          ? { ...elementProps, ...asOptions }
-          : elementProps;
+      const allProps = asOptions
+        ? { ...elementProps, ...asOptions }
+        : elementProps;
       const element = useCreateElement(as, allProps as typeof props);
       if (wrapElement) {
         return wrapElement(element);
