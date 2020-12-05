@@ -9,7 +9,7 @@ import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
 import { getActiveElement } from "reakit-utils/getActiveElement";
-import { canUseDOM } from "reakit-utils/canUseDOM";
+import { isUA } from "reakit-utils/dom";
 import { getClosestFocusable } from "reakit-utils/tabbable";
 import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { TABBABLE_KEYS } from "./__keys";
@@ -32,11 +32,6 @@ export type TabbableHTMLProps = RoleHTMLProps & {
 };
 
 export type TabbableProps = TabbableOptions & TabbableHTMLProps;
-
-function isUA(string: string) {
-  if (!canUseDOM) return false;
-  return window.navigator.userAgent.indexOf(string) !== -1;
-}
 
 const isSafariOrFirefoxOnMac =
   isUA("Mac") && !isUA("Chrome") && (isUA("Safari") || isUA("Firefox"));

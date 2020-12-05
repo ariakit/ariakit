@@ -6,6 +6,7 @@
 /createEvent
 /createOnKeyDown
 /dist
+/dom
 /ensureFocus
 /es
 /fireBlurEvent

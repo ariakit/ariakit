@@ -30,6 +30,7 @@ yarn add reakit-utils
 -   [contains](#contains)
 -   [createEvent](#createevent)
 -   [createOnKeyDown](#createonkeydown)
+-   [isUA](#isua)
 -   [ensureFocus](#ensurefocus)
 -   [fireBlurEvent](#fireblurevent)
 -   [fireEvent](#fireevent)
@@ -174,6 +175,14 @@ Returns an `onKeyDown` handler to be passed to a component.
     -   `options.preventDefault`   (optional, default `true`)
 
 Returns **React.KeyboardEventHandler** 
+
+### isUA
+
+Checks if a given string exists in the user agent string.
+
+#### Parameters
+
+-   `string` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ### ensureFocus
 

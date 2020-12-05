@@ -8,6 +8,7 @@ export default {
   "reakit-utils/contains": require("reakit-utils/contains"),
   "reakit-utils/createEvent": require("reakit-utils/createEvent"),
   "reakit-utils/createOnKeyDown": require("reakit-utils/createOnKeyDown"),
+  "reakit-utils/dom": require("reakit-utils/dom"),
   "reakit-utils/ensureFocus": require("reakit-utils/ensureFocus"),
   "reakit-utils/fireBlurEvent": require("reakit-utils/fireBlurEvent"),
   "reakit-utils/fireEvent": require("reakit-utils/fireEvent"),
