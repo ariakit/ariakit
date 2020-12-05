@@ -174,7 +174,9 @@ export function usePopoverState(
         // https://popper.js.org/docs/v2/constructors/#options
         placement: originalPlacement,
         strategy: fixed ? "fixed" : "absolute",
-        // Safari needs styles to be applied in the first render
+        // Safari needs styles to be applied in the first render, otherwise
+        // hovering over the popover when it gets visible for the first time
+        // will change its dimensions unexpectedly.
         onFirstUpdate: isSafari ? updateState : undefined,
         modifiers: [
           {
