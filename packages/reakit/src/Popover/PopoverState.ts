@@ -6,7 +6,7 @@ import {
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { shallowEqual } from "reakit-utils/shallowEqual";
-import { canUseDOM } from "reakit-utils/canUseDOM";
+import { isUA } from "reakit-utils/dom";
 import {
   DialogState,
   DialogActions,
@@ -14,11 +14,6 @@ import {
   useDialogState,
   DialogStateReturn,
 } from "../Dialog/DialogState";
-
-function isUA(string: string) {
-  if (!canUseDOM) return false;
-  return window.navigator.userAgent.indexOf(string) !== -1;
-}
 
 const isSafari = isUA("Mac") && !isUA("Chrome") && isUA("Safari");
 

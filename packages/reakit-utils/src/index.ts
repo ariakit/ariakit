@@ -4,6 +4,7 @@ export * from "./closest";
 export * from "./contains";
 export * from "./createEvent";
 export * from "./createOnKeyDown";
+export * from "./dom";
 export * from "./ensureFocus";
 export * from "./fireEvent";
 export * from "./fireBlurEvent";
