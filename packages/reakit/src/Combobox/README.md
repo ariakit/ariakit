@@ -760,7 +760,7 @@ similarly to `readOnly` on form elements. In this case, only
   When enabled, user can hide the combobox popover by pressing
 <kbd>Esc</kbd> while focusing on the combobox input.
 
-<details><summary>23 state props</summary>
+<details><summary>24 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
 
@@ -861,6 +861,12 @@ state will get focus.
   <code>boolean</code>
 
   Whether it's visible or not.
+
+- **`minValueLength`**
+  <code>number</code>
+
+  How many characters are needed for opening the combobox popover and
+populating `matches` with filtered values.
 
 - **`list`**
   <code>boolean</code>
