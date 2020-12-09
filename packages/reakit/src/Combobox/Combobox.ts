@@ -227,11 +227,19 @@ export const unstable_useCombobox = createHook<
       (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        options.show?.();
+        if (value.length >= options.minValueLength) {
+          options.show?.();
+        }
         options.setCurrentId?.(null);
         options.setInputValue(value);
       },
-      [options.show, options.setCurrentId, options.setInputValue, value]
+      [
+        options.show,
+        options.setCurrentId,
+        options.setInputValue,
+        options.minValueLength,
+        value,
+      ]
     );
 
     const onBlur = React.useCallback(
@@ -350,6 +358,7 @@ export type unstable_ComboboxOptions = CompositeOptions &
     | "show"
     | "hide"
     | "unstable_referenceRef"
+    | "minValueLength"
   > &
   Pick<
     unstable_ComboboxStateReturn,
