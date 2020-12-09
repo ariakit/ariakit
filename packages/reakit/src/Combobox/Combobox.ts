@@ -227,7 +227,8 @@ export const unstable_useCombobox = createHook<
       (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
         onClickRef.current?.(event);
         if (event.defaultPrevented) return;
-        if (value.length >= options.minValueLength) {
+        // https://github.com/reakit/reakit/issues/808
+        if (!options.minValueLength || value.length >= options.minValueLength) {
           options.show?.();
         }
         options.setCurrentId?.(null);
