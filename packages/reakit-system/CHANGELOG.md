@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.15.0...reakit-system@0.15.1) (2020-12-11)
+
+
+### Bug Fixes
+
+* Add React 17 to peer dependencies ([#807](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/807)) ([411b5aa](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/411b5aa8adf63f3149b40db6a499e65b58929b29)), closes [#776](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/776)
+* Stop passing the `state` prop to custom `as` components ([#800](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/800)) ([e4c67a3](https://github.com/reakit/reakit/tree/master/packages/reakit-system/commit/e4c67a3de2985684dd1ed918175df3454cd44b81)), closes [#797](https://github.com/reakit/reakit/tree/master/packages/reakit-system/issues/797)
+
+
+
+
+
 # [0.15.0](https://github.com/reakit/reakit/tree/master/packages/reakit-system/compare/reakit-system@0.14.5...reakit-system@0.15.0) (2020-11-12)
 
 

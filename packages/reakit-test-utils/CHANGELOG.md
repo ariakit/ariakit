@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.1](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.15.0...reakit-test-utils@0.15.1) (2020-12-11)
+
+
+### Bug Fixes
+
+* Add React 17 to peer dependencies ([#807](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/807)) ([411b5aa](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/commit/411b5aa8adf63f3149b40db6a499e65b58929b29)), closes [#776](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/issues/776)
+
+
+
+
+
 # [0.15.0](https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils/compare/reakit-test-utils@0.14.6...reakit-test-utils@0.15.0) (2020-11-12)
 
 **Note:** Version bump only for package reakit-test-utils

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.2](https://github.com/reakit/reakit/compare/reakit@1.3.1...reakit@1.3.2) (2020-12-11)
+
+
+### Bug Fixes
+
+* Accept other option props together with the `state` prop ([#799](https://github.com/reakit/reakit/issues/799)) ([a21bb2b](https://github.com/reakit/reakit/commit/a21bb2b22780121125bbf3dfc6160ac29e1a0741)), closes [#798](https://github.com/reakit/reakit/issues/798)
+* Add React 17 to peer dependencies ([#807](https://github.com/reakit/reakit/issues/807)) ([411b5aa](https://github.com/reakit/reakit/commit/411b5aa8adf63f3149b40db6a499e65b58929b29)), closes [#776](https://github.com/reakit/reakit/issues/776)
+* Fix `Menu` scroll jump ([#801](https://github.com/reakit/reakit/issues/801)) ([96f5dd5](https://github.com/reakit/reakit/commit/96f5dd52704444862d16167db3c82fb89838e3ae)), closes [#751](https://github.com/reakit/reakit/issues/751)
+* Fix badly positioned popover on click + minValueLength ([#809](https://github.com/reakit/reakit/issues/809)) ([2c847da](https://github.com/reakit/reakit/commit/2c847da75edebae2f511fb5f50c516dfcfa71981)), closes [#808](https://github.com/reakit/reakit/issues/808)
+
+
+
+
+
 ## [1.3.1](https://github.com/reakit/reakit/compare/reakit@1.3.0...reakit@1.3.1) (2020-11-26)
 
 

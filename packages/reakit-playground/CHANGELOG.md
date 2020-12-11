@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.2](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.15.1...reakit-playground@0.15.2) (2020-12-11)
+
+
+### Bug Fixes
+
+* Add React 17 to peer dependencies ([#807](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/807)) ([411b5aa](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/411b5aa8adf63f3149b40db6a499e65b58929b29)), closes [#776](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/776)
+* Fix `Menu` scroll jump ([#801](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/801)) ([96f5dd5](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/commit/96f5dd52704444862d16167db3c82fb89838e3ae)), closes [#751](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/issues/751)
+
+
+
+
+
 ## [0.15.1](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.15.0...reakit-playground@0.15.1) (2020-11-26)
 
 **Note:** Version bump only for package reakit-playground
