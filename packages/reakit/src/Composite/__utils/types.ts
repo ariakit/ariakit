@@ -10,4 +10,4 @@ export type Item = {
   disabled?: boolean;
 };
 
-export type Orientation = "horizontal" | "vertical";
+export type Orientation = "horizontal" | "vertical" | "both";
