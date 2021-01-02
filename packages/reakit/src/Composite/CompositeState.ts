@@ -259,7 +259,7 @@ function reducer(
         );
         return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
-      const oppositeOrientation = getOppositeOrientation(
+      const oppositeOrientation = orientation === "both" ? "!both" : getOppositeOrientation(
         // If it's a grid and orientation is not set, it's a next/previous
         // call, which is inherently horizontal. up/down will call next with
         // orientation set to vertical by default (see below on up/down cases).
@@ -665,7 +665,7 @@ export type CompositeState = unstable_IdState & {
    * column and vice-versa.
    * @default false
    */
-  loop: boolean | Exclude<Orientation, "both">;
+  loop: boolean | Orientation;
   /**
    * **Has effect only on two-dimensional composites**. If enabled, moving to
    * the next item from the last one in a row or column will focus the first
@@ -678,7 +678,7 @@ export type CompositeState = unstable_IdState & {
    * column and vice-versa.
    * @default false
    */
-  wrap: boolean | Exclude<Orientation, "both">;
+  wrap: boolean | Orientation;
   /**
    * **Has effect only on two-dimensional composites**. If enabled, moving up
    * or down when there's no next item or the next item is disabled will shift
