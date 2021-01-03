@@ -31,7 +31,7 @@ test("render", () => {
           aria-checked="false"
           id="item"
           role="menuitemradio"
-          tabindex="0"
+          tabindex="-1"
         />
       </div>
     </body>

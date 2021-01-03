@@ -26,7 +26,7 @@ test("render", () => {
         <input
           aria-checked="false"
           id="radio"
-          tabindex="0"
+          tabindex="-1"
           type="radio"
           value="radio"
         />
