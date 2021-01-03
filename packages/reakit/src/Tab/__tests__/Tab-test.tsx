@@ -30,7 +30,7 @@ test("render", () => {
           aria-selected="false"
           id="tab"
           role="tab"
-          tabindex="0"
+          tabindex="-1"
         >
           tab
         </button>
@@ -93,7 +93,7 @@ test("render selected", () => {
           aria-selected="true"
           id="tab"
           role="tab"
-          tabindex="0"
+          tabindex="-1"
         >
           tab
         </button>

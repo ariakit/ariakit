@@ -26,7 +26,7 @@ test("render", () => {
         <button
           id="item"
           role="menuitem"
-          tabindex="0"
+          tabindex="-1"
         >
           item
         </button>

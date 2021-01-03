@@ -24,7 +24,7 @@ test("render", () => {
       <div>
         <button
           id="item"
-          tabindex="0"
+          tabindex="-1"
         >
           button
         </button>
