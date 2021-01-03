@@ -62,6 +62,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         ref: htmlRef,
         onClick: htmlOnClick,
         onKeyDown: htmlOnKeyDown,
+        onKeyUp: htmlOnKeyUp,
         onFocus: htmlOnFocus,
         onMouseEnter: htmlOnMouseEnter,
         onMouseDown: htmlOnMouseDown,
@@ -77,6 +78,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
       const disabled = options.disabled || htmlProps["aria-disabled"];
       const onClickRef = useLiveRef(htmlOnClick);
       const onKeyDownRef = useLiveRef(htmlOnKeyDown);
+      const onKeyUpRef = useLiveRef(htmlOnKeyUp);
       const onFocusRef = useLiveRef(htmlOnFocus);
       const onMouseEnterRef = useLiveRef(htmlOnMouseEnter);
       const onMouseDownRef = useLiveRef(htmlOnMouseDown);
@@ -93,7 +95,6 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
             const last = options.last && (() => setTimeout(options.last));
             const keyMap = {
               Enter: first,
-              " ": first,
               ArrowUp: (dir === "top" || dir === "bottom") && last,
               ArrowRight: dir === "right" && first,
               ArrowDown: (dir === "bottom" || dir === "top") && first,
@@ -111,6 +112,21 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
           onKeyDownRef.current?.(event);
         },
         [disabled, options.hide, options.first, options.last, dir, options.show]
+      );
+
+      const onKeyUp = React.useCallback(
+        (event: React.KeyboardEvent<HTMLElement>) => {
+          if (!disabled && options.first && event.key === " ") {
+            event.preventDefault();
+            event.stopPropagation();
+            options.show?.();
+            // setTimeout prevents scroll jump
+            setTimeout(options.first);
+            return;
+          }
+          onKeyUpRef.current?.(event);
+        },
+        [disabled, options.first, options.show]
       );
 
       const onMouseEnter = React.useCallback(
@@ -203,6 +219,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
         ref: useForkRef(ref, htmlRef),
         "aria-haspopup": "menu",
         onKeyDown,
+        onKeyUp,
         onMouseEnter,
         onMouseDown,
         onFocus,
