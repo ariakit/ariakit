@@ -184,7 +184,7 @@ export const useMenuButton = createHook<MenuButtonOptions, MenuButtonHTMLProps>(
               !parentIsMenuBar &&
               !options.visible
             ) {
-              options.move?.(null);
+              setTimeout(() => options.move?.(null), 0);
             }
           }
           hasPressedMouse.current = false;
