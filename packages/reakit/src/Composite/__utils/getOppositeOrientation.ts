@@ -5,6 +5,8 @@ const map = {
   vertical: "horizontal",
 } as const;
 
-export function getOppositeOrientation(orientation?: Exclude<Orientation, "both">) {
+export function getOppositeOrientation(
+  orientation?: Exclude<Orientation, "both">
+) {
   return orientation && map[orientation];
 }
