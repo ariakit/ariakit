@@ -151,7 +151,7 @@ export const useCompositeItem = createHook<
         isCurrentItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
-      !options.items;
+      !options.items?.length;
 
     React.useEffect(() => {
       if (!id) return undefined;
