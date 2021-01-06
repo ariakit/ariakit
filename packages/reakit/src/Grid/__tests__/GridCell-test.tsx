@@ -26,7 +26,7 @@ test("render", () => {
       <span
         id="gridcell"
         role="gridcell"
-        tabindex="-1"
+        tabindex="0"
       />
     </div>
   `);
