@@ -97,6 +97,10 @@ export type PopoverInitialState = DialogInitialState &
      */
     unstable_offset?: [number | string, number | string];
     /**
+     * Modifiers for Popper.js. Any attributes added here will override other configurations set in props.
+     */
+    unstable_popperModifiers?: [Object] | undefined;
+    /**
      * Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
      */
     gutter?: number;
@@ -127,6 +131,7 @@ export function usePopoverState(
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
     unstable_offset: sealedOffset,
+    unstable_popperModifiers,
     unstable_preventOverflow: preventOverflow = true,
     unstable_fixed: fixed = false,
     modal = false,
@@ -222,6 +227,9 @@ export function usePopoverState(
             enabled: dialog.visible && process.env.NODE_ENV !== "test",
             fn: ({ state }) => updateState(state),
           },
+          // Spread any Popper.js modifier objects into our modifier array.
+          // This can potentially override any of the above modifier objects.
+          ...(unstable_popperModifiers || []),
         ],
       });
     }
