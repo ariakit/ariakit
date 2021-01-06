@@ -19,7 +19,6 @@ const POPOVER_STATE_KEYS = [
   "unstable_popoverRef",
   "unstable_arrowRef",
   "unstable_popoverStyles",
-  "unstable_popperModifiers",
   "unstable_arrowStyles",
   "unstable_originalPlacement",
   "unstable_update",
