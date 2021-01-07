@@ -311,6 +311,11 @@ element.
 
   Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
 
+- **`unstable_popperModifiers`** <span title="Experimental">⚠️</span>
+  <code>[Object] | undefined</code>
+
+  Modifiers for Popper.js. Any attributes added here will override other configurations set in props.
+
 - **`gutter`**
   <code>number | undefined</code>
 
