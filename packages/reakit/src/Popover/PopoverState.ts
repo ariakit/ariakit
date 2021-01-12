@@ -6,7 +6,6 @@ import {
 } from "reakit-utils/useSealedState";
 import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
 import { shallowEqual } from "reakit-utils/shallowEqual";
-import { isUA } from "reakit-utils/dom";
 import {
   DialogState,
   DialogActions,
@@ -14,8 +13,6 @@ import {
   useDialogState,
   DialogStateReturn,
 } from "../Dialog/DialogState";
-
-const isSafari = isUA("Mac") && !isUA("Chrome") && isUA("Safari");
 
 type Placement =
   | "auto-start"
@@ -137,14 +134,23 @@ export function usePopoverState(
   const referenceRef = React.useRef<HTMLElement>(null);
   const popoverRef = React.useRef<HTMLElement>(null);
   const arrowRef = React.useRef<HTMLElement>(null);
+  const strategy = fixed ? "fixed" : "absolute";
 
   const [originalPlacement, place] = React.useState(sealedPlacement);
   const [placement, setPlacement] = React.useState(sealedPlacement);
   const [offset] = React.useState(sealedOffset || [0, gutter]);
   const [popoverStyles, setPopoverStyles] = React.useState<React.CSSProperties>(
-    {}
+    {
+      // start popovers with fixed position so that they don't render in document flow and cause scroll jump
+      // between render and popper apply style lifecycle phase
+      position: "fixed",
+      left: "0",
+      top: "0",
+    }
   );
-  const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
+  const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({
+    position: "absolute",
+  });
 
   const dialog = useDialogState({ modal, ...sealed });
 
@@ -154,30 +160,30 @@ export function usePopoverState(
       return true;
     }
     return false;
-  }, []);
+  }, [popper.current]);
 
-  const updateState = React.useCallback((state: Partial<State>) => {
-    if (state.placement) {
-      setPlacement(state.placement);
-    }
-    if (state.styles) {
-      setPopoverStyles(applyStyles(state.styles.popper));
-      if (arrowRef.current) {
-        setArrowStyles(applyStyles(state.styles.arrow));
+  const updateState = React.useCallback(
+    (state: Partial<State>) => {
+      if (state.placement && state.placement !== placement) {
+        setPlacement(state.placement);
       }
-    }
-  }, []);
+
+      if (state.styles) {
+        setPopoverStyles(applyStyles(state.styles.popper));
+        if (arrowRef.current) {
+          setArrowStyles(applyStyles(state.styles.arrow));
+        }
+      }
+    },
+    [placement, setPlacement, setPopoverStyles, setArrowStyles]
+  );
 
   useIsomorphicEffect(() => {
-    if (referenceRef.current && popoverRef.current) {
+    if (dialog.visible && referenceRef.current && popoverRef.current) {
       popper.current = createPopper(referenceRef.current, popoverRef.current, {
         // https://popper.js.org/docs/v2/constructors/#options
         placement: originalPlacement,
-        strategy: fixed ? "fixed" : "absolute",
-        // Safari needs styles to be applied in the first render, otherwise
-        // hovering over the popover when it gets visible for the first time
-        // will change its dimensions unexpectedly.
-        onFirstUpdate: isSafari ? updateState : undefined,
+        strategy,
         modifiers: [
           {
             // https://popper.js.org/docs/v2/modifiers/event-listeners/
@@ -225,6 +231,7 @@ export function usePopoverState(
         ],
       });
     }
+
     return () => {
       if (popper.current) {
         popper.current.destroy();
@@ -235,15 +242,15 @@ export function usePopoverState(
 
   // Ensure that the popover will be correctly positioned with an additional
   // update.
-  React.useEffect(() => {
-    if (!dialog.visible) return undefined;
-    const id = window.requestAnimationFrame(() => {
-      popper.current?.forceUpdate();
-    });
-    return () => {
-      window.cancelAnimationFrame(id);
-    };
-  }, [dialog.visible]);
+  // React.useEffect(() => {
+  //   if (!dialog.visible) return undefined;
+  //   const id = window.requestAnimationFrame(() => {
+  //     popper.current?.forceUpdate();
+  //   });
+  //   return () => {
+  //     window.cancelAnimationFrame(id);
+  //   };
+  // }, [dialog.visible]);
 
   return {
     ...dialog,
