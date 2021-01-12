@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/reakit/reakit/compare/reakit@1.3.3...reakit@1.3.4) (2021-01-06)
+
+
+### Bug Fixes
+
+* Revert `CompositeItem` tabIndex fix ([#821](https://github.com/reakit/reakit/issues/821)) ([1390d31](https://github.com/reakit/reakit/commit/1390d31a3d0b1f5e1b0555001e6d6d096b57ec0e))
+
+
+
+
+
 ## [1.3.3](https://github.com/reakit/reakit/compare/reakit@1.3.2...reakit@1.3.3) (2021-01-03)
 
 
