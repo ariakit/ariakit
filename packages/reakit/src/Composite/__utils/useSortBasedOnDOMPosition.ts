@@ -5,7 +5,7 @@ import { Item } from "./types";
 
 type SetItems = (items: Item[]) => void;
 
-function mutateItemsBasedOnDOMPosition(items: Item[], setItems: SetItems) {
+function setItemsBasedOnDOMPosition(items: Item[], setItems: SetItems) {
   const sortedItems = sortBasedOnDOMPosition(items);
   if (items !== sortedItems) {
     setItems(sortedItems);
@@ -35,7 +35,7 @@ function useIntersectionObserver(items: Item[], setItems: SetItems) {
       const hasPreviousItems = !!previousItems.current.length;
       // We don't want to sort items if items have been just registered.
       if (hasPreviousItems) {
-        mutateItemsBasedOnDOMPosition(items, setItems);
+        setItemsBasedOnDOMPosition(items, setItems);
       }
       previousItems.current = items;
     };
@@ -54,7 +54,7 @@ function useIntersectionObserver(items: Item[], setItems: SetItems) {
 
 function useTimeoutObserver(items: Item[], setItems: SetItems) {
   React.useEffect(() => {
-    const callback = () => mutateItemsBasedOnDOMPosition(items, setItems);
+    const callback = () => setItemsBasedOnDOMPosition(items, setItems);
     const timeout = setTimeout(callback, 250);
     return () => clearTimeout(timeout);
   });
