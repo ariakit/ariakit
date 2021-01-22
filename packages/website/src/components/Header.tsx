@@ -46,7 +46,6 @@ export default function Header({ transparent }: HeaderProps) {
   const boxShadowColor = useFade(foreground, 0.85);
   const dialog = useDialogState({ animated: true });
   const location = useLocation();
-  const narrowBreakpoint = 450;
 
   React.useEffect(dialog.hide, [location.pathname]);
 
