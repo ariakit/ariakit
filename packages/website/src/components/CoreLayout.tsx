@@ -31,7 +31,7 @@ type CoreLayoutProps = {
 };
 
 export default function CoreLayout(props: CoreLayoutProps) {
-  const scrolled = useScrolled(50);
+  const scrolled = useScrolled();
   const title =
     props.data && props.data.markdownRemark && props.data.markdownRemark.title;
   const isHome = props.location.pathname === "/";
