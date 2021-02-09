@@ -424,7 +424,7 @@ import {
   MenuButton,
 } from "reakit/Menu";
 
-function Menu({ disclosure, items, ...props }) {
+function Menu({ disclosure, menuItems, ...props }) {
   const menu = useMenuState();
   return (
     <>
@@ -432,7 +432,7 @@ function Menu({ disclosure, items, ...props }) {
         {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
       </MenuButton>
       <BaseMenu {...menu} {...props}>
-        {items.map((item, i) => (
+        {menuItems.map((item, i) => (
           <MenuItem {...menu} {...item.props} key={i}>
             {(itemProps) => React.cloneElement(item, itemProps)}
           </MenuItem>
@@ -447,7 +447,7 @@ function Example() {
     <Menu
       aria-label="Custom menu"
       disclosure={<button>Custom menu</button>}
-      items={[
+      menuItems={[
         <button>Custom item 1</button>,
         <button>Custom item 2</button>,
         <button>Custom item 3</button>,
