@@ -74,16 +74,9 @@ export function createComponent<T extends As, O>({
       const asKeys = as.render?.__keys || as.__keys;
       const asOptions = asKeys && splitProps(props, asKeys)[0];
 
-      const allProps =
-        // If `as` is a string, then that means it's an element not a component
-        // we don't need to pass the state in this case.
-        // If a component is passed, then the component can decide
-        // what should happen with the state prop.
-        isPlainObject(props.state) && typeof as !== "string"
-          ? { state: props.state, ...elementProps }
-          : asOptions
-          ? { ...elementProps, ...asOptions }
-          : elementProps;
+      const allProps = asOptions
+        ? { ...elementProps, ...asOptions }
+        : elementProps;
       const element = useCreateElement(as, allProps as typeof props);
       if (wrapElement) {
         return wrapElement(element);
