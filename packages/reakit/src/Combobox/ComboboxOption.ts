@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useStateContextConsumer } from "reakit/StateContext/useStateContextConsumer";
+import { useStateContextConsumer } from "reakit/StateContext";
 import {
   CompositeItemOptions,
   CompositeItemHTMLProps,
@@ -20,8 +20,6 @@ export const unstable_useComboboxOption = createHook<
 >({
   name: "ComboboxOption",
   compose: [
-    useComboboxItem,
-    useCompositeItem,
     useStateContextConsumer({
       context: StateContext,
       shouldUpdate: (id, state, nextState) =>
@@ -30,6 +28,8 @@ export const unstable_useComboboxOption = createHook<
         id === nextState.currentId,
       updateDependencies: (state) => [state?.currentId],
     }),
+    useComboboxItem,
+    useCompositeItem,
   ],
   keys: COMBOBOX_OPTION_KEYS,
 

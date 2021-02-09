@@ -44,7 +44,6 @@ export const useStateContextConsumer = <O,>({
             : undefined,
         [subscribe, id, htmlProps.id, ...updateDependencies(state)]
       );
-
-      return { ...options, ...state };
+      return { ...state, ...options, id };
     },
   });
