@@ -73,7 +73,6 @@ export function createComponent<T extends As, O>({
       // @ts-ignore
       const asKeys = as.render?.__keys || as.__keys;
       const asOptions = asKeys && splitProps(props, asKeys)[0];
-
       const allProps = asOptions
         ? { ...elementProps, ...asOptions }
         : elementProps;
