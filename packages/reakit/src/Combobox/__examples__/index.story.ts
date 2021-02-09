@@ -1,6 +1,7 @@
 import { unstable_Combobox as Combobox } from "../Combobox";
 
 export { default as AccessibleCombobox } from "./AccessibleCombobox";
+export { default as AccessibleComboboxContext } from "./AccessibleComboboxContext";
 export { default as ComboboxAutoSelect } from "./ComboboxAutoSelect";
 export { default as ComboboxBothAutocomplete } from "./ComboboxBothAutocomplete";
 export { default as ComboboxBothAutoSelect } from "./ComboboxBothAutoSelect";
