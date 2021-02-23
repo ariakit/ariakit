@@ -29,7 +29,7 @@ export type TabbableOptions = RoleOptions & {
   /**
    * Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
    */
-  onFocusVisible?: () => void;
+  onFocusVisible?: (event: React.FocusEvent) => void;
 };
 
 export type TabbableHTMLProps = RoleHTMLProps & {
@@ -232,7 +232,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       htmlOnFocus?.(event);
 
       if (isFocusVisible) {
-        options.onFocusVisible?.();
+        options.onFocusVisible?.(event);
       }
     };
 
