@@ -40,6 +40,7 @@
   ],
   "dependencies": {
     "@popperjs/core": "^2.5.4",
+    "@react-aria/interactions": "^3.3.3",
     "body-scroll-lock": "^3.1.5",
     "reakit-system": "^0.15.1",
     "reakit-utils": "^0.15.1",

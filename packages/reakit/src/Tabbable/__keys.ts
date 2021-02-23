@@ -1,2 +1,6 @@
 // Automatically generated
-export const TABBABLE_KEYS = ["disabled", "focusable"] as const;
+export const TABBABLE_KEYS = [
+  "disabled",
+  "focusable",
+  "onFocusVisible",
+] as const;

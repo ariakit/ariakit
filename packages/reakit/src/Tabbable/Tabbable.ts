@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useFocusVisible } from "@react-aria/interactions";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef } from "reakit-utils/useForkRef";
@@ -25,6 +26,10 @@ export type TabbableOptions = RoleOptions & {
    * `aria-disabled` will be set.
    */
   focusable?: boolean;
+  /**
+   * Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+   */
+  onFocusVisible?: () => void;
 };
 
 export type TabbableHTMLProps = RoleHTMLProps & {
@@ -181,6 +186,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       ref: htmlRef,
       tabIndex: htmlTabIndex,
       onClickCapture: htmlOnClickCapture,
+      onFocus: htmlOnFocus,
       onMouseDownCapture: htmlOnMouseDownCapture,
       onMouseDown: htmlOnMouseDown,
       onKeyPressCapture: htmlOnKeyPressCapture,
@@ -200,6 +206,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
     const focusOnMouseDown = useFocusOnMouseDown();
+    const { isFocusVisible } = useFocusVisible({ isTextInput: true });
 
     useIsomorphicEffect(() => {
       const tabbable = ref.current;
@@ -220,6 +227,14 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     }, []);
 
     const onClickCapture = useDisableEvent(onClickCaptureRef, options.disabled);
+
+    const onFocus = (event: React.FocusEvent) => {
+      htmlOnFocus?.(event);
+
+      if (isFocusVisible) {
+        options.onFocusVisible?.();
+      }
+    };
 
     const onMouseDownCapture = useDisableEvent(
       onMouseDownCaptureRef,
@@ -252,6 +267,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       disabled: trulyDisabled && supportsDisabled ? true : undefined,
       "aria-disabled": options.disabled ? true : undefined,
       onClickCapture,
+      onFocus,
       onMouseDownCapture,
       onMouseDown,
       onKeyPressCapture,
