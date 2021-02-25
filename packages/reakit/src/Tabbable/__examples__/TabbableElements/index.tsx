@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Tabbable, TabbableProps } from "reakit/Tabbable";
+import { Tabbable } from "reakit/Tabbable";
 
 function onClick(event: React.MouseEvent) {
   const element = event.target as HTMLElement;
