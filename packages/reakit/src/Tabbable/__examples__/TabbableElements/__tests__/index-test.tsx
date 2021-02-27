@@ -166,6 +166,23 @@ test("markup", () => {
         >
           Disabled focusable custom
         </div>
+        <h2>
+          Focus visible
+        </h2>
+        <button>
+          Button with focus visible handler
+        </button>
+        <label>
+          Input with focus visible handler:
+          <br />
+          <input />
+        </label>
+        <button
+          aria-disabled="true"
+          style="pointer-events: none;"
+        >
+          Disabled focusable button with focus visible handler
+        </button>
       </div>
     </div>
   `);
