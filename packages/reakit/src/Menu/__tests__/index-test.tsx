@@ -22,6 +22,8 @@ import {
 
 [true, false].forEach((virtual) => {
   describe(virtual ? "aria-activedescendant" : "roving-tabindex", () => {
+    beforeEach(() => jest.resetAllMocks());
+
     test("menu bar is always visible", () => {
       const Test = () => {
         const menu = useMenuState({ unstable_virtual: virtual });
