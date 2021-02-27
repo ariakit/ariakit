@@ -9,6 +9,7 @@ import { warning } from "reakit-warning";
 import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { isButton } from "reakit-utils/isButton";
 import { isPortalEvent } from "reakit-utils/isPortalEvent";
+import { isTextField } from "reakit-utils/isTextField";
 import { getActiveElement } from "reakit-utils/getActiveElement";
 import { isUA } from "reakit-utils/dom";
 import { getClosestFocusable } from "reakit-utils/tabbable";
@@ -202,11 +203,12 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
     const trulyDisabled = !!options.disabled && !options.focusable;
     const [nativeTabbable, setNativeTabbable] = React.useState(true);
     const [supportsDisabled, setSupportsDisabled] = React.useState(true);
+    const [isTextInput, setIsTextInput] = React.useState(false);
     const style = options.disabled
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
     const focusOnMouseDown = useFocusOnMouseDown();
-    const { isFocusVisible } = useFocusVisible({ isTextInput: true });
+    const { isFocusVisible } = useFocusVisible({ isTextInput });
 
     useIsomorphicEffect(() => {
       const tabbable = ref.current;
@@ -223,6 +225,9 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       }
       if (!supportsDisabledAttribute(tabbable)) {
         setSupportsDisabled(false);
+      }
+      if (isTextField(tabbable)) {
+        setIsTextInput(true);
       }
     }, []);
 
