@@ -197,6 +197,8 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
   ) {
     const ref = React.useRef<HTMLElement>(null);
     const onClickCaptureRef = useLiveRef(htmlOnClickCapture);
+    const onFocusRef = useLiveRef(htmlOnFocus);
+    const onFocusVisibleRef = useLiveRef(options.onFocusVisible);
     const onMouseDownCaptureRef = useLiveRef(htmlOnMouseDownCapture);
     const onMouseDownRef = useLiveRef(htmlOnMouseDown);
     const onKeyPressCaptureRef = useLiveRef(htmlOnKeyPressCapture);
@@ -233,13 +235,15 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
 
     const onClickCapture = useDisableEvent(onClickCaptureRef, options.disabled);
 
-    const onFocus = (event: React.FocusEvent) => {
-      htmlOnFocus?.(event);
-
-      if (isFocusVisible) {
-        options.onFocusVisible?.(event);
-      }
-    };
+    const onFocus = React.useCallback(
+      (event: React.FocusEvent) => {
+        onFocusRef.current?.(event);
+        if (isFocusVisible) {
+          onFocusVisibleRef.current?.(event);
+        }
+      },
+      [isFocusVisible]
+    );
 
     const onMouseDownCapture = useDisableEvent(
       onMouseDownCaptureRef,
