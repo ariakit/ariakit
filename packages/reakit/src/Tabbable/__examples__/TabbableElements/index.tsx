@@ -108,6 +108,10 @@ export default function TabbableElements() {
         <br />
         <FocusVisibleTappable as="input" />
       </label>
+
+      <FocusVisibleTappable as="button" disabled focusable>
+        Disabled focusable button with focus visible handler
+      </FocusVisibleTappable>
     </div>
   );
 }
