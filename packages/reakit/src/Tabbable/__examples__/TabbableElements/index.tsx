@@ -29,8 +29,8 @@ const FocusVisibleTappable = (props: any) => {
         }}
         {...props}
       />
-      {isFocused && <div>focused</div>}
-      {isFocusVisible && <div>focus visible</div>}
+      {isFocused && <div>I am focused</div>}
+      {isFocusVisible && <div>I am focus visible</div>}
     </>
   );
 };
