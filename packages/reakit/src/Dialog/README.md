@@ -545,6 +545,11 @@ by default.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 <details><summary>3 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.

@@ -185,6 +185,11 @@ to the item right before it.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 <details><summary>12 state props</summary>
 
 > These props are returned by the state hook. You can spread them into this component (`{...state}`) or pass them separately. You can also provide these props from your own state logic.
@@ -297,6 +302,11 @@ state will get focus.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
 
 - **`id`**
   <code>string | undefined</code>

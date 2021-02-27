@@ -764,6 +764,11 @@ the combobox popover opens, but the input value remains the same.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 - **`hideOnEsc`**
   <code>boolean | undefined</code>
 
@@ -961,6 +966,11 @@ the `matches` property.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
 
 - **`id`**
   <code>string | undefined</code>
@@ -1170,6 +1180,11 @@ and `groupId` if any. This state is automatically updated when
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 - **`id`**
   <code>string | undefined</code>
 
@@ -1343,6 +1358,11 @@ the `matches` property.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
 
 - **`id`**
   <code>string | undefined</code>

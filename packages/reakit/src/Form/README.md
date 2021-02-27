@@ -550,6 +550,11 @@ only occur on submit.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 - **`checked`**
   <code>boolean | undefined</code>
 
@@ -650,6 +655,11 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
 
 - **`name`**
   <code>P</code>
@@ -774,6 +784,11 @@ This stores the messages returned by `onValidate` and `onSubmit`.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 - **`name`**
   <code>P</code>
 
@@ -883,6 +898,11 @@ This stores the error messages throwed by `onValidate` and `onSubmit`.
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
 
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
+
 - **`name`**
   <code>P</code>
 
@@ -927,6 +947,11 @@ similarly to `readOnly` on form elements. In this case, only
   When an element is `disabled`, it may still be `focusable`. It works
 similarly to `readOnly` on form elements. In this case, only
 `aria-disabled` will be set.
+
+- **`onFocusVisible`**
+  <code>((event: FocusEvent&#60;Element&#62;) =&#62; void) | undefined</code>
+
+  Do something only when focused via keyboard, similar to the :focus-visible pseudo class.
 
 <details><summary>3 state props</summary>
 
