@@ -14,27 +14,6 @@ const CustomComponent = React.forwardRef<
   // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 >((props, ref) => <div ref={ref} {...props} onClick={onClick} />);
 
-const FocusVisibleTappable = (props: any) => {
-  const [isFocusVisible, setIsFocusVisible] = React.useState(false);
-  const [isFocused, setIsFocused] = React.useState(false);
-
-  return (
-    <>
-      <Tabbable
-        onFocus={() => setIsFocused(true)}
-        onFocusVisible={() => setIsFocusVisible(true)}
-        onBlur={() => {
-          setIsFocused(false);
-          setIsFocusVisible(false);
-        }}
-        {...props}
-      />
-      {isFocused && <div>I am focused</div>}
-      {isFocusVisible && <div>I am focus visible</div>}
-    </>
-  );
-};
-
 export default function TabbableElements() {
   return (
     <div style={{ display: "inline-flex", flexDirection: "column" }}>
@@ -96,22 +75,6 @@ export default function TabbableElements() {
       <Tabbable as={CustomComponent} disabled focusable>
         Disabled focusable custom
       </Tabbable>
-
-      <h2>Focus visible</h2>
-
-      <FocusVisibleTappable as="button">
-        Button with focus visible handler
-      </FocusVisibleTappable>
-
-      <label>
-        Input with focus visible handler:
-        <br />
-        <FocusVisibleTappable as="input" />
-      </label>
-
-      <FocusVisibleTappable as="button" disabled focusable>
-        Disabled focusable button with focus visible handler
-      </FocusVisibleTappable>
     </div>
   );
 }

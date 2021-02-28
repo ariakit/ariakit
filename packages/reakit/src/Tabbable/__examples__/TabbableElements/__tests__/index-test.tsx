@@ -49,40 +49,6 @@ test("click", () => {
   expect(window.alert).not.toHaveBeenCalledWith("Disabled focusable custom");
 });
 
-test("focus visible", () => {
-  render(<TabbableElements />);
-
-  click(screen.getByText("Button with focus visible handler"));
-  expect(screen.queryByText("I am focused")).toBeInTheDocument();
-  expect(screen.queryByText("I am focus visible")).not.toBeInTheDocument();
-  press.ShiftTab();
-  press.Tab();
-  expect(screen.queryByText("I am focused")).toBeInTheDocument();
-  expect(screen.queryByText("I am focus visible")).toBeInTheDocument();
-
-  const input = screen.getByLabelText("Input with focus visible handler:");
-  click(input);
-  expect(screen.queryByText("I am focused")).toBeInTheDocument();
-  expect(screen.queryByText("I am focus visible")).not.toBeInTheDocument();
-  type("abc", input);
-  expect(screen.queryByText("I am focused")).toBeInTheDocument();
-  expect(screen.queryByText("I am focus visible")).not.toBeInTheDocument();
-  press.ShiftTab();
-  press.Tab();
-  expect(input).toHaveValue("abc");
-  expect(screen.queryByText("I am focus visible")).toBeInTheDocument();
-
-  click(
-    screen.getByText("Disabled focusable button with focus visible handler")
-  );
-  expect(screen.queryByText("I am focused")).not.toBeInTheDocument();
-  expect(screen.queryByText("I am focus visible")).not.toBeInTheDocument();
-  click(input);
-  press.Tab();
-  expect(screen.queryByText("I am focused")).toBeInTheDocument();
-  expect(screen.queryByText("I am focus visible")).toBeInTheDocument();
-});
-
 test("type on input", () => {
   render(<TabbableElements />);
   const defaultInput = screen.getByLabelText("Default input");
@@ -200,23 +166,6 @@ test("markup", () => {
         >
           Disabled focusable custom
         </div>
-        <h2>
-          Focus visible
-        </h2>
-        <button>
-          Button with focus visible handler
-        </button>
-        <label>
-          Input with focus visible handler:
-          <br />
-          <input />
-        </label>
-        <button
-          aria-disabled="true"
-          style="pointer-events: none;"
-        >
-          Disabled focusable button with focus visible handler
-        </button>
       </div>
     </div>
   `);
