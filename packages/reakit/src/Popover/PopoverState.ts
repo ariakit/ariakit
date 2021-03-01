@@ -142,7 +142,11 @@ export function usePopoverState(
   const [placement, setPlacement] = React.useState(sealedPlacement);
   const [offset] = React.useState(sealedOffset || [0, gutter]);
   const [popoverStyles, setPopoverStyles] = React.useState<React.CSSProperties>(
-    {}
+    {
+      position: "fixed",
+      left: "0",
+      top: "0",
+    }
   );
   const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
 
