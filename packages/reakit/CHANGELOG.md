@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.6](https://github.com/reakit/reakit/compare/reakit@1.3.5...reakit@1.3.6) (2021-03-01)
+
+
+### Bug Fixes
+
+* Fix layout shift when first render popper ([#848](https://github.com/reakit/reakit/issues/848)) ([37b0079](https://github.com/reakit/reakit/commit/37b0079c6c87b443b69d97646d93f16a031bd533)), closes [#819](https://github.com/reakit/reakit/issues/819)
+
+
+
+
+
 ## [1.3.5](https://github.com/reakit/reakit/compare/reakit@1.3.4...reakit@1.3.5) (2021-01-21)
 
 
