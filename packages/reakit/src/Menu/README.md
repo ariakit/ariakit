@@ -415,6 +415,8 @@ function Example() {
 
 You can build your own `Menu` component with a different API on top of Reakit.
 
+Be careful not to accidentally shadow props coming in from the menu state.
+
 ```jsx
 import React from "react";
 import {
@@ -422,35 +424,56 @@ import {
   Menu as BaseMenu,
   MenuItem,
   MenuButton,
+  MenuSeparator,
 } from "reakit/Menu";
 
-function Menu({ disclosure, items, ...props }) {
-  const menu = useMenuState();
-  return (
-    <>
-      <MenuButton {...menu} ref={disclosure.ref} {...disclosure.props}>
-        {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
-      </MenuButton>
-      <BaseMenu {...menu} {...props}>
-        {items.map((item, i) => (
-          <MenuItem {...menu} {...item.props} key={i}>
-            {(itemProps) => React.cloneElement(item, itemProps)}
-          </MenuItem>
-        ))}
-      </BaseMenu>
-    </>
-  );
-}
+const Menu = React.forwardRef(
+  ({ disclosure, menuItems, menuProps, ...props }, ref) => {
+    const menu = useMenuState();
+    return (
+      <>
+        <MenuButton ref={ref} {...menu} {...props} {...disclosure.props}>
+          {(disclosureProps) => React.cloneElement(disclosure, disclosureProps)}
+        </MenuButton>
+        <BaseMenu {...menu} {...menuProps}>
+          {menuItems.map((item, i) => {
+            if (item.type === MenuSeparator) {
+              return React.cloneElement(item, {
+                ...menu,
+                key: item.key || i,
+                ...item.props,
+              });
+            }
+            return (
+              <MenuItem {...menu} {...item.props} key={item.key || i}>
+                {(itemProps) => React.cloneElement(item, itemProps)}
+              </MenuItem>
+            );
+          })}
+        </BaseMenu>
+      </>
+    );
+  }
+);
 
 function Example() {
   return (
     <Menu
-      aria-label="Custom menu"
+      menuProps={{ "aria-label": "Custom menu" }}
       disclosure={<button>Custom menu</button>}
-      items={[
+      menuItems={[
         <button>Custom item 1</button>,
         <button>Custom item 2</button>,
         <button>Custom item 3</button>,
+        <MenuSeparator />,
+        <Menu
+          menuProps={{ "aria-label": "Sub Menu" }}
+          disclosure={<button>Sub Menu</button>}
+          menuItems={[
+            <button>Custom item 4</button>,
+            <button>Custom item 5</button>,
+          ]}
+        />,
       ]}
     />
   );
