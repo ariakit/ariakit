@@ -259,15 +259,12 @@ function reducer(
         );
         return reducer(state, { ...action, type: "move", id: nextItem?.id });
       }
-      const oppositeOrientation =
-        orientation === "both"
-          ? "!both"
-          : getOppositeOrientation(
-              // If it's a grid and orientation is not set, it's a next/previous
-              // call, which is inherently horizontal. up/down will call next with
-              // orientation set to vertical by default (see below on up/down cases).
-              isGrid ? orientation || "horizontal" : orientation
-            );
+      const oppositeOrientation = getOppositeOrientation(
+        // If it's a grid and orientation is not set, it's a next/previous
+        // call, which is inherently horizontal. up/down will call next with
+        // orientation set to vertical by default (see below on up/down cases).
+        isGrid ? orientation || "horizontal" : orientation
+      );
       const canLoop = loop && loop !== oppositeOrientation;
       const canWrap = isGrid && wrap && wrap !== oppositeOrientation;
       const hasNullItem =

@@ -74,65 +74,12 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 <!-- Automatically generated -->
 
-### `useComboboxGridState`
+### `useComboboxListState`
 
 - **`baseId`**
   <code>string</code>
 
   ID that will serve as a base for all the items IDs.
-
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
-- **`animated`**
-  <code>number | boolean</code>
-
-  If `true`, `animating` will be set to `true` when `visible` is updated.
-It'll wait for `stopAnimation` to be called or a CSS transition ends.
-If `animated` is set to a `number`, `stopAnimation` will be called only
-after the same number of milliseconds have passed.
-
-- **`modal`**
-  <code>boolean</code>
-
-  Toggles Dialog's `modal` state.
-  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
-  - Modal: `preventBodyScroll` is automatically enabled, focus is
-trapped within the dialog and the dialog is rendered within a `Portal`
-by default.
-
-- **`placement`**
-  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
-
-  Actual `placement`.
-
-- **`unstable_fixed`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Whether or not the popover should have `position` set to `fixed`.
-
-- **`unstable_flip`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Flip the popover's placement when it starts to overlap its reference
-element.
-
-- **`unstable_offset`** <span title="Experimental">⚠️</span>
-  <code>[string | number, string | number] | undefined</code>
-
-  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
-
-- **`gutter`**
-  <code>number | undefined</code>
-
-  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
-
-- **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
-  <code>boolean | undefined</code>
-
-  Prevents popover from being positioned outside the boundary.
 
 - **`rtl`**
   <code>boolean</code>
@@ -142,7 +89,7 @@ set to `true`, they will be inverted. This only affects the composite
 widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -165,7 +112,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`loop`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   On one-dimensional composites:
   - `true` loops from the last item to the first item and vice-versa.
@@ -190,7 +137,7 @@ item in the last row or column and the first item in the first row or
 column and vice-versa.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -263,12 +210,6 @@ The inline completion string will be highlighted and will have a selected
 state.
   - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
-
-- **`columns`**
-  <code>number</code>
-
-  Number of columns by which `values` will be splitted to generate the
-`matches` 2D array.
 
 ### `useComboboxListGridState`
 
@@ -285,7 +226,7 @@ set to `true`, they will be inverted. This only affects the composite
 widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -308,7 +249,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`loop`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   On one-dimensional composites:
   - `true` loops from the last item to the first item and vice-versa.
@@ -333,7 +274,7 @@ item in the last row or column and the first item in the first row or
 column and vice-versa.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -412,143 +353,6 @@ the combobox popover opens, but the input value remains the same.
 
   Number of columns by which `values` will be splitted to generate the
 `matches` 2D array.
-
-### `useComboboxListState`
-
-- **`baseId`**
-  <code>string</code>
-
-  ID that will serve as a base for all the items IDs.
-
-- **`rtl`**
-  <code>boolean</code>
-
-  Determines how `next` and `previous` functions will behave. If `rtl` is
-set to `true`, they will be inverted. This only affects the composite
-widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
-
-- **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
-
-  Defines the orientation of the composite widget. If the composite has a
-single row or column (one-dimensional), the `orientation` value determines
-which arrow keys can be used to move focus:
-  - `undefined`: all arrow keys work.
-  - `horizontal`: only left and right arrow keys work.
-  - `vertical`: only up and down arrow keys work.
-
-  It doesn't have any effect on two-dimensional composites.
-
-- **`currentId`**
-  <code>string | null | undefined</code>
-
-  The current focused item `id`.
-  - `undefined` will automatically focus the first enabled composite item.
-  - `null` will focus the base composite element and users will be able to
-navigate out of it using arrow keys.
-  - If `currentId` is initially set to `null`, the base composite element
-itself will have focus and users will be able to navigate to it using
-arrow keys.
-
-- **`loop`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
-
-  On one-dimensional composites:
-  - `true` loops from the last item to the first item and vice-versa.
-  - `horizontal` loops only if `orientation` is `horizontal` or not set.
-  - `vertical` loops only if `orientation` is `vertical` or not set.
-  - If `currentId` is initially set to `null`, the composite element will
-be focused in between the last and first items.
-
-  On two-dimensional composites:
-  - `true` loops from the last row/column item to the first item in the
-same row/column and vice-versa. If it's the last item in the last row, it
-moves to the first item in the first row and vice-versa.
-  - `horizontal` loops only from the last row item to the first item in
-the same row.
-  - `vertical` loops only from the last column item to the first item in
-the column row.
-  - If `currentId` is initially set to `null`, vertical loop will have no
-effect as moving down from the last row or up from the first row will
-focus the composite element.
-  - If `wrap` matches the value of `loop`, it'll wrap between the last
-item in the last row or column and the first item in the first row or
-column and vice-versa.
-
-- **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
-
-  **Has effect only on two-dimensional composites**. If enabled, moving to
-the next item from the last one in a row or column will focus the first
-item in the next row or column and vice-versa.
-  - `true` wraps between rows and columns.
-  - `horizontal` wraps only between rows.
-  - `vertical` wraps only between columns.
-  - If `loop` matches the value of `wrap`, it'll wrap between the last
-item in the last row or column and the first item in the first row or
-column and vice-versa.
-
-- **`shift`**
-  <code>boolean</code>
-
-  **Has effect only on two-dimensional composites**. If enabled, moving up
-or down when there's no next item or the next item is disabled will shift
-to the item right before it.
-
-- **`inputValue`**
-  <code>string</code>
-
-  Combobox input value that will be used to filter `values` and populate
-the `matches` property.
-
-- **`minValueLength`**
-  <code>number</code>
-
-  How many characters are needed for opening the combobox popover and
-populating `matches` with filtered values.
-
-- **`values`**
-  <code>string[]</code>
-
-  Values that will be used to produce `matches`.
-
-- **`limit`**
-  <code>number | false</code>
-
-  Maximum number of `matches`. If it's set to `false`, there will be no
-limit.
-
-- **`list`**
-  <code>boolean</code>
-
-  Determines how the combobox options behave: dynamically or statically.
-By default, it's `true` if `values` are provided. Otherwise, it's `false`:
-  - If it's `true` and `values` are provided, then they will be
-automatically filtered based on `inputValue` and will populate `matches`.
-  - If it's `true` and `values` aren't provided, this means that you'll
-provide and filter values by yourself. `matches` will be empty.
-  - If it's `false` and `values` are provided, then they won't be
-automatically filtered and `matches` will be the same as `values`.
-
-- **`inline`**
-  <code>boolean</code>
-
-  Determines whether focusing on an option will temporarily change the value
-of the combobox. If it's `true`, focusing on an option will temporarily
-change the combobox value to the option's value.
-
-- **`autoSelect`**
-  <code>boolean</code>
-
-  Determines whether the first option will be automatically selected. When
-it's set to `true`, the exact behavior will depend on the value of
-`inline`:
-  - If `inline` is `true`, the first option is automatically focused when
-the combobox popover opens and the input value changes to reflect this.
-The inline completion string will be highlighted and will have a selected
-state.
-  - If `inline` is `false`, the first option is automatically focused when
-the combobox popover opens, but the input value remains the same.
 
 ### `useComboboxState`
 
@@ -618,7 +422,7 @@ set to `true`, they will be inverted. This only affects the composite
 widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -641,7 +445,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`loop`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   On one-dimensional composites:
   - `true` loops from the last item to the first item and vice-versa.
@@ -666,7 +470,7 @@ item in the last row or column and the first item in the first row or
 column and vice-versa.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -740,6 +544,202 @@ state.
   - If `inline` is `false`, the first option is automatically focused when
 the combobox popover opens, but the input value remains the same.
 
+### `useComboboxGridState`
+
+- **`baseId`**
+  <code>string</code>
+
+  ID that will serve as a base for all the items IDs.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
+
+- **`animated`**
+  <code>number | boolean</code>
+
+  If `true`, `animating` will be set to `true` when `visible` is updated.
+It'll wait for `stopAnimation` to be called or a CSS transition ends.
+If `animated` is set to a `number`, `stopAnimation` will be called only
+after the same number of milliseconds have passed.
+
+- **`modal`**
+  <code>boolean</code>
+
+  Toggles Dialog's `modal` state.
+  - Non-modal: `preventBodyScroll` doesn't work and focus is free.
+  - Modal: `preventBodyScroll` is automatically enabled, focus is
+trapped within the dialog and the dialog is rendered within a `Portal`
+by default.
+
+- **`placement`**
+  <code title="&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start&#34; | &#34;top&#34; | &#34;top-end&#34; | &#34;right-start&#34; | &#34;right&#34; | &#34;right-end&#34; | &#34;bottom-end&#34; | &#34;bottom&#34; | &#34;bottom-start&#34; | &#34;left-end&#34; | &#34;left&#34; | &#34;left-start&#34;">&#34;auto-start&#34; | &#34;auto&#34; | &#34;auto-end&#34; | &#34;top-start...</code>
+
+  Actual `placement`.
+
+- **`unstable_fixed`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Whether or not the popover should have `position` set to `fixed`.
+
+- **`unstable_flip`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Flip the popover's placement when it starts to overlap its reference
+element.
+
+- **`unstable_offset`** <span title="Experimental">⚠️</span>
+  <code>[string | number, string | number] | undefined</code>
+
+  Offset between the reference and the popover: [main axis, alt axis]. Should not be combined with `gutter`.
+
+- **`gutter`**
+  <code>number | undefined</code>
+
+  Offset between the reference and the popover on the main axis. Should not be combined with `unstable_offset`.
+
+- **`unstable_preventOverflow`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Prevents popover from being positioned outside the boundary.
+
+- **`rtl`**
+  <code>boolean</code>
+
+  Determines how `next` and `previous` functions will behave. If `rtl` is
+set to `true`, they will be inverted. This only affects the composite
+widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
+
+- **`orientation`**
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
+
+  Defines the orientation of the composite widget. If the composite has a
+single row or column (one-dimensional), the `orientation` value determines
+which arrow keys can be used to move focus:
+  - `undefined`: all arrow keys work.
+  - `horizontal`: only left and right arrow keys work.
+  - `vertical`: only up and down arrow keys work.
+
+  It doesn't have any effect on two-dimensional composites.
+
+- **`currentId`**
+  <code>string | null | undefined</code>
+
+  The current focused item `id`.
+  - `undefined` will automatically focus the first enabled composite item.
+  - `null` will focus the base composite element and users will be able to
+navigate out of it using arrow keys.
+  - If `currentId` is initially set to `null`, the base composite element
+itself will have focus and users will be able to navigate to it using
+arrow keys.
+
+- **`loop`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
+
+  On one-dimensional composites:
+  - `true` loops from the last item to the first item and vice-versa.
+  - `horizontal` loops only if `orientation` is `horizontal` or not set.
+  - `vertical` loops only if `orientation` is `vertical` or not set.
+  - If `currentId` is initially set to `null`, the composite element will
+be focused in between the last and first items.
+
+  On two-dimensional composites:
+  - `true` loops from the last row/column item to the first item in the
+same row/column and vice-versa. If it's the last item in the last row, it
+moves to the first item in the first row and vice-versa.
+  - `horizontal` loops only from the last row item to the first item in
+the same row.
+  - `vertical` loops only from the last column item to the first item in
+the column row.
+  - If `currentId` is initially set to `null`, vertical loop will have no
+effect as moving down from the last row or up from the first row will
+focus the composite element.
+  - If `wrap` matches the value of `loop`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`wrap`**
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
+
+  **Has effect only on two-dimensional composites**. If enabled, moving to
+the next item from the last one in a row or column will focus the first
+item in the next row or column and vice-versa.
+  - `true` wraps between rows and columns.
+  - `horizontal` wraps only between rows.
+  - `vertical` wraps only between columns.
+  - If `loop` matches the value of `wrap`, it'll wrap between the last
+item in the last row or column and the first item in the first row or
+column and vice-versa.
+
+- **`shift`**
+  <code>boolean</code>
+
+  **Has effect only on two-dimensional composites**. If enabled, moving up
+or down when there's no next item or the next item is disabled will shift
+to the item right before it.
+
+- **`inputValue`**
+  <code>string</code>
+
+  Combobox input value that will be used to filter `values` and populate
+the `matches` property.
+
+- **`minValueLength`**
+  <code>number</code>
+
+  How many characters are needed for opening the combobox popover and
+populating `matches` with filtered values.
+
+- **`values`**
+  <code>string[]</code>
+
+  Values that will be used to produce `matches`.
+
+- **`limit`**
+  <code>number | false</code>
+
+  Maximum number of `matches`. If it's set to `false`, there will be no
+limit.
+
+- **`list`**
+  <code>boolean</code>
+
+  Determines how the combobox options behave: dynamically or statically.
+By default, it's `true` if `values` are provided. Otherwise, it's `false`:
+  - If it's `true` and `values` are provided, then they will be
+automatically filtered based on `inputValue` and will populate `matches`.
+  - If it's `true` and `values` aren't provided, this means that you'll
+provide and filter values by yourself. `matches` will be empty.
+  - If it's `false` and `values` are provided, then they won't be
+automatically filtered and `matches` will be the same as `values`.
+
+- **`inline`**
+  <code>boolean</code>
+
+  Determines whether focusing on an option will temporarily change the value
+of the combobox. If it's `true`, focusing on an option will temporarily
+change the combobox value to the option's value.
+
+- **`autoSelect`**
+  <code>boolean</code>
+
+  Determines whether the first option will be automatically selected. When
+it's set to `true`, the exact behavior will depend on the value of
+`inline`:
+  - If `inline` is `true`, the first option is automatically focused when
+the combobox popover opens and the input value changes to reflect this.
+The inline completion string will be highlighted and will have a selected
+state.
+  - If `inline` is `false`, the first option is automatically focused when
+the combobox popover opens, but the input value remains the same.
+
+- **`columns`**
+  <code>number</code>
+
+  Number of columns by which `values` will be splitted to generate the
+`matches` 2D array.
+
 ### `Combobox`
 
 - **`disabled`**
@@ -779,7 +779,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -802,7 +802,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -857,11 +857,6 @@ updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
 
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
 - **`minValueLength`**
   <code>number</code>
 
@@ -909,6 +904,11 @@ the combobox popover opens, but the input value remains the same.
   <code>string | undefined</code>
 
   Value of the item that is currently selected.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
 
 - **`show`**
   <code>() =&#62; void</code>
@@ -983,7 +983,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -1066,11 +1066,6 @@ updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
 
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
 - **`inputValue`**
   <code>string</code>
 
@@ -1081,6 +1076,11 @@ the `matches` property.
   <code>string | undefined</code>
 
   Value of the item that is currently selected.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -1191,7 +1191,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -1274,11 +1274,6 @@ updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
 
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
 - **`inputValue`**
   <code>string</code>
 
@@ -1289,6 +1284,11 @@ the `matches` property.
   <code>string | undefined</code>
 
   Value of the item that is currently selected.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
 
 - **`hide`**
   <code>() =&#62; void</code>
@@ -1365,7 +1365,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -1448,11 +1448,6 @@ updates the `currentId` state without moving focus. When the composite
 widget gets focused by the user, the item referred by the `currentId`
 state will get focus.
 
-- **`visible`**
-  <code>boolean</code>
-
-  Whether it's visible or not.
-
 - **`inputValue`**
   <code>string</code>
 
@@ -1463,6 +1458,11 @@ the `matches` property.
   <code>string | undefined</code>
 
   Value of the item that is currently selected.
+
+- **`visible`**
+  <code>boolean</code>
+
+  Whether it's visible or not.
 
 - **`hide`**
   <code>() =&#62; void</code>

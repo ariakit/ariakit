@@ -563,7 +563,7 @@ set to `true`, they will be inverted. This only affects the composite
 widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -586,7 +586,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`loop`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   On one-dimensional composites:
   - `true` loops from the last item to the first item and vice-versa.
@@ -611,7 +611,7 @@ item in the last row or column and the first item in the first row or
 column and vice-versa.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -659,7 +659,7 @@ set to `true`, they will be inverted. This only affects the composite
 widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -682,7 +682,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`loop`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   On one-dimensional composites:
   - `true` loops from the last item to the first item and vice-versa.
@@ -707,7 +707,7 @@ item in the last row or column and the first item in the first row or
 column and vice-versa.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -890,7 +890,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -913,7 +913,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -1031,7 +1031,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -1054,7 +1054,7 @@ itself will have focus and users will be able to navigate to it using
 arrow keys.
 
 - **`wrap`**
-  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34;</code>
+  <code>boolean | &#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34;</code>
 
   **Has effect only on two-dimensional composites**. If enabled, moving to
 the next item from the last one in a row or column will focus the first
@@ -1337,7 +1337,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -1509,7 +1509,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
@@ -1677,7 +1677,7 @@ container instead of
 DOM focus will remain on the composite while its items receive virtual focus.
 
 - **`orientation`**
-  <code>&#34;horizontal&#34; | &#34;vertical&#34; | undefined</code>
+  <code>&#34;horizontal&#34; | &#34;vertical&#34; | &#34;both&#34; | undefined</code>
 
   Defines the orientation of the composite widget. If the composite has a
 single row or column (one-dimensional), the `orientation` value determines
