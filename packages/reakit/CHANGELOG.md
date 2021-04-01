@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.7](https://github.com/reakit/reakit/compare/reakit@1.3.6...reakit@1.3.7) (2021-04-01)
+
+
+### Bug Fixes
+
+* Fix Popover initial position ([#853](https://github.com/reakit/reakit/issues/853)) ([8df5ed4](https://github.com/reakit/reakit/commit/8df5ed43f5e4b2bbea7ca42ef9a5b2a4c78d6859)), closes [#852](https://github.com/reakit/reakit/issues/852)
+
+
+
+
+
 ## [1.3.6](https://github.com/reakit/reakit/compare/reakit@1.3.5...reakit@1.3.6) (2021-03-01)
 
 
