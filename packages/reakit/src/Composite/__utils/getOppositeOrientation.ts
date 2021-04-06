@@ -7,5 +7,5 @@ const map = {
 } as const;
 
 export function getOppositeOrientation(orientation?: Orientation) {
-  return orientation && (orientation === "both" ? "!both" : map[orientation]);
+  return orientation && map[orientation];
 }
