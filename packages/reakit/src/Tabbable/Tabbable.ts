@@ -178,7 +178,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         // focusable ancestor element, which is ultimately the body element. So
         // we make sure to give focus to the tabbable element on mouse down so
         // it works consistently across browsers.
-        // istanbul ignore start
         if (!isSafariOrFirefoxOnMac) return;
         if (isPortalEvent(event)) return;
         if (!isButton(element)) return;
@@ -203,7 +202,6 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
           once: true,
           capture: true,
         });
-        // istanbul ignore end
       },
       []
     );
