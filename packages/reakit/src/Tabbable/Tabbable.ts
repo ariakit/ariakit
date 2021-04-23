@@ -205,7 +205,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         });
         // istanbul ignore end
       },
-      [options.disabled]
+      []
     );
 
     return {
