@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   useCompositeState,
   CompositeState,
@@ -50,14 +48,14 @@ export type TabInitialState = CompositeInitialState &
 export type TabStateReturn = TabState & TabActions;
 
 export function useTabState(
-  initialState: SealedInitialState<TabInitialState> = {}
+  initialState: InitialState<TabInitialState> = {}
 ): TabStateReturn {
   const {
     selectedId: initialSelectedId,
     loop = true,
     manual = false,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
 
   const composite = useCompositeState({
     loop,

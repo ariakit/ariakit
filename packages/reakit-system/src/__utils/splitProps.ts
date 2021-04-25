@@ -1,4 +1,4 @@
-import { isPlainObject } from "./isPlainObject";
+import { isPlainObject } from "reakit-utils/misc";
 
 /**
  * Splits an object (`props`) into a tuple where the first item is an object

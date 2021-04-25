@@ -1,7 +1,5 @@
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   useCompositeState,
   CompositeState,
@@ -18,9 +16,9 @@ export type ToolbarInitialState = CompositeInitialState;
 export type ToolbarStateReturn = ToolbarState & ToolbarActions;
 
 export function useToolbarState(
-  initialState: SealedInitialState<ToolbarInitialState> = {}
+  initialState: InitialState<ToolbarInitialState> = {}
 ): ToolbarStateReturn {
-  const { orientation = "horizontal", ...sealed } = useSealedState(
+  const { orientation = "horizontal", ...sealed } = useInitialValue(
     initialState
   );
   return useCompositeState({ orientation, ...sealed });

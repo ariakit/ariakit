@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { canUseDOM } from "reakit-utils/canUseDOM";
+import { useSafeLayoutEffect } from "reakit-utils/hooks";
+import { canUseDOM } from "reakit-utils/dom";
 
 export type PortalProps = {
   /**
@@ -33,7 +33,7 @@ export function Portal({ children }: PortalProps) {
     return null;
   });
 
-  useIsomorphicEffect(() => {
+  useSafeLayoutEffect(() => {
     if (!hostNode || !context) return undefined;
     context.appendChild(hostNode);
     return () => {

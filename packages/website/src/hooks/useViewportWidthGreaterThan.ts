@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { useSafeLayoutEffect } from "reakit-utils/hooks";
 
 function useViewportWidthGreaterThan(width: number) {
   const [greater, setGreater] = React.useState(false);
 
-  useIsomorphicEffect(() => {
+  useSafeLayoutEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > width) {
         setGreater(true);

@@ -3,7 +3,7 @@ import { useWarning } from "reakit-warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
+import { useForkRef } from "reakit-utils/hooks";
 import {
   CompositeOptions,
   CompositeHTMLProps,

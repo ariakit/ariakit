@@ -1,7 +1,5 @@
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   useCompositeState,
   CompositeState,
@@ -19,8 +17,8 @@ export type unstable_GridStateReturn = unstable_GridState &
   unstable_GridActions;
 
 export function unstable_useGridState(
-  initialState: SealedInitialState<unstable_GridInitialState> = {}
+  initialState: InitialState<unstable_GridInitialState> = {}
 ): unstable_GridStateReturn {
-  const sealed = useSealedState(initialState);
+  const sealed = useInitialValue(initialState);
   return useCompositeState(sealed);
 }

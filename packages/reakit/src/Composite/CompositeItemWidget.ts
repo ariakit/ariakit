@@ -1,10 +1,9 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { isTextField } from "reakit-utils/isTextField";
-import { getDocument } from "reakit-utils/getDocument";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { getDocument, isTextField } from "reakit-utils/dom";
+import { isSelfTarget } from "reakit-utils/events";
+import { useLiveRef } from "reakit-utils/hooks";
 import { useRole, RoleOptions, RoleHTMLProps } from "../Role/Role";
 import { CompositeStateReturn } from "./CompositeState";
 import { setTextFieldValue } from "./__utils/setTextFieldValue";

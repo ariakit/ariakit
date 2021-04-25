@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useLiveRef } from "reakit-utils/hooks";
 import { MenuContextType } from "./MenuContext";
 import { findVisibleSubmenu } from "./findVisibleSubmenu";
 

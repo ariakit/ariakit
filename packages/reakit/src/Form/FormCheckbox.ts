@@ -2,7 +2,7 @@ import * as React from "react";
 import { As, PropsWithAs, ArrayValue } from "reakit-utils/types";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useLiveRef } from "reakit-utils/hooks";
 import {
   CheckboxOptions,
   CheckboxHTMLProps,

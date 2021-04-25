@@ -24,69 +24,59 @@ yarn add reakit-utils
 
 #### Table of Contents
 
--   [applyState](#applystate)
 -   [canUseDOM](#canusedom)
--   [closest](#closest)
--   [contains](#contains)
--   [createEvent](#createevent)
--   [createOnKeyDown](#createonkeydown)
 -   [isUA](#isua)
--   [ensureFocus](#ensurefocus)
--   [fireBlurEvent](#fireblurevent)
--   [fireEvent](#fireevent)
--   [fireKeyboardEvent](#firekeyboardevent)
--   [flatten](#flatten)
--   [getActiveElement](#getactiveelement)
 -   [getDocument](#getdocument)
--   [getNextActiveElementOnBlur](#getnextactiveelementonblur)
 -   [getWindow](#getwindow)
+-   [getActiveElement](#getactiveelement)
+-   [contains](#contains)
+-   [isButton](#isbutton)
+-   [matches](#matches)
+-   [closest](#closest)
+-   [isTextField](#istextfield)
+-   [getNativeElementType](#getnativeelementtype)
+-   [isPortalEvent](#isportalevent)
+-   [isSelfTarget](#isselftarget)
+-   [createEvent](#createevent)
+-   [fireEvent](#fireevent)
+-   [fireBlurEvent](#fireblurevent)
+-   [fireKeyboardEvent](#firekeyboardevent)
+-   [getNextActiveElementOnBlur](#getnextactiveelementonblur)
+-   [flatten](#flatten)
+-   [isFocusable](#isfocusable)
+-   [isTabbable](#istabbable)
+-   [getAllFocusableIn](#getallfocusablein)
+-   [getFirstFocusableIn](#getfirstfocusablein)
+-   [getAllTabbableIn](#getalltabbablein)
+-   [getFirstTabbableIn](#getfirsttabbablein)
+-   [getLastTabbableIn](#getlasttabbablein)
+-   [getNextTabbableIn](#getnexttabbablein)
+-   [getPreviousTabbableIn](#getprevioustabbablein)
+-   [getClosestFocusable](#getclosestfocusable)
 -   [hasFocus](#hasfocus)
 -   [hasFocusWithin](#hasfocuswithin)
--   [isButton](#isbutton)
--   [isEmpty](#isempty)
--   [isInteger](#isinteger)
+-   [ensureFocus](#ensurefocus)
+-   [useSafeLayoutEffect](#usesafelayouteffect)
+-   [useInitialValue](#useinitialvalue)
+-   [useLazyRef](#uselazyref)
+-   [useLiveRef](#useliveref)
+-   [useEventCallback](#useeventcallback)
+-   [useForkRef](#useforkref)
+-   [useNativeElementType](#usenativeelementtype)
+-   [useUpdateEffect](#useupdateeffect)
+-   [shallowEqual](#shallowequal)
+-   [toArray](#toarray)
+-   [applyState](#applystate)
 -   [isObject](#isobject)
 -   [isPlainObject](#isplainobject)
--   [isPortalEvent](#isportalevent)
 -   [isPromise](#ispromise)
--   [isSelfTarget](#isselftarget)
--   [isTextField](#istextfield)
--   [matches](#matches)
--   [normalizePropsAreEqual](#normalizepropsareequal)
--   [omit](#omit)
--   [pick](#pick)
+-   [isEmpty](#isempty)
+-   [isInteger](#isinteger)
 -   [removeIndexFromArray](#removeindexfromarray)
 -   [removeItemFromArray](#removeitemfromarray)
--   [shallowEqual](#shallowequal)
--   [\_\_deprecatedSplitProps](#__deprecatedsplitprops)
--   [splitProps](#splitprops)
--   [tabbable](#tabbable)
--   [toArray](#toarray)
+-   [omit](#omit)
+-   [pick](#pick)
 -   [types](#types)
--   [useForkRef](#useforkref)
--   [useIsomorphicEffect](#useisomorphiceffect)
--   [useLiveRef](#useliveref)
--   [useSealedState](#usesealedstate)
--   [useUpdateEffect](#useupdateeffect)
-
-### applyState
-
-Receives a `setState` argument and calls it with `currentValue` if it's a
-function. Otherwise return the argument as the new value.
-
-#### Parameters
-
--   `argument` **React.SetStateAction&lt;T>** 
--   `currentValue` **T** 
-
-#### Examples
-
-```javascript
-import { applyState } from "reakit-utils";
-
-applyState((value) => value + 1, 1); // 2
-applyState(2, 1); // 2
-```
 
 ### canUseDOM
 
@@ -100,24 +90,41 @@ import { canUseDOM } from "reakit-utils";
 const title = canUseDOM ? document.title : "";
 ```
 
-### closest
+### isUA
 
-Ponyfill for `Element.prototype.closest`
+Checks if a given string exists in the user agent string.
 
 #### Parameters
 
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `selectors` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `string` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
-#### Examples
+### getDocument
 
-```javascript
-import { closest } from "reakit-utils";
+Returns `element.ownerDocument || document`.
 
-closest(document.getElementById("id"), "div");
-// same as
-document.getElementById("id").closest("div");
-```
+#### Parameters
+
+-   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
+
+Returns **[Document](https://developer.mozilla.org/docs/Web/API/Document)** 
+
+### getWindow
+
+Returns `element.ownerDocument.defaultView || window`.
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)?** 
+
+Returns **[Window](https://developer.mozilla.org/docs/Web/API/Window)** 
+
+### getActiveElement
+
+Returns `element.ownerDocument.activeElement`.
+
+#### Parameters
+
+-   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
 
 ### contains
 
@@ -139,9 +146,131 @@ contains(document.getElementById("parent"), document.getElementById("child"));
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
+### isButton
+
+Checks whether `element` is a native HTML button element.
+
+#### Parameters
+
+-   `element` **{tagName: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?}** 
+
+#### Examples
+
+```javascript
+import { isButton } from "reakit-utils";
+
+isButton(document.querySelector("button")); // true
+isButton(document.querySelector("input[type='button']")); // true
+isButton(document.querySelector("div")); // false
+isButton(document.querySelector("input[type='text']")); // false
+isButton(document.querySelector("div[role='button']")); // false
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### matches
+
+-   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>
+    **
+
+Ponyfill for `Element.prototype.matches`
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `selectors` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### closest
+
+Ponyfill for `Element.prototype.closest`
+
+#### Parameters
+
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `selectors` **K** 
+
+#### Examples
+
+```javascript
+import { closest } from "reakit-utils";
+
+closest(document.getElementById("id"), "div");
+// same as
+document.getElementById("id").closest("div");
+```
+
+Returns **any** 
+
+### isTextField
+
+Check whether the given element is a text field, where text field is defined
+by the ability to select within the input, or that it is contenteditable.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+
+#### Examples
+
+```javascript
+import { isTextField } from "reakit-utils";
+
+isTextField(document.querySelector("div")); // false
+isTextField(document.querySelector("input")); // true
+isTextField(document.querySelector("input[type='button']")); // false
+isTextField(document.querySelector("textarea")); // true
+isTextField(document.querySelector("div[contenteditable='true']")); // true
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### getNativeElementType
+
+Returns the native tag name of the passed element. If the element is not
+provided, the second argument `defaultType` will be used, but only if it's
+a string.
+
+#### Parameters
+
+-   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)?** 
+-   `defaultType` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | ComponentType)?** 
+
+#### Examples
+
+```javascript
+import { getNativeElementType } from "reakit-utils";
+
+getNativeElementType(document.querySelector("div")); // "div"
+getNativeElementType(document.querySelector("button")); // "button"
+getNativeElementType(null, "button"); // "button"
+getNativeElementType(null, SomeComponent); // undefined
+```
+
+### isPortalEvent
+
+Returns `true` if `event` has been fired within a React Portal element.
+
+#### Parameters
+
+-   `event` **SyntheticEvent** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isSelfTarget
+
+Returns `true` if `event.target` and `event.currentTarget` are the same.
+
+#### Parameters
+
+-   `event` **SyntheticEvent** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### createEvent
 
-Creates an `Event` in a way that also works on IE 11.
+Creates an event. Supports IE 11.
 
 #### Parameters
 
@@ -154,88 +283,15 @@ Creates an `Event` in a way that also works on IE 11.
 ```javascript
 import { createEvent } from "reakit-utils";
 
-const el = document.getElementById("id");
-el.dispatchEvent(createEvent(el, "blur", { bubbles: false }));
+const element = document.getElementById("id");
+createEvent(element, "blur", { bubbles: false });
 ```
 
 Returns **[Event](https://developer.mozilla.org/docs/Web/API/Event)** 
 
-### createOnKeyDown
-
-Returns an `onKeyDown` handler to be passed to a component.
-
-#### Parameters
-
--   `options` **Options**  (optional, default `{}`)
-    -   `options.keyMap`  
-    -   `options.onKey`  
-    -   `options.stopPropagation`  
-    -   `options.onKeyDown`  
-    -   `options.shouldKeyDown`   (optional, default `()=>true`)
-    -   `options.preventDefault`   (optional, default `true`)
-
-Returns **React.KeyboardEventHandler** 
-
-### isUA
-
-Checks if a given string exists in the user agent string.
-
-#### Parameters
-
--   `string` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
-
-### ensureFocus
-
-Ensures `element` will receive focus if it's not already.
-
-#### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
--   `$1` **EnsureFocusOptions**  (optional, default `{}`)
-    -   `$1.preventScroll`  
-    -   `$1.isActive`   (optional, default `hasFocus`)
-
-#### Examples
-
-```javascript
-import { ensureFocus } from "reakit-utils";
-
-ensureFocus(document.activeElement); // does nothing
-
-const element = document.querySelector("input");
-
-ensureFocus(element); // focuses element
-ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
-
-function isActive(el) {
-  return el.dataset.active === "true";
-}
-
-ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
-```
-
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
-
-### fireBlurEvent
-
-Creates and dispatches a blur event in a way that also works on IE 11.
-
-#### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
--   `eventInit` **FocusEventInit?** 
-
-#### Examples
-
-```javascript
-import { fireBlurEvent } from "reakit-utils";
-
-fireBlurEvent(document.getElementById("id"));
-```
-
 ### fireEvent
 
-Creates and dispatches `Event` in a way that also works on IE 11.
+Creates and dispatches an event. Supports IE 11.
 
 #### Parameters
 
@@ -254,9 +310,26 @@ fireEvent(document.getElementById("id"), "blur", {
 });
 ```
 
+### fireBlurEvent
+
+Creates and dispatches a blur event. Supports IE 11.
+
+#### Parameters
+
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `eventInit` **FocusEventInit?** 
+
+#### Examples
+
+```javascript
+import { fireBlurEvent } from "reakit-utils";
+
+fireBlurEvent(document.getElementById("id"));
+```
+
 ### fireKeyboardEvent
 
-Creates and dispatches `KeyboardEvent` in a way that also works on IE 11.
+Creates and dispatches a keyboard event. Supports IE 11.
 
 #### Parameters
 
@@ -272,6 +345,27 @@ import { fireKeyboardEvent } from "reakit-utils";
 fireKeyboardEvent(document.getElementById("id"), "keydown", {
   key: "ArrowDown",
   shiftKey: true,
+});
+```
+
+### getNextActiveElementOnBlur
+
+Cross-browser method that returns the next active element (the element that
+is receiving focus) after a blur event is dispatched. It receives the blur
+event object as the argument.
+
+#### Parameters
+
+-   `event` **(ReactFocusEvent | [FocusEvent](https://developer.mozilla.org/docs/Web/API/FocusEvent))** 
+
+#### Examples
+
+```javascript
+import { getNextActiveElementOnBlur } from "reakit-utils";
+
+const element = document.getElementById("id");
+element.addEventListener("blur", (event) => {
+  const nextActiveElement = getNextActiveElementOnBlur(event);
 });
 ```
 
@@ -292,54 +386,136 @@ flatten([0, 1, [2, [3, 4], 5], 6]);
 // => [0, 1, 2, 3, 4, 5, 6]
 ```
 
-### getActiveElement
+### isFocusable
 
-Returns `element.ownerDocument.activeElement`.
-
-#### Parameters
-
--   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
-
-### getDocument
-
-Returns `element.ownerDocument || document`.
+Checks whether `element` is focusable or not.
 
 #### Parameters
 
--   `element` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [Document](https://developer.mozilla.org/docs/Web/API/Document) | null)?** 
-
-Returns **[Document](https://developer.mozilla.org/docs/Web/API/Document)** 
-
-### getNextActiveElementOnBlur
-
-Cross-browser method that returns the next active element (the element that
-is receiving focus) after a blur event is dispatched. It receives the blur
-event object as the argument.
-
-#### Parameters
-
--   `event` **(React.FocusEvent | [FocusEvent](https://developer.mozilla.org/docs/Web/API/FocusEvent))** 
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
 #### Examples
 
 ```javascript
-import { getNextActiveElementOnBlur } from "reakit-utils";
+import { isFocusable } from "reakit-utils";
 
-const element = document.getElementById("id");
-element.addEventListener("blur", (event) => {
-  const nextActiveElement = getNextActiveElementOnBlur(event);
-});
+isFocusable(document.querySelector("input")); // true
+isFocusable(document.querySelector("input[tabindex='-1']")); // true
+isFocusable(document.querySelector("input[hidden]")); // false
+isFocusable(document.querySelector("input:disabled")); // false
 ```
 
-### getWindow
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-Returns `element.ownerDocument.defaultView || window`.
+### isTabbable
+
+Checks whether `element` is tabbable or not.
 
 #### Parameters
 
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)?** 
+-   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
 
-Returns **[Window](https://developer.mozilla.org/docs/Web/API/Window)** 
+#### Examples
+
+```javascript
+import { isTabbable } from "reakit-utils";
+
+isTabbable(document.querySelector("input")); // true
+isTabbable(document.querySelector("input[tabindex='-1']")); // false
+isTabbable(document.querySelector("input[hidden]")); // false
+isTabbable(document.querySelector("input:disabled")); // false
+```
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### getAllFocusableIn
+
+Returns all the focusable elements in `container`.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
+
+### getFirstFocusableIn
+
+Returns the first focusable element in `container`.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
+
+### getAllTabbableIn
+
+Returns all the tabbable elements in `container`, including the container
+itself.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return focusable elements if there are no tabbable ones.
+
+Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
+
+### getFirstTabbableIn
+
+Returns the first tabbable element in `container`, including the container
+itself if it's tabbable.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the first focusable element if there are no tabbable ones.
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
+
+### getLastTabbableIn
+
+Returns the last tabbable element in `container`, including the container
+itself if it's tabbable.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the last focusable element if there are no tabbable ones.
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
+
+### getNextTabbableIn
+
+Returns the next tabbable element in `container`.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the next focusable element if there are no tabbable ones.
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
+
+### getPreviousTabbableIn
+
+Returns the previous tabbable element in `container`.
+
+#### Parameters
+
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the previous focusable element if there are no tabbable ones.
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
+
+### getClosestFocusable
+
+Returns the closest focusable element.
+
+#### Parameters
+
+-   `element` **(T | null)?** 
+-   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
 
 ### hasFocus
 
@@ -379,25 +555,256 @@ hasFocusWithin(document.getElementById("id"));
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### isButton
+### ensureFocus
 
-Checks whether `element` is a native HTML button element.
+Ensures `element` will receive focus if it's not already.
 
 #### Parameters
 
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
+-   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
+-   `$1` **EnsureFocusOptions**  (optional, default `{}`)
+    -   `$1.preventScroll`  
+    -   `$1.isActive`   (optional, default `hasFocus`)
 
 #### Examples
 
 ```javascript
-import { isButton } from "reakit-utils";
+import { ensureFocus } from "reakit-utils";
 
-isButton(document.querySelector("button")); // true
-isButton(document.querySelector("input[type='button']")); // true
-isButton(document.querySelector("div")); // false
-isButton(document.querySelector("input[type='text']")); // false
-isButton(document.querySelector("div[role='button']")); // false
+ensureFocus(document.activeElement); // does nothing
+
+const element = document.querySelector("input");
+
+ensureFocus(element); // focuses element
+ensureFocus(element, { preventScroll: true }); // focuses element preventing scroll jump
+
+function isActive(el) {
+  return el.dataset.active === "true";
+}
+
+ensureFocus(document.querySelector("[data-active='true']"), { isActive }); // does nothing
 ```
+
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** `requestAnimationFrame` call ID so it can be passed to `cancelAnimationFrame` if needed.
+
+### useSafeLayoutEffect
+
+`React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
+
+### useInitialValue
+
+Returns a value that never changes even if the argument is updated.
+
+#### Parameters
+
+-   `value` **InitialState&lt;T>** 
+
+#### Examples
+
+```javascript
+import { useInitialValue } from "reakit-utils";
+
+function Component({ prop }) {
+  const initialProp = useInitialValue(prop);
+}
+```
+
+### useLazyRef
+
+Returns a value that is lazily initiated and never changes.
+
+#### Parameters
+
+-   `init` **function (): T** 
+
+#### Examples
+
+```javascript
+import { useLazyRef } from "reakit-utils";
+
+function Component() {
+  const set = useLazyRef(() => new Set());
+}
+```
+
+### useLiveRef
+
+Creates a `React.RefObject` that is constantly updated with the incoming
+value.
+
+#### Parameters
+
+-   `value` **T** 
+
+#### Examples
+
+```javascript
+import { useLiveRef } from "reakit-utils";
+
+function Component({ prop }) {
+  const propRef = useLiveRef(prop);
+}
+```
+
+### useEventCallback
+
+Creates a memoized callback function that is constantly updated with the
+incoming callback.
+
+#### Parameters
+
+-   `callback` **T?** 
+
+#### Examples
+
+```javascript
+import { useEffect } from "react";
+import { useEventCallback } from "reakit-utils";
+
+function Component(props) {
+  const onClick = useEventCallback(props.onClick);
+  useEffect(() => {}, [onClick]);
+}
+```
+
+### useForkRef
+
+Merges React Refs into a single memoized function ref so you can pass it to
+an element.
+
+#### Parameters
+
+-   `refs` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;(Ref&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))>** 
+
+#### Examples
+
+```javascript
+import { forwardRef, useRef } from "react";
+import { useForkRef } from "reakit-utils";
+
+const Component = forwardRef((props, ref) => {
+  const internalRef = useRef();
+  return <div {...props} ref={useForkRef(internalRef, ref)} />;
+});
+```
+
+### useNativeElementType
+
+Returns the native tag name of an element by parsing its ref object. If the
+second argument `defaultType` is provided, it's going to be used by default
+on the first render, before React runs the effects.
+
+#### Parameters
+
+-   `ref` **RefObject&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
+-   `defaultType` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | ComponentType)?** 
+
+#### Examples
+
+```javascript
+import * as React from "react";
+import { useNativeElementType } from "reakit-utils";
+
+function Component(props) {
+  const ref = React.useRef();
+  // button on the first render, div on the second render
+  const type = useNativeElementType(ref, "button");
+  return <div ref={ref} {...props} />;
+}
+```
+
+### useUpdateEffect
+
+A `React.useEffect` that will not run on the first render.
+
+#### Parameters
+
+-   `effect` **EffectCallback** 
+-   `deps` **(ReadonlyArray&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))?** 
+
+### shallowEqual
+
+Compares two objects.
+
+#### Parameters
+
+-   `a` **AnyObject?** 
+-   `b` **AnyObject?** 
+
+#### Examples
+
+```javascript
+import { shallowEqual } from "reakit-utils";
+
+shallowEqual({ a: "a" }, {}); // false
+shallowEqual({ a: "a" }, { b: "b" }); // false
+shallowEqual({ a: "a" }, { a: "a" }); // true
+shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
+```
+
+### toArray
+
+Transforms `arg` into an array if it's not already.
+
+#### Parameters
+
+-   `arg` **T** 
+
+#### Examples
+
+```javascript
+import { toArray } from "reakit-utils";
+
+toArray("a"); // ["a"]
+toArray(["a"]); // ["a"]
+```
+
+### applyState
+
+Receives a `setState` argument and calls it with `currentValue` if it's a
+function. Otherwise return the argument as the new value.
+
+#### Parameters
+
+-   `argument` **SetStateAction&lt;T>** 
+-   `currentValue` **T** 
+
+#### Examples
+
+```javascript
+import { applyState } from "reakit-utils";
+
+applyState((value) => value + 1, 1); // 2
+applyState(2, 1); // 2
+```
+
+### isObject
+
+Checks whether `arg` is an object or not.
+
+#### Parameters
+
+-   `arg` **any** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isPlainObject
+
+Checks whether `arg` is a plain object or not.
+
+#### Parameters
+
+-   `arg` **any** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isPromise
+
+Checks whether `arg` is a promise or not.
+
+#### Parameters
+
+-   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
@@ -447,149 +854,6 @@ isInteger("1.5"); // false
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### isObject
-
-Checks whether `arg` is an object or not.
-
-#### Parameters
-
--   `arg` **any** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isPlainObject
-
-Checks whether `arg` is a plain object or not.
-
-#### Parameters
-
--   `arg` **any** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isPortalEvent
-
-Returns `true` if `event` has been fired within a React Portal element.
-
-#### Parameters
-
--   `event` **React.SyntheticEvent&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element), [Event](https://developer.mozilla.org/docs/Web/API/Event)>** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isPromise
-
-Checks whether `arg` is a promise or not.
-
-#### Parameters
-
--   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isSelfTarget
-
-Returns `true` if `event.target` and `event.currentTarget` are the same.
-
-#### Parameters
-
--   `event` **React.SyntheticEvent** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isTextField
-
-Check whether the given element is a text field, where text field is defined
-by the ability to select within the input, or that it is contenteditable.
-
-#### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
-
-#### Examples
-
-```javascript
-import { isTextField } from "reakit-utils";
-
-isTextField(document.querySelector("div")); // false
-isTextField(document.querySelector("input")); // true
-isTextField(document.querySelector("input[type='button']")); // false
-isTextField(document.querySelector("textarea")); // true
-isTextField(document.querySelector("div[contenteditable='true']")); // true
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### matches
-
--   **See: <https://developer.mozilla.org/en-US/docs/Web/API/Element/matches>
-    **
-
-Ponyfill for `Element.prototype.matches`
-
-#### Parameters
-
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `selectors` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### normalizePropsAreEqual
-
-This higher order functions take `propsAreEqual` function and
-returns a new function which normalizes the props.
-
-Normalizing in our case is making sure the `propsAreEqual` works with
-both version 1 (object spreading) and version 2 (state object) state passing.
-
-To achieve this, the returned function in case of a state object
-will spread the state object in both `prev` and \`next props.
-
-Other case it just returns the function as is which makes sure
-that we are still backward compatible
-
-#### Parameters
-
--   `propsAreEqual` **function (prev: O, next: O): [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-Returns **function (prev: PropsWithAs&lt;O, T>, next: PropsWithAs&lt;O, T>): [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### omit
-
-Omits specific keys from an object.
-
-#### Parameters
-
--   `object` **T** 
--   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
-
-#### Examples
-
-```javascript
-import { omit } from "reakit-utils";
-
-omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
-```
-
-Returns **Omit&lt;T, K>** 
-
-### pick
-
-Picks specific keys from an object.
-
-#### Parameters
-
--   `object` **T** 
--   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
-
-#### Examples
-
-```javascript
-import { pick } from "reakit-utils";
-
-pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
-```
-
 ### removeIndexFromArray
 
 Immutably removes an index from an array.
@@ -633,233 +897,40 @@ removeItemFromArray([obj], obj); // []
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** A new array without the passed item.
 
-### shallowEqual
+### omit
 
-Compares two objects.
+Omits specific keys from an object.
 
 #### Parameters
 
--   `objA` **Record&lt;any, any>?** 
--   `objB` **Record&lt;any, any>?** 
+-   `object` **T** 
+-   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
 
 #### Examples
 
 ```javascript
-import { shallowEqual } from "reakit-utils";
+import { omit } from "reakit-utils";
 
-shallowEqual({ a: "a" }, {}); // false
-shallowEqual({ a: "a" }, { b: "b" }); // false
-shallowEqual({ a: "a" }, { a: "a" }); // true
-shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
+omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
 ```
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+Returns **Omit&lt;T, K>** 
 
-### \_\_deprecatedSplitProps
+### pick
 
-Splits an object (`props`) into a tuple where the first item is an object
-with the passed `keys`, and the second item is an object with these keys
-omitted.
+Picks specific keys from an object.
 
 #### Parameters
 
--   `props` **T** 
--   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
+-   `object` **T** 
+-   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
 
 #### Examples
 
 ```javascript
-import { splitProps } from "reakit-utils";
+import { pick } from "reakit-utils";
 
-splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
-```
-
-Returns **\[any, Omit&lt;T, K>]** 
-
-**Meta**
-
--   **deprecated**: will be removed in version 2
-
-
-### splitProps
-
-Splits an object (`props`) into a tuple where the first item
-is the `state` property, and the second item is the rest of the properties.
-
-It is also backward compatible with version 1. If `keys` are passed then
-splits an object (`props`) into a tuple where the first item is an object
-with the passed `keys`, and the second item is an object with these keys
-omitted.
-
-#### Parameters
-
--   `props` **T** 
--   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)**  (optional, default `[]`)
-
-#### Examples
-
-```javascript
-import { splitProps } from "reakit-utils";
-
-splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
-```
-
-```javascript
-import { splitProps } from "reakit-utils";
-
-splitProps({ state: { a: "a" }, b: "b" }); // [{ a: "a" }, { b: "b" }]
-```
-
-Returns **\[any, Omit&lt;T, K>]** 
-
-### tabbable
-
-#### isFocusable
-
-Checks whether `element` is focusable or not.
-
-##### Parameters
-
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
-
-##### Examples
-
-```javascript
-import { isFocusable } from "reakit-utils";
-
-isFocusable(document.querySelector("input")); // true
-isFocusable(document.querySelector("input[tabindex='-1']")); // true
-isFocusable(document.querySelector("input[hidden]")); // false
-isFocusable(document.querySelector("input:disabled")); // false
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-#### isTabbable
-
-Checks whether `element` is tabbable or not.
-
-##### Parameters
-
--   `element` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
-
-##### Examples
-
-```javascript
-import { isTabbable } from "reakit-utils";
-
-isTabbable(document.querySelector("input")); // true
-isTabbable(document.querySelector("input[tabindex='-1']")); // false
-isTabbable(document.querySelector("input[hidden]")); // false
-isTabbable(document.querySelector("input:disabled")); // false
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-#### getAllFocusableIn
-
-Returns all the focusable elements in `container`.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
-
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
-
-#### getFirstFocusableIn
-
-Returns the first focusable element in `container`.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
-
-Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
-
-#### getAllTabbableIn
-
-Returns all the tabbable elements in `container`, including the container
-itself.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return focusable elements if there are no tabbable ones.
-
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Element](https://developer.mozilla.org/docs/Web/API/Element)>** 
-
-#### getFirstTabbableIn
-
-Returns the first tabbable element in `container`, including the container
-itself if it's tabbable.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the first focusable element if there are no tabbable ones.
-
-Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
-
-#### getLastTabbableIn
-
-Returns the last tabbable element in `container`, including the container
-itself if it's tabbable.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the last focusable element if there are no tabbable ones.
-
-Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
-
-#### getNextTabbableIn
-
-Returns the next tabbable element in `container`.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the next focusable element if there are no tabbable ones.
-
-Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
-
-#### getPreviousTabbableIn
-
-Returns the previous tabbable element in `container`.
-
-##### Parameters
-
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
--   `fallbackToFocusable` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** If `true`, it'll return the previous focusable element if there are no tabbable ones.
-
-Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
-
-#### getClosestFocusable
-
-Returns the closest focusable element.
-
-##### Parameters
-
--   `element` **(T | null)?** 
--   `container` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** 
-
-Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** 
-
-### toArray
-
-Transforms `arg` into an array if it's not already.
-
-#### Parameters
-
--   `arg` **T** 
-
-#### Examples
-
-```javascript
-import { toArray } from "reakit-utils";
-
-toArray("a"); // ["a"]
-toArray(["a"]); // ["a"]
+pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
 ```
 
 ### types
@@ -915,66 +986,23 @@ Any function
 
 Type: function (...args: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>): any
 
+#### AnyObject
+
+Any object
+
+Type: Record&lt;any, any>
+
 #### SetState
 
 State hook setter.
 
 Type: React.Dispatch&lt;React.SetStateAction&lt;T>>
 
-### useForkRef
+#### InitialState
 
-Merges up to two React Refs into a single memoized function React Ref so you
-can pass it to an element.
+Initial state.
 
-#### Parameters
-
--   `refA` **React.Ref&lt;any>?** 
--   `refB` **React.Ref&lt;any>?** 
-
-#### Examples
-
-```javascript
-import React from "react";
-import { useForkRef } from "reakit-utils";
-
-const Component = React.forwardRef((props, ref) => {
-  const internalRef = React.useRef();
-  return <div {...props} ref={useForkRef(internalRef, ref)} />;
-});
-```
-
-### useIsomorphicEffect
-
-`React.useLayoutEffect` that fallbacks to `React.useEffect` on server side
-rendering.
-
-### useLiveRef
-
-A `React.Ref` that keeps track of the passed `value`.
-
-#### Parameters
-
--   `value` **T** 
-
-Returns **React.MutableRefObject&lt;T>** 
-
-### useSealedState
-
-React custom hook that returns the very first value passed to `initialState`,
-even if it changes between re-renders.
-
-#### Parameters
-
--   `initialState` **SealedInitialState&lt;T>** 
-
-### useUpdateEffect
-
-A `React.useEffect` that will not run on the first render.
-
-#### Parameters
-
--   `effect` **React.EffectCallback** 
--   `deps` **(ReadonlyArray&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))?** 
+Type: (T | function (): T)
 
 ## License
 

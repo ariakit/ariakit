@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useLiveRef } from "reakit-utils/hooks";
 import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { unstable_FormStateReturn } from "./FormState";
 import { FORM_KEYS } from "./__keys";

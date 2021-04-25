@@ -1,7 +1,7 @@
 import * as React from "react";
 import { warning } from "reakit-warning";
-import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/tabbable";
-import { getDocument } from "reakit-utils/getDocument";
+import { getFirstTabbableIn, getLastTabbableIn } from "reakit-utils/focus";
+import { getDocument } from "reakit-utils/dom";
 import { DialogOptions } from "../Dialog";
 import { usePortalRef } from "./usePortalRef";
 

@@ -1,4 +1,4 @@
-import { getDocument } from "reakit-utils/getDocument";
+import { getDocument } from "reakit-utils/dom";
 
 export function getFirstInvalidInput(baseId: string, target?: Element | null) {
   const document = getDocument(target);

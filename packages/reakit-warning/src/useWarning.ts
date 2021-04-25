@@ -1,5 +1,5 @@
 import * as React from "react";
-import { isObject } from "reakit-utils/isObject";
+import { isObject } from "reakit-utils/misc";
 import { warning } from "./warning";
 
 function isRefObject(ref: any): ref is React.RefObject<any> {

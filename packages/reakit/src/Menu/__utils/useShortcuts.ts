@@ -1,5 +1,5 @@
 import * as React from "react";
-import { closest } from "reakit-utils/closest";
+import { closest } from "reakit-utils/dom";
 import { MenuStateReturn } from "../MenuState";
 
 export function useShortcuts(

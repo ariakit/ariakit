@@ -1,8 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useForkRef, useLiveRef } from "reakit-utils/hooks";
 import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { TooltipStateReturn } from "./TooltipState";
 import { TOOLTIP_REFERENCE_KEYS } from "./__keys";

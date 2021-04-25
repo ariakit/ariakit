@@ -1,15 +1,15 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
-import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { isButton } from "reakit-utils/isButton";
-import { isPortalEvent } from "reakit-utils/isPortalEvent";
-import { isUA } from "reakit-utils/dom";
-import { isFocusable } from "reakit-utils/tabbable";
+import { isButton, isUA } from "reakit-utils/dom";
+import { isPortalEvent } from "reakit-utils/events";
+import { hasFocusWithin, isFocusable } from "reakit-utils/focus";
+import {
+  useForkRef,
+  useSafeLayoutEffect,
+  useLiveRef,
+} from "reakit-utils/hooks";
 import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { TABBABLE_KEYS } from "./__keys";
 
@@ -138,7 +138,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       ? { pointerEvents: "none" as const, ...htmlStyle }
       : htmlStyle;
 
-    useIsomorphicEffect(() => {
+    useSafeLayoutEffect(() => {
       const tabbable = ref.current;
       if (!tabbable) {
         warning(

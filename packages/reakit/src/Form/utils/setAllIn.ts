@@ -1,4 +1,4 @@
-import { isObject } from "reakit-utils/isObject";
+import { isObject } from "reakit-utils/misc";
 import { DeepMap } from "../__utils/types";
 
 export function unstable_setAllIn<T, V>(object: T, value: V) {

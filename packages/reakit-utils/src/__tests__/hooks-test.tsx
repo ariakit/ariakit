@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render } from "reakit-test-utils";
-import { useForkRef } from "../useForkRef";
+import { useForkRef, useUpdateEffect } from "../hooks";
 
 test("useForkRef", () => {
   expect.assertions(2);
@@ -17,4 +17,16 @@ test("useForkRef", () => {
   render(<Component ref={externalRef} />);
 
   expect(externalRef.current).toBeInTheDocument();
+});
+
+test("useUpdateEffect", () => {
+  const fn = jest.fn();
+  const Test = () => {
+    useUpdateEffect(fn);
+    return null;
+  };
+  const { rerender } = render(<Test />);
+  expect(fn).not.toHaveBeenCalled();
+  rerender(<Test />);
+  expect(fn).toHaveBeenCalled();
 });

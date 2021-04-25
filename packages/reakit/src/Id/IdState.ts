@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  useSealedState,
-  SealedInitialState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import { unstable_IdContext } from "./IdProvider";
 
 export type unstable_IdState = {
@@ -28,9 +26,9 @@ export type unstable_IdInitialState = Partial<Pick<unstable_IdState, "baseId">>;
 export type unstable_IdStateReturn = unstable_IdState & unstable_IdActions;
 
 export function unstable_useIdState(
-  initialState: SealedInitialState<unstable_IdInitialState> = {}
+  initialState: InitialState<unstable_IdInitialState> = {}
 ): unstable_IdStateReturn {
-  const { baseId: initialBaseId } = useSealedState(initialState);
+  const { baseId: initialBaseId } = useInitialValue(initialState);
   const generateId = React.useContext(unstable_IdContext);
   const idCountRef = React.useRef(0);
   const [baseId, setBaseId] = React.useState(

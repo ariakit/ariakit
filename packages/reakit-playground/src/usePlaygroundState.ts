@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SealedInitialState, useSealedState } from "reakit-utils";
+import { InitialState, useInitialValue } from "reakit-utils";
 
 export type PlaygroundState = {
   /** TODO: Description */
@@ -16,9 +16,9 @@ export type PlaygroundInitialState = Partial<PlaygroundState>;
 export type PlaygroundStateReturn = PlaygroundState & PlaygroundActions;
 
 export function usePlaygroundState(
-  initialState: SealedInitialState<PlaygroundInitialState> = {}
+  initialState: InitialState<PlaygroundInitialState> = {}
 ): PlaygroundStateReturn {
-  const { code: initialCode = "" } = useSealedState(initialState);
+  const { code: initialCode = "" } = useInitialValue(initialState);
   const [code, update] = React.useState(initialCode);
   return { code, update };
 }

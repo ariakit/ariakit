@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  useSealedState,
-  SealedInitialState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   PopoverState,
   PopoverActions,
@@ -39,13 +37,13 @@ export type TooltipStateReturn = Omit<
   TooltipActions;
 
 export function useTooltipState(
-  initialState: SealedInitialState<TooltipInitialState> = {}
+  initialState: InitialState<TooltipInitialState> = {}
 ): TooltipStateReturn {
   const {
     placement = "top",
     unstable_timeout: initialTimeout = 0,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
   const [timeout, setTimeout] = React.useState(initialTimeout);
   const showTimeout = React.useRef<number | null>(null);
   const hideTimeout = React.useRef<number | null>(null);

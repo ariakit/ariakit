@@ -1,10 +1,7 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
-import { applyState } from "reakit-utils/applyState";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { InitialState } from "reakit-utils/types";
+import { applyState } from "reakit-utils/misc";
+import { useSafeLayoutEffect, useInitialValue } from "reakit-utils/hooks";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -445,7 +442,7 @@ function useAction<T extends (...args: any[]) => any>(fn: T) {
 
 function useIsUnmountedRef() {
   const isUnmountedRef = React.useRef(false);
-  useIsomorphicEffect(() => {
+  useSafeLayoutEffect(() => {
     return () => {
       isUnmountedRef.current = true;
     };
@@ -454,7 +451,7 @@ function useIsUnmountedRef() {
 }
 
 export function useCompositeState(
-  initialState: SealedInitialState<CompositeInitialState> = {}
+  initialState: InitialState<CompositeInitialState> = {}
 ): CompositeStateReturn {
   const {
     unstable_virtual: virtual = false,
@@ -466,7 +463,7 @@ export function useCompositeState(
     shift = false,
     unstable_includesBaseElement,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
   const idState = unstable_useIdState(sealed);
   const [
     {

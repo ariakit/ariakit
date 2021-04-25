@@ -1,9 +1,6 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
-import { SetState } from "reakit-utils/types";
+import { InitialState, SetState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   unstable_useGridState as useGridState,
   unstable_GridState as GridState,
@@ -26,14 +23,14 @@ function chunk<T>(array: T[], size: number) {
 }
 
 export function unstable_useComboboxListGridState(
-  initialState: SealedInitialState<unstable_ComboboxListGridInitialState> = {}
+  initialState: InitialState<unstable_ComboboxListGridInitialState> = {}
 ): unstable_ComboboxListGridStateReturn {
   const {
     columns: initialColumns = 1,
     currentId = null,
     loop = true,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
 
   const [columns, setColumns] = React.useState(initialColumns);
 

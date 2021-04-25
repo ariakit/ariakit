@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getDocument } from "reakit-utils/getDocument";
+import { getDocument } from "reakit-utils/dom";
 import { sortBasedOnDOMPosition } from "./sortBasedOnDOMPosition";
 import { Item } from "./types";
 

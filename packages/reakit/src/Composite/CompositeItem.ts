@@ -2,14 +2,10 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { warning } from "reakit-warning";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { getDocument } from "reakit-utils/getDocument";
-import { isTextField } from "reakit-utils/isTextField";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { isPortalEvent } from "reakit-utils/isPortalEvent";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
-import { ensureFocus } from "reakit-utils/ensureFocus";
+import { useForkRef, useLiveRef } from "reakit-utils/hooks";
+import { hasFocusWithin, ensureFocus } from "reakit-utils/focus";
+import { getDocument, isTextField } from "reakit-utils/dom";
+import { isPortalEvent, isSelfTarget } from "reakit-utils/events";
 import {
   ClickableOptions,
   ClickableHTMLProps,

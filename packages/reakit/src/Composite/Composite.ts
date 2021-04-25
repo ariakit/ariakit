@@ -2,15 +2,15 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { useCreateElement } from "reakit-system/useCreateElement";
-import { useForkRef } from "reakit-utils/useForkRef";
+import { useForkRef, useLiveRef } from "reakit-utils/hooks";
 import { warning, useWarning } from "reakit-warning";
-import { getDocument } from "reakit-utils/getDocument";
-import { fireBlurEvent } from "reakit-utils/fireBlurEvent";
-import { fireKeyboardEvent } from "reakit-utils/fireKeyboardEvent";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { canUseDOM } from "reakit-utils/canUseDOM";
-import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
+import { canUseDOM, getDocument } from "reakit-utils/dom";
+import {
+  fireBlurEvent,
+  fireKeyboardEvent,
+  isSelfTarget,
+  getNextActiveElementOnBlur,
+} from "reakit-utils/events";
 import { useTabbable, TabbableOptions, TabbableHTMLProps } from "../Tabbable";
 import { useRole } from "../Role/Role";
 import { CompositeStateReturn } from "./CompositeState";

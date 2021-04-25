@@ -1,5 +1,5 @@
 import * as React from "react";
-import { removeItemFromArray } from "reakit-utils/removeItemFromArray";
+import { removeItemFromArray } from "reakit-utils/misc";
 import { MenuBarOptions } from "../MenuBar";
 import { MenuOptions } from "../Menu";
 

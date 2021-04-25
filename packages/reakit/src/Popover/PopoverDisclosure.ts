@@ -1,6 +1,6 @@
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
+import { useForkRef } from "reakit-utils/hooks";
 import {
   DialogDisclosureOptions,
   DialogDisclosureHTMLProps,

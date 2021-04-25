@@ -1,11 +1,8 @@
 import * as React from "react";
 import { createPopper, Instance, State } from "@popperjs/core";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { shallowEqual } from "reakit-utils/shallowEqual";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue, useSafeLayoutEffect } from "reakit-utils/hooks";
+import { shallowEqual } from "reakit-utils/misc";
 import { isUA } from "reakit-utils/dom";
 import {
   DialogState,
@@ -124,7 +121,7 @@ function applyStyles(styles?: Partial<CSSStyleDeclaration>) {
 }
 
 export function usePopoverState(
-  initialState: SealedInitialState<PopoverInitialState> = {}
+  initialState: InitialState<PopoverInitialState> = {}
 ): PopoverStateReturn {
   const {
     gutter = 12,
@@ -136,7 +133,7 @@ export function usePopoverState(
     unstable_fixed: fixed = false,
     modal = false,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
 
   const popper = React.useRef<Instance | null>(null);
   const referenceRef = React.useRef<HTMLElement>(null);
@@ -177,7 +174,7 @@ export function usePopoverState(
     }
   }, []);
 
-  useIsomorphicEffect(() => {
+  useSafeLayoutEffect(() => {
     if (referenceRef.current && popoverRef.current) {
       popper.current = createPopper(referenceRef.current, popoverRef.current, {
         // https://popper.js.org/docs/v2/constructors/#options

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { useLiveRef } from "reakit-utils/hooks";
+import { isSelfTarget } from "reakit-utils/events";
 import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { DisclosureStateReturn } from "./DisclosureState";
 import { DISCLOSURE_CONTENT_KEYS } from "./__keys";

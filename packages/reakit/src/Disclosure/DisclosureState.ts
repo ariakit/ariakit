@@ -1,9 +1,6 @@
 import * as React from "react";
-import {
-  useSealedState,
-  SealedInitialState,
-} from "reakit-utils/useSealedState";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue, useSafeLayoutEffect } from "reakit-utils/hooks";
 import { warning } from "reakit-warning";
 import {
   unstable_IdState,
@@ -66,20 +63,20 @@ export type DisclosureStateReturn = DisclosureState & DisclosureActions;
 
 function useLastValue<T>(value: T) {
   const lastValue = React.useRef<T | null>(null);
-  useIsomorphicEffect(() => {
+  useSafeLayoutEffect(() => {
     lastValue.current = value;
   }, [value]);
   return lastValue;
 }
 
 export function useDisclosureState(
-  initialState: SealedInitialState<DisclosureInitialState> = {}
+  initialState: InitialState<DisclosureInitialState> = {}
 ): DisclosureStateReturn {
   const {
     visible: initialVisible = false,
     animated: initialAnimated = false,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
 
   const id = unstable_useIdState(sealed);
 

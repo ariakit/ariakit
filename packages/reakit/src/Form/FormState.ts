@@ -1,13 +1,11 @@
 import * as React from "react";
-import { ArrayValue } from "reakit-utils/types";
-import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
-import { isPromise } from "reakit-utils/isPromise";
+import { ArrayValue, InitialState } from "reakit-utils/types";
+import { isPromise, isEmpty } from "reakit-utils/misc";
 import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
-import { isEmpty } from "reakit-utils/isEmpty";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+  useInitialValue,
+  useUpdateEffect,
+  useLiveRef,
+} from "reakit-utils/hooks";
 import {
   unstable_IdState,
   unstable_IdActions,
@@ -278,7 +276,7 @@ function reducer<V>(
 }
 
 export function unstable_useFormState<V = Record<any, any>>(
-  initialState: SealedInitialState<unstable_FormInitialState<V>> = {}
+  initialState: InitialState<unstable_FormInitialState<V>> = {}
 ): unstable_FormStateReturn<V> {
   const {
     values: initialValues = {} as V,
@@ -289,7 +287,7 @@ export function unstable_useFormState<V = Record<any, any>>(
     onValidate,
     onSubmit,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
   const onValidateRef = useLiveRef(
     typeof initialState !== "function" ? initialState.onValidate : onValidate
   );

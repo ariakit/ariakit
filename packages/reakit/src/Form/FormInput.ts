@@ -2,7 +2,7 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { As, PropsWithAs } from "reakit-utils/types";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useLiveRef } from "reakit-utils/hooks";
 import { InputOptions, InputHTMLProps, useInput } from "../Input/Input";
 import { DeepPath } from "./__utils/types";
 import { getInputId } from "./__utils/getInputId";

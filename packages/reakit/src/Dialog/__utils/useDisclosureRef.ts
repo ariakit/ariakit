@@ -1,6 +1,5 @@
 import * as React from "react";
-import { getDocument } from "reakit-utils/getDocument";
-import { isButton } from "reakit-utils/isButton";
+import { getDocument, isButton } from "reakit-utils/dom";
 import { DialogOptions } from "../Dialog";
 
 export function useDisclosureRef(

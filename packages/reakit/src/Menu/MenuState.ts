@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   PopoverState,
   PopoverActions,
@@ -31,10 +29,10 @@ export type MenuStateReturn = MenuBarStateReturn &
   MenuActions;
 
 export function useMenuState(
-  initialState: SealedInitialState<MenuInitialState> = {}
+  initialState: InitialState<MenuInitialState> = {}
 ): MenuStateReturn {
   const parent = React.useContext(MenuContext);
-  const { orientation = "vertical", gutter = 0, ...sealed } = useSealedState(
+  const { orientation = "vertical", gutter = 0, ...sealed } = useInitialValue(
     initialState
   );
 

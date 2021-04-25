@@ -1,10 +1,12 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { useLiveRef } from "reakit-utils/useLiveRef";
 import { warning } from "reakit-warning";
+import {
+  useForkRef,
+  useSafeLayoutEffect,
+  useLiveRef,
+} from "reakit-utils/hooks";
 import {
   DisclosureOptions,
   DisclosureHTMLProps,
@@ -37,7 +39,7 @@ export const useDialogDisclosure = createHook<
     const disclosureRef = options.unstable_disclosureRef;
 
     // aria-expanded may be used for styling purposes, so we useLayoutEffect
-    useIsomorphicEffect(() => {
+    useSafeLayoutEffect(() => {
       const element = ref.current;
       warning(
         !element,

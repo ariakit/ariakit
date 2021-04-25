@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
+import { useForkRef } from "reakit-utils/hooks";
 import { RoleOptions, RoleHTMLProps, useRole } from "../Role/Role";
 import { PopoverStateReturn } from "./PopoverState";
 import { POPOVER_ARROW_KEYS } from "./__keys";

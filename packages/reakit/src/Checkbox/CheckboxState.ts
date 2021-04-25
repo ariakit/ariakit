@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  useSealedState,
-  SealedInitialState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 
 export type CheckboxState = {
   /**
@@ -28,9 +26,9 @@ export type CheckboxStateReturn = CheckboxState & CheckboxActions;
  * As simple as `React.useState(false)`
  */
 export function useCheckboxState(
-  initialState: SealedInitialState<CheckboxInitialState> = {}
+  initialState: InitialState<CheckboxInitialState> = {}
 ): CheckboxStateReturn {
-  const { state: initialValue = false } = useSealedState(initialState);
+  const { state: initialValue = false } = useInitialValue(initialState);
   const [state, setState] = React.useState(initialValue);
   return { state, setState };
 }
