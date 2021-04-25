@@ -36,7 +36,6 @@ yarn add reakit-utils
 -   [matches](#matches)
 -   [closest](#closest)
 -   [isTextField](#istextfield)
--   [isTextField](#istextfield-1)
 -   [getNativeElementType](#getnativeelementtype)
 -   [isPortalEvent](#isportalevent)
 -   [isSelfTarget](#isselftarget)
@@ -242,29 +241,6 @@ document.getElementById("id").closest("div");
 ```
 
 Returns **any** 
-
-### isTextField
-
-Check whether the given element is a text field, where text field is defined
-by the ability to select within the input, or that it is contenteditable.
-
-#### Parameters
-
--   `element` **[HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element)** 
-
-#### Examples
-
-```javascript
-import { isTextField } from "reakit-utils";
-
-isTextField(document.querySelector("div")); // false
-isTextField(document.querySelector("input")); // true
-isTextField(document.querySelector("input[type='button']")); // false
-isTextField(document.querySelector("textarea")); // true
-isTextField(document.querySelector("div[contenteditable='true']")); // true
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 ### isTextField
 

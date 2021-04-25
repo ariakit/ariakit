@@ -14,7 +14,6 @@ export default {
   "reakit-utils/isObject": require("reakit-utils/isObject"),
   "reakit-utils/isPlainObject": require("reakit-utils/isPlainObject"),
   "reakit-utils/isPromise": require("reakit-utils/isPromise"),
-  "reakit-utils/isTextField": require("reakit-utils/isTextField"),
   "reakit-utils/normalizePropsAreEqual": require("reakit-utils/normalizePropsAreEqual"),
   "reakit-utils/omit": require("reakit-utils/omit"),
   "reakit-utils/pick": require("reakit-utils/pick"),

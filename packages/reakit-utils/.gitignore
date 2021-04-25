@@ -13,7 +13,6 @@
 /isObject
 /isPlainObject
 /isPromise
-/isTextField
 /lib
 /normalizePropsAreEqual
 /omit
