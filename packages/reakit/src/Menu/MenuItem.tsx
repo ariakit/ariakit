@@ -1,9 +1,9 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { contains } from "reakit-utils/contains";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { contains } from "reakit-utils/dom";
+import { useLiveRef } from "reakit-utils/hooks";
+import { hasFocusWithin } from "reakit-utils/focus";
 import {
   CompositeItemOptions,
   CompositeItemHTMLProps,

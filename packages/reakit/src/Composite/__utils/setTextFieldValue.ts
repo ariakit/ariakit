@@ -1,4 +1,4 @@
-import { fireEvent } from "reakit-utils/fireEvent";
+import { fireEvent } from "reakit-utils/events";
 
 export function setTextFieldValue(element: HTMLElement, value: string) {
   if (

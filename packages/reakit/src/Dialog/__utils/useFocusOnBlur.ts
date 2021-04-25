@@ -1,8 +1,7 @@
 import * as React from "react";
-import { getNextActiveElementOnBlur } from "reakit-utils/getNextActiveElementOnBlur";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
-import { getDocument } from "reakit-utils/getDocument";
-import { getActiveElement } from "reakit-utils/getActiveElement";
+import { getNextActiveElementOnBlur } from "reakit-utils/events";
+import { useSafeLayoutEffect } from "reakit-utils/hooks";
+import { getDocument, getActiveElement } from "reakit-utils/dom";
 import { warning } from "reakit-warning";
 import { DialogOptions } from "../Dialog";
 
@@ -21,7 +20,7 @@ export function useFocusOnBlur(
 ) {
   const [blurred, scheduleFocus] = React.useReducer((n: number) => n + 1, 0);
 
-  useIsomorphicEffect(() => {
+  useSafeLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!options.visible) return;
     if (!blurred) return;

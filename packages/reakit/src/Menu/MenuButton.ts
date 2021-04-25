@@ -1,9 +1,8 @@
 import * as React from "react";
 import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useForkRef, useLiveRef } from "reakit-utils/hooks";
+import { hasFocusWithin } from "reakit-utils/focus";
 import {
   PopoverDisclosureOptions,
   PopoverDisclosureHTMLProps,

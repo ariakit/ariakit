@@ -3,8 +3,8 @@ import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-warning";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
+import { useForkRef } from "reakit-utils/hooks";
+import { hasFocusWithin } from "reakit-utils/focus";
 import { AnyFunction } from "reakit-utils/types";
 import {
   ClickableOptions,

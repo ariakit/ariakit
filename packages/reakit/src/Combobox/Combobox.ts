@@ -1,10 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { useForkRef } from "reakit-utils/useForkRef";
+import { useLiveRef, useForkRef, useUpdateEffect } from "reakit-utils/hooks";
 import { warning } from "reakit-warning";
-import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import {
   CompositeOptions,
   CompositeHTMLProps,

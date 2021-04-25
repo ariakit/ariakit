@@ -1,5 +1,5 @@
 import * as React from "react";
-import { closest } from "reakit-utils/closest";
+import { closest } from "reakit-utils/dom";
 import { Portal } from "../../Portal/Portal";
 import { DialogOptions } from "../Dialog";
 

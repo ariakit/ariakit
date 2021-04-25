@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  useSealedState,
-  SealedInitialState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   CompositeState,
   CompositeActions,
@@ -30,9 +28,9 @@ export type RadioInitialState = CompositeInitialState &
 export type RadioStateReturn = RadioState & RadioActions;
 
 export function useRadioState(
-  initialState: SealedInitialState<RadioInitialState> = {}
+  initialState: InitialState<RadioInitialState> = {}
 ): RadioStateReturn {
-  const { state: initialValue, loop = true, ...sealed } = useSealedState(
+  const { state: initialValue, loop = true, ...sealed } = useInitialValue(
     initialState
   );
   const [state, setState] = React.useState(initialValue);

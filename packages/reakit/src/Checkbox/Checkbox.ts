@@ -2,10 +2,9 @@ import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { removeIndexFromArray } from "reakit-utils/removeIndexFromArray";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { createEvent } from "reakit-utils/createEvent";
+import { useForkRef, useLiveRef } from "reakit-utils/hooks";
+import { createEvent } from "reakit-utils/events";
 import { warning } from "reakit-warning";
-import { useLiveRef } from "reakit-utils/useLiveRef";
 import {
   ClickableOptions,
   ClickableHTMLProps,

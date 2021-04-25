@@ -1,9 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { createEvent } from "reakit-utils/createEvent";
+import { useLiveRef, useForkRef } from "reakit-utils/hooks";
+import { createEvent } from "reakit-utils/events";
 import { warning } from "reakit-warning/warning";
 import {
   CompositeItemOptions,

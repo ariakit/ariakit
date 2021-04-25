@@ -1,8 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { getDocument } from "reakit-utils/getDocument";
+import { useForkRef } from "reakit-utils/hooks";
+import { getDocument } from "reakit-utils/dom";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,

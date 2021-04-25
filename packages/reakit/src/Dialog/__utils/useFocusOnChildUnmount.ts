@@ -1,7 +1,6 @@
 import * as React from "react";
-import { getDocument } from "reakit-utils/getDocument";
+import { getDocument, getActiveElement } from "reakit-utils/dom";
 import { isEmpty } from "reakit-utils/isEmpty";
-import { getActiveElement } from "reakit-utils/getActiveElement";
 import { DialogOptions } from "../Dialog";
 
 /**

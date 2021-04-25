@@ -1,8 +1,7 @@
 import * as React from "react";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useLiveRef } from "reakit-utils/hooks";
 import { warning } from "reakit-warning";
-import { getDocument } from "reakit-utils/getDocument";
-import { contains } from "reakit-utils/contains";
+import { getDocument, contains } from "reakit-utils/dom";
 import { isFocusTrap } from "./useFocusTrap";
 
 function dialogContains(target: Element) {

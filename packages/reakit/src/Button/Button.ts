@@ -1,8 +1,8 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { isButton } from "reakit-utils/isButton";
+import { useForkRef } from "reakit-utils/hooks";
+import { isButton } from "reakit-utils/dom";
 import { warning } from "reakit-warning";
 import {
   ClickableOptions,

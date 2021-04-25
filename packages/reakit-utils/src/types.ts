@@ -82,3 +82,10 @@ export type AnyFunction = (...args: any[]) => any;
  * @template T Setter type
  */
 export type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+
+/**
+ * Initial state.
+ * @memberof types
+ * @template T State type
+ */
+export type InitialState<T> = T | (() => T);

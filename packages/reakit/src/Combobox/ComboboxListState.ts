@@ -1,7 +1,5 @@
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   useCompositeState,
   CompositeState,
@@ -16,14 +14,14 @@ import {
 } from "./__utils/ComboboxBaseState";
 
 export function unstable_useComboboxListState(
-  initialState: SealedInitialState<unstable_ComboboxListInitialState> = {}
+  initialState: InitialState<unstable_ComboboxListInitialState> = {}
 ): unstable_ComboboxListStateReturn {
   const {
     currentId = null,
     orientation = "vertical",
     loop = true,
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
 
   const composite = useCompositeState({
     currentId,

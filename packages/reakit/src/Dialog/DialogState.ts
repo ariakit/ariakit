@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   useDisclosureState,
   DisclosureState,
@@ -41,9 +39,9 @@ export type DialogStateReturn = DisclosureStateReturn &
   DialogActions;
 
 export function useDialogState(
-  initialState: SealedInitialState<DialogInitialState> = {}
+  initialState: InitialState<DialogInitialState> = {}
 ): DialogStateReturn {
-  const { modal: initialModal = true, ...sealed } = useSealedState(
+  const { modal: initialModal = true, ...sealed } = useInitialValue(
     initialState
   );
 

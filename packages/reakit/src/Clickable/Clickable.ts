@@ -1,9 +1,9 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { isButton } from "reakit-utils/isButton";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { isSelfTarget } from "reakit-utils/isSelfTarget";
+import { isButton } from "reakit-utils/dom";
+import { useLiveRef } from "reakit-utils/hooks";
+import { isSelfTarget } from "reakit-utils/events";
 import {
   TabbableOptions,
   TabbableHTMLProps,

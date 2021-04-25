@@ -3,8 +3,7 @@ import { warning, useWarning } from "reakit-warning";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { useLiveRef } from "reakit-utils/useLiveRef";
+import { useForkRef, useLiveRef } from "reakit-utils/hooks";
 import {
   DisclosureContentOptions,
   DisclosureContentHTMLProps,

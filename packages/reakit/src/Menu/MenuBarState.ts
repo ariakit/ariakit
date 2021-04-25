@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  SealedInitialState,
-  useSealedState,
-} from "reakit-utils/useSealedState";
+import { InitialState } from "reakit-utils/types";
+import { useInitialValue } from "reakit-utils/hooks";
 import {
   CompositeState,
   CompositeActions,
@@ -30,13 +28,13 @@ export type MenuBarInitialState = CompositeInitialState &
 export type MenuBarStateReturn = MenuBarState & MenuBarActions;
 
 export function useMenuBarState(
-  initialState: SealedInitialState<MenuBarInitialState> = {}
+  initialState: InitialState<MenuBarInitialState> = {}
 ): MenuBarStateReturn {
   const {
     orientation = "horizontal",
     unstable_values: initialValues = {},
     ...sealed
-  } = useSealedState(initialState);
+  } = useInitialValue(initialState);
 
   const [values, setValues] = React.useState(initialValues);
   const composite = useCompositeState({ ...sealed, orientation });

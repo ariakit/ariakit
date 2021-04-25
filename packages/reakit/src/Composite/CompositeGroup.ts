@@ -1,8 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { useForkRef } from "reakit-utils/useForkRef";
-import { useIsomorphicEffect } from "reakit-utils/useIsomorphicEffect";
+import { useForkRef, useSafeLayoutEffect } from "reakit-utils/hooks";
 import { GroupOptions, GroupHTMLProps, useGroup } from "../Group/Group";
 import {
   unstable_useId,
@@ -62,7 +61,7 @@ export const useCompositeGroup = createHook<
     const { id } = options;
 
     // We need this to be called before CompositeItems' register
-    useIsomorphicEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!id) return undefined;
       options.registerGroup?.({ id, ref });
       return () => {

@@ -3,8 +3,8 @@ import { useWarning } from "reakit-warning";
 import { createHook } from "reakit-system/createHook";
 import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
-import { useLiveRef } from "reakit-utils/useLiveRef";
-import { isPortalEvent } from "reakit-utils/isPortalEvent";
+import { useLiveRef } from "reakit-utils/hooks";
+import { isPortalEvent } from "reakit-utils/events";
 import {
   PopoverOptions,
   PopoverHTMLProps,
