@@ -1,4 +1,4 @@
-import { isObject } from "reakit-utils/isObject";
+import { isObject } from "reakit-utils/misc";
 import { UnionToIntersection } from "reakit-utils/types";
 import { reduceObjects } from "./__utils/reduceObjects";
 import { SystemContextType } from "./SystemContext";

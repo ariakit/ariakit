@@ -1,4 +1,4 @@
-import { isPlainObject } from "reakit-utils/isPlainObject";
+import { isPlainObject } from "reakit-utils/misc";
 
 export function filterAllEmpty<T extends Record<any, any> | Array<any>>(
   object: T

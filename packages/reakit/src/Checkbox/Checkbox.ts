@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
-import { removeIndexFromArray } from "reakit-utils/removeIndexFromArray";
+import { removeIndexFromArray } from "reakit-utils/misc";
 import { createHook } from "reakit-system/createHook";
 import { useForkRef, useLiveRef } from "reakit-utils/hooks";
 import { createEvent } from "reakit-utils/events";

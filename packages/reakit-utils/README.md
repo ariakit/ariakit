@@ -24,8 +24,6 @@ yarn add reakit-utils
 
 #### Table of Contents
 
--   [applyState](#applystate)
--   [createOnKeyDown](#createonkeydown)
 -   [canUseDOM](#canusedom)
 -   [isUA](#isua)
 -   [getDocument](#getdocument)
@@ -66,56 +64,19 @@ yarn add reakit-utils
 -   [useForkRef](#useforkref)
 -   [useNativeElementType](#usenativeelementtype)
 -   [useUpdateEffect](#useupdateeffect)
--   [isEmpty](#isempty)
--   [isInteger](#isinteger)
+-   [shallowEqual](#shallowequal)
+-   [toArray](#toarray)
+-   [applyState](#applystate)
 -   [isObject](#isobject)
 -   [isPlainObject](#isplainobject)
 -   [isPromise](#ispromise)
--   [normalizePropsAreEqual](#normalizepropsareequal)
--   [omit](#omit)
--   [pick](#pick)
+-   [isEmpty](#isempty)
+-   [isInteger](#isinteger)
 -   [removeIndexFromArray](#removeindexfromarray)
 -   [removeItemFromArray](#removeitemfromarray)
--   [shallowEqual](#shallowequal)
--   [\_\_deprecatedSplitProps](#__deprecatedsplitprops)
--   [splitProps](#splitprops)
--   [toArray](#toarray)
+-   [omit](#omit)
+-   [pick](#pick)
 -   [types](#types)
-
-### applyState
-
-Receives a `setState` argument and calls it with `currentValue` if it's a
-function. Otherwise return the argument as the new value.
-
-#### Parameters
-
--   `argument` **React.SetStateAction&lt;T>** 
--   `currentValue` **T** 
-
-#### Examples
-
-```javascript
-import { applyState } from "reakit-utils";
-
-applyState((value) => value + 1, 1); // 2
-applyState(2, 1); // 2
-```
-
-### createOnKeyDown
-
-Returns an `onKeyDown` handler to be passed to a component.
-
-#### Parameters
-
--   `options` **Options**  (optional, default `{}`)
-    -   `options.keyMap`  
-    -   `options.onKey`  
-    -   `options.stopPropagation`  
-    -   `options.onKeyDown`  
-    -   `options.shouldKeyDown`   (optional, default `()=>true`)
-    -   `options.preventDefault`   (optional, default `true`)
-
-Returns **React.KeyboardEventHandler** 
 
 ### canUseDOM
 
@@ -761,6 +722,92 @@ A `React.useEffect` that will not run on the first render.
 -   `effect` **EffectCallback** 
 -   `deps` **(ReadonlyArray&lt;any> | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))?** 
 
+### shallowEqual
+
+Compares two objects.
+
+#### Parameters
+
+-   `a` **AnyObject?** 
+-   `b` **AnyObject?** 
+
+#### Examples
+
+```javascript
+import { shallowEqual } from "reakit-utils";
+
+shallowEqual({ a: "a" }, {}); // false
+shallowEqual({ a: "a" }, { b: "b" }); // false
+shallowEqual({ a: "a" }, { a: "a" }); // true
+shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
+```
+
+### toArray
+
+Transforms `arg` into an array if it's not already.
+
+#### Parameters
+
+-   `arg` **T** 
+
+#### Examples
+
+```javascript
+import { toArray } from "reakit-utils";
+
+toArray("a"); // ["a"]
+toArray(["a"]); // ["a"]
+```
+
+### applyState
+
+Receives a `setState` argument and calls it with `currentValue` if it's a
+function. Otherwise return the argument as the new value.
+
+#### Parameters
+
+-   `argument` **SetStateAction&lt;T>** 
+-   `currentValue` **T** 
+
+#### Examples
+
+```javascript
+import { applyState } from "reakit-utils";
+
+applyState((value) => value + 1, 1); // 2
+applyState(2, 1); // 2
+```
+
+### isObject
+
+Checks whether `arg` is an object or not.
+
+#### Parameters
+
+-   `arg` **any** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isPlainObject
+
+Checks whether `arg` is a plain object or not.
+
+#### Parameters
+
+-   `arg` **any** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### isPromise
+
+Checks whether `arg` is a promise or not.
+
+#### Parameters
+
+-   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
 ### isEmpty
 
 Checks whether `arg` is empty or not.
@@ -807,92 +854,6 @@ isInteger("1.5"); // false
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### isObject
-
-Checks whether `arg` is an object or not.
-
-#### Parameters
-
--   `arg` **any** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isPlainObject
-
-Checks whether `arg` is a plain object or not.
-
-#### Parameters
-
--   `arg` **any** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### isPromise
-
-Checks whether `arg` is a promise or not.
-
-#### Parameters
-
--   `arg` **(T | [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;T>)** 
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### normalizePropsAreEqual
-
-This higher order functions take `propsAreEqual` function and
-returns a new function which normalizes the props.
-
-Normalizing in our case is making sure the `propsAreEqual` works with
-both version 1 (object spreading) and version 2 (state object) state passing.
-
-To achieve this, the returned function in case of a state object
-will spread the state object in both `prev` and \`next props.
-
-Other case it just returns the function as is which makes sure
-that we are still backward compatible
-
-#### Parameters
-
--   `propsAreEqual` **function (prev: O, next: O): [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-Returns **function (prev: PropsWithAs&lt;O, T>, next: PropsWithAs&lt;O, T>): [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### omit
-
-Omits specific keys from an object.
-
-#### Parameters
-
--   `object` **T** 
--   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
-
-#### Examples
-
-```javascript
-import { omit } from "reakit-utils";
-
-omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
-```
-
-Returns **Omit&lt;T, K>** 
-
-### pick
-
-Picks specific keys from an object.
-
-#### Parameters
-
--   `object` **T** 
--   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
-
-#### Examples
-
-```javascript
-import { pick } from "reakit-utils";
-
-pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
-```
-
 ### removeIndexFromArray
 
 Immutably removes an index from an array.
@@ -936,100 +897,40 @@ removeItemFromArray([obj], obj); // []
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** A new array without the passed item.
 
-### shallowEqual
+### omit
 
-Compares two objects.
+Omits specific keys from an object.
 
 #### Parameters
 
--   `objA` **Record&lt;any, any>?** 
--   `objB` **Record&lt;any, any>?** 
+-   `object` **T** 
+-   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
 
 #### Examples
 
 ```javascript
-import { shallowEqual } from "reakit-utils";
+import { omit } from "reakit-utils";
 
-shallowEqual({ a: "a" }, {}); // false
-shallowEqual({ a: "a" }, { b: "b" }); // false
-shallowEqual({ a: "a" }, { a: "a" }); // true
-shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
+omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
 ```
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+Returns **Omit&lt;T, K>** 
 
-### \_\_deprecatedSplitProps
+### pick
 
-Splits an object (`props`) into a tuple where the first item is an object
-with the passed `keys`, and the second item is an object with these keys
-omitted.
+Picks specific keys from an object.
 
 #### Parameters
 
--   `props` **T** 
--   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
+-   `object` **T** 
+-   `paths` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)** 
 
 #### Examples
 
 ```javascript
-import { splitProps } from "reakit-utils";
+import { pick } from "reakit-utils";
 
-splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
-```
-
-Returns **\[any, Omit&lt;T, K>]** 
-
-**Meta**
-
--   **deprecated**: will be removed in version 2
-
-
-### splitProps
-
-Splits an object (`props`) into a tuple where the first item
-is the `state` property, and the second item is the rest of the properties.
-
-It is also backward compatible with version 1. If `keys` are passed then
-splits an object (`props`) into a tuple where the first item is an object
-with the passed `keys`, and the second item is an object with these keys
-omitted.
-
-#### Parameters
-
--   `props` **T** 
--   `keys` **(ReadonlyArray&lt;K> | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;K>)**  (optional, default `[]`)
-
-#### Examples
-
-```javascript
-import { splitProps } from "reakit-utils";
-
-splitProps({ a: "a", b: "b" }, ["a"]); // [{ a: "a" }, { b: "b" }]
-```
-
-```javascript
-import { splitProps } from "reakit-utils";
-
-splitProps({ state: { a: "a" }, b: "b" }); // [{ a: "a" }, { b: "b" }]
-```
-
-Returns **\[any, Omit&lt;T, K>]** 
-
-### toArray
-
-Transforms `arg` into an array if it's not already.
-
-#### Parameters
-
--   `arg` **T** 
-
-#### Examples
-
-```javascript
-import { toArray } from "reakit-utils";
-
-toArray("a"); // ["a"]
-toArray(["a"]); // ["a"]
+pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
 ```
 
 ### types
@@ -1084,6 +985,12 @@ Type: any
 Any function
 
 Type: function (...args: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>): any
+
+#### AnyObject
+
+Any object
+
+Type: Record&lt;any, any>
 
 #### SetState
 

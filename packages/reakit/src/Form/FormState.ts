@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ArrayValue, InitialState } from "reakit-utils/types";
-import { isPromise } from "reakit-utils/isPromise";
-import { isEmpty } from "reakit-utils/isEmpty";
+import { isPromise, isEmpty } from "reakit-utils/misc";
 import {
   useInitialValue,
   useUpdateEffect,

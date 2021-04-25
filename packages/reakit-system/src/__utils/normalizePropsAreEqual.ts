@@ -1,5 +1,5 @@
-import { isPlainObject } from "./isPlainObject";
-import { As, PropsWithAs } from "./types";
+import { isPlainObject } from "reakit-utils/misc";
+import { As, PropsWithAs } from "reakit-utils/types";
 
 /**
  * This higher order functions take `propsAreEqual` function and

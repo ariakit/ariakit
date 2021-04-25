@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createComponent } from "reakit-system/createComponent";
 import { createHook } from "reakit-system/createHook";
-import { shallowEqual } from "reakit-utils/shallowEqual";
+import { shallowEqual } from "reakit-utils/misc";
 import { BOX_KEYS } from "./__keys";
 
 export type BoxOptions = {

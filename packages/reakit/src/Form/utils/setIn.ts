@@ -1,5 +1,4 @@
-import { toArray } from "reakit-utils/toArray";
-import { isInteger } from "reakit-utils/isInteger";
+import { toArray, isInteger } from "reakit-utils/misc";
 import { DeepPath, DeepPathArray } from "../__utils/types";
 
 export function unstable_setIn<

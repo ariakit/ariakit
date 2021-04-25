@@ -1,5 +1,4 @@
-import { toArray } from "reakit-utils/toArray";
-import { shallowEqual } from "reakit-utils/shallowEqual";
+import { toArray, shallowEqual } from "reakit-utils/misc";
 import { useOptions } from "./useOptions";
 import { useProps } from "./useProps";
 

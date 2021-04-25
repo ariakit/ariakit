@@ -2,7 +2,7 @@ import * as React from "react";
 import { createPopper, Instance, State } from "@popperjs/core";
 import { InitialState } from "reakit-utils/types";
 import { useInitialValue, useSafeLayoutEffect } from "reakit-utils/hooks";
-import { shallowEqual } from "reakit-utils/shallowEqual";
+import { shallowEqual } from "reakit-utils/misc";
 import { isUA } from "reakit-utils/dom";
 import {
   DialogState,

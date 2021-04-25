@@ -1,6 +1,6 @@
 import * as React from "react";
 import { InitialState } from "reakit-utils/types";
-import { applyState } from "reakit-utils/applyState";
+import { applyState } from "reakit-utils/misc";
 import { useSafeLayoutEffect, useInitialValue } from "reakit-utils/hooks";
 import {
   unstable_IdState,

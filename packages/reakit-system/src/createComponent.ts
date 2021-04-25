@@ -1,8 +1,8 @@
 import * as React from "react";
 import { As, PropsWithAs } from "reakit-utils/types";
-import { splitProps } from "reakit-utils/splitProps";
-import { shallowEqual } from "reakit-utils/shallowEqual";
-import { normalizePropsAreEqual } from "reakit-utils/normalizePropsAreEqual";
+import { shallowEqual } from "reakit-utils/misc";
+import { splitProps } from "./__utils/splitProps";
+import { normalizePropsAreEqual } from "./__utils/normalizePropsAreEqual";
 import { forwardRef } from "./__utils/forwardRef";
 import { useCreateElement as defaultUseCreateElement } from "./useCreateElement";
 import { memo } from "./__utils/memo";

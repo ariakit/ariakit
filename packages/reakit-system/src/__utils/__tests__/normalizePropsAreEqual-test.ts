@@ -1,4 +1,4 @@
-import { normalizePropsAreEqual } from "reakit-utils/normalizePropsAreEqual";
+import { normalizePropsAreEqual } from "../normalizePropsAreEqual";
 
 function propsAreEqual(
   prev?: Record<any, any>,

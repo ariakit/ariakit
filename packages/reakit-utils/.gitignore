@@ -1,6 +1,4 @@
 # Automatically generated
-/applyState
-/createOnKeyDown
 /dist
 /dom
 /es
@@ -8,19 +6,7 @@
 /flatten
 /focus
 /hooks
-/isEmpty
-/isInteger
-/isObject
-/isPlainObject
-/isPromise
 /lib
-/normalizePropsAreEqual
-/omit
-/pick
-/removeIndexFromArray
-/removeItemFromArray
-/shallowEqual
-/splitProps
-/toArray
+/misc
 /ts
 /types

@@ -77,6 +77,12 @@ export type ArrayValue<T> = T extends Array<infer U> ? U : never;
 export type AnyFunction = (...args: any[]) => any;
 
 /**
+ * Any object
+ * @memberof types
+ */
+export type AnyObject = Record<any, any>;
+
+/**
  * State hook setter.
  * @memberof types
  * @template T Setter type
