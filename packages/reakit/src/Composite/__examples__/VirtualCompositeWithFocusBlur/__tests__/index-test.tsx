@@ -137,3 +137,35 @@ test("focus/blur on virtual composite with keyboard", () => {
     </div>
   `);
 });
+
+test("focus/blur on virtual composite with mouse click and then with keyboard", () => {
+  render(<VirtualCompositeWithFocusBlur />);
+  click(screen.getByText("item-1"));
+  press.ArrowDown();
+  expect(screen.getByRole("log")).toMatchInlineSnapshot(`
+    <div
+      role="log"
+    >
+      <ul>
+        <li>
+          focus item-1
+        </li>
+        <li>
+          focus container - item-1
+        </li>
+        <li>
+          blur item-1
+        </li>
+        <li>
+          blur container - item-1
+        </li>
+        <li>
+          focus item-2
+        </li>
+        <li>
+          focus container - item-2
+        </li>
+      </ul>
+    </div>
+  `);
+});

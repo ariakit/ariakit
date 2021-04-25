@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.8](https://github.com/reakit/reakit/compare/reakit@1.3.7...reakit@1.3.8) (2021-04-23)
+
+
+### Bug Fixes
+
+* Fix `CompositeItem` not emitting blur events when `unstable_virtual` is `true` ([#858](https://github.com/reakit/reakit/issues/858)) ([56a86f5](https://github.com/reakit/reakit/commit/56a86f571dbaef83511e4f25d6ebbc2642abf8d7))
+* Fix button focus on mouse down on Safari and React 17 ([#857](https://github.com/reakit/reakit/issues/857)) ([cd0c4df](https://github.com/reakit/reakit/commit/cd0c4dfb95a25639ba076c9a6f6617781fc1930d))
+
+
+
+
+
+## [1.3.7](https://github.com/reakit/reakit/compare/reakit@1.3.6...reakit@1.3.7) (2021-04-01)
+
+
+### Bug Fixes
+
+* Fix Popover initial position ([#853](https://github.com/reakit/reakit/issues/853)) ([8df5ed4](https://github.com/reakit/reakit/commit/8df5ed43f5e4b2bbea7ca42ef9a5b2a4c78d6859)), closes [#852](https://github.com/reakit/reakit/issues/852)
+
+
+
+
+
 ## [1.3.6](https://github.com/reakit/reakit/compare/reakit@1.3.5...reakit@1.3.6) (2021-03-01)
 
 

@@ -189,7 +189,8 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
         // IE11 doesn't support event.relatedTarget, so we use the active
         // element ref instead.
         const previousActiveElement =
-          activeElementRef?.current || event.relatedTarget;
+          activeElementRef?.current ||
+          (event.relatedTarget as HTMLElement | null);
         const previousActiveElementWasItem = isItem(
           options.items,
           previousActiveElement
@@ -201,6 +202,10 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
           // additional event nor call the onFocus handler passed to
           // <Composite onFocus={...} />.
           event.stopPropagation();
+          // We keep track of the previous active item element so we can
+          // manually fire a blur event on it later when the focus is moved to
+          // another item on the onBlurCapture event below.
+          previousElementRef.current = previousActiveElement;
         }
       },
       [options.unstable_virtual, options.items]
@@ -276,7 +281,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
               // it had DOM focus before (like when using roving tabindex).
               fireBlurEvent(previousElementRef.current, event);
             }
-            previousElementRef.current = currentElement;
           } else if (currentElement) {
             // This will be true when the next active element is not the
             // current element, but there's a current item. This will only
@@ -285,7 +289,6 @@ export const useComposite = createHook<CompositeOptions, CompositeHTMLProps>({
             // is the item that is getting blurred, and nextActiveElement is
             // the item that is being clicked.
             fireBlurEvent(currentElement, event);
-            previousElementRef.current = nextActiveElement;
           }
           // We want to ignore intermediate blur events, so we stop its
           // propagation and return early so onFocus will not be called.

@@ -149,8 +149,8 @@ export function usePopoverState(
   const [popoverStyles, setPopoverStyles] = React.useState<React.CSSProperties>(
     {
       position: "fixed",
-      left: "0",
-      top: "0",
+      left: "100%",
+      top: "100%",
     }
   );
   const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
