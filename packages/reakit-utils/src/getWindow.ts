@@ -1,4 +1,4 @@
-// Thanks to Fluent UI for doing the [research on IE11 memery leak](https://github.com/microsoft/fluentui/pull/9010#issuecomment-490768427)
+// Thanks to Fluent UI for doing the [research on IE11 memory leak](https://github.com/microsoft/fluentui/pull/9010#issuecomment-490768427)
 // and for creating this [utils](https://github.com/microsoft/fluentui/blob/f6af0479a54f17fd16b9616a62d6be38686a5c1e/packages/utilities/src/dom/getWindow.ts)
 
 import { getDocument } from "./getDocument";
