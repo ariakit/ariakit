@@ -100,7 +100,7 @@
     "jest-matcher-utils": "26.6.2",
     "lerna": "3.22.1",
     "lint-staged": "10.5.3",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "md-node-inject": "1.0.1",
     "open-cli": "6.0.1",
     "patch-package": "6.2.2",
