@@ -74,7 +74,7 @@ function Example() {
 
 Example with styled-components:
 
-> When using libraries like styled-components, you'll not be able to use the Reakit [`as` prop](https://reakit.io/docs/composition/#as-prop) since styled components have their own built-in `as` prop which is not passed down to the underlying component. You can use [render props](https://reakit.io/docs/composition/#render-props) instead to achieve the same functionality
+> When using styled-components, you will have to use [`forwardedAs` prop](https://styled-components.com/docs/api#forwardedas-prop) instead of Reakit [`as` prop](https://reakit.io/docs/composition/#as-prop) since styled-components have their own built-in `as` prop. Otherwise, you can use [render props](https://reakit.io/docs/composition/#render-props) to achieve the same functionality
 
 ```jsx static
 import { Button } from "reakit";
