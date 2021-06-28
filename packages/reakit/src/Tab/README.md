@@ -11,7 +11,7 @@ redirect_from:
 
 # Tab
 
-Accessible `Tab` component that follows the [WAI-ARIA Tabs Pattern](https://www.w3.org/TR/wai-aria-practices/#tabpanel). It's a component that, when activated, display a `TabPanel`.
+Accessible `Tab` component that follows the [WAI-ARIA Tabs Pattern](https://www.w3.org/TR/wai-aria-practices/#tabpanel). It's a component that, when activated, displays a `TabPanel`.
 
 <carbon-ad></carbon-ad>
 
