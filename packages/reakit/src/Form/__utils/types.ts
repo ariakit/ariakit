@@ -11,7 +11,7 @@ export type ArrayWithLength<N extends number> = { [K in N]: any };
  * @template T Object with keys { foo: { bar: [{ baz }] } }
  * @template P Path ["foo", "bar", 0, "baz"]
  */
-export interface DeepPathArray<T, P> extends ReadonlyArray<string | number> {
+export interface DeepPathArray<T, P> extends ReadonlyArray<any> {
   ["0"]?: keyof T;
   ["1"]?: P extends {
     ["0"]: infer K0;

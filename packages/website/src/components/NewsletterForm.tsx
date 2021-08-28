@@ -35,7 +35,7 @@ export default function NewsletterForm() {
     onValidate: async (values) => {
       try {
         await schema.validate(values, { abortEarly: false });
-      } catch (e) {
+      } catch (e: any) {
         if (e.inner.length) {
           throw e.inner.reduce(
             (acc: any, curr: any) =>
