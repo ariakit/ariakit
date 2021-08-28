@@ -66,7 +66,7 @@ export function PlaygroundPreview({
         options.componentName
       );
       return wrapElement(<Example />);
-    } catch (e) {
+    } catch (e: any) {
       handleError(e);
     }
     return null;
@@ -90,7 +90,7 @@ export function PlaygroundPreview({
         );
         unmount();
         ReactDOM.render(wrapElement(<Example />), ref.current);
-      } catch (e) {
+      } catch (e: any) {
         unmount();
         handleError(e);
       }
