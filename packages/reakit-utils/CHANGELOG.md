@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.2](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.15.1...reakit-utils@0.15.2) (2021-09-06)
+
+**Note:** Version bump only for package reakit-utils
+
+
+
+
+
 ## [0.15.1](https://github.com/reakit/reakit/tree/master/packages/reakit-utils/compare/reakit-utils@0.15.0...reakit-utils@0.15.1) (2020-12-11)
 
 
