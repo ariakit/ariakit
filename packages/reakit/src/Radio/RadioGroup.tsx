@@ -17,7 +17,7 @@ export type RadioGroupHTMLProps = CompositeHTMLProps &
 
 export type RadioGroupProps = RadioGroupOptions & RadioGroupHTMLProps;
 
-const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
+export const useRadioGroup = createHook<RadioGroupOptions, RadioGroupHTMLProps>({
   name: "RadioGroup",
   compose: useComposite,
   keys: RADIO_GROUP_KEYS,
