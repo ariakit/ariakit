@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.10](https://github.com/reakit/reakit/compare/reakit@1.3.9...reakit@1.3.10) (2021-09-21)
+
+
+### Bug Fixes
+
+* Add missing `useRadioGroup` export ([#912](https://github.com/reakit/reakit/issues/912)) ([7836667](https://github.com/reakit/reakit/commit/78366677d4e8da0a807b3a5194209dcf085c637e))
+
+
+
+
+
 ## [1.3.9](https://github.com/reakit/reakit/compare/reakit@1.3.8...reakit@1.3.9) (2021-09-06)
 
 
