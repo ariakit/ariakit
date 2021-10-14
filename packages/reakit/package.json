@@ -16,7 +16,7 @@
   },
   "funding": {
     "type": "opencollective",
-    "url": "https://opencollective.com/reakit"
+    "url": "https://opencollective.com/ariakit"
   },
   "scripts": {
     "test": "jest",
