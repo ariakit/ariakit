@@ -11,7 +11,7 @@ redirect_from:
 
 # Popover
 
-`Popover` is a [non-modal dialog](/docs/dialog/#non-modal-dialogs) that floats around its disclosure. It's commonly used for displaying additional rich content on top of something.
+`Popover` is a [non-modal dialog](/packages/reakit/src/Dialog#non-modal-dialogs) that floats around its disclosure. It's commonly used for displaying additional rich content on top of something.
 
 <carbon-ad></carbon-ad>
 
