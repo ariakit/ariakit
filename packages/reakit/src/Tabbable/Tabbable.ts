@@ -42,22 +42,13 @@ function focusIfNeeded(element: HTMLElement) {
 }
 
 function isNativeTabbable(element: Element) {
-  return (
-    element.tagName === "BUTTON" ||
-    element.tagName === "INPUT" ||
-    element.tagName === "SELECT" ||
-    element.tagName === "TEXTAREA" ||
-    element.tagName === "A"
+  return ["BUTTON", "INPUT", "SELECT", "TEXTAREA", "A"].includes(
+    element.tagName
   );
 }
 
 function supportsDisabledAttribute(element: Element) {
-  return (
-    element.tagName === "BUTTON" ||
-    element.tagName === "INPUT" ||
-    element.tagName === "SELECT" ||
-    element.tagName === "TEXTAREA"
-  );
+  return ["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(element.tagName);
 }
 
 function getTabIndex(

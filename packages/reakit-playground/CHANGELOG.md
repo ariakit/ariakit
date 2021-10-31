@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.10](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.15.9...reakit-playground@0.15.10) (2021-09-21)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
+## [0.15.9](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.15.8...reakit-playground@0.15.9) (2021-09-06)
+
+**Note:** Version bump only for package reakit-playground
+
+
+
+
+
 ## [0.15.8](https://github.com/reakit/reakit/tree/master/packages/reakit-playground/compare/reakit-playground@0.15.7...reakit-playground@0.15.8) (2021-04-23)
 
 **Note:** Version bump only for package reakit-playground

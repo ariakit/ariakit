@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.10](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.3.9...website@1.3.10) (2021-09-21)
+
+**Note:** Version bump only for package website
+
+
+
+
+
+## [1.3.9](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.3.8...website@1.3.9) (2021-09-06)
+
+**Note:** Version bump only for package website
+
+
+
+
+
 ## [1.3.8](https://github.com/reakit/reakit/tree/master/packages/website/compare/website@1.3.7...website@1.3.8) (2021-04-23)
 
 **Note:** Version bump only for package website

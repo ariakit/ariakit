@@ -44,7 +44,7 @@ Learn more in [Accessibility](/docs/accessibility/).
 
 ## Composition
 
-- `Group` uses [Role](/docs/role/).
+- `Group` uses [Role](/docs/role/) and is used by [CompositeGroup](/docs/composite/) and [FormGroup](/docs/form/).
 
 Learn more in [Composition](/docs/composition/#props-hooks).
 

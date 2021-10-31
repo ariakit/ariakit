@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.2](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.14.1...reakit-system-bootstrap@0.14.2) (2021-09-06)
+
+**Note:** Version bump only for package reakit-system-bootstrap
+
+
+
+
+
 ## [0.14.1](https://github.com/reakit/reakit/tree/master/packages/reakit-system-bootstrap/compare/reakit-system-bootstrap@0.14.0...reakit-system-bootstrap@0.14.1) (2020-12-11)
 
 
