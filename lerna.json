@@ -1,0 +1,15 @@
+{
+  "version": "independent",
+  "npmClient": "npm",
+  "ignoreChanges": [
+    "**/__tests__/**",
+    "**/__examples__/**",
+    "**/*.md"
+  ],
+  "command": {
+    "publish": {
+      "conventionalCommits": true,
+      "message": "chore(release): Publish"
+    }
+  }
+}

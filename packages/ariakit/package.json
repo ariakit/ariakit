@@ -1,0 +1,48 @@
+{
+  "name": "ariakit",
+  "version": "2.0.0-alpha.0",
+  "description": "Toolkit for building accessible web apps with React",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit",
+  "homepage": "https://reakit.io",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit.min.js",
+  "types": "ts/index.d.ts",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ariakit"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "npm test -- --coverage",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js",
+    "preversion": "npm run lint && npm run test && npm run build",
+    "postpublish": "npm run clean"
+  },
+  "keywords": [
+    "ariakit",
+    "a11y",
+    "react",
+    "ui",
+    "toolkit",
+    "components"
+  ],
+  "dependencies": {
+    "@popperjs/core": "^2.10.2",
+    "ariakit-utils": "0.17.0-alpha.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  }
+}

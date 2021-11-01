@@ -1,0 +1,36 @@
+{
+  "name": "ariakit-utils",
+  "version": "0.17.0-alpha.0",
+  "description": "Ariakit utils",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-utils",
+  "homepage": "https://reakit.io",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-utils.min.js",
+  "types": "ts/index.d.ts",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "npm test -- --coverage",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js",
+    "preversion": "npm run lint && npm run test && npm run build",
+    "postpublish": "npm run clean"
+  },
+  "keywords": [
+    "ariakit",
+    "react",
+    "utils"
+  ],
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  }
+}

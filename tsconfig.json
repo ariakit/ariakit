@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.prod.json",
+  "compilerOptions": {
+    "paths": {
+      "ariakit": ["packages/ariakit/src"],
+      "ariakit/*": ["packages/ariakit/src/*"],
+
+      "ariakit-utils": ["packages/ariakit-utils/src"],
+      "ariakit-utils/*": ["packages/ariakit-utils/src/*"]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+dist
+es
+lib
+ts
+coverage
+node_modules
+public
+.cache
