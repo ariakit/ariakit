@@ -92,21 +92,6 @@ function isRootModule(path, index, array) {
 }
 
 /**
- * Filters out /dist, /es, /lib, /ts etc.
- * @param {string} rootPath
- * @param {string} filename
- */
-function isSourceModule(rootPath, filename) {
-  const dists = [
-    getModuleDir(rootPath),
-    getUnpkgDir(rootPath),
-    getTypesDir(rootPath),
-    getMainDir(rootPath),
-  ];
-  return !dists.includes(filename);
-}
-
-/**
  * @param {string} path
  */
 function isDirectory(path) {
@@ -166,20 +151,6 @@ function getPublicFiles(rootPath, prefix = "") {
         ...acc,
       };
     }, {});
-}
-
-/**
- * Returns the same as getPublicFiles, but grouped by modules.
- * Like { "path/to/moduleName": ["path/to/moduleName/file1", "path/to/moduleName/file2"] }
- * @param {string} rootPath
- */
-function getPublicFilesByModules(rootPath) {
-  const publicFiles = getPublicFiles(rootPath);
-  return Object.values(publicFiles).reduce((acc, path) => {
-    const moduleName = dirname(path);
-    acc[moduleName] = [...(acc[moduleName] || []), path];
-    return acc;
-  }, {});
 }
 
 /**
@@ -270,13 +241,16 @@ function getProxyPackageContents(rootPath, moduleName) {
   const moduleDir = getModuleDir(rootPath);
   const typesDir = getTypesDir(rootPath);
   const prefix = "../".repeat(moduleName.split("/").length);
+  const tsModuleName = existsSync(join(getSourcePath(rootPath), moduleName))
+    ? `${moduleName}/index.d.ts`
+    : `${moduleName}.d.ts`;
   const json = {
     name: `${name}/${moduleName}`,
     private: true,
     sideEffects: false,
     main: join(prefix, mainDir, moduleName),
     ...(moduleDir ? { module: join(prefix, moduleDir, moduleName) } : {}),
-    ...(typesDir ? { types: join(prefix, typesDir, moduleName) } : {}),
+    ...(typesDir ? { types: join(prefix, typesDir, tsModuleName) } : {}),
   };
   return JSON.stringify(json, null, 2);
 }
