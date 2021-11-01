@@ -70,6 +70,8 @@ function getOutput(isUMD) {
         ariakit: "Ariakit",
         react: "React",
         "react-dom": "ReactDOM",
+        "@testing-library/react": "TestingLibraryReact",
+        "@testing-library/dom": "TestingLibraryDom",
       },
     };
   }
