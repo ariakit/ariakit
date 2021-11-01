@@ -1,4 +1,4 @@
-import React, {
+import {
   ComponentPropsWithRef,
   ElementType,
   RefObject,
@@ -211,7 +211,6 @@ export const useDialog = createHook<DialogOptions>(
       modal,
       backdrop,
       preserveTabOrder,
-      state.disclosureRef,
     ]);
 
     // Auto focus on show.
