@@ -1,6 +1,6 @@
 {
   "name": "ariakit-test-utils",
-  "version": "0.17.0-alpha.0",
+  "version": "0.17.0-alpha.1",
   "description": "Ariakit test utils",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "react"
   ],
   "dependencies": {
-    "ariakit-utils": "0.17.0-alpha.0"
+    "ariakit-utils": "^0.17.0-alpha.1"
   },
   "peerDependencies": {
     "@testing-library/dom": "^8.0.0",
