@@ -6,7 +6,10 @@
     "lint": "eslint . --ext js,ts,tsx",
     "ts": "tsc --noEmit",
     "build": "npm run build -ws --if-present",
-    "clean": "npm run clean -ws --if-present"
+    "clean": "npm run clean -ws --if-present",
+    "release": "lerna publish --pre-dist-tag next",
+    "release:next": "npm run release -- --no-git-tag-version --no-changelog",
+    "release:graduate": "npm run release -- --conventional-graduate"
   },
   "workspaces": [
     "packages/*"
@@ -36,6 +39,7 @@
     "eslint-plugin-react": "7.26.1",
     "fs-extra": "10.0.0",
     "jest": "27.3.1",
+    "jest-axe": "5.0.1",
     "jest-matcher-utils": "27.3.1",
     "lerna": "4.0.0",
     "lodash": "4.17.21",
