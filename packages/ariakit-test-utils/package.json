@@ -1,0 +1,40 @@
+{
+  "name": "ariakit-test-utils",
+  "version": "0.17.0-alpha.0",
+  "description": "Ariakit test utils",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-test-utils",
+  "homepage": "https://reakit.io",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-test-utils.min.js",
+  "types": "ts/index.d.ts",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "npm test -- --coverage",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js",
+    "preversion": "npm run lint && npm run test && npm run build",
+    "postpublish": "npm run clean"
+  },
+  "keywords": [
+    "ariakit",
+    "react"
+  ],
+  "dependencies": {
+    "ariakit-utils": "0.17.0-alpha.0"
+  },
+  "peerDependencies": {
+    "@testing-library/dom": "^8.0.0",
+    "@testing-library/react": "^12.0.0 || ^13.0.0-alpha.4",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  }
+}
