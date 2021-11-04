@@ -36,7 +36,7 @@ jobs:
         run: |
           git config --global user.name "reakit-bot"
           git config --global user.email "reakit-bot@users.noreply.github.com"
-          git commit -am "chore: Fix lint issues"
+          git commit -am "chore: Fix lint issues" || echo "No changes to commit"
           git push
 
       - name: Build
