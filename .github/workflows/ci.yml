@@ -42,8 +42,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Type check
-        run: npm run type-check
+      # TODO: Add later
+      # - name: Type check
+      #   run: npm run type-check
 
       - name: Test
         run: npm test -- --coverage

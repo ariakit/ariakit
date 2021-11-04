@@ -45,11 +45,12 @@
     "@codemirror/state": "0.19.3",
     "@codemirror/view": "0.19.11",
     "@emotion/css": "11.5.0",
+    "ariakit-utils": "0.17.0-alpha.2",
     "prismjs": "1.25.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^18.0.0-alpha",
-    "ariakit": "^2.0.0-alpha"
+    "ariakit": "^2.0.0-alpha",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^18.0.0-alpha"
   },
   "devDependencies": {
     "@types/babel__standalone": "7.1.3",
