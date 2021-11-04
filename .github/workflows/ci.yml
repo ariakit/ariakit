@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+    branches: [master, next, v*]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Lint
+        run: npm run lint -- --fix
+
+      - name: Fix lint issues
+        run: |
+          git config --global user.name "reakit-bot"
+          git config --global user.email "reakit-bot@users.noreply.github.com"
+          git commit -am "chore: Fix lint issues"
+          git push
+
+      - name: Build
+        run: npm run build
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Test
+        run: npm test -- --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2

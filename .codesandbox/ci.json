@@ -1,0 +1,5 @@
+{
+  "packages": ["packages/ariakit*"],
+  "buildCommand": "build",
+  "sandboxes": ["packages/*/__examples__/*"]
+}
