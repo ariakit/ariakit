@@ -3,6 +3,8 @@ import {
   useState,
   useEffect,
   useLayoutEffect,
+  // @ts-ignore
+  // useId as useReactId,
   Ref,
   useMemo,
   RefObject,
@@ -140,6 +142,12 @@ export function useRefId(ref?: RefObject<HTMLElement>, deps?: DependencyList) {
  * Generates a random ID.
  */
 export function useId(defaultId?: string) {
+  // TODO: Use React's useId when it's stable.
+  // if (useReactId) {
+  //   const reactId = useReactId();
+  //   if (defaultId) return defaultId;
+  //   return reactId;
+  // }
   const [id, setId] = useState(defaultId);
   useSafeLayoutEffect(() => {
     if (defaultId || id) return;

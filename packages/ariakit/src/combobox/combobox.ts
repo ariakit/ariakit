@@ -145,20 +145,16 @@ export const useCombobox = createHook<ComboboxOptions>(
       state.value,
     ]);
 
-    // Auto select on type
+    // Auto select the first item on type.
     useUpdateEffect(() => {
-      const hasInsertedText = hasInsertedTextRef.current;
-      if (autoSelect && state.items.length && hasInsertedText) {
-        // If autoSelect is set to true and the last change was a text
-        // insertion, we want to automatically focus on the first suggestion.
-        // This effect will run both when value changes and when items change so
-        // we can also catch async items.
-        state.move(state.first());
-      } else if (!autoSelect && state.virtualFocus) {
-        // Without autoSelect, we'll always blur the combobox option and move
-        // focus onto the combobox input.
-        state.setActiveId(null);
-      }
+      if (!autoSelect) return;
+      if (!state.items.length) return;
+      if (!hasInsertedTextRef.current) return;
+      // If autoSelect is set to true and the last change was a text
+      // insertion, we want to automatically focus on the first suggestion.
+      // This effect will run both when value changes and when items change so
+      // we can also catch async items.
+      state.move(state.first());
     }, [
       valueUpdated,
       state.value,
@@ -166,9 +162,13 @@ export const useCombobox = createHook<ComboboxOptions>(
       state.items,
       state.move,
       state.first,
-      state.virtualFocus,
-      state.setActiveId,
     ]);
+
+    // Focus on the combobox input on type.
+    useUpdateEffect(() => {
+      if (autoSelect) return;
+      state.setActiveId(null);
+    }, [valueUpdated, autoSelect, state.setActiveId]);
 
     // If it has inline auto completion, set the state value when the combobox
     // input or the combobox list lose focus.
