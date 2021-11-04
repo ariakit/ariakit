@@ -1,10 +1,10 @@
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { useVisuallyHidden, VisuallyHiddenOptions } from "../visually-hidden";
+import { VisuallyHiddenOptions, useVisuallyHidden } from "../visually-hidden";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

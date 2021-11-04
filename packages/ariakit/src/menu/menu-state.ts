@@ -1,7 +1,7 @@
 import { SetStateAction, useCallback, useMemo, useState } from "react";
 import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
-import { useStore, useStorePublisher } from "ariakit-utils/store";
 import { applyState } from "ariakit-utils/misc";
+import { useStore, useStorePublisher } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
   CompositeState,

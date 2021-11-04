@@ -1,10 +1,10 @@
 import {
-  getActiveElement,
-  contains,
   closest,
-  matches,
+  contains,
+  getActiveElement,
   isFrame,
   isVisible,
+  matches,
 } from "./dom";
 
 const selector =

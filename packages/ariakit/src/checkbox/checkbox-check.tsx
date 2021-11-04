@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { CheckboxState } from "./checkbox-state";
 import { CheckboxCheckedContext } from "./__utils";
+import { CheckboxState } from "./checkbox-state";
 
 const checkmark = (
   <svg

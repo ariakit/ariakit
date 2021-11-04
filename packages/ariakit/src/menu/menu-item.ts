@@ -1,19 +1,19 @@
 import { Context, MouseEvent, useCallback } from "react";
-import { useStore, createMemoComponent } from "ariakit-utils/store";
-import { createHook, createElement } from "ariakit-utils/system";
 import { useEventCallback } from "ariakit-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import {
-  CompositeItemOptions,
-  useCompositeItem,
-} from "../composite/composite-item";
 import {
   CompositeHoverOptions,
   useCompositeHover,
 } from "../composite/composite-hover";
+import {
+  CompositeItemOptions,
+  useCompositeItem,
+} from "../composite/composite-item";
+import { MenuContext } from "./__utils";
 import { MenuBarState } from "./menu-bar-state";
 import { MenuState } from "./menu-state";
-import { MenuContext } from "./__utils";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

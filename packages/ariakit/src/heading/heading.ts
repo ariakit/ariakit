@@ -1,10 +1,10 @@
 import { useContext, useMemo, useRef } from "react";
+import { useForkRef, useTagName } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useForkRef, useTagName } from "ariakit-utils/hooks";
 import { As, Options, Props } from "ariakit-utils/types";
 import { HeadingContext, HeadingLevels } from "./__utils";
 

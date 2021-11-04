@@ -1,19 +1,13 @@
 import {
   ChangeEvent,
   CompositionEvent,
-  KeyboardEvent as ReactKeyboardEvent,
   MouseEvent,
+  KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
 } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { As, Props, BooleanOrCallback } from "ariakit-utils/types";
 import { getPopupRole } from "ariakit-utils/dom";
 import { isFocusEventOutside } from "ariakit-utils/events";
 import {
@@ -25,6 +19,12 @@ import {
   useUpdateEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
 import {
   PopoverAnchorOptions,

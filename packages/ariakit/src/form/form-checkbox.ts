@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useStore, createMemoComponent } from "ariakit-utils/store";
-import { createHook, createElement } from "ariakit-utils/system";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import {
   CheckboxOptions,
@@ -8,9 +8,9 @@ import {
   useCheckbox,
   useCheckboxState,
 } from "../checkbox";
+import { FormContext } from "./__utils";
 import { FormFieldOptions, useFormField } from "./form-field";
 import { FormState } from "./form-state";
-import { FormContext } from "./__utils";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

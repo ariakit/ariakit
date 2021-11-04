@@ -1,10 +1,10 @@
 import { MouseEvent, useCallback } from "react";
+import { useEventCallback } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useEventCallback } from "ariakit-utils/hooks";
 import { As, Props } from "ariakit-utils/types";
 import {
   DialogDisclosureOptions,

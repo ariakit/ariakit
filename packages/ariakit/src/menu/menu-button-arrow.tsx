@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { BasePlacement } from "@popperjs/core";
+import { useStore } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { useStore } from "ariakit-utils/store";
-import { MenuState } from "./menu-state";
 import { MenuContext } from "./__utils";
+import { MenuState } from "./menu-state";
 
 const pointsMap = {
   top: "4,10 8,6 12,10",

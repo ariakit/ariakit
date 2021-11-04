@@ -1,12 +1,12 @@
-import { forwardRef, ElementType } from "react";
+import { ElementType, forwardRef } from "react";
 import { hasOwnProperty } from "./misc";
 import {
-  RenderProp,
   Component,
-  Options,
   HTMLProps,
-  Props,
   Hook,
+  Options,
+  Props,
+  RenderProp,
 } from "./types";
 
 function isRenderProp(children: any): children is RenderProp {

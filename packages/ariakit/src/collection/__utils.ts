@@ -1,4 +1,4 @@
-import { createContext, RefObject } from "react";
+import { RefObject, createContext } from "react";
 import { CollectionState } from "./collection-state";
 
 export type Item = {

@@ -1,15 +1,15 @@
 import "./__mock-get-client-rects";
 
+import { isTextField } from "ariakit-utils/dom";
 import {
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,
 } from "ariakit-utils/focus";
-import { isTextField } from "ariakit-utils/dom";
+import { queuedMicrotasks, sleep } from "./__utils";
+import { blur } from "./blur";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
-import { blur } from "./blur";
-import { queuedMicrotasks, sleep } from "./__utils";
 
 const clickableInputTypes = [
   "button",

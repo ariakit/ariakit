@@ -1,10 +1,10 @@
+import { useForkRef } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { useForkRef } from "ariakit-utils/hooks";
 import { PopoverState } from "./popover-state";
 
 /**

@@ -1,10 +1,10 @@
 import { useContext } from "react";
+import { useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { As, Options, Props } from "ariakit-utils/types";
 import { GroupLabelContext } from "./__utils";
 

@@ -3,41 +3,41 @@ import {
   KeyboardEvent,
   RefObject,
   SyntheticEvent,
-  useState,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
-import { createHook, createElement } from "ariakit-utils/system";
 import { isButton, isTextField } from "ariakit-utils/dom";
-import { isSafari } from "ariakit-utils/platform";
-import { As, Props } from "ariakit-utils/types";
+import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
   useEventCallback,
   useForkRef,
-  useWrapElement,
   useId,
   useLiveRef,
   useSafeLayoutEffect,
+  useWrapElement,
 } from "ariakit-utils/hooks";
+import { isSafari } from "ariakit-utils/platform";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,
 } from "../collection/collection-item";
 import { CommandOptions, useCommand } from "../command/command";
-import { CompositeState } from "./composite-state";
 import {
+  CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
-  getContextId,
   Item,
   findEnabledItemById,
-  CompositeContext,
+  getContextId,
 } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 function isEditableElement(element: HTMLElement) {
   if (element.isContentEditable) return true;

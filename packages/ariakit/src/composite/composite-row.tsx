@@ -1,13 +1,13 @@
-import { useMemo, useRef, useContext } from "react";
+import { useContext, useMemo, useRef } from "react";
+import { useForkRef, useId, useWrapElement } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useForkRef, useId, useWrapElement } from "ariakit-utils/hooks";
 import { As, Options, Props } from "ariakit-utils/types";
-import { CompositeState } from "./composite-state";
 import { CompositeContext, CompositeRowContext } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

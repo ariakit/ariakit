@@ -1,14 +1,14 @@
 import { KeyboardEvent, useCallback, useState } from "react";
+import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
 import { As, Props } from "ariakit-utils/types";
 import { HovercardOptions, useHovercard } from "../hovercard/hovercard";
-import { useMenuList, MenuListOptions } from "./menu-list";
 import { useParentMenu } from "./__utils";
+import { MenuListOptions, useMenuList } from "./menu-list";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

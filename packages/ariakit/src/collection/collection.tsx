@@ -1,12 +1,12 @@
+import { useWrapElement } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { useWrapElement } from "ariakit-utils/hooks";
-import { CollectionState } from "./collection-state";
 import { CollectionItemContext } from "./__utils";
+import { CollectionState } from "./collection-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

@@ -1,23 +1,14 @@
 import {
-  MouseEvent as ReactMouseEvent,
   EventHandler,
   FocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
   SyntheticEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
-import { hasFocusWithin, isFocusable } from "ariakit-utils/focus";
-import { As, Options, Props } from "ariakit-utils/types";
-import { queueMicrotask } from "ariakit-utils/misc";
 import { isButton } from "ariakit-utils/dom";
 import {
   addGlobalEventListener,
@@ -26,12 +17,21 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
+import { hasFocusWithin, isFocusable } from "ariakit-utils/focus";
 import {
-  useForkRef,
-  useTagName,
   useEventCallback,
+  useForkRef,
   useSafeLayoutEffect,
+  useTagName,
 } from "ariakit-utils/hooks";
+import { queueMicrotask } from "ariakit-utils/misc";
+import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Options, Props } from "ariakit-utils/types";
 
 const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
 

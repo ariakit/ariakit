@@ -1,23 +1,23 @@
 import { RefObject, useEffect, useState } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { As, Props } from "ariakit-utils/types";
 import {
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
+import {
   DisclosureContentOptions,
   useDisclosureContent,
 } from "../disclosure/disclosure-content";
 import { PortalOptions, usePortal } from "../portal";
-import { TooltipState } from "./tooltip-state";
 import { TooltipContext } from "./__utils";
+import { TooltipState } from "./tooltip-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

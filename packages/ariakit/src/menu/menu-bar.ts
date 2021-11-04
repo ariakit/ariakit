@@ -1,13 +1,13 @@
+import { useStoreProvider } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useStoreProvider } from "ariakit-utils/store";
 import { As, Props } from "ariakit-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
-import { MenuBarState } from "./menu-bar-state";
 import { MenuBarContext } from "./__utils";
+import { MenuBarState } from "./menu-bar-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

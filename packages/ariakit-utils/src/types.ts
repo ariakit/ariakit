@@ -1,10 +1,10 @@
 import {
   ComponentPropsWithRef,
+  Dispatch,
   ElementType,
   HTMLAttributes,
   ReactNode,
   RefAttributes,
-  Dispatch,
   SetStateAction,
 } from "react";
 

@@ -7,14 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
+import { isSelfTarget } from "ariakit-utils/events";
+import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
 import { As, Options, Props } from "ariakit-utils/types";
-import { isSelfTarget } from "ariakit-utils/events";
 import { DisclosureState } from "./disclosure-state";
 
 /**

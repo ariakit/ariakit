@@ -1,4 +1,4 @@
-import { createContext, RefObject } from "react";
+import { RefObject, createContext } from "react";
 import { TooltipState } from "./tooltip-state";
 
 export function createGlobalTooltipState() {

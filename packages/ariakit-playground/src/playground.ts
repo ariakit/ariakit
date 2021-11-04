@@ -1,12 +1,12 @@
-import { As, Options, Props } from "ariakit-utils/types";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { PlaygroundState } from "./playground-state";
+import { As, Options, Props } from "ariakit-utils/types";
 import { PlaygroundContext } from "./__utils";
+import { PlaygroundState } from "./playground-state";
 
 export const usePlayground = createHook<PlaygroundOptions>(
   ({ state, ...props }) => {

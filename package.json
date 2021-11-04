@@ -37,6 +37,7 @@
     "cross-spawn": "7.0.3",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.2",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "7.26.1",
     "fs-extra": "10.0.0",

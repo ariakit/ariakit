@@ -1,19 +1,19 @@
 import { MouseEvent, useCallback, useEffect, useState } from "react";
+import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
+import { useStore } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
 import { As, Props } from "ariakit-utils/types";
-import { useStore } from "ariakit-utils/store";
 import { ButtonOptions, useButton } from "../button";
 import {
   CollectionItemOptions,
   useCollectionItem,
 } from "../collection/collection-item";
-import { FormState } from "./form-state";
 import { FormContext, StringLike } from "./__utils";
+import { FormState } from "./form-state";
 
 function getFirstFieldsByName(
   items: FormState["items"] | undefined,

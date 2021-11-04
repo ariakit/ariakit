@@ -1,5 +1,5 @@
-import { createHook, createElement } from "ariakit-utils/system";
 import { createMemoComponent } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import {
   CompositeItemOptions,

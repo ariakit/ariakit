@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { useStore, createStoreContext } from "ariakit-utils/store";
+import { createStoreContext, useStore } from "ariakit-utils/store";
 import { DialogContext } from "../dialog/__utils/dialog-context";
 import { MenuBarState } from "./menu-bar-state";
 import { MenuState } from "./menu-state";

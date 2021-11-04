@@ -1,7 +1,4 @@
 import { SetStateAction, useCallback, useMemo, useState } from "react";
-import { AnyObject, SetState } from "ariakit-utils/types";
-import { useStorePublisher } from "ariakit-utils/store";
-import { applyState } from "ariakit-utils/misc";
 import {
   useControlledState,
   useInitialValue,
@@ -9,21 +6,24 @@ import {
   useLiveRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
+import { applyState } from "ariakit-utils/misc";
+import { useStorePublisher } from "ariakit-utils/store";
+import { AnyObject, SetState } from "ariakit-utils/types";
 import {
   CollectionState,
   CollectionStateProps,
   useCollectionState,
 } from "../collection/collection-state";
 import {
-  createNames,
   DeepMap,
   DeepPartial,
+  Names,
+  StringLike,
+  createNames,
   get,
   hasMessages,
-  Names,
   set,
   setAll,
-  StringLike,
 } from "./__utils";
 
 type ErrorMessage = string | undefined | null;

@@ -1,18 +1,16 @@
 import {
-  useRef,
-  useState,
+  ComponentType,
+  DependencyList,
+  EffectCallback,
+  Ref,
+  RefObject,
+  useCallback,
   useEffect,
   useLayoutEffect,
-  // @ts-ignore
-  // useId as useReactId,
-  Ref,
   useMemo,
-  RefObject,
-  ComponentType,
-  EffectCallback,
-  useCallback,
-  DependencyList,
   useReducer,
+  useRef,
+  useState,
 } from "react";
 import { canUseDOM } from "./dom";
 import { noop, setRef } from "./misc";

@@ -1,7 +1,4 @@
 import { MouseEvent, useCallback } from "react";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createHook, createElement } from "ariakit-utils/system";
-import { As, Options, Props, BooleanOrCallback } from "ariakit-utils/types";
 import { contains } from "ariakit-utils/dom";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import {
@@ -9,6 +6,9 @@ import {
   useEventCallback,
   useId,
 } from "ariakit-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
+import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 

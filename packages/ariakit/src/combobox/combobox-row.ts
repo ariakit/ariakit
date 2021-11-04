@@ -1,17 +1,17 @@
 import { useContext } from "react";
+import { getPopupRole } from "ariakit-utils/dom";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { getPopupRole } from "ariakit-utils/dom";
 import {
   CompositeRowOptions,
   useCompositeRow,
 } from "../composite/composite-row";
-import { ComboboxState } from "./combobox-state";
 import { ComboboxContext } from "./__utils";
+import { ComboboxState } from "./combobox-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

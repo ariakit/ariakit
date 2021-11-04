@@ -1,6 +1,6 @@
 import { getActiveElement } from "ariakit-utils/dom";
-import { fireEvent } from "./fire-event";
 import { DirtiableElement } from "./__utils";
+import { fireEvent } from "./fire-event";
 
 export function blur(element?: DirtiableElement | null) {
   if (element == null) {

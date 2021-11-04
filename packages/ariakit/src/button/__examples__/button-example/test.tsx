@@ -1,5 +1,5 @@
-import ButtonExample from ".";
 import { getByRole, render } from "ariakit-test-utils";
+import ButtonExample from ".";
 
 test("render button", () => {
   render(<ButtonExample />);

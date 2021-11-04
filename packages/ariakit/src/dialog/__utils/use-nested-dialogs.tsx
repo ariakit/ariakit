@@ -1,13 +1,13 @@
 import {
-  createContext,
   RefObject,
+  createContext,
   useCallback,
   useContext,
   useMemo,
   useState,
 } from "react";
-import { WrapElement } from "ariakit-utils/types";
 import { useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { WrapElement } from "ariakit-utils/types";
 import { DialogOptions } from "../dialog";
 
 type DialogRef = RefObject<HTMLElement>;

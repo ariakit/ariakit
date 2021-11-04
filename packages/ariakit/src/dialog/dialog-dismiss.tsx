@@ -1,14 +1,14 @@
 import { MouseEvent, useCallback, useContext, useMemo } from "react";
+import { useEventCallback } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useEventCallback } from "ariakit-utils/hooks";
 import { As, Props } from "ariakit-utils/types";
 import { ButtonOptions, useButton } from "../button";
-import { DialogState } from "./dialog-state";
 import { DialogContext } from "./__utils/dialog-context";
+import { DialogState } from "./dialog-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

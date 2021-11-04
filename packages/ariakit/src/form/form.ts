@@ -6,13 +6,6 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
-import { useStoreProvider } from "ariakit-utils/store";
 import { isTextField } from "ariakit-utils/dom";
 import {
   useEventCallback,
@@ -20,8 +13,15 @@ import {
   useTagName,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
-import { FormState } from "./form-state";
+import { useStoreProvider } from "ariakit-utils/store";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Options, Props } from "ariakit-utils/types";
 import { FormContext } from "./__utils";
+import { FormState } from "./form-state";
 
 function isField(element: HTMLElement, items: FormState["items"]) {
   return items.some(

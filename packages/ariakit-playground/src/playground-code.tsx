@@ -8,20 +8,20 @@ import {
   useRef,
   useState,
 } from "react";
-import { highlight, languages } from "prismjs";
-import { Button } from "ariakit/button";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { As, Options, Props, SetState } from "ariakit-utils/types";
-import { createElement, createHook } from "ariakit-utils/system";
-import { cx } from "ariakit-utils/misc";
 import {
   useControlledState,
   useEventCallback,
   useForkRef,
   useWrapElement,
 } from "ariakit-utils/hooks";
+import { cx } from "ariakit-utils/misc";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
+import { As, Options, Props, SetState } from "ariakit-utils/types";
+import { Button } from "ariakit/button";
+import { highlight, languages } from "prismjs";
+import { PlaygroundContext, getExtension, getValue } from "./__utils";
 import { PlaygroundState } from "./playground-state";
-import { getExtension, getValue, PlaygroundContext } from "./__utils";
 
 export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
   ({

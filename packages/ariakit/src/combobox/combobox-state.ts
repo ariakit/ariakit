@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { useStorePublisher } from "ariakit-utils/store";
 import { useControlledState, useUpdateEffect } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import { isSafari, isTouchDevice } from "ariakit-utils/platform";
+import { useStorePublisher } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
   CompositeState,

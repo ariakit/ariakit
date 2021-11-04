@@ -1,18 +1,18 @@
 import { FocusEvent, KeyboardEvent, useCallback } from "react";
 import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import {
   getDocument,
   getTextboxSelection,
   isTextField,
 } from "ariakit-utils/dom";
-import { As, Options, Props } from "ariakit-utils/types";
 import { useEventCallback } from "ariakit-utils/hooks";
-import { CompositeState } from "./composite-state";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Options, Props } from "ariakit-utils/types";
 import { selectTextField } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 function getValueLength(element: HTMLElement) {
   if (isTextField(element)) {

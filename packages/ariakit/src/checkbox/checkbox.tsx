@@ -1,20 +1,20 @@
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useRef } from "react";
 import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
-import {
-  useWrapElement,
   useControlledState,
   useEventCallback,
   useForkRef,
   useTagName,
+  useWrapElement,
 } from "ariakit-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import { CommandOptions, useCommand } from "../command/command";
-import { CheckboxState } from "./checkbox-state";
 import { CheckboxCheckedContext } from "./__utils";
+import { CheckboxState } from "./checkbox-state";
 
 function getStateChecked(
   stateValue?: CheckboxState["value"],

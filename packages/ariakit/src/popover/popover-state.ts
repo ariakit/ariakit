@@ -7,18 +7,18 @@ import {
   useState,
 } from "react";
 import {
-  createPopper,
+  BasePlacement,
   VirtualElement,
   applyStyles,
-  BasePlacement,
+  createPopper,
 } from "@popperjs/core";
+import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { SetState } from "ariakit-utils/types";
 import {
   DialogState,
   DialogStateProps,
   useDialogState,
 } from "../dialog/dialog-state";
-import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
-import { SetState } from "ariakit-utils/types";
 
 type Placement =
   | "auto-start"

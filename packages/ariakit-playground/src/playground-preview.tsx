@@ -1,19 +1,19 @@
-import { useState, useDeferredValue, useCallback } from "react";
+import { useCallback, useDeferredValue, useState } from "react";
 import { useUpdateEffect, useWrapElement } from "ariakit-utils/hooks";
+import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { cx } from "ariakit-utils/misc";
-import { PlaygroundState } from "./playground-state";
 import { ErrorBoundary } from "./__error-boundary";
 import { ErrorMessage } from "./__error-message";
 import {
+  PlaygroundContext,
   compileComponent,
   compileModule,
   getModuleCSS,
-  PlaygroundContext,
   resolveModule,
 } from "./__utils";
+import { PlaygroundState } from "./playground-state";
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
   ({ state, file, requireModule: requireModuleProp, ...props }) => {

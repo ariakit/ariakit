@@ -1,14 +1,14 @@
 import { useContext, useRef } from "react";
+import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useStore } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { useStore } from "ariakit-utils/store";
-import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
-import { CollectionState } from "./collection-state";
 import { CollectionItemContext, Item } from "./__utils";
+import { CollectionState } from "./collection-state";
 
 function identity<T>(value: T) {
   return value;

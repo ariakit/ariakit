@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
+import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import { useEventCallback } from "ariakit-utils/hooks";
 import { noop } from "ariakit-utils/misc";

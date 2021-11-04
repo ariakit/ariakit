@@ -1,14 +1,14 @@
 import "./__mock-get-client-rects";
 
-import { isFocusable } from "ariakit-utils/focus";
 import { getActiveElement, isTextField } from "ariakit-utils/dom";
+import { isFocusable } from "ariakit-utils/focus";
 import {
   DirtiableElement,
   TextField,
   getSelectionRange,
+  queuedMicrotasks,
   setSelectionRange,
   sleep,
-  queuedMicrotasks,
 } from "./__utils";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";

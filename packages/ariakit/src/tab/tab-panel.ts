@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getAllTabbableIn } from "ariakit-utils/focus";
+import { useForkRef, useId } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useForkRef, useId } from "ariakit-utils/hooks";
-import { getAllTabbableIn } from "ariakit-utils/focus";
 import { As, Props } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
@@ -13,8 +13,8 @@ import {
 } from "../collection/collection-item";
 import {
   DisclosureContentOptions,
-  useDisclosureState,
   useDisclosureContent,
+  useDisclosureState,
 } from "../disclosure";
 import { FocusableOptions, useFocusable } from "../focusable";
 import { TabState } from "./tab-state";

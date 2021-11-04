@@ -1,23 +1,23 @@
 import { FocusEvent, useCallback, useEffect, useRef, useState } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { As, Props } from "ariakit-utils/types";
-import { contains } from "ariakit-utils/dom";
+import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
-import { HovercardState } from "./hovercard-state";
 import {
   Point,
   getElementPolygon,
   getEventPoint,
   isPointInPolygon,
 } from "./__utils";
+import { HovercardState } from "./hovercard-state";
 
 function getAnchorElement(anchorRef: HovercardState["anchorRef"]) {
   // The anchor element can be a VirtualElement, which is just an object with a

@@ -6,9 +6,6 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useStore, createMemoComponent } from "ariakit-utils/store";
-import { createHook, createElement } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
 import {
   useEventCallback,
   useForkRef,
@@ -16,12 +13,15 @@ import {
   useLiveRef,
   useTagName,
 } from "ariakit-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import {
   CompositeItemOptions,
   useCompositeItem,
 } from "../composite/composite-item";
-import { RadioState } from "./radio-state";
 import { RadioContextState } from "./__utils";
+import { RadioState } from "./radio-state";
 
 function getIsChecked(
   value: RadioOptions["value"],

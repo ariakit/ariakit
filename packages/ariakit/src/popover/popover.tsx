@@ -1,18 +1,18 @@
 import { RefObject, useState } from "react";
 import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
-import {
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import { DialogOptions, useDialog } from "../dialog/dialog";
-import { PopoverState } from "./popover-state";
 import { PopoverContext } from "./__utils";
+import { PopoverState } from "./popover-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

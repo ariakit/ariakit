@@ -1,13 +1,13 @@
 import { MouseEvent, useCallback, useEffect } from "react";
+import { contains } from "ariakit-utils/dom";
+import { addGlobalEventListener } from "ariakit-utils/events";
+import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
-import { addGlobalEventListener } from "ariakit-utils/events";
 import { As, Props } from "ariakit-utils/types";
-import { contains } from "ariakit-utils/dom";
 import {
   DialogDisclosureOptions,
   useDialogDisclosure,

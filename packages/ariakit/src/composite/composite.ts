@@ -1,35 +1,35 @@
 import {
   FocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
   KeyboardEventHandler,
+  KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { useEventCallback, useForkRef, useLiveRef } from "ariakit-utils/hooks";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
-import { useStoreProvider } from "ariakit-utils/store";
-import { As, Props } from "ariakit-utils/types";
 import {
   fireBlurEvent,
   fireKeyboardEvent,
   isSelfTarget,
 } from "ariakit-utils/events";
-import { FocusableOptions, useFocusable } from "../focusable/focusable";
-import { CompositeState } from "./composite-state";
+import { useEventCallback, useForkRef, useLiveRef } from "ariakit-utils/hooks";
+import { useStoreProvider } from "ariakit-utils/store";
 import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
+import { FocusableOptions, useFocusable } from "../focusable/focusable";
+import {
+  CompositeContext,
+  Item,
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
-  Item,
-  CompositeContext,
 } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
   if (!isSelfTarget(event)) return false;

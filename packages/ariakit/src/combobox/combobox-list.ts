@@ -1,14 +1,14 @@
 import { KeyboardEvent, useCallback, useRef } from "react";
+import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useStoreProvider } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { useStoreProvider } from "ariakit-utils/store";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
-import { ComboboxState } from "./combobox-state";
 import { ComboboxContext } from "./__utils";
+import { ComboboxState } from "./combobox-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

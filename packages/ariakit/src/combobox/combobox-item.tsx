@@ -1,10 +1,10 @@
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
-import { createHook, createElement } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { getPopupRole, isTextField } from "ariakit-utils/dom";
 import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CompositeHoverOptions,
@@ -14,8 +14,8 @@ import {
   CompositeItemOptions,
   useCompositeItem,
 } from "../composite/composite-item";
-import { ComboboxState } from "./combobox-state";
 import { ComboboxContext, ComboboxItemValueContext } from "./__utils";
+import { ComboboxState } from "./combobox-state";
 
 const itemRoleByPopupRole = {
   listbox: "option",

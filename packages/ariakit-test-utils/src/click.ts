@@ -1,12 +1,12 @@
 import "./__mock-get-client-rects";
 
-import { isFocusable, getClosestFocusable } from "ariakit-utils/focus";
 import { closest } from "ariakit-utils/dom";
+import { getClosestFocusable, isFocusable } from "ariakit-utils/focus";
+import { sleep } from "./__utils";
+import { blur } from "./blur";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
 import { hover } from "./hover";
-import { blur } from "./blur";
-import { sleep } from "./__utils";
 
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {

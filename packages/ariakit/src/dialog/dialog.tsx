@@ -7,15 +7,12 @@ import {
   useState,
 } from "react";
 import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
-import { As, Props, BooleanOrCallback } from "ariakit-utils/types";
+  contains,
+  getActiveElement,
+  getDocument,
+  isButton,
+} from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { useStoreProvider } from "ariakit-utils/store";
-import { chain } from "ariakit-utils/misc";
 import {
   ensureFocus,
   getFirstTabbableIn,
@@ -24,39 +21,42 @@ import {
   isTabbable,
 } from "ariakit-utils/focus";
 import {
-  contains,
-  getActiveElement,
-  getDocument,
-  isButton,
-} from "ariakit-utils/dom";
-import {
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
+import { chain } from "ariakit-utils/misc";
+import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
+import { useStoreProvider } from "ariakit-utils/store";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import {
   DisclosureContentOptions,
   DisclosureContentProps,
   useDisclosureContent,
 } from "../disclosure/disclosure-content";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
-import { PortalOptions, usePortal } from "../portal/portal";
 import { HeadingLevel } from "../heading/heading-level";
-import { DialogState } from "./dialog-state";
-import { useFocusOnChildUnmount } from "./__utils/use-focus-on-child-unmount";
-import { useHideOnInteractOutside } from "./__utils/use-hide-on-interact-outside";
-import { useNestedDialogs } from "./__utils/use-nested-dialogs";
+import { PortalOptions, usePortal } from "../portal/portal";
+import { DialogBackdrop } from "./__utils/dialog-backdrop";
 import {
   DialogContext,
   DialogDescriptionContext,
   DialogHeadingContext,
 } from "./__utils/dialog-context";
-import { DialogBackdrop } from "./__utils/dialog-backdrop";
-import { usePreventBodyScroll } from "./__utils/use-prevent-body-scroll";
-import { prependHiddenDismiss } from "./__utils/prepend-hidden-dismiss";
-import { useHideOnUnmount } from "./__utils/use-hide-on-unmount";
 import { disableAccessibilityTreeOutside } from "./__utils/disable-accessibility-tree-outside";
 import { disablePointerEventsOutside } from "./__utils/disable-pointer-events-outside";
+import { prependHiddenDismiss } from "./__utils/prepend-hidden-dismiss";
+import { useFocusOnChildUnmount } from "./__utils/use-focus-on-child-unmount";
+import { useHideOnInteractOutside } from "./__utils/use-hide-on-interact-outside";
+import { useHideOnUnmount } from "./__utils/use-hide-on-unmount";
+import { useNestedDialogs } from "./__utils/use-nested-dialogs";
+import { usePreventBodyScroll } from "./__utils/use-prevent-body-scroll";
+import { DialogState } from "./dialog-state";
 
 const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
 

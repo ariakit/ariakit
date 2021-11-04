@@ -1,12 +1,12 @@
 import { ChangeEvent, useCallback } from "react";
 import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
-import { useStore, createMemoComponent } from "ariakit-utils/store";
-import { createHook, createElement } from "ariakit-utils/system";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import { RadioOptions, useRadio } from "../radio/radio";
+import { MenuContext, MenuItemCheckedContext } from "./__utils";
 import { MenuItemOptions, useMenuItem } from "./menu-item";
 import { MenuState } from "./menu-state";
-import { MenuContext, MenuItemCheckedContext } from "./__utils";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

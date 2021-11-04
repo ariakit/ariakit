@@ -1,12 +1,12 @@
 import { useState } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
 import { matches } from "ariakit-utils/dom";
 import { useUpdateEffect } from "ariakit-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
 import { ComboboxListOptions, useComboboxList } from "./combobox-list";
 

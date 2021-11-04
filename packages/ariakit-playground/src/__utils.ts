@@ -1,8 +1,8 @@
 import * as React from "react";
+import { availablePresets, transform } from "@babel/standalone";
 import { css } from "@emotion/css";
-import { transform, availablePresets } from "@babel/standalone";
-import { createStoreContext } from "ariakit-utils/store";
 import { hasOwnProperty } from "ariakit-utils/misc";
+import { createStoreContext } from "ariakit-utils/store";
 import { AnyObject } from "ariakit-utils/types";
 import { PlaygroundState } from "./playground-state";
 

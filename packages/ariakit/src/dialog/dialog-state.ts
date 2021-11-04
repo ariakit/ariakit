@@ -1,7 +1,7 @@
+import { getActiveElement } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { useStorePublisher } from "ariakit-utils/store";
-import { getActiveElement } from "ariakit-utils/dom";
 import {
   DisclosureState,
   DisclosureStateProps,

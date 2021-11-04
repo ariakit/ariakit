@@ -6,9 +6,6 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { createHook, createElement } from "ariakit-utils/system";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { As, Options, Props } from "ariakit-utils/types";
 import { isButton, isTextField } from "ariakit-utils/dom";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
@@ -18,8 +15,11 @@ import {
 } from "ariakit-utils/focus";
 import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
-import { CompositeState } from "./composite-state";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
+import { As, Options, Props } from "ariakit-utils/types";
 import { CompositeContext, selectTextField } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 function getFirstTabbable(container: HTMLElement) {
   restoreFocusIn(container);

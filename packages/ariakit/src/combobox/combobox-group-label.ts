@@ -1,12 +1,12 @@
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import {
-  useCompositeGroupLabel,
   CompositeGroupLabelOptions,
+  useCompositeGroupLabel,
 } from "../composite/composite-group-label";
 import { ComboboxState } from "./combobox-state";
 

@@ -1,11 +1,11 @@
 import { RefObject, useCallback, useMemo, useRef, useState } from "react";
-import { useStorePublisher } from "ariakit-utils/store";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import {
   useControlledState,
   useInitialValue,
   useLiveRef,
 } from "ariakit-utils/hooks";
+import { useStorePublisher } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
   CollectionState,
@@ -13,6 +13,8 @@ import {
   useCollectionState,
 } from "../collection/collection-state";
 import {
+  Item,
+  Orientation,
   findEnabledItemById,
   findFirstEnabledItem,
   flipItems,
@@ -21,9 +23,7 @@ import {
   getItemsInRow,
   getOppositeOrientation,
   groupItemsByRows,
-  Item,
   normalizeRows,
-  Orientation,
   verticalizeItems,
 } from "./__utils";
 

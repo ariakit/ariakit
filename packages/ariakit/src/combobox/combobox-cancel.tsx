@@ -1,12 +1,12 @@
 import { MouseEvent, useCallback } from "react";
+import { useEventCallback, useRefId } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { useEventCallback, useRefId } from "ariakit-utils/hooks";
-import { useButton, ButtonOptions } from "../button";
+import { ButtonOptions, useButton } from "../button";
 import { ComboboxState } from "./combobox-state";
 
 const children = (

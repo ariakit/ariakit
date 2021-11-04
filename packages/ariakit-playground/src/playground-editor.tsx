@@ -10,15 +10,24 @@ import {
   useRef,
   useState,
 } from "react";
-import { CommandOptions, useCommand } from "ariakit/command";
-import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
-import { As, Props } from "ariakit-utils/types";
-import { useStore } from "ariakit-utils/store";
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/closebrackets";
+import { defaultKeymap, indentWithTab } from "@codemirror/commands";
+import { commentKeymap } from "@codemirror/comment";
+import { highlightActiveLineGutter, lineNumbers } from "@codemirror/gutter";
+import { HighlightStyle, tags as t } from "@codemirror/highlight";
+import { history, historyKeymap } from "@codemirror/history";
+import { css } from "@codemirror/lang-css";
+import { javascript } from "@codemirror/lang-javascript";
+import { bracketMatching } from "@codemirror/matchbrackets";
+import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+import { EditorState, Extension, StateEffect } from "@codemirror/state";
 import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
+  EditorView,
+  drawSelection,
+  highlightActiveLine,
+  keymap,
+} from "@codemirror/view";
+import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
   useEventCallback,
   useForkRef,
@@ -26,26 +35,17 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
-import { EditorState, Extension, StateEffect } from "@codemirror/state";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/closebrackets";
-import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
-import { lineNumbers, highlightActiveLineGutter } from "@codemirror/gutter";
-import { defaultKeymap, indentWithTab } from "@codemirror/commands";
-import { HighlightStyle, tags as t } from "@codemirror/highlight";
-import { history, historyKeymap } from "@codemirror/history";
-import { bracketMatching } from "@codemirror/matchbrackets";
-import { commentKeymap } from "@codemirror/comment";
-import { javascript } from "@codemirror/lang-javascript";
-import { css } from "@codemirror/lang-css";
+import { useStore } from "ariakit-utils/store";
 import {
-  EditorView,
-  drawSelection,
-  highlightActiveLine,
-  keymap,
-} from "@codemirror/view";
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Props } from "ariakit-utils/types";
+import { CommandOptions, useCommand } from "ariakit/command";
+import { PlaygroundContext, getExtension, getValue } from "./__utils";
+import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code";
 import { PlaygroundState } from "./playground-state";
-import { usePlaygroundCode, PlaygroundCodeOptions } from "./playground-code";
-import { getExtension, getValue, PlaygroundContext } from "./__utils";
 
 function getLanguage(file: string) {
   const extension = getExtension(file);

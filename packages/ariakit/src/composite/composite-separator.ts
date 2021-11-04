@@ -1,13 +1,13 @@
+import { useStore } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { useStore } from "ariakit-utils/store";
 import { SeparatorOptions, useSeparator } from "../separator/separator";
-import { CompositeState } from "./composite-state";
 import { CompositeContext } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

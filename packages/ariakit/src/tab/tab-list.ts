@@ -1,13 +1,13 @@
+import { useStoreProvider } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useStoreProvider } from "ariakit-utils/store";
 import { As, Props } from "ariakit-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
-import { TabState } from "./tab-state";
 import { TabContext } from "./__utils";
+import { TabState } from "./tab-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

@@ -1,15 +1,15 @@
 import { KeyboardEvent, useCallback, useContext, useRef } from "react";
-import {
-  createHook,
-  createComponent,
-  createElement,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+import { isSelfTarget } from "ariakit-utils/events";
 import { useEventCallback } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
-import { isSelfTarget } from "ariakit-utils/events";
-import { CompositeState } from "./composite-state";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-utils/system";
+import { As, Options, Props } from "ariakit-utils/types";
 import { CompositeContext, Item } from "./__utils";
+import { CompositeState } from "./composite-state";
 
 let chars = "";
 

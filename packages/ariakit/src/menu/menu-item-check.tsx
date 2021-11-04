@@ -1,16 +1,16 @@
 import { useContext } from "react";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import {
   CheckboxCheckOptions,
   useCheckboxCheck,
 } from "../checkbox/checkbox-check";
-import { MenuState } from "./menu-state";
 import { MenuItemCheckedContext } from "./__utils";
+import { MenuState } from "./menu-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

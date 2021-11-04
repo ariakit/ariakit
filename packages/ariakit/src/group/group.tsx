@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useWrapElement } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { useWrapElement } from "ariakit-utils/hooks";
 import { GroupLabelContext } from "./__utils";
 
 /**

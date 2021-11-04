@@ -1,14 +1,14 @@
 import { useContext } from "react";
+import { useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { As, Props } from "ariakit-utils/types";
 import { HeadingOptions, useHeading } from "../heading";
-import { DialogState } from "./dialog-state";
 import { DialogHeadingContext } from "./__utils/dialog-context";
+import { DialogState } from "./dialog-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

@@ -1,13 +1,13 @@
+import { useWrapElement } from "ariakit-utils/hooks";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useWrapElement } from "ariakit-utils/hooks";
 import { As, Props } from "ariakit-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
-import { ToolbarState } from "./toolbar-state";
 import { ToolbarContext } from "./__utils";
+import { ToolbarState } from "./toolbar-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

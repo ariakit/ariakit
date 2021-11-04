@@ -1,9 +1,9 @@
+import { getPopupRole } from "ariakit-utils/dom";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { getPopupRole } from "ariakit-utils/dom";
 import { As, Props } from "ariakit-utils/types";
 import { DisclosureOptions, useDisclosure } from "../disclosure/disclosure";
 import { DialogState } from "./dialog-state";

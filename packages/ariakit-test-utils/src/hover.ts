@@ -1,5 +1,5 @@
-import { fireEvent } from "./fire-event";
 import { sleep } from "./__utils";
+import { fireEvent } from "./fire-event";
 
 type DocumentWithLastHovered = Document & {
   lastHovered?: Element | null;

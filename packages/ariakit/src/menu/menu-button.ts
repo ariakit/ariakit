@@ -1,13 +1,13 @@
 import { FocusEvent, KeyboardEvent, MouseEvent, useCallback } from "react";
 import { BasePlacement } from "@popperjs/core";
+import { getPopupRole } from "ariakit-utils/dom";
+import { useEventCallback, useId } from "ariakit-utils/hooks";
+import { useStore, useStoreProvider } from "ariakit-utils/store";
 import {
-  createHook,
   createComponent,
   createElement,
+  createHook,
 } from "ariakit-utils/system";
-import { useStore, useStoreProvider } from "ariakit-utils/store";
-import { useEventCallback, useId } from "ariakit-utils/hooks";
-import { getPopupRole } from "ariakit-utils/dom";
 import { As, Props } from "ariakit-utils/types";
 import {
   CompositeTypeaheadOptions,
@@ -21,8 +21,8 @@ import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
-import { MenuState } from "./menu-state";
 import { MenuBarContext, MenuContext, useParentMenu } from "./__utils";
+import { MenuState } from "./menu-state";
 
 function hasExpandedMenuButton(
   items: MenuState["items"],

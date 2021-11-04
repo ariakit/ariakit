@@ -2,8 +2,8 @@ import "./__mock-get-client-rects";
 
 import { getActiveElement } from "ariakit-utils/dom";
 import { isFocusable } from "ariakit-utils/focus";
-import { fireEvent } from "./fire-event";
 import { DirtiableElement } from "./__utils";
+import { fireEvent } from "./fire-event";
 
 export function focus(element: Element) {
   if (getActiveElement(element) === element) return;

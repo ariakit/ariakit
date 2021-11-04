@@ -1,14 +1,14 @@
 import { FocusEvent, MouseEvent, useCallback } from "react";
-import { useStore, createMemoComponent } from "ariakit-utils/store";
-import { createHook, createElement } from "ariakit-utils/system";
 import { useEventCallback, useId } from "ariakit-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-utils/store";
+import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import {
   CompositeItemOptions,
   useCompositeItem,
 } from "../composite/composite-item";
-import { TabState } from "./tab-state";
 import { TabContext } from "./__utils";
+import { TabState } from "./tab-state";
 
 function getPanelId(tabs?: TabState["items"], id?: string) {
   if (!id) return;
