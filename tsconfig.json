@@ -5,6 +5,9 @@
       "ariakit": ["packages/ariakit/src"],
       "ariakit/*": ["packages/ariakit/src/*"],
 
+      "ariakit-playground": ["packages/ariakit-playground/src"],
+      "ariakit-playground/*": ["packages/ariakit-playground/src/*"],
+
       "ariakit-test-utils": ["packages/ariakit-test-utils/src"],
       "ariakit-test-utils/*": ["packages/ariakit-test-utils/src/*"],
 
