@@ -1,0 +1,37 @@
+name: 🐛 Bug report
+description: Create a report to help us improve.
+labels: ["potential bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    attributes:
+      label: Current behavior
+      description: Explain what's happening.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce the bug
+      description: |
+        Provide a repository link or CodeSandbox with the bug and describe the
+        steps to reproduce it. Bug reports without a reproduction may be
+        ignored.
+      placeholder: |
+        1. Open sandbox: https://codesandbox.io/s/m4n32vjkoj
+        2. Remove any line
+        3. See console logs
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: Explain how it should behave.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Possible solutions
+      description: If possible, describe how this bug could be fixed.
