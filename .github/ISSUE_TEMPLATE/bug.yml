@@ -15,11 +15,8 @@ body:
   - type: textarea
     attributes:
       label: Steps to reproduce the bug
-      description: |
-        Provide a repository link or CodeSandbox with the bug and describe the
-        steps to reproduce it. Bug reports without a reproduction may be
-        ignored.
-      placeholder: |
+      description: Provide a repository link or CodeSandbox with the bug and describe the steps to reproduce it. Bug reports without a reproduction may be ignored.
+      value: |
         1. Open sandbox: https://codesandbox.io/s/m4n32vjkoj
         2. Remove any line
         3. See console logs
