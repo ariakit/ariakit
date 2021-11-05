@@ -11,8 +11,7 @@ body:
   - type: textarea
     attributes:
       label: Usage example
-      description: Provide an example for how this feature would be used.
-      render: tsx
+      description: Provide documentation and code examples for how this feature would be used.
   - type: textarea
     attributes:
       label: Possible implementations
