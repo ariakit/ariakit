@@ -2,10 +2,6 @@ name: 🐛 Bug report
 description: Create a report to help us improve.
 labels: ["potential bug"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
   - type: textarea
     attributes:
       label: Current behavior
