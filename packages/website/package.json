@@ -9,8 +9,11 @@
   },
   "dependencies": {
     "ariakit": "2.0.0-alpha.2",
-    "next": "12.0.2",
-    "react-fetch": "0.0.0-experimental-5cccacd13-20211101"
+    "next": "12.0.3",
+    "react-fetch": "0.0.0-experimental-5cccacd13-20211101",
+    "rehype-react": "7.0.3",
+    "remark-parse": "10.0.0",
+    "remark-rehype": "10.0.1"
   },
   "devDependencies": {
     "next-transpile-modules": "9.0.0"

@@ -72,6 +72,14 @@ function getPageImports(filename, dest, originalSource = ".") {
     source: `!raw-loader!${originalRelativeSource}`,
     identifier: pathToIdentifier(originalRelativeSource),
   };
+
+  if (/\.md$/.test(filename)) {
+    originalImport.source = `!${relative(
+      dest,
+      join(__dirname, "loader.js")
+    )}!${originalRelativeSource}`;
+  }
+
   const imports = [originalImport];
 
   if (!/\.[tj]sx?$/.test(filename)) return imports;
@@ -180,11 +188,14 @@ async function getPageContents(filename, dest) {
     })
   );
 
-  const keys = uniq(
-    allImports.filter((i) => i.defaultExport).map((i) => i.identifier)
-  );
-
   const { default: _, ...markdownImports } = imports;
+
+  const keys = uniq(
+    Object.values(markdownImports)
+      .flat()
+      .filter((i) => i.defaultExport)
+      .map((i) => i.identifier)
+  );
 
   const defaultValues = Object.entries(markdownImports).map(([key, value]) => {
     return `"${key}": {
@@ -203,12 +214,14 @@ async function getPageContents(filename, dest) {
   });
 
   const contents = `
+    /* Automatically generated */
+    /* eslint-disable */
     ${importContents.join("\n")}
     import MarkdownPage from "../../components/markdown-page";
 
     const props = {
       key: ${keys.join("+")},
-      markdown: ${JSON.stringify(tree)},
+      markdown: ${isMarkdown ? imports.default[0].identifier : "null"},
       defaultValues: {
         ${defaultValues.join("\n")}
       },
@@ -216,6 +229,10 @@ async function getPageContents(filename, dest) {
         ${deps.join("\n")}
       },
     };
+
+    export default function Page() {
+      return <MarkdownPage {...props} />;
+    }
   `;
 
   return prettier.format(contents, { parser: "babel" });
@@ -227,12 +244,13 @@ async function getPageContents(filename, dest) {
  * @param {string} dest The directory where the page will be written.
  */
 async function writePage(filename, dest) {
-  const pageName = basename(dirname(source));
+  const pageName = basename(dirname(filename));
   const pagePath = join(dest, `${pageName}.js`);
   writeFileSync(pagePath, await getPageContents(filename, dest));
 }
 
 module.exports = {
+  getMarkdownTree,
   getPageImports,
   getPageContents,
   writePage,

@@ -1,28 +1,32 @@
 const fs = require("fs");
 const path = require("path");
 const glob = require("glob");
-const { getPageContents } = require("./utils");
+const { writePage } = require("./utils");
 
 const EXAMPLE_GLOB = path.join(__dirname, `../../packages/**/__examples__/*`);
 const PAGES_PATH = path.join(
   __dirname,
-  "../../packages/website/pages/docs/examples"
+  "../../packages/website/pages/examples"
 );
 const examples = glob.sync(EXAMPLE_GLOB, { ignore: "**/node_modules/**" });
 const pages = glob.sync(`${PAGES_PATH}/*`, { ignore: "**/index.{js,ts,tsx}" });
 
-console.log(pages);
 // Clean
 pages.forEach(fs.unlinkSync);
 
-// async function main() {
-//   for (const filename of files) {
-//     const readme = path.join(path.dirname(filename), "README.md");
-//     await writePageFile(fs.existsSync(readme) ? readme : filename, PAGES_PATH);
-//   }
-// }
+async function main() {
+  for (const example of examples) {
+    const readme = path.join(example, "readme.md");
+    const index = path.join(example, "index.tsx");
+    if (fs.existsSync(readme)) {
+      await writePage(readme, PAGES_PATH);
+    } else if (fs.existsSync(index)) {
+      await writePage(index, PAGES_PATH);
+    }
+  }
+}
 
-// main();
+main();
 
 // t.addComment(
 //   statement,

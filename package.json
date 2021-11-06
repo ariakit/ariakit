@@ -54,6 +54,7 @@
     "marked": "4.0.0",
     "open-cli": "7.0.1",
     "prettier": "2.4.1",
+    "raw-loader": "4.0.2",
     "react": "0.0.0-experimental-00ced1e2b-20211102",
     "react-dom": "0.0.0-experimental-00ced1e2b-20211102",
     "rehype-parse": "8.0.3",
