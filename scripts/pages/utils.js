@@ -1,6 +1,7 @@
-const { readFileSync, writeFileSync } = require("fs");
+const { readFileSync, writeFileSync, unlinkSync, mkdirSync } = require("fs");
 const { dirname, relative, parse, resolve, basename, join } = require("path");
 const babel = require("@babel/core");
+const chalk = require("chalk");
 const { uniq } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
@@ -20,7 +21,7 @@ function resolveModuleName(source, filename) {
   const res = ts.resolveModuleName(
     source,
     filename,
-    compilerOptions,
+    { ...compilerOptions, baseUrl: resolve(__dirname, "../..") },
     compilerHost
   );
   if (res.resolvedModule) {
@@ -74,18 +75,17 @@ function getPageImports(filename, dest, originalSource = ".") {
   };
 
   if (/\.md$/.test(filename)) {
-    originalImport.source = `!${relative(
-      dest,
-      join(__dirname, "loader.js")
-    )}!${originalRelativeSource}`;
+    const loader = join(__dirname, "md-loader.js");
+    const loaderPath = relative(dest, loader);
+    originalImport.source = `!${loaderPath}!${originalRelativeSource}`;
   }
 
   const imports = [originalImport];
 
   if (!/\.[tj]sx?$/.test(filename)) return imports;
 
-  const contents = readFileSync(filename, "utf8");
-  const parsed = babel.parse(contents, { filename, ...babelConfig });
+  const content = readFileSync(filename, "utf8");
+  const parsed = babel.parse(content, { filename, ...babelConfig });
 
   /** @type {babel.types.Program} */
   const program = parsed.program;
@@ -141,34 +141,43 @@ function getPageImports(filename, dest, originalSource = ".") {
 }
 
 /**
- * @param {string} filename The filename of the file that contains the markdown.
+ * @param {string} content The markdown content.
  */
-async function getMarkdownTree(filename) {
-  const isMarkdown = /\.md$/.test(filename);
-  const contents = isMarkdown
-    ? readFileSync(filename, "utf8")
-    : `# ${basename(filename)}
-<a href="./${basename(filename)}" data-playground>Example</a>`;
-
+async function getPageTreeFromContent(content) {
   const { unified } = await import("unified");
   const { default: rehypeParse } = await import("rehype-parse");
-  const tree = await unified()
+  const tree = unified()
     .use(rehypeParse, { fragment: true })
-    .parse(marked(contents));
+    .parse(marked(content));
   return tree;
+}
+
+/**
+ * @param {string} filename The filename of the file that contains the markdown.
+ */
+function getPageTreeFromFile(filename) {
+  const isMarkdown = /\.md$/.test(filename);
+  const file = basename(filename);
+  const content = isMarkdown
+    ? readFileSync(filename, "utf8")
+    : `# ${file}
+<a href="./${file}" data-playground>Example</a>`;
+  return getPageTreeFromContent(content);
 }
 
 /**
  * @param {string} filename The filename that will be used as a source to write
  * the page.
  * @param {string} dest The directory where the page will be written.
+ * @param {string} componentPath The path to the component that will be used to
+ * render the page.
  */
-async function getPageContents(filename, dest) {
+async function getPageContent(filename, dest, componentPath) {
   const isMarkdown = /\.md$/.test(filename);
   const imports = isMarkdown ? { default: getPageImports(filename, dest) } : {};
 
   const { visit } = await import("unist-util-visit");
-  const tree = await getMarkdownTree(filename);
+  const tree = await getPageTreeFromFile(filename);
 
   visit(tree, "element", (node) => {
     if (node.tagName !== "a") return;
@@ -178,10 +187,10 @@ async function getPageContents(filename, dest) {
     imports[href] = getPageImports(nextFilename, dest);
   });
 
-  const allImports = Object.values(imports).flat();
+  const importsFlat = Object.values(imports).flat();
 
-  const importContents = uniq(
-    allImports.map((i) => {
+  const importDeclarations = uniq(
+    importsFlat.map((i) => {
       if (!i.identifier) return `import "${i.source}";`;
       if (i.defaultExport) return `import ${i.identifier} from "${i.source}";`;
       return `import * as ${i.identifier} from "${i.source}";`;
@@ -213,15 +222,19 @@ async function getPageContents(filename, dest) {
     },`;
   });
 
-  const contents = `
+  const componentSource = relative(dest, componentPath);
+
+  const content = `
     /* Automatically generated */
     /* eslint-disable */
-    ${importContents.join("\n")}
-    import MarkdownPage from "../../components/markdown-page";
+    ${importDeclarations.join("\n")}
+    import Component from "${componentSource}";
 
     const props = {
       key: ${keys.join("+")},
-      markdown: ${isMarkdown ? imports.default[0].identifier : "null"},
+      markdown: ${
+        isMarkdown ? imports.default[0].identifier : JSON.stringify(tree)
+      },
       defaultValues: {
         ${defaultValues.join("\n")}
       },
@@ -231,27 +244,47 @@ async function getPageContents(filename, dest) {
     };
 
     export default function Page() {
-      return <MarkdownPage {...props} />;
+      return <Component {...props} />;
     }
   `;
 
-  return prettier.format(contents, { parser: "babel" });
+  return prettier.format(content, { parser: "babel" });
 }
 
 /**
  * @param {string} filename The filename that will be used as a source to write
  * the page.
  * @param {string} dest The directory where the page will be written.
+ * @param {string} componentPath The path to the component that will be used to
+ * render the page.
  */
-async function writePage(filename, dest) {
+async function writePage(filename, dest, componentPath) {
   const pageName = basename(dirname(filename));
   const pagePath = join(dest, `${pageName}.js`);
-  writeFileSync(pagePath, await getPageContents(filename, dest));
+  mkdirSync(dirname(pagePath), { recursive: true });
+  writeFileSync(pagePath, await getPageContent(filename, dest, componentPath));
+}
+
+/**
+ * @param {string[]} pages The list of page paths to remove.
+ */
+function cleanPages(pages) {
+  pages.forEach(unlinkSync);
+
+  const cleanedPages = pages.map((page) =>
+    chalk.bold(chalk.gray(path.basename(page)))
+  );
+
+  console.log(
+    ["", "Cleaning examples:", `${cleanedPages.join(", ")}`].join("\n")
+  );
 }
 
 module.exports = {
-  getMarkdownTree,
+  getPageTreeFromContent,
+  getPageTreeFromFile,
   getPageImports,
-  getPageContents,
+  getPageContent,
   writePage,
+  cleanPages,
 };

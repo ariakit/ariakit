@@ -5,7 +5,12 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "preserve",
-    "types": ["node", "jest", "@testing-library/jest-dom", "react/experimental"],
+    "types": [
+      "node",
+      "jest",
+      "@testing-library/jest-dom",
+      "react/experimental"
+    ],
     "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
     "allowJs": true,

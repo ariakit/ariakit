@@ -63,6 +63,8 @@
     "rollup-plugin-terser": "7.0.2",
     "typescript": "4.4.4",
     "unified": "10.1.0",
-    "unist-util-visit": "4.1.0"
+    "unist-util-visit": "4.1.0",
+    "webpack": "5.62.1",
+    "webpack-virtual-modules": "0.4.3"
   }
 }
