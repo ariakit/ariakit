@@ -1,7 +1,6 @@
 const { readFileSync, writeFileSync, unlinkSync, mkdirSync } = require("fs");
 const { dirname, relative, parse, resolve, basename, join } = require("path");
 const babel = require("@babel/core");
-const chalk = require("chalk");
 const { uniq } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
@@ -231,7 +230,7 @@ async function getPageContent(filename, dest, componentPath) {
     import Component from "${componentSource}";
 
     const props = {
-      key: ${keys.join("+")},
+      key: ${keys.join("+") || "null"},
       markdown: ${
         isMarkdown ? imports.default[0].identifier : JSON.stringify(tree)
       },
@@ -252,6 +251,16 @@ async function getPageContent(filename, dest, componentPath) {
 }
 
 /**
+ * @param {string} filename
+ */
+function getPageFilename(filename) {
+  if (/(index\.[jt]sx?|readme\.mdx?)$/i.test(filename)) {
+    return `${basename(dirname(filename))}.js`;
+  }
+  return `${basename(filename)}.js`;
+}
+
+/**
  * @param {string} filename The filename that will be used as a source to write
  * the page.
  * @param {string} dest The directory where the page will be written.
@@ -259,25 +268,9 @@ async function getPageContent(filename, dest, componentPath) {
  * render the page.
  */
 async function writePage(filename, dest, componentPath) {
-  const pageName = basename(dirname(filename));
-  const pagePath = join(dest, `${pageName}.js`);
+  const pagePath = join(dest, getPageFilename(filename));
   mkdirSync(dirname(pagePath), { recursive: true });
   writeFileSync(pagePath, await getPageContent(filename, dest, componentPath));
-}
-
-/**
- * @param {string[]} pages The list of page paths to remove.
- */
-function cleanPages(pages) {
-  pages.forEach(unlinkSync);
-
-  const cleanedPages = pages.map((page) =>
-    chalk.bold(chalk.gray(path.basename(page)))
-  );
-
-  console.log(
-    ["", "Cleaning examples:", `${cleanedPages.join(", ")}`].join("\n")
-  );
 }
 
 module.exports = {
@@ -285,6 +278,6 @@ module.exports = {
   getPageTreeFromFile,
   getPageImports,
   getPageContent,
+  getPageFilename,
   writePage,
-  cleanPages,
 };

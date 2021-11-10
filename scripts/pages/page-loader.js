@@ -5,14 +5,15 @@ const { getPageTreeFromContent, writePage } = require("./utils");
 async function pageLoader(source) {
   const filePath = this.resourcePath;
 
+  console.log(this.resourcePath);
+
   if (/index\.[tj]sx?$/.test(filePath)) {
     const readmePath = path.join(path.dirname(filePath), "readme.md");
     if (fs.existsSync(readmePath)) return source;
   }
 
-  const cwd = process.cwd();
-  const { name } = this.getOptions();
-  const pagesPath = path.join(cwd, ".pages", name);
+  const { name, buildDir } = this.getOptions();
+  const pagesPath = path.join(buildDir, name);
 
   const componentPath = path.join(
     __dirname,

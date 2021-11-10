@@ -17,8 +17,8 @@ const nextConfig = {
     config.plugins.push(
       new PagesWebpackPlugin({
         name: "examples",
-        context: path.resolve(__dirname, ".."),
-        test: /__examples__\/[^\/]+\/(index\.[tj]sx?|readme.md)$/,
+        sourceContext: path.resolve(__dirname, ".."),
+        sourceRegExp: /__examples__\/[^\/]+\/(index\.[tj]sx?|readme.md)$/,
       })
     );
     // config.plugins.push(
