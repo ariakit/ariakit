@@ -13,7 +13,7 @@ import { DialogState } from "./dialog-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a button that hides a dialog.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const state = useDialogState();
@@ -74,7 +74,7 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
 
 /**
  * A component that renders a button that hides a dialog.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const dialog = useDialogState();

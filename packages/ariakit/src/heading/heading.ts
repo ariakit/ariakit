@@ -15,7 +15,7 @@ type HeadingElements = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
  * Ariakit component to render a heading element. The element type (or the
  * `aria-level` prop, if the element type is not a native heading) is determined
  * by the context level provided by the parent `HeadingLevel` component.
- * @see https://ariakit.org/docs/heading
+ * @see https://ariakit.org/components/heading
  * @example
  * ```jsx
  * const props = useHeading();
@@ -47,7 +47,7 @@ export const useHeading = createHook<HeadingOptions>((props) => {
  * A component that renders a heading element. The element type (or the
  * `aria-level` prop, if the element type is not a native heading) is determined
  * by the context level provided by the parent `HeadingLevel` component.
- * @see https://ariakit.org/docs/heading
+ * @see https://ariakit.org/components/heading
  * @example
  * ```jsx
  * <HeadingLevel>

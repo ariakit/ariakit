@@ -10,7 +10,7 @@ import { ToolbarState } from "./toolbar-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an interactive element in a toolbar.
- * @see https://ariakit.org/docs/toolbar
+ * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
  * const state = useToolbarState();
@@ -29,7 +29,7 @@ export const useToolbarItem = createHook<ToolbarItemOptions>(
 
 /**
  * A component that renders an interactive element in a toolbar.
- * @see https://ariakit.org/docs/toolbar
+ * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
  * const toolbar = useToolbarState();

@@ -108,7 +108,7 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
  * Ariakit component to render a hovercard element, which is a popover that's
  * usually made visible by hovering the mouse cursor over an anchor element
  * (`HovercardAnchor`).
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const state = useHovercardState();
@@ -257,7 +257,7 @@ export const useHovercard = createHook<HovercardOptions>(
  * A component that renders a hovercard element, which is a popover that's
  * usually made visible by hovering the mouse cursor over an anchor element
  * (`HovercardAnchor`).
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const hovercard = useHovercardState();

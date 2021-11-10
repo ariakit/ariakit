@@ -20,7 +20,7 @@ function getPanelId(tabs?: TabState["items"], id?: string) {
  * Ariakit component to render a tab element. The underlying element must be
  * wrapped in a `TabList` component or a component that implements the
  * `useTabList` props.
- * @see https://ariakit.org/docs/tab
+ * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const state = useTabState();
@@ -109,7 +109,7 @@ export const useTab = createHook<TabOptions>(
 /**
  * A component that renders a tab element. The underlying element must be
  * wrapped in a `TabList` component.
- * @see https://ariakit.org/docs/tab
+ * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const tab = useTabState();

@@ -12,7 +12,7 @@ import { CompositeState } from "./composite-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a separator for composite items.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -39,7 +39,7 @@ export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
 
 /**
  * A component that renders a separator for composite items.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

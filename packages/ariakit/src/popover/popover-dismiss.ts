@@ -13,7 +13,7 @@ import { PopoverState } from "./popover-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a button that hides a popover.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const state = usePopoverState();
@@ -30,7 +30,7 @@ export const usePopoverDismiss = createHook<PopoverDismissOptions>((props) => {
 
 /**
  * A component that renders a button that hides a popover.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const popover = usePopoverState();

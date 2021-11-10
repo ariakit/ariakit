@@ -10,7 +10,7 @@ import { ComboboxState } from "./combobox-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an arrow inside the combobox popover element.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const state = useComboboxState();
@@ -26,7 +26,7 @@ export const useComboboxArrow = createHook<ComboboxArrowOptions>((props) => {
 
 /**
  * A component that renders an arrow inside a `ComboboxPopover` component.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxState();

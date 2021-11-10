@@ -10,7 +10,7 @@ import { CompositeState } from "./composite-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a composite group.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -33,7 +33,7 @@ export const useCompositeGroup = createHook<CompositeGroupOptions>(
 
 /**
  * A component that renders a composite group.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

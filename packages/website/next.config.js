@@ -19,53 +19,9 @@ const nextConfig = {
         name: "examples",
         sourceContext: path.resolve(__dirname, ".."),
         sourceRegExp: /__examples__\/[^\/]+\/(index\.[tj]sx?|readme.md)$/,
+        componentPath: path.join(__dirname, "components/markdown-page"),
       })
     );
-    // config.plugins.push(
-    //   new WatchPagesWebpackPlugin({
-    //     pattern: path.resolve(
-    //       __dirname,
-    //       "../**/__examples__/**/*.{js,ts,tsx,md}"
-    //     ),
-    //     ignore: ["**/*test.{js,ts,tsx}", "**/node_modules/**"],
-    //   })
-    // );
-    // config.module.rules.push({
-    //   test: /__examples__/,
-    //   use: path.resolve(__dirname, "../../scripts/pages/page-loader.js"),
-    // });
-    // config.module.rules.push({
-    //   test: /\.md$/,
-    //   use: path.resolve(__dirname, "../../scripts/pages/md-loader.js"),
-    // });
-
-    // const originalEntry = config.entry;
-
-    // config.entry = async () => {
-    //   const entries = await originalEntry();
-    //   return {
-    //     ...entries,
-    //     context: path.resolve(__dirname, "context.js"),
-    //   };
-    // };
-
-    // config.entry = () => {
-    //   return entry().then((e) => {
-    //     const files = glob.sync(
-    //       path.resolve(__dirname, "../**/__examples__/**/*.{js,ts,tsx,md}"),
-    //       { ignore: ["**/*test.{js,ts,tsx}", "**/node_modules/**"] }
-    //     );
-    //     console.log(e);
-    //     files.forEach((file) => {
-    //       e["pages/lool"] = path.resolve(
-    //         __dirname,
-    //         "../ariakit/src/button/__examples__/button-example/index.tsx"
-    //       );
-    //     });
-    //     return e;
-    //   });
-    // };
-
     return config;
   },
 };

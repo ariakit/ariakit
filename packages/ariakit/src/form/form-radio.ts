@@ -11,7 +11,7 @@ import { FormState } from "./form-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a radio button in a form.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { char: "a" } });
@@ -70,7 +70,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
 
 /**
  * A component that renders a radio button in a form.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { char: "a" } });

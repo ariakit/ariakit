@@ -34,7 +34,7 @@ function getFirstTabbable(container: HTMLElement) {
  * composite items. This should be used in conjunction with the `CompositeItem`
  * component, the `useCompositeItem` hook, or any other component/hook that uses
  * `CompositeItem` underneath.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -234,7 +234,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
  * A component that renders a container for interactive widgets inside composite
  * items. This should be used in conjunction with the `CompositeItem` component
  * or a component that uses `CompositeItem` underneath.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

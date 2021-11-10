@@ -13,7 +13,7 @@ import { FormState } from "./form-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a description element for a form field.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { password: "" } });
@@ -58,7 +58,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
 
 /**
  * A component that renders a description element for a form field.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { password: "" } });

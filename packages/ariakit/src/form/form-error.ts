@@ -14,7 +14,7 @@ import { FormState } from "./form-state";
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an element that displays an error message. The
  * `children` will be automatically set to the error message set on the state.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { email: "" } });
@@ -77,7 +77,7 @@ export const useFormError = createHook<FormErrorOptions>(
 /**
  * A component that renders an element that displays an error message. The
  * `children` will be automatically set to the error message set on the state.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { email: "" } });

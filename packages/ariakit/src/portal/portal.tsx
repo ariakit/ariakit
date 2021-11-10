@@ -56,7 +56,7 @@ function getRandomId(prefix = "id") {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an element using `ReactDOM.createPortal`.
- * @see https://ariakit.org/docs/portal
+ * @see https://ariakit.org/components/portal
  * @example
  * ```jsx
  * const props = usePortal();
@@ -234,7 +234,7 @@ export const usePortal = createHook<PortalOptions>(
 
 /**
  * A component that renders an element using `ReactDOM.createPortal`.
- * @see https://ariakit.org/docs/portal
+ * @see https://ariakit.org/components/portal
  * @example
  * ```jsx
  * <Portal>Content</Portal>

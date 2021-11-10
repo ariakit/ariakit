@@ -14,7 +14,7 @@ import { CompositeState } from "./composite-state";
  * Ariakit component to render a composite row. Wrapping `CompositeItem`
  * elements within rows will create a two-dimensional composite widget, such as
  * a grid.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -64,7 +64,7 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
  * A component that renders a composite row. Wrapping `CompositeItem` elements
  * within `CompositeRow` will create a two-dimensional composite widget, such
  * as a grid.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

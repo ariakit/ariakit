@@ -27,7 +27,7 @@ function getTabId(panels: TabState["panels"], id?: string) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a tab panel element.
- * @see https://ariakit.org/docs/tab
+ * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const state = useTabState();
@@ -91,7 +91,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
 
 /**
  * A component that renders a tab panel element.
- * @see https://ariakit.org/docs/tab
+ * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const tab = useTabState();

@@ -15,7 +15,7 @@ import { DialogState } from "./dialog-state";
  * Ariakit component to render a heading element for a dialog. This hook must be
  * used in a component that's wrapped with `Dialog` so the `aria-labelledby`
  * prop is properly set on the dialog element.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * // This component must be wrapped with Dialog
@@ -48,7 +48,7 @@ export const useDialogHeading = createHook<DialogHeadingOptions>(
  * A component that renders a heading in a dialog. This component must be
  * wrapped with `Dialog` so the `aria-labelledby` prop is properly set on the
  * dialog element.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const dialog = useDialogState();

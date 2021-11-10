@@ -12,7 +12,7 @@ import { RadioState } from "./radio-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a radio group element.
- * @see https://ariakit.org/docs/radio
+ * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
  * const state = useRadioState();
@@ -40,7 +40,7 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
 
 /**
  * A component that renders a radio group element.
- * @see https://ariakit.org/docs/radio
+ * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
  * const radio = useRadioState();

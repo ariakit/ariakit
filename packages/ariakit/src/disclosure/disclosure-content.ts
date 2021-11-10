@@ -20,7 +20,7 @@ import { DisclosureState } from "./disclosure-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an element that can be shown or hidden.
- * @see https://ariakit.org/docs/disclosure
+ * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
  * const state = useDisclosureState();
@@ -115,7 +115,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
 
 /**
  * A component that renders an element that can be shown or hidden.
- * @see https://ariakit.org/docs/disclosure
+ * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
  * const disclosure = useDisclosureState();

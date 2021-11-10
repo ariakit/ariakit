@@ -38,7 +38,7 @@ function supportsNativeLabel(tagName?: string) {
  * render a `span` element. Instead of relying on the `htmlFor` prop, it'll rely
  * on the `aria-labelledby` attribute on the form field. Clicking on the label
  * will move focus to the field even if it's not a native input.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { email: "" } });
@@ -113,7 +113,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
  * element. Instead of relying on the `htmlFor` prop, it'll rely on the
  * `aria-labelledby` attribute on the form field. Clicking on the label will
  * move focus to the field even if it's not a native input.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { email: "" } });

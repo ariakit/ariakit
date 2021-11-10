@@ -21,7 +21,7 @@ const pointsMap = {
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an arrow pointing to the menu position, usually
  * inside a `MenuButton`.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuState();
@@ -80,7 +80,7 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
 /**
  * A component that renders an arrow pointing to the menu position, usually
  * inside a `MenuButton`.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState();

@@ -52,7 +52,7 @@ function itemTextStartsWith(text: string) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to add typeahead functionality to composite components.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -116,7 +116,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
 
 /**
  * A component that adds typeahead functionality to composite components.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

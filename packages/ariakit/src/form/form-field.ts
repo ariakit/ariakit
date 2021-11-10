@@ -49,7 +49,7 @@ function useItem(state: FormState | undefined, name: string, type: ItemType) {
  * doesn't automatically returns the `value` and `onChange` props. This is so we
  * can use it not only for native form elements but also for custom components
  * whose value is not controlled by the native `value` and `onChange` props.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { content: "" } });
@@ -157,7 +157,7 @@ export const useFormField = createHook<FormFieldOptions>(
  * underlying element. This is so we can use it not only for native form
  * elements but also for custom components whose value is not controlled by the
  * native `value` and `onChange` props.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { content: "" } });

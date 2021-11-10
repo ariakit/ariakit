@@ -17,7 +17,7 @@ import { TooltipState } from "./tooltip-state";
  * Ariakit component to render an element that will be labelled or described by
  * a `Tooltip` component. This component will also be used as the reference to
  * position the tooltip on the screen.
- * @see https://ariakit.org/docs/tooltip
+ * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
  * const state = useToolTipState();
@@ -93,7 +93,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
  * A component that renders an element that will be labelled or described by
  * a `Tooltip` component. This component will also be used as the reference to
  * position the tooltip on the screen.
- * @see https://ariakit.org/docs/tooltip
+ * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
  * const tooltip = useTooltipState();

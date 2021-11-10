@@ -34,7 +34,7 @@ function useComputedStyle(element?: Element | null) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an arrow inside a popover element.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const state = usePopoverState();
@@ -91,7 +91,7 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
 
 /**
  * A component that renders an arrow inside a `Popover` component.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const popover = usePopoverState();

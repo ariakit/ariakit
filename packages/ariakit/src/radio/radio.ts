@@ -39,7 +39,7 @@ function isNativeRadio(tagName?: string, type?: string) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a radio button element.
- * @see https://ariakit.org/docs/radio
+ * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
  * const state = useRadioState();
@@ -139,7 +139,7 @@ export const useRadio = createHook<RadioOptions>(
 
 /**
  * A component that renders a radio button element.
- * @see https://ariakit.org/docs/radio
+ * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
  * const radio = useRadioState();

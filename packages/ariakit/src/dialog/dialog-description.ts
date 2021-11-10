@@ -14,7 +14,7 @@ import { DialogState } from "./dialog-state";
  * Ariakit component to render a description element for a dialog. This hook
  * must be used in a component that's wrapped with `Dialog` so the
  * `aria-describedby` prop is properly set on the dialog element.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * // This component must be wrapped with Dialog
@@ -45,7 +45,7 @@ export const useDialogDescription = createHook<DialogDescriptionOptions>(
  * A component that renders a description in a dialog. This component must be
  * wrapped with `Dialog` so the `aria-describedby` prop is properly set on the
  * dialog element.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const dialog = useDialogState();

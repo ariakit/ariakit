@@ -8,7 +8,7 @@ import { As, Options, Props } from "ariakit-utils/types";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a separator element.
- * @see https://ariakit.org/docs/separator
+ * @see https://ariakit.org/components/separator
  * @example
  * ```jsx
  * const props = useSeparator({ orientation: "horizontal" });
@@ -28,7 +28,7 @@ export const useSeparator = createHook<SeparatorOptions>(
 
 /**
  * A component that renders a separator element.
- * @see https://ariakit.org/docs/separator
+ * @see https://ariakit.org/components/separator
  * @example
  * ```jsx
  * <Separator orientation="horizontal" />

@@ -58,7 +58,7 @@ function getActiveValue(props: Pick<ComboboxState, "activeId" | "items">) {
 
 /**
  * Provides state for the `Combobox` components.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxState();

@@ -12,7 +12,7 @@ import { CollectionState } from "./collection-state";
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component. It receives the collection state through the `state` prop
  * and provides context for `CollectionItem` components.
- * @see https://ariakit.org/docs/collection
+ * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
  * const collection = useCollectionState();
@@ -44,7 +44,7 @@ export const useCollection = createHook<CollectionOptions>(
  * A component that renders a simple wrapper for collection items. It receives
  * the collection state through the `state` prop and provides context for
  * `CollectionItem` components.
- * @see https://ariakit.org/docs/collection
+ * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
  * const collection = useCollectionState();

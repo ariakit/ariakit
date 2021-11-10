@@ -18,7 +18,7 @@ import { MenuState } from "./menu-state";
  * `MenuItemRadio` components. This hook must be used in a component that's
  * wrapped with one of those components or the `checked` prop must be explicitly
  * passed to the component.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const props = useMenuItemCheck({ checked: true });
@@ -38,7 +38,7 @@ export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
  * A component that renders a checkmark inside a `MenuItemCheckbox` or
  * `MenuItemRadio` components. This component must be wrapped with one of those
  * components or the `checked` prop must be explicitly passed to the component.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState({

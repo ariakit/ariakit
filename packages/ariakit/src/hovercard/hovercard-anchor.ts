@@ -20,7 +20,7 @@ import { HovercardState } from "./hovercard-state";
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an anchor element that will open a popover
  * (`Hovercard`) on hover.
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const state = useHovercardState();
@@ -104,7 +104,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 /**
  * A component that renders an anchor element that will open a popover
  * (`Hovercard`) on hover.
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const hovercard = useHovercardState();

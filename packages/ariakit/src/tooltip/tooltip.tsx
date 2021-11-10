@@ -22,7 +22,7 @@ import { TooltipState } from "./tooltip-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a tooltip element.
- * @see https://ariakit.org/docs/tooltip
+ * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
  * const state = useToolTipState();
@@ -95,7 +95,7 @@ export const useTooltip = createHook<TooltipOptions>(
 
 /**
  * A component that renders a tooltip element.
- * @see https://ariakit.org/docs/tooltip
+ * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
  * const tooltip = useTooltipState();

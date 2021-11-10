@@ -12,7 +12,7 @@ import { TabState } from "./tab-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a tab list element.
- * @see https://ariakit.org/docs/tab
+ * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const state = useTabState();
@@ -43,7 +43,7 @@ export const useTabList = createHook<TabListOptions>(({ state, ...props }) => {
 
 /**
  * A component that renders a tab list element.
- * @see https://ariakit.org/docs/tab
+ * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const tab = useTabState();

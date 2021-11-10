@@ -12,7 +12,7 @@ import { FormState } from "./form-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a submit buttom in a form.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState();
@@ -40,7 +40,7 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
 
 /**
  * A component that renders a submit buttom in a form.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState();

@@ -12,7 +12,7 @@ import { FormState } from "./form-state";
  * Ariakit component to render a label in a form group. This hook must be used
  * in a component that's wrapped with `FormGroup` so the `aria-labelledby` prop
  * is properly set on the form group element.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * // This component must be wrapped with FormGroup
@@ -31,7 +31,7 @@ export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
  * A component that renders a label in a form group. This component must be
  * wrapped with `FormGroup` so the `aria-labelledby` prop is properly set on the
  * form group element.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({

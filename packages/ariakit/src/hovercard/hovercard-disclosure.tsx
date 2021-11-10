@@ -20,7 +20,7 @@ import { HovercardState } from "./hovercard-state";
  * when the hovercard anchor element (`HovercardAnchor`) receives keyboard
  * focus. The user can then navigate to the button to open the hovercard when
  * using the keyboard.
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const state = useHovercardState();
@@ -103,7 +103,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
  * the hovercard anchor element (`HovercardAnchor`) receives keyboard focus. The
  * user can then navigate to the button to open the hovercard when using the
  * keyboard.
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const hovercard = useHovercardState();

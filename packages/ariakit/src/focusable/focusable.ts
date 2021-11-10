@@ -173,7 +173,7 @@ function onGlobalKeyDown(event: KeyboardEvent) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an element that can be focused.
- * @see https://ariakit.org/docs/focusable
+ * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
  * const props = useFocusable();
@@ -408,7 +408,7 @@ export const useFocusable = createHook<FocusableOptions>(
 
 /**
  * A component that renders an element that can be focused.
- * @see https://ariakit.org/docs/focusable
+ * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
  * <Focusable>Focusable</Focusable>

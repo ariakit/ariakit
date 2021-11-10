@@ -10,7 +10,7 @@ import { As, Options, Props } from "ariakit-utils/types";
  * Ariakit component. When applying the props returned by this hook to a
  * component, the component will be visually hidden, but still accessible to
  * screen readers.
- * @see https://ariakit.org/docs/visually-hidden
+ * @see https://ariakit.org/components/visually-hidden
  * @example
  * ```jsx
  * const props = useVisuallyHidden();
@@ -41,7 +41,7 @@ export const useVisuallyHidden = createHook<VisuallyHiddenOptions>((props) => {
 /**
  * A component that renders an element that's visually hidden, but still
  * accessible to screen readers.
- * @see https://ariakit.org/docs/visually-hidden
+ * @see https://ariakit.org/components/visually-hidden
  * @example
  * ```jsx
  * <a href="#">

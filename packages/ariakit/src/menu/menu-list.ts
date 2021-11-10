@@ -42,7 +42,7 @@ function useAriaLabelledBy({ state, ...props }: MenuListProps) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a menu list element.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuState();
@@ -212,7 +212,7 @@ export const useMenuList = createHook<MenuListOptions>(
 
 /**
  * A component that renders a menu list element.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState();

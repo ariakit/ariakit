@@ -12,7 +12,7 @@ import { FormState } from "./form-state";
  * Ariakit component to render a form input. Unline `useFormField`, this hook
  * returns the `value` and `onChange` props that can be passed to a native
  * input, select or textarea elements.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { email: "" } });
@@ -60,7 +60,7 @@ export const useFormInput = createHook<FormInputOptions>(
  * A component that renders a form input. Unline `FormField`, this component
  * passes the `value` and `onChange` props down to the underlying element that
  * can be a native input, select or textarea elements.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { email: "" } });

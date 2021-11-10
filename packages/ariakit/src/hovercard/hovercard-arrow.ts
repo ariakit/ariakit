@@ -10,7 +10,7 @@ import { HovercardState } from "./hovercard-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an arrow element in a hovercard.
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const state = useHovercardState();
@@ -28,7 +28,7 @@ export const useHovercardArrow = createHook<HovercardArrowOptions>((props) => {
 
 /**
  * A component that renders an arrow element in a hovercard.
- * @see https://ariakit.org/docs/hovercard
+ * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
  * const hovercard = useHovercardState();

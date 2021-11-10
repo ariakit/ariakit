@@ -32,7 +32,7 @@ function hoveringInside(event: MouseEvent<HTMLElement>) {
  * focus on mouse move and loses focus to the composite base element on mouse
  * leave. This should be combined with the `CompositeItem` component, the
  * `useCompositeItem` hook or any component/hook that uses them underneath.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -89,7 +89,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
  * on mouse move and loses focus to the composite base element on mouse leave.
  * This should be combined with the `CompositeItem` component, the
  * `useCompositeItem` hook or any component/hook that uses them underneath.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

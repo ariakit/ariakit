@@ -27,7 +27,7 @@ const checkmark = (
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a check mark icon.
- * @see https://ariakit.org/docs/checkbox
+ * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
  * const props = useCheckboxCheck({ checked: true });
@@ -59,7 +59,7 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
 
 /**
  * A component that renders a a check mark icon.
- * @see https://ariakit.org/docs/checkbox
+ * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
  * <CheckboxCheck checked />

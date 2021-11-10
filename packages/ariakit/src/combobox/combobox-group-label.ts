@@ -15,7 +15,7 @@ import { ComboboxState } from "./combobox-state";
  * Ariakit component to render a label in a combobox group. This hook should be
  * used in a component that's wrapped with `ComboboxGroup` so the
  * `aria-labelledby` is correctly set on the combobox group element.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * // This component should be wrapped with ComboboxGroup
@@ -34,7 +34,7 @@ export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
  * A component that renders a label in a combobox group. This component should
  * be wrapped with `ComboboxGroup` so the `aria-labelledby` is correctly set on
  * the combobox group element.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxState();

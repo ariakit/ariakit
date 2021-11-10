@@ -12,7 +12,7 @@ import { TooltipState } from "./tooltip-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an arrow inside a tooltip element.
- * @see https://ariakit.org/docs/tooltip
+ * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
  * const state = useToolTipState();
@@ -37,7 +37,7 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
 
 /**
  * A component that renders an arrow inside a `Tooltip` component.
- * @see https://ariakit.org/docs/tooltip
+ * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
  * const tooltip = useTooltipState();

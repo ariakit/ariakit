@@ -9,7 +9,7 @@ import { FormGroupOptions, useFormGroup } from "./form-group";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a radio group in a form.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({ defaultValues: { color: "red" } });
@@ -34,7 +34,7 @@ export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
 
 /**
  * A component that renders a radio group in a form.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { color: "red" } });

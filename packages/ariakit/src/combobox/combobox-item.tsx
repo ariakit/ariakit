@@ -32,7 +32,7 @@ function getItemRole(contentElement?: HTMLElement | null) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a combobox item.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const state = useComboboxState();
@@ -194,7 +194,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
  * component's `role` prop is set to `listbox` (default), the `ComboboxItem`
  * `role` will be set to `option`. By default, the `value` prop will be rendered
  * as the children, but this can be overriden.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxState();

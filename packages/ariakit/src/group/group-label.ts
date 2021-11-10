@@ -13,7 +13,7 @@ import { GroupLabelContext } from "./__utils";
  * Ariakit component to render a label in a group. This hook must be used in a
  * component that's wrapped with `Group` so the `aria-labelledby` prop is
  * properly set on the group element.
- * @see https://ariakit.org/docs/group
+ * @see https://ariakit.org/components/group
  * @example
  * ```jsx
  * // This component must be wrapped with Group
@@ -42,7 +42,7 @@ export const useGroupLabel = createHook<GroupLabelOptions>((props) => {
  * A component that renders a label in a group. This component must be wrapped
  * with `Group` so the `aria-labelledby` prop is properly set on the group
  * element.
- * @see https://ariakit.org/docs/group
+ * @see https://ariakit.org/components/group
  * @example
  * ```jsx
  * <Group>

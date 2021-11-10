@@ -96,7 +96,7 @@ function useSortBasedOnDOMPosition<T extends Item = Item>(
 
 /**
  * Provides state for the `Collection` components.
- * @see https://ariakit.org/docs/collection
+ * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
  * const collection = useCollectionState();

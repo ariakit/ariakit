@@ -11,7 +11,7 @@ import { MenuState } from "./menu-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a menu item radio inside a menu.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuState({ defaultValues: { fruit: "apple" } });
@@ -83,7 +83,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
 
 /**
  * A component that renders a menu item radio inside a menu.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState({ defaultValues: { fruit: "apple" } });

@@ -4,7 +4,7 @@ import { SetState } from "ariakit-utils/types";
 
 /**
  * Provides state for the `Checkbox` component.
- * @see https://ariakit.org/docs/checkbox
+ * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
  * const checkbox = useCheckboxState({ defaultChecked: true });

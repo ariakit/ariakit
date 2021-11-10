@@ -79,7 +79,7 @@ function isInDialog(element: Node) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a dialog element.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const state = useDialogState();
@@ -442,7 +442,7 @@ export const useDialog = createHook<DialogOptions>(
 
 /**
  * A component that renders a dialog element.
- * @see https://ariakit.org/docs/dialog
+ * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const dialog = useDialogState();

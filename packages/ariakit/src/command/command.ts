@@ -31,7 +31,7 @@ function isNativeClick(event: KeyboardEvent) {
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component. If the element is not a native clickable element (like a
  * button), the hook will return additional props to make sure it's accessible.
- * @see https://ariakit.org/docs/command
+ * @see https://ariakit.org/components/command
  * @example
  * ```jsx
  * const props = useCommand({ as: "div" });
@@ -150,7 +150,7 @@ export const useCommand = createHook<CommandOptions>(
  * A component that renders a native clickable element (a button). If another
  * element is passed to the `as` prop, this component will make sure the
  * rendered element is accessible.
- * @see https://ariakit.org/docs/command
+ * @see https://ariakit.org/components/command
  * @example
  * ```jsx
  * <Command as="div">Accessible button</Command>

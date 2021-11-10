@@ -128,17 +128,17 @@ export function usePopoverState({
     }
 
     const popper = createPopper(anchor, popover, {
-      // https://popper.js.org/docs/v2/constructors/#options
+      // https://popper.js.org/components/v2/constructors/#options
       placement,
       strategy: fixed ? "fixed" : "absolute",
       modifiers: [
         {
-          // https://popper.js.org/docs/v2/modifiers/event-listeners/
+          // https://popper.js.org/components/v2/modifiers/event-listeners/
           name: "eventListeners",
           enabled: dialog.mounted,
         },
         {
-          // https://popper.js.org/docs/v2/modifiers/apply-styles/
+          // https://popper.js.org/components/v2/modifiers/apply-styles/
           name: "applyStyles",
           enabled: true,
           fn: (args) => {
@@ -154,13 +154,13 @@ export function usePopoverState({
           },
         },
         {
-          // https://popper.js.org/docs/v2/modifiers/flip/
+          // https://popper.js.org/components/v2/modifiers/flip/
           name: "flip",
           enabled: flip,
           options: { padding },
         },
         {
-          // https://popper.js.org/docs/v2/modifiers/offset/
+          // https://popper.js.org/components/v2/modifiers/offset/
           name: "offset",
           options: {
             // Makes sure the shift value is applied to the popover element
@@ -176,7 +176,7 @@ export function usePopoverState({
           },
         },
         {
-          // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
+          // https://popper.js.org/components/v2/modifiers/prevent-overflow/
           name: "preventOverflow",
           enabled: preventOverflow,
           options: {
@@ -185,13 +185,13 @@ export function usePopoverState({
           },
         },
         {
-          // https://popper.js.org/docs/v2/modifiers/arrow/
+          // https://popper.js.org/components/v2/modifiers/arrow/
           name: "arrow",
           enabled: !!arrow,
           options: { element: arrow, padding: arrowPadding },
         },
         {
-          // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
+          // https://popper.js.org/components/v2/modifiers/#custom-modifiers
           name: "updateState",
           phase: "write",
           requires: ["computeStyles"],

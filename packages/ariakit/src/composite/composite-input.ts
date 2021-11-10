@@ -30,7 +30,7 @@ function getValueLength(element: HTMLElement) {
  * Ariakit component to render an input as a composite item. This should be used
  * in conjunction with the `CompositeItem` component, the `useCompositeItem`
  * hook, or any other component/hook that uses `CompositeItem` underneath.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -89,7 +89,7 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
  * A component that renders an input as a composite item. This should be used in
  * conjunction with the `CompositeItem` component or a component that uses
  * `CompositeItem` underneath.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

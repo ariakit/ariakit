@@ -20,7 +20,7 @@ function identity<T>(value: T) {
  * If this hook is used in a component that is wrapped by `Collection` or a
  * component that implements `useCollection`, there's no need to explicitly pass
  * the `state` prop.
- * @see https://ariakit.org/docs/collection
+ * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
  * const state = useCollectionState();
@@ -53,7 +53,7 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
  * A component that renders an item in a collection. The collection state can be
  * passed explicitly through the `state` prop or implicitly through the
  * `Collection` component.
- * @see https://ariakit.org/docs/collection
+ * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
  * const state = useCollectionState();

@@ -13,7 +13,7 @@ import { MenuBarState } from "./menu-bar-state";
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a menu bar that may contain a group of menu items
  * that control other submenus.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuBarState();
@@ -51,7 +51,7 @@ export const useMenuBar = createHook<MenuBarOptions>(({ state, ...props }) => {
 /**
  * A component that renders a menu bar that may contain a group of menu items
  * that control other submenus.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuBarState();

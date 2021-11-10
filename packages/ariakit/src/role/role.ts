@@ -10,7 +10,7 @@ import { As, Options, Props } from "ariakit-utils/types";
  * Ariakit component to render an abstract element that supports the `as` prop,
  * `children` as a function and a `wrapElement` prop that can be used to wrap
  * the underlying element with React Portal, Context or other component types.
- * @see https://ariakit.org/docs/role
+ * @see https://ariakit.org/components/role
  * @example
  * ```jsx
  * const props = useRole();
@@ -25,7 +25,7 @@ export const useRole = createHook<RoleOptions>((props) => {
  * A component that renders an abstract element that supports the `as` prop,
  * `children` as a function and a `wrapElement` prop that can be used to wrap
  * the underlying element with React Portal, Context or other component types.
- * @see https://ariakit.org/docs/role
+ * @see https://ariakit.org/components/role
  * @example
  * ```jsx
  * <Role as="div" />

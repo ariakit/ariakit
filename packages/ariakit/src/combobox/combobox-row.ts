@@ -16,7 +16,7 @@ import { ComboboxState } from "./combobox-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a combobox row.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const state = useComboboxState();
@@ -44,7 +44,7 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
 
 /**
  * A component that renders a combobox row.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxState();

@@ -52,7 +52,7 @@ function isNativeCheckbox(tagName?: string, type?: string) {
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component. If the element is not a native checkbox, the hook will
  * return additional props to make sure it's accessible.
- * @see https://ariakit.org/docs/checkbox
+ * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
  * const props = useCheckbox({ as: "div" });
@@ -165,7 +165,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
  * A component that renders a native accessible checkbox. If another element is
  * passed to the `as` prop, this component will make sure the rendered element is
  * accessible.
- * @see https://ariakit.org/docs/checkbox
+ * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
  * <Checkbox as="div">Accessible checkbox</Checkbox>

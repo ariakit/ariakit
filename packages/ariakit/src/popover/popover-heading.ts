@@ -15,7 +15,7 @@ import { PopoverState } from "./popover-state";
  * Ariakit component to render a heading element for a popover. This hook must
  * be used in a component that's wrapped with `Popover` so the `aria-labelledby`
  * prop is properly set on the popover element.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * // This component must be wrapped with Popover
@@ -32,7 +32,7 @@ export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
  * A component that renders a heading in a popover. This component must be
  * wrapped with `Popover` so the `aria-labelledby` prop is properly set on the
  * popover element.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const popover = usePopoverState();

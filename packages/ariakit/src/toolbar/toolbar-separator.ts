@@ -13,7 +13,7 @@ import { ToolbarState } from "./toolbar-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a separator for toolbar items.
- * @see https://ariakit.org/docs/toolbar
+ * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
  * const state = useToolbarState();
@@ -34,7 +34,7 @@ export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
 
 /**
  * A component that renders a separator for toolbar items.
- * @see https://ariakit.org/docs/toolbar
+ * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
  * const toolbar = useToolbarState();

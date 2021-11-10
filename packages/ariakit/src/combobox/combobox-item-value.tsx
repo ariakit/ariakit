@@ -51,7 +51,7 @@ function splitValue(itemValue: string, userValue: string) {
  * portions of the value that correspond to the state value will have a
  * `data-user-value` attribute. The other portions will have a
  * `data-autocomplete-value` attribute.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const state = useComboboxState({ value: "p" });
@@ -94,7 +94,7 @@ export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
  * will be split into span elements. The portions of the value that correspond
  * to the state value will have a `data-user-value` attribute. The other
  * portions will have a `data-autocomplete-value` attribute.
- * @see https://ariakit.org/docs/combobox
+ * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxState({ value: "p" });

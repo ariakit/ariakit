@@ -13,7 +13,7 @@ import { CommandOptions, useCommand } from "../command";
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component. If the element is not a native button, the hook will
  * return additional props to make sure it's accessible.
- * @see https://ariakit.org/docs/button
+ * @see https://ariakit.org/components/button
  * @example
  * ```jsx
  * const props = useButton({ as: "div" });
@@ -47,7 +47,7 @@ export const useButton = createHook<ButtonOptions>((props) => {
  * A component that renders a native accessible button. If another element is
  * passed to the `as` prop, this component will make sure the rendered element is
  * accessible.
- * @see https://ariakit.org/docs/button
+ * @see https://ariakit.org/components/button
  * @example
  * ```jsx
  * <Button as="div">Accessible button</Button>

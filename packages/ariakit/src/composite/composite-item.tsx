@@ -180,7 +180,7 @@ function supportsAriaSelected(role?: string) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a composite item.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const state = useCompositeState();
@@ -436,7 +436,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
 /**
  * A component that renders a composite item.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();

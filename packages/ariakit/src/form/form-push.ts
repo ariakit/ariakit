@@ -36,7 +36,7 @@ function getFirstFieldsByName(
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a button that will push items to an array field
  * in the form when clicked.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState({
@@ -113,7 +113,7 @@ export const useFormPush = createHook<FormPushOptions>(
 /**
  * A component that renders a button that will push items to an array value in
  * the form state when clicked.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({

@@ -15,7 +15,7 @@ import { MenuState } from "./menu-state";
  * Ariakit component to render a label in a menu group. This hook must be used
  * in a component that's wrapped with `MenuGroup` so the `aria-labelledby`
  * prop is properly set on the menu group element.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * // This component must be wrapped with MenuGroup
@@ -32,7 +32,7 @@ export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
  * A component that renders a label in a menu group. This component must be
  * wrapped with `MenuGroup` so the `aria-labelledby` prop is properly set
  * on the menu group element.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState();

@@ -40,7 +40,7 @@ function getFirstInvalidField(items: FormState["items"]) {
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a form element.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const state = useFormState();
@@ -138,7 +138,7 @@ export const useForm = createHook<FormOptions>(
 
 /**
  * A component that renders a form element.
- * @see https://ariakit.org/docs/form
+ * @see https://ariakit.org/components/form
  * @example
  * ```jsx
  * const form = useFormState({ defaultValues: { username: "johndoe" } });

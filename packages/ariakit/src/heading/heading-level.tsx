@@ -4,7 +4,7 @@ import { HeadingContext, HeadingLevels } from "./__utils";
 /**
  * A component that sets the heading level for the children. It doesn't render
  * any HTML element, just sets the `level` prop on the context.
- * @see https://ariakit.org/docs/heading
+ * @see https://ariakit.org/components/heading
  * @example
  * ```jsx
  * <HeadingLevel>

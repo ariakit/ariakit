@@ -10,7 +10,7 @@ import { MenuState } from "./menu-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an arrow inside the menu element.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuState();
@@ -27,7 +27,7 @@ export const useMenuArrow = createHook<MenuArrowOptions>((props) => {
 
 /**
  * A component that renders an arrow inside the menu element.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState();

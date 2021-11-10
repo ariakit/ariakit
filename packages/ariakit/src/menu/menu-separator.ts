@@ -13,7 +13,7 @@ import { MenuState } from "./menu-state";
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a separator for menu items.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const state = useMenuState();
@@ -34,7 +34,7 @@ export const useMenuSeparator = createHook<MenuSeparatorOptions>((props) => {
 
 /**
  * A component that renders a separator for menu items.
- * @see https://ariakit.org/docs/menu
+ * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
  * const menu = useMenuState();

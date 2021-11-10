@@ -11,7 +11,7 @@ import { PopoverState } from "./popover-state";
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an element that will serve as the popover's
  * anchor. The popover will be positioned relative to this element.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const state = usePopoverState();
@@ -33,7 +33,7 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
 /**
  * A component that renders an element that will serve as the popover's anchor.
  * The popover will be positioned relative to this element.
- * @see https://ariakit.org/docs/popover
+ * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
  * const popover = usePopoverState();

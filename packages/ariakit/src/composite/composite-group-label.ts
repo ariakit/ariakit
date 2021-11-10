@@ -12,7 +12,7 @@ import { CompositeState } from "./composite-state";
  * Ariakit component to render a label in a composite group. This hook must be
  * used in a component that's wrapped with `CompositeGroup` so the
  * `aria-labelledby` prop is properly set on the composite group element.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * // This component must be wrapped with CompositeGroup
@@ -31,7 +31,7 @@ export const useCompositeGroupLabel = createHook<CompositeGroupLabelOptions>(
  * A component that renders a label in a composite group. This component must be
  * wrapped with `CompositeGroup` so the `aria-labelledby` prop is properly set
  * on the composite group element.
- * @see https://ariakit.org/docs/composite
+ * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeState();
