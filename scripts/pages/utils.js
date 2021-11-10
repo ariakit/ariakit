@@ -1,5 +1,13 @@
 const { readFileSync, writeFileSync, unlinkSync, mkdirSync } = require("fs");
-const { dirname, relative, parse, resolve, basename, join } = require("path");
+const {
+  dirname,
+  relative,
+  parse,
+  resolve,
+  basename,
+  join,
+  extname,
+} = require("path");
 const babel = require("@babel/core");
 const { uniq } = require("lodash");
 const { marked } = require("marked");
@@ -257,7 +265,8 @@ function getPageFilename(filename) {
   if (/(index\.[jt]sx?|readme\.mdx?)$/i.test(filename)) {
     return `${basename(dirname(filename))}.js`;
   }
-  return `${basename(filename)}.js`;
+
+  return `${basename(filename, extname(filename))}.js`;
 }
 
 /**

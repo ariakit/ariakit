@@ -33,8 +33,24 @@ class PagesWebpackPlugin {
   }
 
   resetBuildDir() {
-    fs.rmSync(this.buildDir, { recursive: true, force: true });
-    fs.mkdirSync(this.buildDir, { recursive: true });
+    if (!fs.existsSync(this.buildDir)) {
+      fs.mkdirSync(this.buildDir, { recursive: true });
+      return;
+    }
+
+    const buildPath = path.join(this.buildDir, this.name);
+
+    if (fs.existsSync(buildPath)) {
+      fs.rmSync(buildPath, { recursive: true, force: true });
+    }
+    if (fs.existsSync(this.entryPath)) {
+      fs.rmSync(this.entryPath);
+    }
+
+    if (!fs.readdirSync(this.buildDir).length) {
+      fs.rmSync(this.buildDir);
+      fs.mkdirSync(this.buildDir, { recursive: true });
+    }
   }
 
   writeEntryFile() {
@@ -64,11 +80,18 @@ req.keys().forEach(req);
   }
 
   /**
+   * @param {string} file
+   */
+  testFile(file) {
+    return file.includes(this.sourceContext) && this.sourceRegExp.test(file);
+  }
+
+  /**
    * @param {import("webpack").Compiler} compiler
    */
   apply(compiler) {
     compiler.options.module.rules.push({
-      test: this.sourceRegExp,
+      test: (file) => this.testFile(file),
       loader: path.join(__dirname, "page-loader.js"),
       options: {
         name: this.name,
@@ -80,7 +103,7 @@ req.keys().forEach(req);
     compiler.hooks.watchRun.tap("PagesWebpackPlugin", () => {
       if (!compiler.removedFiles) return;
       for (const file of compiler.removedFiles) {
-        if (file.includes(this.sourceContext) && this.sourceRegExp.test(file)) {
+        if (this.testFile(file)) {
           const pagePath = path.join(
             this.buildDir,
             this.name,
