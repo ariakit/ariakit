@@ -7,6 +7,23 @@ import { CSS_EXPORT, getExtension } from "./__utils";
 
 const requireCache = Object.create(null);
 
+const { warn } = console;
+
+// TODO: Find a better way to do this.
+console.warn = (...args) => {
+  for (const arg of args) {
+    if (
+      arg.includes(
+        "Critical dependency: the request of a dependency is an expression"
+      ) &&
+      /@babel\/standalone\/babel/.test(arg)
+    ) {
+      return;
+    }
+  }
+  warn(...args);
+};
+
 function createModule(exports: AnyObject = {}) {
   return { __esModule: true, ...exports };
 }
