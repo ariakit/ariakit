@@ -306,7 +306,7 @@ export type PlaygroundEditorOptions<T extends As = "div"> =
       file: string;
       lineNumbers?: boolean;
       enableButton?: boolean | ElementType<ComponentPropsWithRef<"div">>;
-      enableButtonProps: ComponentPropsWithRef<"div">;
+      enableButtonProps?: ComponentPropsWithRef<"div">;
     };
 
 export type PlaygroundEditorProps<T extends As = "div"> = Props<

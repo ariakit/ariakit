@@ -165,9 +165,11 @@ async function getPageTreeFromContent(content) {
 function getPageTreeFromFile(filename) {
   const isMarkdown = /\.md$/.test(filename);
   const file = basename(filename);
+  // TODO: Refactor
+  const name = getPageFilename(filename);
   const content = isMarkdown
     ? readFileSync(filename, "utf8")
-    : `# ${file}
+    : `# ${basename(name, extname(name))}
 <a href="./${file}" data-playground>Example</a>`;
   return getPageTreeFromContent(content);
 }
@@ -206,18 +208,18 @@ async function getPageContent(filename, dest, componentPath) {
 
   const { default: _, ...markdownImports } = imports;
 
-  const keys = uniq(
-    Object.values(markdownImports)
-      .flat()
-      .filter((i) => i.defaultExport)
-      .map((i) => i.identifier)
-  );
-
   const defaultValues = Object.entries(markdownImports).map(([key, value]) => {
     return `"${key}": {
       ${value
         .filter((i) => i.defaultExport)
-        .map((i) => `"${basename(i.filename)}": ${i.identifier},`)}
+        .map((i) => {
+          // TODO: Refactor
+          const name = getPageFilename(i.filename);
+          return `"${basename(name, ".js")}${extname(i.filename)}": ${
+            i.identifier
+          },`;
+        })
+        .join("\n")}
     },`;
   });
 
@@ -225,7 +227,8 @@ async function getPageContent(filename, dest, componentPath) {
     return `"${key}": {
       ${value
         .filter((i) => !i.defaultExport)
-        .map((i) => `"${i.originalSource}": ${i.identifier || {}},`)}
+        .map((i) => `"${i.originalSource}": ${i.identifier},`)
+        .join("\n")}
     },`;
   });
 
@@ -238,7 +241,6 @@ async function getPageContent(filename, dest, componentPath) {
     import Component from "${componentSource}";
 
     const props = {
-      key: ${keys.join("+") || "null"},
       markdown: ${
         isMarkdown ? imports.default[0].identifier : JSON.stringify(tree)
       },
