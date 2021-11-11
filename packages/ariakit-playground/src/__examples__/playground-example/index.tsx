@@ -4,7 +4,7 @@ import {
   PlaygroundPreview,
   usePlaygroundState,
 } from "ariakit-playground";
-import { playgroundEditorStyle } from "ariakit-playground/playground-style";
+import "./style.css";
 
 const defaultValues = {
   "index.js": `export default function Example() {
@@ -17,8 +17,8 @@ export default function PlaygroundExample() {
   const playground = usePlaygroundState({ defaultValues });
   return (
     <Playground state={playground}>
-      <PlaygroundPreview state={playground} file="index.js" />
-      <PlaygroundEditor className={playgroundEditorStyle} file="index.js" />
+      <PlaygroundPreview className="preview" file="index.js" />
+      <PlaygroundEditor className="editor" file="index.js" />
     </Playground>
   );
 }

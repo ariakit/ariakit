@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
@@ -36,6 +36,7 @@ type PlaygroundProps = {
 export default function Playground(props: PlaygroundProps) {
   const playground = usePlaygroundState({ defaultValues: props.defaultValues });
   const tab = useTabState();
+  const [expanded, setExpanded] = useState(false);
 
   const requireModule = useCallback(
     (path: string) => {
@@ -49,7 +50,10 @@ export default function Playground(props: PlaygroundProps) {
 
   return (
     <PlaygroundContainer state={playground}>
-      <PlaygroundPreview requireModule={requireModule} />
+      <PlaygroundPreview
+        requireModule={requireModule}
+        style={{ padding: 16, border: "1px solid #ccc", marginBottom: 16 }}
+      />
       <TabList state={tab}>
         {Object.keys(playground.values).map((file) => (
           <Tab key={file}>{file}</Tab>
@@ -64,6 +68,8 @@ export default function Playground(props: PlaygroundProps) {
                   state={playground}
                   file={file}
                   className={playgroundEditorStyle}
+                  expanded={expanded}
+                  setExpanded={setExpanded}
                 />
               </div>
             )
