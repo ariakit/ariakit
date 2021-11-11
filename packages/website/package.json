@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "NODE_ENV=production node next.config.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

@@ -4,15 +4,10 @@ import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
+import { compileComponent, compileModule } from "./__compile";
 import { ErrorBoundary } from "./__error-boundary";
 import { ErrorMessage } from "./__error-message";
-import {
-  PlaygroundContext,
-  compileComponent,
-  compileModule,
-  getModuleCSS,
-  resolveModule,
-} from "./__utils";
+import { PlaygroundContext, getModuleCSS, resolveModule } from "./__utils";
 import { PlaygroundState } from "./playground-state";
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(

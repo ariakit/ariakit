@@ -253,7 +253,6 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       (element) => (
         <>
           {element}
-          {console.log({ focusVisible, editable })}
           {focusVisible && !editable && EnableButton && (
             <EnableButton
               children="Press Enter to edit the code"

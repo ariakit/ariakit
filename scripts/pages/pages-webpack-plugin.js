@@ -1,7 +1,28 @@
 const fs = require("fs");
 const path = require("path");
 const { EntryPlugin } = require("webpack");
+const pageLoader = require("./page-loader");
 const { getPageFilename } = require("./utils");
+
+/**
+ *
+ * @param {string} dir
+ * @param {RegExp} pattern
+ * @param {string[]} files
+ */
+function getFiles(dir, pattern, files = []) {
+  const items = fs.readdirSync(dir, { withFileTypes: true });
+  for (const item of items) {
+    const itemPath = path.join(dir, item.name);
+    if (/node_modules/.test(itemPath)) continue;
+    if (item.isDirectory()) {
+      getFiles(itemPath, pattern, files);
+    } else if (pattern.test(itemPath)) {
+      files.push(itemPath);
+    }
+  }
+  return files;
+}
 
 class PagesWebpackPlugin {
   /**
@@ -27,7 +48,25 @@ class PagesWebpackPlugin {
     this.pagesDir = options.pagesDir || path.join(process.cwd(), "pages");
     this.entryPath = path.join(this.buildDir, `${this.name}-entry.js`);
 
-    this.resetBuildDir();
+    if (process.env.NODE_ENV !== "production") {
+      this.resetBuildDir();
+    } else {
+      // TODO: Find a better way to do this.
+      const files = getFiles(this.sourceContext, this.sourceRegExp);
+      for (const file of files) {
+        const source = fs.readFileSync(file, "utf8");
+        const loaderContext = {
+          resourcePath: file,
+          getOptions: () => ({
+            name: this.name,
+            buildDir: this.buildDir,
+            componentPath: this.componentPath,
+          }),
+        };
+        pageLoader.call(loaderContext, source);
+      }
+    }
+
     this.writeEntryFile();
     this.writeSymlinks();
   }

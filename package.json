@@ -52,6 +52,7 @@
     "lerna": "4.0.0",
     "lodash": "4.17.21",
     "marked": "4.0.0",
+    "node-require-context": "1.0.0",
     "open-cli": "7.0.1",
     "postcss": "8.3.11",
     "postcss-import": "14.0.2",

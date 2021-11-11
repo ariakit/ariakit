@@ -21,8 +21,6 @@ const { Compiler: renderAst } = new RehypeReact({
     pre: (props) => {
       const [child] = props.children;
       if (child.type === "code") {
-        console.log(child.props);
-
         return (
           <PlaygroundCode
             highlight
