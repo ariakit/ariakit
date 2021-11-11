@@ -48,23 +48,21 @@ class PagesWebpackPlugin {
     this.pagesDir = options.pagesDir || path.join(process.cwd(), "pages");
     this.entryPath = path.join(this.buildDir, `${this.name}-entry.js`);
 
-    if (process.env.NODE_ENV !== "production") {
-      this.resetBuildDir();
-    } else {
-      // TODO: Find a better way to do this.
-      const files = getFiles(this.sourceContext, this.sourceRegExp);
-      for (const file of files) {
-        const source = fs.readFileSync(file, "utf8");
-        const loaderContext = {
-          resourcePath: file,
-          getOptions: () => ({
-            name: this.name,
-            buildDir: this.buildDir,
-            componentPath: this.componentPath,
-          }),
-        };
-        pageLoader.call(loaderContext, source);
-      }
+    this.resetBuildDir();
+
+    // TODO: Find a better way to do this.
+    const files = getFiles(this.sourceContext, this.sourceRegExp);
+    for (const file of files) {
+      const source = fs.readFileSync(file, "utf8");
+      const loaderContext = {
+        resourcePath: file,
+        getOptions: () => ({
+          name: this.name,
+          buildDir: this.buildDir,
+          componentPath: this.componentPath,
+        }),
+      };
+      pageLoader.call(loaderContext, source);
     }
 
     this.writeEntryFile();
@@ -94,11 +92,11 @@ class PagesWebpackPlugin {
 
   writeEntryFile() {
     const stringTest = this.sourceRegExp.toString();
-    const timestamp = Date.now();
+    // const timestamp = Date.now();
     fs.writeFileSync(
       this.entryPath,
-      `// ${timestamp}
-const req = require.context("${this.sourceContext}", true, ${stringTest});
+      // `// ${timestamp}
+      `const req = require.context("${this.sourceContext}", true, ${stringTest});
 req.keys().forEach(req);
 `
     );
