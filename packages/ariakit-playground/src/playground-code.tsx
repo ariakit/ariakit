@@ -23,6 +23,11 @@ import { highlight, languages } from "prismjs";
 import { PlaygroundContext, getExtension, getValue } from "./__utils";
 import { PlaygroundState } from "./playground-state";
 
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-markup";
+
 export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
   ({
     state,

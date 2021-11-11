@@ -190,7 +190,7 @@ async function getPageContent(filename, dest, componentPath) {
 
   visit(tree, "element", (node) => {
     if (node.tagName !== "a") return;
-    if (!"dataPlayground" in node.properties) return;
+    if (!("dataPlayground" in node.properties)) return;
     const href = node.properties.href;
     const nextFilename = resolve(dirname(filename), href);
     imports[href] = getPageImports(nextFilename, dest);

@@ -1,4 +1,6 @@
 import { Fragment, createElement, useMemo } from "react";
+import { PlaygroundCode } from "ariakit-playground/playground-code";
+import { playgroundCodeStyle } from "ariakit-playground/playground-style";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
 import Playground from "./playground";
@@ -8,12 +10,29 @@ const { Compiler: renderAst } = new RehypeReact({
   createElement,
   Fragment: Fragment,
   components: {
+    // TODO: Refactor
     p: (props) => {
       const [child] = props.children;
-      if ("data-playground" in child.props) {
+      if (child.props && "data-playground" in child.props) {
         return <>{props.children}</>;
       }
       return <p {...props} />;
+    },
+    pre: (props) => {
+      const [child] = props.children;
+      if (child.type === "code") {
+        console.log(child.props);
+
+        return (
+          <PlaygroundCode
+            highlight
+            className={playgroundCodeStyle}
+            value={child.props.children[0]}
+            language={child.props.className?.replace("language-", "")}
+          />
+        );
+      }
+      return <pre {...props} />;
     },
     a: (props) => {
       if ("data-playground" in props) {
