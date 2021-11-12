@@ -44,22 +44,6 @@ function resolveModuleName(source, filename) {
 }
 
 /**
- * @param {string} filename The filename of the file that contains the import
- * declaration.
- * @param {string} dest The destination path.
- */
-function getRelativeSource(filename, dest) {
-  const relativePath = relative(dest, filename);
-  const parsedPath = parse(relativePath);
-  if (parsedPath.name === "index") {
-    return `./${parsedPath.dir}`;
-  }
-  return `./${parsedPath.dir}/${parsedPath.name}${
-    /\.[tj]sx?$/.test(parsedPath.ext) ? "" : parsedPath.ext
-  }`;
-}
-
-/**
  * @param {string} path Path that will be converted to an identifier string.
  */
 function pathToIdentifier(path) {
@@ -72,11 +56,11 @@ function pathToIdentifier(path) {
  * @param {string} originalSource The source path of the import.
  */
 function getPageImports(filename, dest, originalSource = ".") {
-  const originalRelativeSource = getRelativeSource(filename, dest);
+  const originalRelativeSource = relative(dest, filename);
   const originalImport = {
     originalSource,
     defaultExport: true,
-    filename: relative(dest, filename),
+    filename: originalRelativeSource,
     source: `!raw-loader!${originalRelativeSource}`,
     identifier: pathToIdentifier(originalRelativeSource),
   };
@@ -103,14 +87,13 @@ function getPageImports(filename, dest, originalSource = ".") {
     const source = node.source.value;
     const mod = resolveModuleName(source, filename);
     const relativeFilename = relative(dest, mod.resolvedFileName);
-    const relativeSource = getRelativeSource(mod.resolvedFileName, dest);
 
     if (mod.isExternalLibraryImport) {
       imports.push({
         source,
         originalSource: source,
         filename: relativeFilename,
-        identifier: pathToIdentifier(source),
+        identifier: pathToIdentifier(relativeFilename),
         defaultExport: false,
       });
       return;
@@ -121,7 +104,7 @@ function getPageImports(filename, dest, originalSource = ".") {
         source: `!raw-loader!postcss-loader!${relativeFilename}`,
         originalSource: source,
         filename: relativeFilename,
-        identifier: pathToIdentifier(source),
+        identifier: pathToIdentifier(relativeFilename),
         defaultExport: true,
       });
       return;
@@ -136,10 +119,10 @@ function getPageImports(filename, dest, originalSource = ".") {
     }
 
     imports.push({
-      source: relativeSource,
+      source: relativeFilename,
       originalSource: source,
       filename: relativeFilename,
-      identifier: pathToIdentifier(relativeSource),
+      identifier: pathToIdentifier(relativeFilename),
       defaultExport: false,
     });
   });
