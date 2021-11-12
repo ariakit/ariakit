@@ -1,14 +1,41 @@
-import { useCallback, useDeferredValue, useState } from "react";
+import {
+  Component,
+  ReactNode,
+  useCallback,
+  useDeferredValue,
+  useState,
+} from "react";
 import { useUpdateEffect, useWrapElement } from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
 import { compileComponent, compileModule } from "./__compile";
-import { ErrorBoundary } from "./__error-boundary";
-import { ErrorMessage } from "./__error-message";
 import { PlaygroundContext, getModuleCSS, resolveModule } from "./__utils";
 import { PlaygroundState } from "./playground-state";
+
+function ErrorMessage(props: { children: ReactNode }) {
+  return <div role="alert" {...props} />;
+}
+
+class ErrorBoundary extends Component<{ children: ReactNode }> {
+  state: { error: Error | null } = {
+    error: null,
+  };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  render() {
+    return (
+      <>
+        {!this.state.error && this.props.children}
+        <ErrorMessage>{this.state.error?.message}</ErrorMessage>
+      </>
+    );
+  }
+}
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
   ({ state, file, requireModule: requireModuleProp, ...props }) => {

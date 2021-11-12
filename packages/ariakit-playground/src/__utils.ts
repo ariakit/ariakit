@@ -42,3 +42,10 @@ export function getValue(state?: PlaygroundState, filename?: string) {
   if (!filename) return "";
   return state.values[filename] ?? "";
 }
+
+export function getFile(
+  values: PlaygroundState["values"] = {},
+  filename = Object.keys(values)[0] || ""
+) {
+  return filename;
+}
