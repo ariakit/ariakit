@@ -38,7 +38,7 @@ export default function Playground(props: PlaygroundProps) {
   const tab = useTabState();
   const [expanded, setExpanded] = useState(false);
 
-  const requireModule = useCallback(
+  const getModule = useCallback(
     (path: string) => {
       if (hasOwnProperty(props.deps, path)) {
         return props.deps[path];
@@ -51,7 +51,7 @@ export default function Playground(props: PlaygroundProps) {
   return (
     <PlaygroundContainer state={playground}>
       <PlaygroundPreview
-        requireModule={requireModule}
+        getModule={getModule}
         style={{ padding: 16, border: "1px solid #ccc", marginBottom: 16 }}
       />
       <TabList state={tab}>

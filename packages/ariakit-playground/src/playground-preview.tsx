@@ -11,7 +11,12 @@ import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
 import { compileComponent, compileModule } from "./__compile";
-import { PlaygroundContext, getModuleCSS, resolveModule } from "./__utils";
+import {
+  PlaygroundContext,
+  getFile,
+  getModuleCSS,
+  resolveModule,
+} from "./__utils";
 import { PlaygroundState } from "./playground-state";
 
 function ErrorMessage(props: { children: ReactNode }) {
@@ -38,12 +43,12 @@ class ErrorBoundary extends Component<{ children: ReactNode }> {
 }
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
-  ({ state, file, requireModule: requireModuleProp, ...props }) => {
+  ({ state, file, getModule: getModuleProp, ...props }) => {
     state = useStore(state || PlaygroundContext, ["values"]);
     const [error, setError] = useState<Error | null>(null);
     const [className, setClassName] = useState("");
     const values = state?.values || {};
-    const filename = file || Object.keys(values)[0] || "";
+    const filename = getFile(values, file);
     // TODO: Add delay 500, but update immediately if cmd+S is pressed
     const value = useDeferredValue(values[filename] || "");
 
@@ -52,28 +57,28 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
       setError(e);
     }, []);
 
-    const requireModule = useCallback(
+    const getModule = useCallback(
       (path: string) => {
-        const externalModule = requireModuleProp?.(path);
+        const externalModule = getModuleProp?.(path);
         if (externalModule != null) return externalModule;
         const availableNames = Object.keys(values);
         const moduleName = resolveModule(path, availableNames);
         if (!moduleName) return;
         const code = values[moduleName] || "";
         try {
-          const internalModule = compileModule(code, moduleName, requireModule);
+          const internalModule = compileModule(code, moduleName, getModule);
           setClassName(getModuleCSS(internalModule));
           return internalModule;
         } catch (e) {
           handleError(e);
         }
       },
-      [requireModuleProp, values, filename, handleError]
+      [getModuleProp, values, filename, handleError]
     );
 
     const [Component, setComponent] = useState(() => {
       try {
-        return compileComponent(value, filename, requireModule);
+        return compileComponent(value, filename, getModule);
       } catch (e) {
         handleError(e);
       }
@@ -83,12 +88,12 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
     useUpdateEffect(() => {
       setError(null);
       try {
-        const component = compileComponent(value, filename, requireModule);
+        const component = compileComponent(value, filename, getModule);
         setComponent(() => component);
       } catch (e) {
         handleError(e);
       }
-    }, [value, filename, requireModule]);
+    }, [value, filename, getModule]);
 
     props = useWrapElement(
       props,
@@ -123,7 +128,7 @@ export const PlaygroundPreview = createMemoComponent<PlaygroundPreviewOptions>(
 export type PlaygroundPreviewOptions<T extends As = "div"> = Options<T> & {
   state?: PlaygroundState;
   file?: string;
-  requireModule?: (path: string) => any;
+  getModule?: (path: string) => any;
 };
 
 export type PlaygroundPreviewProps<T extends As = "div"> = Props<

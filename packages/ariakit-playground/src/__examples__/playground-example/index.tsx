@@ -16,9 +16,9 @@ const defaultValues = {
 export default function PlaygroundExample() {
   const playground = usePlaygroundState({ defaultValues });
   return (
-    <Playground state={playground}>
-      <PlaygroundPreview className="preview" file="index.js" />
+    <Playground state={playground} className="playground">
       <PlaygroundEditor className="editor" file="index.js" />
+      <PlaygroundPreview className="preview" />
     </Playground>
   );
 }

@@ -14,12 +14,12 @@ function createModule(exports: AnyObject = {}) {
 export function compileModule(
   code: string,
   filename: string,
-  requireModule?: (path: string) => any
+  getModule?: (path: string) => any
 ) {
   const extension = getExtension(filename);
   const defaultDeps = { react: React };
   const customRequire = (path: string) => {
-    const mod = requireModule?.(path);
+    const mod = getModule?.(path);
     if (mod != null) {
       requireCache[path] = mod;
       return mod;
@@ -52,9 +52,9 @@ export function compileModule(
 export function compileComponent(
   code: string,
   filename: string,
-  requireModule?: (path: string) => any
+  getModule?: (path: string) => any
 ) {
-  const compiledModule = compileModule(code, filename, requireModule);
+  const compiledModule = compileModule(code, filename, getModule);
   if (compiledModule.default) {
     return compiledModule.default;
   }

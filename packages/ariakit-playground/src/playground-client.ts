@@ -14,6 +14,8 @@ import { As, Options, Props } from "ariakit-utils/types";
 import { PlaygroundContext, getFile } from "./__utils";
 import { PlaygroundState } from "./playground-state";
 
+const ENTRY_FILE = "/index.js";
+
 const DEFAULT_DEPENDENCIES = {
   // TODO: Remove ariakit and use latest on react when v18 gets released.
   ariakit: "next",
@@ -23,7 +25,7 @@ const DEFAULT_DEPENDENCIES = {
   typescript: "latest",
 };
 
-function getIndexContent(filename: string) {
+function getEntryContent(filename: string) {
   return `import { createRoot } from "react-dom";
 import App from "./src/${filename}";
 createRoot(document.getElementById("root")).render(<App />);
@@ -99,11 +101,9 @@ export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
     const clientRef = useRef<SandpackClient | null>(null);
     const dependencies = useDependencies(values);
 
-    console.log(dependencies);
-
     const defaultFiles = useMemo(
       () => ({
-        "/index.js": { code: getIndexContent(filename) },
+        [ENTRY_FILE]: { code: getEntryContent(filename) },
       }),
       [filename]
     );
@@ -115,39 +115,35 @@ export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
       const client = new SandpackClient(
         element,
         {
+          entry: ENTRY_FILE,
+          dependencies,
           files: {
             ...initialDefaultFiles,
             ...getFiles(initialValues),
           },
-          dependencies,
-          entry: "/index.js",
         },
         { showOpenInCodeSandbox: false }
       );
-
       clientRef.current = client;
       return () => {
         clientRef.current = null;
         client.cleanup();
       };
-    }, [initialDefaultFiles, initialValues, dependencies]);
+    }, [dependencies, initialDefaultFiles, initialValues]);
 
     useUpdateEffect(() => {
       const client = clientRef.current;
       if (!client) return;
-
-      // client.getCodeSandboxURL().then(console.log);
       const id = setTimeout(() => {
         client.updatePreview({
+          entry: ENTRY_FILE,
+          dependencies,
           files: {
             ...defaultFiles,
             ...getFiles(values),
           },
-          dependencies,
-          entry: "/index.js",
         });
       }, 500);
-
       return () => clearTimeout(id);
     }, [defaultFiles, values, dependencies]);
 

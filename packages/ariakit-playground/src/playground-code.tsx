@@ -34,7 +34,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     file,
     lineNumbers,
     highlight: shouldHighlight = true,
-    maxHeight = 150,
+    maxHeight,
     value: valueProp,
     language = getExtension(file),
     disclosure,

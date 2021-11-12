@@ -4,8 +4,10 @@ const { EntryPlugin } = require("webpack");
 const pageLoader = require("./page-loader");
 const { getPageFilename } = require("./utils");
 
+// TODO: It doesn't update dependencies when the file being saved is not the
+// entry point (for example, saving index.tsx instead of readme.md).
+
 /**
- *
  * @param {string} dir
  * @param {RegExp} pattern
  * @param {string[]} files
