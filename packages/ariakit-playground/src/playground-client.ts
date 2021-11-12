@@ -38,7 +38,7 @@ function getDependencies(
   const nextDependencies = { ...dependencies };
 
   Object.values(values).forEach((value) => {
-    const matches = value.matchAll(/import[^"']+['"]([^'"]+)['"]/g);
+    const matches = value.matchAll(/import[^"']+['"]([^\."'][^'"]*)['"]/g);
     for (const [, match] of matches) {
       if (!match) continue;
       // Scoped dependency
@@ -98,6 +98,8 @@ export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
     const ref = useRef<HTMLIFrameElement>(null);
     const clientRef = useRef<SandpackClient | null>(null);
     const dependencies = useDependencies(values);
+
+    console.log(dependencies);
 
     const defaultFiles = useMemo(
       () => ({
