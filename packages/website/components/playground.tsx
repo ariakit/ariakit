@@ -76,6 +76,11 @@ export default function Playground(props: PlaygroundProps) {
           }
         </TabPanel>
       ))}
+      <style jsx>{`
+        * {
+          color: red;
+        }
+      `}</style>
     </PlaygroundContainer>
   );
 }

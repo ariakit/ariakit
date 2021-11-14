@@ -1,3 +1,4 @@
+// @ts-check
 const test = process.env.NODE_ENV === "test";
 const prod = process.env.NODE_ENV === "production";
 
@@ -15,6 +16,7 @@ console.warn = (...args) => {
   warn(...args);
 };
 
+/** @type {import("@babel/core").ParserOptions} */
 module.exports = {
   presets: [
     [

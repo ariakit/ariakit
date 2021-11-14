@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const mdLoader = require("./md-loader");
+const markdownLoader = require("./markdown-loader");
 const { writePage } = require("./utils");
 
 /**
@@ -11,24 +11,20 @@ const { writePage } = require("./utils");
  */
 
 /**
+ * Writes a page to the build directory.
  * @type {import("webpack").LoaderDefinitionFunction<Options,
  * import("webpack").LoaderContext<Options>}
  */
 async function pageLoader(source) {
   const filePath = this.resourcePath;
-
-  if (/index\.[tj]sx?$/.test(filePath)) {
-    const readmePath = path.join(path.dirname(filePath), "readme.md");
-    if (fs.existsSync(readmePath)) return source;
-  }
-
   const { name, buildDir, componentPath } = this.getOptions();
-  const pagesPath = path.join(buildDir, name);
+  const dest = path.join(buildDir, name);
 
-  await writePage(filePath, pagesPath, componentPath);
+  await writePage(filePath, dest, componentPath);
 
   if (/\.md$/.test(filePath)) {
-    return mdLoader.call(this, source);
+    // If the file is a markdown file, we'll need to convert it to AST.
+    return markdownLoader.call(this, source);
   }
 
   return source;

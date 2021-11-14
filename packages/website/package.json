@@ -2,8 +2,10 @@
   "name": "website",
   "private": true,
   "scripts": {
+    "pages": "node ../../scripts/pages",
+    "predev": "npm run pages",
     "dev": "next dev",
-    "prebuild": "NODE_ENV=production node next.config.js",
+    "prebuild": "npm run pages",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

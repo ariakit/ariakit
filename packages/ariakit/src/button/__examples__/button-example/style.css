@@ -1,4 +1,4 @@
-button {
+.button {
   font-family: var(--font-family-body, sans-serif);
   background-color: transparent;
   color: var(--color-primary-700, #1976d2);
@@ -12,14 +12,14 @@ button {
   outline: 0;
 }
 
-button:hover {
+.button:hover {
   background-color: var(--color-primary-50, #e3f2fd);
 }
 
-button:active {
+.button:active {
   background-color: var(--color-primary-100, #bbdefb);
 }
 
-button:focus {
+.button:focus {
   box-shadow: 0 0 0 2px var(--color-primary-700, #1976d2);
 }
