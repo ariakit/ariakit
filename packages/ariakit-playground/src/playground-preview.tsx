@@ -59,6 +59,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
 
     const getModule = useCallback(
       (path: string) => {
+        setClassName("");
         const externalModule = getModuleProp?.(path);
         if (externalModule != null) return externalModule;
         const availableNames = Object.keys(values);
