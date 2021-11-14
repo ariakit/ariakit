@@ -3,7 +3,7 @@ import { Playground as PlaygroundContainer } from "ariakit-playground/playground
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
-import { playgroundEditorStyle } from "ariakit-playground/playground-style";
+import theme from "ariakit-playground/themes/vscode-dark";
 import { hasOwnProperty } from "ariakit-utils/misc";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
@@ -67,7 +67,7 @@ export default function Playground(props: PlaygroundProps) {
                 <PlaygroundEditor
                   state={playground}
                   file={file}
-                  className={playgroundEditorStyle}
+                  className={theme}
                   expanded={expanded}
                   setExpanded={setExpanded}
                 />

@@ -1,6 +1,6 @@
 import { Fragment, createElement, useMemo } from "react";
 import { PlaygroundCode } from "ariakit-playground/playground-code";
-import { playgroundCodeStyle } from "ariakit-playground/playground-style";
+import theme from "ariakit-playground/themes/vscode-dark";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
 import Playground from "./playground";
@@ -24,7 +24,7 @@ const { Compiler: renderAst } = new RehypeReact({
         return (
           <PlaygroundCode
             highlight
-            className={playgroundCodeStyle}
+            className={theme}
             value={child.props.children[0]}
             language={child.props.className?.replace("language-", "")}
           />

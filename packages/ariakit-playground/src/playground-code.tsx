@@ -52,7 +52,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     const [collapsible, setCollapsible] = useState(false);
 
     const [expanded, setExpanded] = useControlledState(
-      defaultExpanded ?? false,
+      defaultExpanded ?? !maxHeight,
       expandedProp,
       setExpandedProp
     );

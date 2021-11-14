@@ -16,7 +16,7 @@ const lightBlue = "#9cdcfe";
 const dimmedBlue = "#264f78";
 const lightDimmedBlue = "#323a40";
 
-export const playgroundCodeStyle = css`
+const theme = css`
   margin: 0;
   color: ${white};
   font-family: Menlo, monospace;
@@ -107,6 +107,47 @@ export const playgroundCodeStyle = css`
     padding: 0 16px 0 8px;
     box-sizing: border-box;
     line-height: 21px;
+  }
+
+  .cm-focused {
+    outline: none;
+  }
+
+  .cm-content {
+    padding: 0;
+  }
+
+  .cm-cursor {
+    border-left: 2px solid ${white};
+    height: 21px !important;
+    transform: translateY(-10%);
+  }
+
+  .cm-activeLine {
+    background-color: ${black};
+  }
+
+  .cm-focused .cm-activeLine {
+    background-color: ${darkGray};
+  }
+
+  .cm-selectionMatch {
+    background-color: ${lightDimmedBlue};
+  }
+
+  .cm-matchingBracket,
+  .cm-nonmatchingBracket {
+    background-color: transparent;
+    outline: 1px solid ${gray};
+  }
+
+  .cm-activeLineGutter {
+    background-color: ${black};
+  }
+
+  .cm-focused .cm-activeLineGutter {
+    color: ${white};
+    background-color: ${darkGray};
   }
 
   .token.keyword,
@@ -201,47 +242,4 @@ export const playgroundCodeStyle = css`
   }
 `;
 
-export const playgroundEditorStyle = css`
-  ${playgroundCodeStyle}
-
-  .cm-focused {
-    outline: none;
-  }
-
-  .cm-content {
-    padding: 0;
-  }
-
-  .cm-cursor {
-    border-left: 2px solid ${white};
-    height: 21px !important;
-    transform: translateY(-10%);
-  }
-
-  .cm-activeLine {
-    background-color: ${black};
-  }
-
-  .cm-focused .cm-activeLine {
-    background-color: ${darkGray};
-  }
-
-  .cm-selectionMatch {
-    background-color: ${lightDimmedBlue};
-  }
-
-  .cm-matchingBracket,
-  .cm-nonmatchingBracket {
-    background-color: transparent;
-    outline: 1px solid ${gray};
-  }
-
-  .cm-activeLineGutter {
-    background-color: ${black};
-  }
-
-  .cm-focused .cm-activeLineGutter {
-    color: ${white};
-    background-color: ${darkGray};
-  }
-`;
+export default theme;
