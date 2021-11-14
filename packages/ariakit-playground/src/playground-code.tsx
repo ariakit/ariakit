@@ -18,7 +18,7 @@ import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props, SetState } from "ariakit-utils/types";
-import { Button } from "ariakit/button";
+import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { PlaygroundContext, getExtension, getValue } from "./__utils";
 import { PlaygroundState } from "./playground-state";
@@ -148,21 +148,6 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
               children={expanded ? "Collapse code" : "Expand code"}
               {...disclosureProps}
               onClick={disclosureOnClick}
-              // style={{
-              //   position: "absolute",
-              //   bottom: expanded ? undefined : 0,
-              //   top: expanded ? "100%" : undefined,
-              //   padding: "16px 8px 8px",
-              //   zIndex: 201,
-              //   width: "100%",
-              //   borderRadius: 0,
-              //   borderBottomLeftRadius: "inherit",
-              //   borderBottomRightRadius: "inherit",
-              //   justifyContent: "center",
-              //   color: "white",
-              //   textDecoration: "underline",
-              //   background: "linear-gradient(transparent, #1e1e1e 70%)",
-              // }}
             />
           )}
         </>
@@ -222,7 +207,7 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   highlight?: boolean;
   maxHeight?: number;
   disclosure?: boolean | ElementType<ComponentPropsWithRef<"button">>;
-  disclosureProps?: ComponentPropsWithRef<"button">;
+  disclosureProps?: ButtonProps;
   expanded?: boolean;
   setExpanded?: SetState<boolean>;
   defaultExpanded?: boolean;
