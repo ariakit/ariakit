@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          ref: ${{ env.GITHUB_REF }}
 
       - name: Set up Node
         uses: actions/setup-node@v2
@@ -33,6 +31,10 @@ jobs:
 
       - name: Lint
         run: npm run lint -- --fix
+
+      - name: Checkout PR
+        if: ${{ github.event_name == "pull_request" }}
+        run: git checkout ${{ github.ref }}
 
       - name: Fix lint issues
         run: |
