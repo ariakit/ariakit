@@ -12,7 +12,7 @@
     "build:fast": "npm run build -- -- --no-umd",
     "clean": "npm run clean -ws --if-present",
     "release": "lerna publish --pre-dist-tag next",
-    "release:next": "npm run release -- --no-git-tag-version --no-changelog",
+    "release:next": "npm run release -- --no-changelog",
     "release:graduate": "npm run release -- --conventional-graduate"
   },
   "workspaces": [
