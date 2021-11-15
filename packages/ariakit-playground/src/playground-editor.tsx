@@ -43,7 +43,9 @@ import {
 import { As, Props } from "ariakit-utils/types";
 import { CommandOptions, useCommand } from "ariakit/command";
 import { Role, RoleProps } from "ariakit/role";
-import { PlaygroundContext, getExtension, getValue } from "./__utils";
+import { getExtension } from "./__utils/get-extension";
+import { getValue } from "./__utils/get-value";
+import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code";
 import { PlaygroundState } from "./playground-state";
 

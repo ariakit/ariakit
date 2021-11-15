@@ -5,13 +5,12 @@ import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
 import { Role, RoleProps } from "ariakit/role";
-import { compileComponent, compileModule } from "./__compile";
-import {
-  PlaygroundContext,
-  getFile,
-  getModuleCSS,
-  resolveModule,
-} from "./__utils";
+import { compileComponent } from "./__utils/compile-component";
+import { compileModule } from "./__utils/compile-module";
+import { getCSSModule } from "./__utils/css-module";
+import { getFile } from "./__utils/get-file";
+import { PlaygroundContext } from "./__utils/playground-context";
+import { resolveModule } from "./__utils/resolve-module";
 import { PlaygroundState } from "./playground-state";
 
 function ErrorMessage(props: RoleProps) {
@@ -86,7 +85,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
         const code = debouncedValues[moduleName] || "";
         try {
           const internalModule = compileModule(code, moduleName, getModule);
-          setClassName(getModuleCSS(internalModule));
+          setClassName(getCSSModule(internalModule));
           return internalModule;
         } catch (e) {
           handleError(e);

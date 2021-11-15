@@ -18,7 +18,9 @@ import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props, SetState } from "ariakit-utils/types";
 import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
-import { PlaygroundContext, getExtension, getValue } from "./__utils";
+import { getExtension } from "./__utils/get-extension";
+import { getValue } from "./__utils/get-value";
+import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundState } from "./playground-state";
 
 import "prismjs/components/prism-jsx";

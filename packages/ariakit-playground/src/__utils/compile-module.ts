@@ -1,9 +1,9 @@
 import * as React from "react";
 import { availablePresets, transform } from "@babel/standalone";
-import { css } from "@emotion/css";
 import { hasOwnProperty } from "ariakit-utils/misc";
 import { AnyObject } from "ariakit-utils/types";
-import { CSS_EXPORT, getExtension } from "./__utils";
+import { createCSSModule } from "./css-module";
+import { getExtension } from "./get-extension";
 
 const requireCache = Object.create(null);
 
@@ -34,7 +34,7 @@ export function compileModule(
     throw new Error(`Module not found: Can't resolve '${path}'`);
   };
   if (extension === "css") {
-    return createModule({ [CSS_EXPORT]: css(code) });
+    return createModule(createCSSModule(code));
   }
   const compiled = transform(code, {
     filename,
@@ -47,22 +47,4 @@ export function compileModule(
   const compiledCode = `${compiled.code}; return exports`;
   const fn = new Function("require", "exports", "React", compiledCode);
   return fn(customRequire, Object.create(null), React);
-}
-
-export function compileComponent(
-  code: string,
-  filename: string,
-  getModule?: (path: string) => any
-) {
-  const compiledModule = compileModule(code, filename, getModule);
-  if (compiledModule.default) {
-    return compiledModule.default;
-  }
-  const firstPascalCaseExport = Object.keys(compiledModule).find((key) =>
-    /^[A-Z]/.test(key)
-  );
-  if (firstPascalCaseExport) {
-    return compiledModule[firstPascalCaseExport];
-  }
-  return;
 }

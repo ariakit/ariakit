@@ -11,7 +11,8 @@ import {
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { PlaygroundContext, getFile } from "./__utils";
+import { getFile } from "./__utils/get-file";
+import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundState } from "./playground-state";
 
 const ENTRY_FILE = "/index.js";
