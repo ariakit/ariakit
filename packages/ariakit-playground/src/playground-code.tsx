@@ -1,6 +1,4 @@
 import {
-  ComponentPropsWithRef,
-  ElementType,
   MouseEvent,
   useCallback,
   useEffect,
@@ -37,7 +35,6 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     maxHeight,
     value: valueProp,
     language = getExtension(file),
-    disclosure,
     disclosureProps,
     defaultExpanded,
     expanded: expandedProp,
@@ -104,23 +101,16 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       props.className
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onMouseDownCaptureProp = useEventCallback(props.onMouseDownCapture);
 
-    const onClick = useCallback(
+    const onMouseDownCapture = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
+        onMouseDownCaptureProp(event);
         if (event.defaultPrevented) return;
         setExpanded(true);
       },
-      [onClickProp]
+      [onMouseDownCaptureProp]
     );
-
-    const Disclosure =
-      typeof disclosure !== "boolean"
-        ? disclosure || Button
-        : disclosure
-        ? Button
-        : null;
 
     const disclosureOnClickProp = useEventCallback(disclosureProps?.onClick);
 
@@ -142,8 +132,8 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       (element) => (
         <>
           {element}
-          {collapsible && Disclosure && (
-            <Disclosure
+          {collapsible && (
+            <Button
               aria-expanded={expanded}
               children={expanded ? "Collapse code" : "Expand code"}
               {...disclosureProps}
@@ -152,7 +142,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
           )}
         </>
       ),
-      [collapsible, Disclosure, expanded, disclosureProps, disclosureOnClick]
+      [collapsible, expanded, disclosureProps, disclosureOnClick]
     );
 
     const children = useMemo(
@@ -178,10 +168,9 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       children,
       ...props,
       ref: useForkRef(ref, props.ref),
-      onClick,
+      onMouseDownCapture,
       className,
       style: {
-        position: "relative",
         maxHeight: expanded ? undefined : maxHeight,
         ...props.style,
       },
@@ -206,7 +195,6 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   lineNumbers?: boolean;
   highlight?: boolean;
   maxHeight?: number;
-  disclosure?: boolean | ElementType<ComponentPropsWithRef<"button">>;
   disclosureProps?: ButtonProps;
   expanded?: boolean;
   setExpanded?: SetState<boolean>;

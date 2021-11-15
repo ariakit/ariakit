@@ -1,4 +1,5 @@
 import { css } from "@emotion/css";
+import defaultTheme from "./default";
 
 const black = "#1e1e1e";
 const darkGray = "#2b2c2d";
@@ -17,29 +18,8 @@ const dimmedBlue = "#264f78";
 const lightDimmedBlue = "#323a40";
 
 const theme = css`
-  margin: 0;
+  ${defaultTheme}
   color: ${white};
-  font-family: Menlo, monospace;
-  font-size: 14px;
-  line-height: 21px;
-  white-space: pre;
-  word-spacing: normal;
-  word-break: normal;
-  tab-size: 2;
-  hyphens: none;
-  /* TODO: Accept border-radius from outside? */
-  /* border-radius: 8px; */
-
-  .cm-editor {
-    border-radius: inherit;
-    max-height: inherit;
-  }
-
-  pre {
-    display: flex;
-    overflow: auto;
-    margin: 0;
-  }
 
   &.code-css pre,
   &.code-js pre,
@@ -50,26 +30,7 @@ const theme = css`
   }
 
   .cm-scroller {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    max-height: inherit;
     background: ${black};
-    border-radius: inherit;
-    padding: 16px 8px 16px 0;
-    box-sizing: border-box;
-  }
-
-  &:not(.has-line-numbers) .cm-scroller {
-    padding: 16px;
-  }
-
-  code {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    /* Comment: collapsible with end line */
-    height: max-content;
   }
 
   .cm-selectionBackground,
@@ -79,48 +40,20 @@ const theme = css`
     background-color: ${dimmedBlue};
   }
 
-  code,
-  .cm-line {
-    padding: 0 1px;
-  }
-
   .cm-gutters {
-    display: flex;
-    position: sticky;
     background-color: ${black};
-    border: none;
-    padding-left: 8px;
-    z-index: 200;
-    left: 0;
-    height: 100%;
   }
 
   .cm-lineNumbers {
     background-color: ${black};
-    position: sticky;
-    flex-direction: column;
   }
 
   .cm-lineNumbers .cm-gutterElement {
     color: ${gray};
-    text-align: right;
-    padding: 0 16px 0 8px;
-    box-sizing: border-box;
-    line-height: 21px;
-  }
-
-  .cm-focused {
-    outline: none;
-  }
-
-  .cm-content {
-    padding: 0;
   }
 
   .cm-cursor {
-    border-left: 2px solid ${white};
-    height: 21px !important;
-    transform: translateY(-10%);
+    border-left-color: ${white};
   }
 
   .cm-activeLine {

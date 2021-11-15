@@ -35,7 +35,9 @@ type PlaygroundProps = {
 
 export default function Playground(props: PlaygroundProps) {
   const playground = usePlaygroundState({ defaultValues: props.defaultValues });
-  const tab = useTabState();
+  const tab = useTabState({
+    defaultVisibleId: `tab-${Object.keys(playground.values)[0]}`,
+  });
   const [expanded, setExpanded] = useState(false);
 
   const getModule = useCallback(
@@ -49,38 +51,48 @@ export default function Playground(props: PlaygroundProps) {
   );
 
   return (
-    <PlaygroundContainer state={playground}>
-      <PlaygroundPreview
-        getModule={getModule}
-        style={{ padding: 16, border: "1px solid #ccc", marginBottom: 16 }}
-      />
-      <TabList state={tab}>
+    <div>
+      <PlaygroundContainer state={playground}>
+        <PlaygroundPreview
+          getModule={getModule}
+          style={{ padding: 16, border: "1px solid #ccc", marginBottom: 16 }}
+        />
+        <TabList state={tab}>
+          {Object.keys(playground.values).map((file) => (
+            <Tab key={file} id={`tab-${file}`}>
+              {file}
+            </Tab>
+          ))}
+        </TabList>
         {Object.keys(playground.values).map((file) => (
-          <Tab key={file}>{file}</Tab>
+          <TabPanel
+            key={file}
+            state={tab}
+            tabId={`tab-${file}`}
+            focusable={false}
+          >
+            {(props) =>
+              !props.hidden && (
+                <div {...props}>
+                  <PlaygroundEditor
+                    state={playground}
+                    file={file}
+                    className={`${theme} playground-editor`}
+                    expanded={expanded}
+                    maxHeight={240}
+                    setExpanded={setExpanded}
+                  />
+                </div>
+              )
+            }
+          </TabPanel>
         ))}
-      </TabList>
-      {Object.keys(playground.values).map((file) => (
-        <TabPanel key={file} state={tab} focusable={false}>
-          {(props) =>
-            !props.hidden && (
-              <div {...props}>
-                <PlaygroundEditor
-                  state={playground}
-                  file={file}
-                  className={theme}
-                  expanded={expanded}
-                  setExpanded={setExpanded}
-                />
-              </div>
-            )
-          }
-        </TabPanel>
-      ))}
+      </PlaygroundContainer>
       <style jsx>{`
-        * {
-          color: red;
+        :global(.playground-editor) {
+          border-radius: 8px;
         }
       `}</style>
-    </PlaygroundContainer>
+    </div>
   );
 }

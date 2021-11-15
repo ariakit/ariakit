@@ -1,6 +1,4 @@
 import {
-  ComponentPropsWithRef,
-  ElementType,
   FocusEvent,
   KeyboardEvent,
   MouseEvent,
@@ -31,6 +29,7 @@ import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
   useEventCallback,
   useForkRef,
+  useId,
   useInitialValue,
   useSafeLayoutEffect,
   useWrapElement,
@@ -43,6 +42,7 @@ import {
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import { CommandOptions, useCommand } from "ariakit/command";
+import { Role, RoleProps } from "ariakit/role";
 import { PlaygroundContext, getExtension, getValue } from "./__utils";
 import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code";
 import { PlaygroundState } from "./playground-state";
@@ -115,8 +115,8 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     state,
     file,
     lineNumbers: showLineNumbers = true,
-    enableButton,
-    enableButtonProps,
+    keyboardDescription = "Press Enter to edit the code",
+    keyboardDescriptionProps,
     ...props
   }) => {
     state = useStore(state || PlaygroundContext, [
@@ -241,30 +241,35 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       [onFocusVisibleProp, editable]
     );
 
-    const EnableButton =
-      typeof enableButton !== "boolean"
-        ? enableButton || "div"
-        : enableButton
-        ? "div"
-        : null;
+    const keyboardDescriptionId = useId(keyboardDescriptionProps?.id);
 
     props = useWrapElement(
       props,
       (element) => (
         <>
           {element}
-          {focusVisible && !editable && EnableButton && (
-            <EnableButton
-              children="Press Enter to edit the code"
-              {...enableButtonProps}
+          {focusVisible && !editable && (
+            <Role
+              children={keyboardDescription}
+              {...keyboardDescriptionProps}
+              id={keyboardDescriptionId}
             />
           )}
         </>
       ),
-      [focusVisible, editable, EnableButton, enableButtonProps]
+      [
+        focusVisible,
+        editable,
+        keyboardDescription,
+        keyboardDescriptionProps,
+        keyboardDescriptionId,
+      ]
     );
 
     props = {
+      role: "group",
+      "aria-label": file,
+      "aria-describedby": keyboardDescriptionId,
       ...props,
       ref: useForkRef(ref, props.ref),
       onClick,
@@ -272,9 +277,6 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       onBlur,
       onFocusVisible,
       children: editorDOM ? null : undefined,
-      style: {
-        ...props.style,
-      },
     };
 
     props = useCommand(props);
@@ -304,8 +306,8 @@ export type PlaygroundEditorOptions<T extends As = "div"> =
       state?: PlaygroundState;
       file: string;
       lineNumbers?: boolean;
-      enableButton?: boolean | ElementType<ComponentPropsWithRef<"div">>;
-      enableButtonProps?: ComponentPropsWithRef<"div">;
+      keyboardDescription?: string;
+      keyboardDescriptionProps?: RoleProps;
     };
 
 export type PlaygroundEditorProps<T extends As = "div"> = Props<
