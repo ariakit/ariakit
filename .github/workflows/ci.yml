@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ env.GITHUB_SHA }}
 
       - name: Set up Node
         uses: actions/setup-node@v2
