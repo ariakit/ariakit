@@ -34,7 +34,7 @@ jobs:
 
       - name: Checkout PR
         if: ${{ github.event_name == "pull_request" }}
-        run: git checkout ${{ github.ref }}
+        run: gh pr checkout ${{ github.event.pull_request.number }}
 
       - name: Fix lint issues
         run: |
