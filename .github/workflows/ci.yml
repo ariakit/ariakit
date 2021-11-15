@@ -11,14 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/checkout@v2
-
-      - name: Checkout pull request
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v2
@@ -38,6 +31,10 @@ jobs:
 
       - name: Lint
         run: npm run lint -- --fix
+
+      - name: Checkout PR
+        if: ${{ github.event_name == 'pull_request' }}
+        run: gh pr checkout ${{ github.event.pull_request.number }}
 
       - name: Fix lint issues
         run: |
