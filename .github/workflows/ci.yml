@@ -13,6 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Checkout PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout ${{ github.event.pull_request.number }}
+
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
@@ -31,10 +37,6 @@ jobs:
 
       - name: Lint
         run: npm run lint -- --fix
-
-      - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request' }}
-        run: gh pr checkout ${{ github.event.pull_request.number }}
 
       - name: Fix lint issues
         run: |
