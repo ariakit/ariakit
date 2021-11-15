@@ -47,6 +47,7 @@
     "@codesandbox/sandpack-client": "0.2.0",
     "@emotion/css": "11.5.0",
     "ariakit-utils": "0.17.0-alpha.2",
+    "codesandbox": "2.2.3",
     "prismjs": "1.25.0"
   },
   "peerDependencies": {

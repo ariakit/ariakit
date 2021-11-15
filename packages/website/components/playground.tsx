@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { OpenInCodeSandboxProps } from "ariakit-playground/actions/open-in-code-sandbox";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
@@ -22,6 +23,16 @@ const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(
   () =>
     import("ariakit-playground/playground-preview").then(
       (mod) => mod.PlaygroundPreview
+    ),
+  {
+    loading: () => <p>Loading...</p>,
+  }
+);
+
+const OpenInCodeSandbox = dynamic<OpenInCodeSandboxProps>(
+  () =>
+    import("ariakit-playground/actions/open-in-code-sandbox").then(
+      (mod) => mod.OpenInCodeSandbox
     ),
   {
     loading: () => <p>Loading...</p>,
@@ -64,6 +75,7 @@ export default function Playground(props: PlaygroundProps) {
             </Tab>
           ))}
         </TabList>
+        <OpenInCodeSandbox />
         {Object.keys(playground.values).map((file) => (
           <TabPanel
             key={file}

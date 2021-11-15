@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   SandpackBundlerFiles,
   SandpackClient,
@@ -11,78 +11,15 @@ import {
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
+import {
+  getCodeSandboxEntryContent,
+  useCodeSandboxDependencies,
+} from "./__utils/code-sandbox";
 import { getFile } from "./__utils/get-file";
 import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundState } from "./playground-state";
 
 const ENTRY_FILE = "/index.js";
-
-const DEFAULT_DEPENDENCIES = {
-  // TODO: Remove ariakit and use latest on react when v18 gets released.
-  ariakit: "next",
-  react: "experimental",
-  "react-dom": "experimental",
-  "react-scripts": "latest",
-  typescript: "latest",
-};
-
-function getEntryContent(filename: string) {
-  return `import { createRoot } from "react-dom";
-import App from "./src/${filename}";
-createRoot(document.getElementById("root")).render(<App />);
-`;
-}
-
-function getDependencies(
-  values: PlaygroundState["values"],
-  dependencies: Record<string, string> = DEFAULT_DEPENDENCIES
-) {
-  let hasNewDependencies = false;
-  const nextDependencies = { ...dependencies };
-
-  Object.values(values).forEach((value) => {
-    const matches = value.matchAll(/import[^"']+['"]([^\."'][^'"]*)['"]/g);
-    for (const [, match] of matches) {
-      if (!match) continue;
-      // Scoped dependency
-      let [, dependency] = match.match(/^(@[^\/]+\/[^\/]+)/) || [];
-      if (!dependency) {
-        // Normal dependency
-        [, dependency] = match.match(/^([^\/]+)/) || [];
-      }
-      if (dependency && !nextDependencies[dependency]) {
-        hasNewDependencies = true;
-        nextDependencies[dependency] = "latest";
-      }
-    }
-  });
-
-  if (hasNewDependencies) {
-    return nextDependencies;
-  }
-  return dependencies;
-}
-
-function useDependencies(
-  values: PlaygroundState["values"],
-  defaultDependencies = DEFAULT_DEPENDENCIES,
-  timeout = 2000
-) {
-  const [dependencies, setDependencies] = useState(() =>
-    getDependencies(values, defaultDependencies)
-  );
-
-  useUpdateEffect(() => {
-    const id = setTimeout(() => {
-      setDependencies((prevDependencies) =>
-        getDependencies(values, prevDependencies)
-      );
-    }, timeout);
-    return () => clearTimeout(id);
-  }, [values, timeout]);
-
-  return dependencies;
-}
 
 function getFiles(values: PlaygroundState["values"]) {
   const files: SandpackBundlerFiles = {};
@@ -100,11 +37,11 @@ export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
     const filename = getFile(values, file);
     const ref = useRef<HTMLIFrameElement>(null);
     const clientRef = useRef<SandpackClient | null>(null);
-    const dependencies = useDependencies(values);
+    const dependencies = useCodeSandboxDependencies(values);
 
     const defaultFiles = useMemo(
       () => ({
-        [ENTRY_FILE]: { code: getEntryContent(filename) },
+        [ENTRY_FILE]: { code: getCodeSandboxEntryContent(filename) },
       }),
       [filename]
     );

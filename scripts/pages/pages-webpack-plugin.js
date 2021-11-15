@@ -48,6 +48,8 @@ class PagesWebpackPlugin {
       if (!compiler.removedFiles) return;
       for (const file of compiler.removedFiles) {
         if (test(file)) {
+          // TODO: Save index.[jt]sx file if the removed page is a readme.md
+          // file.
           const pagePath = path.join(
             this.buildDir,
             this.name,
