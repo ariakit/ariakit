@@ -1,0 +1,62 @@
+{
+  "name": "ariakit-playground",
+  "version": "0.17.0-alpha.4",
+  "description": "Ariakit playground",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": "https://github.com/reakit/reakit/tree/master/packages/reakit-playground",
+  "homepage": "https://reakit.io",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-playground.min.js",
+  "types": "ts/index.d.ts",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "npm test -- --coverage",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js",
+    "preversion": "npm run lint && npm run test && npm run build",
+    "postpublish": "npm run clean"
+  },
+  "keywords": [
+    "ariakit",
+    "react",
+    "playground"
+  ],
+  "dependencies": {
+    "@babel/standalone": "7.16.3",
+    "@codemirror/closebrackets": "0.19.0",
+    "@codemirror/commands": "0.19.5",
+    "@codemirror/comment": "0.19.0",
+    "@codemirror/gutter": "0.19.5",
+    "@codemirror/highlight": "0.19.6",
+    "@codemirror/history": "0.19.0",
+    "@codemirror/lang-css": "0.19.3",
+    "@codemirror/lang-javascript": "0.19.3",
+    "@codemirror/matchbrackets": "0.19.3",
+    "@codemirror/search": "0.19.2",
+    "@codemirror/state": "0.19.5",
+    "@codemirror/view": "0.19.16",
+    "@codesandbox/sandpack-client": "0.2.0",
+    "@emotion/css": "11.5.0",
+    "ariakit-utils": "^0.17.0-alpha.4",
+    "codesandbox": "2.2.3",
+    "prismjs": "1.25.0"
+  },
+  "peerDependencies": {
+    "ariakit": "^2.0.0-alpha",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^18.0.0-alpha"
+  },
+  "devDependencies": {
+    "@types/babel__standalone": "7.1.3",
+    "@types/prismjs": "1.16.6",
+    "ariakit": "^2.0.0-alpha.4"
+  }
+}

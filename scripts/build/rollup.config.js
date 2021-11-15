@@ -1,10 +1,9 @@
 const { babel } = require("@rollup/plugin-babel");
+const commonjs = require("@rollup/plugin-commonjs");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const replace = require("@rollup/plugin-replace");
-const commonjs = require("@rollup/plugin-commonjs");
-const { terser } = require("rollup-plugin-terser");
-const ignore = require("rollup-plugin-ignore");
 const { camelCase, upperFirst } = require("lodash");
+const { terser } = require("rollup-plugin-terser");
 const {
   getIndexPath,
   getPublicFiles,
@@ -49,9 +48,9 @@ function getPlugins(isUMD) {
     return [
       ...commonPlugins,
       commonjs({ include: /node_modules/ }),
-      ignore(["stream"]),
       terser(),
       replace({
+        preventAssignment: true,
         "process.env.NODE_ENV": JSON.stringify("production"),
       }),
     ];
@@ -68,9 +67,11 @@ function getOutput(isUMD) {
       format: "umd",
       exports: "named",
       globals: {
-        reakit: "Reakit",
+        ariakit: "Ariakit",
         react: "React",
         "react-dom": "ReactDOM",
+        "@testing-library/react": "TestingLibraryReact",
+        "@testing-library/dom": "TestingLibraryDom",
       },
     };
   }

@@ -1,0 +1,14 @@
+# Automatically generated
+/actions
+/cjs
+/esm
+/playground
+/playground-client
+/playground-code
+/playground-editor
+/playground-preview
+/playground-state
+/themes/default
+/themes/vscode-dark
+/ts
+/umd

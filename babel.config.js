@@ -1,3 +1,4 @@
+// @ts-check
 const test = process.env.NODE_ENV === "test";
 const prod = process.env.NODE_ENV === "production";
 
@@ -15,12 +16,12 @@ console.warn = (...args) => {
   warn(...args);
 };
 
+/** @type {import("@babel/core").ParserOptions} */
 module.exports = {
   presets: [
     [
       "@babel/preset-env",
       {
-        modules: test ? "commonjs" : false,
         loose: true,
         targets: test
           ? { node: "current" }
@@ -29,21 +30,15 @@ module.exports = {
             },
       },
     ],
+    ["@babel/preset-react", { runtime: "automatic" }],
     "@babel/preset-typescript",
-    "@babel/preset-react",
   ],
   plugins: [
-    "reakit-warning/babel-plugin",
-    "babel-plugin-macros",
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-private-methods",
-    "@babel/plugin-proposal-object-rest-spread",
-    "@babel/plugin-proposal-optional-chaining",
     !prod && [
       "babel-plugin-module-resolver",
       {
         alias: {
-          "^reakit([^/]*)(.*)$": "reakit\\1/src\\2",
+          "^ariakit([^/]*)(.*)$": "ariakit\\1/src\\2",
         },
       },
     ],

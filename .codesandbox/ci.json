@@ -1,5 +1,5 @@
 {
-  "packages": ["packages/reakit*"],
-  "buildCommand": "build:fast",
-  "sandboxes": ["reakit-m4n32vjkoj"]
+  "packages": ["packages/ariakit*"],
+  "buildCommand": "build",
+  "sandboxes": ["packages/*/__examples__/*"]
 }

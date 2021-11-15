@@ -2,29 +2,17 @@
   "extends": "./tsconfig.prod.json",
   "compilerOptions": {
     "paths": {
-      "reakit": ["packages/reakit/src"],
-      "reakit/*": ["packages/reakit/src/*"],
-      
-      "reakit-playground": ["packages/reakit-playground/src"],
-      "reakit-playground/*": ["packages/reakit-playground/src/*"],
+      "ariakit": ["packages/ariakit/src"],
+      "ariakit/*": ["packages/ariakit/src/*"],
 
-      "reakit-system": ["packages/reakit-system/src"],
-      "reakit-system/*": ["packages/reakit-system/src/*"],
-      
-      "reakit-system-palette": ["packages/reakit-system-palette/src"],
-      "reakit-system-palette/*": ["packages/reakit-system-palette/src/*"],
+      "ariakit-playground": ["packages/ariakit-playground/src"],
+      "ariakit-playground/*": ["packages/ariakit-playground/src/*"],
 
-      "reakit-system-bootstrap": ["packages/reakit-system-bootstrap/src"],
-      "reakit-system-bootstrap/*": ["packages/reakit-system-bootstrap/src/*"],
+      "ariakit-test-utils": ["packages/ariakit-test-utils/src"],
+      "ariakit-test-utils/*": ["packages/ariakit-test-utils/src/*"],
 
-      "reakit-test-utils": ["packages/reakit-test-utils/src"],
-      "reakit-test-utils/*": ["packages/reakit-test-utils/src/*"],
-
-      "reakit-utils": ["packages/reakit-utils/src"],
-      "reakit-utils/*": ["packages/reakit-utils/src/*"],
-
-      "reakit-warning": ["packages/reakit-warning/src"],
-      "reakit-warning/*": ["packages/reakit-warning/src/*"]
+      "ariakit-utils": ["packages/ariakit-utils/src"],
+      "ariakit-utils/*": ["packages/ariakit-utils/src/*"]
     }
   }
 }
