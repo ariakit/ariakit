@@ -1,8 +1,8 @@
 import { click, getByRole, press, render, type } from "ariakit-test-utils";
-import ComboboxExample from ".";
+import Example from ".";
 
 test("show on click", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
   await click(getByRole("combobox"));
   expect(getByRole("listbox")).toBeVisible();
@@ -10,7 +10,7 @@ test("show on click", async () => {
 });
 
 test("show on arrow down key", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
   await press.ArrowDown();
@@ -19,7 +19,7 @@ test("show on arrow down key", async () => {
 });
 
 test("show on arrow up key", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
   await press.ArrowUp();
@@ -28,7 +28,7 @@ test("show on arrow up key", async () => {
 });
 
 test("show on change", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
   await type("a");
@@ -37,7 +37,7 @@ test("show on change", async () => {
 });
 
 test("navigate through items with keyboard", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   await press.ArrowDown();
@@ -49,7 +49,7 @@ test("navigate through items with keyboard", async () => {
 });
 
 test("type", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   await type("a");
   await press.ArrowDown();
@@ -62,7 +62,7 @@ test("type", async () => {
 });
 
 test("set value and hide on item click with mouse", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await click(getByRole("combobox"));
   expect(getByRole("combobox")).toHaveValue("");
   await click(getByRole("option", { name: "Orange" }));
@@ -72,7 +72,7 @@ test("set value and hide on item click with mouse", async () => {
 });
 
 test("set value and hide on item click with keyboard", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   await press.ArrowDown();
@@ -85,7 +85,7 @@ test("set value and hide on item click with keyboard", async () => {
 });
 
 test("do not set value and hide by pressing space", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   await press.ArrowDown();
@@ -99,7 +99,7 @@ test("do not set value and hide by pressing space", async () => {
 });
 
 test("hide listbox by pressing escape", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await click(getByRole("combobox"));
   expect(getByRole("listbox")).toBeVisible();
   await press.Escape();
@@ -107,7 +107,7 @@ test("hide listbox by pressing escape", async () => {
 });
 
 test("hide listbox by clicking outside", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await click(getByRole("combobox"));
   expect(getByRole("listbox")).toBeVisible();
   await click(document.body);
@@ -115,7 +115,7 @@ test("hide listbox by clicking outside", async () => {
 });
 
 test("re-open listbox when deleting content", async () => {
-  render(<ComboboxExample />);
+  render(<Example />);
   await press.Tab();
   await type("a");
   expect(getByRole("listbox")).toBeVisible();

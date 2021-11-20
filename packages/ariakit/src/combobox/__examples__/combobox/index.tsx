@@ -6,7 +6,7 @@ import {
   useComboboxState,
 } from "ariakit/combobox";
 
-export default function ComboboxExample() {
+export default function Example() {
   const combobox = useComboboxState();
   return (
     <div>

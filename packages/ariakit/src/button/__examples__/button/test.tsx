@@ -1,8 +1,8 @@
 import { getByRole, render } from "ariakit-test-utils";
-import ButtonExample from ".";
+import Example from ".";
 
 test("render button", () => {
-  render(<ButtonExample />);
+  render(<Example />);
   expect(getByRole("button")).toMatchInlineSnapshot(`
     <button
       class="button"

@@ -7,7 +7,7 @@
   border: 0;
   padding: 0 1em;
   line-height: 2.5em;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   outline: 0;
 }
@@ -16,10 +16,11 @@
   background-color: var(--color-primary-50, #e3f2fd);
 }
 
-.button:active {
+.button:active,
+.button[data-active] {
   background-color: var(--color-primary-100, #bbdefb);
 }
 
-.button:focus {
+.button[data-focus-visible] {
   box-shadow: 0 0 0 2px var(--color-primary-700, #1976d2);
 }
