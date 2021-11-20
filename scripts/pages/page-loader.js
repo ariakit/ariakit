@@ -1,4 +1,4 @@
-const fs = require("fs");
+// @ts-check
 const path = require("path");
 const markdownLoader = require("./markdown-loader");
 const { writePage } = require("./utils");
@@ -13,7 +13,7 @@ const { writePage } = require("./utils");
 /**
  * Writes a page to the build directory.
  * @type {import("webpack").LoaderDefinitionFunction<Options,
- * import("webpack").LoaderContext<Options>}
+ * import("webpack").LoaderContext<Options>>}
  */
 async function pageLoader(source) {
   const filePath = this.resourcePath;

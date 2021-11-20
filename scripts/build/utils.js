@@ -1,3 +1,4 @@
+// @ts-check
 const { join, dirname } = require("path");
 const chalk = require("chalk");
 const {
@@ -23,6 +24,7 @@ function resolveDir(dir) {
 
 /**
  * @param {string} rootPath
+ * @returns {object}
  */
 function getPackage(rootPath) {
   return require(join(rootPath, "package.json"));
@@ -83,12 +85,31 @@ function removeExt(path) {
 
 /**
  * @param {string} path
- * @param {number} index
+ */
+function getRootPath(path) {
+  return path.replace(/^([^/]+).*$/, "$1");
+}
+
+/**
+ * @param {string} path
+ * @param {number} _
  * @param {string[]} array
  */
-function isRootModule(path, index, array) {
-  const rootPath = path.replace(/^([^/]+).*$/, "$1");
+function isRootModule(path, _, array) {
+  const rootPath = getRootPath(path);
   return path === rootPath || !array.includes(rootPath);
+}
+
+/**
+ * @param {string[]} array
+ * @param {string} path
+ */
+function reduceToRootPaths(array, path) {
+  const rootPath = getRootPath(path);
+  if (array.includes(rootPath)) {
+    return array;
+  }
+  return [...array, rootPath];
 }
 
 /**
@@ -167,8 +188,10 @@ function getProxyFolders(rootPath) {
 /**
  * Returns ["lib", "es", "dist", "ts", "moduleName", ...]
  * @param {string} rootPath
+ * @returns {string[]}
  */
 function getBuildFolders(rootPath) {
+  // @ts-ignore
   return [
     getMainDir(rootPath),
     getUnpkgDir(rootPath),
@@ -186,6 +209,7 @@ function cleanBuild(rootPath) {
   const cleaned = [];
   getBuildFolders(rootPath)
     .filter(isRootModule)
+    .reduce(reduceToRootPaths, [])
     .forEach((name) => {
       rimraf.sync(name);
       cleaned.push(chalk.bold(chalk.gray(name)));
@@ -217,6 +241,7 @@ function makeGitignore(rootPath) {
   const buildFolders = getBuildFolders(rootPath);
   const contents = buildFolders
     .filter(isRootModule)
+    .reduce(reduceToRootPaths, [])
     .sort() // Ensure that the order is consistent across platforms
     .map((name) => `/${name}`)
     .join("\n");
@@ -292,18 +317,18 @@ function hasTSConfig(rootPath) {
  */
 function makeTSConfigProd(rootPath) {
   const filepath = join(rootPath, "tsconfig.json");
-  const contents = readFileSync(filepath);
-  const json = JSON.parse(contents);
+  const content = readFileSync(filepath, "utf-8");
+  const json = JSON.parse(content);
   json.extends = json.extends.replace("tsconfig.json", "tsconfig.prod.json");
   json.exclude = [...(json.exlcude || []), "src/**/__*"];
   writeFileSync(filepath, JSON.stringify(json, null, 2));
   return function restoreTSConfig() {
-    writeFileSync(filepath, contents);
+    writeFileSync(filepath, content);
   };
 }
 
 /**
- * @param {Function} callback
+ * @param {NodeJS.ExitListener} callback
  */
 function onExit(callback) {
   process.on("exit", callback);

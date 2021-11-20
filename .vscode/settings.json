@@ -1,6 +1,5 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
-  "stylelint.enable": true,
   "eslint.enable": true
 }

@@ -1,16 +1,18 @@
-const { babel } = require("@rollup/plugin-babel");
-const commonjs = require("@rollup/plugin-commonjs");
-const { nodeResolve } = require("@rollup/plugin-node-resolve");
-const replace = require("@rollup/plugin-replace");
-const { camelCase, upperFirst } = require("lodash");
-const { terser } = require("rollup-plugin-terser");
+// @ts-check
+import { babel } from "@rollup/plugin-babel";
+import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
+import { camelCase, upperFirst } from "lodash";
+import { terser } from "rollup-plugin-terser";
+
 const {
   getIndexPath,
+  getMainDir,
+  getModuleDir,
+  getPackage,
   getPublicFiles,
   getSourcePath,
-  getPackage,
-  getModuleDir,
-  getMainDir,
 } = require("./utils");
 
 const cwd = process.cwd();

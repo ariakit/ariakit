@@ -1,4 +1,5 @@
-/** @type {import("@jest/types").Config.ProjectConfig} */
+// @ts-check
+/** @type {import("@jest/types").Config.GlobalConfig} */
 module.exports = {
   rootDir: __dirname,
   testEnvironment: "jsdom",
