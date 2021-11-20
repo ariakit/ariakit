@@ -10,7 +10,6 @@ import {
 import { getDocument } from "ariakit-utils/dom";
 import {
   useForkRef,
-  useId,
   useUpdateEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -75,16 +74,13 @@ function useDebouncedValue<T>(value: T, ms: number) {
 }
 
 function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
-  const id = useId();
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    if (!id) return;
     const document = getDocument(element);
     const root = document.createElement("div");
-    root.id = id;
     if (className) {
       root.className = className;
     }
@@ -93,7 +89,7 @@ function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
     return () => {
       root.remove();
     };
-  }, [ref, id, className]);
+  }, [ref, className]);
 
   return portalRoot;
 }
