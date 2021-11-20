@@ -7,7 +7,7 @@
   border: 0;
   padding: 0 1em;
   line-height: 2.5em;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   outline: 0;
 }
@@ -21,6 +21,6 @@
   background-color: var(--color-primary-100, #bbdefb);
 }
 
-.button[data-focus-visible] {
+.button:focus {
   box-shadow: 0 0 0 2px var(--color-primary-700, #1976d2);
 }

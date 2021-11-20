@@ -1,4 +1,4 @@
-import { RefObject, useState } from "react";
+import { HTMLAttributes, RefObject, useRef, useState } from "react";
 import {
   useForkRef,
   useSafeLayoutEffect,
@@ -31,8 +31,10 @@ export const usePopover = createHook<PopoverOptions>(
     modal = false,
     portal = !!modal,
     preserveTabOrder = true,
+    wrapperProps,
     ...props
   }) => {
+    const ref = useRef<HTMLDivElement>(null);
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
@@ -45,19 +47,28 @@ export const usePopover = createHook<PopoverOptions>(
       state.render();
     }, [portalNode, state.mounted, state.render]);
 
+    // Makes sure the wrapper element that's passed to popper has the same
+    // z-index as the popover element so users only need to set the z-index
+    // once.
+    useSafeLayoutEffect(() => {
+      const element = ref.current;
+      const wrapper = popoverRef.current;
+      if (!element) return;
+      if (!wrapper) return;
+      wrapper.style.zIndex = getComputedStyle(element).zIndex;
+    }, [popoverRef]);
+
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
     // create animations.
     props = useWrapElement(
       props,
       (element) => (
-        // TODO: Receive the element similar to DialogBackdrop? Use same zIndex
-        // as popover.
-        <div data-popover="" ref={popoverRef}>
+        <div {...wrapperProps} ref={popoverRef}>
           {element}
         </div>
       ),
-      [popoverRef]
+      [popoverRef, wrapperProps]
     );
 
     props = useWrapElement(
@@ -76,6 +87,7 @@ export const usePopover = createHook<PopoverOptions>(
       preserveTabOrder,
       portal,
       ...props,
+      ref: useForkRef(ref, props.ref),
       portalRef,
     });
 
@@ -106,6 +118,11 @@ export type PopoverOptions<T extends As = "div"> = Omit<
    * Object returned by the `usePopoverState` hook.
    */
   state: PopoverState;
+  /**
+   * Props that will be passed to the popover wrapper element. This element will
+   * be used to position the popover.
+   */
+  wrapperProps?: HTMLAttributes<HTMLDivElement>;
 };
 
 export type PopoverProps<T extends As = "div"> = Props<PopoverOptions<T>>;
