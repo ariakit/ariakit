@@ -11,6 +11,7 @@
     "build:website": "npm run build -w website",
     "build:fast": "npm run build -- -- --no-umd",
     "clean": "npm run clean -ws --if-present",
+    "prerelease": "npm whoami",
     "release": "lerna publish --pre-dist-tag next",
     "release:next": "npm run release -- --no-changelog",
     "release:graduate": "npm run release -- --conventional-graduate"
