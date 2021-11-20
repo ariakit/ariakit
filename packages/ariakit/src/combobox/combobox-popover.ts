@@ -1,3 +1,5 @@
+// TODO: Do not move focus to the combobox input when clicking outside (the
+// body).
 import { useState } from "react";
 import { matches } from "ariakit-utils/dom";
 import { useUpdateEffect } from "ariakit-utils/hooks";
