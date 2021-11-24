@@ -11,6 +11,15 @@ const theme = css`
   tab-size: 2;
   hyphens: none;
 
+  .cm-editor,
+  .cm-gutters,
+  .cm-lineNumbers,
+  .cm-activeLine,
+  .cm-activeLineGutter,
+  .cm-scroller {
+    background-color: inherit;
+  }
+
   .cm-editor {
     border-radius: inherit;
     max-height: inherit;
@@ -43,7 +52,7 @@ const theme = css`
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
-    /* Comment: collapsible with end line */
+    /* TODO: Comment about collapsible with end line */
     height: max-content;
   }
 
