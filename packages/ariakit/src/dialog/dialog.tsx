@@ -18,7 +18,7 @@ import {
   getFirstTabbableIn,
   getLastTabbableIn,
   hasFocusWithin,
-  isTabbable,
+  isFocusable,
 } from "ariakit-utils/focus";
 import {
   useForkRef,
@@ -64,10 +64,7 @@ function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
   if (contains(dialog, activeElement)) return false;
-  if (isTabbable(activeElement)) return true;
-  // Clicking on a parent dialog with tabIndex={-1} should keep the focus on
-  // the dialog.
-  if (activeElement.hasAttribute("data-dialog")) return true;
+  if (isFocusable(activeElement)) return true;
   return false;
 }
 
