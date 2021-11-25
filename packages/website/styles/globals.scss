@@ -1,0 +1,124 @@
+@import url("./tokens.css");
+
+.ak-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.ak-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ak-center {
+  justify-content: center;
+  align-items: center;
+}
+
+@for $i from 1 through 5 {
+  .ak-gap-#{$i} {
+    gap: var(--space-#{$i});
+  }
+}
+
+.ak-input {
+  font-size: 1em;
+  border: none;
+  height: 2.5em;
+  padding: 0 var(--space-2);
+  background: var(--color-bg-1);
+  color: var(--color-bg-1-text);
+  border-radius: var(--radius-1);
+}
+
+.ak-input:hover {
+  background: var(--color-bg-1-hover);
+}
+
+.ak-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  font-size: 1em;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  height: 2.5em;
+  min-width: 2.5em;
+  border: none;
+}
+
+*[disabled],
+*[aria-disabled="true"] {
+  opacity: 0.5;
+}
+
+*:focus-visible,
+*[data-focus-visible] {
+  outline: 2px solid var(--color-focus-ring, var(--color-primary-2));
+  outline-offset: 2px;
+}
+
+.ak-border {
+  border: 1px solid transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 16px !important;
+  background: var(--color-bg-2);
+  color: var(--color-bg-2-text);
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: var(--color-link);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.playground-editor {
+  max-height: calc(100vh - 300px);
+}
+
+.playground-editor .cm-scroller {
+  padding-top: 8px !important;
+}
+
+$colors: bg, alpha, primary, danger, warn;
+
+@each $color in $colors {
+  @for $i from 1 through 4 {
+    $colorName: #{$color}-#{$i};
+    $selector: ak-#{$colorName};
+
+    .#{$selector} {
+      background-color: var(--color-#{$colorName});
+      border-color: var(--color-#{$colorName}-border);
+      color: var(--color-#{$colorName}-text);
+    }
+
+    .#{$selector}.ak-button:not([aria-disabled="true"]):not([disabled]):hover,
+    .#{$selector}.ak-interactive:not([aria-disabled="true"]):not([disabled]):hover {
+      background-color: var(--color-#{$colorName}-hover);
+    }
+  }
+}

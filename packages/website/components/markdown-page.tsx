@@ -34,10 +34,10 @@ const { Compiler: renderAst } = new RehypeReact({
     },
     a: (props) => {
       if ("data-playground" in props) {
-        const key = Object.values(props.defaultValues).join("");
+        // const key = Object.values(props.defaultValues).join("");
         return (
           <Playground
-            key={key}
+            // key={key}
             defaultValues={props.defaultValues}
             deps={props.deps}
           />

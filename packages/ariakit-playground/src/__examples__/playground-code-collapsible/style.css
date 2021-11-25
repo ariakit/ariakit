@@ -4,6 +4,7 @@
 }
 
 .playground-code {
+  background: var(--background-inset);
   border-radius: inherit;
 }
 
@@ -18,6 +19,7 @@
   cursor: pointer;
   background: none;
   padding: 4px 8px 8px;
+  color: inherit;
 }
 
 .playground-code-disclosure:hover {
@@ -33,6 +35,6 @@
   border-radius: 0;
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
-  color: white;
-  background: linear-gradient(#1e1e1e00, #1e1e1eee 3.5em, #1e1e1e 4em);
+  color: var(--background-inset-text);
+  background: linear-gradient(transparent, var(--background-inset) 3.5em);
 }

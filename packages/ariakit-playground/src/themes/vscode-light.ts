@@ -7,14 +7,14 @@ const selection = "hsl(210, 100%, 84%)";
 const selectionMatch = "hsl(207, 50%, 85%)";
 const matchingBracket = "hsla(204, 3%, 50%, 0.5)";
 const lineNumber = "hsl(204, 3%, 43%)";
-const activeLine = "hsla(204, 3%, 87%, 0.5)";
+const activeLine = "hsla(204, 3%, 87%, 0.4)";
 const keyword = "hsl(240, 100%, 50%)";
 const comment = "hsl(120, 100%, 25%)";
 const number = "hsl(158, 87%, 28%)";
 const string = "hsl(0, 77%, 36%)";
 const func = "hsl(40, 52%, 31%)";
 const regex = "hsl(340, 61%, 31%)";
-const tag = "hsl(194, 60%, 35%)";
+const tag = "hsl(195, 60%, 35%)";
 const selector = "hsl(0, 100%, 25%)";
 
 const theme = css`

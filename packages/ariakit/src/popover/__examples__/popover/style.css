@@ -4,14 +4,22 @@
   display: flex;
   flex-direction: column;
   z-index: 999;
-  background: var(--color-background-50, #fff);
-  border-radius: 4px;
+  background: var(--background-2);
+  /* border: 1px solid var(--background-border); */
+  border-radius: 8px;
   padding: 1em;
   gap: 1em;
-  filter: drop-shadow(0px 2px 4px var(--color-shadow-200, rgba(0, 0, 0, 0.25)));
+  min-width: 195px;
+  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.25));
 }
 
 .popover-heading {
   margin: 0;
   font-size: 1.5em;
+}
+
+.popover .button {
+  background: var(--gray);
+  color: var(--gray-text);
+  border: 1px solid var(--gray-border);
 }

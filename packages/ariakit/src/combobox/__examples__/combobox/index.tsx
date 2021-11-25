@@ -1,18 +1,24 @@
 import {
   Combobox,
   ComboboxItem,
-  ComboboxLabel,
   ComboboxPopover,
   useComboboxState,
 } from "ariakit/combobox";
+import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState();
+  const combobox = useComboboxState({ gutter: 8 });
   return (
     <div>
-      <ComboboxLabel state={combobox}>Fruit</ComboboxLabel>
-      <Combobox state={combobox} />
-      <ComboboxPopover state={combobox} aria-label="Fruits">
+      <label className="label">
+        Fruit
+        <Combobox
+          state={combobox}
+          placeholder="Start typing some fruit"
+          className="combobox"
+        />
+      </label>
+      <ComboboxPopover state={combobox} className="popover">
         <ComboboxItem value="Apple" />
         <ComboboxItem value="Orange" />
         <ComboboxItem value="Watermelon" />

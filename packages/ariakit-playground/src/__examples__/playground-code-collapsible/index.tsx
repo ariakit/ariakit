@@ -1,5 +1,5 @@
 import { PlaygroundCode } from "ariakit-playground";
-import theme from "ariakit-playground/themes/vscode-dark";
+import theme from "ariakit-playground/themes/vscode";
 import "./style.css";
 
 const value = `function Greeting({ name }) {
