@@ -1,0 +1,29 @@
+.playground-code-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+  background: none;
+  padding: 4px 8px 8px;
+  color: inherit;
+}
+
+.playground-code-disclosure:hover {
+  text-decoration: underline;
+}
+
+.playground-code-disclosure[aria-expanded="false"] {
+  position: absolute;
+  bottom: 0;
+  padding: 3em 16px 8px;
+  z-index: 201;
+  border-radius: 0;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  color: var(--color-bg-1-text);
+  background: linear-gradient(transparent, var(--color-bg-1) 3.5em);
+}

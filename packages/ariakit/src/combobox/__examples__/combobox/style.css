@@ -1,15 +1,13 @@
-
 .label {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: var(--space-1);
 }
 
 .combobox {
-  background: var(--color-bg-3);
-  color: var(--color-bg-3-text);
-  border: 1px solid var(--color-bg-3-border);
-  /* border: 1px solid var(--background-border); */
+  background: var(--color-bg-1);
+  color: var(--color-bg-1-text);
+  border: none;
   height: 2.5em;
   font-size: 1em;
   padding: 0 1em;
@@ -18,5 +16,29 @@
 }
 
 .combobox:hover {
-  background: var(--color-bg-3-hover);
+  background: var(--color-bg-1-hover);
+}
+
+.combobox-popover {
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  background: var(--color-bg-4);
+  color: var(--color-bg-4-text);
+  border: 1px solid var(--color-bg-4-border);
+  border-radius: var(--radius-2);
+  min-width: 250px;
+  padding: var(--space-1);
+  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.25));
+}
+
+.combobox-popover > * {
+  border-radius: var(--radius-1);
+  padding: var(--space-1);
+  outline: none;
+}
+
+.combobox-popover > *[aria-selected="true"] {
+  background: var(--color-primary-2);
+  color: var(--color-primary-2-text);
 }

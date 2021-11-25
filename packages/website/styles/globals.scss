@@ -11,14 +11,9 @@
 }
 
 .ak-center {
+  display: flex;
   justify-content: center;
   align-items: center;
-}
-
-@for $i from 1 through 5 {
-  .ak-gap-#{$i} {
-    gap: var(--space-#{$i});
-  }
 }
 
 .ak-input {
@@ -28,7 +23,7 @@
   padding: 0 var(--space-2);
   background: var(--color-bg-1);
   color: var(--color-bg-1-text);
-  border-radius: var(--radius-1);
+  border-radius: var(--radius-2);
 }
 
 .ak-input:hover {
@@ -61,6 +56,29 @@
 
 .ak-border {
   border: 1px solid transparent;
+}
+
+@for $i from 1 through 5 {
+  .ak-gap-#{$i} {
+    gap: var(--space-#{$i});
+  }
+  .ak-padding-#{$i} {
+    padding: var(--space-#{$i});
+  }
+  .ak-padding-x-#{$i} {
+    padding-left: var(--space-#{$i});
+    padding-right: var(--space-#{$i});
+  }
+  .ak-padding-y-#{$i} {
+    padding-top: var(--space-#{$i});
+    padding-bottom: var(--space-#{$i});
+  }
+}
+
+@for $i from 1 through 3 {
+  .ak-round-#{$i} {
+    border-radius: var(--radius-#{$i});
+  }
 }
 
 * {
@@ -96,7 +114,7 @@ a:hover {
 }
 
 .playground-editor {
-  max-height: calc(100vh - 300px);
+  max-height: calc(100vh - 500px);
 }
 
 .playground-editor .cm-scroller {
@@ -106,7 +124,7 @@ a:hover {
 $colors: bg, alpha, primary, danger, warn;
 
 @each $color in $colors {
-  @for $i from 1 through 4 {
+  @for $i from 1 through 5 {
     $colorName: #{$color}-#{$i};
     $selector: ak-#{$colorName};
 

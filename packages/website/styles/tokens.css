@@ -8,8 +8,8 @@
   --space-4: 32px;
   --space-5: 64px;
 
-  --radius-1: 8px;
-  --radius-2: 4px;
+  --radius-1: 4px;
+  --radius-2: 8px;
   --radius-3: 50%;
 }
 
@@ -35,46 +35,54 @@ body {
   --light: var(--ON);
 }
 
-body {
+body,
+.dark-mode,
+.light-mode {
+  --color-text:             var(--dark, hsl(204, 3%, 97%))        var(--light, hsl(204, 10%, 10%));
+  --color-text-soft:        var(--dark, hsl(204, 3%, 80%))        var(--light, hsl(204, 10%, 30%));
+  --color-link:             var(--dark, hsl(204, 100%, 56%))      var(--light, hsl(204, 100%, 36%));
+
   /** color-bg **/
-  --color-bg-1:             var(--dark, hsl(204, 3%, 12%))        var(--light, hsl(204, 20%, 93%));
-  --color-bg-1-hover:       var(--dark, hsl(204, 3%, 10%))        var(--light, hsl(204, 20%, 90%));
-  --color-bg-1-border:      var(--dark, hsl(204, 3%, 24%))        var(--light, hsl(204, 20%, 81%));
-  --color-bg-1-text:        var(--dark, hsl(204, 3%, 97%))        var(--light, hsl(204, 10%, 10%));
+  --color-bg-1:             var(--dark, hsl(204, 3%, 12%))        var(--light, hsl(204, 20%, 94%));
+  --color-bg-1-hover:       var(--dark, hsl(204, 3%, 10%))        var(--light, hsl(204, 20%, 91%));
+  --color-bg-1-border:      var(--dark, hsl(204, 3%, 24%))        var(--light, hsl(204, 20%, 82%));
+  --color-bg-1-text:        var(--color-text);
 
   --color-bg-2:             var(--dark, hsl(204, 3%, 16%))        var(--light, hsl(204, 20%, 97%));
   --color-bg-2-hover:       var(--dark, hsl(204, 3%, 14%))        var(--light, hsl(204, 20%, 94%));
   --color-bg-2-border:      var(--dark, hsl(204, 3%, 28%))        var(--light, hsl(204, 20%, 85%));
-  --color-bg-2-text:        var(--color-bg-1-text);
+  --color-bg-2-text:        var(--color-text);
 
   --color-bg-3:             var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 99%));
   --color-bg-3-hover:       var(--dark, hsl(204, 3%, 16%))        var(--light, hsl(204, 20%, 95%));
   --color-bg-3-border:      var(--dark, hsl(204, 3%, 30%))        var(--light, hsl(204, 20%, 87%));
-  --color-bg-3-text:        var(--color-bg-1-text);
+  --color-bg-3-text:        var(--color-text);
 
   --color-bg-4:             var(--dark, hsl(204, 3%, 20%))        var(--light, hsl(204, 20%, 100%));
   --color-bg-4-hover:       var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 96%));
   --color-bg-4-border:      var(--dark, hsl(204, 3%, 32%))        var(--light, hsl(204, 20%, 88%));
-  --color-bg-4-text:        var(--color-bg-1-text);
+  --color-bg-4-text:        var(--color-text);
 
-  /** color-link **/
-  --color-link:             var(--dark, hsl(204, 100%, 56%))      var(--light, hsl(204, 100%, 36%));
+  --color-bg-5:             var(--dark, hsl(204, 20%, 94%))       var(--light, hsl(204, 3%, 12%));
+  --color-bg-5-hover:       var(--dark, hsl(204, 20%, 91%))       var(--light, hsl(204, 3%, 10%));
+  --color-bg-5-border:      var(--dark, hsl(204, 20%, 82%))       var(--light, hsl(204, 3%, 24%));
+  --color-bg-5-text:        var(--dark, hsl(204, 10%, 10%))       var(--light, hsl(204, 3%, 97%));
 
   /** color-alpha **/ 
-  --color-alpha-1:          var(--dark, hsla(204, 5%, 8%, 50%))   var(--light, hsla(204, 20%, 89%, 50%));
-  --color-alpha-1-hover:    var(--dark, hsla(204, 5%, 4%, 50%))   var(--light, hsla(204, 20%, 83%, 50%));
-  --color-alpha-1-border:   var(--dark, hsla(204, 5%, 45%, 50%))  var(--light, hsla(204, 20%, 72%, 50%));
-  --color-alpha-1-text:     var(--color-bg-1-text);
+  --color-alpha-1:          var(--dark, hsla(204, 5%, 8%, 50%))   var(--light, hsla(204, 10%, 89%, 50%));
+  --color-alpha-1-hover:    var(--dark, hsla(204, 5%, 4%, 50%))   var(--light, hsla(204, 10%, 83%, 50%));
+  --color-alpha-1-border:   var(--dark, hsla(204, 5%, 45%, 50%))  var(--light, hsla(204, 10%, 72%, 50%));
+  --color-alpha-1-text:     var(--color-text);
 
-  --color-alpha-2:          var(--dark, hsla(204, 5%, 8%, 0%))    var(--light, hsla(204, 20%, 100%, 0%));
-  --color-alpha-2-hover:    var(--dark, hsla(204, 5%, 24%, 50%))  var(--light, hsla(204, 20%, 89%, 50%));
-  --color-alpha-2-border:   var(--dark, hsl(204, 5%, 100%))       var(--light, hsl(204, 20%, 0%));
-  --color-alpha-2-text:     var(--color-bg-1-text);
+  --color-alpha-2:          var(--dark, hsla(204, 5%, 8%, 0%))    var(--light, hsla(204, 10%, 100%, 0%));
+  --color-alpha-2-hover:    var(--dark, hsla(204, 5%, 24%, 50%))  var(--light, hsla(204, 10%, 87%, 50%));
+  --color-alpha-2-border:   var(--dark, hsl(204, 5%, 100%))       var(--light, hsl(204, 10%, 0%));
+  --color-alpha-2-text:     var(--color-text);
 
-  --color-alpha-3:          var(--dark, hsla(204, 5%, 24%, 50%))  var(--light, hsla(204, 20%, 100%, 75%));
-  --color-alpha-3-hover:    var(--dark, hsla(204, 5%, 32%, 50%))  var(--light, hsla(204, 20%, 89%, 75%));
-  --color-alpha-3-border:   var(--dark, hsla(204, 5%, 70%, 50%))  var(--light, hsla(204, 20%, 85%, 75%));
-  --color-alpha-3-text:     var(--color-bg-1-text);
+  --color-alpha-3:          var(--dark, hsla(204, 5%, 24%, 50%))  var(--light, hsla(204, 10%, 100%, 75%));
+  --color-alpha-3-hover:    var(--dark, hsla(204, 5%, 32%, 50%))  var(--light, hsla(204, 10%, 89%, 75%));
+  --color-alpha-3-border:   var(--dark, hsla(204, 5%, 70%, 50%))  var(--light, hsla(204, 10%, 85%, 75%));
+  --color-alpha-3-text:     var(--color-text);
 
   /** color-primary **/ 
   --color-primary-1:        var(--dark, hsl(204, 25%, 23%))       var(--light, hsl(204, 100%, 90%));
@@ -85,7 +93,7 @@ body {
   --color-primary-2:        var(--dark, hsl(204, 100%, 40%))      var(--light, hsl(204, 100%, 40%));
   --color-primary-2-hover:  var(--dark, hsl(204, 100%, 32%))      var(--light, hsl(204, 100%, 32%));
   --color-primary-2-border: var(--dark, hsl(204, 100%, 80%))      var(--light, hsl(204, 100%, 30%));
-  --color-primary-2-text:   var(--dark, var(--color-bg-1-text))     var(--light, hsl(204, 3%, 97%));
+  --color-primary-2-text:   var(--dark, var(--color-text))          var(--light, hsl(204, 3%, 97%));
 
   /** color-danger **/
   --color-danger-1:         var(--dark, hsl(357, 25%, 25%))       var(--light, hsl(357, 56%, 90%));
@@ -96,7 +104,7 @@ body {
   --color-danger-2:         var(--dark, hsl(357, 56%, 50%))       var(--light, hsl(357, 56%, 50%));
   --color-danger-2-hover:   var(--dark, hsl(357, 56%, 42%))       var(--light, hsl(357, 56%, 42%));
   --color-danger-2-border:  var(--dark, hsl(357, 56%, 80%))       var(--light, hsl(357, 56%, 30%));
-  --color-danger-2-text:    var(--dark, var(--color-bg-1-text))     var(--light, hsl(357, 3%, 97%));
+  --color-danger-2-text:    var(--dark, var(--color-text))          var(--light, hsl(357, 3%, 97%));
 
   /** color-warn **/
   --color-warn-1:           var(--dark, hsl(43, 25%, 23%))        var(--light, hsl(43, 91%, 80%));
@@ -107,5 +115,5 @@ body {
   --color-warn-2:           var(--dark, hsl(43, 75%, 50%))        var(--light, hsl(43, 91%, 62%));
   --color-warn-2-hover:     var(--dark, hsl(43, 75%, 60%))        var(--light, hsl(43, 91%, 54%));
   --color-warn-2-border:    var(--dark, hsl(43, 91%, 90%))        var(--light, hsl(43, 91%, 42%));
-  --color-warn-2-text:      var(--dark, hsl(43, 10%, 10%))        var(--light, var(--color-bg-1-text));
+  --color-warn-2-text:      var(--dark, hsl(43, 10%, 10%))        var(--light, var(--color-text));
 }

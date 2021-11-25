@@ -18,7 +18,7 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover state={combobox} className="combobox-popover">
         <ComboboxItem value="Apple" />
         <ComboboxItem value="Orange" />
         <ComboboxItem value="Watermelon" />
