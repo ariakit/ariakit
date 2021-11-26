@@ -8,5 +8,5 @@ export function getCSSModule(module: AnyObject) {
 }
 
 export function createCSSModule(code: string) {
-  return { [CSS_EXPORT]: css(code) };
+  return { [CSS_EXPORT]: css(code.replace(/\:root/gi, "&")) };
 }

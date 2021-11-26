@@ -1,6 +1,6 @@
 # Combobox
 
-<p class="ak-warn">
+<p class="warn">
   This component is <strong>experimental</strong>.
 </p>
 

@@ -1,15 +1,9 @@
-import {
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { MouseEvent, useCallback, useMemo, useRef, useState } from "react";
 import {
   useControlledState,
   useEventCallback,
   useForkRef,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
@@ -60,7 +54,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       language = "jsx";
     }
 
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!maxHeight) return;
       const element = ref.current;
       if (!element) return;

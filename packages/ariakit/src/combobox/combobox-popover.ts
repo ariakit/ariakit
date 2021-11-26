@@ -1,5 +1,5 @@
 // TODO: Do not move focus to the combobox input when clicking outside (the
-// body).
+// body) when the popover is conditionally rendered.
 import { useState } from "react";
 import { matches } from "ariakit-utils/dom";
 import { useUpdateEffect } from "ariakit-utils/hooks";

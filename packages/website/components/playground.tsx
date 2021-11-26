@@ -98,60 +98,48 @@ export default function Playground(props: PlaygroundProps) {
   );
 
   return (
-    <div className="ak-col ak-center ak-gap-3" style={{ maxWidth: 980 }}>
+    <div className="col center gap-3" style={{ maxWidth: 980 }}>
       <PlaygroundContainer
         state={playground}
-        className="ak-col ak-center ak-gap-3"
+        className="col center gap-3 sm:gap-1"
         style={{ width: "100%" }}
       >
         <div style={{ width: "100%" }}>
           <PlaygroundPreview
             getModule={getModule}
-            className="ak-center ak-bg-3 ak-round-2 ak-padding-x-5 ak-padding-y-4"
+            className="playground-preview center bg-3 round-3 px-6 py-4 sm:p-1 light:border"
             style={{
-              borderWidth: "var(--light, 1px) var(--dark, 0)",
-              borderStyle: "solid",
+              // borderWidth: "var(--light, 1px) var(--dark, 0)",
+              // borderStyle: "solid",
               minHeight: 300,
             }}
           />
         </div>
         <div
+          className="relative round-3"
           style={{
-            position: "relative",
-            borderRadius: "var(--radius-2)",
             maxWidth: 800,
             width: "100%",
           }}
         >
           <div
-            className="ak-bg-1"
+            className="bg-1 space-between gap-2 p-2 pb-1"
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "16px 16px 8px",
-              gap: 16,
               borderTopLeftRadius: "inherit",
               borderTopRightRadius: "inherit",
               fontSize: 14,
             }}
           >
-            <TabList state={tab} style={{ display: "flex", gap: 8 }}>
+            <TabList state={tab} className="row gap-1">
               {Object.keys(playground.values).map((file) => (
                 <Tab
                   key={file}
                   id={`tab-${file}`}
                   onClick={() => setExpanded(true)}
-                  className={cx(
-                    "ak-button",
-                    tab.visibleId === `tab-${file}`
-                      ? "ak-primary-2"
-                      : "ak-alpha-2"
-                  )}
+                  className="button alpha-2 selected:primary-2 round-2"
                   style={
                     tab.visibleId === `tab-${file}`
-                      ? {
-                          borderRadius: 6,
-                        }
+                      ? {}
                       : {
                           color: "var(--color-text-soft)",
                         }
@@ -164,7 +152,7 @@ export default function Playground(props: PlaygroundProps) {
             <TooltipAnchor
               as={OpenInCodeSandbox}
               state={tooltip}
-              className="ak-button ak-alpha-2"
+              className="button alpha-2"
               style={{
                 color: "var(--color-text-soft)",
               }}
@@ -173,7 +161,7 @@ export default function Playground(props: PlaygroundProps) {
             </TooltipAnchor>
             <Tooltip
               state={tooltip}
-              className="ak-bg-5 ak-padding-1 ak-round-2"
+              className="dark:bg-4 light:bg-1 border shadow-1 p-1 round-2"
               style={{ fontSize: 14 }}
             >
               Open in CodeSandbox
@@ -192,7 +180,7 @@ export default function Playground(props: PlaygroundProps) {
                     <PlaygroundEditor
                       state={playground}
                       file={file}
-                      className={`${theme} playground-editor ak-bg-1`}
+                      className={`${theme} playground-editor bg-1`}
                       style={{
                         borderBottomLeftRadius: "inherit",
                         borderBottomRightRadius: "inherit",

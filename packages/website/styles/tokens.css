@@ -1,14 +1,15 @@
-/* TODO: We need more grays */
 :root { 
   --space-1: 8px;
   --space-2: 16px;
   --space-3: 24px;
   --space-4: 32px;
-  --space-5: 64px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 96px;
 
   --radius-1: 4px;
-  --radius-2: 8px;
-  --radius-3: 50%;
+  --radius-2: 6px;
+  --radius-3: 8px;
 
   --color-text-dark: hsl(204, 3%, 97%);
   --color-text-light: hsl(204, 10%, 10%);
@@ -20,6 +21,7 @@ body,
   --color-text:             var(--dark, var(--color-text-dark))     var(--light, var(--color-text-light));
   --color-text-soft:        var(--dark, hsl(204, 3%, 80%))        var(--light, hsl(204, 10%, 30%));
   --color-link:             var(--dark, hsl(204, 100%, 56%))      var(--light, hsl(204, 100%, 36%));
+  --color-shadow:           var(--dark, rgba(0, 0, 0, 30%))       var(--light, rgba(0, 0, 0, 15%));
 
   /** color-bg **/
   --color-bg-1:             var(--dark, hsl(204, 3%, 12%))        var(--light, hsl(204, 20%, 94%));
@@ -41,11 +43,6 @@ body,
   --color-bg-4-hover:       var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 96%));
   --color-bg-4-border:      var(--dark, hsl(204, 3%, 32%))        var(--light, hsl(204, 20%, 88%));
   --color-bg-4-text:        var(--color-text);
-
-  --color-bg-5:             var(--dark, hsl(204, 20%, 94%))       var(--light, hsl(204, 3%, 12%));
-  --color-bg-5-hover:       var(--dark, hsl(204, 20%, 91%))       var(--light, hsl(204, 3%, 10%));
-  --color-bg-5-border:      var(--dark, hsl(204, 20%, 82%))       var(--light, hsl(204, 3%, 24%));
-  --color-bg-5-text:        var(--dark, var(--color-text-light))    var(--light, var(--color-text-dark));
 
   /** color-alpha **/ 
   --color-alpha-1:          var(--dark, hsla(204, 5%, 8%, 50%))   var(--light, hsla(204, 10%, 89%, 50%));
