@@ -98,17 +98,19 @@ export default function Playground(props: PlaygroundProps) {
   );
 
   return (
-    <div className="ak-col ak-center ak-gap-3">
+    <div className="ak-col ak-center ak-gap-3" style={{ maxWidth: 980 }}>
       <PlaygroundContainer
         state={playground}
-        className="ak-col ak-center ak-gap-3 ak-padding-x-2"
+        className="ak-col ak-center ak-gap-3"
         style={{ width: "100%" }}
       >
-        <div style={{ maxWidth: 920, width: "100%" }}>
+        <div style={{ width: "100%" }}>
           <PlaygroundPreview
             getModule={getModule}
-            className="ak-center ak-bg-3 ak-border ak-round-2 ak-padding-x-5 ak-padding-y-4"
+            className="ak-center ak-bg-3 ak-round-2 ak-padding-x-5 ak-padding-y-4"
             style={{
+              borderWidth: "var(--light, 1px) var(--dark, 0)",
+              borderStyle: "solid",
               minHeight: 300,
             }}
           />

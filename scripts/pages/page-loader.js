@@ -8,6 +8,7 @@ const { writePage } = require("./utils");
  * @property {string} options.name
  * @property {string} options.buildDir
  * @property {string} options.componentPath
+ * @property {string} [options.cssTokensPath]
  */
 
 /**
@@ -16,13 +17,13 @@ const { writePage } = require("./utils");
  * import("webpack").LoaderContext<Options>>}
  */
 async function pageLoader(source) {
-  const filePath = this.resourcePath;
-  const { name, buildDir, componentPath } = this.getOptions();
+  const filename = this.resourcePath;
+  const { name, buildDir, componentPath, cssTokensPath } = this.getOptions();
   const dest = path.join(buildDir, name);
 
-  await writePage(filePath, dest, componentPath);
+  await writePage({ filename, dest, componentPath, cssTokensPath });
 
-  if (/\.md$/.test(filePath)) {
+  if (/\.md$/.test(filename)) {
     // If the file is a markdown file, we'll need to convert it to AST.
     return markdownLoader.call(this, source);
   }

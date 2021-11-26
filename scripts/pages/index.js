@@ -17,6 +17,7 @@ const {
  * @property {string} sourceContext
  * @property {RegExp} sourceRegExp
  * @property {string} componentPath
+ * @property {string} [cssTokensPath]
  * @property {string} [buildDir]
  * @property {string} [pagesDir]
  */
@@ -33,9 +34,14 @@ pages.forEach(async (page) => {
 
   const files = getFiles(page.sourceContext, page.sourceRegExp);
 
-  for await (const file of files) {
+  for await (const filename of files) {
     const dest = path.join(buildDir, page.name);
-    await writePage(file, dest, page.componentPath);
+    await writePage({
+      filename,
+      dest,
+      componentPath: page.componentPath,
+      cssTokensPath: page.cssTokensPath,
+    });
   }
 
   writeEntryFile(page.sourceContext, page.sourceRegExp, entryPath);

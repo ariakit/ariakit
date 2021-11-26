@@ -14,7 +14,7 @@ export default function Example() {
         Fruit
         <Combobox
           state={combobox}
-          placeholder="Start typing some fruit"
+          placeholder="A delicious fruit"
           className="combobox"
         />
       </label>

@@ -3,6 +3,7 @@ import { PlaygroundCode } from "ariakit-playground/playground-code";
 import theme from "ariakit-playground/themes/vscode-dark";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
+import styles from "./markdown-page.module.scss";
 import Playground from "./playground";
 
 // @ts-ignore
@@ -59,5 +60,31 @@ export default function MarkdownPage(props) {
     });
     return props.markdown;
   }, [props.markdown, props.defaultValues, props.deps]);
-  return <div>{renderAst(props.markdown)}</div>;
+  return (
+    <div className="ak-col ak-gap-2 ak-center">
+      <div
+        style={{
+          position: "fixed",
+          height: 60,
+          width: "100%",
+          background: "var(--color-bg-4)",
+          top: 0,
+          left: 0,
+          zIndex: 998,
+          borderBottom: "1px solid var(--color-bg-4-border)",
+        }}
+      />
+      <div
+        className={styles["wrapper"]}
+        style={{
+          position: "relative",
+          width: "100%",
+          padding: "80px 16px",
+          maxWidth: 952,
+        }}
+      >
+        {renderAst(props.markdown)}
+      </div>
+    </div>
+  );
 }

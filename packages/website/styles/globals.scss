@@ -1,3 +1,4 @@
+@import url("./modes.css");
 @import url("./tokens.css");
 
 .ak-row {
@@ -24,6 +25,14 @@
   background: var(--color-bg-1);
   color: var(--color-bg-1-text);
   border-radius: var(--radius-2);
+}
+
+.ak-warn {
+  background: var(--color-warn-1);
+  color: var(--color-warn-1-text);
+  padding: var(--space-2);
+  border-radius: var(--radius-2);
+  border-left: var(--radius-2) solid var(--color-warn-1-border);
 }
 
 .ak-input:hover {
@@ -111,6 +120,20 @@ a:hover {
 
 * {
   box-sizing: border-box;
+}
+
+p,
+ul {
+  margin: 0;
+  line-height: 1.5;
+}
+
+code {
+  font-family: Menlo, monospace;
+  font-size: 1em;
+  background: var(--color-bg-4);
+  padding: 0.25em;
+  border-radius: var(--radius-2);
 }
 
 .playground-editor {

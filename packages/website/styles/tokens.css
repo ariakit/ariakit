@@ -1,7 +1,5 @@
+/* TODO: We need more grays */
 :root { 
-  --ON: initial;
-  --OFF: ;
-
   --space-1: 8px;
   --space-2: 16px;
   --space-3: 24px;
@@ -11,34 +9,15 @@
   --radius-1: 4px;
   --radius-2: 8px;
   --radius-3: 50%;
-}
 
-body {
-  --dark: var(--ON);
-  --light: var(--OFF);
-}
-
-@media (prefers-color-scheme: light) {
-  body {
-    --dark: var(--OFF);
-    --light: var(--ON);
-  }
-}
-
-.dark-mode {
-  --dark: var(--ON);
-  --light: var(--OFF);
-}
-
-.light-mode {
-  --dark: var(--OFF);
-  --light: var(--ON);
+  --color-text-dark: hsl(204, 3%, 97%);
+  --color-text-light: hsl(204, 10%, 10%);
 }
 
 body,
 .dark-mode,
 .light-mode {
-  --color-text:             var(--dark, hsl(204, 3%, 97%))        var(--light, hsl(204, 10%, 10%));
+  --color-text:             var(--dark, var(--color-text-dark))     var(--light, var(--color-text-light));
   --color-text-soft:        var(--dark, hsl(204, 3%, 80%))        var(--light, hsl(204, 10%, 30%));
   --color-link:             var(--dark, hsl(204, 100%, 56%))      var(--light, hsl(204, 100%, 36%));
 
@@ -66,7 +45,7 @@ body,
   --color-bg-5:             var(--dark, hsl(204, 20%, 94%))       var(--light, hsl(204, 3%, 12%));
   --color-bg-5-hover:       var(--dark, hsl(204, 20%, 91%))       var(--light, hsl(204, 3%, 10%));
   --color-bg-5-border:      var(--dark, hsl(204, 20%, 82%))       var(--light, hsl(204, 3%, 24%));
-  --color-bg-5-text:        var(--dark, hsl(204, 10%, 10%))       var(--light, hsl(204, 3%, 97%));
+  --color-bg-5-text:        var(--dark, var(--color-text-light))    var(--light, var(--color-text-dark));
 
   /** color-alpha **/ 
   --color-alpha-1:          var(--dark, hsla(204, 5%, 8%, 50%))   var(--light, hsla(204, 10%, 89%, 50%));
@@ -93,7 +72,7 @@ body,
   --color-primary-2:        var(--dark, hsl(204, 100%, 40%))      var(--light, hsl(204, 100%, 40%));
   --color-primary-2-hover:  var(--dark, hsl(204, 100%, 32%))      var(--light, hsl(204, 100%, 32%));
   --color-primary-2-border: var(--dark, hsl(204, 100%, 80%))      var(--light, hsl(204, 100%, 30%));
-  --color-primary-2-text:   var(--dark, var(--color-text))          var(--light, hsl(204, 3%, 97%));
+  --color-primary-2-text:   var(--color-text-dark);
 
   /** color-danger **/
   --color-danger-1:         var(--dark, hsl(357, 25%, 25%))       var(--light, hsl(357, 56%, 90%));
@@ -104,16 +83,16 @@ body,
   --color-danger-2:         var(--dark, hsl(357, 56%, 50%))       var(--light, hsl(357, 56%, 50%));
   --color-danger-2-hover:   var(--dark, hsl(357, 56%, 42%))       var(--light, hsl(357, 56%, 42%));
   --color-danger-2-border:  var(--dark, hsl(357, 56%, 80%))       var(--light, hsl(357, 56%, 30%));
-  --color-danger-2-text:    var(--dark, var(--color-text))          var(--light, hsl(357, 3%, 97%));
+  --color-danger-2-text:    var(--dark, var(--color-text-dark))     var(--light, hsl(357, 3%, 97%));
 
   /** color-warn **/
-  --color-warn-1:           var(--dark, hsl(43, 25%, 23%))        var(--light, hsl(43, 91%, 80%));
-  --color-warn-1-hover:     var(--dark, hsl(43, 25%, 27%))        var(--light, hsl(43, 91%, 76%));
-  --color-warn-1-border:    var(--dark, hsl(43, 25%, 36%))        var(--light, hsl(43, 91%, 50%));
+  --color-warn-1:           var(--dark, hsl(43, 25%, 23%))        var(--light, hsl(43, 91%, 86%));
+  --color-warn-1-hover:     var(--dark, hsl(43, 25%, 27%))        var(--light, hsl(43, 91%, 81%));
+  --color-warn-1-border:    var(--dark, hsl(43, 25%, 36%))        var(--light, hsl(43, 91%, 55%));
   --color-warn-1-text:      var(--dark, hsl(43, 100%, 90%))       var(--light, hsl(43, 100%, 20%));
 
   --color-warn-2:           var(--dark, hsl(43, 75%, 50%))        var(--light, hsl(43, 91%, 62%));
   --color-warn-2-hover:     var(--dark, hsl(43, 75%, 60%))        var(--light, hsl(43, 91%, 54%));
   --color-warn-2-border:    var(--dark, hsl(43, 91%, 90%))        var(--light, hsl(43, 91%, 42%));
-  --color-warn-2-text:      var(--dark, hsl(43, 10%, 10%))        var(--light, var(--color-text));
+  --color-warn-2-text:      var(--dark, hsl(43, 10%, 10%))        var(--light, var(--color-text-light));
 }
