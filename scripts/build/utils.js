@@ -155,6 +155,7 @@ function isPublicModule(rootPath, filename) {
  * Returns { index: "path/to/index", moduleName: "path/to/moduleName" }
  * @param {string} rootPath
  * @param {string} prefix
+ * @returns {Record<string, string>}
  */
 function getPublicFiles(rootPath, prefix = "") {
   return readdirSync(rootPath)

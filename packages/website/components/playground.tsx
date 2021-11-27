@@ -6,7 +6,7 @@ import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
 import theme from "ariakit-playground/themes/vscode";
 import { useUpdateEffect } from "ariakit-utils/hooks";
-import { cx, hasOwnProperty } from "ariakit-utils/misc";
+import { hasOwnProperty } from "ariakit-utils/misc";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
 import { Tooltip, TooltipAnchor, useTooltipState } from "ariakit/tooltip";
 import dynamic from "next/dynamic";

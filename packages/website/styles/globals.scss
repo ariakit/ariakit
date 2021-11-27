@@ -76,12 +76,6 @@ body {
   box-sizing: border-box;
 }
 
-a {
-  color: var(--color-link);
-  font-weight: bold;
-  text-decoration: none;
-}
-
 a:hover {
   text-decoration: underline;
 }
@@ -97,13 +91,20 @@ ul {
 }
 
 code {
+  @extend .bg-4, .border, .round-2;
   font-family: Menlo, monospace;
   font-size: 1em;
-  background: var(--color-bg-4);
-  color: var(--color-bg-4-text);
-  padding: 0.25em 0.5em;
-  border-radius: var(--radius-2);
-  border: 1px solid var(--color-bg-4-border);
+  padding: 0.25em;
+}
+
+a {
+  color: var(--color-link);
+  font-weight: bold;
+  text-decoration: none;
+
+  & > code {
+    color: inherit;
+  }
 }
 
 .playground-editor {
@@ -115,7 +116,8 @@ code {
 }
 
 .playground-preview * {
-  all: unset;
+  all: revert;
+  box-sizing: border-box;
 }
 
 .layer-1 {

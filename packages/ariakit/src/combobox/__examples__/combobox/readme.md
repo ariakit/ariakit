@@ -4,7 +4,7 @@
   This component is <strong>experimental</strong>.
 </p>
 
-Accessible `Combobox` component that follows the [WAI-ARIA Combobox pattern](https://www.w3.org/TR/wai-aria-practices-1.2/#combobox).
+Accessible [`Combobox`](/components/combobox) component that follows the [WAI-ARIA Combobox pattern](https://www.w3.org/TR/wai-aria-practices-1.2/#combobox).
 
 dsadsa
 
