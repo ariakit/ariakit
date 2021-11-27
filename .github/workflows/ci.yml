@@ -48,6 +48,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Commit build files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: Add build files" || echo "No changes to commit"
+          git push
+
       # TODO: Add later
       # - name: Type check
       #   run: npm run type-check
