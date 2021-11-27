@@ -306,6 +306,17 @@ async function getPageContent({
 }
 
 /**
+ * @param {string} filename
+ * @param {(path: string) => boolean} exists
+ */
+function getReadmePathFromIndex(filename, exists = fs.existsSync) {
+  if (/readme\.md$/.test(filename)) return;
+  const readmePath = path.join(path.dirname(filename), "readme.md");
+  if (!exists(readmePath)) return;
+  return readmePath;
+}
+
+/**
  * @param {object} options
  * @param {string} options.filename The filename that will be used as a source to write
  * the page.
@@ -316,13 +327,10 @@ async function getPageContent({
  * contains the tokens.
  */
 async function writePage({ filename, dest, componentPath, cssTokensPath }) {
-  if (/index\.[tj]sx?$/.test(filename)) {
-    const readmePath = path.join(path.dirname(filename), "readme.md");
-    // If there's already a readme.md file in the same directory, we'll generate
-    // the page from that, so we can just return the source here for the
-    // index.js file.
-    if (fs.existsSync(readmePath)) return;
-  }
+  // If there's already a readme.md file in the same directory, we'll generate
+  // the page from that, so we can just return the source here for the index.js
+  // file.
+  if (getReadmePathFromIndex(filename)) return;
   const pagePath = path.join(dest, getPageFilename(filename));
   fs.mkdirSync(path.dirname(pagePath), { recursive: true });
   fs.writeFileSync(
@@ -439,6 +447,7 @@ module.exports = {
   getPageTreeFromFile,
   getPageImports,
   getPageContent,
+  getReadmePathFromIndex,
   writePage,
   getFiles,
   getPagesDir,

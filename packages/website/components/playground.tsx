@@ -116,7 +116,7 @@ export default function Playground(props: PlaygroundProps) {
           />
         </div>
         <div
-          className="relative round-3"
+          className="dark-mode relative round-3"
           style={{
             maxWidth: 800,
             width: "100%",

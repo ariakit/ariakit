@@ -1,26 +1,21 @@
-:root { 
-  --ON: initial;
-  --OFF: ;
-}
-
 body {
-  --dark: var(--ON);
-  --light: var(--OFF);
+  --dark: initial;
+  --light: ;
 }
 
 @media (prefers-color-scheme: light) {
   body {
-    --dark: var(--OFF);
-    --light: var(--ON);
+    --dark: ;
+    --light: initial;
   }
 }
 
 .dark-mode {
-  --dark: var(--ON);
-  --light: var(--OFF);
+  --dark: initial;
+  --light: ;
 }
 
 .light-mode {
-  --dark: var(--OFF);
-  --light: var(--ON);
+  --dark: ;
+  --light: initial;
 }
