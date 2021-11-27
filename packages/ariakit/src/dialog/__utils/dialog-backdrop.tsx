@@ -88,7 +88,6 @@ export function DialogBackdrop({
   });
 
   return (
-    // TODO: Rename to data-backdrop
     <Component {...props} data-backdrop={state.contentElement?.id}>
       {children}
     </Component>
