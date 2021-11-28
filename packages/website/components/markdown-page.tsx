@@ -61,7 +61,7 @@ export default function MarkdownPage(props) {
     return props.markdown;
   }, [props.markdown, props.defaultValues, props.deps]);
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <div
         className="w-full bg-canvas-4 layer-2 border-b border-canvas-4"
         style={{
