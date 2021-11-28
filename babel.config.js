@@ -26,7 +26,7 @@ module.exports = {
         targets: test
           ? { node: "current" }
           : {
-              browsers: "defaults",
+              browsers: "defaults, not IE 11",
             },
       },
     ],
