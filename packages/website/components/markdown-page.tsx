@@ -61,21 +61,19 @@ export default function MarkdownPage(props) {
     return props.markdown;
   }, [props.markdown, props.defaultValues, props.deps]);
   return (
-    <div className="col gap-2 center">
+    <div>
       <div
-        className="w-full bg-4 layer-2 border-b"
+        className="w-full bg-canvas-4 layer-2 border-b border-canvas-4"
         style={{
           position: "fixed",
+          zIndex: 300,
           height: 60,
           top: 0,
           left: 0,
         }}
       />
       <div
-        className={`${styles["wrapper"]} w-full relative px-3 sm:px-1 py-7`}
-        style={{
-          maxWidth: 952,
-        }}
+        className={`${styles["wrapper"]} max-w-5xl w-full gap-6 relative px-2 sm:px-4 md:px-8 py-24`}
       >
         {renderAst(props.markdown)}
       </div>

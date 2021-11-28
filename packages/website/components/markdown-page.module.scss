@@ -2,11 +2,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
 
   & > * {
-    max-width: 800px;
-    width: 100%;
+    @apply max-w-3xl w-full;
   }
 
   h1 {

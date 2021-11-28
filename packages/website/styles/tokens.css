@@ -6,6 +6,13 @@
   --space-5: 48px;
   --space-6: 64px;
   --space-7: 96px;
+  --space-8: 128px;
+  --space-9: 192px;
+  --space-10: 256px;
+  --space-11: 384px;
+  --space-12: 512px;
+  --space-13: 768px;
+  --space-14: 1024px;
 
   --radius-1: 4px;
   --radius-2: 6px;
@@ -15,34 +22,34 @@
   --color-text-light: hsl(204, 10%, 10%);
 }
 
-body,
-.dark-mode,
-.light-mode {
+:root,
+.dark,
+.light {
   --color-text:             var(--dark, var(--color-text-dark))     var(--light, var(--color-text-light));
   --color-text-soft:        var(--dark, hsl(204, 3%, 80%))        var(--light, hsl(204, 10%, 30%));
   --color-link:             var(--dark, hsl(204, 100%, 56%))      var(--light, hsl(204, 100%, 36%));
   --color-shadow:           var(--dark, rgba(0, 0, 0, 30%))       var(--light, rgba(0, 0, 0, 15%));
 
-  /** color-bg **/
-  --color-bg-1:             var(--dark, hsl(204, 3%, 12%))        var(--light, hsl(204, 20%, 94%));
-  --color-bg-1-hover:       var(--dark, hsl(204, 3%, 10%))        var(--light, hsl(204, 20%, 91%));
-  --color-bg-1-border:      var(--dark, hsl(204, 3%, 24%))        var(--light, hsl(204, 20%, 82%));
-  --color-bg-1-text:        var(--color-text);
+  /** color-canvas **/
+  --color-canvas-1:         var(--dark, hsl(204, 3%, 12%))        var(--light, hsl(204, 20%, 94%));
+  --color-canvas-1-hover:   var(--dark, hsl(204, 3%, 10%))        var(--light, hsl(204, 20%, 91%));
+  --color-canvas-1-border:  var(--dark, hsl(204, 3%, 24%))        var(--light, hsl(204, 20%, 82%));
+  --color-canvas-1-text:    var(--color-text);
 
-  --color-bg-2:             var(--dark, hsl(204, 3%, 16%))        var(--light, hsl(204, 20%, 97%));
-  --color-bg-2-hover:       var(--dark, hsl(204, 3%, 14%))        var(--light, hsl(204, 20%, 94%));
-  --color-bg-2-border:      var(--dark, hsl(204, 3%, 28%))        var(--light, hsl(204, 20%, 85%));
-  --color-bg-2-text:        var(--color-text);
+  --color-canvas-2:         var(--dark, hsl(204, 3%, 16%))        var(--light, hsl(204, 20%, 97%));
+  --color-canvas-2-hover:   var(--dark, hsl(204, 3%, 14%))        var(--light, hsl(204, 20%, 94%));
+  --color-canvas-2-border:  var(--dark, hsl(204, 3%, 28%))        var(--light, hsl(204, 20%, 85%));
+  --color-canvas-2-text:    var(--color-text);
 
-  --color-bg-3:             var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 99%));
-  --color-bg-3-hover:       var(--dark, hsl(204, 3%, 16%))        var(--light, hsl(204, 20%, 95%));
-  --color-bg-3-border:      var(--dark, hsl(204, 3%, 30%))        var(--light, hsl(204, 20%, 87%));
-  --color-bg-3-text:        var(--color-text);
+  --color-canvas-3:         var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 99%));
+  --color-canvas-3-hover:   var(--dark, hsl(204, 3%, 16%))        var(--light, hsl(204, 20%, 95%));
+  --color-canvas-3-border:  var(--dark, hsl(204, 3%, 30%))        var(--light, hsl(204, 20%, 87%));
+  --color-canvas-3-text:    var(--color-text);
 
-  --color-bg-4:             var(--dark, hsl(204, 3%, 20%))        var(--light, hsl(204, 20%, 100%));
-  --color-bg-4-hover:       var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 96%));
-  --color-bg-4-border:      var(--dark, hsl(204, 3%, 32%))        var(--light, hsl(204, 20%, 88%));
-  --color-bg-4-text:        var(--color-text);
+  --color-canvas-4:         var(--dark, hsl(204, 3%, 20%))        var(--light, hsl(204, 20%, 100%));
+  --color-canvas-4-hover:   var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 96%));
+  --color-canvas-4-border:  var(--dark, hsl(204, 3%, 32%))        var(--light, hsl(204, 20%, 88%));
+  --color-canvas-4-text:    var(--color-text);
 
   /** color-alpha **/ 
   --color-alpha-1:          var(--dark, hsla(204, 5%, 8%, 50%))   var(--light, hsla(204, 10%, 89%, 50%));

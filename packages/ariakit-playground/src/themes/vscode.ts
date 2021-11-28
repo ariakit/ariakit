@@ -9,10 +9,12 @@ const theme = css`
     ${lightTheme}
   }
 
+  .dark &,
   .dark-mode & {
     ${darkTheme}
   }
 
+  .light &,
   .light-mode & {
     ${lightTheme}
   }

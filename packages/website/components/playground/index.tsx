@@ -6,11 +6,11 @@ import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
 import theme from "ariakit-playground/themes/vscode";
 import { useUpdateEffect } from "ariakit-utils/hooks";
-import { hasOwnProperty } from "ariakit-utils/misc";
+import { cx, hasOwnProperty } from "ariakit-utils/misc";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
-import { Tooltip, TooltipAnchor, useTooltipState } from "ariakit/tooltip";
 import dynamic from "next/dynamic";
-import styles from "./playground.module.scss";
+import { TooltipControl } from "../tooltip-control";
+import styles from "./index.module.scss";
 
 const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
   () =>
@@ -76,7 +76,6 @@ const codeSandboxIcon = (
 );
 
 export default function Playground(props: PlaygroundProps) {
-  const tooltip = useTooltipState({ timeout: 500 });
   const playground = usePlaygroundState({ defaultValues: props.defaultValues });
   const tab = useTabState({
     defaultVisibleId: `tab-${Object.keys(playground.values)[0]}`,
@@ -98,74 +97,38 @@ export default function Playground(props: PlaygroundProps) {
   );
 
   return (
-    <div className="col center gap-3" style={{ maxWidth: 980 }}>
+    <div className="!max-w-4xl">
       <PlaygroundContainer
         state={playground}
-        className="col center gap-3 sm:gap-1"
-        style={{ width: "100%" }}
+        className="flex flex-col items-center w-full gap-2 sm:gap-4 md:gap-6"
       >
-        <div style={{ width: "100%" }}>
+        <div className="w-full">
           <PlaygroundPreview
             getModule={getModule}
-            className="playground-preview center bg-3 round-3 px-6 py-4 sm:p-1 light:border"
-            style={{
-              // borderWidth: "var(--light, 1px) var(--dark, 0)",
-              // borderStyle: "solid",
-              minHeight: 300,
-            }}
+            className="flex min-h-1 items-center justify-center bg-canvas-3 rounded-lg p-1 md:px-6 md:py-4 border border-canvas-3 dark:border-0"
           />
         </div>
-        <div
-          className="dark-mode relative round-3"
-          style={{
-            maxWidth: 800,
-            width: "100%",
-          }}
-        >
-          <div
-            className="bg-1 space-between gap-2 p-2 pb-1"
-            style={{
-              borderTopLeftRadius: "inherit",
-              borderTopRightRadius: "inherit",
-              fontSize: 14,
-            }}
-          >
-            <TabList state={tab} className="row gap-1">
+        <div className="dark relative rounded-lg max-w-3xl w-full">
+          <div className="flex justify-between p-4 pb-2 bg-canvas-1 rounded-tl-[inherit] rounded-tr-[inherit] text-sm">
+            <TabList state={tab} className="flex flex-row gap-2">
               {Object.keys(playground.values).map((file) => (
                 <Tab
                   key={file}
                   id={`tab-${file}`}
                   onClick={() => setExpanded(true)}
-                  className="button alpha-2 selected:primary-2 round-2"
-                  style={
-                    tab.visibleId === `tab-${file}`
-                      ? {}
-                      : {
-                          color: "var(--color-text-soft)",
-                        }
-                  }
+                  className="button-sm text-sm bg-alpha-2 hover:bg-alpha-2-hover aria-selected:bg-primary-2 hover:aria-selected:bg-primary-2-hover text-[color:var(--color-text-soft)] aria-selected:text-alpha-2"
                 >
                   {file}
                 </Tab>
               ))}
             </TabList>
-            <TooltipAnchor
+            <TooltipControl
               as={OpenInCodeSandbox}
-              state={tooltip}
-              className="button alpha-2"
-              style={{
-                color: "var(--color-text-soft)",
-              }}
+              title="Open in CodeSandbox"
+              className="button-sm text-sm bg-alpha-2 hover:bg-alpha-2-hover text-[color:var(--color-text-soft)]"
             >
               {codeSandboxIcon}
-            </TooltipAnchor>
-            <Tooltip
-              state={tooltip}
-              className="dark:bg-4 light:bg-1 border shadow-1 p-1 round-2"
-              style={{ fontSize: 14 }}
-            >
-              Open in CodeSandbox
-            </Tooltip>
+            </TooltipControl>
           </div>
           {Object.keys(playground.values).map((file) => (
             <TabPanel
@@ -173,18 +136,19 @@ export default function Playground(props: PlaygroundProps) {
               state={tab}
               tabId={`tab-${file}`}
               focusable={false}
+              className="rounded-[inherit]"
             >
               {(props) =>
                 !props.hidden && (
-                  <div {...props} style={{ borderRadius: "inherit" }}>
+                  <div {...props}>
                     <PlaygroundEditor
                       state={playground}
                       file={file}
-                      className={`${theme} playground-editor bg-1`}
-                      style={{
-                        borderBottomLeftRadius: "inherit",
-                        borderBottomRightRadius: "inherit",
-                      }}
+                      className={cx(
+                        theme,
+                        "playground-editor",
+                        "bg-canvas-1 rounded-bl-[inherit] rounded-br-[inherit]"
+                      )}
                       expanded={expanded}
                       maxHeight={260}
                       setExpanded={setExpanded}

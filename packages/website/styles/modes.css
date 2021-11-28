@@ -1,21 +1,21 @@
-body {
-  --dark: initial;
-  --light: ;
+:root {
+  --dark: ;
+  --light: initial;
 }
 
-@media (prefers-color-scheme: light) {
-  body {
-    --dark: ;
-    --light: initial;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --light: ;
+    --dark: initial;
   }
 }
 
-.dark-mode {
-  --dark: initial;
+.dark {
   --light: ;
+  --dark: initial;
 }
 
-.light-mode {
+.light {
   --dark: ;
   --light: initial;
 }
