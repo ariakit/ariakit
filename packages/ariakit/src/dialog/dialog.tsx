@@ -386,6 +386,7 @@ export const useDialog = createHook<DialogOptions>(
       (element) => {
         if (backdrop) {
           return (
+            // TODO: Use the same z-index as the dialog.
             <DialogBackdrop
               state={state}
               backdrop={backdrop}

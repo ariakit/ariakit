@@ -1,59 +1,64 @@
 .label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  color: var(--color-canvas-1-text);
+  @apply flex flex-col gap-2;
 }
 
 .combobox {
-  background: var(--color-canvas-1);
-  color: var(--color-canvas-1-text);
-  font-size: 1em;
-  border: none;
-  height: 2.5em;
-  font-size: 1em;
-  padding: 0 1em;
-  border-radius: var(--radius-lg);
-  min-width: 250px;
+  @apply
+    bg-canvas-1
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover
+    border-none
+    px-4
+    h-10
+    rounded-lg
+    w-[250px]
+    text-base;
 }
 
 .combobox[data-focus-visible] {
-  outline: 2px solid var(--color-primary-2);
-  outline-offset: 2px;
-}
-
-.combobox:hover {
-  background: var(--color-canvas-1-hover);
+  @apply outline-primary dark:outline-primary-dark;
 }
 
 .popover {
-  display: flex;
-  flex-direction: column;
-  z-index: var(--layer-dialog);
-  background: var(--color-canvas-4);
-  color: var(--color-canvas-4-text);
-  border: 1px solid var(--color-canvas-4-border);
-  border-radius: var(--radius-lg);
-  min-width: 250px;
-  padding: var(--space-2);
-  font-family: sans-serif;
-  filter: var(--drop-shadow);
+  @apply relative
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    text-canvas-4
+    dark:text-canvas-4-dark
+    border
+    border-solid
+    border-canvas-4
+    dark:border-canvas-4-dark
+    flex
+    flex-col
+    z-50
+    p-2
+    rounded-lg
+    w-[250px]
+    drop-shadow
+    dark:drop-shadow-dark;
 }
 
 .popover > * {
-  border-radius: var(--radius);
-  padding: var(--space-2);
-  color: var(--color-canvas-4-text);
-  outline: none;
-  cursor: default;
+  @apply
+    outline-none
+    cursor-default
+    rounded
+    p-2;
 }
 
 .popover > *:hover {
-  background: var(--color-primary-1-hover);
+  @apply bg-primary-1-hover dark:bg-primary-1-dark-hover;
 }
 
 .popover > *[aria-selected="true"],
 .popover > *:focus {
-  background: var(--color-primary-2);
-  color: var(--color-primary-2-text);
+  @apply
+    bg-primary-2
+    text-primary-2
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark;
 }

@@ -97,18 +97,22 @@ export default function Playground(props: PlaygroundProps) {
         <div className="w-full">
           <PlaygroundPreview
             getModule={getModule}
-            className="flex min-h-[300px] items-center justify-center bg-canvas-3 rounded-lg p-4 md:p-6 border border-canvas-3 dark:border-0"
+            className="playground-preview flex min-h-[300px] items-center justify-center bg-canvas-3 dark:bg-canvas-3-dark rounded-lg p-4 md:p-6 border border-canvas-3 dark:border-0"
           />
         </div>
         <div className="dark relative rounded-lg max-w-3xl w-full">
-          <div className="flex justify-between p-4 pb-2 bg-canvas-1 rounded-tl-[inherit] rounded-tr-[inherit] text-sm">
+          <div className="flex justify-between p-4 pb-2 bg-canvas-1 dark:bg-canvas-1-dark rounded-tl-[inherit] rounded-tr-[inherit] text-sm">
             <TabList state={tab} className="flex flex-row gap-2">
               {Object.keys(playground.values).map((file) => (
                 <Tab
                   key={file}
                   id={`tab-${file}`}
                   onClick={() => setExpanded(true)}
-                  className="button-sm text-sm bg-alpha-2 hover:bg-alpha-2-hover aria-selected:bg-primary-2 hover:aria-selected:bg-primary-2-hover text-[color:var(--color-text-soft)] aria-selected:text-alpha-2"
+                  className={`h-8 px-3 rounded-md text-sm ${
+                    tab.activeId === `tab-${file}`
+                      ? "bg-primary-2 text-primary-2 hover:to-primary-2-hover dark:bg-primary-2-dark dark:text-primary-2-dark dark:hover:bg-primary-2-dark-hover"
+                      : "bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover text-black-fade dark:text-white-fade"
+                  }`}
                 >
                   {file}
                 </Tab>
@@ -117,7 +121,7 @@ export default function Playground(props: PlaygroundProps) {
             <TooltipControl
               as={OpenInCodeSandbox}
               title="Open in CodeSandbox"
-              className="button-sm text-sm bg-alpha-2 hover:bg-alpha-2-hover text-[color:var(--color-text-soft)]"
+              className="h-8 px-3 rounded-md text-sm bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover text-black-fade dark:text-white-fade"
             >
               {codeSandboxIcon}
             </TooltipControl>
@@ -139,7 +143,7 @@ export default function Playground(props: PlaygroundProps) {
                       className={cx(
                         theme,
                         "playground-editor",
-                        "bg-canvas-1 rounded-bl-[inherit] rounded-br-[inherit]"
+                        "bg-canvas-1 dark:bg-canvas-1-dark rounded-bl-[inherit] rounded-br-[inherit]"
                       )}
                       expanded={expanded}
                       maxHeight={260}

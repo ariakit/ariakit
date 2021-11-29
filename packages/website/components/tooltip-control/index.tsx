@@ -22,9 +22,9 @@ export const TooltipControl = forwardRef<HTMLDivElement, TooltipControlProps>(
         <Tooltip
           {...tooltipProps}
           className={cx(
-            "bg-canvas-1 dark:bg-canvas-4 text-canvas-1 dark:text-canvas-4",
-            "border border-canvas-1 dark:border-canvas-4 rounded-md",
-            "py-1 px-2 text-sm filter drop-shadow-md",
+            "bg-canvas-1 dark:bg-canvas-4-dark text-canvas-1 dark:text-canvas-4-dark",
+            "border border-canvas-1 dark:border-canvas-4-dark rounded-md",
+            "py-1 px-2 text-sm drop-shadow-sm dark:drop-shadow-sm-dark",
             tooltipProps?.className
           )}
           state={tooltip}

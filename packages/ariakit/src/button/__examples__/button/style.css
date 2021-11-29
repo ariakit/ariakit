@@ -1,27 +1,28 @@
 .button {
-  background: var(--color-primary-2);
-  color: var(--color-primary-2-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  font-size: 1em;
-  border: 0;
-  padding: 0 var(--space-4);
-  /* height: 2.5em; */
-  border-radius: var(--radius-lg);
+  @apply bg-primary-2 
+    text-primary-2
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark
+    flex
+    items-center
+    justify-center
+    gap-2
+    text-base
+    border-none
+    rounded-lg
+    px-4
+    h-10;
 }
 
 .button:hover {
-  background: var(--color-primary-2-hover);
+  @apply bg-primary-2-hover dark:bg-primary-2-dark-hover;
 }
 
 .button[data-focus-visible] {
-  outline: 2px solid var(--color-primary-2);
-  outline-offset: 2px;
+  @apply outline-primary dark:outline-primary-dark;
 }
 
 .button[disabled],
 .button[aria-disabled="true"] {
-  opacity: 0.5;
+  @apply opacity-50;
 }

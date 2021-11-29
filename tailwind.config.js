@@ -1,15 +1,46 @@
+const path = require("path");
+const plugin = require("tailwindcss/plugin");
+
 const black = "hsl(204, 10%, 10%)";
+const blackFade = "hsla(204, 10%, 10%, 75%)";
 const white = "hsl(204, 3%, 97%)";
+const whiteFade = "hsla(204, 3%, 97%, 75%)";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
   mode: "jit",
-  purge: ["./packages/website/components/**/*.{js,jsx,ts,tsx}"],
+  purge: [
+    path.join(__dirname, "packages/website/components/**/*.{js,jsx,ts,tsx}"),
+  ],
   darkMode: "class",
   theme: {
+    extend: {
+      outline: (theme) => ({
+        none: ["none", null],
+        primary: [`2px solid ${theme("colors.primary-2.DEFAULT")}`, "2px"],
+        "primary-dark": [
+          `2px solid ${theme("colors.primary-2.dark.DEFAULT")}`,
+          "2px",
+        ],
+      }),
+    },
     colors: {
-      black,
-      white,
+      black: {
+        DEFAULT: black,
+        text: black,
+      },
+      "black-fade": {
+        DEFAULT: blackFade,
+        text: blackFade,
+      },
+      white: {
+        DEFAULT: white,
+        text: white,
+      },
+      "white-fade": {
+        DEFAULT: whiteFade,
+        text: whiteFade,
+      },
       "canvas-1": {
         DEFAULT: "hsl(204, 20%, 94%)",
         hover: "hsl(204, 20%, 91%)",
@@ -183,10 +214,9 @@ module.exports = {
     borderColor: (theme) => {
       const colors = theme("colors");
       return Object.entries(colors).reduce((acc, [key, color]) => {
-        if (!color.border || !color.dark) return acc;
         acc[key] = {
           DEFAULT: color.border,
-          dark: color.dark.border,
+          dark: color.dark && color.dark.border,
         };
         return acc;
       }, {});
@@ -195,34 +225,44 @@ module.exports = {
     textColor: (theme) => {
       const colors = theme("colors");
       return Object.entries(colors).reduce((acc, [key, color]) => {
-        if (!color.text || !color.dark) return acc;
         acc[key] = {
           DEFAULT: color.text,
-          dark: color.dark.text,
+          dark: color.dark && color.dark.text,
         };
         return acc;
       }, {});
     },
 
+    fill: (theme) => theme("colors"),
+    stroke: (theme) => theme("borderColor"),
+
     dropShadow: {
-      sm: {
-        DEFAULT: "0 2px 3px rgba(0, 0, 0, 15%)",
-        dark: "0 2px 3px rgba(0, 0, 0, 30%)",
-      },
       DEFAULT: "0 4px 6px rgba(0, 0, 0, 15%)",
       dark: "0 4px 6px rgba(0, 0, 0, 30%)",
-      md: {
-        DEFAULT: "0 8px 12px rgba(0, 0, 0, 15%)",
-        dark: "0 8px 12px rgba(0, 0, 0, 30%)",
-      },
-      lg: {
-        DEFAULT: "0 16px 24px rgba(0, 0, 0, 15%)",
-        dark: "0 16px 24px rgba(0, 0, 0, 30%)",
-      },
+      sm: "0 2px 3px rgba(0, 0, 0, 15%)",
+      "sm-dark": "0 2px 3px rgba(0, 0, 0, 30%)",
+      md: "0 8px 12px rgba(0, 0, 0, 15%)",
+      "md-dark": "0 8px 12px rgba(0, 0, 0, 30%)",
+      lg: "0 16px 24px rgba(0, 0, 0, 15%)",
+      "lg-dark": "0 16px 24px rgba(0, 0, 0, 30%)",
     },
   },
   corePlugins: {
     backgroundOpacity: false,
+    borderOpacity: false,
+    textOpacity: false,
+    dropShadow: false,
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addUtilities, theme }) => {
+      const shadows = theme("dropShadow");
+      const utilities = Object.entries(shadows).reduce((acc, [key, shadow]) => {
+        acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+          filter: `drop-shadow(${shadow})`,
+        };
+        return acc;
+      }, {});
+      addUtilities(utilities, ["responsive", "dark", "hover"]);
+    }),
+  ],
 };

@@ -24,9 +24,17 @@
   border-radius: 0;
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
-  color: var(--color-canvas-1-text);
+  @apply text-canvas-1;
   background: linear-gradient(
-    var(--color-alpha-2),
-    var(--color-canvas-1) 3.5em
+    theme("colors.alpha-2.DEFAULT"),
+    theme("colors.canvas-1.DEFAULT") 3.5em
+  );
+}
+
+:global(.dark) .playground-code-disclosure[aria-expanded="false"] {
+  @apply text-canvas-1-dark;
+  background: linear-gradient(
+    theme("colors.alpha-2.dark.DEFAULT"),
+    theme("colors.canvas-1.dark.DEFAULT") 3.5em
   );
 }

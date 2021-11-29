@@ -63,7 +63,7 @@ export default function MarkdownPage(props) {
   return (
     <div className="flex flex-col items-center">
       <div
-        className="w-full bg-canvas-4 layer-2 border-b border-canvas-4"
+        className="flex items-center w-full p-4 bg-canvas-4 dark:bg-canvas-4-dark layer-2 border-b border-canvas-4 dark:border-canvas-4-dark"
         style={{
           position: "fixed",
           zIndex: 300,
