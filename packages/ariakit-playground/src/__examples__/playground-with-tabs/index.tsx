@@ -20,7 +20,7 @@ export default function Example() {
 `,
 };
 
-export default function PlaygroundWithTabs() {
+export default function Example() {
   const tab = useTabState({ defaultVisibleId: "tab-index.js" });
   const playground = usePlaygroundState({ defaultValues });
   const files = Object.keys(playground.values);

@@ -4,7 +4,7 @@
 }
 
 .playground-code {
-  background: var(--background-inset);
+  background: #1e1f20;
   border-radius: inherit;
 }
 
@@ -35,6 +35,6 @@
   border-radius: 0;
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
-  color: var(--background-inset-text);
-  background: linear-gradient(transparent, var(--background-inset) 3.5em);
+  color: white;
+  background: linear-gradient(transparent, #1e1f20 3.5em);
 }

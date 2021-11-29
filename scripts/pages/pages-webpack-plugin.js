@@ -14,8 +14,6 @@ class PagesWebpackPlugin {
    * source files.
    * @param {string} options.componentPath The path of the component that will
    * be used to render the page.
-   * @param {string} [options.cssTokensPath] The path to the css file that
-   * contains the tokens.
    * @param {string} [options.buildDir] The directory where the build files
    * should be placed.
    */
@@ -24,7 +22,6 @@ class PagesWebpackPlugin {
     this.sourceContext = options.sourceContext;
     this.sourceRegExp = options.sourceRegExp;
     this.componentPath = options.componentPath;
-    this.cssTokensPath = options.cssTokensPath;
     this.buildDir = getBuildDir(options.buildDir);
     this.entryPath = getEntryPath(this.name, this.buildDir);
   }
@@ -44,7 +41,6 @@ class PagesWebpackPlugin {
         name: this.name,
         buildDir: this.buildDir,
         componentPath: this.componentPath,
-        cssTokensPath: this.cssTokensPath,
       },
     });
 

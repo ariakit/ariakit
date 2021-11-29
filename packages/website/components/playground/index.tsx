@@ -4,7 +4,7 @@ import { Playground as PlaygroundContainer } from "ariakit-playground/playground
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
-import theme from "ariakit-playground/themes/vscode";
+import theme from "ariakit-playground/themes/vscode-dark";
 import { useUpdateEffect } from "ariakit-utils/hooks";
 import { cx, hasOwnProperty } from "ariakit-utils/misc";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
@@ -12,24 +12,16 @@ import dynamic from "next/dynamic";
 import { TooltipControl } from "../tooltip-control";
 import styles from "./index.module.scss";
 
-const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
-  () =>
-    import("ariakit-playground/playground-editor").then(
-      (mod) => mod.PlaygroundEditor
-    ),
-  {
-    loading: () => <p>Loading...</p>,
-  }
+const PlaygroundEditor = dynamic<PlaygroundEditorProps>(() =>
+  import("ariakit-playground/playground-editor").then(
+    (mod) => mod.PlaygroundEditor
+  )
 );
 
-const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(
-  () =>
-    import("ariakit-playground/playground-preview").then(
-      (mod) => mod.PlaygroundPreview
-    ),
-  {
-    loading: () => <p>Loading...</p>,
-  }
+const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(() =>
+  import("ariakit-playground/playground-preview").then(
+    (mod) => mod.PlaygroundPreview
+  )
 );
 
 type PlaygroundProps = {
@@ -100,12 +92,12 @@ export default function Playground(props: PlaygroundProps) {
     <div className="!max-w-4xl">
       <PlaygroundContainer
         state={playground}
-        className="flex flex-col items-center w-full gap-2 sm:gap-4 md:gap-6"
+        className="flex flex-col items-center w-full gap-3 sm:gap-4 md:gap-6"
       >
         <div className="w-full">
           <PlaygroundPreview
             getModule={getModule}
-            className="flex min-h-1 items-center justify-center bg-canvas-3 rounded-lg p-1 md:px-6 md:py-4 border border-canvas-3 dark:border-0"
+            className="flex min-h-[300px] items-center justify-center bg-canvas-3 rounded-lg p-4 md:p-6 border border-canvas-3 dark:border-0"
           />
         </div>
         <div className="dark relative rounded-lg max-w-3xl w-full">

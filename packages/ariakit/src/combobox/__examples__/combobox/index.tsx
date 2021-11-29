@@ -11,17 +11,17 @@ export default function Example() {
   return (
     <div>
       <label className="label">
-        Fruit
+        Your favorite fruit
         <Combobox
           state={combobox}
-          placeholder="A delicious fruit"
+          placeholder="e.g., Apple"
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="combobox-popover">
-        <ComboboxItem value="Apple" />
-        <ComboboxItem value="Orange" />
-        <ComboboxItem value="Watermelon" />
+      <ComboboxPopover state={combobox} aria-label="Fruits" className="popover">
+        <ComboboxItem value="Apple">🍎 Apple</ComboboxItem>
+        <ComboboxItem value="Orange">🍊 Orange</ComboboxItem>
+        <ComboboxItem value="Watermelon">🍉 Watermelon</ComboboxItem>
       </ComboboxPopover>
     </div>
   );

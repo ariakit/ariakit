@@ -15,11 +15,7 @@
     "rehype-react": "7.0.3"
   },
   "devDependencies": {
-    "@tailwindcss/jit": "0.1.18",
-    "@types/tailwindcss": "2.2.4",
     "autoprefixer": "10.4.0",
-    "next-transpile-modules": "9.0.0",
-    "postcss": "8.4.4",
-    "tailwindcss": "2.2.19"
+    "next-transpile-modules": "9.0.0"
   }
 }

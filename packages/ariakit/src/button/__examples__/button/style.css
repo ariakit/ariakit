@@ -1,33 +1,24 @@
 .button {
-  background: var(--primary);
-  color: var(--primary-text);
+  background: var(--color-primary-2);
+  color: var(--color-primary-2-text);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
+  gap: var(--space-2);
   font-size: 1em;
   border: 0;
-  padding: 0 1em;
-  height: 2.5em;
-  border-radius: 8px;
-}
-
-.button[aria-expanded="true"] {
-  background: var(--primary-accent);
+  padding: 0 var(--space-4);
+  /* height: 2.5em; */
+  border-radius: var(--radius-lg);
 }
 
 .button:hover {
-  background: var(--primary-accent);
+  background: var(--color-primary-2-hover);
 }
 
 .button[data-focus-visible] {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--color-primary-2);
   outline-offset: 2px;
-}
-
-.button:active,
-.button[data-active] {
-  background: var(--primary-inset);
 }
 
 .button[disabled],

@@ -1,5 +1,5 @@
 import { PlaygroundCode } from "ariakit-playground";
-import theme from "ariakit-playground/themes/vscode";
+import theme from "ariakit-playground/themes/vscode-dark";
 import "./style.css";
 
 const value = `function Greeting({ name }) {
@@ -49,7 +49,7 @@ const arrowUp = (
   </svg>
 );
 
-export default function PlaygroundCodeExample() {
+export default function Example() {
   return (
     <div className="playground-code-wrapper">
       <PlaygroundCode

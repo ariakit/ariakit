@@ -11,6 +11,13 @@ const theme = css`
   tab-size: 2;
   hyphens: none;
 
+  @media (max-width: 640px) {
+    &:focus-within {
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+
   .cm-editor,
   .cm-gutters,
   .cm-lineNumbers,
@@ -90,6 +97,7 @@ const theme = css`
   .cm-cursor {
     border-left-width: 2px;
     border-left-style: solid;
+    border-left-color: currentColor;
     height: 21px !important;
     transform: translateY(-10%);
   }

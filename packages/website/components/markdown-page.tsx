@@ -71,9 +71,25 @@ export default function MarkdownPage(props) {
           top: 0,
           left: 0,
         }}
-      />
+      >
+        <button
+          onClick={() => {
+            if (document.documentElement.classList.contains("dark")) {
+              document.documentElement.classList.remove("dark");
+              document.documentElement.classList.add("light");
+              localStorage.setItem("theme", "light");
+            } else {
+              document.documentElement.classList.remove("light");
+              document.documentElement.classList.add("dark");
+              localStorage.setItem("theme", "dark");
+            }
+          }}
+        >
+          Toggle dark mode
+        </button>
+      </div>
       <div
-        className={`${styles["wrapper"]} max-w-5xl w-full gap-6 relative px-2 sm:px-4 md:px-8 py-24`}
+        className={`${styles["wrapper"]} max-w-5xl w-full gap-6 relative px-3 sm:px-4 md:px-8 py-24`}
       >
         {renderAst(props.markdown)}
       </div>

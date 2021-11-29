@@ -14,7 +14,6 @@ const compilerHost = ts.createCompilerHost(compilerOptions);
 
 const dependencyLoader = path.join(__dirname, "dependency-loader.js");
 const markdownLoader = path.join(__dirname, "markdown-loader.js");
-const cssLoader = path.join(__dirname, "css-loader.js");
 
 /**
  * @param {string} source The soruce path of the import declaration.
@@ -71,18 +70,10 @@ function getPageFilename(filename, extension = ".js") {
  * @param {string} options.dest The destination path where the imports will be
  * written.
  * @param {string} [options.originalSource] The source path of the import.
- * @param {string} [options.cssTokensPath] The path to the css file that
- * contains the tokens.
  * @param {string} [options.importerFilePath] The path to the file that contains
  * the import.
  */
-function getPageImports({
-  filename,
-  dest,
-  cssTokensPath,
-  originalSource,
-  importerFilePath,
-}) {
+function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   const relativeDependencyLoader = path.relative(dest, dependencyLoader);
   const originalDependencyLoader = importerFilePath
     ? `${relativeDependencyLoader}?importerFilePath=${importerFilePath}!`
@@ -131,9 +122,8 @@ function getPageImports({
     }
 
     if (/\.s?css$/.test(relativeFilename)) {
-      const relativeCssLoader = path.relative(dest, cssLoader);
       imports.push({
-        source: `!${relativeCssLoader}?cssTokensPath=${cssTokensPath}!${relativeFilename}`,
+        source: `!raw-loader!postcss-loader!${relativeFilename}`,
         originalSource: source,
         filename: relativeFilename,
         identifier: pathToIdentifier(relativeFilename),
@@ -148,7 +138,6 @@ function getPageImports({
       const nextImports = getPageImports({
         filename: mod.resolvedFileName,
         dest,
-        cssTokensPath,
         originalSource: source,
         importerFilePath: filename,
       });
@@ -208,15 +197,8 @@ function getPageTreeFromFile(filename) {
  * @param {string} options.dest The directory where the page will be written.
  * @param {string} options.componentPath The path to the component that will be
  * used to render the page.
- * @param {string} [options.cssTokensPath] The path to the css file that
- * contains the tokens.
  */
-async function getPageContent({
-  filename,
-  dest,
-  componentPath,
-  cssTokensPath,
-}) {
+async function getPageContent({ filename, dest, componentPath }) {
   const isMarkdown = /\.md$/.test(filename);
 
   /** @type {Record<string, ReturnType<typeof getPageImports>>} */
@@ -236,7 +218,6 @@ async function getPageContent({
     imports[href] = getPageImports({
       filename: nextFilename,
       dest,
-      cssTokensPath,
       importerFilePath: isMarkdown ? filename : undefined,
     });
   });
@@ -323,10 +304,8 @@ function getReadmePathFromIndex(filename, exists = fs.existsSync) {
  * @param {string} options.dest The directory where the page will be written.
  * @param {string} options.componentPath The path to the component that will be used to
  * render the page.
- * @param {string} [options.cssTokensPath] The path to the css file that
- * contains the tokens.
  */
-async function writePage({ filename, dest, componentPath, cssTokensPath }) {
+async function writePage({ filename, dest, componentPath }) {
   // If there's already a readme.md file in the same directory, we'll generate
   // the page from that, so we can just return the source here for the index.js
   // file.
@@ -335,7 +314,7 @@ async function writePage({ filename, dest, componentPath, cssTokensPath }) {
   fs.mkdirSync(path.dirname(pagePath), { recursive: true });
   fs.writeFileSync(
     pagePath,
-    await getPageContent({ filename, dest, componentPath, cssTokensPath })
+    await getPageContent({ filename, dest, componentPath })
   );
 }
 

@@ -136,6 +136,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     const extensions = useMemo(() => {
       const editorStyle = EditorView.theme({
         "&": { maxHeight: "inherit" },
+        // TODO: This is probably not a good idea.
         ".cm-scroller": { overflow: editable ? "auto" : "hidden" },
       });
       const updateListener = EditorView.updateListener.of((update) => {

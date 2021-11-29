@@ -3,13 +3,6 @@
   --light: initial;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --light: ;
-    --dark: initial;
-  }
-}
-
 .dark {
   --light: ;
   --dark: initial;

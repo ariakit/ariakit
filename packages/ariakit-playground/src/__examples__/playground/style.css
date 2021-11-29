@@ -1,14 +1,14 @@
 .playground {
   display: flex;
-  border: 1px solid var(--color-grayscale-100, #e1e1e1);
-  border-radius: 4px;
+  border: 1px solid var(--color-canvas-3-border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .editor {
   flex: 1;
   max-width: 50%;
-  border-right: 1px solid var(--color-grayscale-100, #e1e1e1);
+  border-right: 1px solid var(--color-canvas-3-border);
 }
 
 .preview {
@@ -16,5 +16,5 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  padding: 16px;
+  padding: var(--space-4);
 }

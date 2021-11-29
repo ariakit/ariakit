@@ -20,7 +20,6 @@ const {
  * @property {string} sourceContext
  * @property {RegExp} sourceRegExp
  * @property {string} componentPath
- * @property {string} [cssTokensPath]
  * @property {string} [buildDir]
  * @property {string} [pagesDir]
  */
@@ -76,7 +75,6 @@ pages.forEach(async (page) => {
       filename,
       dest,
       componentPath: page.componentPath,
-      cssTokensPath: page.cssTokensPath,
     });
   }
 

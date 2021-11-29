@@ -1,20 +1,19 @@
 .label {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  font-family: sans-serif;
-  color: var(--color-bg-1-text);
+  gap: var(--space-2);
+  color: var(--color-canvas-1-text);
 }
 
 .combobox {
-  background: var(--color-bg-1);
-  color: var(--color-bg-1-text);
+  background: var(--color-canvas-1);
+  color: var(--color-canvas-1-text);
   font-size: 1em;
   border: none;
   height: 2.5em;
   font-size: 1em;
   padding: 0 1em;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   min-width: 250px;
 }
 
@@ -24,32 +23,37 @@
 }
 
 .combobox:hover {
-  background: var(--color-bg-1-hover);
+  background: var(--color-canvas-1-hover);
 }
 
-.combobox-popover {
+.popover {
   display: flex;
   flex-direction: column;
-  z-index: 999;
-  background: var(--color-bg-4);
-  color: var(--color-bg-4-text);
-  border: 1px solid var(--color-bg-4-border);
-  border-radius: var(--radius-3);
+  z-index: var(--layer-dialog);
+  background: var(--color-canvas-4);
+  color: var(--color-canvas-4-text);
+  border: 1px solid var(--color-canvas-4-border);
+  border-radius: var(--radius-lg);
   min-width: 250px;
-  padding: var(--space-1);
+  padding: var(--space-2);
   font-family: sans-serif;
-  filter: drop-shadow(0px 4px 6px var(--color-shadow));
+  filter: var(--drop-shadow);
 }
 
-.combobox-popover > * {
-  border-radius: var(--radius-1);
-  padding: var(--space-1);
-  color: var(--color-bg-4-text);
+.popover > * {
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  color: var(--color-canvas-4-text);
   outline: none;
+  cursor: default;
 }
 
-.combobox-popover > *[aria-selected="true"],
-.combobox-popover > *:focus {
+.popover > *:hover {
+  background: var(--color-primary-1-hover);
+}
+
+.popover > *[aria-selected="true"],
+.popover > *:focus {
   background: var(--color-primary-2);
   color: var(--color-primary-2-text);
 }

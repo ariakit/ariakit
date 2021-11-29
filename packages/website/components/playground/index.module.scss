@@ -24,6 +24,9 @@
   border-radius: 0;
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
-  color: var(--color-bg-1-text);
-  background: linear-gradient(var(--color-alpha-2), var(--color-bg-1) 3.5em);
+  color: var(--color-canvas-1-text);
+  background: linear-gradient(
+    var(--color-alpha-2),
+    var(--color-canvas-1) 3.5em
+  );
 }

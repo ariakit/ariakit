@@ -2,45 +2,12 @@
 const fs = require("fs");
 const path = require("path");
 const { default: postcss } = require("postcss");
-const postcssImport = require("postcss-import");
 const parseValue = require("postcss-value-parser");
 
 /**
  * @typedef {object} Options
  * @property {string} options.cssTokensPath
  */
-
-/**
- * @type {import("webpack").LoaderDefinitionFunction<Options,
- * import("webpack").LoaderContext<Options>>}
- */
-function cssLoader(source, map, meta) {
-  const callback = this.async();
-  const { cssTokensPath } = this.getOptions();
-  this.addDependency(cssTokensPath);
-
-  const options = {
-    postcssOptions: {
-      config: path.join(__dirname, "postcss.config.js"),
-    },
-  };
-  // console.log(serialize(options));
-
-  this.loadModule(
-    `!raw-loader!postcss-loader?${JSON.stringify(options)}!${
-      this.resourcePath
-    }`,
-    (error, content) => callback(error, content, map, meta)
-  );
-
-  // const result = await postcss([
-  //   postcssImport(),
-  //   postcssVariables({ cssTokensPath }),
-  // ]).process(source, {
-  //   from: this.resourcePath,
-  // });
-  // return `module.exports = \`${result.css}\`;`;
-}
 
 /**
  * @param {object} values
@@ -87,6 +54,23 @@ const postcssVariables = (options) => ({
   },
 });
 
-postcssVariables.postcss = true;
-
-module.exports = cssLoader;
+module.exports = {
+  plugins: [
+    "postcss-import",
+    [
+      "tailwindcss",
+      {
+        config: path.resolve(
+          __dirname,
+          "../../packages/website/tailwind.config.js"
+        ),
+      },
+    ],
+    postcssVariables({
+      cssTokensPath: path.join(
+        __dirname,
+        "../../packages/website/styles/theme.css"
+      ),
+    }),
+  ],
+};

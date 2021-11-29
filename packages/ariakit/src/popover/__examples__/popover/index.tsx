@@ -2,26 +2,24 @@ import {
   Popover,
   PopoverArrow,
   PopoverDisclosure,
-  PopoverDismiss,
   PopoverHeading,
   usePopoverState,
 } from "ariakit/popover";
 import "./style.css";
 
 export default function Example() {
-  const popover = usePopoverState();
+  const popover = usePopoverState({ visible: true });
   return (
     <>
       <PopoverDisclosure state={popover} className="button">
-        Open Popover
+        Click to toggle Popover
       </PopoverDisclosure>
       <Popover state={popover} className="popover">
-        <PopoverArrow />
+        <PopoverArrow className="popover-arrow" />
         <PopoverHeading className="popover-heading">
           Popover Title
         </PopoverHeading>
-        <div>Content</div>
-        <PopoverDismiss className="button">Close Popover</PopoverDismiss>
+        <div>And here is some amazing content. It is very engaging. Right?</div>
       </Popover>
     </>
   );

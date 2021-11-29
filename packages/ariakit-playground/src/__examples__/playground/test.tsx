@@ -1,6 +1,6 @@
 import { render } from "ariakit-test-utils";
-import PlaygroundExample from ".";
+import Example from ".";
 
 test("render playground", () => {
-  render(<PlaygroundExample />);
+  render(<Example />);
 });

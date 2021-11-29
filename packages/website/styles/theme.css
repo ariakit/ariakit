@@ -1,22 +1,43 @@
-:root { 
-  --space-1: 8px;
-  --space-2: 16px;
-  --space-3: 24px;
-  --space-4: 32px;
-  --space-5: 48px;
-  --space-6: 64px;
-  --space-7: 96px;
-  --space-8: 128px;
-  --space-9: 192px;
-  --space-10: 256px;
-  --space-11: 384px;
-  --space-12: 512px;
-  --space-13: 768px;
-  --space-14: 1024px;
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-11: 44px;
+  --space-12: 48px;
+  --space-14: 52px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-28: 112px;
+  --space-32: 128px;
+  --space-36: 144px;
+  --space-40: 160px;
+  --space-44: 176px;
+  --space-48: 192px;
+  --space-52: 208px;
+  --space-56: 224px;
+  --space-60: 240px;
+  --space-64: 256px;
+  --space-72: 288px;
+  --space-80: 320px;
+  --space-96: 384px;
 
-  --radius-1: 4px;
-  --radius-2: 6px;
-  --radius-3: 8px;
+  --radius-sm: 2px;
+  --radius: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  --layer-navbar: 100;
+  --layer-dialog: 200;
 
   --color-text-dark: hsl(204, 3%, 97%);
   --color-text-light: hsl(204, 10%, 10%);
@@ -50,6 +71,11 @@
   --color-canvas-4-hover:   var(--dark, hsl(204, 3%, 18%))        var(--light, hsl(204, 20%, 96%));
   --color-canvas-4-border:  var(--dark, hsl(204, 3%, 32%))        var(--light, hsl(204, 20%, 88%));
   --color-canvas-4-text:    var(--color-text);
+
+  --color-canvas-5:         var(--dark, hsl(204, 3%, 24%))        var(--light, hsl(204, 20%, 100%));
+  --color-canvas-5-hover:   var(--dark, hsl(204, 3%, 20%))        var(--light, hsl(204, 20%, 96%));
+  --color-canvas-5-border:  var(--dark, hsl(204, 3%, 36%))        var(--light, hsl(204, 20%, 88%));
+  --color-canvas-5-text:    var(--color-text);
 
   /** color-alpha **/ 
   --color-alpha-1:          var(--dark, hsla(204, 5%, 8%, 50%))   var(--light, hsla(204, 10%, 89%, 50%));
@@ -99,4 +125,22 @@
   --color-warn-2-hover:     var(--dark, hsl(43, 75%, 60%))        var(--light, hsl(43, 91%, 54%));
   --color-warn-2-border:    var(--dark, hsl(43, 91%, 90%))        var(--light, hsl(43, 91%, 42%));
   --color-warn-2-text:      var(--dark, hsl(43, 10%, 10%))        var(--light, var(--color-text-light));
+}
+
+:root {
+  --shadow-sm: 0 2px 3px var(--color-shadow);
+  --shadow: 0 4px 6px var(--color-shadow);
+  --shadow-md: 0 8px 12px var(--color-shadow);
+  --shadow-lg: 0 16px 24px var(--color-shadow);
+
+  --drop-shadow-sm: drop-shadow(var(--shadow-sm));
+  --drop-shadow: drop-shadow(var(--shadow));
+  --drop-shadow-md: drop-shadow(var(--shadow-md));
+  --drop-shadow-lg: drop-shadow(var(--shadow-lg));
+  /* --drop-shadow-sm: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+  --drop-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06));
+  --drop-shadow-md: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.06));
+  --drop-shadow-lg: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04)) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
+  --drop-shadow-xl: drop-shadow(0 20px 13px rgba(0, 0, 0, 0.03)) drop-shadow(0 8px 5px rgba(0, 0, 0, 0.08));
+  --drop-shadow-2xl: drop-shadow(0 25px 25px rgba(0, 0, 0, 0.15)); */
 }
