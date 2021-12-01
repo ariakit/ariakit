@@ -1,6 +1,7 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .popover {
+  width: 250px;
   @apply relative
     bg-canvas-4
     dark:bg-canvas-4-dark
@@ -16,7 +17,6 @@
     z-50
     p-4
     rounded-lg
-    w-[250px]
     drop-shadow
     dark:drop-shadow-dark
 }

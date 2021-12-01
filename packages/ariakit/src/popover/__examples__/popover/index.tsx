@@ -8,7 +8,7 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const popover = usePopoverState({ visible: true });
+  const popover = usePopoverState();
   return (
     <>
       <PopoverDisclosure state={popover} className="button">

@@ -3,8 +3,8 @@
 }
 
 .combobox {
-  @apply
-    bg-canvas-1
+  width: 250px;
+  @apply bg-canvas-1
     text-canvas-1
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
@@ -14,7 +14,6 @@
     px-4
     h-10
     rounded-lg
-    w-[250px]
     text-base;
 }
 
@@ -23,6 +22,7 @@
 }
 
 .popover {
+  width: 250px;
   @apply relative
     bg-canvas-4
     dark:bg-canvas-4-dark
@@ -37,17 +37,12 @@
     z-50
     p-2
     rounded-lg
-    w-[250px]
     drop-shadow
     dark:drop-shadow-dark;
 }
 
 .popover > * {
-  @apply
-    outline-none
-    cursor-default
-    rounded
-    p-2;
+  @apply outline-none cursor-default rounded p-2;
 }
 
 .popover > *:hover {
@@ -56,8 +51,7 @@
 
 .popover > *[aria-selected="true"],
 .popover > *:focus {
-  @apply
-    bg-primary-2
+  @apply bg-primary-2
     text-primary-2
     dark:bg-primary-2-dark
     dark:text-primary-2-dark;

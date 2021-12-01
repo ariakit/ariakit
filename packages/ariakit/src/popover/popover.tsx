@@ -88,6 +88,10 @@ export const usePopover = createHook<PopoverOptions>(
       portal,
       ...props,
       ref: useForkRef(ref, props.ref),
+      style: {
+        position: "relative",
+        ...props.style,
+      },
       portalRef,
     });
 
