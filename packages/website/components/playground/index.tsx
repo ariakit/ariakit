@@ -1,16 +1,17 @@
 import { useCallback, useState } from "react";
-import { OpenInCodeSandbox } from "ariakit-playground/actions/open-in-code-sandbox";
+// import { OpenInCodeSandbox } from "ariakit-playground/actions/open-in-code-sandbox";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
 import theme from "ariakit-playground/themes/vscode-dark";
-import { useUpdateEffect } from "ariakit-utils/hooks";
+import { useId, useUpdateEffect } from "ariakit-utils/hooks";
 import { cx, hasOwnProperty } from "ariakit-utils/misc";
-import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
+import { TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
-import { TooltipControl } from "../tooltip-control";
-import styles from "./index.module.scss";
+import PlaygroundDisclosure from "./playground-disclosure";
+import PlaygroundTab from "./playground-tab";
+import style from "./style.module.css";
 
 const PlaygroundEditor = dynamic<PlaygroundEditorProps>(() =>
   import("ariakit-playground/playground-editor").then(
@@ -24,54 +25,23 @@ const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(() =>
   )
 );
 
+const OpenInCodeSandbox = dynamic(() => import("./open-in-code-sandbox"));
+
 type PlaygroundProps = {
   defaultValues: Record<string, string>;
   deps: Record<string, string>;
 };
 
-const arrowDown = (
-  <svg
-    display="block"
-    fill="none"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth="1.5pt"
-    viewBox="0 0 16 16"
-    height="1em"
-    width="1em"
-  >
-    <polyline points="4,6 8,10 12,6"></polyline>
-  </svg>
-);
-
-const arrowUp = (
-  <svg
-    display="block"
-    fill="none"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth="1.5pt"
-    viewBox="0 0 16 16"
-    height="1em"
-    width="1em"
-  >
-    <polyline points="4,10 8,6 12,10"></polyline>
-  </svg>
-);
-
-const codeSandboxIcon = (
-  <svg fill="currentColor" height="1.25em" viewBox="0 0 256 296">
-    <path d="M115.498 261.088v-106.61L23.814 101.73v60.773l41.996 24.347v45.7l49.688 28.54zm23.814.627l50.605-29.151V185.78l42.269-24.495v-60.011l-92.874 53.621v106.82zm80.66-180.887l-48.817-28.289l-42.863 24.872l-43.188-24.897l-49.252 28.667l91.914 52.882l92.206-53.235zM0 222.212V74.495L127.987 0L256 74.182v147.797l-128.016 73.744L0 222.212z"></path>
-  </svg>
-);
+function getTabId(prefix: string, name: string) {
+  return `${prefix}-${name.replace(/[^a-z0-9]/gi, "-")}`;
+}
 
 export default function Playground(props: PlaygroundProps) {
   const playground = usePlaygroundState({ defaultValues: props.defaultValues });
-  const tab = useTabState({
-    defaultVisibleId: `tab-${Object.keys(playground.values)[0]}`,
-  });
+  const [firstFile = ""] = Object.keys(playground.values);
+  const baseId = useId();
+  const firstFileId = getTabId(baseId, firstFile);
+  const tab = useTabState({ defaultVisibleId: firstFileId });
   const [expanded, setExpanded] = useState(false);
 
   useUpdateEffect(() => {
@@ -97,40 +67,35 @@ export default function Playground(props: PlaygroundProps) {
         <div className="w-full">
           <PlaygroundPreview
             getModule={getModule}
-            className="playground-preview flex min-h-[300px] items-center justify-center bg-canvas-3 dark:bg-canvas-3-dark rounded-lg p-4 md:p-6 border border-canvas-3 dark:border-0"
+            className="playground-preview flex min-h-[300px] items-center
+            justify-center bg-canvas-3 dark:bg-canvas-3-dark rounded-lg p-4
+            md:p-6 border border-canvas-3 dark:border-0"
           />
         </div>
         <div className="dark relative rounded-lg max-w-3xl w-full">
-          <div className="flex justify-between p-4 pb-2 bg-canvas-1 dark:bg-canvas-1-dark rounded-tl-[inherit] rounded-tr-[inherit] text-sm">
+          <div
+            className="flex justify-between p-4 pb-2 bg-canvas-1
+            dark:bg-canvas-1-dark rounded-tl-[inherit] rounded-tr-[inherit]
+            text-sm"
+          >
             <TabList state={tab} className="flex flex-row gap-2">
               {Object.keys(playground.values).map((file) => (
-                <Tab
+                <PlaygroundTab
                   key={file}
-                  id={`tab-${file}`}
+                  id={getTabId(baseId, file)}
                   onClick={() => setExpanded(true)}
-                  className={`h-8 px-3 rounded-md text-sm ${
-                    tab.activeId === `tab-${file}`
-                      ? "bg-primary-2 text-primary-2 hover:to-primary-2-hover dark:bg-primary-2-dark dark:text-primary-2-dark dark:hover:bg-primary-2-dark-hover"
-                      : "bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover text-black-fade dark:text-white-fade"
-                  }`}
                 >
                   {file}
-                </Tab>
+                </PlaygroundTab>
               ))}
             </TabList>
-            <TooltipControl
-              as={OpenInCodeSandbox}
-              title="Open in CodeSandbox"
-              className="h-8 px-3 rounded-md text-sm bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover text-black-fade dark:text-white-fade"
-            >
-              {codeSandboxIcon}
-            </TooltipControl>
+            <OpenInCodeSandbox />
           </div>
           {Object.keys(playground.values).map((file) => (
             <TabPanel
               key={file}
               state={tab}
-              tabId={`tab-${file}`}
+              tabId={getTabId(baseId, file)}
               focusable={false}
               className="rounded-[inherit]"
             >
@@ -140,27 +105,11 @@ export default function Playground(props: PlaygroundProps) {
                     <PlaygroundEditor
                       state={playground}
                       file={file}
-                      className={cx(
-                        theme,
-                        "playground-editor",
-                        "bg-canvas-1 dark:bg-canvas-1-dark rounded-bl-[inherit] rounded-br-[inherit]"
-                      )}
+                      className={cx(theme, style.playgroundEditor)}
                       expanded={expanded}
                       maxHeight={260}
                       setExpanded={setExpanded}
-                      disclosureProps={{
-                        className: styles["playground-code-disclosure"],
-                        children: (props) => (
-                          <button {...props}>
-                            <div>
-                              {props["aria-expanded"]
-                                ? "Collapse code"
-                                : "Expand code"}
-                            </div>
-                            {props["aria-expanded"] ? arrowUp : arrowDown}
-                          </button>
-                        ),
-                      }}
+                      disclosureProps={{ as: PlaygroundDisclosure }}
                     />
                   </div>
                 )

@@ -1,6 +1,11 @@
-import { forwardRef } from "react";
-import { OpenInCodeSandbox as Action } from "ariakit-playground/actions/open-in-code-sandbox";
-import { TooltipControl } from "../tooltip-control";
+import {
+  OpenInCodeSandbox as Action,
+  OpenInCodeSandboxProps as ActionProps,
+} from "ariakit-playground/actions/open-in-code-sandbox";
+import { cx } from "ariakit-utils/misc";
+import TooltipControl, { TooltipControlProps } from "../tooltip-control";
+
+export type OpenInCodeSandboxProps = ActionProps & Partial<TooltipControlProps>;
 
 const codeSandboxIcon = (
   <svg fill="currentColor" height="1.25em" viewBox="0 0 256 296">
@@ -8,12 +13,19 @@ const codeSandboxIcon = (
   </svg>
 );
 
-export const OpenInCodeSandbox = forwardRef(() => (
-  <TooltipControl
-    as={Action}
-    title="Open in CodeSandbox"
-    className="button-sm text-sm bg-alpha-2 hover:bg-alpha-2-hover text-[color:var(--color-text-soft)]"
-  >
-    {codeSandboxIcon}
-  </TooltipControl>
-));
+export default function OpenInCodeSandbox(props: OpenInCodeSandboxProps) {
+  return (
+    <TooltipControl
+      as={Action}
+      title="Open in CodeSandbox"
+      {...props}
+      className={cx(
+        "bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover",
+        "text-black-fade dark:text-white-fade h-8 px-3 rounded text-sm ",
+        props.className
+      )}
+    >
+      {codeSandboxIcon}
+    </TooltipControl>
+  );
+}

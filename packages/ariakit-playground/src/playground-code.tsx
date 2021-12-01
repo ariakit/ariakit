@@ -1,4 +1,11 @@
-import { MouseEvent, useCallback, useMemo, useRef, useState } from "react";
+import {
+  ElementType,
+  MouseEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   useControlledState,
   useEventCallback,
@@ -133,6 +140,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
               aria-expanded={expanded}
               children={expanded ? "Collapse code" : "Expand code"}
               {...disclosureProps}
+              as={disclosureProps?.as || "button"}
               onClick={disclosureOnClick}
             />
           )}
@@ -191,7 +199,7 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   lineNumbers?: boolean;
   highlight?: boolean;
   maxHeight?: number;
-  disclosureProps?: ButtonProps;
+  disclosureProps?: ButtonProps<ElementType>;
   expanded?: boolean;
   setExpanded?: SetState<boolean>;
   defaultExpanded?: boolean;
