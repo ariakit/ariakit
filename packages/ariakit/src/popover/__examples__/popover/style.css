@@ -1,0 +1,37 @@
+@import url("../../../button/__examples__/button/style.css");
+
+.popover {
+  width: 250px;
+  @apply relative
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    text-canvas-4
+    dark:text-canvas-4-dark
+    border
+    border-solid
+    border-canvas-4
+    dark:border-canvas-4-dark
+    flex
+    flex-col
+    gap-2
+    z-50
+    p-4
+    rounded-lg
+    drop-shadow
+    dark:drop-shadow-dark
+}
+
+.popover[data-focus-visible] {
+  @apply outline-primary dark:outline-primary-dark;
+}
+
+.popover-arrow svg {
+  @apply fill-canvas-4
+    dark:fill-canvas-4-dark
+    stroke-canvas-4
+    dark:stroke-canvas-4-dark;
+}
+
+.popover-heading {
+  @apply m-0 text-xl font-medium;
+}

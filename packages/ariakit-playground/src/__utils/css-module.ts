@@ -8,5 +8,12 @@ export function getCSSModule(module: AnyObject) {
 }
 
 export function createCSSModule(code: string) {
-  return { [CSS_EXPORT]: css(code) };
+  return {
+    [CSS_EXPORT]: css(
+      code
+        .replace(/\:root/gi, "&")
+        .replace(/\.dark(-mode)?\s+/g, ".dark$1 & ")
+        .replace(/\.light(-mode)?\s+/g, ".light$1 & ")
+    ),
+  };
 }

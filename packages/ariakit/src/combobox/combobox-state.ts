@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useControlledState, useUpdateEffect } from "ariakit-utils/hooks";
+import { useControlledState, useUpdateLayoutEffect } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import { isSafari, isTouchDevice } from "ariakit-utils/platform";
 import { useStorePublisher } from "ariakit-utils/store";
@@ -118,7 +118,11 @@ export function useComboboxState({
     [limit, value, list]
   );
 
-  useUpdateEffect(() => {
+  // Resets the combobox state when it gets hidden. This effect should be sync
+  // (layout effect), otherwise pressing tab while focusing on a combobox item
+  // will always put focus back on the combobox input. See
+  // ../composite/composite.ts#132
+  useUpdateLayoutEffect(() => {
     if (!popover.visible) {
       setMoveType("keyboard");
       // We need to reset the composite state when the popover is closed.

@@ -1,7 +1,7 @@
 import {
+  ElementType,
   MouseEvent,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -10,6 +10,7 @@ import {
   useControlledState,
   useEventCallback,
   useForkRef,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
@@ -60,7 +61,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       language = "jsx";
     }
 
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!maxHeight) return;
       const element = ref.current;
       if (!element) return;
@@ -139,6 +140,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
               aria-expanded={expanded}
               children={expanded ? "Collapse code" : "Expand code"}
               {...disclosureProps}
+              as={disclosureProps?.as || "button"}
               onClick={disclosureOnClick}
             />
           )}
@@ -197,7 +199,7 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   lineNumbers?: boolean;
   highlight?: boolean;
   maxHeight?: number;
-  disclosureProps?: ButtonProps;
+  disclosureProps?: ButtonProps<ElementType>;
   expanded?: boolean;
   setExpanded?: SetState<boolean>;
   defaultExpanded?: boolean;

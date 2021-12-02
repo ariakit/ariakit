@@ -11,6 +11,22 @@ const theme = css`
   tab-size: 2;
   hyphens: none;
 
+  @media (max-width: 640px) {
+    &:focus-within {
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+
+  .cm-editor,
+  .cm-gutters,
+  .cm-lineNumbers,
+  .cm-activeLine,
+  .cm-activeLineGutter,
+  .cm-scroller {
+    background-color: inherit;
+  }
+
   .cm-editor {
     border-radius: inherit;
     max-height: inherit;
@@ -43,7 +59,7 @@ const theme = css`
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
-    /* Comment: collapsible with end line */
+    /* TODO: Comment about collapsible with end line */
     height: max-content;
   }
 
@@ -81,6 +97,7 @@ const theme = css`
   .cm-cursor {
     border-left-width: 2px;
     border-left-style: solid;
+    border-left-color: currentColor;
     height: 21px !important;
     transform: translateY(-10%);
   }

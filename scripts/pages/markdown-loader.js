@@ -1,11 +1,10 @@
-const fs = require("fs");
-const path = require("path");
+// @ts-check
 const { getPageTreeFromContent } = require("./utils");
 
 /**
  * Converts markdown pages into a JavaScript module that exports the page AST.
  * @type {import("webpack").LoaderDefinitionFunction<{},
- * import("webpack").LoaderContext<{}>}
+ * import("webpack").LoaderContext<{}>>}
  */
 async function markdownLoader(source) {
   const tree = await getPageTreeFromContent(source);

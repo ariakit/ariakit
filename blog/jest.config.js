@@ -1,6 +1,10 @@
+// @ts-check
 const { join, basename } = require("path");
-const { projects, ...baseConfig } = require("../jest.config");
+const config = require("../jest.config");
 
+const { projects, ...baseConfig } = config;
+
+/** @type {import("@jest/types").Config.ProjectConfig} */
 module.exports = {
   ...baseConfig,
   displayName: basename(__dirname),

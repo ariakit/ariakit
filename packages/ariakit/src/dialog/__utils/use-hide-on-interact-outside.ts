@@ -45,7 +45,7 @@ function dialogContains(target: Element) {
     const dialog = dialogRef.current;
     if (!dialog) return false;
     if (contains(dialog, target)) return true;
-    if (target.getAttribute("data-dialog-backdrop") === dialogRef.current?.id) {
+    if (target.getAttribute("data-backdrop") === dialogRef.current?.id) {
       return true;
     }
     return false;

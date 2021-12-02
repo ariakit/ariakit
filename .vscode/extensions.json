@@ -1,4 +1,8 @@
 {
-  "recommendations": ["dbaeumer.vscode-eslint", "stylelint.vscode-stylelint"],
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "christian-kohler.path-intellisense"
+  ],
   "unwantedRecommendations": []
 }

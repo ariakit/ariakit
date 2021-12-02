@@ -1,3 +1,5 @@
+// TODO: Do not activate the tab if it receives focus by other means other than
+// arrow keys.
 import { FocusEvent, MouseEvent, useCallback } from "react";
 import { useEventCallback, useId } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";

@@ -1,4 +1,5 @@
-const matchers = require("@testing-library/jest-dom/matchers");
+// @ts-check
+const jestDOMMatchers = require("@testing-library/jest-dom/matchers");
 const { toHaveNoViolations: axeMatchers } = require("jest-axe");
 const {
   matcherHint,
@@ -6,7 +7,10 @@ const {
   printExpected,
 } = require("jest-matcher-utils");
 
-// Consider [aria-activedescendant="${id}"] #${id} as the focused element.
+/**
+ * Consider [aria-activedescendant="${id}"] #${id} as the focused element.
+ * @param {HTMLElement} element
+ */
 function toHaveFocus(element) {
   const result = matchers.toHaveFocus.call(this, element);
   const { activeElement } = element.ownerDocument;
@@ -31,4 +35,5 @@ function toHaveFocus(element) {
   };
 }
 
+const { __esModule, ...matchers } = jestDOMMatchers;
 expect.extend({ ...matchers, ...axeMatchers, toHaveFocus });

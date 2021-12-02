@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wrapper > * {
+  @apply max-w-3xl w-full;
+}
+
+.wrapper h1 {
+  font-size: 3.5em;
+  font-weight: normal;
+  margin: 0;
+}

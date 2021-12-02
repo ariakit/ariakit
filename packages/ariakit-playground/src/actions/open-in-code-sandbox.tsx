@@ -7,7 +7,7 @@ import {
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import { ButtonOptions, useButton } from "ariakit/button";
-import { getParameters } from "codesandbox/lib/api/define";
+import { getParameters } from "codesandbox-import-utils/lib/api/define";
 import {
   getCodeSandboxDependencies,
   getCodeSandboxEntryContent,

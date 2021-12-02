@@ -64,13 +64,16 @@ function getPageFilename(filename, extension = ".js") {
 }
 
 /**
- * @param {string} filename The filename of the file that contains the imports.
- * @param {string} dest The destination path where the imports will be written.
- * @param {string} [originalSource] The source path of the import.
- * @param {string} [importerFilePath] The path to the file that contains the
- * import.
+ * @param {object} options
+ * @param {string} options.filename The filename of the file that contains the
+ * imports.
+ * @param {string} options.dest The destination path where the imports will be
+ * written.
+ * @param {string} [options.originalSource] The source path of the import.
+ * @param {string} [options.importerFilePath] The path to the file that contains
+ * the import.
  */
-function getPageImports(filename, dest, originalSource, importerFilePath) {
+function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   const relativeDependencyLoader = path.relative(dest, dependencyLoader);
   const originalDependencyLoader = importerFilePath
     ? `${relativeDependencyLoader}?importerFilePath=${importerFilePath}!`
@@ -132,12 +135,12 @@ function getPageImports(filename, dest, originalSource, importerFilePath) {
     const isInternal = mod.resolvedFileName.startsWith(".");
 
     if (isInternal) {
-      const nextImports = getPageImports(
-        mod.resolvedFileName,
+      const nextImports = getPageImports({
+        filename: mod.resolvedFileName,
         dest,
-        source,
-        filename
-      );
+        originalSource: source,
+        importerFilePath: filename,
+      });
       imports.push(...nextImports);
       return;
     }
@@ -188,17 +191,20 @@ function getPageTreeFromFile(filename) {
 }
 
 /**
- * @param {string} filename The filename that will be used as a source to write
- * the page.
- * @param {string} dest The directory where the page will be written.
- * @param {string} componentPath The path to the component that will be used to
- * render the page.
+ * @param {object} options
+ * @param {string} options.filename The filename that will be used as a source
+ * to write the page.
+ * @param {string} options.dest The directory where the page will be written.
+ * @param {string} options.componentPath The path to the component that will be
+ * used to render the page.
  */
-async function getPageContent(filename, dest, componentPath) {
+async function getPageContent({ filename, dest, componentPath }) {
   const isMarkdown = /\.md$/.test(filename);
 
   /** @type {Record<string, ReturnType<typeof getPageImports>>} */
-  const imports = isMarkdown ? { default: getPageImports(filename, dest) } : {};
+  const imports = isMarkdown
+    ? { default: getPageImports({ filename, dest }) }
+    : {};
 
   const { visit } = await import("unist-util-visit");
   const tree = await getPageTreeFromFile(filename);
@@ -209,12 +215,11 @@ async function getPageContent(filename, dest, componentPath) {
     const href = node.properties.href;
     if (typeof href !== "string") return;
     const nextFilename = path.resolve(path.dirname(filename), href);
-    imports[href] = getPageImports(
-      nextFilename,
+    imports[href] = getPageImports({
+      filename: nextFilename,
       dest,
-      undefined,
-      isMarkdown ? filename : undefined
-    );
+      importerFilePath: isMarkdown ? filename : undefined,
+    });
   });
 
   const importsFlat = Object.values(imports).flat();
@@ -282,25 +287,34 @@ async function getPageContent(filename, dest, componentPath) {
 }
 
 /**
- * @param {string} filename The filename that will be used as a source to write
+ * @param {string} filename
+ * @param {(path: string) => boolean} exists
+ */
+function getReadmePathFromIndex(filename, exists = fs.existsSync) {
+  if (/readme\.md$/.test(filename)) return;
+  const readmePath = path.join(path.dirname(filename), "readme.md");
+  if (!exists(readmePath)) return;
+  return readmePath;
+}
+
+/**
+ * @param {object} options
+ * @param {string} options.filename The filename that will be used as a source to write
  * the page.
- * @param {string} dest The directory where the page will be written.
- * @param {string} componentPath The path to the component that will be used to
+ * @param {string} options.dest The directory where the page will be written.
+ * @param {string} options.componentPath The path to the component that will be used to
  * render the page.
  */
-async function writePage(filename, dest, componentPath) {
-  if (/index\.[tj]sx?$/.test(filename)) {
-    const readmePath = path.join(path.dirname(filename), "readme.md");
-    // If there's already a readme.md file in the same directory, we'll generate
-    // the page from that, so we can just return the source here for the
-    // index.js file.
-    if (fs.existsSync(readmePath)) return;
-  }
+async function writePage({ filename, dest, componentPath }) {
+  // If there's already a readme.md file in the same directory, we'll generate
+  // the page from that, so we can just return the source here for the index.js
+  // file.
+  if (getReadmePathFromIndex(filename)) return;
   const pagePath = path.join(dest, getPageFilename(filename));
   fs.mkdirSync(path.dirname(pagePath), { recursive: true });
   fs.writeFileSync(
     pagePath,
-    await getPageContent(filename, dest, componentPath)
+    await getPageContent({ filename, dest, componentPath })
   );
 }
 
@@ -412,6 +426,7 @@ module.exports = {
   getPageTreeFromFile,
   getPageImports,
   getPageContent,
+  getReadmePathFromIndex,
   writePage,
   getFiles,
   getPagesDir,

@@ -1,9 +1,23 @@
-import { Component, ReactNode, useCallback, useState } from "react";
-import { useUpdateEffect, useWrapElement } from "ariakit-utils/hooks";
+import {
+  Component,
+  ReactNode,
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { getDocument } from "ariakit-utils/dom";
+import {
+  useForkRef,
+  useUpdateEffect,
+  useWrapElement,
+} from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
+import { PortalContext } from "ariakit/portal";
 import { Role, RoleProps } from "ariakit/role";
 import { compileComponent } from "./__utils/compile-component";
 import { compileModule } from "./__utils/compile-module";
@@ -59,9 +73,31 @@ function useDebouncedValue<T>(value: T, ms: number) {
   return debouncedValue;
 }
 
+function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
+  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const document = getDocument(element);
+    const root = document.createElement("div");
+    if (className) {
+      root.className = className;
+    }
+    document.body.appendChild(root);
+    setPortalRoot(root);
+    return () => {
+      root.remove();
+    };
+  }, [ref, className]);
+
+  return portalRoot;
+}
+
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
   ({ state, file, errorProps, getModule: getModuleProp, ...props }) => {
     state = useStore(state || PlaygroundContext, ["values"]);
+    const ref = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<Error | null>(null);
     const [className, setClassName] = useState("");
     const values = state?.values || {};
@@ -113,15 +149,19 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
       }
     }, [value, filename, getModule]);
 
+    const portalRoot = usePortalRoot(ref, className);
+
     props = useWrapElement(
       props,
       (element) => (
         <ErrorBoundary resetKey={debouncedValues}>
-          {element}
+          <PortalContext.Provider value={portalRoot}>
+            {element}
+          </PortalContext.Provider>
           <ErrorMessage {...errorProps}>{error?.message}</ErrorMessage>
         </ErrorBoundary>
       ),
-      [error, debouncedValues, errorProps]
+      [error, debouncedValues, portalRoot, errorProps]
     );
 
     const children = Component ? <Component /> : null;
@@ -129,6 +169,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
     props = {
       children,
       ...props,
+      ref: useForkRef(ref, props.ref),
       className: cx(className, props.className),
     };
 

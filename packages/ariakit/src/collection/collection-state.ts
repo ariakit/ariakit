@@ -12,10 +12,21 @@ function isElementPreceding(a: Element, b: Element) {
 }
 
 function findDOMIndex(items: Item[], item: Item) {
-  return items.findIndex((currentItem) => {
-    if (!currentItem.ref.current || !item.ref.current) return false;
-    return isElementPreceding(item.ref.current, currentItem.ref.current);
-  });
+  const itemElement = item.ref.current;
+  if (!itemElement) return -1;
+  let length = items.length;
+  if (!length) return -1;
+  // Most of the times, the new item will be added at the end of the list, so we
+  // do a findeIndex in reverse order, instead of wasting time searching the
+  // index from the beginning.
+  while (length--) {
+    const currentItem = items[length];
+    if (!currentItem?.ref.current) continue;
+    if (isElementPreceding(currentItem.ref.current, itemElement)) {
+      return length + 1;
+    }
+  }
+  return -1;
 }
 
 function sortBasedOnDOMPosition(items: Item[]) {
@@ -55,11 +66,12 @@ function setItemsBasedOnDOMPosition(
 }
 
 function getCommonParent(items: Item[]) {
-  const [firstItem, ...nextItems] = items;
+  const firstItem = items[0];
+  const lastItem = items[items.length - 1];
   let parentElement = firstItem?.ref.current?.parentElement;
   while (parentElement) {
     const parent = parentElement;
-    if (nextItems.every((item) => parent.contains(item.ref.current))) {
+    if (lastItem && parent.contains(lastItem.ref.current)) {
       return parentElement;
     }
     parentElement = parentElement.parentElement;
@@ -85,11 +97,11 @@ function useSortBasedOnDOMPosition<T extends Item = Item>(
     };
     const root = getCommonParent(items);
     const observer = new IntersectionObserver(callback, { root });
-    for (const item of items) {
+    items.forEach((item) => {
       if (item.ref.current) {
         observer.observe(item.ref.current);
       }
-    }
+    });
     return () => observer.disconnect();
   }, [items, setItems]);
 }
@@ -156,7 +168,7 @@ export type CollectionState<T extends Item = Item> = {
    */
   items: T[];
   /**
-   * Sets `items`
+   * Sets `items`.
    */
   setItems: SetState<CollectionState<T>["items"]>;
   /**

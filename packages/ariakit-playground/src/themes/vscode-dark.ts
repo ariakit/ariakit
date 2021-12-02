@@ -1,86 +1,66 @@
 import { css } from "@emotion/css";
 import defaultTheme from "./default";
 
-const black = "#1e1e1e";
-const darkGray = "#2b2c2d";
-const gray = "#808080";
-const white = "#d4d4d4";
-const green = "#6a9955";
-const lightGreen = "#b5cea8";
-const aquaGreen = "#4ec9b0";
-const red = "#d16969";
-const orange = "#ce9178";
-const lightOrange = "#d7ba7d";
-const yellow = "#dcdcaa";
-const blue = "#569cd6";
-const lightBlue = "#9cdcfe";
-const dimmedBlue = "#264f78";
-const lightDimmedBlue = "#323a40";
+const foreground = "hsl(204, 3%, 98%)";
+const identifier = "hsl(204, 98%, 80%)";
+const selection = "hsl(210, 52%, 31%)";
+const selectionMatch = "hsl(210, 12%, 22%)";
+const matchingBracket = "hsla(204, 3%, 80%, 0.5)";
+const lineNumber = "hsl(204, 3%, 50%)";
+const activeLine = "hsla(204, 3%, 20%, 0.4)";
+const keyword = "hsl(207, 65%, 59%)";
+const comment = "hsl(101, 33%, 47%)";
+const number = "hsl(99, 28%, 73%)";
+const string = "hsl(17, 60%, 64%)";
+const func = "hsl(60, 42%, 76%)";
+const regex = "hsl(0, 60%, 62%)";
+const tag = "hsl(168, 60%, 55%)";
+const selector = "hsl(41, 60%, 67%)";
 
 const theme = css`
   ${defaultTheme}
-  color: ${white};
+  color: ${foreground};
 
   &.code-css pre,
   &.code-js pre,
   &.code-jsx pre,
   &.code-ts pre,
   &.code-tsx pre {
-    color: ${lightBlue};
-  }
-
-  .cm-scroller {
-    background: ${black};
+    color: ${identifier};
   }
 
   .cm-selectionBackground,
   .cm-focused .cm-selectionBackground,
   &::selection,
   *::selection {
-    background-color: ${dimmedBlue};
-  }
-
-  .cm-gutters {
-    background-color: ${black};
-  }
-
-  .cm-lineNumbers {
-    background-color: ${black};
-  }
-
-  .cm-lineNumbers .cm-gutterElement {
-    color: ${gray};
-  }
-
-  .cm-cursor {
-    border-left-color: ${white};
-  }
-
-  .cm-activeLine {
-    background-color: ${black};
-  }
-
-  .cm-focused .cm-activeLine {
-    background-color: ${darkGray};
+    background-color: ${selection};
   }
 
   .cm-selectionMatch {
-    background-color: ${lightDimmedBlue};
+    background-color: ${selectionMatch};
+  }
+
+  .cm-lineNumbers .cm-gutterElement {
+    color: ${lineNumber};
+  }
+
+  .cm-cursor {
+    border-left-color: ${foreground};
   }
 
   .cm-matchingBracket,
   .cm-nonmatchingBracket {
-    background-color: transparent;
-    outline: 1px solid ${gray};
+    background-color: ${selectionMatch};
+    outline: 1px solid ${matchingBracket};
   }
 
-  .cm-activeLineGutter {
-    background-color: ${black};
+  .cm-focused .cm-activeLine {
+    background-color: ${activeLine};
   }
 
   .cm-focused .cm-activeLineGutter {
-    color: ${white};
-    background-color: ${darkGray};
+    color: ${foreground};
+    background-color: ${activeLine};
   }
 
   .token.keyword,
@@ -90,7 +70,7 @@ const theme = css`
   .token.atrule,
   .token.atrule .token.rule,
   .token.punctuation.interpolation-punctuation {
-    color: ${blue};
+    color: ${keyword};
   }
 
   .token.property-name,
@@ -104,11 +84,11 @@ const theme = css`
   .token.attr-name,
   .token.function-variable.function,
   .token.tag .token.script.language-javascript {
-    color: ${lightBlue};
+    color: ${identifier};
   }
 
   .token.comment {
-    color: ${green};
+    color: ${comment};
     font-style: italic;
   }
 
@@ -119,7 +99,7 @@ const theme = css`
   .token.atrule .token.keyword,
   .token.attr-value .token.punctuation.attr-equals,
   .token.tag .script .token.punctuation {
-    color: ${white};
+    color: ${foreground};
   }
 
   .token.boolean,
@@ -127,7 +107,7 @@ const theme = css`
   .token.symbol,
   .token.inserted,
   .token.unit {
-    color: ${lightGreen};
+    color: ${number};
   }
 
   .token.string,
@@ -135,15 +115,15 @@ const theme = css`
   .token.deleted,
   .token.attr-value,
   .token.attr-value .token.punctuation {
-    color: ${orange};
+    color: ${string};
   }
 
   .token.function {
-    color: ${yellow};
+    color: ${func};
   }
 
   .token.regex {
-    color: ${red};
+    color: ${regex};
   }
 
   .token.tag,
@@ -151,27 +131,27 @@ const theme = css`
   .token.namespace,
   .token.class-name,
   .token.class-name .token.constant {
-    color: ${aquaGreen};
+    color: ${tag};
   }
 
   .token.angle-bracket,
   .token.tag .token.punctuation {
-    color: ${gray};
+    color: ${lineNumber};
   }
 
   &.code-html .token.doctype .token.name {
-    color: ${white};
+    color: ${foreground};
   }
 
   &.code-html .token.tag {
-    color: ${blue};
+    color: ${keyword};
   }
 
   &.code-css .token.selector,
   &.code-css .token.square-bracket + .token.property-name,
   &.code-css .token.square-bracket + .token.property-name,
   &.code-css .token.class-name {
-    color: ${lightOrange};
+    color: ${selector};
   }
 `;
 

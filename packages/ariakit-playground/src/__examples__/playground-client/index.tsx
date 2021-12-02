@@ -15,7 +15,7 @@ export default function Example() {
 `,
 };
 
-export default function PlaygroundExample() {
+export default function Example() {
   const playground = usePlaygroundState({ defaultValues });
   return (
     <Playground state={playground}>

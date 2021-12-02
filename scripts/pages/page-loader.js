@@ -1,4 +1,4 @@
-const fs = require("fs");
+// @ts-check
 const path = require("path");
 const markdownLoader = require("./markdown-loader");
 const { writePage } = require("./utils");
@@ -13,16 +13,16 @@ const { writePage } = require("./utils");
 /**
  * Writes a page to the build directory.
  * @type {import("webpack").LoaderDefinitionFunction<Options,
- * import("webpack").LoaderContext<Options>}
+ * import("webpack").LoaderContext<Options>>}
  */
 async function pageLoader(source) {
-  const filePath = this.resourcePath;
+  const filename = this.resourcePath;
   const { name, buildDir, componentPath } = this.getOptions();
   const dest = path.join(buildDir, name);
 
-  await writePage(filePath, dest, componentPath);
+  await writePage({ filename, dest, componentPath });
 
-  if (/\.md$/.test(filePath)) {
+  if (/\.md$/.test(filename)) {
     // If the file is a markdown file, we'll need to convert it to AST.
     return markdownLoader.call(this, source);
   }

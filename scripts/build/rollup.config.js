@@ -1,16 +1,18 @@
-const { babel } = require("@rollup/plugin-babel");
-const commonjs = require("@rollup/plugin-commonjs");
-const { nodeResolve } = require("@rollup/plugin-node-resolve");
-const replace = require("@rollup/plugin-replace");
-const { camelCase, upperFirst } = require("lodash");
-const { terser } = require("rollup-plugin-terser");
+// @ts-check
+import { babel } from "@rollup/plugin-babel";
+import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
+import { camelCase, upperFirst } from "lodash";
+import { terser } from "rollup-plugin-terser";
+
 const {
   getIndexPath,
+  getMainDir,
+  getModuleDir,
+  getPackage,
   getPublicFiles,
   getSourcePath,
-  getPackage,
-  getModuleDir,
-  getMainDir,
 } = require("./utils");
 
 const cwd = process.cwd();
@@ -18,22 +20,32 @@ const pkg = getPackage(cwd);
 const sourcePath = getSourcePath(cwd);
 const extensions = [".ts", ".tsx", ".js", ".jsx", ".json"];
 
-// Keeps subdirectories and files belonging to our dependencies as external too
-// (i.e. lodash/pick)
+/**
+ * Keeps subdirectories and files belonging to our dependencies as external too
+ * (i.e. lodash/pick)
+ * @param {string[]} externalArr
+ */
 function makeExternalPredicate(externalArr) {
   if (!externalArr.length) {
     return () => false;
   }
   const pattern = new RegExp(`^(${externalArr.join("|")})($|/)`);
+  /** @param {string} id */
   return (id) => pattern.test(id);
 }
 
+/**
+ * @param {boolean} isUMD
+ */
 function getExternal(isUMD) {
   const external = Object.keys(pkg.peerDependencies || {});
   const allExternal = [...external, ...Object.keys(pkg.dependencies || {})];
   return isUMD ? external : makeExternalPredicate(allExternal);
 }
 
+/**
+ * @param {boolean} isUMD
+ */
 function getPlugins(isUMD) {
   const commonPlugins = [
     babel({
@@ -59,6 +71,10 @@ function getPlugins(isUMD) {
   return commonPlugins;
 }
 
+/**
+ * @param {boolean} isUMD
+ * @returns {import("rollup").OutputOptions | import("rollup").OutputOptions[]}
+ */
 function getOutput(isUMD) {
   if (isUMD) {
     return {
@@ -75,22 +91,26 @@ function getOutput(isUMD) {
       },
     };
   }
-
+  /** @type {import("rollup").OutputOptions} */
+  const mainOutput = {
+    format: "cjs",
+    dir: getMainDir(cwd),
+    exports: "named",
+    hoistTransitiveImports: false,
+  };
   const moduleDir = getModuleDir(cwd);
-
-  return [
-    moduleDir && {
-      format: "es",
-      dir: moduleDir,
-    },
-    {
-      format: "cjs",
-      dir: getMainDir(cwd),
-      exports: "named",
-    },
-  ].filter(Boolean);
+  if (moduleDir) {
+    return [
+      mainOutput,
+      { format: "es", dir: moduleDir, hoistTransitiveImports: false },
+    ];
+  }
+  return mainOutput;
 }
 
+/**
+ * @param {boolean} [isUMD]
+ */
 function getInput(isUMD) {
   if (isUMD) {
     return getIndexPath(sourcePath);
@@ -98,6 +118,10 @@ function getInput(isUMD) {
   return getPublicFiles(sourcePath);
 }
 
+/**
+ * @param {boolean} [isUMD]
+ * @returns {import("rollup").RollupOptions}
+ */
 function getConfig(isUMD) {
   return {
     external: getExternal(isUMD),

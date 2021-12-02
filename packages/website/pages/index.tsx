@@ -1,21 +1,27 @@
 import React from "react";
 import {
-  Combobox,
-  ComboboxItem,
-  ComboboxPopover,
-  useComboboxState,
-} from "ariakit";
+  Playground,
+  PlaygroundPreview,
+  usePlaygroundState,
+} from "ariakit-playground";
+
+const value = `import { useId } from "react";
+
+export default function Example() {
+  const id = useId();
+  return <button id={id}>Button</button>;
+}
+`;
 
 export default function Home() {
-  const combobox = useComboboxState();
+  const playground = usePlaygroundState({
+    defaultValues: { "index.js": value },
+  });
   return (
     <div>
-      <Combobox state={combobox} />
-      <ComboboxPopover state={combobox}>
-        <ComboboxItem value="Item 1" />
-        <ComboboxItem value="Item 2" />
-        <ComboboxItem value="Item 3" />
-      </ComboboxPopover>
+      <Playground state={playground}>
+        <PlaygroundPreview />
+      </Playground>
     </div>
   );
 }

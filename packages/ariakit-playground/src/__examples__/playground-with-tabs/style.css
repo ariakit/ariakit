@@ -1,7 +1,7 @@
-@import url("../playground-example/style.css");
+@import url("../playground/style.css");
 
 .tab-list {
-  border-bottom: 1px solid var(--color-grayscale-100, #e1e1e1);
+  border-bottom: 1px solid var(--color-canvas-3-border);
 }
 
 .tab {
@@ -13,5 +13,5 @@
 }
 
 .tab[aria-selected="true"] {
-  border-color: var(--color-primary-700, #1976d2)
+  border-color: var(--color-primary-2-border)
 }

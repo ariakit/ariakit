@@ -469,7 +469,7 @@ export type CompositeItemOptions<T extends As = "button"> = CommandOptions<T> &
     rowId?: string;
     /**
      * Whether the scroll behavior should be prevented when pressing arrow keys
-     * on the first or the last item.
+     * on the first or the last item. TODO: Test this more thoroughly.
      * @default false
      */
     preventScrollOnKeyDown?: boolean;

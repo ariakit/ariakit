@@ -152,7 +152,7 @@ export function closest(element: Element, selectors: string) {
  * isTextField(document.querySelector("textarea")); // true
  */
 export function isTextField(
-  element: HTMLElement
+  element: Element
 ): element is HTMLInputElement | HTMLTextAreaElement {
   try {
     const isTextInput =
