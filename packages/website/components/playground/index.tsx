@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-// import { OpenInCodeSandbox } from "ariakit-playground/actions/open-in-code-sandbox";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";

@@ -9,6 +9,6 @@
   @apply bg-canvas-1-dark;
 }
 
-.playgroundEditor .cm-scroller {
+.playgroundEditor :global(.cm-scroller) {
   @apply !pt-2;
 }

@@ -163,6 +163,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value]
     );
 
+    // TODO: Force aria-selected on virtualFocus: false too
     props = {
       role: getItemRole(state?.contentElement),
       children: value,
