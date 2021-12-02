@@ -1,6 +1,6 @@
 {
   "name": "ariakit-playground",
-  "version": "0.17.0-alpha.4",
+  "version": "0.17.0-alpha.5",
   "description": "Ariakit playground",
   "sideEffects": false,
   "license": "MIT",
@@ -46,7 +46,7 @@
     "@codemirror/view": "0.19.20",
     "@codesandbox/sandpack-client": "0.5.0",
     "@emotion/css": "^11.5.0",
-    "ariakit-utils": "^0.17.0-alpha.4",
+    "ariakit-utils": "^0.17.0-alpha.5",
     "codesandbox-import-utils": "^2.2.3",
     "prismjs": "^1.25.0"
   },
@@ -57,6 +57,6 @@
   "devDependencies": {
     "@types/babel__standalone": "7.1.3",
     "@types/prismjs": "1.16.6",
-    "ariakit": "^2.0.0-alpha.4"
+    "ariakit": "^2.0.0-alpha.5"
   }
 }
