@@ -9,7 +9,7 @@
     "lint": "eslint . --ext js,ts,tsx",
     "type-check": "tsc --noEmit",
     "build": "lerna exec --scope ariakit* -- npm run build",
-    "build:website": "npm run build -w website",
+    "build:website": "lerna exec --scope website -- npm run build",
     "build:fast": "npm run build -- -- --no-umd",
     "clean": "npm run clean -ws --if-present",
     "release": "lerna publish --pre-dist-tag latest",
