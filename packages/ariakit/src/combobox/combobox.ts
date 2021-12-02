@@ -282,7 +282,8 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (event.defaultPrevented) return;
         if (event.key.length === 1) {
           // Printable characters shouldn't perform actions on the combobox
-          // items, only on the combobox input.
+          // items, only on the combobox input. TODO: Do not do this if ctrl or
+          // meta is pressed.
           return event.stopPropagation();
         }
         const hasRows = state.items.some((item) => !!item.rowId);

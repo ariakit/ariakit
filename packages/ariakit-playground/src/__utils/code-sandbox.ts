@@ -4,8 +4,7 @@ import { useUpdateEffect } from "ariakit-utils/hooks";
 import { PlaygroundState } from "../playground-state";
 
 const DEFAULT_DEPENDENCIES = {
-  // TODO: Remove ariakit and use latest on react when v18 gets released.
-  ariakit: "next",
+  // TODO: Use latest on react when v18 gets released.
   "modern-normalize": "latest",
   react: "experimental",
   "react-dom": "experimental",
@@ -31,6 +30,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   padding-top: min(10vh, 100px);
+  line-height: 1.5;
 }
 `;
 }

@@ -97,7 +97,9 @@ export function useCompositeState<T extends Item = Item>({
       hasNullItem: boolean,
       skip?: number
     ): string | null | undefined => {
-      // If there's no item focused, we just move the first one
+      // If there's no item focused, we just move the first one. TODO: Instead
+      // of returning the first one, return the first from the items parameter,
+      // so previous() will return the last id.
       if (activeIdRef.current == null) {
         return first();
       }
@@ -108,7 +110,8 @@ export function useCompositeState<T extends Item = Item>({
       const activeItem = allItems.find(
         (item) => item.id === activeIdRef.current
       );
-      // If there's no item focused, we just move the first one
+      // If there's no item focused, we just move the first one. TODO: Same as
+      // comment above.
       if (!activeItem) {
         return first();
       }
