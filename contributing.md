@@ -1,6 +1,6 @@
 # Contributing
 
-## Clone the repository
+## Getting started
 
 ```bash
 git clone https://github.com/reakit/reakit
