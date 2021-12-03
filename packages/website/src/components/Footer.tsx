@@ -90,8 +90,14 @@ export default function Footer() {
         </Anchor>
       </div>
       <Paragraph>
-        <Anchor href="https://www.netlify.com" target="_blank">
-          This site is powered by Netlify
+        <Anchor
+          href="https://www.vercel.com?utm_source=ariakit&amp;utm_campaign=oss"
+          target="_blank"
+        >
+          <img
+            alt="Powered by Vercel"
+            src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg"
+          />
         </Anchor>
       </Paragraph>
       <Paragraph>

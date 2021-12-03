@@ -77,7 +77,6 @@ module.exports = {
       },
     },
     "gatsby-plugin-meta-redirect",
-    "gatsby-plugin-netlify",
     {
       resolve: "gatsby-plugin-google-tagmanager",
       options: {
