@@ -6,3 +6,6 @@ es
 dist
 ts
 *.log
+tsconfig.tsbuildinfo
+.next
+.pages
