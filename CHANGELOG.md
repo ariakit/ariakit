@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.11](https://github.com/reakit/reakit/compare/reakit@1.3.10...reakit@1.3.11) (2021-11-18)
+
+
+### Bug Fixes
+
+* Add default empty value for items prop ([#934](https://github.com/reakit/reakit/issues/934)) ([c676738](https://github.com/reakit/reakit/commit/c67673806e4306f8a71fdef269ff1680f9ead3ea))
+
+
+
+
+
 ## [1.3.10](https://github.com/reakit/reakit/compare/reakit@1.3.9...reakit@1.3.10) (2021-09-21)
 
 

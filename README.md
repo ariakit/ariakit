@@ -143,6 +143,8 @@ This project exists thanks to all the people who contribute. Learn more on the [
 
 ## Attribution
 
+<a href="https://www.vercel.com?utm_source=ariakit&utm_campaign=oss"><img alt="Powered by Vercel" src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" /></a>
+
 Browser testing provided by 
 <a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" height="80" align="center"></a>
 
