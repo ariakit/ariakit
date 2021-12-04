@@ -5,6 +5,7 @@
     "start": "npm start -w website",
     "dev": "npm run dev -w website",
     "test": "jest",
+    "test:watch": "npm test -- --watch",
     "test:all": "npm run test && npm run lint && npm run build && npm run build:website && npm run clean",
     "lint": "eslint . --ext js,ts,tsx",
     "type-check": "tsc --noEmit",
