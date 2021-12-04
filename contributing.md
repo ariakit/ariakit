@@ -2,9 +2,18 @@
 
 This guide is intended to help you get started with contributing to the project. By following these steps, you will understand the basic development process and workflow.
 
-- [Cloning the repository](#cloning-the-repository)
-- [Installing Node.js and npm](#installing-nodejs-and-npm)
-- [Installing dependencies](#installing-dependencies)
+1. [Cloning the repository](#cloning-the-repository)
+2. [Installing Node.js and npm](#installing-nodejs-and-npm)
+3. [Installing dependencies](#installing-dependencies)
+4. [Creating a new branch](#creating-a-new-branch)
+5. [Starting the development server](#starting-the-development-server)
+6. [Creating a component](#creating-a-component)
+7. [Creating the default example](#creating-the-default-example)
+8. [Styling the example](#styling-the-example)
+9. [Writing the component documentation](#writing-the-component-documentation)
+10. [Writing another example](#writing-another-example)
+11. [Importing styles from other examples](#importing-styles-from-other-examples)
+12. [Writing documentation for other examples](#writing-documentation-for-other-examples)
 
 ## Cloning the repository
 
@@ -71,7 +80,7 @@ Now you can open http://localhost:3000 in your browser to see the project's site
 
 To create a new component, create a file with the following contents:
 
-<sub><code>packages/ariakit/src/my-component/my-component.ts</code></sub>
+`packages/ariakit/src/my-component/my-component.ts`
 
 ````tsx
 import {
@@ -127,7 +136,7 @@ That's the basic structure for all components in the project. This will guarante
 
 Finally, create an `index.ts` file in the same directory as the component. This file will be used to export the component:
 
-<sub><code>packages/ariakit/src/my-component/index.ts</code></sub>
+`packages/ariakit/src/my-component/index.ts`
 
 ```tsx
 export * from "./my-component";
@@ -141,7 +150,7 @@ The development workflow on this project is entirely based on examples. You can 
 
 Let's create a default example for our component:
 
-<sub><code>packages/ariakit/src/my-component/\_\_examples\_\_/my-component/index.tsx</code></sub>
+`packages/ariakit/src/my-component/__examples__/my-component/index.tsx`
 
 ```tsx
 import { MyComponent } from "ariakit/my-component";
@@ -161,7 +170,7 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 >
 > Make sure you also take dark mode into account.
 
-<sub><code>packages/ariakit/src/my-component/\_\_examples\_\_/my-component/style.css</code></sub>
+`packages/ariakit/src/my-component/__examples__/my-component/style.css`
 
 ```css
 .my-component {
@@ -174,7 +183,7 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 Now we need to import the CSS file on the example's `index.tsx` file and add the class name to the respective elements:
 
-<sub><code>packages/ariakit/src/my-component/\_\_examples\_\_/my-component/index.tsx</code></sub>
+`packages/ariakit/src/my-component/__examples__/my-component/index.tsx`
 
 ```tsx
 import { MyComponent } from "ariakit/my-component";
@@ -197,7 +206,7 @@ One of the goals of having use cases written like that is so we can write automa
 
 Let's create a test for our example:
 
-<sub><code>packages/ariakit/src/my-component/\_\_examples\_\_/my-component/test.tsx</code></sub>
+`packages/ariakit/src/my-component/__examples__/my-component/test.tsx`
 
 ```tsx
 import { render, getByText } from "ariakit-test-utils";
@@ -221,9 +230,9 @@ Now we can write the documentation for the component itself using the example we
 
 We can create a `readme.md` file in the component's directory and render an anchor element pointing to the example's index file with a `data-playground` attribute. This will turn the link into a playground.
 
-<sub><code>packages/ariakit/src/my-component/readme.md</code></sub>
+`packages/ariakit/src/my-component/readme.md`
 
-````md
+````markdown
 # My component
 
 This is my component.
@@ -244,3 +253,58 @@ Learn more on [Get started](/guide/get-started).
 ````
 
 Now you can open http://localhost:3000/components/my-component in your browser to see the component documentation.
+
+## Writing another example
+
+A component may have multiple examples besides the default one. This is useful when you want to show a component in different contexts and props.
+
+> Conventionally, the example names are prefixed with the component name and a short suffix. For example: `my-component-custom-prop`.
+
+Let's create another example for our component:
+
+`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/index.tsx`
+
+```tsx
+import { MyComponent } from "ariakit/my-component";
+import "./style.css";
+
+export default function Example() {
+  return <MyComponent className="my-component" customProp="Hello world" />;
+}
+```
+
+Now you can open http://localhost:3000/examples/my-component-custom-prop in your browser to see the example with the custom prop applied.
+
+## Importing styles from other examples
+
+We can `@import` CSS files from other examples. You'll usually import the CSS file from the default example on the other examples so you don't need to repeat yourself.
+
+`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/style.css`
+
+```css
+@import url("../my-component/style.css");
+
+.my-component {
+  @apply p-4;
+}
+```
+
+## Writing documentation for other examples
+
+Unlike default examples, other examples will be primarily accessed through their own URLs (`/examples/my-component-custom-prop`). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's `readme.md` file.
+
+`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/readme.md`
+
+````markdown
+# My component with `customProp`
+
+This is my component using `customProp`.
+
+<a href="./index.tsx" data-playground>Example</a>
+
+Note that we're passing the `customProp` prop to the component:
+
+```tsx
+<MyComponent className="my-component" customProp="Hello world" />
+```
+````
