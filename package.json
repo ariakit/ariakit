@@ -18,7 +18,8 @@
     "release:beta": "npm run release:alpha -- --preid beta",
     "release:graduate": "npm run release -- --conventional-graduate",
     "preversion": "npm run lint && npm run build && npm run test",
-    "postpublish": "npm run clean && npm i"
+    "postversion": "npm install",
+    "postpublish": "npm run clean"
   },
   "workspaces": [
     "packages/*"
