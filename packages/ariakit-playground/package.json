@@ -21,9 +21,7 @@
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
-    "clean": "node ../../scripts/build/clean.js",
-    "preversion": "npm run lint && npm run test && npm run build",
-    "postpublish": "npm run clean"
+    "clean": "node ../../scripts/build/clean.js"
   },
   "keywords": [
     "ariakit",

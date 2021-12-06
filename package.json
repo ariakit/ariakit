@@ -16,7 +16,9 @@
     "release": "lerna publish --pre-dist-tag latest",
     "release:alpha": "npm run release -- --no-changelog --conventional-prerelease --preid alpha",
     "release:beta": "npm run release:alpha -- --preid beta",
-    "release:graduate": "npm run release -- --conventional-graduate"
+    "release:graduate": "npm run release -- --conventional-graduate",
+    "preversion": "npm run lint && npm run build && npm run test",
+    "postpublish": "npm run clean && npm i"
   },
   "workspaces": [
     "packages/*"
