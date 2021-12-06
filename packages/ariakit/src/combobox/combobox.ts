@@ -17,6 +17,7 @@ import {
   useForkRef,
   useId,
   useUpdateEffect,
+  useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
@@ -145,8 +146,10 @@ export const useCombobox = createHook<ComboboxOptions>(
       state.value,
     ]);
 
-    // Auto select the first item on type.
-    useUpdateEffect(() => {
+    // Auto select the first item on type. Must be a layout effect, otherwise it
+    // doesn't work well with useDeferredValue. TODO: Check if this is still
+    // needed.
+    useUpdateLayoutEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
       if (!hasInsertedTextRef.current) return;
