@@ -1,8 +1,5 @@
 import * as React from "react";
-import fetchJsonp from "fetch-jsonp";
 import { object, string } from "yup";
-import toPath from "lodash/toPath";
-import { stringify } from "qs";
 import {
   unstable_useFormState as useFormState,
   unstable_Form as Form,
@@ -17,20 +14,21 @@ import Paragraph from "./Paragraph";
 import Anchor from "./Anchor";
 
 const schema = object({
-  EMAIL: string()
+  "member[email]": string()
     .email("Please, provide a valid email address")
     .required("Email is required"),
-  FNAME: string(),
+  "member[first_name]": string(),
 });
 
 export default function NewsletterForm() {
   const form = useFormState({
     resetOnSubmitSucceed: false,
     resetOnUnmount: false,
+    validateOnBlur: true,
     values: {
       _: "",
-      EMAIL: "",
-      FNAME: "",
+      "member[email]": "",
+      "member[first_name]": "",
     },
     onValidate: async (values) => {
       try {
@@ -39,29 +37,11 @@ export default function NewsletterForm() {
         if (e.inner.length) {
           throw e.inner.reduce(
             (acc: any, curr: any) =>
-              unstable_setIn(acc, toPath(curr.path), curr.message),
+              unstable_setIn(acc, curr.path, curr.message),
             {}
           );
         }
       }
-    },
-    onSubmit: async ({ EMAIL, FNAME }) => {
-      const res = await fetchJsonp(
-        `https://reakit.us18.list-manage.com/subscribe/post-json?u=cf382e48d5d8ed7178cb22060&amp;id=941e41af27&${stringify(
-          { EMAIL, FNAME }
-        )}`,
-        {
-          jsonpCallback: "c",
-        }
-      );
-      const json = await res.json();
-      const result = {
-        _: json.msg.replace(/^\d - /, "").replace(/ <a.+$/, ""),
-      };
-      if (json.result === "error") {
-        throw result;
-      }
-      return result;
     },
   });
   return (
@@ -94,21 +74,30 @@ export default function NewsletterForm() {
         <>
           <FormMessage {...form} name="_" />
           <Form {...form}>
-            <div>
-              <FormLabel {...form} name="FNAME">
-                First name
-              </FormLabel>
-              <FormInput {...form} name="FNAME" />
-              <FormMessage {...form} name="FNAME" />
-            </div>
-            <div>
-              <FormLabel {...form} name="EMAIL">
-                Email
-              </FormLabel>
-              <FormInput {...form} name="EMAIL" type="email" />
-              <FormMessage {...form} name="EMAIL" />
-            </div>
-            <FormSubmitButton {...form}>Subscribe</FormSubmitButton>
+            {({ onSubmit, ...formProps }) => (
+              <form
+                {...formProps}
+                action="https://www.getrevue.co/profile/diegohaz/add_subscriber"
+                method="post"
+                target="_blank"
+              >
+                <div>
+                  <FormLabel {...form} name="member[first_name]">
+                    First name
+                  </FormLabel>
+                  <FormInput {...form} name="member[first_name]" />
+                  <FormMessage {...form} name="member[first_name]" />
+                </div>
+                <div>
+                  <FormLabel {...form} name="member[email]">
+                    Email
+                  </FormLabel>
+                  <FormInput {...form} name="member[email]" type="email" />
+                  <FormMessage {...form} name="member[email]" />
+                </div>
+                <FormSubmitButton {...form}>Subscribe</FormSubmitButton>
+              </form>
+            )}
           </Form>
         </>
       )}
@@ -119,8 +108,31 @@ export default function NewsletterForm() {
         `}
       >
         Emails will be sent by{" "}
-        <Anchor href="https://twitter.com/diegohaz">Diego Haz</Anchor>, and you
-        can unsubscribe at any time.
+        <Anchor
+          target="_blank"
+          rel="noreferrer"
+          href="https://twitter.com/diegohaz"
+        >
+          Diego Haz
+        </Anchor>
+        , and you can unsubscribe at any time. By subscribing, you agree with
+        Revue’s{" "}
+        <Anchor
+          target="_blank"
+          rel="noreferrer"
+          href="https://www.getrevue.co/terms"
+        >
+          Terms of Service
+        </Anchor>{" "}
+        and{" "}
+        <Anchor
+          target="_blank"
+          rel="noreferrer"
+          href="https://www.getrevue.co/privacy"
+        >
+          Privacy Policy
+        </Anchor>
+        .
       </Paragraph>
     </>
   );
