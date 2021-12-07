@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches: [master, next, v*]
-  pull_request:
+  pull_request_target:
 
 jobs:
   build:
@@ -12,12 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr checkout ${{ github.event.pull_request.number }}
 
       - name: Set up Node
         uses: actions/setup-node@v2
