@@ -49,10 +49,6 @@ jobs:
           git commit -am "chore: Add build files" || echo "No changes to commit"
           git push
 
-      # TODO: Add later
-      # - name: Type check
-      #   run: npm run type-check
-
       - name: Test
         run: npm test -- --coverage
 
