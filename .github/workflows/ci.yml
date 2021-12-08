@@ -7,7 +7,40 @@ on:
 
 jobs:
   build:
-    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci --no-audit --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit build files
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: Add build files" || echo "No changes to commit"
+          git push
+
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,52 +65,6 @@ jobs:
 
       - name: Lint
         run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Commit build files
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore: Add build files" || echo "No changes to commit"
-          git push
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dependencies:
-          [
-            react@beta react-dom@beta @testing-library/react@alpha,
-            react@16.13.1 react-dom@16.13.1 @testing-library/react@12.1.2,
-            react@17.0.2 react-dom@17.0.2 @testing-library/react@12.1.2,
-          ]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci --no-audit --ignore-scripts
-
-      - name: Install React
-        run: npm install ${{ matrix.dependencies }}
 
       - name: Type check
         run: npm run type-check
