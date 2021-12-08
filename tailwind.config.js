@@ -11,6 +11,7 @@ module.exports = {
   mode: "jit",
   purge: [
     path.join(__dirname, "packages/website/components/**/*.{js,jsx,ts,tsx}"),
+    path.join(__dirname, "packages/website/pages/**/*.{js,jsx,ts,tsx}"),
   ],
   darkMode: "class",
   theme: {
