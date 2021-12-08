@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run type-check
+
       - name: Build
         run: npm run build
 
@@ -62,12 +68,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Type check
-        run: npm run type-check
 
       - name: Test
         run: npm test -- --coverage
