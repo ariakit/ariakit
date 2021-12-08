@@ -1,8 +1,4 @@
-// TODO: Do not move focus to the combobox input when clicking outside (the
-// body) when the popover is conditionally rendered.
-import { useState } from "react";
 import { matches } from "ariakit-utils/dom";
-import { useUpdateEffect } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -45,25 +41,13 @@ function isController(
  */
 export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
   ({ state, tabIndex, hideOnInteractOutside = true, ...props }) => {
-    // We don't want to auto focus on hide when the popover is closed via an
-    // interaction outside of the combobox. So we keep track of this state here.
-    const [autoFocusOnHide, setAutoFocusOnHide] = useState(
-      props.autoFocusOnHide
-    );
-
-    useUpdateEffect(() => {
-      // Whenever the autoFocusOnHide state changes, we need to reset it to the
-      // original value passed to the hook.
-      setAutoFocusOnHide(props.autoFocusOnHide);
-    }, [autoFocusOnHide, props.autoFocusOnHide]);
-
     props = useComboboxList({ state, ...props });
     props = usePopover({
       state,
       autoFocusOnShow: false,
+      autoFocusOnHide: false,
       finalFocusRef: state.baseRef,
       ...props,
-      autoFocusOnHide,
       // Make sure we don't hide the popover when the user interacts with the
       // combobox cancel or the combobox disclosure buttons. They will have the
       // aria-controls attribute pointing to either the combobox input or the
@@ -76,13 +60,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
           typeof hideOnInteractOutside === "function"
             ? hideOnInteractOutside(event)
             : hideOnInteractOutside;
-        if (!result) return false;
-        // When an interaction outside such as a click on the body hides the
-        // combobox popover, we don't want to move focus to the combobox input,
-        // so we temporarily set the autoFocusOnHide prop to false here (this
-        // will be reset on the next render).
-        setAutoFocusOnHide(false);
-        return true;
+        return result;
       },
     });
     return props;
