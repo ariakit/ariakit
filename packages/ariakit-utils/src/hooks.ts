@@ -4,12 +4,12 @@ import {
   EffectCallback,
   Ref,
   RefObject,
+  // @ts-expect-error
+  useId as _useId,
   useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
-  // @ts-expect-error
-  useId as useReactId,
   useReducer,
   useRef,
   useState,
@@ -17,6 +17,8 @@ import {
 import { canUseDOM } from "./dom";
 import { noop, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
+
+const useReactId = typeof _useId === "function" ? _useId : undefined;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
