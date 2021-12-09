@@ -18,8 +18,7 @@
     "release:beta": "npm run release:alpha -- --preid beta",
     "release:graduate": "npm run release -- --conventional-graduate",
     "preversion": "npm run lint && npm run build && npm run test",
-    "postversion": "npm i --package-lock-only && git add package-lock.json",
-    "postpublish": "npm run clean"
+    "postpublish": "npm i --package-lock-only && git add package-lock.json && npm run clean"
   },
   "workspaces": [
     "packages/*"
