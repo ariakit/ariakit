@@ -1,9 +1,5 @@
 .button {
-  @apply bg-primary-2 
-    text-primary-2
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark
-    flex
+  @apply flex
     items-center
     justify-center
     gap-2
@@ -12,18 +8,13 @@
     border-none
     rounded-lg
     px-4
-    h-10;
-}
-
-.button:hover {
-  @apply bg-primary-2-hover dark:bg-primary-2-dark-hover;
-}
-
-.button[data-focus-visible] {
-  @apply outline-primary dark:outline-primary-dark;
-}
-
-.button[disabled],
-.button[aria-disabled="true"] {
-  @apply opacity-50;
+    h-10
+    bg-primary-2
+    text-primary-2
+    hover:bg-primary-2-hover
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark
+    dark:hover:bg-primary-2-dark-hover
+    ariakit-focus-visible:ariakit-outline
+    aria-disabled:opacity-50
 }

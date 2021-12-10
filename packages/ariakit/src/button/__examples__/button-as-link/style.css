@@ -1,15 +1,9 @@
 .button {
-  @apply text-primary-1
-    dark:text-primary-1-dark
-    text-base
-    cursor-pointer
-    underline;
-}
-
-.button:hover {
-  @apply no-underline;
-}
-
-.button[data-focus-visible] {
-  @apply outline-primary dark:outline-primary-dark;
+  @apply text-base
+  cursor-pointer
+  underline
+  hover:no-underline
+  text-primary-1
+  dark:text-primary-1-dark
+  ariakit-focus-visible:ariakit-outline
 }

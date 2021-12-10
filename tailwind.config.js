@@ -8,23 +8,12 @@ const whiteFade = "hsla(204, 3%, 97%, 75%)";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
-  mode: "jit",
-  purge: [
+  content: [
     path.join(__dirname, "packages/website/components/**/*.{js,jsx,ts,tsx}"),
     path.join(__dirname, "packages/website/pages/**/*.{js,jsx,ts,tsx}"),
   ],
   darkMode: "class",
   theme: {
-    extend: {
-      outline: (theme) => ({
-        none: ["none", null],
-        primary: [`2px solid ${theme("colors.primary-2.DEFAULT")}`, "2px"],
-        "primary-dark": [
-          `2px solid ${theme("colors.primary-2.dark.DEFAULT")}`,
-          "2px",
-        ],
-      }),
-    },
     colors: {
       black: {
         DEFAULT: black,
@@ -255,15 +244,33 @@ module.exports = {
     dropShadow: false,
   },
   plugins: [
-    plugin(({ addUtilities, theme }) => {
+    plugin(({ addUtilities, addVariant, theme }) => {
       const shadows = theme("dropShadow");
-      const utilities = Object.entries(shadows).reduce((acc, [key, shadow]) => {
-        acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-          filter: `drop-shadow(${shadow})`,
-        };
-        return acc;
-      }, {});
-      addUtilities(utilities, ["responsive", "dark", "hover"]);
+      const shadowUtilities = Object.entries(shadows).reduce(
+        (acc, [key, shadow]) => {
+          acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+            filter: `drop-shadow(${shadow})`,
+          };
+          return acc;
+        },
+        {}
+      );
+
+      addUtilities(shadowUtilities);
+
+      addUtilities({
+        ".ariakit-outline": {
+          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+          outlineOffset: "2px",
+          ".dark &": {
+            outlineColor: theme("colors.primary-2.dark.DEFAULT"),
+          },
+        },
+      });
+
+      addVariant("ariakit-focus-visible", "&[data-focus-visible]");
+      addVariant("aria-disabled", '&[aria-disabled="true"]');
+      addVariant("aria-selected", '&[aria-selected="true"]');
     }),
   ],
 };
