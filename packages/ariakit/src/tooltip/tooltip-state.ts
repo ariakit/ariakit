@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useControlledState } from "ariakit-utils/hooks";
-import { applyState } from "ariakit-utils/misc";
 import {
   PopoverState,
   PopoverStateProps,
@@ -29,49 +28,50 @@ export function useTooltipState({
   const showTimeout = useRef<number>();
   const hideTimeout = useRef<number>();
 
-  const [visible, _setVisible] = useControlledState(
-    props.defaultVisible ?? false,
-    props.visible,
-    props.setVisible
-  );
-
   const clearTimeouts = useCallback(() => {
     window.clearTimeout(showTimeout.current);
     window.clearTimeout(hideTimeout.current);
   }, []);
 
-  const setVisible: typeof _setVisible = useCallback(
-    (arg) => {
-      _setVisible((prevVisible) => {
-        clearTimeouts();
-        const nextVisible = applyState(arg, prevVisible);
-        if (nextVisible) {
-          if (!timeout || globalState.activeRef) {
-            // If there's no timeout or a tooltip visible already, we can show
-            // this immediately.
-            globalState.show(ref);
-          } else {
-            // There may be a reference with focus whose tooltip is still not
-            // visible In this case, we want to update it before it gets shown.
-            globalState.show(null);
-            // Otherwise, wait a little bit to show the tooltip.
-            showTimeout.current = window.setTimeout(() => {
-              globalState.show(ref);
-              _setVisible(true);
-            }, timeout);
-            return prevVisible;
-          }
+  const [_visible, __setVisible] = useState(props.defaultVisible ?? false);
+
+  const _setVisible = (nextVisible: boolean) => {
+    props.setVisible?.(nextVisible);
+    if (props.visible === undefined) {
+      __setVisible(nextVisible);
+    }
+  };
+
+  const [visible, setVisible] = useControlledState(
+    props.defaultVisible ?? false,
+    props.visible ?? _visible,
+    (nextVisible) => {
+      clearTimeouts();
+      if (nextVisible) {
+        if (!timeout || globalState.activeRef) {
+          // If there's no timeout or a tooltip visible already, we can show
+          // this immediately.
+          globalState.show(ref);
         } else {
-          // Let's give some time so people can move from a reference to
-          // another and still show tooltips immediately.
-          hideTimeout.current = window.setTimeout(() => {
-            globalState.hide(ref);
+          // There may be a reference with focus whose tooltip is still not
+          // visible In this case, we want to update it before it gets shown.
+          globalState.show(null);
+          // Wait for the timeout to show the tooltip.
+          showTimeout.current = window.setTimeout(() => {
+            globalState.show(ref);
+            _setVisible(nextVisible);
           }, timeout);
+          return;
         }
-        return nextVisible;
-      });
-    },
-    [_setVisible, clearTimeouts, timeout]
+      } else {
+        // Let's give some time so people can move from a reference to
+        // another and still show tooltips immediately.
+        hideTimeout.current = window.setTimeout(() => {
+          globalState.hide(ref);
+        }, timeout);
+      }
+      _setVisible(nextVisible);
+    }
   );
 
   const popover = usePopoverState({

@@ -236,19 +236,17 @@ export function useControlledState<S>(
   const nextStateRef = useLiveRef(nextState);
   const setStateRef = useLiveRef(setState);
 
-  const stateUpdater = useCallback((prevValue: S) => {
+  const nextSetState = useCallback((prevValue: S) => {
     if (setStateRef.current) {
       const nextValue = applyState(prevValue, nextStateRef.current);
-      if (nextValue !== nextStateRef.current) {
-        setStateRef.current(nextValue);
-      }
+      setStateRef.current(nextValue);
     }
     if (stateRef.current === undefined) {
       setInternalState(prevValue);
     }
   }, []);
 
-  return [nextState, stateUpdater];
+  return [nextState, nextSetState];
 }
 
 /**
