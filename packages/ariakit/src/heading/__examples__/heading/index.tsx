@@ -1,11 +1,18 @@
-import { HeadingLevel } from "ariakit";
-import { Heading } from "ariakit/heading";
+import { Heading, HeadingLevel } from "ariakit/heading";
 import "./style.css";
 
 export default function Example() {
   return (
     <HeadingLevel>
-      <Heading className="heading1">Heading 1</Heading>
+      <div className="headingContainer">
+        <Heading className="h1">This is heading 1</Heading>
+        <HeadingLevel>
+          <Heading className="h2">This is heading 2</Heading>
+          <HeadingLevel>
+            <Heading className="h3">This is heading 3</Heading>
+          </HeadingLevel>
+        </HeadingLevel>
+      </div>
     </HeadingLevel>
   );
 }
