@@ -1,0 +1,15 @@
+.wrapper {
+  @apply flex flex-col
+}
+  
+h1 {
+  @apply text-xl
+}
+  
+h2 {
+  @apply text-lg mt-4
+}
+  
+h3 {
+  @apply text-base mt-4
+}
