@@ -250,7 +250,7 @@ export function useStore<T>(
 
   const state =
     hasSubscribe(externalState) && hasSubscribe(internalState)
-      ? getLatest(externalState, internalState)
+      ? getLatest(internalState, externalState)
       : externalState;
 
   const subscribe = getSubscribe(externalState);
