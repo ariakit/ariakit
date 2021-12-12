@@ -58,7 +58,7 @@ test("render radiogroup", () => {
   `);
 });
 
-test("Check radio button on click", async () => {
+test("check radio button on click", async () => {
   render(<Example />);
   expect(getByLabelText("apple")).toHaveAttribute("aria-checked", "false");
   expect(getByLabelText("orange")).toHaveAttribute("aria-checked", "false");
@@ -72,7 +72,7 @@ test("Check radio button on click", async () => {
   expect(getByLabelText("watermelon")).toHaveAttribute("aria-checked", "true");
 });
 
-test("Tab key - Moves keyboard focus to the radio group", async () => {
+test("tab", async () => {
   render(<Example />);
   expect(getByLabelText("apple")).not.toHaveFocus();
   expect(getByLabelText("orange")).not.toHaveFocus();
@@ -85,7 +85,7 @@ test("Tab key - Moves keyboard focus to the radio group", async () => {
   expect(getByLabelText("watermelon")).not.toHaveFocus();
 });
 
-test("Space key - Changes the state to checked, if the radio button with focus is not checked", async () => {
+test("space", async () => {
   render(<Example />);
   await press.Tab();
   expect(getByLabelText("apple")).toHaveFocus();
@@ -95,7 +95,7 @@ test("Space key - Changes the state to checked, if the radio button with focus i
   expect(getByLabelText("apple")).toBeChecked();
 });
 
-test("Right arrow - Moves the focus to and checks the next radio button in the group", async () => {
+test("arrow right", async () => {
   render(<Example />);
   await press.Tab();
   await press.ArrowRight();
@@ -107,7 +107,7 @@ test("Right arrow - Moves the focus to and checks the next radio button in the g
   expect(getByLabelText("watermelon")).toHaveFocus();
 });
 
-test("Down arrow - Moves the focus to and checks the next radio button in the group", async () => {
+test("arrow down", async () => {
   render(<Example />);
   await press.Tab();
   await press.ArrowDown();
@@ -119,7 +119,7 @@ test("Down arrow - Moves the focus to and checks the next radio button in the gr
   expect(getByLabelText("watermelon")).toHaveFocus();
 });
 
-test("Left arrow - Moves the focus to and checks the previous radio button in the group", async () => {
+test("arrow left", async () => {
   render(<Example />);
   await press.Tab();
   await press.ArrowLeft();
@@ -131,7 +131,7 @@ test("Left arrow - Moves the focus to and checks the previous radio button in th
   expect(getByLabelText("orange")).toHaveFocus();
 });
 
-test("Up arrow - Moves the focus to and checks the previous radio button in the group", async () => {
+test("arrow up", async () => {
   render(<Example />);
   await press.Tab();
   await press.ArrowUp();

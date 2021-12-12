@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useControlledState } from "ariakit-utils/hooks";
 import { useStorePublisher } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
@@ -22,11 +23,11 @@ export function useRadioState({
   focusLoop = true,
   ...props
 }: RadioStateProps = {}): RadioState {
-  const [_value, _setValue] = useState(
-    props.value ?? props.defaultValue ?? null
+  const [value, setValue] = useControlledState(
+    props.defaultValue ?? null,
+    props.value,
+    props.setValue
   );
-  const value = props.value ?? _value;
-  const setValue = props.setValue || _setValue;
 
   const composite = useCompositeState({ focusLoop, ...props });
 

@@ -3,6 +3,7 @@ import "./__mock-get-client-rects";
 import { getActiveElement } from "ariakit-utils/dom";
 import { isFocusable } from "ariakit-utils/focus";
 import { DirtiableElement } from "./__utils";
+import { act } from "./act";
 import { fireEvent } from "./fire-event";
 
 export function focus(element: Element) {
@@ -16,5 +17,7 @@ export function focus(element: Element) {
     activeElement.dirty = false;
   }
 
-  element.focus();
+  act(() => {
+    element.focus();
+  });
 }

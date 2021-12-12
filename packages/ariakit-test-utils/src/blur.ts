@@ -1,5 +1,6 @@
 import { getActiveElement } from "ariakit-utils/dom";
 import { DirtiableElement } from "./__utils";
+import { act } from "./act";
 import { fireEvent } from "./fire-event";
 
 export function blur(element?: DirtiableElement | null) {
@@ -16,7 +17,9 @@ export function blur(element?: DirtiableElement | null) {
     element.dirty = false;
   }
 
-  if (element instanceof HTMLElement || element instanceof SVGElement) {
-    element.blur();
-  }
+  act(() => {
+    if (element instanceof HTMLElement || element instanceof SVGElement) {
+      element.blur();
+    }
+  });
 }
