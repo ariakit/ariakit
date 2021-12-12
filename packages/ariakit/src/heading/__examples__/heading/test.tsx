@@ -3,5 +3,5 @@ import Example from ".";
 
 test("render heading", () => {
   render(<Example />);
-  expect(getByRole('heading')).toHaveTextContent('Heading 1')
+  expect(getByRole("heading")).toHaveTextContent("Heading 1");
 });
