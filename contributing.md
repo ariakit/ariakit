@@ -74,6 +74,8 @@ After installing the project's dependencies, you can run the following command t
 npm run dev
 ```
 
+> On Windows, you should run this command as administrator or in developer mode. Otherwise, symlinks won't be created.
+
 Now you can open http://localhost:3000 in your browser to see the project's site.
 
 ## Creating a component

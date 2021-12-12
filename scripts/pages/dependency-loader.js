@@ -15,8 +15,8 @@ const fs = require("fs");
  */
 async function dependencyLoader(source) {
   const { importerFilePath } = this.getOptions();
-  const timestamp = Date.now();
-  fs.utimesSync(importerFilePath, timestamp, timestamp);
+  const date = new Date();
+  fs.utimesSync(importerFilePath, date, date);
   return source;
 }
 
