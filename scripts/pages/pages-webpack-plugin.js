@@ -2,7 +2,12 @@
 const fs = require("fs");
 const path = require("path");
 const { EntryPlugin } = require("webpack");
-const { getPageFilename, getEntryPath, getBuildDir } = require("./utils");
+const {
+  getPageFilename,
+  getEntryPath,
+  getBuildDir,
+  pathToPosix,
+} = require("./utils");
 
 class PagesWebpackPlugin {
   /**
@@ -32,7 +37,8 @@ class PagesWebpackPlugin {
   apply(compiler) {
     /** @param {string} file */
     const test = (file) =>
-      file.includes(this.sourceContext) && this.sourceRegExp.test(file);
+      file.includes(this.sourceContext) &&
+      this.sourceRegExp.test(pathToPosix(file));
 
     compiler.options.module.rules.push({
       test,

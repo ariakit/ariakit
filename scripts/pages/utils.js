@@ -43,7 +43,14 @@ function resolveModuleName(source, filename) {
  * @param {string} path Path that will be converted to an identifier string.
  */
 function pathToIdentifier(path) {
-  return path.replace(/[\.\/\-@]/g, "_");
+  return path.replace(/[\.\/\\:\-@]/g, "_");
+}
+
+/**
+ * @param {string} path
+ */
+function pathToPosix(path) {
+  return path.replace(/\\/g, "/");
 }
 
 /**
@@ -74,11 +81,14 @@ function getPageFilename(filename, extension = ".js") {
  * the import.
  */
 function getPageImports({ filename, dest, originalSource, importerFilePath }) {
-  const relativeDependencyLoader = path.relative(dest, dependencyLoader);
+  const relativeDependencyLoader = pathToPosix(
+    path.relative(dest, dependencyLoader)
+  );
+  importerFilePath = importerFilePath && pathToPosix(importerFilePath);
   const originalDependencyLoader = importerFilePath
     ? `${relativeDependencyLoader}?importerFilePath=${importerFilePath}!`
     : "";
-  const originalRelativeSource = path.relative(dest, filename);
+  const originalRelativeSource = pathToPosix(path.relative(dest, filename));
   const originalImport = {
     originalSource,
     defaultExport: true,
@@ -88,7 +98,9 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   };
 
   if (/\.md$/.test(filename)) {
-    const relativeMarkdownLoader = path.relative(dest, markdownLoader);
+    const relativeMarkdownLoader = pathToPosix(
+      path.relative(dest, markdownLoader)
+    );
     originalImport.source = `!${relativeMarkdownLoader}!${originalRelativeSource}`;
   }
 
@@ -108,7 +120,9 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
 
     const source = node.source.value;
     const mod = resolveModuleName(source, filename);
-    const relativeFilename = path.relative(dest, mod.resolvedFileName);
+    const relativeFilename = pathToPosix(
+      path.relative(dest, mod.resolvedFileName)
+    );
 
     if (mod.isExternalLibraryImport) {
       imports.push({
@@ -162,8 +176,9 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
  */
 function createPageContent(filename) {
   const title = getPageName(filename);
+  const importPath = pathToPosix(path.basename(filename));
   const content = `# ${title}
-<a href="./${path.basename(filename)}" data-playground>Example</a>`;
+<a href="./${importPath}" data-playground>Example</a>`;
   return content;
 }
 
@@ -255,7 +270,7 @@ async function getPageContent({ filename, dest, componentPath }) {
     },`;
   });
 
-  const componentSource = path.relative(dest, componentPath);
+  const componentSource = pathToPosix(path.relative(dest, componentPath));
 
   const markdown =
     imports.default && imports.default[0]
@@ -330,7 +345,7 @@ function getFiles(dir, pattern, files = []) {
     if (/node_modules/.test(itemPath)) continue;
     if (item.isDirectory()) {
       getFiles(itemPath, pattern, files);
-    } else if (pattern.test(itemPath)) {
+    } else if (pattern.test(pathToPosix(itemPath))) {
       files.push(itemPath);
     }
   }
@@ -392,6 +407,7 @@ function resetBuildDir(pageName, buildDir, entryPath) {
  */
 function writeEntryFile(sourceContext, sourceRegExp, entryPath) {
   const stringTest = sourceRegExp.toString();
+  sourceContext = pathToPosix(sourceContext);
   fs.writeFileSync(
     entryPath,
     `const req = require.context("${sourceContext}", true, ${stringTest});
@@ -413,13 +429,14 @@ function writeSymlinks(pageName, buildDir, pagesDir) {
     if (fs.lstatSync(symlinkPath).isSymbolicLink()) {
       fs.unlinkSync(symlinkPath);
     }
+    fs.symlinkSync(relativeBuildPath, symlinkPath);
   } catch (e) {
     // Do nothing
   }
-  fs.symlinkSync(relativeBuildPath, symlinkPath);
 }
 
 module.exports = {
+  pathToPosix,
   getPageName,
   getPageFilename,
   getPageTreeFromContent,
