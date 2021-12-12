@@ -168,7 +168,13 @@ export type CollectionState<T extends Item = Item> = {
    */
   items: T[];
   /**
-   * Sets `items`.
+   * Sets the `items` state.
+   * @example
+   * const { setItems } = useCollectionState();
+   * useEffect(() => {
+   *   const item = { ref: React.createRef() };
+   *   setItems((prevItems) => [...prevItems, item]);
+   * }, [setItems])
    */
   setItems: SetState<CollectionState<T>["items"]>;
   /**
@@ -186,5 +192,25 @@ export type CollectionState<T extends Item = Item> = {
 };
 
 export type CollectionStateProps<T extends Item = Item> = Partial<
-  Pick<CollectionState<T>, "items" | "setItems">
->;
+  Pick<CollectionState<T>, "items">
+> & {
+  /**
+   * Function that will be called when setting the collection `items` state.
+   * @example
+   * // Uncontrolled example
+   * useCollectionState({ setItems: (items) => console.log(items) });
+   * @example
+   * // Controlled example
+   * const [items, setItems] = useState([]);
+   * useCollectionState({ items, setItems });
+   * @example
+   * // Externally controlled example
+   * function Items({ items, onItemsChange }) {
+   *   const collection = useCollectionState({
+   *     items,
+   *     setItems: onItemsChange,
+   *   });
+   * }
+   */
+  setItems?: (items: CollectionState<T>["items"]) => void;
+};

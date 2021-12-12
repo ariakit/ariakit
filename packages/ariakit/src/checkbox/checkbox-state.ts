@@ -29,20 +29,39 @@ export type CheckboxState = {
    */
   value: boolean | string | number | Array<string | number>;
   /**
-   * A memoized function that will be called to update the value.
+   * Sets the `value` state.
    * @example
-   * const [value, setValue] = useState(false);
-   * useCheckboxState({ value, setValue });
+   * const checkbox = useCheckboxState({ defaultValue: false });
+   * checkbox.setValue(true);
    */
   setValue: SetState<CheckboxState["value"]>;
 };
 
-export type CheckboxStateProps = Partial<
-  Pick<CheckboxState, "value" | "setValue">
-> & {
+export type CheckboxStateProps = Partial<Pick<CheckboxState, "value">> & {
   /**
    * The default value of the checkbox.
    * @default false
+   * @example
+   * const checkbox = useCheckboxState({ defaultValue: ["Apple", "Orange"] });
+   * <Checkbox state={checkbox} value="Apple" />
+   * <Checkbox state={checkbox} value="Orange" />
+   * <Checkbox state={checkbox} value="Watermelon" />
    */
   defaultValue?: CheckboxState["value"];
+  /**
+   * Function that will be called when setting the checkbox `value` state.
+   * @example
+   * // Uncontrolled example
+   * useCheckboxState({ setValue: (value) => console.log(value) });
+   * @example
+   * // Controlled example
+   * const [value, setValue] = useState(false);
+   * useCheckboxState({ value, setValue });
+   * @example
+   * // Externally controlled example
+   * function CheckboxGroup({ value, onChange }) {
+   *   const checkbox = useCheckboxState({ value, setValue: onChange });
+   * }
+   */
+  setValue?: (value: CheckboxState["value"]) => void;
 };

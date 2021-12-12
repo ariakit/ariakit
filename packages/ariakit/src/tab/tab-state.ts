@@ -135,7 +135,7 @@ export type TabState = CompositeState<Item> & {
    */
   visibleId: TabState["activeId"];
   /**
-   * Sets `visibleId`.
+   * Sets the `visibleId` state.
    */
   setVisibleId: SetState<TabState["visibleId"]>;
   /**
@@ -149,7 +149,7 @@ export type TabState = CompositeState<Item> & {
 };
 
 export type TabStateProps = CompositeStateProps<Item> &
-  Partial<Pick<TabState, "visibleId" | "setVisibleId">> & {
+  Partial<Pick<TabState, "visibleId">> & {
     /**
      * The id of the tab whose panel should be initially visible.
      * @example
@@ -162,4 +162,15 @@ export type TabStateProps = CompositeStateProps<Item> &
      * ```
      */
     defaultVisibleId?: TabState["visibleId"];
+    /**
+     * Function that will be called when setting the tab `visibleId` state.
+     * @example
+     * function Tabs({ visibleTab, onTabChange }) {
+     *   const tab = useTabState({
+     *     visibleId: visibleTab,
+     *     setVisibleId: onTabChange,
+     *   });
+     * }
+     */
+    setVisibleId?: (visibleId: TabState["visibleId"]) => void;
   };

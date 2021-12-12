@@ -129,7 +129,7 @@ export type MenuState = CompositeState &
      */
     initialFocus: "container" | "first" | "last";
     /**
-     * Sets `initialFocus`.
+     * Sets the `initialFocus` state.
      */
     setInitialFocus: SetState<MenuState["initialFocus"]>;
     /**
@@ -138,7 +138,7 @@ export type MenuState = CompositeState &
      */
     values: Record<string, string | boolean | number | Array<string | number>>;
     /**
-     * Sets `values`.
+     * Sets the `values` state.
      */
     setValues: SetState<MenuState["values"]>;
     /**
@@ -156,6 +156,19 @@ export type MenuState = CompositeState &
 
 export type MenuStateProps = CompositeStateProps &
   HovercardStateProps &
-  Partial<Pick<MenuState, "values" | "setValues">> & {
+  Partial<Pick<MenuState, "values">> & {
+    /**
+     * A default map of names and values that will be used by the
+     * `MenuItemCheckbox` and `MenuItemRadio` components.
+     */
     defaultValues?: MenuState["values"];
+    /**
+     * Function that will be called when setting the menu `values` state.
+     * @example
+     * const [values, setValues] = useState({});
+     * // Combining the values from two menus into a single state.
+     * const menu = useMenuState({ values, setValues });
+     * const submenu = useMenuState({ values, setValues });
+     */
+    setValues?: (values: MenuState["values"]) => void;
   };

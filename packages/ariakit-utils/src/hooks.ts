@@ -15,7 +15,7 @@ import {
   useState,
 } from "react";
 import { canUseDOM } from "./dom";
-import { noop, setRef } from "./misc";
+import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
 const useReactId = typeof _useId === "function" ? _useId : undefined;
@@ -227,15 +227,28 @@ export function useUpdateLayoutEffect(
 export function useControlledState<S>(
   defaultState: S | (() => S),
   state?: S,
-  setState?: SetState<S>
+  setState?: (value: S) => void
 ): [S, SetState<S>] {
-  // TODO: If setState is provided, but state is not, we should use the internal
-  // state, but merge the internal setState with the provided one.
-  const isControlled = state !== undefined;
   const [internalState, setInternalState] = useState(defaultState);
-  state = isControlled ? state! : internalState;
-  setState = setState || (isControlled ? noop : setInternalState);
-  return [state, setState];
+  const nextState = state !== undefined ? state : internalState;
+
+  const stateRef = useLiveRef(state);
+  const nextStateRef = useLiveRef(nextState);
+  const setStateRef = useLiveRef(setState);
+
+  const stateUpdater = useCallback((prevValue: S) => {
+    if (setStateRef.current) {
+      const nextValue = applyState(prevValue, nextStateRef.current);
+      if (nextValue !== nextStateRef.current) {
+        setStateRef.current(nextValue);
+      }
+    }
+    if (stateRef.current === undefined) {
+      setInternalState(prevValue);
+    }
+  }, []);
+
+  return [nextState, stateUpdater];
 }
 
 /**

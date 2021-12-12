@@ -188,9 +188,7 @@ export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
    * array of checked values.
    * @example
    * ```jsx
-   * const checkbox = useCheckboxState({
-   *   defaultValue: ["Apple", "Orange"],
-   * });
+   * const checkbox = useCheckboxState({ defaultValue: ["Apple", "Orange"] });
    * <Checkbox state={checkbox} value="Apple" />
    * <Checkbox state={checkbox} value="Orange" />
    * <Checkbox state={checkbox} value="Watermelon" />

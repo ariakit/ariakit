@@ -282,7 +282,7 @@ export type PopoverState = DialogState & {
    */
   anchorRect: AnchorRect | null;
   /**
-   * Sets `anchorRect`.
+   * Sets the `anchorRect` state.
    */
   setAnchorRect: SetState<PopoverState["anchorRect"]>;
   /**
@@ -365,7 +365,6 @@ export type PopoverStateProps = DialogStateProps &
     Pick<
       PopoverState,
       | "anchorRect"
-      | "setAnchorRect"
       | "placement"
       | "fixed"
       | "padding"
@@ -386,4 +385,13 @@ export type PopoverStateProps = DialogStateProps &
      * });
      */
     defaultAnchorRect?: PopoverState["anchorRect"];
+    /**
+     * Function that will be called when setting the popover `anchorRect` state.
+     * @example
+     * const [anchorRect, setAnchorRect] = useState(
+     *   { x: 10, y: 10, width: 100, height: 100 }
+     * );
+     * usePopoverState({ anchorRect, setAnchorRect });
+     */
+    setAnchorRect?: (anchor: PopoverState["anchorRect"]) => void;
   };

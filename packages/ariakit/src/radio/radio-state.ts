@@ -44,15 +44,23 @@ export type RadioState = CompositeState & {
    */
   value: string | number | null;
   /**
-   * Sets `value`.
+   * Sets the `value` state.
    */
   setValue: SetState<RadioState["value"]>;
 };
 
 export type RadioStateProps = CompositeStateProps &
-  Partial<Pick<RadioState, "value" | "setValue">> & {
+  Partial<Pick<RadioState, "value">> & {
     /**
      * The initial value of the radio group.
      */
     defaultValue?: RadioState["value"];
+    /**
+     * Function that will be called when setting the radio `value` state.
+     * @example
+     * function RadioGroup({ value, onChange }) {
+     *   const radio = useRadioState({ value, setValue: onChange });
+     * }
+     */
+    setValue?: (value: RadioState["value"]) => void;
   };

@@ -41,4 +41,5 @@ export type PlaygroundStateProps = Partial<
   Pick<PlaygroundState, "values" | "setValues">
 > & {
   defaultValues?: PlaygroundState["values"];
+  setValues?: (values: PlaygroundState["values"]) => void;
 };

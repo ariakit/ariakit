@@ -159,11 +159,30 @@ export type DisclosureState = {
 };
 
 export type DisclosureStateProps = Partial<
-  Pick<DisclosureState, "visible" | "setVisible" | "animated">
+  Pick<DisclosureState, "visible" | "animated">
 > & {
   /**
    * The default visibility state of the content.
    * @default false
    */
   defaultVisible?: DisclosureState["visible"];
+  /**
+   * Function that will be called when setting the disclosure `visible` state.
+   * @example
+   * // Uncontrolled example
+   * useDisclosureState({ setVisible: (visible) => console.log(visible) });
+   * @example
+   * // Controlled example
+   * const [visible, setVisible] = useState(false);
+   * useDisclosureState({ visible, setVisible });
+   * @example
+   * // Externally controlled example
+   * function MyDisclosure({ visible, onVisibleChange }) {
+   *   const disclosure = useDisclosureState({
+   *     visible,
+   *     setVisible: onVisibleChange,
+   *   });
+   * }
+   */
+  setVisible?: (visible: DisclosureState["visible"]) => void;
 };

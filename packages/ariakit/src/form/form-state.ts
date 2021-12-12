@@ -287,7 +287,7 @@ export type FormState<V = AnyObject> = CollectionState<Item> & {
    */
   values: V;
   /**
-   * Sets `values`.
+   * Sets the `values` state.
    * @example
    * const form = useFormState({ defaultValues: { name: "John" } });
    * // Inside an effect or event callback.
@@ -332,7 +332,7 @@ export type FormState<V = AnyObject> = CollectionState<Item> & {
    */
   errors: DeepPartial<DeepMap<V, ErrorMessage>>;
   /**
-   * Sets `errors`.
+   * Sets the `errors` state.
    * @example
    * const form = useFormState({ defaultValues: { name: "" } });
    * // Inside an effect or event callback.
@@ -362,7 +362,7 @@ export type FormState<V = AnyObject> = CollectionState<Item> & {
    */
   touched: DeepPartial<DeepMap<V, boolean>>;
   /**
-   * Sets `touched`.
+   * Sets the `touched` state.
    * @example
    * const form = useFormState({ defaultValues: { name: "" } });
    * // Inside an effect or event callback.
@@ -498,12 +498,7 @@ export type FormState<V = AnyObject> = CollectionState<Item> & {
 };
 
 export type FormStateProps<V = AnyObject> = CollectionStateProps<Item> &
-  Partial<
-    Pick<
-      FormState<V>,
-      "values" | "setValues" | "errors" | "setErrors" | "touched" | "setTouched"
-    >
-  > & {
+  Partial<Pick<FormState<V>, "values" | "errors" | "touched">> & {
     /**
      * The default values of the form.
      */
@@ -516,4 +511,32 @@ export type FormStateProps<V = AnyObject> = CollectionStateProps<Item> &
      * The default touched state of the form.
      */
     defaultTouched?: FormState<V>["touched"];
+    /**
+     * Function that will be called when setting the form `values` state.
+     * @example
+     * // Uncontrolled example
+     * useFormState({ setValues: (values) => console.log(values) });
+     * @example
+     * // Controlled example
+     * const [values, setValues] = useState({});
+     * useFormState({ values, setValues });
+     * @example
+     * // Externally controlled example
+     * function MyForm({ values, onChange }) {
+     *   const form = useFormState({ values, setValues: onChange });
+     * }
+     */
+    setValues?: (values: FormState<V>["values"]) => void;
+    /**
+     * Function that will be called when setting the form `errors` state.
+     * @example
+     * useFormState({ setErrors: (errors) => console.log(errors) });
+     */
+    setErrors?: (errors: FormState<V>["errors"]) => void;
+    /**
+     * Function that will be called when setting the form `touched` state.
+     * @example
+     * useFormState({ setTouched: (touched) => console.log(touched) });
+     */
+    setTouched?: (touched: FormState<V>["touched"]) => void;
   };

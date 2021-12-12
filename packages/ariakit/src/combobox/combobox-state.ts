@@ -170,7 +170,7 @@ export type ComboboxState = CompositeState<Item> &
      */
     value: string;
     /**
-     * Sets `value`.
+     * Sets the `value` state.
      * @example
      * const combobox = useComboboxState();
      * combobox.setValue("new value");
@@ -188,7 +188,7 @@ export type ComboboxState = CompositeState<Item> &
      */
     list: string[];
     /**
-     * Sets `list`.
+     * Sets the `list` state.
      */
     setList: SetState<ComboboxState["list"]>;
     /**
@@ -214,16 +214,14 @@ export type ComboboxState = CompositeState<Item> &
      */
     moveType: "keyboard" | "mouse";
     /**
-     * Sets `moveType`.
+     * Sets the `moveType` state.
      */
     setMoveType: SetState<ComboboxState["moveType"]>;
   };
 
 export type ComboboxStateProps = CompositeStateProps<Item> &
   PopoverStateProps &
-  Partial<
-    Pick<ComboboxState, "value" | "setValue" | "list" | "setList" | "limit">
-  > & {
+  Partial<Pick<ComboboxState, "value" | "list" | "limit">> & {
     /**
      * Default value of the combobox input.
      */
@@ -244,4 +242,27 @@ export type ComboboxStateProps = CompositeStateProps<Item> &
      * ```
      */
     defaultList?: ComboboxState["list"];
+    /**
+     * Function that will be called when setting the combobox `value` state.
+     * @example
+     * // Uncontrolled example
+     * useComboboxState({ setValue: (value) => console.log(value) });
+     * @example
+     * // Controlled example
+     * const [value, setValue] = useState("");
+     * useComboboxState({ value, setValue });
+     * @example
+     * // Externally controlled example
+     * function MyCombobox({ value, onChange }) {
+     *   const combobox = useComboboxState({ value, setValue: onChange });
+     * }
+     */
+    setValue?: (value: ComboboxState["value"]) => void;
+    /**
+     * Function that will be called when setting the combobox `list` state.
+     * @example
+     * const [list, setList] = useState([]);
+     * useComboboxState({ list, setList });
+     */
+    setList?: (list: ComboboxState["list"]) => void;
   };

@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useMemo, useRef, useState } from "react";
+import { RefObject, useCallback, useMemo, useRef } from "react";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import {
   useControlledState,
@@ -48,15 +48,18 @@ export function useCompositeState<T extends Item = Item>({
   focusShift = false,
   ...props
 }: CompositeStateProps<T> = {}): CompositeState<T> {
+  const collection = useCollectionState(props);
   const baseRef = useRef<HTMLDivElement>(null);
   const [moves, setMoves] = useControlledState(0, props.moves, props.setMoves);
-  const [_activeId, _setActiveId] = useState(props.defaultActiveId);
-  const collection = useCollectionState(props);
-  const activeId = useMemo(
-    () => getActiveId(collection.items, _activeId, props.activeId),
-    [collection.items, _activeId, props.activeId]
+  const [_activeId, setActiveId] = useControlledState(
+    props.defaultActiveId,
+    props.activeId,
+    props.setActiveId
   );
-  const setActiveId = props.setActiveId || _setActiveId;
+  const activeId = useMemo(
+    () => getActiveId(collection.items, _activeId),
+    [collection.items, _activeId]
+  );
   const initialActiveId = useInitialValue(activeId);
   const includesBaseElement =
     props.includesBaseElement ?? initialActiveId === null;
@@ -400,7 +403,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    */
   moves: number;
   /**
-   * Sets `moves`.
+   * Sets the `moves` state.
    */
   setMoves: SetState<CompositeState["moves"]>;
   /**
@@ -508,11 +511,40 @@ export type CompositeStateProps<T extends Item = Item> =
         | "focusWrap"
         | "focusShift"
         | "moves"
-        | "setMoves"
         | "includesBaseElement"
         | "activeId"
-        | "setActiveId"
       >
     > & {
+      /**
+       * The composite item id that should be focused when the composite is
+       * initialized.
+       * @example
+       * ```jsx
+       * const composite = useCompositeState({ defaultActiveId: "item-2" });
+       * <Composite state={composite}>
+       *   <CompositeItem>Item 1</CompositeItem>
+       *   <CompositeItem id="item-2">Item 2</CompositeItem>
+       *   <CompositeItem>Item 3</CompositeItem>
+       * </Composite>
+       * ```
+       */
       defaultActiveId?: CompositeState<T>["activeId"];
+      /**
+       * Function that will be called when setting the composite `moves` state.
+       * @example
+       * const [moves, setMoves] = useState(0);
+       * useCompositeState({ moves, setMoves });
+       */
+      setMoves?: (moves: CompositeState<T>["moves"]) => void;
+      /**
+       * Function that will be called when setting the composite `activeId`.
+       * @example
+       * function MyComposite({ activeId, onActiveIdChange }) {
+       *   const composite = useCompositeState({
+       *     activeId,
+       *     setActiveId: onActiveIdChange,
+       *   });
+       * }
+       */
+      setActiveId?: (activeId: CompositeState<T>["activeId"]) => void;
     };
