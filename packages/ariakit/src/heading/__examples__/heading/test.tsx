@@ -1,9 +1,9 @@
-import { getByRole, render } from "ariakit-test-utils";
+import { render } from "ariakit-test-utils";
 import Example from ".";
 
 test("render heading", () => {
-  render(<Example />);
-  expect(getByRole("heading-container")).toMatchInlineSnapshot(`
+  const { container } = render(<Example />);
+  expect(container).toMatchInlineSnapshot(`
   <div
     class="headingContainer"
     role="heading-container"

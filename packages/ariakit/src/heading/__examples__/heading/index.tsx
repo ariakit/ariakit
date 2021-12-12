@@ -3,8 +3,8 @@ import "./style.css";
 
 export default function Example() {
   return (
-    <HeadingLevel>
-      <div role="heading-container" className="headingContainer">
+    <div className="wrapper">
+      <HeadingLevel>
         <Heading>Lacus Et Semper Turpis Massa Commodo Cum</Heading>
         <p>Torquent penatibus ipsum nascetur cursus primis lobortis</p>
         <HeadingLevel>
@@ -15,7 +15,7 @@ export default function Example() {
           <Heading>Quis Placerat</Heading>
           <p>Platea justo lectus. Praesent. Et sodales pellentesque</p>
         </HeadingLevel>
-      </div>
-    </HeadingLevel>
+      </HeadingLevel>
+    </div>
   );
 }
