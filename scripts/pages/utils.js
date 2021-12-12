@@ -426,13 +426,16 @@ function writeSymlinks(pageName, buildDir, pagesDir) {
   const buildPath = path.join(buildDir, pageName);
   const relativeBuildPath = path.relative(pagesDir, buildPath);
   try {
-    if (fs.lstatSync(symlinkPath).isSymbolicLink()) {
+    const stat = fs.lstatSync(symlinkPath);
+    if (stat.isSymbolicLink()) {
       fs.unlinkSync(symlinkPath);
+    } else if (stat.isFile()) {
+      fs.rmSync(symlinkPath);
     }
-    fs.symlinkSync(relativeBuildPath, symlinkPath);
   } catch (e) {
     // Do nothing
   }
+  fs.symlinkSync(relativeBuildPath, symlinkPath);
 }
 
 module.exports = {
