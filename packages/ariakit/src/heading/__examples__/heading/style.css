@@ -3,11 +3,11 @@
     flex-col
 }
 
-.h1{
+h1{
     @apply text-xl
 }
 
-.h2{
+h2{
     @apply text-lg
     mt-4
 }

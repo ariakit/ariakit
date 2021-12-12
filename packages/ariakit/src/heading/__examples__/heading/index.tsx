@@ -4,13 +4,16 @@ import "./style.css";
 export default function Example() {
   return (
     <HeadingLevel>
-      <div className="headingContainer">
-        <Heading className="h1">This is heading 1</Heading>
+      <div role="heading-container" className="headingContainer">
+        <Heading>Lacus Et Semper Turpis Massa Commodo Cum</Heading>
+        <p>Torquent penatibus ipsum nascetur cursus primis lobortis</p>
         <HeadingLevel>
-          <Heading className="h2">This is heading 2</Heading>
-          <HeadingLevel>
-            <Heading className="h3">This is heading 3</Heading>
-          </HeadingLevel>
+          <Heading>Ac Nullam</Heading>
+          <p>Volutpat metus id purus dignissim fusce Tellus egestas.</p>
+        </HeadingLevel>
+        <HeadingLevel>
+          <Heading>Quis Placerat</Heading>
+          <p>Platea justo lectus. Praesent. Et sodales pellentesque</p>
         </HeadingLevel>
       </div>
     </HeadingLevel>
