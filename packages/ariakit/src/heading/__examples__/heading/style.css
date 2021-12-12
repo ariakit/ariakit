@@ -8,11 +8,9 @@ h1{
 }
 
 h2{
-    @apply text-lg
-    mt-4
+    @apply text-lg mt-4
 }
 
-.h3{
-    @apply text-base
-    mt-4
+h3{
+    @apply text-base mt-4
 }
