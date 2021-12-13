@@ -1,4 +1,4 @@
-import { Tooltip, useTooltipState, TooltipAnchor } from "ariakit/tooltip";
+import { TooltipAnchor, Tooltip, useTooltipState } from "ariakit/tooltip";
 
 export default function Example() {
   const tooltip = useTooltipState();
