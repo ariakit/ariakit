@@ -18,7 +18,7 @@
     }
   },
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", {"endOfLine": "auto"}],
     "react/no-children-prop": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
