@@ -28,7 +28,9 @@ function getIsChecked(
   stateValue?: RadioState["value"]
 ) {
   if (stateValue === undefined) return;
-  if (value && stateValue) return stateValue === value;
+  if (value != null && stateValue != null) {
+    return stateValue === value;
+  }
   return !!stateValue;
 }
 

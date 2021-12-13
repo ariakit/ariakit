@@ -1,3 +1,4 @@
+// TODO: Add data-attribute to indicate whether it's expanded?
 import {
   FocusEvent,
   KeyboardEvent,
