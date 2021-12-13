@@ -48,7 +48,7 @@ Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the p
 nvm use
 ```
 
-> If haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. You can just follow the instructions in your terminal.
+> If you haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. You can just follow the instructions in your terminal.
 
 ## Installing dependencies
 
@@ -176,10 +176,7 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 ```css
 .my-component {
-  @apply bg-danger-2
-    text-danger-2
-    dark:bg-danger-2-dark
-    dark:text-danger-2-dark;
+  @apply bg-danger-2 text-danger-2 dark:bg-danger-2-dark dark:text-danger-2-dark
 }
 ```
 
