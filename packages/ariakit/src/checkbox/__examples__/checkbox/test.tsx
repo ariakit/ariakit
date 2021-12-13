@@ -8,14 +8,21 @@ import {
 import Example from ".";
 
 test("render checkbox", async () => {
-  render(<Example />);
-  expect(getByRole("checkbox")).toMatchInlineSnapshot(`
-      <input
-        aria-checked="false"
-        class="checkbox"
-        data-command=""
-        type="checkbox"
-      />
+  const { container } = render(<Example />);
+  expect(container).toMatchInlineSnapshot(`
+    <div>
+      <label
+        class="label"
+      >
+        <input
+          aria-checked="false"
+          class="checkbox"
+          data-command=""
+          type="checkbox"
+        />
+         I have read and agree to the terms and conditions
+      </label>
+    </div>
   `);
 });
 
