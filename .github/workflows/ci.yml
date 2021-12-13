@@ -38,14 +38,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Commit build files
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore: Add build files" || echo "No changes to commit"
-          git push
-
   test:
     runs-on: ubuntu-latest
 
