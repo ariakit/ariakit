@@ -284,7 +284,7 @@ We can `@import` CSS files from other examples. You'll usually import the CSS fi
 @import url("../my-component/style.css");
 
 .my-component {
-  @apply p-4;
+  @apply p-4
 }
 ```
 
