@@ -4,7 +4,6 @@ import {
   EffectCallback,
   Ref,
   RefObject,
-  // @ts-expect-error
   useId as _useId,
   useCallback,
   useEffect,
