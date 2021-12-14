@@ -2,7 +2,6 @@
   "extends": "stylelint-config-standard",
   "rules": {
     "at-rule-name-newline-after": "always-multi-line",
-    "declaration-block-trailing-semicolon": null,
     "no-descending-specificity": null,
     "selector-pseudo-class-no-unknown": [
       true,
