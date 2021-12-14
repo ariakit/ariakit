@@ -6,6 +6,10 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "css.validate": false,
+  "stylelint.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.stylelint": true
+  },
   "eslint.enable": true,
   "editor.formatOnSave": true,
   "eslint.format.enable": true,

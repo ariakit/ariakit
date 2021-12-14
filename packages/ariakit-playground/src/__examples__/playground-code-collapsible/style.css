@@ -26,7 +26,6 @@
   text-decoration: underline;
 }
 
-
 .playground-code-disclosure[aria-expanded="false"] {
   position: absolute;
   bottom: 0;

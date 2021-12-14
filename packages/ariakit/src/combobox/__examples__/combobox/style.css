@@ -1,10 +1,11 @@
 .label {
-  @apply flex flex-col gap-2
+  @apply flex flex-col gap-2;
 }
 
 .combobox {
   width: 250px;
-  @apply border-none
+  @apply
+    border-none
     px-4
     h-10
     rounded-lg
@@ -15,12 +16,13 @@
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
     dark:hover:bg-canvas-1-dark-hover
-    ariakit-focus-visible:ariakit-outline
+    ariakit-focus-visible:ariakit-outline;
 }
 
 .popover {
   width: 250px;
-  @apply relative
+  @apply
+    relative
     flex
     flex-col
     z-50
@@ -35,21 +37,22 @@
     bg-canvas-4
     dark:bg-canvas-4-dark
     text-canvas-4
-    dark:text-canvas-4-dark
+    dark:text-canvas-4-dark;
 }
 
 .popover > * {
-  @apply outline-none cursor-default rounded p-2
+  @apply outline-none cursor-default rounded p-2;
 }
 
 .popover > *:hover {
-  @apply bg-primary-1-hover dark:bg-primary-1-dark-hover
+  @apply bg-primary-1-hover dark:bg-primary-1-dark-hover;
 }
 
 .popover > *[aria-selected="true"],
 .popover > *:focus {
-  @apply bg-primary-2
+  @apply
+    bg-primary-2
     text-primary-2
     dark:bg-primary-2-dark
-    dark:text-primary-2-dark
+    dark:text-primary-2-dark;
 }

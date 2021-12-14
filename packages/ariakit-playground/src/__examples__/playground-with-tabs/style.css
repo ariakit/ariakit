@@ -13,5 +13,5 @@
 }
 
 .tab[aria-selected="true"] {
-  border-color: var(--color-primary-2-border)
+  border-color: var(--color-primary-2-border);
 }

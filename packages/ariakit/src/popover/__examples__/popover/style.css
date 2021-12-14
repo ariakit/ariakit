@@ -2,7 +2,8 @@
 
 .popover {
   width: 250px;
-  @apply relative
+  @apply
+    relative
     flex
     flex-col
     gap-2
@@ -19,16 +20,17 @@
     dark:bg-canvas-4-dark
     text-canvas-4
     dark:text-canvas-4-dark
-    ariakit-focus-visible:ariakit-outline
+    ariakit-focus-visible:ariakit-outline;
 }
 
 .popover-arrow svg {
-  @apply fill-canvas-4
+  @apply
+    fill-canvas-4
     dark:fill-canvas-4-dark
     stroke-canvas-4
-    dark:stroke-canvas-4-dark
+    dark:stroke-canvas-4-dark;
 }
 
 .popover-heading {
-  @apply m-0 text-xl font-medium
+  @apply m-0 text-xl font-medium;
 }

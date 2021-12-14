@@ -1,7 +1,7 @@
 .label {
-  @apply flex items-center gap-2
+  @apply flex items-center gap-2;
 }
 
 .radio {
-  @apply ariakit-focus-visible:ariakit-outline
+  @apply ariakit-focus-visible:ariakit-outline;
 }

@@ -1,9 +1,10 @@
 .button {
-  @apply text-base
-  cursor-pointer
-  underline
-  hover:no-underline
-  text-primary-1
-  dark:text-primary-1-dark
-  ariakit-focus-visible:ariakit-outline
+  @apply
+    text-base
+    cursor-pointer
+    underline
+    hover:no-underline
+    text-primary-1
+    dark:text-primary-1-dark
+    ariakit-focus-visible:ariakit-outline;
 }

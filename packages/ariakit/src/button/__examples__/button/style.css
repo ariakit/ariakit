@@ -1,5 +1,6 @@
 .button {
-  @apply flex
+  @apply
+    flex
     items-center
     justify-center
     gap-2
@@ -16,5 +17,5 @@
     dark:text-primary-2-dark
     dark:hover:bg-primary-2-dark-hover
     ariakit-focus-visible:ariakit-outline
-    aria-disabled:opacity-50
+    aria-disabled:opacity-50;
 }

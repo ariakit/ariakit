@@ -104,7 +104,7 @@ export default function Playground(props: PlaygroundProps) {
                     <PlaygroundEditor
                       state={playground}
                       file={file}
-                      className={cx(theme, style.playgroundEditor)}
+                      className={cx(theme, style["playground-editor"])}
                       expanded={expanded}
                       maxHeight={260}
                       setExpanded={setExpanded}

@@ -1,14 +1,15 @@
-.playgroundEditor {
+.playground-editor {
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
   max-height: min(max(calc(100vh - 640px), 480px), 800px);
+
   @apply bg-canvas-1;
 }
 
-:global(.dark) .playgroundEditor {
+:global(.dark) .playground-editor {
   @apply bg-canvas-1-dark;
 }
 
-.playgroundEditor :global(.cm-scroller) {
+.playground-editor :global(.cm-scroller) {
   @apply !pt-2;
 }
