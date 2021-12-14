@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
+    "EditorConfig.EditorConfig",
     "bradlc.vscode-tailwindcss",
     "christian-kohler.path-intellisense"
   ],
