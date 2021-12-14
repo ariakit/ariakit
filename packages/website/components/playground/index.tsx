@@ -31,15 +31,15 @@ type PlaygroundProps = {
   deps: Record<string, string>;
 };
 
-function getTabId(prefix: string, name: string) {
-  return `${prefix}-${name.replace(/[^a-z0-9]/gi, "-")}`;
+function getTabId(name: string, prefix?: string) {
+  return `${prefix ? `${prefix}-` : ""}${name.replace(/[^a-z0-9]/gi, "-")}`;
 }
 
 export default function Playground(props: PlaygroundProps) {
   const playground = usePlaygroundState({ defaultValues: props.defaultValues });
   const [firstFile = ""] = Object.keys(playground.values);
   const baseId = useId();
-  const firstFileId = getTabId(baseId, firstFile);
+  const firstFileId = getTabId(firstFile, baseId);
   const tab = useTabState({ defaultVisibleId: firstFileId });
   const [expanded, setExpanded] = useState(false);
 
@@ -81,7 +81,7 @@ export default function Playground(props: PlaygroundProps) {
               {Object.keys(playground.values).map((file) => (
                 <PlaygroundTab
                   key={file}
-                  id={getTabId(baseId, file)}
+                  id={getTabId(file, baseId)}
                   onClick={() => setExpanded(true)}
                 >
                   {file}
@@ -94,7 +94,7 @@ export default function Playground(props: PlaygroundProps) {
             <TabPanel
               key={file}
               state={tab}
-              tabId={getTabId(baseId, file)}
+              tabId={getTabId(file, baseId)}
               focusable={false}
               className="rounded-[inherit]"
             >

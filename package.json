@@ -6,7 +6,7 @@
     "dev": "npm run dev -w website",
     "test": "jest",
     "test:watch": "npm test -- --watch",
-    "test:all": "npm run test && npm run lint && npm run lint:css && npm run build && npm run build:website && npm run clean",
+    "test:all": "npm run test && npm run lint && npm run lint:css && npm run type-check && npm run build && npm run build:website && npm run clean",
     "lint": "eslint . --ext js,ts,tsx",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore",
     "type-check": "tsc --noEmit",
