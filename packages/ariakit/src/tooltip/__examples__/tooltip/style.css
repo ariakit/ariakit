@@ -30,9 +30,9 @@
     dark:drop-shadow-sm-dark
     border
     border-canvas-1
-  dark:border-canvas-4-dark
-  bg-canvas-1
-  dark:bg-canvas-4-dark
-  text-canvas-1
-  dark:text-canvas-4-dark;
+    dark:border-canvas-4-dark
+    bg-canvas-1
+    dark:bg-canvas-4-dark
+    text-canvas-1
+    dark:text-canvas-4-dark;
 }
