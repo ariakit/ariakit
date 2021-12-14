@@ -100,23 +100,20 @@ export function useCompositeState<T extends Item = Item>({
       hasNullItem: boolean,
       skip?: number
     ): string | null | undefined => {
-      // If there's no item focused, we just move the first one. TODO: Instead
-      // of returning the first one, return the first from the items parameter,
-      // so previous() will return the last id.
-      if (activeIdRef.current == null) {
-        return first();
-      }
       // RTL doesn't make sense on vertical navigation
       const isHorizontal = orientation !== "vertical";
       const isRTL = rtl && isHorizontal;
       const allItems = isRTL ? reverseArray(items) : items;
+      // If there's no item focused, we just move the first one.
+      if (activeIdRef.current == null) {
+        return findFirstEnabledItem(allItems)?.id;
+      }
       const activeItem = allItems.find(
         (item) => item.id === activeIdRef.current
       );
-      // If there's no item focused, we just move the first one. TODO: Same as
-      // comment above.
+      // If there's no item focused, we just move to the first one.
       if (!activeItem) {
-        return first();
+        return findFirstEnabledItem(allItems)?.id;
       }
       const isGrid = !!activeItem.rowId;
       const activeIndex = allItems.indexOf(activeItem);

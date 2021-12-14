@@ -3,6 +3,7 @@
   "rules": {
     "at-rule-name-newline-after": "always-multi-line",
     "no-descending-specificity": null,
+    "max-line-length": 100,
     "selector-pseudo-class-no-unknown": [
       true,
       { "ignorePseudoClasses": ["global"] }

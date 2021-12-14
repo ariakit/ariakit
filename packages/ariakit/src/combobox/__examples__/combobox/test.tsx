@@ -1,10 +1,25 @@
-import { click, getByRole, press, render, type } from "ariakit-test-utils";
+import {
+  click,
+  getByRole,
+  getByText,
+  press,
+  render,
+  type,
+} from "ariakit-test-utils";
 import Example from ".";
 
 test("show on click", async () => {
   render(<Example />);
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
   await click(getByRole("combobox"));
+  expect(getByRole("listbox")).toBeVisible();
+  expect(getByRole("option", { name: "🍎 Apple" })).not.toHaveFocus();
+});
+
+test("show on label click", async () => {
+  render(<Example />);
+  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  await click(getByText("Your favorite fruit"));
   expect(getByRole("listbox")).toBeVisible();
   expect(getByRole("option", { name: "🍎 Apple" })).not.toHaveFocus();
 });
@@ -104,6 +119,7 @@ test("hide listbox by pressing escape", async () => {
   expect(getByRole("listbox")).toBeVisible();
   await press.Escape();
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getByRole("combobox")).toHaveFocus();
 });
 
 test("hide listbox by clicking outside", async () => {
@@ -112,6 +128,7 @@ test("hide listbox by clicking outside", async () => {
   expect(getByRole("listbox")).toBeVisible();
   await click(document.body);
   expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getByRole("combobox")).not.toHaveFocus();
 });
 
 test("re-open listbox when deleting content", async () => {

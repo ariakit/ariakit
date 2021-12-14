@@ -1,4 +1,4 @@
-import { getByRole, hover, press, render } from "ariakit-test-utils";
+import { blur, getByRole, hover, press, render } from "ariakit-test-utils";
 import Example from ".";
 
 test("render tooltip", () => {
@@ -50,5 +50,5 @@ test("show tooltip on focus", async () => {
   await press.Tab();
   expect(getByRole("tooltip")).toBeVisible();
   await blur();
-  expect(getByRole("tooltip", { hidden: true })).toBeVisible();
+  expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
 });

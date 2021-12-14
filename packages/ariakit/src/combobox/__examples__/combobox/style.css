@@ -41,11 +41,13 @@
 }
 
 .popover > * {
-  @apply outline-none cursor-default rounded p-2;
-}
-
-.popover > *:hover {
-  @apply bg-primary-1-hover dark:bg-primary-1-dark-hover;
+  @apply
+    outline-none
+    cursor-default
+    rounded
+    p-2
+    hover:bg-primary-1-hover
+    dark:hover:bg-primary-1-dark-hover;
 }
 
 .popover > *[aria-selected="true"],

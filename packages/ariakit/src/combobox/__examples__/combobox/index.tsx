@@ -18,7 +18,7 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} aria-label="Fruits" className="popover">
+      <ComboboxPopover state={combobox} className="popover">
         <ComboboxItem value="Apple">🍎 Apple</ComboboxItem>
         <ComboboxItem value="Grape">🍇 Grape</ComboboxItem>
         <ComboboxItem value="Orange">🍊 Orange</ComboboxItem>
