@@ -4,7 +4,8 @@ import {
   EffectCallback,
   Ref,
   RefObject,
-  useId as _useId,
+  useDeferredValue as _useReactDeferredValue,
+  useId as _useReactId,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -17,7 +18,11 @@ import { canUseDOM } from "./dom";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
-const useReactId = typeof _useId === "function" ? _useId : undefined;
+const useReactId = typeof _useReactId === "function" ? _useReactId : undefined;
+const useReactDeferredValue =
+  typeof _useReactDeferredValue === "function"
+    ? _useReactDeferredValue
+    : undefined;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
@@ -140,7 +145,7 @@ export function useRefId(ref?: RefObject<HTMLElement>, deps?: DependencyList) {
 }
 
 /**
- * Generates a random ID.
+ * Generates a unique ID. Uses React's useId if available.
  */
 export function useId(defaultId?: string) {
   if (useReactId) {
@@ -155,6 +160,23 @@ export function useId(defaultId?: string) {
     setId(`id-${random}`);
   }, [defaultId, id]);
   return defaultId || id;
+}
+
+/**
+ * Uses React's useDeferredValue if available.
+ */
+export function useDeferredValue<T>(value: T) {
+  if (useReactDeferredValue) {
+    return useReactDeferredValue(value);
+  }
+  const [deferredValue, setDeferredValue] = useState(value);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      setDeferredValue(value);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return deferredValue;
 }
 
 /**

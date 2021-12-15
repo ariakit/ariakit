@@ -146,7 +146,7 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
       return;
     }
 
-    const isInternal = mod.resolvedFileName.startsWith(".");
+    const isInternal = source.startsWith(".");
 
     if (isInternal) {
       const nextImports = getPageImports({
