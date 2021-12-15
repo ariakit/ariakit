@@ -1,5 +1,9 @@
 import { useMemo, useState } from "react";
-import { useControlledState, useUpdateLayoutEffect } from "ariakit-utils/hooks";
+import {
+  useControlledState,
+  useDeferredValue,
+  useUpdateLayoutEffect,
+} from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import { isSafari, isTouchDevice } from "ariakit-utils/platform";
 import { useStorePublisher } from "ariakit-utils/store";
@@ -113,9 +117,11 @@ export function useComboboxState({
     setActiveValue(nextActiveValue);
   }
 
+  const deferredValue = useDeferredValue(value);
+
   const matches = useMemo(
-    () => getMatches({ limit, value, list }),
-    [limit, value, list]
+    () => getMatches({ limit, list, value: deferredValue }),
+    [limit, list, deferredValue]
   );
 
   // Resets the combobox state when it gets hidden. This effect should be sync

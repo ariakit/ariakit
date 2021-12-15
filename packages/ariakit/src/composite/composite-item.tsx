@@ -198,8 +198,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
   }) => {
     const id = useId(props.id);
     state = useStore(state || CompositeContext, [
-      // See test "show on space then esc then arrow up"
-      useCallback((s: CompositeState) => s.moves === 0, []),
+      // TODO: See test "show on space then esc then arrow up"
+      // useCallback((s: CompositeState) => s.moves === 0, []),
       useCallback((s: CompositeState) => s.activeId === id, [id]),
       "baseRef",
       "items",

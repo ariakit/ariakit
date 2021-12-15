@@ -21,12 +21,14 @@
 
 .popover {
   width: 250px;
+  max-height: 300px;
   @apply
     relative
     flex
     flex-col
     z-50
     p-2
+    overflow-auto
     rounded-lg
     drop-shadow
     dark:drop-shadow-dark
@@ -42,6 +44,7 @@
 
 .popover > * {
   @apply
+    scroll-m-2
     outline-none
     cursor-default
     rounded
