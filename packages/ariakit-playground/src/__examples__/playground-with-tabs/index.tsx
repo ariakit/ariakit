@@ -21,7 +21,7 @@ export default function Example() {
 };
 
 export default function Example() {
-  const tab = useTabState({ defaultVisibleId: "tab-index.js" });
+  const tab = useTabState({ defaultSelectedId: "tab-index.js" });
   const playground = usePlaygroundState({ defaultValues });
   const files = Object.keys(playground.values);
   return (

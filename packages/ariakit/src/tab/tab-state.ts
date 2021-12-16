@@ -40,37 +40,37 @@ export function useTabState({
   focusLoop = true,
   ...props
 }: TabStateProps = {}): TabState {
-  const [visibleId, setVisibleId] = useControlledState(
-    props.defaultVisibleId,
-    props.visibleId,
-    props.setVisibleId
+  const [selectedId, setSelectedId] = useControlledState(
+    props.defaultSelectedId,
+    props.selectedId,
+    props.setSelectedId
   );
   const composite = useCompositeState({ orientation, focusLoop, ...props });
   const panels = useCollectionState<Panel>();
   const activeIdRef = useLiveRef(composite.activeId);
 
-  // Keep activeId in sync with visibleId.
+  // Keep activeId in sync with selectedId.
   useEffect(() => {
-    if (visibleId === activeIdRef.current) return;
-    composite.setActiveId(visibleId);
-  }, [visibleId, composite.setActiveId]);
+    if (selectedId === activeIdRef.current) return;
+    composite.setActiveId(selectedId);
+  }, [selectedId, composite.setActiveId]);
 
-  // Automatically set visibleId if it's undefined.
+  // Automatically set selectedId if it's undefined.
   useEffect(() => {
-    if (visibleId !== undefined) return;
-    // First, we try to set visibleId based on the current active tab.
+    if (selectedId !== undefined) return;
+    // First, we try to set selectedId based on the current active tab.
     const activeId = activeIdRef.current;
     const activeTab = composite.items.find((item) => item.id === activeId);
     if (activeTab && !activeTab.dimmed) {
-      setVisibleId(activeId);
+      setSelectedId(activeId);
     }
     // If there's no active tab or the active tab is dimmed, we get the first
     // enabled tab instead.
     else {
       const firstEnabledTab = composite.items.find((item) => !item.dimmed);
-      setVisibleId(firstEnabledTab?.id);
+      setSelectedId(firstEnabledTab?.id);
     }
-  }, [visibleId, composite.items, setVisibleId]);
+  }, [selectedId, composite.items, setSelectedId]);
 
   // Keep tabs panelIds in sync with the current panels.
   useEffect(() => {
@@ -110,20 +110,20 @@ export function useTabState({
   const show: TabState["show"] = useCallback(
     (id) => {
       composite.move(id);
-      setVisibleId(id);
+      setSelectedId(id);
     },
-    [composite.move, setVisibleId]
+    [composite.move, setSelectedId]
   );
 
   const state = useMemo(
     () => ({
       ...composite,
-      visibleId,
-      setVisibleId,
+      selectedId,
+      setSelectedId,
       show,
       panels,
     }),
-    [composite, visibleId, setVisibleId, show, panels]
+    [composite, selectedId, setSelectedId, show, panels]
   );
 
   return useStorePublisher(state);
@@ -133,11 +133,11 @@ export type TabState = CompositeState<Item> & {
   /**
    * The id of the tab whose panel is currently visible.
    */
-  visibleId: TabState["activeId"];
+  selectedId: TabState["activeId"];
   /**
-   * Sets the `visibleId` state.
+   * Sets the `selectedId` state.
    */
-  setVisibleId: SetState<TabState["visibleId"]>;
+  setSelectedId: SetState<TabState["selectedId"]>;
   /**
    * Shows the tab panel for the tab with the given id.
    */
@@ -149,28 +149,28 @@ export type TabState = CompositeState<Item> & {
 };
 
 export type TabStateProps = CompositeStateProps<Item> &
-  Partial<Pick<TabState, "visibleId">> & {
+  Partial<Pick<TabState, "selectedId">> & {
     /**
      * The id of the tab whose panel should be initially visible.
      * @example
      * ```jsx
-     * const tab = useTabState({ defaultVisibleId: "tab-1" });
+     * const tab = useTabState({ defaultSelectedId: "tab-1" });
      * <TabList state={tab}>
      *   <Tab id="tab-1">Tab 1</Tab>
      * </TabList>
      * <TabPanel state={tab}>Panel 1</TabPanel>
      * ```
      */
-    defaultVisibleId?: TabState["visibleId"];
+    defaultSelectedId?: TabState["selectedId"];
     /**
-     * Function that will be called when setting the tab `visibleId` state.
+     * Function that will be called when setting the tab `selectedId` state.
      * @example
      * function Tabs({ visibleTab, onTabChange }) {
      *   const tab = useTabState({
-     *     visibleId: visibleTab,
-     *     setVisibleId: onTabChange,
+     *     selectedId: visibleTab,
+     *     setSelectedId: onTabChange,
      *   });
      * }
      */
-    setVisibleId?: (visibleId: TabState["visibleId"]) => void;
+    setSelectedId?: (selectedId: TabState["selectedId"]) => void;
   };

@@ -1,0 +1,44 @@
+.wrapper {
+  @apply
+    flex
+    flex-col
+    gap-4
+    p-4
+    rounded-lg
+    border
+    bg-canvas-3
+    border-canvas-3
+    dark:bg-canvas-3-dark
+    dark:border-canvas-3-dark;
+}
+
+.tab-list {
+  @apply flex gap-2;
+}
+
+.tab {
+  @apply
+    flex
+    items-center
+    justify-center
+    gap-2
+    text-base
+    border-none
+    rounded-md
+    px-4
+    h-10
+    bg-alpha-2
+    text-alpha-2
+    hover:bg-alpha-2-hover
+    aria-selected:bg-primary-2
+    aria-selected:text-primary-2
+    aria-selected:hover:bg-primary-2-hover
+    dark:bg-alpha-2-dark
+    dark:text-alpha-2-dark
+    dark:hover:bg-alpha-2-dark-hover
+    dark:aria-selected:bg-primary-2-dark
+    dark:aria-selected:text-primary-2-dark
+    dark:aria-selected:hover:bg-primary-2-dark-hover
+    ariakit-focus-visible:ariakit-outline
+    aria-disabled:opacity-50;
+}

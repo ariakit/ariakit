@@ -1,7 +1,5 @@
-// TODO: Do not activate the tab if it receives focus by other means other than
-// arrow keys.
-import { FocusEvent, MouseEvent, useCallback } from "react";
-import { useEventCallback, useId } from "ariakit-utils/hooks";
+import { MouseEvent, useCallback, useEffect } from "react";
+import { useEventCallback, useId, useLiveRef } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -45,7 +43,10 @@ export const useTab = createHook<TabOptions>(
 
     state = useStore(state || TabContext, [
       "items",
-      useCallback((s: TabState) => id && s.visibleId === id, [id]),
+      "setSelectedId",
+      "moves",
+      "activeId",
+      "selectedId",
     ]);
 
     const dimmed = props.disabled;
@@ -61,28 +62,29 @@ export const useTab = createHook<TabOptions>(
       [panelIdProp, dimmed, props.getItem]
     );
 
+    const isActiveItem = state?.activeId === id;
+    const isActiveItemRef = useLiveRef(isActiveItem);
+
+    useEffect(() => {
+      if (dimmed) return;
+      if (manual) return;
+      // The tab should be selected only when moves is incremented. That is, by
+      // calling state.move(), and not just state.setActiveId(). This prevents
+      // screen reader users from getting trapped in the tab list.
+      if (state?.moves && isActiveItemRef.current) {
+        state.setSelectedId(id);
+      }
+    }, [dimmed, manual, state?.moves, state?.setSelectedId, id]);
+
     const onClickProp = useEventCallback(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        state?.setVisibleId(id);
+        state?.setSelectedId(id);
       },
-      [onClickProp, state?.setVisibleId, id]
-    );
-
-    const onFocusProp = useEventCallback(props.onFocus);
-
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLButtonElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        if (manual) return;
-        if (dimmed) return;
-        state?.setVisibleId(id);
-      },
-      [onFocusProp, manual, dimmed, state?.setVisibleId, id]
+      [onClickProp, state?.setSelectedId, id]
     );
 
     const panelId = panelIdProp || getPanelId(state?.items, id);
@@ -90,11 +92,10 @@ export const useTab = createHook<TabOptions>(
     props = {
       id,
       role: "tab",
-      "aria-selected": (id && state?.visibleId === id) || undefined,
+      "aria-selected": !!id && state?.selectedId === id,
       "aria-controls": panelId || undefined,
       ...props,
       onClick,
-      onFocus,
     };
 
     props = useCompositeItem({

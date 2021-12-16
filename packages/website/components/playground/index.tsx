@@ -40,7 +40,7 @@ export default function Playground(props: PlaygroundProps) {
   const [firstFile = ""] = Object.keys(playground.values);
   const baseId = useId();
   const firstFileId = getTabId(firstFile, baseId);
-  const tab = useTabState({ defaultVisibleId: firstFileId });
+  const tab = useTabState({ defaultSelectedId: firstFileId });
   const [expanded, setExpanded] = useState(false);
 
   useUpdateEffect(() => {

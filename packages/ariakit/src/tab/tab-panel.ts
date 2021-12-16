@@ -64,7 +64,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
     );
 
     const tabId = tabIdProp || getTabId(state.panels, id);
-    const visible = !!tabId && state.visibleId === tabId;
+    const visible = !!tabId && state.selectedId === tabId;
 
     props = {
       id,
