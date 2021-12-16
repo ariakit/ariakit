@@ -73,11 +73,12 @@ export function useCompositeState<T extends Item = Item>({
       if (id === null) {
         setMoves((prevMoves) => prevMoves + 1);
         setActiveId(id);
-      }
-      const item = findEnabledItemById(collection.items, id);
-      if (item) {
-        setMoves((prevMoves) => prevMoves + 1);
-        setActiveId(item.id);
+      } else {
+        const item = findEnabledItemById(collection.items, id);
+        if (item) {
+          setMoves((prevMoves) => prevMoves + 1);
+          setActiveId(item.id);
+        }
       }
     },
     [collection.items]

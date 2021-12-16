@@ -5,7 +5,6 @@ import { PlaygroundState } from "../playground-state";
 
 const DEFAULT_DEPENDENCIES = {
   // TODO: Use latest on react when v18 gets released.
-  "modern-normalize": "latest",
   react: "experimental",
   "react-dom": "experimental",
   "react-scripts": "latest",
@@ -23,7 +22,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 // TODO: This should be configurable.
 function getCodeSandboxStyleContent() {
-  return `@import "modern-normalize";
+  return `@import url("https://unpkg.com/tailwindcss@^3.0.0/lib/css/preflight.css");
 
 body {
   display: flex;
@@ -31,6 +30,18 @@ body {
   min-height: 100vh;
   padding-top: min(10vh, 100px);
   line-height: 1.5;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
 }
 `;
 }

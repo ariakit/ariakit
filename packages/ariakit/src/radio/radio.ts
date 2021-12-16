@@ -56,6 +56,8 @@ export const useRadio = createHook<RadioOptions>(
   ({ state, value, checked, ...props }) => {
     const id = useId(props.id);
     state = useStore(state || RadioContextState, [
+      "setActiveId",
+      "setValue",
       useCallback((s: RadioState) => s.activeId === id, [id]),
       useCallback((s: RadioState) => s.value === value, [value]),
     ]);

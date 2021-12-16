@@ -63,7 +63,7 @@ module.exports = {
         dark: {
           DEFAULT: "hsl(204, 3%, 18%)",
           hover: "hsl(204, 3%, 16%)",
-          border: "hsl(204, 3%, 50%)",
+          border: "hsl(204, 3%, 30%)",
           text: white,
         },
       },
