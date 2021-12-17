@@ -250,24 +250,44 @@ export function useControlledState<S>(
   state?: S,
   setState?: (value: S) => void
 ): [S, SetState<S>] {
-  const [internalState, setInternalState] = useState(defaultState);
-  const nextState = state !== undefined ? state : internalState;
+  const [localState, setLocalState] = useState(defaultState);
+  const nextState = state !== undefined ? state : localState;
 
   const stateRef = useLiveRef(state);
-  const nextStateRef = useLiveRef(nextState);
   const setStateRef = useLiveRef(setState);
+  const nextStateRef = useLiveRef(nextState);
 
-  const nextSetState = useCallback((prevValue: S) => {
-    if (setStateRef.current) {
-      const nextValue = applyState(prevValue, nextStateRef.current);
-      setStateRef.current(nextValue);
+  const setNextState = useCallback((prevValue: S) => {
+    const setStateProp = setStateRef.current;
+    if (setStateProp) {
+      if (isSetNextState(setStateProp)) {
+        setStateProp(prevValue);
+      } else {
+        const nextValue = applyState(prevValue, nextStateRef.current);
+        nextStateRef.current = nextValue;
+        setStateProp(nextValue);
+      }
     }
     if (stateRef.current === undefined) {
-      setInternalState(prevValue);
+      setLocalState(prevValue);
     }
   }, []);
 
-  return [nextState, nextSetState];
+  defineSetNextState(setNextState);
+
+  return [nextState, setNextState];
+}
+
+const SET_NEXT_STATE = Symbol("setNextState");
+
+function isSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
+  return arg[SET_NEXT_STATE] === true;
+}
+
+function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
+  if (!isSetNextState(arg)) {
+    Object.defineProperty(arg, SET_NEXT_STATE, { value: true });
+  }
 }
 
 /**
