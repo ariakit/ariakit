@@ -107,7 +107,7 @@ export function useTabState({
     });
   }, [composite.items, panels.setItems]);
 
-  const show: TabState["show"] = useCallback(
+  const select: TabState["select"] = useCallback(
     (id) => {
       composite.move(id);
       setSelectedId(id);
@@ -120,10 +120,10 @@ export function useTabState({
       ...composite,
       selectedId,
       setSelectedId,
-      show,
+      select,
       panels,
     }),
-    [composite, selectedId, setSelectedId, show, panels]
+    [composite, selectedId, setSelectedId, select, panels]
   );
 
   return useStorePublisher(state);
@@ -139,9 +139,9 @@ export type TabState = CompositeState<Item> & {
    */
   setSelectedId: SetState<TabState["selectedId"]>;
   /**
-   * Shows the tab panel for the tab with the given id.
+   * Selects the tab panel for the tab with the given id.
    */
-  show: TabState["move"];
+  select: TabState["move"];
   /**
    * A collection state containing the tab panels.
    */
