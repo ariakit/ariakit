@@ -1,7 +1,1 @@
-.label {
-  @apply flex flex-row items-center gap-2;
-}
-
-.checkbox {
-  @apply ariakit-focus-visible:ariakit-outline;
-}
+@import url("../checkbox/style.css");
