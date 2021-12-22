@@ -1,0 +1,64 @@
+.container {
+  @apply w-full bg-canvas-2 h-screen p-3 flex items-center justify-center;
+}
+
+.toolbar {
+  @apply flex space-x-3;
+}
+
+.button {
+  @apply
+    flex
+    items-center
+    gap-2
+    py-2
+    px-3
+    bg-canvas-1
+    text-canvas-5
+    text-sm
+    font-semibold
+    rounded-md
+    shadow-sm
+    hover:bg-canvas-1
+    border
+    border-canvas-1
+  ;
+}
+
+.menu {
+  @apply
+    max-w-[300px]
+    outline-none
+    w-full
+    bg-white
+    py-1
+    rounded-md
+    shadow-sm
+    border
+    border-canvas-1
+  ;
+}
+
+.menu-item-checkbox {
+  @apply w-full cursor-default pl-3 py-2 text-left flex hover:bg-canvas-1 focus:bg-canvas-1;
+}
+
+.menu-item-check-wrapper {
+  @apply mr-3 w-4 h-4 relative;
+}
+
+.menu-item-check-wrapper span {
+  @apply absolute top-1;
+}
+
+.menu-item-check-content {
+  @apply flex flex-1 flex-col pr-2;
+}
+
+.menu-item-check-title {
+  @apply font-semibold text-sm text-canvas-1 mb-1;
+}
+
+.menu-item-check-summary {
+  @apply text-xs text-canvas-1;
+}
