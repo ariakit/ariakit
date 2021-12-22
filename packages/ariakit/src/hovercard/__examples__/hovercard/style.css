@@ -1,0 +1,65 @@
+.container {
+  @apply flex items-center justify-center w-full px-3 py-44 bg-canvas-2 text-black ;
+}
+
+.hovercard {
+  @apply
+    w-[300px]
+    min-h-[200px]
+    p-3
+    bg-white
+    shadow-sm
+    border
+    border-alpha-1
+    rounded-md
+    top-1
+    text-sm
+    flex
+    flex-col
+    gap-2
+  ;
+}
+
+.item {
+  @apply p-3 w-[600px] flex gap-3 border border-alpha-1 rounded-md shadow-lg;
+}
+
+.avatar {
+  @apply w-16 h-16 rounded-full overflow-hidden border border-alpha-1;
+}
+
+.avatar-img {
+  @apply w-full h-auto;
+}
+
+.profile {
+  @apply flex justify-between ;
+}
+
+.button {
+  @apply px-5 py-2 bg-primary-2 text-white rounded-full hover:bg-primary-2-hover font-semibold;
+}
+
+.profile-name {
+  @apply font-semibold text-base;
+}
+
+.profile-username {
+  @apply text-black;
+}
+
+.profile-details {
+  @apply flex gap-3;
+}
+
+.content {
+  @apply flex flex-col gap-1;
+}
+
+.content-profile {
+  @apply text-base;
+}
+
+.content-content {
+  @apply text-sm;
+}
