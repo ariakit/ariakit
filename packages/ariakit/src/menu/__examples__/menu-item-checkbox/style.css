@@ -1,5 +1,5 @@
 .container {
-  @apply w-full bg-canvas-2 h-screen p-3 flex items-center justify-center;
+  @apply flex items-center justify-center w-full h-screen p-3 bg-canvas-2;
 }
 
 .toolbar {
@@ -11,16 +11,16 @@
     flex
     items-center
     gap-2
-    py-2
     px-3
-    bg-canvas-1
-    text-canvas-5
+    py-2
     text-sm
     font-semibold
+    border
     rounded-md
     shadow-sm
+    bg-canvas-1
+    text-canvas-5
     hover:bg-canvas-1
-    border
     border-canvas-1
   ;
 }
@@ -40,11 +40,11 @@
 }
 
 .menu-item-checkbox {
-  @apply w-full cursor-default pl-3 py-2 text-left flex hover:bg-canvas-1 focus:bg-canvas-1;
+  @apply flex w-full py-2 pl-3 text-left cursor-default hover:bg-canvas-1 focus:bg-canvas-1;
 }
 
 .menu-item-check-wrapper {
-  @apply mr-3 w-4 h-4 relative;
+  @apply relative w-4 h-4 mr-3;
 }
 
 .menu-item-check-wrapper span {
@@ -52,11 +52,11 @@
 }
 
 .menu-item-check-content {
-  @apply flex flex-1 flex-col pr-2;
+  @apply flex flex-col flex-1 pr-2;
 }
 
 .menu-item-check-title {
-  @apply font-semibold text-sm text-canvas-1 mb-1;
+  @apply mb-1 text-sm font-semibold text-canvas-1;
 }
 
 .menu-item-check-summary {
