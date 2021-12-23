@@ -201,7 +201,11 @@ export const usePortal = createHook<PortalOptions>(
                 }}
               />
             )}
-            {preserveTabOrder && <span aria-owns={portalNode?.id} />}
+            {preserveTabOrder && (
+              // We're using position: fixed here so that the browser doesn't
+              // add margin to the element when setting gap on a parent element.
+              <span aria-owns={portalNode?.id} style={{ position: "fixed" }} />
+            )}
             {element}
             {preserveTabOrder && portalNode && (
               <FocusTrap
