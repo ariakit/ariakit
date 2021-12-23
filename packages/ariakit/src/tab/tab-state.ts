@@ -14,7 +14,6 @@ import {
 
 type Item = CompositeState["items"][number] & {
   dimmed?: boolean;
-  panelId?: string | null;
 };
 
 type Panel = CollectionState["items"][number] & {
@@ -72,26 +71,6 @@ export function useTabState({
     }
   }, [selectedId, composite.items, setSelectedId]);
 
-  // Keep tabs panelIds in sync with the current panels.
-  useEffect(() => {
-    // Initially, panels will be empty, so we wait until they are populated.
-    if (!panels.items.length) return;
-    composite.setItems((prevTabs) => {
-      const hasOrphanTabs = prevTabs.some((tab) => !tab.panelId);
-      // If all tabs have a panelId, we don't need to do anything.
-      if (!hasOrphanTabs) return prevTabs;
-      return prevTabs.map((tab, i) => {
-        // If the tab has a panelId, we don't need to do anything.
-        if (tab.panelId) return tab;
-        // If there's already a panel with tabId pointing to this tab, use it.
-        let panel = panels.items.find((item) => item.tabId === tab.id);
-        // Otherwise, get the panel based on the index.
-        panel = panel || panels.items[i];
-        return { ...tab, panelId: panel?.id };
-      });
-    });
-  }, [panels.items, composite.setItems]);
-
   // Keep panels tabIds in sync with the current tabs.
   useEffect(() => {
     if (!composite.items.length) return;
@@ -100,8 +79,7 @@ export function useTabState({
       if (!hasOrphanPanels) return prevPanels;
       return prevPanels.map((panel, i) => {
         if (panel.tabId) return panel;
-        let tab = composite.items.find((item) => item.panelId === panel.id);
-        tab = tab || composite.items[i];
+        const tab = composite.items[i];
         return { ...panel, tabId: tab?.id };
       });
     });

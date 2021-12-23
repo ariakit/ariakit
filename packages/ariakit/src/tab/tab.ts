@@ -10,9 +10,9 @@ import {
 import { TabContext } from "./__utils";
 import { TabState } from "./tab-state";
 
-function getPanelId(tabs?: TabState["items"], id?: string) {
+function getPanelId(panels?: TabState["panels"], id?: string) {
   if (!id) return;
-  return tabs?.find((tab) => tab.id === id)?.panelId;
+  return panels?.items.find((panel) => panel.tabId === id)?.id;
 }
 
 /**
@@ -32,17 +32,11 @@ function getPanelId(tabs?: TabState["items"], id?: string) {
  * ```
  */
 export const useTab = createHook<TabOptions>(
-  ({
-    state,
-    panelId: panelIdProp,
-    manual,
-    accessibleWhenDisabled = true,
-    ...props
-  }) => {
+  ({ state, manual, accessibleWhenDisabled = true, ...props }) => {
     const id = useId(props.id);
 
     state = useStore(state || TabContext, [
-      "items",
+      "panels",
       "setSelectedId",
       "moves",
       "activeId",
@@ -53,13 +47,13 @@ export const useTab = createHook<TabOptions>(
 
     const getItem = useCallback(
       (item) => {
-        const nextItem = { ...item, panelId: panelIdProp, dimmed };
+        const nextItem = { ...item, dimmed };
         if (props.getItem) {
           return props.getItem(nextItem);
         }
         return nextItem;
       },
-      [panelIdProp, dimmed, props.getItem]
+      [dimmed, props.getItem]
     );
 
     const isActiveItem = state?.activeId === id;
@@ -87,7 +81,7 @@ export const useTab = createHook<TabOptions>(
       [onClickProp, state?.setSelectedId, id]
     );
 
-    const panelId = panelIdProp || getPanelId(state?.items, id);
+    const panelId = getPanelId(state?.panels, id);
 
     props = {
       id,
@@ -138,11 +132,6 @@ export type TabOptions<T extends As = "button"> = Omit<
    * `TabList` component's context will be used.
    */
   state?: TabState;
-  /**
-   * The id of the tab panel that is controlled by this tab. By default, this
-   * value will be inferred based on the order of the tabs and the panels.
-   */
-  panelId?: string;
   /**
    * Whether the tab should be automatically selected when focused.
    * @default true

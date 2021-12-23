@@ -119,7 +119,7 @@ export type TabPanelOptions<T extends As = "div"> = FocusableOptions<T> &
      * The id of the tab that controls this panel. By default, this value will
      * be inferred based on the order of the tabs and the panels.
      */
-    tabId?: string;
+    tabId?: string | null;
   };
 
 export type TabPanelProps<T extends As = "div"> = Props<TabPanelOptions<T>>;
