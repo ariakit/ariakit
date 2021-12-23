@@ -112,7 +112,6 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
 
     const getModule = useCallback(
       (path: string) => {
-        setClassName("");
         const externalModule = getModuleProp?.(path);
         if (externalModule != null) return externalModule;
         const availableNames = Object.keys(debouncedValues);
@@ -121,7 +120,10 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
         const code = debouncedValues[moduleName] || "";
         try {
           const internalModule = compileModule(code, moduleName, getModule);
-          setClassName(getCSSModule(internalModule));
+          const css = getCSSModule(internalModule);
+          if (css) {
+            setClassName(css);
+          }
           return internalModule;
         } catch (e) {
           handleError(e);
@@ -138,6 +140,10 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
       }
       return null;
     });
+
+    useUpdateEffect(() => {
+      setClassName("");
+    }, [debouncedValues]);
 
     useUpdateEffect(() => {
       setError(null);

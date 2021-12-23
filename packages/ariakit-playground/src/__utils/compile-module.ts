@@ -44,7 +44,7 @@ export function compileModule(
       [availablePresets.typescript],
     ],
   });
-  const compiledCode = `${compiled.code}; return exports`;
+  const compiledCode = `${compiled.code};\nreturn exports`;
   const fn = new Function("require", "exports", "React", compiledCode);
   return fn(customRequire, Object.create(null), React);
 }
