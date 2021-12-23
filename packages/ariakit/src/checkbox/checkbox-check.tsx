@@ -24,6 +24,16 @@ const checkmark = (
   </svg>
 );
 
+function getChildren(props: Pick<CheckboxCheckProps, "checked" | "children">) {
+  if (props.checked) {
+    return props.children || checkmark;
+  }
+  if (typeof props.children === "function") {
+    return props.children;
+  }
+  return null;
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a check mark icon.
@@ -38,8 +48,7 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
   ({ state, checked, ...props }) => {
     const context = useContext(CheckboxCheckedContext);
     checked = checked ?? context;
-
-    const children = checked ? props.children || checkmark : undefined;
+    const children = getChildren({ checked, children: props.children });
 
     props = {
       "aria-hidden": true,
