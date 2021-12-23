@@ -1,45 +1,59 @@
-.container {
-  @apply flex items-center justify-center w-full h-screen p-3 bg-canvas-2;
-}
-
-.toolbar {
-  @apply flex space-x-3;
-}
-
-.button {
-  @apply
-    flex
-    items-center
-    gap-2
-    px-3
-    py-2
-    text-sm
-    font-semibold
-    border
-    rounded-md
-    shadow-sm
-    bg-canvas-1
-    text-canvas-5
-    hover:bg-canvas-1
-    border-canvas-1
-  ;
-}
+@import url("../../../button/__examples__/button/style.css");
 
 .menu {
   @apply
-    max-w-[300px]
-    outline-none
-    w-full
-    bg-white
-    py-1
-    rounded-md
-    shadow-sm
+    w-[250px]
+    relative
+    flex
+    flex-col
+    z-50
+    p-2
+    rounded-lg
+    drop-shadow
+    dark:drop-shadow-dark
     border
-    border-canvas-1
-  ;
+    border-solid
+    border-canvas-4
+    dark:border-canvas-4-dark
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    text-canvas-4
+    dark:text-canvas-4-dark
+    ariakit-focus-visible:ariakit-outline;
 }
 
-.menu-item-checkbox {
+.menu-arrow svg {
+  @apply
+    fill-canvas-4
+    dark:fill-canvas-4-dark
+    stroke-canvas-4
+    dark:stroke-canvas-4-dark;
+}
+
+.menu-item {
+  @apply
+    flex
+    gap-2
+    items-center
+    scroll-m-2
+    outline-none
+    cursor-default
+    rounded
+    p-2
+    hover:bg-primary-1-hover
+    dark:hover:bg-primary-1-dark-hover;
+}
+
+.menu-item:focus {
+  @apply
+    bg-primary-2
+    text-primary-2
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark;
+}
+
+/*
+.menu-item {
   @apply flex w-full py-2 pl-3 text-left cursor-default hover:bg-canvas-1 focus:bg-canvas-1;
 }
 
@@ -61,4 +75,4 @@
 
 .menu-item-check-summary {
   @apply text-xs text-canvas-1;
-}
+} */
