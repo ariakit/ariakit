@@ -64,7 +64,7 @@ export const usePopover = createHook<PopoverOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <div {...wrapperProps} ref={popoverRef}>
+        <div role="presentation" {...wrapperProps} ref={popoverRef}>
           {element}
         </div>
       ),
