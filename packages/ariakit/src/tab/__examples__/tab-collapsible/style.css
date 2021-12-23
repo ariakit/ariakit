@@ -1,0 +1,39 @@
+@import url("../tab/style.css");
+
+.wrapper {
+  @apply w-full;
+}
+
+.tab[aria-expanded="true"] {
+  @apply bg-alpha-1 dark:bg-alpha-1-dark;
+}
+
+.popover {
+  @apply
+    relative
+    flex
+    flex-col
+    gap-2
+    z-50
+    p-2
+    rounded-lg
+    drop-shadow
+    dark:drop-shadow-dark
+    border
+    border-solid
+    border-canvas-4
+    dark:border-canvas-4-dark
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    text-canvas-4
+    dark:text-canvas-4-dark
+    ariakit-focus-visible:ariakit-outline;
+}
+
+.popover > .tab {
+  @apply rounded-sm;
+}
+
+.tab-panel {
+  @apply p-4 rounded-md bg-canvas-2 dark:bg-canvas-2-dark;
+}
