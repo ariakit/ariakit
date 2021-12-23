@@ -21,6 +21,9 @@ test("update menu button label on menu item check", async () => {
 test("check/uncheck menu item on click", async () => {
   render(<Example />);
   await click(getMenuButton("Unwatch"));
+  expect(getMenuItem("Issues")).toHaveAttribute("aria-checked", "true");
+  await click(getMenuItem("Issues"));
+  expect(getMenuItem("Issues")).toHaveAttribute("aria-checked", "false");
   expect(getMenuItem("Releases")).toHaveAttribute("aria-checked", "false");
   await click(getMenuItem("Releases"));
   expect(getMenuItem("Releases")).toHaveAttribute("aria-checked", "true");
