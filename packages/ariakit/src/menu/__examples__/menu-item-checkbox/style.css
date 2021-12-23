@@ -9,6 +9,7 @@
     z-50
     p-2
     rounded-lg
+    outline-none
     drop-shadow
     dark:drop-shadow-dark
     border
@@ -18,8 +19,7 @@
     bg-canvas-4
     dark:bg-canvas-4-dark
     text-canvas-4
-    dark:text-canvas-4-dark
-    ariakit-focus-visible:ariakit-outline;
+    dark:text-canvas-4-dark;
 }
 
 .menu-arrow svg {
@@ -41,13 +41,9 @@
     rounded
     p-2
     hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover;
-}
-
-.menu-item:focus {
-  @apply
-    bg-primary-2
-    text-primary-2
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark;
+    dark:hover:bg-primary-1-dark-hover
+    focus:bg-primary-2
+    focus:text-primary-2
+    dark:focus:bg-primary-2-dark
+    dark:focus:text-primary-2-dark;
 }
