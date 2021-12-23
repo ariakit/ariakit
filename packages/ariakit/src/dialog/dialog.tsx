@@ -87,6 +87,7 @@ function isInDialog(element: Node) {
 export const useDialog = createHook<DialogOptions>(
   ({
     state,
+    focusable = true,
     modal = true,
     portal = !!modal,
     backdrop = !!modal,
@@ -423,7 +424,7 @@ export const useDialog = createHook<DialogOptions>(
     props = {
       "data-dialog": "",
       role: "dialog",
-      tabIndex: -1,
+      tabIndex: focusable ? -1 : undefined,
       "aria-labelledby": headingId,
       "aria-describedby": descriptionId,
       ...props,
@@ -431,7 +432,7 @@ export const useDialog = createHook<DialogOptions>(
     };
 
     props = useDisclosureContent({ state, ...props });
-    props = useFocusable(props);
+    props = useFocusable({ ...props, focusable });
     props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
 
     return props;
