@@ -70,11 +70,14 @@ export const useCheckbox = createHook<CheckboxOptions>(
     const tagName = useTagName(ref, props.as || "input");
     const nativeCheckbox = isNativeCheckbox(tagName, props.type);
     const mixed = checked ? checked === "mixed" : undefined;
+    const isChecked = checked === "mixed" ? false : checked;
 
     useEffect(() => {
-      if (!ref.current) return;
-      setMixed(ref.current, mixed);
-    }, [mixed]);
+      const element = ref.current;
+      if (!element) return;
+      setMixed(element, mixed);
+      element.checked = isChecked;
+    }, [mixed, isChecked]);
 
     const onChangeProp = useEventCallback(props.onChange);
 
@@ -128,8 +131,6 @@ export const useCheckbox = createHook<CheckboxOptions>(
       },
       [onClickProp, onChange]
     );
-
-    const isChecked = checked === "mixed" ? false : checked;
 
     props = useWrapElement(
       props,
