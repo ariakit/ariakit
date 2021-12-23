@@ -51,28 +51,3 @@
     dark:bg-primary-2-dark
     dark:text-primary-2-dark;
 }
-
-/*
-.menu-item {
-  @apply flex w-full py-2 pl-3 text-left cursor-default hover:bg-canvas-1 focus:bg-canvas-1;
-}
-
-.menu-item-check-wrapper {
-  @apply relative w-4 h-4 mr-3;
-}
-
-.menu-item-check-wrapper span {
-  @apply absolute top-1;
-}
-
-.menu-item-check-content {
-  @apply flex flex-col flex-1 pr-2;
-}
-
-.menu-item-check-title {
-  @apply mb-1 text-sm font-semibold text-canvas-1;
-}
-
-.menu-item-check-summary {
-  @apply text-xs text-canvas-1;
-} */
