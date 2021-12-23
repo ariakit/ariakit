@@ -15,7 +15,6 @@ import {
 import {
   Item,
   Orientation,
-  findEnabledItemById,
   findFirstEnabledItem,
   flipItems,
   getActiveId,
@@ -65,24 +64,18 @@ export function useCompositeState<T extends Item = Item>({
     props.includesBaseElement ?? initialActiveId === null;
   const activeIdRef = useLiveRef(activeId);
 
-  const move = useCallback(
-    (id?: Item["id"]) => {
-      // move() does nothing
-      if (id === undefined) return;
-      // move(null) will focus the composite element itself, not an item
-      if (id === null) {
-        setMoves((prevMoves) => prevMoves + 1);
-        setActiveId(id);
-      } else {
-        const item = findEnabledItemById(collection.items, id);
-        if (item) {
-          setMoves((prevMoves) => prevMoves + 1);
-          setActiveId(item.id);
-        }
-      }
-    },
-    [collection.items]
-  );
+  const move = useCallback((id?: Item["id"]) => {
+    // move() does nothing
+    if (id === undefined) return;
+    // move(null) will focus the composite element itself, not an item
+    if (id === null) {
+      setMoves((prevMoves) => prevMoves + 1);
+      setActiveId(id);
+    } else {
+      setMoves((prevMoves) => prevMoves + 1);
+      setActiveId(id);
+    }
+  }, []);
 
   const first = useCallback(() => {
     const firstItem = findFirstEnabledItem(collection.items);
@@ -187,7 +180,7 @@ export function useCompositeState<T extends Item = Item>({
       }
       return nextItem?.id;
     },
-    [first, focusLoop, focusWrap, includesBaseElement]
+    [focusLoop, focusWrap, includesBaseElement]
   );
 
   const next = useCallback(
