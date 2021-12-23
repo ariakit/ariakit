@@ -17,9 +17,8 @@ export default function Example() {
     },
   });
   const watching = menu.values.watching as string[];
-
   return (
-    <div>
+    <>
       <MenuButton state={menu} className="button">
         <HiOutlineEye />
         {!!watching.length ? "Unwatch" : "Watch"}
@@ -64,6 +63,6 @@ export default function Example() {
           Security alerts
         </MenuItemCheckbox>
       </Menu>
-    </div>
+    </>
   );
 }
