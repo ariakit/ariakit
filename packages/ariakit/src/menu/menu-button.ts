@@ -49,7 +49,7 @@ function hasExpandedMenuButton(
  * ```
  */
 export const useMenuButton = createHook<MenuButtonOptions>(
-  ({ state, ...props }) => {
+  ({ state, focusable, accessibleWhenDisabled, ...props }) => {
     const parentMenu = useParentMenu(["items"]);
     const parentMenuBar = useStore(MenuBarContext, ["items", "move"]);
     const hasParentMenu = !!parentMenu;
@@ -171,12 +171,16 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     props = useHovercardAnchor({
       state,
       showOnMouseMove: hasParentMenu,
+      focusable,
+      accessibleWhenDisabled,
       ...props,
     });
 
     props = usePopoverDisclosure({
       state,
       toggleOnClick: !hasParentMenu,
+      focusable,
+      accessibleWhenDisabled,
       ...props,
     });
 
