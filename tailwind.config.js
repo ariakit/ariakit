@@ -3,7 +3,7 @@ const plugin = require("tailwindcss/plugin");
 
 const black = "hsl(204, 10%, 10%)";
 const blackFade = "hsla(204, 10%, 10%, 75%)";
-const white = "hsl(204, 3%, 97%)";
+const white = "hsl(0, 0%, 100%)";
 const whiteFade = "hsla(204, 3%, 97%, 75%)";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
