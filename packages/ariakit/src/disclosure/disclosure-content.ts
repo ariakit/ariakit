@@ -93,9 +93,10 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       [onAnimationEndProp, onEnd]
     );
 
-    const style = state.mounted
-      ? props.style
-      : { ...props.style, display: "none" };
+    const style =
+      state.mounted || props.hidden === false
+        ? props.style
+        : { ...props.style, display: "none" };
 
     props = {
       id,
