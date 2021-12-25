@@ -3,6 +3,7 @@ import { useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
+import { FocusableOptions, useFocusable } from "../focusable";
 import { FormContext } from "./__utils";
 import { FormFieldOptions, useFormField } from "./form-field";
 import { FormState } from "./form-state";
@@ -50,6 +51,7 @@ export const useFormInput = createHook<FormInputOptions>(
       onChange,
     };
 
+    props = useFocusable(props);
     props = useFormField({ state, name, ...props });
 
     return props;
@@ -75,6 +77,7 @@ export const FormInput = createMemoComponent<FormInputOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
-export type FormInputOptions<T extends As = "input"> = FormFieldOptions<T>;
+export type FormInputOptions<T extends As = "input"> = FocusableOptions<T> &
+  FormFieldOptions<T>;
 
 export type FormInputProps<T extends As = "input"> = Props<FormInputOptions<T>>;
