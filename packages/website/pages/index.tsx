@@ -35,6 +35,9 @@ export default function Home() {
         <li>
           <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
         </li>
+        <li>
+          <Link href="/examples/dialog">Dialog</Link>
+        </li>
       </ul>
     </div>
   );
