@@ -44,6 +44,9 @@
 
 .popover > * {
   @apply
+    flex
+    gap-2
+    items-center
     scroll-m-2
     outline-none
     cursor-default

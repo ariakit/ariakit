@@ -1,0 +1,31 @@
+@import url("../combobox/style.css");
+
+.wrapper {
+  @apply flex flex-col gap-4;
+}
+
+.tags {
+  @apply flex gap-2 flex-wrap max-w-[250px];
+}
+
+.button {
+  @apply
+    flex
+    items-center
+    justify-center
+    gap-2
+    text-base
+    cursor-pointer
+    border-none
+    rounded-lg
+    px-2
+    h-8
+    bg-primary-1
+    text-primary-1
+    hover:bg-primary-1-hover
+    dark:bg-primary-1-dark
+    dark:text-primary-1-dark
+    dark:hover:bg-primary-1-dark-hover
+    ariakit-focus-visible:ariakit-outline
+    aria-disabled:opacity-50;
+}
