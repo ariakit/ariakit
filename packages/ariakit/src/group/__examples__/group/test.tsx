@@ -1,8 +1,6 @@
 import { getByRole, render } from "ariakit-test-utils";
 import Example from ".";
-<button className="button" data-command="" type="button">
-  Button 1
-</button>;
+
 test("render group", () => {
   render(<Example />);
   expect(getByRole("group")).toMatchInlineSnapshot(`
