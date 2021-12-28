@@ -1,0 +1,62 @@
+@import url("../form/style.css");
+
+:root {
+  @apply py-40;
+}
+
+.form {
+  @apply w-full max-w-sm;
+}
+
+.field {
+  @apply
+    items-start
+    border
+    rounded-lg
+    p-4
+    border-canvas-3
+    dark:border-canvas-4-dark;
+}
+
+.error {
+  @apply w-full;
+}
+
+.field input {
+  @apply w-full;
+}
+
+.field-header {
+  @apply flex w-full justify-between gap-4 items-baseline;
+}
+
+.field-header button {
+  @apply
+    text-right
+    text-sm
+    rounded
+    hover:underline
+    text-danger-1
+    dark:text-danger-1-dark
+    ariakit-focus-visible:ariakit-outline;
+}
+
+.add-new {
+  @apply
+    flex
+    items-center
+    justify-center
+    gap-2
+    text-base
+    cursor-pointer
+    border
+    rounded-lg
+    px-4
+    h-24
+    border-canvas-3
+    dark:border-canvas-4-dark
+    hover:bg-canvas-3-hover
+    dark:hover:bg-canvas-4-dark
+    ariakit-focus-visible:ariakit-outline
+    aria-disabled:opacity-50;
+}
