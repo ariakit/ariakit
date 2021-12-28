@@ -1,0 +1,13 @@
+@import url("../../../button/__examples__/button/style.css");
+
+.toolbar {
+  @apply flex border p-1 rounded border-alpha-1 flex-row w-fit items-center;
+}
+
+.button {
+  @apply rounded-none;
+}
+
+.toolbar-separator {
+  @apply hidden sm:block mx-6 lg:mx-4 w-px h-7 bg-canvas-1-border text-canvas-2-dark;
+}
