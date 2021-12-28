@@ -9,9 +9,9 @@
 }
 
 .field input {
-  width: 250px;
   @apply
     border-none
+    w-[250px]
     px-4
     h-10
     rounded-lg
@@ -24,6 +24,10 @@
     dark:text-canvas-1-dark
     dark:hover:bg-canvas-1-dark-hover
     ariakit-focus-visible:ariakit-outline;
+}
+
+.error:empty {
+  @apply absolute;
 }
 
 .error:not(:empty) {
