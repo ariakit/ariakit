@@ -20,11 +20,12 @@ function getFirstFieldsByName(
   name: string
 ) {
   if (!items) return [];
-  const regex = new RegExp(`^${name}\\.\\d+\\.`);
   const fields: FormState["items"] = [];
   for (const item of items) {
     if (item.type !== "field") continue;
     if (!item.name.startsWith(name)) continue;
+    const nameWithIndex = item.name.replace(/(\.\d+)\..+$/, "$1");
+    const regex = new RegExp(`^${nameWithIndex}`);
     if (!fields.some((i) => regex.test(i.name))) {
       fields.push(item);
     }
