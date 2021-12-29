@@ -5,6 +5,14 @@ import {
   ToolbarSeparator,
   useToolbarState,
 } from "ariakit/toolbar";
+import {
+  ImBold,
+  ImItalic,
+  ImParagraphCenter,
+  ImParagraphLeft,
+  ImParagraphRight,
+  ImUnderline,
+} from "react-icons/im";
 import "./style.css";
 
 export default function Example() {
@@ -13,17 +21,29 @@ export default function Example() {
   return (
     <Toolbar state={toolbar} className="toolbar">
       <ToolbarItem as={Button} className="button">
-        File
+        <ImBold />
+        Bold
       </ToolbarItem>
       <ToolbarItem as={Button} className="button">
-        Edit
+        <ImItalic />
+        Italic
+      </ToolbarItem>
+      <ToolbarItem as={Button} className="button">
+        <ImUnderline />
+        Underline
       </ToolbarItem>
       <ToolbarSeparator className="toolbar-separator" />
       <ToolbarItem as={Button} className="button">
-        Formats
+        <ImParagraphLeft />
+        Align Left
       </ToolbarItem>
       <ToolbarItem as={Button} className="button">
-        Help
+        <ImParagraphCenter />
+        Align Center
+      </ToolbarItem>
+      <ToolbarItem as={Button} className="button">
+        <ImParagraphRight />
+        Align Right
       </ToolbarItem>
     </Toolbar>
   );
