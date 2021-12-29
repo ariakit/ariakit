@@ -1,7 +1,7 @@
 import { getByRole, render } from "ariakit-test-utils";
 import Example from ".";
 
-test("render group", () => {
+test("markup", () => {
   render(<Example />);
   expect(getByRole("group")).toMatchInlineSnapshot(`
    <div
