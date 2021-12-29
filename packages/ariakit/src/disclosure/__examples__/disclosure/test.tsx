@@ -15,7 +15,7 @@ test("faq", () => {
         data-disclosure=""
         type="button"
       >
-        What are Vegetables?
+        What are vegetables?
       </button>
       <div
         class="content"

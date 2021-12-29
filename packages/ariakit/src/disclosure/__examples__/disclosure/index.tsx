@@ -10,7 +10,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Disclosure state={disclosure} className="button">
-        What are Vegetables?
+        What are vegetables?
       </Disclosure>
       <DisclosureContent state={disclosure} className="content">
         <ul>
