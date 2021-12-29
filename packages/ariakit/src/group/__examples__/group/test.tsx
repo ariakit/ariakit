@@ -13,21 +13,21 @@ test("markup", () => {
        data-command=""
        type="button"
      >
-       Button 1
+       Bold
      </button>
      <button
        class="button"
        data-command=""
        type="button"
      >
-       Button 2
+       Italic
      </button>
      <button
        class="button"
        data-command=""
        type="button"
      >
-       Button 3
+       Underline
      </button>
    </div>
   `);
