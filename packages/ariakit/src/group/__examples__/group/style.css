@@ -1,28 +1,5 @@
-.button {
-  @apply
-    flex
-    items-center
-    justify-center
-    gap-2
-    text-base
-    cursor-pointer
-    border-none
-    rounded-lg
-    px-4
-    h-10
-    bg-primary-2
-    text-primary-2
-    hover:bg-primary-2-hover
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark
-    dark:hover:bg-primary-2-dark-hover
-    ariakit-focus-visible:ariakit-outline
-    aria-disabled:opacity-50;
-}
+@import url("../../../button/__examples__/button/style.css");
 
 .group {
-  @apply
-    flex
-    items-center
-    gap-2;
+  @apply flex items-center gap-2;
 }
