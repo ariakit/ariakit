@@ -1,0 +1,27 @@
+@import url("../../../button/__examples__/button/style.css");
+
+.wrapper {
+  @apply
+    flex
+    flex-col
+      gap-2;
+}
+
+.content {
+  @apply
+    block
+    z-50
+      p-2
+      rounded-lg
+      outline-none
+      drop-shadow
+      dark:drop-shadow-dark
+      border
+      border-solid
+      border-canvas-4
+      dark:border-canvas-4-dark
+      bg-canvas-4
+      dark:bg-canvas-4-dark
+      text-canvas-4
+      dark:text-canvas-4-dark;
+}
