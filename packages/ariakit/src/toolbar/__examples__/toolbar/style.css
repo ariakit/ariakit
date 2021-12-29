@@ -32,5 +32,5 @@
 }
 
 .toolbar-separator {
-  @apply hidden sm:block lg:mx-4 w-px h-7 bg-canvas-1-border text-canvas-2-dark;
+  @apply lg:mx-4 w-px h-7 bg-canvas-1-border text-canvas-2-dark;
 }

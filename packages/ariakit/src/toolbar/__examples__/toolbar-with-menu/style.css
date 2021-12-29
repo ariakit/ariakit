@@ -1,0 +1,21 @@
+@import url("../toolbar/style.css");
+
+.menu {
+  @apply flex top-2;
+}
+
+.menu [role="menuitem"] {
+  @apply
+    flex
+    flex-col
+    justify-center
+    items-center
+    w-14
+    h-14
+    border
+    border-alpha-1
+    text-sm
+    bg-canvas-4
+    text-canvas-2
+  ;
+}
