@@ -1,4 +1,5 @@
-import { Button, Group } from "ariakit";
+import { Button } from "ariakit/button";
+import { Group } from "ariakit/group";
 import "./style.css";
 
 export default function Example() {
