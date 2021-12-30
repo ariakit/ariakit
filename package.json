@@ -10,10 +10,10 @@
     "lint": "eslint . --ext js,ts,tsx",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore",
     "type-check": "tsc --noEmit",
-    "build": "lerna exec --scope ariakit* -- npm run build",
-    "build:website": "lerna exec --scope website -- npm run build",
+    "build": "turbo run build --include-dependencies --no-deps --scope=ariakit*",
+    "build:webste": "turbo run build --include-dependencies --no-deps --scope=website",
     "build:fast": "npm run build -- -- --no-umd",
-    "clean": "npm run clean -ws --if-present",
+    "clean": "turbo run clean && rm -rf node_modules",
     "release": "lerna publish --pre-dist-tag latest",
     "release:alpha": "npm run release -- --no-changelog --conventional-prerelease --preid alpha",
     "release:beta": "npm run release:alpha -- --preid beta",
@@ -87,9 +87,27 @@
     "stylelint": "14.1.0",
     "stylelint-config-standard": "24.0.0",
     "tailwindcss": "3.0.2",
+    "turbo": "1.0.23",
     "typescript": "4.5.4",
     "unified": "10.1.1",
     "unist-util-visit": "4.1.0",
     "webpack": "5.65.0"
+  },
+  "turbo": {
+    "baseBranch": "origin/main",
+    "pipeline": {
+      "build": {
+        "outputs": [
+          ".next/**",
+          "dist/**"
+        ],
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "clean": {
+        "cache": false
+      }
+    }
   }
 }
