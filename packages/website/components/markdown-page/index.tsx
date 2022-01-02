@@ -26,7 +26,7 @@ const { Compiler: renderAst } = new RehypeReact({
         return (
           <PlaygroundCode
             highlight
-            className={theme}
+            theme={theme}
             value={child.props.children[0]}
             language={child.props.className?.replace("language-", "")}
           />
