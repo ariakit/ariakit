@@ -1,0 +1,15 @@
+
+> ariakit-playground@0.17.0-alpha.12 build
+> node ../../scripts/build
+
+
+Cleaned in ariakit-playground:
+cjs, esm, ts, themes, playground, playground-state, playground-preview, playground-editor, playground-code, playground-client, actions
+
+Created in ariakit-playground: .gitignore
+
+Created proxies in ariakit-playground:
+themes/vscode-light, themes/vscode-dark, themes/default, playground, playground-state, playground-preview, playground-editor, playground-code, playground-client, actions/open-in-code-sandbox, actions
+[36m
+[1m/Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/themes/vscode-light.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/themes/vscode-dark.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/themes/default.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/playground.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/playground-state.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/playground-preview.tsx, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/playground-editor.tsx, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/playground-code.tsx, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/playground-client.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/index.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/actions/open-in-code-sandbox.tsx, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-playground/src/actions/index.ts[22m → [1mcjs, esm[22m...[39m
+[32mcreated [1mcjs, esm[22m in [1m539ms[22m[39m

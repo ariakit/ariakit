@@ -1,0 +1,20 @@
+
+> ariakit-utils@0.17.0-alpha.9 build
+> node ../../scripts/build
+
+
+Cleaned in ariakit-utils:
+cjs, umd, esm, ts, types, system, store, platform, misc, hooks, focus, events, dom, array
+
+Created in ariakit-utils: .gitignore
+
+Created proxies in ariakit-utils:
+types, system, store, platform, misc, hooks, focus, events, dom, array
+[36m
+[1m/Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/types.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/system.tsx, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/store.tsx, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/platform.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/misc.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/index.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/hooks.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/focus.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/events.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/dom.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/array.ts[22m → [1mcjs, esm[22m...[39m
+[1m[33m(!) Generated empty chunks[39m[22m
+types, types
+[32mcreated [1mcjs, esm[22m in [1m444ms[22m[39m
+[36m
+[1m/Users/leonardoelias/www/contrib/reakit/packages/ariakit-utils/src/index.ts[22m → [1mumd/ariakit-utils.min.js[22m...[39m
+[32mcreated [1mumd/ariakit-utils.min.js[22m in [1m427ms[22m[39m

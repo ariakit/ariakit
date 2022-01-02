@@ -1,0 +1,91 @@
+
+> prebuild
+> npm run pages
+
+
+> pages
+> node ../../scripts/pages
+
+
+> build
+> next build
+
+info  - Skipping validation of types...
+info  - Creating an optimized production build...
+info  - Using the createRoot API for React
+info  - Collecting page data...
+info  - Generating static pages (0/30)
+info  - Generating static pages (7/30)
+info  - Generating static pages (14/30)
+info  - Generating static pages (22/30)
+info  - Generating static pages (30/30)
+info  - Finalizing page optimization...
+
+Page                                       Size     First Load JS
+┌ ○ /                                      2.13 kB        77.9 kB
+├   /_app                                  0 B            75.8 kB
+├ ○ /404                                   197 B            76 kB
+├ ○ /blog/first-post                       1.3 kB          121 kB
+├ ○ /components/button                     1.23 kB         121 kB
+├ ○ /components/checkbox                   1.01 kB         122 kB
+├ ○ /components/heading                    1.17 kB         121 kB
+├ ○ /components/radio                      1.06 kB         122 kB
+├ ○ /components/tab                        1.23 kB         121 kB
+├ ○ /components/tooltip                    1.51 kB         134 kB
+├ ○ /examples/button                       1.19 kB         121 kB
+├ ○ /examples/button-as-div                1.2 kB          121 kB
+├ ○ /examples/button-as-link               1.09 kB         121 kB
+├ ○ /examples/checkbox                     966 B           122 kB
+├ ○ /examples/combobox                     1.64 kB         143 kB
+├ ○ /examples/combobox-matches             1.86 kB         143 kB
+├ ○ /examples/heading                      1.13 kB         121 kB
+├ ○ /examples/playground                   1.24 kB         761 kB
+├ ○ /examples/playground-client            1.25 kB         761 kB
+├ ○ /examples/playground-code              954 B           760 kB
+├ ○ /examples/playground-code-collapsible  1.7 kB          761 kB
+├ ○ /examples/playground-with-tabs         1.6 kB          761 kB
+├ ○ /examples/popover                      5.06 kB         137 kB
+├ ○ /examples/radio                        1.01 kB         122 kB
+├ ○ /examples/tab                          1.19 kB         121 kB
+├ ○ /examples/tab-react-router             10.8 kB         127 kB
+├ ○ /examples/tooltip                      1.46 kB         134 kB
+├ ○ /examples/tooltip-placement            1.47 kB         134 kB
+├ ○ /examples/tooltip-with-timeout         1.48 kB         134 kB
+└ ○ /guide/get-started                     3.27 kB         120 kB
++ First Load JS shared by all              75.8 kB
+  ├ chunks/framework-973635de73de2d43.js   44.7 kB
+  ├ chunks/main-9296253d96feb1d9.js        28.2 kB
+  ├ chunks/pages/_app-f16bba2a0d7f99da.js  784 B
+  ├ chunks/webpack-01a0cc8d3a4689b3.js     2.09 kB
+  └ css/1473487d36158c7c.css               2.26 kB
+
+○  (Static)  automatically rendered as static HTML (uses no initial props)
+
+warn  - You have enabled experimental feature(s).
+warn  - Experimental features are not covered by semver, and may cause unexpected or broken application behavior. Use them at your own risk.
+
+warn  - The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config
+warn  - You have to use React 18 to use `experimental.reactRoot`.
+(node:18184) [DEP0148] DeprecationWarning: Use of deprecated folder mapping "./" in the "exports" field module resolution of the package at /Users/leonardoelias/www/contrib/reakit/node_modules/react/package.json.
+Update this package.json to use a subpath pattern like "./*".
+(Use `node --trace-deprecation ...` to show where the warning was created)
+warn  - Compiled with warnings
+
+../../node_modules/@babel/standalone/babel.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../ariakit-playground/src/__utils/compile-module.ts
+../ariakit-playground/src/playground-preview.tsx
+../ariakit-playground/src/index.ts
+./.pages/examples/playground-client.js
+
+../../node_modules/@babel/standalone/babel.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../ariakit-playground/src/__utils/compile-module.ts
+../ariakit-playground/src/playground-preview.tsx
+../ariakit-playground/src/index.ts
+./.pages/examples/playground-client.js
+

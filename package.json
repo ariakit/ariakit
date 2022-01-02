@@ -11,7 +11,7 @@
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore",
     "type-check": "tsc --noEmit",
     "build": "turbo run build --include-dependencies --no-deps --scope=ariakit*",
-    "build:webste": "turbo run build --include-dependencies --no-deps --scope=website",
+    "build:website": "turbo run build --include-dependencies --no-deps --scope=website",
     "build:fast": "npm run build -- -- --no-umd",
     "clean": "turbo run clean && rm -rf node_modules",
     "release": "lerna publish --pre-dist-tag latest",

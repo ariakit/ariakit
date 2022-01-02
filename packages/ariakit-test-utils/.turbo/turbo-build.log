@@ -1,0 +1,18 @@
+
+> ariakit-test-utils@0.17.0-alpha.9 build
+> node ../../scripts/build
+
+
+Cleaned in ariakit-test-utils:
+cjs, umd, esm, ts, within, wait-for, type, tap, screen, render, press, hover, focus, fire-event, click, blur, act
+
+Created in ariakit-test-utils: .gitignore
+
+Created proxies in ariakit-test-utils:
+within, wait-for, type, tap, screen, render, press, hover, focus, fire-event, click, blur, act
+[36m
+[1m/Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/within.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/wait-for.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/type.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/tap.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/screen.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/render.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/press.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/index.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/hover.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/focus.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/fire-event.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/click.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/blur.ts, /Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/act.ts[22m → [1mcjs, esm[22m...[39m
+[32mcreated [1mcjs, esm[22m in [1m363ms[22m[39m
+[36m
+[1m/Users/leonardoelias/www/contrib/reakit/packages/ariakit-test-utils/src/index.ts[22m → [1mumd/ariakit-test-utils.min.js[22m...[39m
+[32mcreated [1mumd/ariakit-test-utils.min.js[22m in [1m329ms[22m[39m
