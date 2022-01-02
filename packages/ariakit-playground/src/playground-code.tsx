@@ -1,11 +1,13 @@
 import {
   ElementType,
   MouseEvent,
+  cloneElement,
   useCallback,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { ClassNames, SerializedStyles } from "@emotion/react";
 import {
   useControlledState,
   useEventCallback,
@@ -42,6 +44,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     defaultExpanded,
     expanded: expandedProp,
     setExpanded: setExpandedProp,
+    theme,
     ...props
   }) => {
     state = useStore(state || PlaygroundContext, [
@@ -98,12 +101,6 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       [lineNumbers, lines]
     );
 
-    const className = cx(
-      language && `code-${language}`,
-      lineNumbers && "has-line-numbers",
-      props.className
-    );
-
     const onMouseDownCaptureProp = useEventCallback(props.onMouseDownCapture);
 
     const onMouseDownCapture = useCallback(
@@ -134,7 +131,15 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       props,
       (element) => (
         <>
-          {element}
+          {element && (
+            <ClassNames>
+              {({ css, cx }) =>
+                cloneElement(element, {
+                  className: cx(css(theme), element.props.className),
+                })
+              }
+            </ClassNames>
+          )}
           {collapsible && (
             <Button
               aria-expanded={expanded}
@@ -146,7 +151,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
           )}
         </>
       ),
-      [collapsible, expanded, disclosureProps, disclosureOnClick]
+      [theme, collapsible, expanded, disclosureProps, disclosureOnClick]
     );
 
     const children = useMemo(
@@ -166,6 +171,12 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
         </div>
       ),
       [numbers, code, value]
+    );
+
+    const className = cx(
+      language && `code-${language}`,
+      lineNumbers && "has-line-numbers",
+      props.className
     );
 
     props = {
@@ -203,6 +214,7 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   expanded?: boolean;
   setExpanded?: SetState<boolean>;
   defaultExpanded?: boolean;
+  theme?: SerializedStyles;
 };
 
 export type PlaygroundCodeProps<T extends As = "div"> = Props<

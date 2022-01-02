@@ -1,1 +1,5 @@
 @import url("../playground/style.css");
+
+.playground {
+  @apply bg-canvas-4 text-canvas-4;
+}
