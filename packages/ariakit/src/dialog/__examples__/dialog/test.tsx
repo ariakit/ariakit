@@ -15,7 +15,7 @@ test("render dialog", () => {
           data-disclosure=""
           type="button"
         >
-          Open dialog
+          View details
         </button>
       </div>
       <div
@@ -29,7 +29,7 @@ test("render dialog", () => {
           tabindex="-1"
         >
           <div
-            aria-label="Welcome"
+            aria-labelledby="r:2"
             class="dialog"
             data-dialog=""
             hidden=""
@@ -38,7 +38,82 @@ test("render dialog", () => {
             style="display: none;"
             tabindex="-1"
           >
-            Welcome to Ariakit!
+            <button
+              class="dismiss"
+              data-command=""
+              data-dialog-dismiss=""
+              type="button"
+            >
+              <svg
+                aria-label="Dismiss popup"
+                display="block"
+                fill="none"
+                height="1em"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5pt"
+                viewBox="0 0 16 16"
+                width="1em"
+              >
+                <line
+                  x1="4"
+                  x2="12"
+                  y1="4"
+                  y2="12"
+                />
+                <line
+                  x1="4"
+                  x2="12"
+                  y1="12"
+                  y2="4"
+                />
+              </svg>
+            </button>
+            <h1
+              class="heading"
+              id="r:2"
+            >
+              Apples
+            </h1>
+            <ul>
+              <li>
+                <strong>
+                  Calories:
+                </strong>
+                 95
+              </li>
+              <li>
+                <strong>
+                  Carbs:
+                </strong>
+                 25 grams
+              </li>
+              <li>
+                <strong>
+                  Fibers:
+                </strong>
+                 4 grams
+              </li>
+              <li>
+                <strong>
+                  Vitamin C:
+                </strong>
+                 14% of the Reference Daily Intake (RDI)
+              </li>
+              <li>
+                <strong>
+                  Potassium:
+                </strong>
+                 6% of the RDI
+              </li>
+              <li>
+                <strong>
+                  Vitamin K:
+                </strong>
+                 5% of the RDI
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -59,7 +134,7 @@ test("enter", async () => {
   await click(getByRole("button"));
   await press.Tab();
   await press.Enter();
-  expect(getByRole("dialog")).toBeVisible();
+  expect(getByRole("dialog", { hidden: true })).not.toBeVisible();
 });
 
 test("esc", async () => {
