@@ -198,14 +198,10 @@ test("markup", () => {
           </div>
         </div>
         <div
-          class="preview"
+          class="css-0 preview"
         >
-          <div
-            class="css-0"
-          >
-            <div>
-              Hello World
-            </div>
+          <div>
+            Hello World
           </div>
         </div>
         <div
