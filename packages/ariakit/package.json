@@ -36,7 +36,7 @@
     "components"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.10.2",
+    "@popperjs/core": "^2.11.0",
     "ariakit-utils": "^0.17.0-alpha.10"
   },
   "peerDependencies": {
