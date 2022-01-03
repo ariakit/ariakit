@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import {
-  SandpackBundlerFiles,
-  SandpackClient,
-} from "@codesandbox/sandpack-client";
+import { SandpackClient } from "@codesandbox/sandpack-client";
 import {
   useForkRef,
   useInitialValue,
@@ -13,6 +10,7 @@ import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
 import {
   getCodeSandboxEntryContent,
+  getSandpackFiles,
   useCodeSandboxDependencies,
 } from "./__utils/code-sandbox";
 import { getFile } from "./__utils/get-file";
@@ -20,14 +18,6 @@ import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundState } from "./playground-state";
 
 const ENTRY_FILE = "/index.js";
-
-function getFiles(values: PlaygroundState["values"]) {
-  const files: SandpackBundlerFiles = {};
-  for (const [file, code] of Object.entries(values)) {
-    files[`/src/${file}`] = { code };
-  }
-  return files;
-}
 
 export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
   ({ state, file, ...props }) => {
@@ -57,7 +47,7 @@ export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
           dependencies,
           files: {
             ...initialDefaultFiles,
-            ...getFiles(initialValues),
+            ...getSandpackFiles(initialValues),
           },
         },
         { showOpenInCodeSandbox: false }
@@ -78,7 +68,7 @@ export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
           dependencies,
           files: {
             ...defaultFiles,
-            ...getFiles(values),
+            ...getSandpackFiles(values),
           },
         });
       }, 500);

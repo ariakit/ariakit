@@ -246,29 +246,6 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
 
     const keyboardDescriptionId = useId(keyboardDescriptionProps?.id);
 
-    props = useWrapElement(
-      props,
-      (element) => (
-        <>
-          {element}
-          {focusVisible && !editable && (
-            <Role
-              children={keyboardDescription}
-              {...keyboardDescriptionProps}
-              id={keyboardDescriptionId}
-            />
-          )}
-        </>
-      ),
-      [
-        focusVisible,
-        editable,
-        keyboardDescription,
-        keyboardDescriptionProps,
-        keyboardDescriptionId,
-      ]
-    );
-
     props = {
       role: "group",
       "aria-label": file,
@@ -291,6 +268,29 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       ...props,
       highlight: !editorDOM && props.highlight,
     });
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <>
+          {element}
+          {focusVisible && !editable && (
+            <Role
+              children={keyboardDescription}
+              {...keyboardDescriptionProps}
+              id={keyboardDescriptionId}
+            />
+          )}
+        </>
+      ),
+      [
+        focusVisible,
+        editable,
+        keyboardDescription,
+        keyboardDescriptionProps,
+        keyboardDescriptionId,
+      ]
+    );
 
     return props;
   }

@@ -23,12 +23,12 @@ function findNextOrPreviousField(
   const regex = new RegExp(`^${name}\\.(\\d+)`);
   const nextField = fields?.find((field) => {
     const fieldIndex = field.name.replace(regex, "$1");
-    return Number(fieldIndex) > index;
+    return parseInt(fieldIndex) > index;
   });
   if (nextField) return nextField;
   return fields?.reverse().find((field) => {
     const fieldIndex = field.name.replace(regex, "$1");
-    return Number(fieldIndex) < index;
+    return parseInt(fieldIndex) < index;
   });
 }
 

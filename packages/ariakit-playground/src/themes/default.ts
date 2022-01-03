@@ -1,4 +1,4 @@
-import { css } from "@emotion/css";
+import { css } from "@emotion/react";
 
 const theme = css`
   margin: 0;
@@ -76,6 +76,7 @@ const theme = css`
     z-index: 200;
     left: 0;
     height: 100%;
+    color: inherit;
   }
 
   .cm-lineNumbers {
