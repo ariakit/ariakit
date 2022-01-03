@@ -1,65 +1,40 @@
-.container {
-  @apply flex items-center justify-center w-full px-3 py-44 bg-canvas-2 text-black ;
+@import url("../../../button/__examples__/button/style.css");
+
+.button {
+  @apply absolute top-4 right-4 rounded-full font-semibold;
+}
+
+.anchor {
+  @apply font-semibold hover:underline text-primary-1 dark:text-primary-1-dark;
 }
 
 .hovercard {
   @apply
-    w-[300px]
-    min-h-[200px]
-    p-3
-    bg-white
-    shadow-sm
-    border
-    border-alpha-1
-    rounded-md
-    top-1
-    text-sm
+    relative
     flex
     flex-col
+    w-[300px]
     gap-2
-  ;
-}
-
-.item {
-  @apply p-3 w-[600px] flex gap-3 border border-alpha-1 rounded-md shadow-lg;
+    z-50
+    p-4
+    rounded-lg
+    drop-shadow
+    dark:drop-shadow-dark
+    border
+    border-solid
+    border-canvas-4
+    dark:border-canvas-4-dark
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    text-canvas-4
+    dark:text-canvas-4-dark
+    ariakit-focus-visible:ariakit-outline;
 }
 
 .avatar {
-  @apply w-16 h-16 rounded-full overflow-hidden border border-alpha-1;
+  @apply rounded-full w-16;
 }
 
-.avatar-img {
-  @apply w-full h-auto;
-}
-
-.profile {
-  @apply flex justify-between ;
-}
-
-.button {
-  @apply px-5 py-2 bg-primary-2 text-white rounded-full hover:bg-primary-2-hover font-semibold;
-}
-
-.profile-name {
-  @apply font-semibold text-base;
-}
-
-.profile-username {
-  @apply text-black;
-}
-
-.profile-details {
-  @apply flex gap-3;
-}
-
-.content {
-  @apply flex flex-col gap-1;
-}
-
-.content-profile {
-  @apply text-base;
-}
-
-.content-content {
-  @apply text-sm;
+.username {
+  @apply text-lg font-semibold;
 }
