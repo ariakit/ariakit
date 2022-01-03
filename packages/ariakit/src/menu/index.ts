@@ -5,6 +5,7 @@ export * from "./menu-button-arrow";
 export * from "./menu-button";
 export * from "./menu-group-label";
 export * from "./menu-group";
+export * from "./menu-heading";
 export * from "./menu-item-check";
 export * from "./menu-item-checkbox";
 export * from "./menu-item-radio";
