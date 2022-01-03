@@ -20,7 +20,7 @@ const checkmark = (
     height="1em"
     width="1em"
   >
-    <polyline points="4,8 7,12 12,4"></polyline>
+    <polyline points="4,8 7,12 12,4" />
   </svg>
 );
 
