@@ -1,16 +1,13 @@
 import {
-  act,
   click,
   getByRole,
   hover,
   render,
+  sleep,
   waitFor,
 } from "ariakit-test-utils";
 import { axe } from "jest-axe";
 import Example from ".";
-
-const sleep = (timeout = 1000) =>
-  act(() => new Promise((resolve) => setTimeout(resolve, timeout)));
 
 const getAnchor = () => getByRole("link", { name: "@A11YProject" });
 const getHovercard = () => getByRole("dialog", { hidden: true });
@@ -49,7 +46,7 @@ test("keep hovercard visible when it has focus", async () => {
   await waitForHovercardToShow();
   await click(getHovercard());
   await hover(baseElement);
-  await sleep();
+  await sleep(1000);
   await expect(getHovercard()).toBeVisible();
 });
 
@@ -64,6 +61,6 @@ test("keep hovercard visible when hovering out and in quickly", async () => {
   await hover(baseElement);
   await sleep(400);
   await hover(getHovercard());
-  await sleep();
+  await sleep(1000);
   await expect(getHovercard()).toBeVisible();
 });
