@@ -4,6 +4,7 @@ export * from "./menu-bar";
 export * from "./menu-button-arrow";
 export * from "./menu-button";
 export * from "./menu-description";
+export * from "./menu-dismiss";
 export * from "./menu-group-label";
 export * from "./menu-group";
 export * from "./menu-heading";
