@@ -15,7 +15,7 @@
     "rehype-react": "7.0.3"
   },
   "devDependencies": {
-    "autoprefixer": "10.4.0",
+    "autoprefixer": "10.4.1",
     "next-transpile-modules": "9.0.0"
   }
 }

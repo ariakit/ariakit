@@ -1,0 +1,21 @@
+@import url("../playground/style.css");
+
+.tab-list {
+  @apply
+    border-b
+    flex
+    w-full
+    border-canvas-3
+    dark:border-canvas-4-dark;
+}
+
+.tab {
+  @apply
+    border-b
+    border-[transparent]
+    py-2
+    px-4
+    mb-[-1px]
+    aria-selected:border-primary-2
+    dark:aria-selected:border-primary-2-dark;
+}

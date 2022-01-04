@@ -18,7 +18,7 @@ function renderArrow(down = false) {
       height="1em"
       width="1em"
     >
-      <polyline points={down ? "4,6 8,10 12,6" : "4,10 8,6 12,10"}></polyline>
+      <polyline points={down ? "4,6 8,10 12,6" : "4,10 8,6 12,10"} />
     </svg>
   );
 }

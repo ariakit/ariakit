@@ -1,16 +1,27 @@
 import { useCallback, useState } from "react";
+import { css } from "@emotion/react";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
-import theme from "ariakit-playground/themes/vscode-dark";
+import darkTheme from "ariakit-playground/themes/vscode-dark";
 import { useId, useUpdateEffect } from "ariakit-utils/hooks";
-import { cx, hasOwnProperty } from "ariakit-utils/misc";
+import { hasOwnProperty } from "ariakit-utils/misc";
 import { TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundTab from "./playground-tab";
-import style from "./style.module.css";
+
+const theme = css`
+  ${darkTheme}
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  max-height: min(max(calc(100vh - 640px), 480px), 800px);
+
+  .cm-scroller {
+    padding-top: 0.5rem;
+  }
+`;
 
 const PlaygroundEditor = dynamic<PlaygroundEditorProps>(() =>
   import("ariakit-playground/playground-editor").then(
@@ -77,7 +88,7 @@ export default function Playground(props: PlaygroundProps) {
             dark:bg-canvas-1-dark rounded-tl-[inherit] rounded-tr-[inherit]
             text-sm"
           >
-            <TabList state={tab} className="flex flex-row gap-2">
+            <TabList state={tab} className="flex w-full flex-row gap-2">
               {Object.keys(playground.values).map((file) => (
                 <PlaygroundTab
                   key={file}
@@ -102,9 +113,10 @@ export default function Playground(props: PlaygroundProps) {
                 !props.hidden && (
                   <div {...props}>
                     <PlaygroundEditor
+                      className="bg-canvas-1 dark:bg-canvas-1-dark"
                       state={playground}
                       file={file}
-                      className={cx(theme, style["playground-editor"])}
+                      theme={theme}
                       expanded={expanded}
                       maxHeight={260}
                       setExpanded={setExpanded}

@@ -1,20 +1,18 @@
 .playground {
-  display: flex;
-  border: 1px solid var(--color-canvas-3-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  @apply
+    grid
+    grid-cols-2
+    w-full
+    rounded-lg
+    border
+    border-canvas-3
+    dark:border-canvas-3-dark;
 }
 
 .editor {
-  flex: 1;
-  max-width: 50%;
-  border-right: 1px solid var(--color-canvas-3-border);
+  @apply border-r border-canvas-3 dark:border-canvas-3-dark;
 }
 
 .preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  padding: var(--space-4);
+  @apply flex items-center justify-center w-full p-4;
 }

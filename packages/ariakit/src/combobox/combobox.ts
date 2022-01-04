@@ -57,6 +57,10 @@ function isInputEvent(event: Event): event is InputEvent {
   return event.type === "input";
 }
 
+function isPrintableKey(event: ReactKeyboardEvent): boolean {
+  return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a combobox input.
@@ -283,10 +287,9 @@ export const useCombobox = createHook<ComboboxOptions>(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
         onKeyDownCaptureProp(event);
         if (event.defaultPrevented) return;
-        if (event.key.length === 1) {
+        if (isPrintableKey(event)) {
           // Printable characters shouldn't perform actions on the combobox
-          // items, only on the combobox input. TODO: Do not do this if ctrl or
-          // meta is pressed.
+          // items, only on the combobox input.
           return event.stopPropagation();
         }
         const hasRows = state.items.some((item) => !!item.rowId);

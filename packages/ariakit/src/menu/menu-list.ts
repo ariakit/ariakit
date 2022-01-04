@@ -182,7 +182,6 @@ export const useMenuList = createHook<MenuListOptions>(
 
     props = {
       id,
-      // TODO: Use dialog attribute if MenuHeading is used
       "aria-labelledby": ariaLabelledBy,
       hidden: !state.mounted,
       ...props,

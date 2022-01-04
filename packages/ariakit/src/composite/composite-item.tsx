@@ -166,6 +166,10 @@ function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
   return role;
 }
 
+function requiresAriaSelected(role?: string) {
+  return role === "option" || role === "treeitem";
+}
+
 function supportsAriaSelected(role?: string) {
   if (role === "option") return true;
   if (role === "tab") return true;
@@ -400,10 +404,21 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     );
 
     const role = useRole(ref, props);
-    const ariaSelected =
-      state?.virtualFocus && isActiveItem && supportsAriaSelected(role)
-        ? true
-        : undefined;
+    let ariaSelected: boolean | undefined;
+
+    if (isActiveItem) {
+      if (requiresAriaSelected(role)) {
+        // When the active item role _requires_ the aria-selected attribute
+        // (e.g., option, treeitem), we always set it to true.
+        ariaSelected = true;
+      } else if (state?.virtualFocus && supportsAriaSelected(role)) {
+        // Otherwise, it will be set to true when virtualFocus is set to true
+        // (meaning that the focus will be managed using the
+        // aria-activedescendant attribute) and the aria-selected attribute is
+        // _supported_ by the active item role.
+        ariaSelected = true;
+      }
+    }
 
     const shouldTabIndex =
       (!state?.virtualFocus && isActiveItem) ||

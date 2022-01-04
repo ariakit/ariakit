@@ -25,23 +25,17 @@ function getCodeSandboxStyleContent() {
   return `@import url("https://unpkg.com/tailwindcss@^3.0.0/lib/css/preflight.css");
 
 body {
-  display: flex;
-  justify-content: center;
   min-height: 100vh;
   padding-top: min(10vh, 100px);
   line-height: 1.5;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol";
+}
+
+#root {
+  display: flex;
+  justify-content: center;
 }
 `;
 }

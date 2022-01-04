@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { useControlledState } from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 
+type Value = boolean | string | number | Array<string | number>;
+
 /**
  * Provides state for the `Checkbox` component.
  * @see https://ariakit.org/components/checkbox
@@ -11,11 +13,11 @@ import { SetState } from "ariakit-utils/types";
  * <Checkbox state={checkbox} />
  * ```
  */
-export function useCheckboxState(
-  props: CheckboxStateProps = {}
-): CheckboxState {
+export function useCheckboxState<T extends Value = Value>(
+  props: CheckboxStateProps<T> = {}
+): CheckboxState<T> {
   const [value, setValue] = useControlledState(
-    props.defaultValue ?? false,
+    props.defaultValue ?? (false as T),
     props.value,
     props.setValue
   );
@@ -23,21 +25,23 @@ export function useCheckboxState(
   return state;
 }
 
-export type CheckboxState = {
+export type CheckboxState<T extends Value = Value> = {
   /**
    * The checked state of the checkbox.
    */
-  value: boolean | string | number | Array<string | number>;
+  value: T;
   /**
    * Sets the `value` state.
    * @example
    * const checkbox = useCheckboxState({ defaultValue: false });
    * checkbox.setValue(true);
    */
-  setValue: SetState<CheckboxState["value"]>;
+  setValue: SetState<T>;
 };
 
-export type CheckboxStateProps = Partial<Pick<CheckboxState, "value">> & {
+export type CheckboxStateProps<T extends Value = Value> = Partial<
+  Pick<CheckboxState<T>, "value">
+> & {
   /**
    * The default value of the checkbox.
    * @default false
@@ -47,7 +51,7 @@ export type CheckboxStateProps = Partial<Pick<CheckboxState, "value">> & {
    * <Checkbox state={checkbox} value="Orange" />
    * <Checkbox state={checkbox} value="Watermelon" />
    */
-  defaultValue?: CheckboxState["value"];
+  defaultValue?: T;
   /**
    * Function that will be called when setting the checkbox `value` state.
    * @example
@@ -63,5 +67,5 @@ export type CheckboxStateProps = Partial<Pick<CheckboxState, "value">> & {
    *   const checkbox = useCheckboxState({ value, setValue: onChange });
    * }
    */
-  setValue?: (value: CheckboxState["value"]) => void;
+  setValue?: (value: T) => void;
 };

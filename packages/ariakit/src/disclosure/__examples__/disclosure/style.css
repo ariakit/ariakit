@@ -1,0 +1,12 @@
+.wrapper {
+  @apply flex flex-col gap-2 w-full max-w-md;
+}
+
+.button {
+  @apply
+    text-lg
+    font-semibold
+    cursor-pointer
+    hover:underline
+    ariakit-focus-visible:ariakit-outline;
+}

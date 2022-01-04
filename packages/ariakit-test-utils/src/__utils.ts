@@ -4,10 +4,6 @@ export type DirtiableElement = Element & { dirty?: boolean };
 
 export type TextField = HTMLInputElement | HTMLTextAreaElement;
 
-export function sleep(ms = 16): Promise<void> {
-  return act(() => new Promise((resolve) => setTimeout(resolve, ms)));
-}
-
 export function queuedMicrotasks(): Promise<void> {
   return act(() => Promise.resolve());
 }

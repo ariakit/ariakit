@@ -1,19 +1,13 @@
 import {
   Component,
   ReactNode,
-  RefObject,
+  cloneElement,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
-import { getDocument } from "ariakit-utils/dom";
-import {
-  useForkRef,
-  useUpdateEffect,
-  useWrapElement,
-} from "ariakit-utils/hooks";
-import { cx } from "ariakit-utils/misc";
+import { ClassNames } from "@emotion/react";
+import { useUpdateEffect, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
@@ -73,13 +67,15 @@ function useDebouncedValue<T>(value: T, ms: number) {
   return debouncedValue;
 }
 
-function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
+type PlaygroundPortalProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+function PlaygroundPortal({ children, className }: PlaygroundPortalProps) {
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    const document = getDocument(element);
     const root = document.createElement("div");
     if (className) {
       root.className = className;
@@ -89,17 +85,20 @@ function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
     return () => {
       root.remove();
     };
-  }, [ref, className]);
+  }, [className]);
 
-  return portalRoot;
+  return (
+    <PortalContext.Provider value={portalRoot}>
+      {children}
+    </PortalContext.Provider>
+  );
 }
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
   ({ state, file, errorProps, getModule: getModuleProp, ...props }) => {
     state = useStore(state || PlaygroundContext, ["values"]);
-    const ref = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<Error | null>(null);
-    const [className, setClassName] = useState("");
+    const [cssModule, setCssModule] = useState("");
     const values = state?.values || {};
     const filename = getFile(values, file);
     const debouncedValues = useDebouncedValue(values, 500);
@@ -122,7 +121,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
           const internalModule = compileModule(code, moduleName, getModule);
           const css = getCSSModule(internalModule);
           if (css) {
-            setClassName(css);
+            setCssModule(css);
           }
           return internalModule;
         } catch (e) {
@@ -141,9 +140,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
       return null;
     });
 
-    useUpdateEffect(() => {
-      setClassName("");
-    }, [debouncedValues]);
+    useUpdateEffect(() => setCssModule(""), [debouncedValues]);
 
     useUpdateEffect(() => {
       setError(null);
@@ -155,28 +152,38 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
       }
     }, [value, filename, getModule]);
 
-    const portalRoot = usePortalRoot(ref, className);
-
     props = useWrapElement(
       props,
       (element) => (
-        <ErrorBoundary resetKey={debouncedValues}>
-          <PortalContext.Provider value={portalRoot}>
-            {element}
-          </PortalContext.Provider>
+        <ErrorBoundary resetKey={debouncedValues} errorProps={errorProps}>
+          {element && (
+            <ClassNames>
+              {({ css, cx }) =>
+                cloneElement(element, {
+                  className: cx(css(cssModule), element.props.className),
+                })
+              }
+            </ClassNames>
+          )}
           <ErrorMessage {...errorProps}>{error?.message}</ErrorMessage>
         </ErrorBoundary>
       ),
-      [error, debouncedValues, portalRoot, errorProps]
+      [error, debouncedValues, errorProps, cssModule]
     );
 
-    const children = Component ? <Component /> : null;
+    const children = Component ? (
+      <ClassNames>
+        {({ css }) => (
+          <PlaygroundPortal className={css(cssModule)}>
+            <Component />
+          </PlaygroundPortal>
+        )}
+      </ClassNames>
+    ) : null;
 
     props = {
       children,
       ...props,
-      ref: useForkRef(ref, props.ref),
-      className: cx(className, props.className),
     };
 
     return props;

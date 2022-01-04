@@ -32,6 +32,9 @@ export default function Home() {
         <li>
           <Link href="/examples/popover">Popover</Link>
         </li>
+        <li>
+          <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
+        </li>
       </ul>
     </div>
   );
