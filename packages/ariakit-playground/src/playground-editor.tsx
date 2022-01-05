@@ -27,6 +27,7 @@ import {
 } from "@codemirror/view";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
+  useControlledState,
   useEventCallback,
   useForkRef,
   useId,
@@ -119,6 +120,10 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     lineNumbers: showLineNumbers = true,
     keyboardDescription = "Press Enter to edit the code",
     keyboardDescriptionProps,
+    maxHeight,
+    defaultExpanded,
+    expanded: expandedProp,
+    setExpanded: setExpandedProp,
     ...props
   }) => {
     state = useStore(state || PlaygroundContext, [
@@ -133,11 +138,16 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     const [editable, setEditable] = useState(false);
     const [focusVisible, setFocusVisible] = useState(false);
 
+    const [expanded, setExpanded] = useControlledState(
+      defaultExpanded ?? !maxHeight,
+      expandedProp,
+      setExpandedProp
+    );
+
     const extensions = useMemo(() => {
       const editorStyle = EditorView.theme({
         "&": { maxHeight: "inherit" },
-        // TODO: This is probably not a good idea.
-        ".cm-scroller": { overflow: editable ? "auto" : "hidden" },
+        ".cm-scroller": { overflow: expanded ? "auto" : "hidden" },
       });
       const updateListener = EditorView.updateListener.of((update) => {
         if (update.docChanged) {
@@ -152,7 +162,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
         getLanguage(file),
         showLineNumbers && lineNumbers(),
       ].filter(Boolean) as Extension[];
-    }, [editable, state?.setValue, file, showLineNumbers]);
+    }, [expanded, state?.setValue, file, showLineNumbers]);
 
     const initialExtensions = useInitialValue(extensions);
 
@@ -241,7 +251,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
         if (event.defaultPrevented) return;
         setFocusVisible(true);
       },
-      [onFocusVisibleProp, editable]
+      [onFocusVisibleProp]
     );
 
     const keyboardDescriptionId = useId(keyboardDescriptionProps?.id);
@@ -266,6 +276,9 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       file,
       lineNumbers: showLineNumbers,
       ...props,
+      maxHeight,
+      expanded,
+      setExpanded,
       highlight: !editorDOM && props.highlight,
     });
 

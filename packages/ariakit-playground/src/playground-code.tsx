@@ -18,7 +18,7 @@ import {
 import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props, SetState } from "ariakit-utils/types";
+import { As, Options, Props } from "ariakit-utils/types";
 import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { getExtension } from "./__utils/get-extension";
@@ -212,7 +212,7 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   maxHeight?: number;
   disclosureProps?: ButtonProps<ElementType>;
   expanded?: boolean;
-  setExpanded?: SetState<boolean>;
+  setExpanded?: (expanded: boolean) => void;
   defaultExpanded?: boolean;
   theme?: SerializedStyles;
 };
