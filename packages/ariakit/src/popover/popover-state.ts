@@ -203,6 +203,7 @@ export function usePopoverState({
     return popper.destroy;
   }, [
     rendered,
+    dialog.contentElement,
     anchorRect,
     shift,
     gutter,
