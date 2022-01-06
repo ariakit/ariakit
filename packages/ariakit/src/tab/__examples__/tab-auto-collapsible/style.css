@@ -1,7 +1,7 @@
 @import url("../tab/style.css");
 
 .wrapper {
-  @apply w-full;
+  @apply w-full overflow-hidden;
 }
 
 .tab[aria-expanded="true"] {

@@ -1,14 +1,22 @@
 import { useRef } from "react";
+import {
+  CompositeOverflow,
+  CompositeOverflowDisclosure,
+  useCompositeOverflowState,
+} from "ariakit";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
 import tabs from "./data";
-import TabPopover from "./tab-popover";
 import useCollapsibleList from "./use-collapsible-list";
 import "./style.css";
 
 const list = Object.keys(tabs);
 
 export default function Example() {
-  const tab = useTabState({ orientation: "both" });
+  const tab = useTabState({
+    defaultSelectedId: "button.js",
+    orientation: "both",
+  });
+  const overflow = useCompositeOverflowState({ placement: "bottom-end" });
   const ref = useRef<HTMLDivElement>(null);
   const gap = 8;
   const [visible, hidden] = useCollapsibleList({ state: tab, list, ref, gap });
@@ -29,9 +37,14 @@ export default function Example() {
       >
         {visible.map(renderItem)}
         {!!hidden.length && (
-          <TabPopover title={`+${hidden.length}`}>
-            {hidden.map(renderItem)}
-          </TabPopover>
+          <>
+            <CompositeOverflowDisclosure state={overflow} className="tab">
+              +{hidden.length}
+            </CompositeOverflowDisclosure>
+            <CompositeOverflow state={overflow} className="popover">
+              {hidden.map(renderItem)}
+            </CompositeOverflow>
+          </>
         )}
       </TabList>
       <TabPanel state={tab} tabId={tab.selectedId} className="tab-panel">
