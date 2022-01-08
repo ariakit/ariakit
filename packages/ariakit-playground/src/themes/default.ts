@@ -37,8 +37,12 @@ const theme = css`
 
   pre {
     display: flex;
+    position: relative;
+    align-items: flex-start;
     overflow: auto;
+    height: 100%;
     margin: 0;
+    z-index: 0;
   }
 
   .cm-scroller {
@@ -82,6 +86,7 @@ const theme = css`
   .cm-lineNumbers {
     position: sticky;
     flex-direction: column;
+    flex-shrink: 0;
   }
 
   .cm-lineNumbers .cm-gutterElement {

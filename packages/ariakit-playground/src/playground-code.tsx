@@ -88,7 +88,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     const numbers = useMemo(
       () =>
         lineNumbers && (
-          <div className="cm-gutters">
+          <div className="cm-gutters" aria-hidden>
             <div className="cm-lineNumbers">
               {lines.map((line) => (
                 <div key={line} className="cm-gutterElement">
