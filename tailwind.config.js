@@ -272,6 +272,7 @@ module.exports = {
       addVariant("aria-invalid", '&[aria-invalid="true"]');
       addVariant("aria-disabled", '&[aria-disabled="true"]');
       addVariant("aria-selected", '&[aria-selected="true"]');
+      addVariant("aria-expanded", '&[aria-expanded="true"]');
     }),
   ],
 };
