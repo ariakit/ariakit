@@ -124,7 +124,7 @@ export default function Playground(props: PlaygroundProps) {
     <Tab
       className={cx(
         hidden ? "rounded-sm" : "rounded",
-        "h-8 px-3 text-sm whitespace-nowrap bg-alpha-2",
+        "h-10 sm:h-8 px-4 sm:px-3 text-base sm:text-sm whitespace-nowrap bg-alpha-2",
         "text-black-fade hover:bg-alpha-2-hover aria-selected:bg-primary-2",
         "aria-selected:text-primary-2 aria-selected:hover:to-primary-2-hover",
         "dark:hover:bg-alpha-2-dark-hover dark:text-white-fade",
@@ -170,10 +170,11 @@ export default function Playground(props: PlaygroundProps) {
                 <>
                   <CompositeOverflowDisclosure
                     state={overflow}
-                    className="h-8 px-3 rounded text-sm bg-alpha-2 text-black-fade
-                    hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover
-                    dark:text-white-fade aria-expanded:bg-alpha-1
-                    dark:aria-expanded:bg-alpha-1-dark focus-visible:ariakit-outline"
+                    className="h-10 sm:h-8 px-4 sm:px-3 rounded text-base sm:text-sm
+                    bg-alpha-2 text-black-fade hover:bg-alpha-2-hover
+                    dark:hover:bg-alpha-2-dark-hover dark:text-white-fade
+                    aria-expanded:bg-alpha-1 dark:aria-expanded:bg-alpha-1-dark
+                    focus-visible:ariakit-outline"
                   >
                     +{hiddenTabs.length}
                   </CompositeOverflowDisclosure>

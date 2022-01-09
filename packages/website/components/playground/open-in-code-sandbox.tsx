@@ -21,9 +21,9 @@ export default function OpenInCodeSandbox(props: OpenInCodeSandboxProps) {
       title="Open in CodeSandbox"
       {...props}
       className={cx(
+        "h-10 sm:h-8 px-4 sm:px-3 text-base sm:text-sm",
         "bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover",
-        "text-black-fade dark:text-white-fade h-8 px-3 rounded text-sm",
-        "focus-visible:ariakit-outline",
+        "text-black-fade dark:text-white-fade rounded focus-visible:ariakit-outline",
         props.className
       )}
     >
