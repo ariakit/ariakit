@@ -1,29 +1,32 @@
-import { ElementType, forwardRef } from "react";
+import { ElementType } from "react";
 import { cx } from "ariakit-utils/misc";
+import { createComponent } from "ariakit-utils/system";
+import { Button } from "ariakit/button";
 import {
   Tooltip,
   TooltipAnchor,
-  TooltipAnchorProps,
+  TooltipAnchorOptions,
   TooltipProps,
   useTooltipState,
 } from "ariakit/tooltip";
 
-export type TooltipControlProps = Omit<
-  TooltipAnchorProps<ElementType>,
+export type TooltipButtonOptions<T extends ElementType = "button"> = Omit<
+  TooltipAnchorOptions<T>,
   "state"
 > & {
   title: string;
   tooltipProps?: Omit<TooltipProps, "state">;
 };
 
-const TooltipControl = forwardRef<HTMLButtonElement, TooltipControlProps>(
-  ({ title, tooltipProps, ...props }, ref) => {
+const TooltipButton = createComponent<TooltipButtonOptions>(
+  ({ title, tooltipProps, ...props }) => {
     const tooltip = useTooltipState({ timeout: 750 });
     return (
       <>
-        <TooltipAnchor as="button" {...props} state={tooltip} ref={ref} />
+        <TooltipAnchor as={Button} {...props} state={tooltip} />
         <Tooltip
           {...tooltipProps}
+          state={tooltip}
           className={cx(
             "bg-canvas-1 dark:bg-canvas-4-dark text-canvas-1",
             "dark:text-canvas-4-dark border border-canvas-1",
@@ -31,7 +34,6 @@ const TooltipControl = forwardRef<HTMLButtonElement, TooltipControlProps>(
             "py-1 px-2 text-sm drop-shadow-sm dark:drop-shadow-sm-dark",
             tooltipProps?.className
           )}
-          state={tooltip}
         >
           {title}
         </Tooltip>
@@ -40,4 +42,4 @@ const TooltipControl = forwardRef<HTMLButtonElement, TooltipControlProps>(
   }
 );
 
-export default TooltipControl;
+export default TooltipButton;
