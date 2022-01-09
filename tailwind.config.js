@@ -268,7 +268,8 @@ module.exports = {
         },
       });
 
-      addVariant("ariakit-focus-visible", "&[data-focus-visible]");
+      addVariant("active", ["&:active", "&[data-active]"]);
+      addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);
       addVariant("aria-invalid", '&[aria-invalid="true"]');
       addVariant("aria-disabled", '&[aria-disabled="true"]');
       addVariant("aria-selected", '&[aria-selected="true"]');

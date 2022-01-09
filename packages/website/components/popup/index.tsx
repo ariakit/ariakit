@@ -23,7 +23,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(
           "rounded-lg border border-solid",
           "border-canvas-4 dark:border-canvas-4-dark",
           "bg-canvas-4 dark:bg-canvas-4-dark text-canvas-4",
-          "dark:text-canvas-4-dark ariakit-focus-visible:ariakit-outline",
+          "dark:text-canvas-4-dark focus-visible:ariakit-outline",
           elevationMap[elevation],
           props.className
         )}

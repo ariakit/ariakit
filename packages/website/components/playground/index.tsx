@@ -130,7 +130,7 @@ export default function Playground(props: PlaygroundProps) {
         "dark:hover:bg-alpha-2-dark-hover dark:text-white-fade",
         "dark:aria-selected:bg-primary-2-dark dark:aria-selected:text-primary-2-dark",
         "dark:aria-selected:hover:bg-primary-2-dark-hover",
-        "ariakit-focus-visible:ariakit-outline flex flex-start items-center"
+        "focus-visible:ariakit-outline flex flex-start items-center"
       )}
       key={file}
       id={getTabId(file, baseId)}
@@ -173,7 +173,7 @@ export default function Playground(props: PlaygroundProps) {
                     className="h-8 px-3 rounded text-sm bg-alpha-2 text-black-fade
                     hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover
                     dark:text-white-fade aria-expanded:bg-alpha-1
-                    dark:aria-expanded:bg-alpha-1-dark ariakit-focus-visible:ariakit-outline"
+                    dark:aria-expanded:bg-alpha-1-dark focus-visible:ariakit-outline"
                   >
                     +{hiddenTabs.length}
                   </CompositeOverflowDisclosure>
@@ -205,7 +205,7 @@ export default function Playground(props: PlaygroundProps) {
                   <div {...props}>
                     <PlaygroundEditor
                       lineNumbers
-                      className="bg-canvas-1 dark:bg-canvas-1-dark"
+                      className="bg-canvas-1 dark:bg-canvas-1-dark focus-visible:ariakit-outline"
                       state={playground}
                       file={file}
                       theme={theme}
@@ -213,6 +213,9 @@ export default function Playground(props: PlaygroundProps) {
                       maxHeight={260}
                       setExpanded={setExpanded}
                       disclosureProps={{ as: PlaygroundDisclosure }}
+                      keyboardDescriptionProps={{
+                        style: { display: "none" },
+                      }}
                     />
                   </div>
                 )

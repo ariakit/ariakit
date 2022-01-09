@@ -3,5 +3,5 @@
 }
 
 .checkbox {
-  @apply ariakit-focus-visible:ariakit-outline;
+  @apply focus-visible:ariakit-outline;
 }

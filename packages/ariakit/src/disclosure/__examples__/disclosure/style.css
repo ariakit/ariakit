@@ -8,5 +8,5 @@
     font-semibold
     cursor-pointer
     hover:underline
-    ariakit-focus-visible:ariakit-outline;
+    focus-visible:ariakit-outline;
 }

@@ -28,7 +28,7 @@
     dark:bg-canvas-4-dark
     text-canvas-4
     dark:text-canvas-4-dark
-    ariakit-focus-visible:ariakit-outline;
+    focus-visible:ariakit-outline;
 }
 
 .avatar {

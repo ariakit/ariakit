@@ -22,7 +22,8 @@ export default function OpenInCodeSandbox(props: OpenInCodeSandboxProps) {
       {...props}
       className={cx(
         "bg-alpha-2 hover:bg-alpha-2-hover dark:hover:bg-alpha-2-dark-hover",
-        "text-black-fade dark:text-white-fade h-8 px-3 rounded text-sm ",
+        "text-black-fade dark:text-white-fade h-8 px-3 rounded text-sm",
+        "focus-visible:ariakit-outline",
         props.className
       )}
     >

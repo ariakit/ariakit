@@ -6,6 +6,10 @@ module.exports = {
     tailwindcss: {
       config: path.join(__dirname, "tailwind.config.js"),
     },
+    "postcss-combine-duplicated-selectors": {
+      removeDuplicatedProperties: true,
+    },
+    "postcss-merge-selectors": {},
     "postcss-prettify": {},
   },
 };
