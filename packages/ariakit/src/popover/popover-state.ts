@@ -258,6 +258,7 @@ export function usePopoverState({
   return state;
 }
 
+// TODO: Return internal renderCallback here.
 export type PopoverStateRenderCallbackProps = Pick<
   PopoverState,
   | "fixed"

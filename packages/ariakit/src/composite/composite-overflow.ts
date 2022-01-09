@@ -1,4 +1,4 @@
-import { FocusEvent, useCallback } from "react";
+import { CSSProperties, FocusEvent, useCallback } from "react";
 import { useEventCallback } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -8,6 +8,13 @@ import {
 import { As, Props } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
 import { CompositeOverflowState } from "./composite-overflow-state";
+
+// Hiding the popover with `display: none` would prevent the hidden items to
+// be focused, so we just make it transparent and disable pointer events.
+const hiddenStyle: CSSProperties = {
+  opacity: 0,
+  pointerEvents: "none",
+};
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -25,7 +32,7 @@ import { CompositeOverflowState } from "./composite-overflow-state";
  * ```
  */
 export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
-  ({ state, ...props }) => {
+  ({ state, backdropProps: backdropPropsProp, portal = false, ...props }) => {
     const onFocusProp = useEventCallback(props.onFocus);
 
     const onFocus = useCallback(
@@ -37,22 +44,25 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
       [onFocusProp, state.show]
     );
 
-    const style = state.mounted
-      ? props.style
-      : // Hiding the popover with `display: none` would prevent the hidden items to
-        // be focused, so we just make it transparent and disable pointer events.
-        { opacity: 0, pointerEvents: "none" as const, ...props.style };
+    const getStyle = (styleProp?: CSSProperties) =>
+      state.mounted ? styleProp : { ...hiddenStyle, ...styleProp };
+
+    const backdropProps = {
+      hidden: false,
+      ...backdropPropsProp,
+      style: getStyle(backdropPropsProp?.style),
+    };
 
     props = {
       role: "presentation",
       hidden: false,
       focusable: false,
       ...props,
-      style,
+      style: getStyle(props.style),
       onFocus,
     };
 
-    props = usePopover({ state, ...props });
+    props = usePopover({ state, backdropProps, portal, ...props });
 
     return props;
   }
