@@ -1,8 +1,8 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .popover {
-  width: 250px;
   @apply
+    w-[250px]
     relative
     flex
     flex-col
