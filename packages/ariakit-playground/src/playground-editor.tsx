@@ -269,7 +269,8 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       children: editorDOM ? null : undefined,
     };
 
-    props = useCommand(props);
+    // as="div" is necessary to avoid styling issues on iOS
+    props = useCommand({ as: "div", ...props });
 
     props = usePlaygroundCode({
       state,
