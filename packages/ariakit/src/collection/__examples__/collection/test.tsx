@@ -3,9 +3,5 @@ import Example from ".";
 
 test("render correctly", async () => {
   render(<Example />);
-  expect(getByText(/apple/i)).toBeInTheDocument();
-  expect(getByText(/grape/i)).toBeInTheDocument();
-  expect(getByText(/orange/i)).toBeInTheDocument();
-  expect(getByText(/strawberry/i)).toBeInTheDocument();
-  expect(getByText(/watermelon/i)).toBeInTheDocument();
+  expect(getByText("Items count: 3")).toBeInTheDocument();
 });
