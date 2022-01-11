@@ -1,22 +1,3 @@
 .collection {
-  @apply
-    overflow-hidden
-    border-none
-    rounded-lg;
-}
-
-.collection-item {
-  @apply
-    px-6
-    py-3
-    flex
-    items-center
-    text-base
-    bg-canvas-1
-    text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    focus-visible:ariakit-outline;
+  @apply flex flex-col gap-2;
 }
