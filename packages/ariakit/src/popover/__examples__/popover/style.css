@@ -1,12 +1,11 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .popover {
+  max-width: min(calc(100vw - 16px), 320px);
   @apply
-    w-[250px]
-    relative
     flex
     flex-col
-    gap-2
+    gap-4
     z-50
     p-4
     rounded-lg
@@ -23,7 +22,7 @@
     focus-visible:ariakit-outline;
 }
 
-.popover-arrow svg {
+.arrow svg {
   @apply
     fill-canvas-4
     dark:fill-canvas-4-dark
@@ -31,6 +30,6 @@
     dark:stroke-canvas-4-dark;
 }
 
-.popover-heading {
+.heading {
   @apply m-0 text-xl font-medium;
 }
