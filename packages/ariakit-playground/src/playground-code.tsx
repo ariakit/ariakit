@@ -10,6 +10,7 @@ import {
 import { ClassNames, SerializedStyles } from "@emotion/react";
 import {
   useControlledState,
+  useDeferredValue,
   useEventCallback,
   useForkRef,
   useSafeLayoutEffect,
@@ -52,6 +53,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     ]);
     const ref = useRef<HTMLDivElement>(null);
     const value = valueProp ?? getValue(state, file);
+
     const [collapsible, setCollapsible] = useState(false);
 
     const [expanded, setExpanded] = useControlledState(
@@ -64,6 +66,8 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       language = "jsx";
     }
 
+    const deferredValue = useDeferredValue(value);
+
     useSafeLayoutEffect(() => {
       if (!maxHeight) return;
       const element = ref.current;
@@ -71,7 +75,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       const scrollerElement = element.querySelector(".cm-scroller");
       if (!scrollerElement) return;
       setCollapsible(scrollerElement.scrollHeight > maxHeight);
-    }, [maxHeight]);
+    }, [deferredValue, maxHeight]);
 
     const code = useMemo(() => {
       if (!shouldHighlight) return;

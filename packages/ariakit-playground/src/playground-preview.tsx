@@ -140,17 +140,18 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
       return null;
     });
 
-    useUpdateEffect(() => setCssModule(""), [debouncedValues]);
-
     useUpdateEffect(() => {
       setError(null);
+      setCssModule("");
       try {
         const component = compileComponent(value, filename, getModule);
         setComponent(() => component);
       } catch (e) {
         handleError(e);
+        // Restore previous css module
+        setCssModule(cssModule);
       }
-    }, [value, filename, getModule]);
+    }, [cssModule, value, filename, getModule]);
 
     props = useWrapElement(
       props,
