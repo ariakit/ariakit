@@ -9,7 +9,7 @@ import {
   PopoverStateRenderCallbackProps,
   usePopoverState,
 } from "ariakit/popover";
-import { useMedia } from "react-use";
+import useMedia from "./use-media";
 import "./style.css";
 
 function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
@@ -19,19 +19,18 @@ function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
   popover.style.bottom = "0";
   popover.style.width = "100%";
   popover.style.padding = "12px";
-  if (arrow) {
-    arrow.style.display = "none";
-  }
-  return () => {
+  arrow?.style.setProperty("display", "none");
+  const restoreDesktopStyles = () => {
     popover.style.cssText = prevStyle;
     if (arrow) {
       arrow.style.cssText = prevArrowStyle!;
     }
   };
+  return restoreDesktopStyles;
 }
 
 export default function Example() {
-  const isMobile = useMedia("(max-width: 640px)", false);
+  const isMobile = useMedia("(max-width: 639px)", false);
 
   const renderCallback = useCallback(
     (props: PopoverStateRenderCallbackProps) => {
@@ -42,14 +41,14 @@ export default function Example() {
     [isMobile]
   );
 
-  const popover = usePopoverState({ defaultVisible: true, renderCallback });
+  const popover = usePopoverState({ renderCallback });
 
   return (
     <>
       <PopoverDisclosure state={popover} className="button">
         Accept invite
       </PopoverDisclosure>
-      <Popover state={popover} backdrop={isMobile} className="popover">
+      <Popover state={popover} modal={isMobile} className="popover">
         <PopoverArrow className="arrow" />
         <PopoverHeading className="heading">Team meeting</PopoverHeading>
         <PopoverDescription>
