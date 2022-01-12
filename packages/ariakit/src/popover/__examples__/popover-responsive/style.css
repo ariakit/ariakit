@@ -1,7 +1,6 @@
 @import url("../popover/style.css");
 
 .popover {
-  transition: transform 150ms ease-in-out, opacity 150ms ease-in-out;
   @apply
     w-full
     max-w-none
