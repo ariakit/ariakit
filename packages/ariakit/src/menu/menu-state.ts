@@ -122,6 +122,7 @@ export function useMenuState({
   return useStorePublisher(state);
 }
 
+// TODO: Use generics for values.
 export type MenuState = CompositeState &
   HovercardState & {
     /**
