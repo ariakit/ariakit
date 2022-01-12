@@ -123,7 +123,7 @@ export default function Playground(props: PlaygroundProps) {
   const renderTab = (file: string, hidden = false) => (
     <Tab
       className={cx(
-        hidden ? "rounded-sm" : "rounded",
+        hidden ? "rounded-sm" : "rounded-md sm:rounded",
         "h-10 sm:h-8 px-4 sm:px-3 text-base sm:text-sm whitespace-nowrap bg-alpha-2",
         "text-black-fade hover:bg-alpha-2-hover aria-selected:bg-primary-2",
         "aria-selected:text-primary-2 aria-selected:hover:to-primary-2-hover",
