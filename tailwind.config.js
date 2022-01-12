@@ -262,11 +262,11 @@ module.exports = {
         ".ariakit-outline": {
           outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
           outlineOffset: "2px",
-          ".dark &": {
-            outlineColor: theme("colors.primary-2.dark.DEFAULT"),
-          },
         },
       });
+
+      addVariant("enter", "&[data-enter]");
+      addVariant("leave", "&[data-leave]");
 
       addVariant("active", ["&:active", "&[data-active]"]);
       addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);

@@ -9,7 +9,18 @@ module.exports = {
     "postcss-combine-duplicated-selectors": {
       removeDuplicatedProperties: true,
     },
-    "postcss-merge-selectors": {},
+    "postcss-merge-selectors": {
+      matchers: {
+        active: {
+          selectorFilter: /(:active|\[data-active\])/,
+          promote: true,
+        },
+        focusVisible: {
+          selectorFilter: /(:focus-visible|\[data-focus-visible\])/,
+          promote: true,
+        },
+      },
+    },
     "postcss-prettify": {},
   },
 };
