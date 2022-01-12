@@ -1,7 +1,11 @@
-import { KeyboardEvent, MouseEvent, useCallback } from "react";
+import { KeyboardEvent, MouseEvent, useCallback, useRef } from "react";
 import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback } from "ariakit-utils/hooks";
+import {
+  useEventCallback,
+  useForkRef,
+  useSafeLayoutEffect,
+} from "ariakit-utils/hooks";
 import { noop } from "ariakit-utils/misc";
 import { useDisclosureContent } from "../../disclosure/disclosure-content";
 import { DialogProps } from "../dialog";
@@ -25,6 +29,7 @@ export function DialogBackdrop({
   hideOnEscape,
   children,
 }: DialogBackdropProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const onClickProp = useEventCallback(backdropProps?.onClick);
   const onKeyDownProp = useEventCallback(backdropProps?.onKeyDown);
   const previousMouseDownRef = usePreviousMouseDownRef(state.mounted);
@@ -39,6 +44,14 @@ export function DialogBackdrop({
     }),
     [state]
   );
+
+  useSafeLayoutEffect(() => {
+    const backdrop = ref.current;
+    const dialog = state.contentElement;
+    if (!backdrop) return;
+    if (!dialog) return;
+    backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
+  }, [state.contentElement]);
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -75,6 +88,7 @@ export function DialogBackdrop({
     role: "presentation",
     tabIndex: -1,
     ...backdropProps,
+    ref: useForkRef(backdropProps?.ref, ref),
     onClick,
     onKeyDown,
     style: {
