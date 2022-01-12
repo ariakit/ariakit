@@ -30,15 +30,15 @@ function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
 }
 
 export default function Example() {
-  const isMobile = useMedia("(max-width: 639px)", false);
+  const isLarge = useMedia("(min-width: 640px)", true);
 
   const renderCallback = useCallback(
     (props: PopoverStateRenderCallbackProps) => {
       const { popover, arrow, defaultRenderCallback } = props;
-      if (!isMobile) return defaultRenderCallback();
+      if (isLarge) return defaultRenderCallback();
       return applyMobileStyles(popover, arrow);
     },
-    [isMobile]
+    [isLarge]
   );
 
   const popover = usePopoverState({ renderCallback });
@@ -48,7 +48,7 @@ export default function Example() {
       <PopoverDisclosure state={popover} className="button">
         Accept invite
       </PopoverDisclosure>
-      <Popover state={popover} modal={isMobile} className="popover">
+      <Popover state={popover} modal={!isLarge} className="popover">
         <PopoverArrow className="arrow" />
         <PopoverHeading className="heading">Team meeting</PopoverHeading>
         <PopoverDescription>
