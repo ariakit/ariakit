@@ -32,7 +32,13 @@ const hiddenStyle: CSSProperties = {
  * ```
  */
 export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
-  ({ state, backdropProps: backdropPropsProp, portal = false, ...props }) => {
+  ({
+    state,
+    backdropProps: backdropPropsProp,
+    wrapperProps: wrapperPropsProp,
+    portal = false,
+    ...props
+  }) => {
     const onFocusProp = useEventCallback(props.onFocus);
 
     const onFocus = useCallback(
@@ -53,16 +59,26 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
       style: getStyle(backdropPropsProp?.style),
     };
 
+    const wrapperProps = {
+      ...wrapperPropsProp,
+      style: getStyle(wrapperPropsProp?.style),
+    };
+
     props = {
       role: "presentation",
       hidden: false,
       focusable: false,
       ...props,
-      style: getStyle(props.style),
       onFocus,
     };
 
-    props = usePopover({ state, backdropProps, portal, ...props });
+    props = usePopover({
+      state,
+      backdropProps,
+      wrapperProps,
+      portal,
+      ...props,
+    });
 
     return props;
   }
