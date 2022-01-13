@@ -37,6 +37,8 @@ const { Compiler: renderAst } = new RehypeReact({
     a: ({ href, ...props }) => {
       if ("data-playground" in props) {
         // @ts-expect-error
+        if (!props.defaultValues) return null;
+        // @ts-expect-error
         return <Playground {...props} />;
       }
       return <a href={href} {...props} />;

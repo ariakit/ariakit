@@ -17,6 +17,7 @@ import dynamic from "next/dynamic";
 import useOverflowList from "packages/website/utils/use-overflow-list";
 import Popup from "../popup";
 import PlaygroundDisclosure from "./playground-disclosure";
+import PlaygroundError from "./playground-error";
 
 const theme = css`
   ${darkTheme}
@@ -28,6 +29,8 @@ const theme = css`
     padding-top: 0.5rem;
   }
 `;
+
+const errorProps = { as: PlaygroundError };
 
 const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
   () =>
@@ -147,9 +150,10 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex flex-col items-center w-full gap-3 sm:gap-4 md:gap-6"
       >
-        <div className="w-full">
+        <div className="relative w-full">
           <PlaygroundPreview
             getModule={getModule}
+            errorProps={errorProps}
             className="flex min-h-[300px] items-center
             justify-center bg-canvas-3 dark:bg-canvas-3-dark rounded-lg p-4
             md:p-6 border border-canvas-3 dark:border-0"
