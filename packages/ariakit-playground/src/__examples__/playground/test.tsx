@@ -205,10 +205,7 @@ test("markup", () => {
           </div>
         </div>
         <div
-          role="alert"
-        />
-        <div
-          role="alert"
+          role="status"
         />
       </div>
     </div>

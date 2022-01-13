@@ -1,0 +1,45 @@
+@import url("../../../button/__examples__/button/style.css");
+
+.form {
+  @apply flex flex-col gap-4;
+}
+
+.field {
+  @apply flex flex-col gap-2;
+}
+
+.field input {
+  @apply
+    border-none
+    w-[250px]
+    px-4
+    h-10
+    rounded-lg
+    text-base
+    outline-none
+    bg-canvas-1
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover
+    focus-visible:ariakit-outline;
+}
+
+.error:empty {
+  @apply absolute;
+}
+
+.error:not(:empty) {
+  @apply
+    py-2
+    px-4
+    border
+    rounded-lg
+    text-danger-1
+    border-danger-1
+    bg-danger-1
+    dark:border-danger-1-dark
+    dark:bg-danger-1-dark
+    dark:text-danger-1-dark;
+}
