@@ -109,8 +109,86 @@ export function usePopoverState({
     const finalGutter =
       typeof gutter === "number" ? gutter + arrowOffset : gutter ?? arrowOffset;
 
+    const defaultRenderCallback = () => {
+      const popper = createPopper(anchor, popover, {
+        // https://popper.js.org/docs/v2/constructors/#options
+        placement,
+        strategy: fixed ? "fixed" : "absolute",
+        modifiers: [
+          {
+            // https://popper.js.org/docs/v2/modifiers/event-listeners/
+            name: "eventListeners",
+            enabled: dialog.mounted,
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/apply-styles/
+            name: "applyStyles",
+            enabled: true,
+            fn: (args) => {
+              // Remove specific popper HTML attributes
+              args.state.attributes.popper = {};
+              // Add specific arrow styles
+              const arrowStyles = args.state.styles.arrow;
+              if (arrowStyles) {
+                const dir = args.state.placement.split("-")[0] as BasePlacement;
+                arrowStyles[dir] = "100%";
+              }
+              applyStyles.fn(args);
+            },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/flip/
+            name: "flip",
+            enabled: flip,
+            options: { padding },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/offset/
+            name: "offset",
+            options: {
+              // Makes sure the shift value is applied to the popover element
+              // consistently no matter the placement. That is, a negative shift
+              // should move down a popover with a "right-end" placement, but
+              // move it up when the placement is "right-start". A good example
+              // is a sub menu that must have a small negative shift so the
+              // first menu item is aligned with its menu button.
+              offset: ({ placement }: { placement: Placement }) => {
+                const start = placement.split("-")[1] === "start";
+                return [start ? shift : -shift, finalGutter];
+              },
+            },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
+            name: "preventOverflow",
+            enabled: preventOverflow,
+            options: {
+              padding,
+              tetherOffset: finalGutter,
+            },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/arrow/
+            name: "arrow",
+            enabled: !!arrow,
+            options: { element: arrow, padding: arrowPadding },
+          },
+          {
+            // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
+            name: "updateState",
+            phase: "write",
+            requires: ["computeStyles"],
+            enabled: dialog.mounted && process.env.NODE_ENV !== "test",
+            fn: ({ state }) => setCurrentPlacement(state.placement),
+          },
+        ],
+      });
+      return popper.destroy;
+    };
+
     if (renderCallback) {
       return renderCallback({
+        defaultRenderCallback,
         setPlacement: setCurrentPlacement,
         mounted: dialog.mounted,
         gutter: finalGutter,
@@ -127,82 +205,10 @@ export function usePopoverState({
       });
     }
 
-    const popper = createPopper(anchor, popover, {
-      // https://popper.js.org/components/v2/constructors/#options
-      placement,
-      strategy: fixed ? "fixed" : "absolute",
-      modifiers: [
-        {
-          // https://popper.js.org/components/v2/modifiers/event-listeners/
-          name: "eventListeners",
-          enabled: dialog.mounted,
-        },
-        {
-          // https://popper.js.org/components/v2/modifiers/apply-styles/
-          name: "applyStyles",
-          enabled: true,
-          fn: (args) => {
-            // Remove specific popper HTML attributes
-            args.state.attributes.popper = {};
-            // Add specific arrow styles
-            const arrowStyles = args.state.styles.arrow;
-            if (arrowStyles) {
-              const dir = args.state.placement.split("-")[0] as BasePlacement;
-              arrowStyles[dir] = "100%";
-            }
-            applyStyles.fn(args);
-          },
-        },
-        {
-          // https://popper.js.org/components/v2/modifiers/flip/
-          name: "flip",
-          enabled: flip,
-          options: { padding },
-        },
-        {
-          // https://popper.js.org/components/v2/modifiers/offset/
-          name: "offset",
-          options: {
-            // Makes sure the shift value is applied to the popover element
-            // consistently no matter the placement. That is, a negative shift
-            // should move down a popover with a "right-end" placement, but move
-            // it up when the placement is "right-start". A good example is a
-            // sub menu that must have a small negative shift so the first menu
-            // item is aligned with its menu button.
-            offset: ({ placement }: { placement: Placement }) => {
-              const start = placement.split("-")[1] === "start";
-              return [start ? shift : -shift, finalGutter];
-            },
-          },
-        },
-        {
-          // https://popper.js.org/components/v2/modifiers/prevent-overflow/
-          name: "preventOverflow",
-          enabled: preventOverflow,
-          options: {
-            padding,
-            tetherOffset: finalGutter,
-          },
-        },
-        {
-          // https://popper.js.org/components/v2/modifiers/arrow/
-          name: "arrow",
-          enabled: !!arrow,
-          options: { element: arrow, padding: arrowPadding },
-        },
-        {
-          // https://popper.js.org/components/v2/modifiers/#custom-modifiers
-          name: "updateState",
-          phase: "write",
-          requires: ["computeStyles"],
-          enabled: dialog.mounted && process.env.NODE_ENV !== "test",
-          fn: ({ state }) => setCurrentPlacement(state.placement),
-        },
-      ],
-    });
-    return popper.destroy;
+    return defaultRenderCallback();
   }, [
     rendered,
+    dialog.contentElement,
     anchorRect,
     shift,
     gutter,
@@ -269,10 +275,27 @@ export type PopoverStateRenderCallbackProps = Pick<
   | "gutter"
   | "shift"
 > & {
+  /**
+   * The popover element.
+   */
   popover: HTMLElement;
+  /**
+   * The anchor element.
+   */
   anchor: VirtualElement;
+  /**
+   * The arrow element.
+   */
   arrow?: HTMLElement | null;
+  /**
+   * A method that updates the `currentPlacement` state.
+   */
   setPlacement: SetState<Placement>;
+  /**
+   * The default render callback that will be called when the `renderCallback`
+   * prop is not provided.
+   */
+  defaultRenderCallback: () => () => void;
 };
 
 export type PopoverState = DialogState & {

@@ -4,6 +4,7 @@ import {
   PlaygroundPreview,
   usePlaygroundState,
 } from "ariakit-playground";
+import theme from "ariakit-playground/themes/default";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
 import "./style.css";
 
@@ -36,7 +37,7 @@ export default function Example() {
         </TabList>
         {files.map((file) => (
           <TabPanel state={tab} tabId={`tab-${file}`} key={file}>
-            <PlaygroundEditor file={file} />
+            <PlaygroundEditor theme={theme} file={file} />
           </TabPanel>
         ))}
       </div>

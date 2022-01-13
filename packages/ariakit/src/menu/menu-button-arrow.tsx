@@ -55,7 +55,7 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
           height="1em"
           width="1em"
         >
-          <polyline points={points}></polyline>
+          <polyline points={points} />
         </svg>
       ),
       [points]

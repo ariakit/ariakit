@@ -26,7 +26,7 @@ const { Compiler: renderAst } = new RehypeReact({
         return (
           <PlaygroundCode
             highlight
-            className={theme}
+            theme={theme}
             value={child.props.children[0]}
             language={child.props.className?.replace("language-", "")}
           />
@@ -36,6 +36,8 @@ const { Compiler: renderAst } = new RehypeReact({
     },
     a: ({ href, ...props }) => {
       if ("data-playground" in props) {
+        // @ts-expect-error
+        if (!props.defaultValues) return null;
         // @ts-expect-error
         return <Playground {...props} />;
       }
@@ -60,14 +62,9 @@ export default function MarkdownPage(props) {
   return (
     <div className="flex flex-col items-center">
       <div
-        className="flex items-center w-full p-4 bg-canvas-4 dark:bg-canvas-4-dark layer-2 border-b border-canvas-4 dark:border-canvas-4-dark"
-        style={{
-          position: "fixed",
-          zIndex: 300,
-          height: 60,
-          top: 0,
-          left: 0,
-        }}
+        className="fixed h-16 top-0 left-0 flex items-center z-40 w-full p-4
+      bg-canvas-4 dark:bg-canvas-4-dark layer-2 border-b border-canvas-4
+      dark:border-canvas-4-dark"
       >
         <button
           onClick={() => {

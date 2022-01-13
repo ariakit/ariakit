@@ -15,11 +15,27 @@ if (!("theme" in localStorage)) {
   })
 }`;
 
+// https://github.com/vercel/next.js/discussions/13387#discussioncomment-101564
+const noOverlayWorkaroundScript = `
+  window.addEventListener('error', event => {
+    event.stopImmediatePropagation()
+  })
+
+  window.addEventListener('unhandledrejection', event => {
+    event.stopImmediatePropagation()
+  })
+`;
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
         <script dangerouslySetInnerHTML={{ __html: script }} />
+        {process.env.NODE_ENV !== "production" && (
+          <script
+            dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }}
+          />
+        )}
       </Head>
       <Component {...pageProps} />
     </>

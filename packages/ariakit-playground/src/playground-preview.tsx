@@ -1,19 +1,18 @@
 import {
   Component,
+  ElementType,
   ReactNode,
-  RefObject,
+  cloneElement,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
-import { getDocument } from "ariakit-utils/dom";
+import { ClassNames } from "@emotion/react";
 import {
-  useForkRef,
+  useLiveRef,
   useUpdateEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
-import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
@@ -27,19 +26,21 @@ import { PlaygroundContext } from "./__utils/playground-context";
 import { resolveModule } from "./__utils/resolve-module";
 import { PlaygroundState } from "./playground-state";
 
-function ErrorMessage(props: RoleProps) {
-  return <Role role="alert" {...props} />;
+function ErrorMessage(props: RoleProps<any>) {
+  return <Role role="status" {...props} />;
 }
 
 type ErrorBoundaryProps = {
   resetKey?: any;
-  errorProps?: RoleProps;
+  error?: Error | null;
+  errorProps?: RoleProps<ElementType>;
   children: ReactNode;
 };
 
 class ErrorBoundary extends Component<ErrorBoundaryProps> {
-  state: { error: Error | null } = {
+  state: { error: Error | null; children: ReactNode } = {
     error: null,
+    children: null,
   };
 
   static getDerivedStateFromError(error: Error) {
@@ -48,14 +49,20 @@ class ErrorBoundary extends Component<ErrorBoundaryProps> {
 
   componentDidUpdate(prevProps: ErrorBoundaryProps) {
     if (prevProps.resetKey !== this.props.resetKey) {
+      if (!this.state.error) {
+        this.setState({ children: this.props.children });
+      }
       this.setState({ error: null });
+    }
+    if (prevProps.error !== this.props.error && !this.state.error) {
+      this.setState({ error: this.props.error });
     }
   }
 
   render() {
     return (
       <>
-        {!this.state.error && this.props.children}
+        {this.state.error ? this.state.children : this.props.children}
         <ErrorMessage {...this.props.errorProps}>
           {this.state.error?.message}
         </ErrorMessage>
@@ -73,13 +80,15 @@ function useDebouncedValue<T>(value: T, ms: number) {
   return debouncedValue;
 }
 
-function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
+type PlaygroundPortalProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+function PlaygroundPortal({ children, className }: PlaygroundPortalProps) {
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    const document = getDocument(element);
     const root = document.createElement("div");
     if (className) {
       root.className = className;
@@ -89,20 +98,24 @@ function usePortalRoot(ref: RefObject<HTMLElement>, className?: string) {
     return () => {
       root.remove();
     };
-  }, [ref, className]);
+  }, [className]);
 
-  return portalRoot;
+  return (
+    <PortalContext.Provider value={portalRoot}>
+      {children}
+    </PortalContext.Provider>
+  );
 }
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
   ({ state, file, errorProps, getModule: getModuleProp, ...props }) => {
     state = useStore(state || PlaygroundContext, ["values"]);
-    const ref = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<Error | null>(null);
-    const [className, setClassName] = useState("");
+    const [cssModule, setCssModule] = useState("");
+    const cssModuleRef = useLiveRef(cssModule);
     const values = state?.values || {};
     const filename = getFile(values, file);
-    const debouncedValues = useDebouncedValue(values, 500);
+    const debouncedValues = useDebouncedValue(values, 750);
     const value = debouncedValues[filename] || "";
 
     const handleError = useCallback((e) => {
@@ -122,7 +135,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
           const internalModule = compileModule(code, moduleName, getModule);
           const css = getCSSModule(internalModule);
           if (css) {
-            setClassName(css);
+            setCssModule(css);
           }
           return internalModule;
         } catch (e) {
@@ -142,41 +155,53 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
     });
 
     useUpdateEffect(() => {
-      setClassName("");
-    }, [debouncedValues]);
-
-    useUpdateEffect(() => {
       setError(null);
+      setCssModule("");
       try {
         const component = compileComponent(value, filename, getModule);
         setComponent(() => component);
       } catch (e) {
         handleError(e);
+        // Restore previous css module
+        setCssModule(cssModuleRef.current);
       }
     }, [value, filename, getModule]);
-
-    const portalRoot = usePortalRoot(ref, className);
 
     props = useWrapElement(
       props,
       (element) => (
-        <ErrorBoundary resetKey={debouncedValues}>
-          <PortalContext.Provider value={portalRoot}>
-            {element}
-          </PortalContext.Provider>
-          <ErrorMessage {...errorProps}>{error?.message}</ErrorMessage>
+        <ErrorBoundary
+          resetKey={debouncedValues}
+          error={error}
+          errorProps={errorProps}
+        >
+          {element && (
+            <ClassNames>
+              {({ css, cx }) =>
+                cloneElement(element, {
+                  className: cx(css(cssModule), element.props.className),
+                })
+              }
+            </ClassNames>
+          )}
         </ErrorBoundary>
       ),
-      [error, debouncedValues, portalRoot, errorProps]
+      [error, debouncedValues, errorProps, cssModule]
     );
 
-    const children = Component ? <Component /> : null;
+    const children = Component ? (
+      <ClassNames>
+        {({ css }) => (
+          <PlaygroundPortal className={css(cssModule)}>
+            <Component />
+          </PlaygroundPortal>
+        )}
+      </ClassNames>
+    ) : null;
 
     props = {
       children,
       ...props,
-      ref: useForkRef(ref, props.ref),
-      className: cx(className, props.className),
     };
 
     return props;
@@ -194,7 +219,7 @@ export type PlaygroundPreviewOptions<T extends As = "div"> = Options<T> & {
   state?: PlaygroundState;
   file?: string;
   getModule?: (path: string) => any;
-  errorProps?: RoleProps;
+  errorProps?: RoleProps<ElementType>;
 };
 
 export type PlaygroundPreviewProps<T extends As = "div"> = Props<

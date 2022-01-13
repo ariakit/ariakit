@@ -50,7 +50,7 @@ function supportsNativeLabel(tagName?: string) {
  * ```
  */
 export const useFormLabel = createHook<FormLabelOptions>(
-  ({ state, name: nameProp, ...props }) => {
+  ({ state, name: nameProp, getItem: getItemProp, ...props }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
       useCallback((s: FormState) => findField(s.items, name), [name]),
@@ -62,12 +62,12 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, name, type: "label" };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, name, props.getItem]
+      [id, name, getItemProp]
     );
 
     const field = findField(state?.items, name);

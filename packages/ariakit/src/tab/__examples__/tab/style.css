@@ -39,6 +39,6 @@
     dark:aria-selected:bg-primary-2-dark
     dark:aria-selected:text-primary-2-dark
     dark:aria-selected:hover:bg-primary-2-dark-hover
-    ariakit-focus-visible:ariakit-outline
+    focus-visible:ariakit-outline
     aria-disabled:opacity-50;
 }

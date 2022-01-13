@@ -48,6 +48,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     setValueOnClick = true,
     shouldRegisterItem = true,
     focusOnMouseMove = false,
+    getItem: getItemProp,
     ...props
   }) => {
     state = useStore(state || ComboboxContext, [
@@ -63,12 +64,12 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, value };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [value, props.getItem]
+      [value, getItemProp]
     );
 
     const onClickProp = useEventCallback(props.onClick);
@@ -163,7 +164,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value]
     );
 
-    // TODO: Force aria-selected on virtualFocus: false too
     props = {
       role: getItemRole(state?.contentElement),
       children: value,

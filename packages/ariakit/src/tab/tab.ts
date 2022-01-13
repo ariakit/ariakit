@@ -32,7 +32,13 @@ function getPanelId(panels?: TabState["panels"], id?: string) {
  * ```
  */
 export const useTab = createHook<TabOptions>(
-  ({ state, manual, accessibleWhenDisabled = true, ...props }) => {
+  ({
+    state,
+    manual,
+    accessibleWhenDisabled = true,
+    getItem: getItemProp,
+    ...props
+  }) => {
     const id = useId(props.id);
 
     state = useStore(state || TabContext, [
@@ -48,12 +54,12 @@ export const useTab = createHook<TabOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, dimmed };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [dimmed, props.getItem]
+      [dimmed, getItemProp]
     );
 
     const isActiveItem = state?.activeId === id;

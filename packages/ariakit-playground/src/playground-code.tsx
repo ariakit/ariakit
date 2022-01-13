@@ -1,13 +1,16 @@
 import {
   ElementType,
   MouseEvent,
+  cloneElement,
   useCallback,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { ClassNames, SerializedStyles } from "@emotion/react";
 import {
   useControlledState,
+  useDeferredValue,
   useEventCallback,
   useForkRef,
   useSafeLayoutEffect,
@@ -16,7 +19,7 @@ import {
 import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props, SetState } from "ariakit-utils/types";
+import { As, Options, Props } from "ariakit-utils/types";
 import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { getExtension } from "./__utils/get-extension";
@@ -42,6 +45,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     defaultExpanded,
     expanded: expandedProp,
     setExpanded: setExpandedProp,
+    theme,
     ...props
   }) => {
     state = useStore(state || PlaygroundContext, [
@@ -49,6 +53,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     ]);
     const ref = useRef<HTMLDivElement>(null);
     const value = valueProp ?? getValue(state, file);
+
     const [collapsible, setCollapsible] = useState(false);
 
     const [expanded, setExpanded] = useControlledState(
@@ -61,6 +66,8 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       language = "jsx";
     }
 
+    const deferredValue = useDeferredValue(value);
+
     useSafeLayoutEffect(() => {
       if (!maxHeight) return;
       const element = ref.current;
@@ -68,7 +75,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       const scrollerElement = element.querySelector(".cm-scroller");
       if (!scrollerElement) return;
       setCollapsible(scrollerElement.scrollHeight > maxHeight);
-    }, [maxHeight]);
+    }, [deferredValue, maxHeight]);
 
     const code = useMemo(() => {
       if (!shouldHighlight) return;
@@ -85,7 +92,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     const numbers = useMemo(
       () =>
         lineNumbers && (
-          <div className="cm-gutters">
+          <div className="cm-gutters" aria-hidden>
             <div className="cm-lineNumbers">
               {lines.map((line) => (
                 <div key={line} className="cm-gutterElement">
@@ -96,12 +103,6 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
           </div>
         ),
       [lineNumbers, lines]
-    );
-
-    const className = cx(
-      language && `code-${language}`,
-      lineNumbers && "has-line-numbers",
-      props.className
     );
 
     const onMouseDownCaptureProp = useEventCallback(props.onMouseDownCapture);
@@ -134,7 +135,15 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       props,
       (element) => (
         <>
-          {element}
+          {element && (
+            <ClassNames>
+              {({ css, cx }) =>
+                cloneElement(element, {
+                  className: cx(css(theme), element.props.className),
+                })
+              }
+            </ClassNames>
+          )}
           {collapsible && (
             <Button
               aria-expanded={expanded}
@@ -146,7 +155,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
           )}
         </>
       ),
-      [collapsible, expanded, disclosureProps, disclosureOnClick]
+      [theme, collapsible, expanded, disclosureProps, disclosureOnClick]
     );
 
     const children = useMemo(
@@ -166,6 +175,12 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
         </div>
       ),
       [numbers, code, value]
+    );
+
+    const className = cx(
+      language && `code-${language}`,
+      lineNumbers && "has-line-numbers",
+      props.className
     );
 
     props = {
@@ -201,8 +216,9 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   maxHeight?: number;
   disclosureProps?: ButtonProps<ElementType>;
   expanded?: boolean;
-  setExpanded?: SetState<boolean>;
+  setExpanded?: (expanded: boolean) => void;
   defaultExpanded?: boolean;
+  theme?: SerializedStyles;
 };
 
 export type PlaygroundCodeProps<T extends As = "div"> = Props<

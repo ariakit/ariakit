@@ -34,7 +34,7 @@ import { FormState } from "./form-state";
  * ```
  */
 export const useFormError = createHook<FormErrorOptions>(
-  ({ state, name: nameProp, ...props }) => {
+  ({ state, name: nameProp, getItem: getItemProp, ...props }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
       useCallback((s: FormState) => s.getError(name), [name]),
@@ -48,12 +48,12 @@ export const useFormError = createHook<FormErrorOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, name, type: "error" };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, name, props.getItem]
+      [id, name, getItemProp]
     );
 
     const shouldShowError =

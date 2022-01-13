@@ -41,15 +41,17 @@ export function set<T extends AnyObject | unknown[]>(
   const nextValues = isIntegerKey ? values || [] : values || {};
   const result = rest.length ? set(nextValues[key], rest, value) : value;
   if (isIntegerKey) {
+    const index = Number(key);
     if (values) {
-      const index = Number(key);
       return [
         ...values.slice(0, index),
         result,
         ...values.slice(index + 1),
       ] as T;
     }
-    return [result] as T;
+    const nextValues = [] as unknown as T;
+    nextValues[index as keyof T] = result as T[keyof T];
+    return nextValues;
   }
   return { ...values, [key]: result };
 }

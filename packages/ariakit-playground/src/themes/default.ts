@@ -1,4 +1,4 @@
-import { css } from "@emotion/css";
+import { css } from "@emotion/react";
 
 const theme = css`
   margin: 0;
@@ -37,8 +37,12 @@ const theme = css`
 
   pre {
     display: flex;
+    position: relative;
+    align-items: flex-start;
     overflow: auto;
+    height: 100%;
     margin: 0;
+    z-index: 0;
   }
 
   .cm-scroller {
@@ -76,11 +80,13 @@ const theme = css`
     z-index: 200;
     left: 0;
     height: 100%;
+    color: inherit;
   }
 
   .cm-lineNumbers {
     position: sticky;
     flex-direction: column;
+    flex-shrink: 0;
   }
 
   .cm-lineNumbers .cm-gutterElement {

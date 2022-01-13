@@ -6,5 +6,5 @@
     hover:no-underline
     text-primary-1
     dark:text-primary-1-dark
-    ariakit-focus-visible:ariakit-outline;
+    focus-visible:ariakit-outline;
 }

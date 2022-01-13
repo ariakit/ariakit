@@ -16,7 +16,7 @@
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
     dark:hover:bg-canvas-1-dark-hover
-    ariakit-focus-visible:ariakit-outline;
+    focus-visible:ariakit-outline;
 }
 
 .popover {

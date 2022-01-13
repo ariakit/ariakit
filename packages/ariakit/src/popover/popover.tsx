@@ -1,4 +1,4 @@
-import { HTMLAttributes, RefObject, useRef, useState } from "react";
+import { HTMLAttributes, RefObject, useState } from "react";
 import {
   useForkRef,
   useSafeLayoutEffect,
@@ -34,7 +34,6 @@ export const usePopover = createHook<PopoverOptions>(
     wrapperProps,
     ...props
   }) => {
-    const ref = useRef<HTMLDivElement>(null);
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
@@ -51,12 +50,12 @@ export const usePopover = createHook<PopoverOptions>(
     // z-index as the popover element so users only need to set the z-index
     // once.
     useSafeLayoutEffect(() => {
-      const element = ref.current;
       const wrapper = popoverRef.current;
-      if (!element) return;
+      const popover = state.contentElement;
       if (!wrapper) return;
-      wrapper.style.zIndex = getComputedStyle(element).zIndex;
-    }, [popoverRef]);
+      if (!popover) return;
+      wrapper.style.zIndex = getComputedStyle(popover).zIndex;
+    }, [popoverRef, state.contentElement]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
@@ -87,7 +86,6 @@ export const usePopover = createHook<PopoverOptions>(
       preserveTabOrder,
       portal,
       ...props,
-      ref: useForkRef(ref, props.ref),
       style: {
         position: "relative",
         ...props.style,

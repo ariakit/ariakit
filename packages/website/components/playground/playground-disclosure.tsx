@@ -18,7 +18,7 @@ function renderArrow(down = false) {
       height="1em"
       width="1em"
     >
-      <polyline points={down ? "4,6 8,10 12,6" : "4,10 8,6 12,10"}></polyline>
+      <polyline points={down ? "4,6 8,10 12,6" : "4,10 8,6 12,10"} />
     </svg>
   );
 }
@@ -33,12 +33,18 @@ const PlaygroundDisclosure = forwardRef<
     <Role
       as="button"
       {...buttonProps}
+      style={{
+        background: expanded
+          ? undefined
+          : "linear-gradient(hsla(204, 3%, 12%, 0), hsl(204, 3%, 12%) 3.25em)",
+        ...buttonProps.style,
+      }}
       className={cx(
         "flex items-center justify-center gap-1 w-full text-base border-none",
-        "cursor-pointer text-[color:inherit] hover:underline",
-        expanded && "bg-none p-2",
+        "cursor-pointer text-[color:inherit] hover:underline focus-visible:ariakit-outline",
+        expanded && "bg-none p-2 rounded",
         !expanded &&
-          "absolute bottom-0 p-4 pt-12 rounded-bl-[inherit] rounded-br-[inherit] text-canvas-1 dark:text-canvas-1-dark bg-gradient-to-b from-alpha-2 dark:from-alpha-2-dark via-canvas-1 dark:via-canvas-1-dark to-canvas-1 dark:to-canvas-1-dark",
+          "absolute bottom-0 p-4 pt-12 rounded-bl-[inherit] rounded-br-[inherit] text-canvas-1-dark",
         buttonProps.className
       )}
     >

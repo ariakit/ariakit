@@ -7,6 +7,7 @@ export * from "./hover";
 export * from "./press";
 export * from "./render";
 export * from "./screen";
+export * from "./sleep";
 export * from "./tap";
 export * from "./type";
 export * from "./wait-for";

@@ -149,8 +149,12 @@ export const usePortal = createHook<PortalOptions>(
           // If the element should be rendered within a portal, but the portal
           // node is not yet in the DOM, we'll return an empty div element. We
           // assign the id to the element so we can use it to set the portal id
-          // later on.
-          return <span ref={refProp} id={props.id} />;
+          // later on. We're using position: fixed here so that the browser
+          // doesn't add margin to the element when setting gap on a parent
+          // element.
+          return (
+            <span ref={refProp} id={props.id} style={{ position: "fixed" }} />
+          );
         }
 
         element = (
