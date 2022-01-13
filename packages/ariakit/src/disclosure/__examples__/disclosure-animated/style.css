@@ -1,0 +1,20 @@
+@import url("../disclosure/style.css");
+
+.content {
+  transition: all 1s ease;
+  transform: translateX(-50px);
+  opacity: 0;
+}
+
+.content[data-enter] {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.content[data-leave] {
+  transform: translateX(50px);
+}
+
+.wrapper {
+  height: 200px;
+}
