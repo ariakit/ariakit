@@ -44,7 +44,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
   ({
     state,
     value,
-    hideOnClick = true,
+    hideOnClick = value != null,
     setValueOnClick = true,
     shouldRegisterItem = true,
     focusOnMouseMove = false,
@@ -78,8 +78,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       (event: MouseEvent<HTMLDivElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        if (value == null) return;
-        if (setValueOnClick) {
+        if (setValueOnClick && value != null) {
           state?.setValue(value);
         }
         if (hideOnClick) {
