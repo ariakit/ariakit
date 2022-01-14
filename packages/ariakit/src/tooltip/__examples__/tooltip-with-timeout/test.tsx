@@ -13,7 +13,7 @@ test("show tooltip on hover after timeout", async () => {
   expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   await hover(getByRole("button"));
   await waitFor(expect(getByRole("tooltip", { hidden: true })).toBeVisible, {
-    timeout: 2000,
+    timeout: 2100,
   });
   await hover(baseElement);
   expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
@@ -24,7 +24,7 @@ test("show tooltip on focus after timeout", async () => {
   expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   await press.Tab();
   await waitFor(expect(getByRole("tooltip", { hidden: true })).toBeVisible, {
-    timeout: 2000,
+    timeout: 2100,
   });
   await blur();
   expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
