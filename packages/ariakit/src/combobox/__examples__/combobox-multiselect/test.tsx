@@ -1,4 +1,11 @@
-import { click, getByRole, press, render } from "ariakit-test-utils";
+import {
+  click,
+  getByRole,
+  getByText,
+  press,
+  render,
+  type,
+} from "ariakit-test-utils";
 import { axe } from "jest-axe";
 import Example from ".";
 
@@ -39,4 +46,11 @@ test("check/uncheck with enter", async () => {
   expect(getOption("Bacon")).toBeChecked();
   await press.Enter();
   expect(getOption("Bacon")).not.toBeChecked();
+});
+
+test("no result", async () => {
+  render(<Example />);
+  await press.Tab();
+  await type("zzz");
+  expect(getByText("No results found")).toBeVisible();
 });
