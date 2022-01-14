@@ -1,10 +1,6 @@
 import { getByRole, getByText, render } from "ariakit-test-utils";
 import Example from ".";
 
-const getContent = () => getByText(/Vegetables are parts of plants/);
-const getDisclosure = () =>
-  getByRole("button", { name: "What are vegetables?" });
-
 test("markup", () => {
   const { container } = render(<Example />);
   expect(container).toMatchInlineSnapshot(`
