@@ -12,7 +12,7 @@ export default function Example() {
   const combobox = useComboboxState({ gutter: 8, list });
   const checkbox = useCheckboxState({ defaultValue: ["Apple"] });
   return (
-    <div className="wrapper">
+    <div>
       <label className="label">
         Your favorite food
         <Combobox
