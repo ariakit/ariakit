@@ -1,4 +1,4 @@
-import { getByRole, getByText, render } from "ariakit-test-utils";
+import { render } from "ariakit-test-utils";
 import Example from ".";
 
 test("markup", () => {
