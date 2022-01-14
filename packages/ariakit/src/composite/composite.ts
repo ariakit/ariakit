@@ -289,6 +289,7 @@ export const useComposite = createHook<CompositeOptions>(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
+        if (state.activeId !== null) return;
         if (!isSelfTarget(event)) return;
         const isVertical = state.orientation !== "horizontal";
         const isHorizontal = state.orientation !== "vertical";
@@ -322,6 +323,7 @@ export const useComposite = createHook<CompositeOptions>(
       },
       [
         onKeyDownProp,
+        state.activeId,
         state.orientation,
         state.items,
         state.moves,
