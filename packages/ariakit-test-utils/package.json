@@ -28,7 +28,7 @@
     "react"
   ],
   "dependencies": {
-    "ariakit-utils": "^0.17.0-alpha.11"
+    "ariakit-utils": "file:../ariakit-utils"
   },
   "peerDependencies": {
     "@testing-library/dom": "^8.0.0",

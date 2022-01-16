@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@popperjs/core": "^2.11.0",
-    "ariakit-utils": "^0.17.0-alpha.11"
+    "ariakit-utils": "file:../ariakit-utils"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^18.0.0-beta",
