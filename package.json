@@ -19,8 +19,7 @@
     "release:beta": "npm run release:alpha -- --preid beta",
     "release:graduate": "npm run release -- --conventional-graduate",
     "preversion": "npm run lint && npm run build && npm run test",
-    "version": "npm i --package-lock-only && git stage package-lock.json",
-    "postpublish": "npm run clean",
+    "postpublish": "npm run clean && npm i --package-lock-only && git stage package-lock.json",
     "prepare": "husky install"
   },
   "workspaces": [
