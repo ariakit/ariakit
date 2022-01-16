@@ -46,5 +46,8 @@ export function setSelectionRange(
 ) {
   const textField = element as TextFieldWithSelectionRange;
   textField.selectionRange = [start, end];
-  textField.addEventListener("select", setSelectionRangeOnSelect);
+  textField.addEventListener(
+    "select",
+    setSelectionRangeOnSelect as EventListenerOrEventListenerObject
+  );
 }

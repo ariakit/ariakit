@@ -31,7 +31,7 @@ import {
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
 
 const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
 
@@ -459,7 +459,7 @@ export type FocusableOptions<T extends As = "div"> = Options<T> & {
    * Custom event handler that is called when the element is focused via the
    * keyboard or when a key is pressed while the element is focused.
    */
-  onFocusVisible?: (event: SyntheticEvent) => void;
+  onFocusVisible?: BivariantCallback<(event: SyntheticEvent) => void>;
 };
 
 export type FocusableProps<T extends As = "div"> = Props<FocusableOptions<T>>;

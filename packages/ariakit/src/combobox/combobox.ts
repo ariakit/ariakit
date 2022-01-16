@@ -15,7 +15,6 @@ import {
   useEventCallback,
   useForceUpdate,
   useForkRef,
-  useId,
   useUpdateEffect,
   useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
@@ -89,7 +88,6 @@ export const useCombobox = createHook<ComboboxOptions>(
     ...props
   }) => {
     const ref = useRef<HTMLInputElement>(null);
-    const id = useId(props.id);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const hasInsertedTextRef = useRef(false);
 
@@ -318,7 +316,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         onKeyDownProp(event);
         hasInsertedTextRef.current = false;
         if (event.defaultPrevented) return;
-        state?.setMoveType("keyboard");
+        state.setMoveType("keyboard");
         if (event.ctrlKey) return;
         if (event.altKey) return;
         if (event.shiftKey) return;
@@ -335,7 +333,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
       [
         onKeyDownProp,
-        state?.setMoveType,
+        state.setMoveType,
         state.move,
         state.activeId,
         state.visible,
@@ -345,7 +343,6 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
 
     props = {
-      id,
       role: "combobox",
       "aria-autocomplete": autoComplete,
       "aria-haspopup": getPopupRole(state.contentElement, "listbox"),

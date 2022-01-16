@@ -15,7 +15,7 @@ import {
 } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BivariantCallback, Props } from "ariakit-utils/types";
 import {
   CompositeItemOptions,
   useCompositeItem,
@@ -178,7 +178,9 @@ export type RadioOptions<T extends As = "input"> = Omit<
   /**
    * Callback function that is called when the radio button state changes.
    */
-  onChange?: (event: SyntheticEvent<HTMLInputElement>) => void;
+  onChange?: BivariantCallback<
+    (event: SyntheticEvent<HTMLInputElement>) => void
+  >;
 };
 
 export type RadioProps<T extends As = "input"> = Props<RadioOptions<T>>;

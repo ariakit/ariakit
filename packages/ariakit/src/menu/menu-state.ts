@@ -1,8 +1,8 @@
-import { SetStateAction, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { applyState } from "ariakit-utils/misc";
 import { useStore, useStorePublisher } from "ariakit-utils/store";
-import { SetState } from "ariakit-utils/types";
+import { SetState, SetStateAction } from "ariakit-utils/types";
 import {
   CompositeState,
   CompositeStateProps,
@@ -127,7 +127,6 @@ export function useMenuState<V extends Values = Values>({
   return useStorePublisher(state);
 }
 
-// TODO: Use generics for values.
 export type MenuState<V extends Values = Values> = CompositeState &
   HovercardState & {
     /**

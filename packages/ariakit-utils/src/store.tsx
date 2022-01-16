@@ -16,7 +16,7 @@ import {
 } from "./hooks";
 import { shallowEqual } from "./misc";
 import { createComponent } from "./system";
-import { Options, Props, WrapElement } from "./types";
+import { BivariantCallback, Options, Props, WrapElement } from "./types";
 
 const GET_STATE = Symbol("getState");
 const SUBSCRIBE = Symbol("subscribe");
@@ -26,7 +26,7 @@ const INITIAL_CONTEXT = Symbol("initialContext");
 type Listener<T> = (state: T) => any;
 type GetState<T> = () => T;
 type Subscribe<T> = (listener: Listener<T>) => () => any;
-type StateFilterFn<T> = (nextState: T) => unknown;
+type StateFilterFn<T> = BivariantCallback<(nextState: T) => unknown>;
 type StateFilterDeps<T> = Array<StateFilterFn<T> | keyof NonNullable<T>>;
 type StateFilter<T> = StateFilterDeps<T> | StateFilterFn<T>;
 
@@ -144,7 +144,7 @@ export function createMemoComponent<O extends Options & { state?: unknown }>(
       return propsAreEqual(prevProps as Props<O>, nextProps as Props<O>);
     }
     return propsAreEqual(prev, next);
-  }) as typeof Role;
+  }) as unknown as typeof Role;
 }
 
 /**

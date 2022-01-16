@@ -55,13 +55,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const disabled = props.disabled || props["aria-disabled"];
-    const dir = state.placement.split("-")[0] as BasePlacement;
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
-    const onFocusProp = useEventCallback(props.onFocus);
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const onClickProp = useEventCallback(props.onClick);
-
     const id = useId(props.id);
+
+    const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
     const onMouseMove = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
@@ -79,6 +75,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       [onMouseMoveProp, disabled, parentMenuBar, parentIsMenuBar, id]
     );
 
+    const onFocusProp = useEventCallback(props.onFocus);
+
     const onFocus = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {
         onFocusProp(event);
@@ -95,6 +93,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       },
       [onFocusProp, disabled, parentMenuBar, parentIsMenuBar, state.show]
     );
+
+    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const dir = state.placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -123,6 +124,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         state.setInitialFocus,
       ]
     );
+
+    const onClickProp = useEventCallback(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
