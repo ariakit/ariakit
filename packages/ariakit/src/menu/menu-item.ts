@@ -111,10 +111,10 @@ export type MenuItemOptions<T extends As = "div"> = Omit<
     hideOnClick?: boolean;
     /**
      * Whether the scroll behavior should be prevented when pressing arrow keys
-     * on the first or the last item.
+     * on the first or the last items.
      * @default true
      */
-    preventScrollOnKeyDown?: boolean;
+    preventScrollOnKeyDown?: CompositeItemOptions["preventScrollOnKeyDown"];
   };
 
 export type MenuItemProps<T extends As = "div"> = Props<MenuItemOptions<T>>;

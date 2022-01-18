@@ -326,7 +326,6 @@ export const useComposite = createHook<CompositeOptions>(
         state.activeId,
         state.orientation,
         state.items,
-        state.moves,
         state.last,
         state.first,
         state.move,
