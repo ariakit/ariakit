@@ -86,6 +86,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
         queueMicrotask(() => {
           const focusableElement = getFirstTabbableIn(fieldElement, true, true);
           focusableElement?.focus();
+          focusableElement?.click();
         });
       },
       [onClickProp, isNativeLabel, field]
