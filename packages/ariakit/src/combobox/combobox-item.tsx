@@ -5,7 +5,6 @@ import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
@@ -47,7 +46,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     hideOnClick = value != null,
     setValueOnClick = true,
     shouldRegisterItem = true,
-    focusOnMouseMove = false,
+    focusOnHover = false,
     getItem: getItemProp,
     ...props
   }) => {
@@ -156,7 +155,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       shouldRegisterItem: state?.mounted && shouldRegisterItem,
     });
 
-    props = useCompositeHover({ state, focusOnMouseMove, ...props });
+    props = useCompositeHover({ state, focusOnHover, ...props });
 
     return props;
   }
@@ -192,7 +191,7 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
   CompositeItemOptions<T>,
   "state"
 > &
-  Omit<CompositeHoverOptions<T>, "state" | "focusOnMouseMove"> & {
+  Omit<CompositeHoverOptions<T>, "state" | "focusOnHover"> & {
     /**
      * Object returned by the `useComboboxState` hook. If not provided, the
      * parent `ComboboxList` or `ComboboxPopover` components' context will be
@@ -219,10 +218,10 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
      */
     setValueOnClick?: boolean;
     /**
-     * Whether to focus the combobox item on mouse move.
+     * Whether to focus the combobox item on hover.
      * @default false
      */
-    focusOnMouseMove?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+    focusOnHover?: CompositeHoverOptions["focusOnHover"];
   };
 
 export type ComboboxItemProps<T extends As = "div"> = Props<

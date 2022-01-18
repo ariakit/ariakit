@@ -67,7 +67,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
 
     props = useCompositeHover({
       state,
-      focusOnMouseMove: isWithinMenu,
+      focusOnHover: isWithinMenu,
       ...props,
     });
 

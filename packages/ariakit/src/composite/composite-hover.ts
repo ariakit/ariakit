@@ -77,10 +77,10 @@ function isPartiallyHidden(element: HTMLElement) {
  * ```
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
-  ({ state, focusOnMouseMove = true, ...props }) => {
+  ({ state, focusOnHover = true, ...props }) => {
     state = useStore(state || CompositeContext, ["setActiveId"]);
 
-    const focusOnMouseMoveProp = useBooleanEventCallback(focusOnMouseMove);
+    const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
     useEffect(() => {
@@ -92,11 +92,11 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
         if (hasFocusWithin(event.currentTarget)) return;
-        if (!focusOnMouseMoveProp(event)) return;
+        if (!focusOnHoverProp(event)) return;
         if (isPartiallyHidden(event.currentTarget)) return;
         event.currentTarget.focus();
       },
-      [onMouseMoveProp, focusOnMouseMoveProp]
+      [onMouseMoveProp, focusOnHoverProp]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
@@ -107,7 +107,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
         if (hoveringInside(event)) return;
-        if (!focusOnMouseMoveProp(event)) return;
+        if (!focusOnHoverProp(event)) return;
         // Move focus to the composite container.
         state?.setActiveId(null);
       },
@@ -152,10 +152,10 @@ export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
    */
   state?: CompositeState;
   /**
-   * Whether to focus the composite item on mouse move.
+   * Whether to focus the composite item on hover.
    * @default true
    */
-  focusOnMouseMove?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+  focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 };
 
 export type CompositeHoverProps<T extends As = "div"> = Props<
