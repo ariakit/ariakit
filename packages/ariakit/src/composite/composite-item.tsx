@@ -37,6 +37,7 @@ import {
   Item,
   findEnabledItemById,
   getContextId,
+  getScrollingElement,
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
@@ -44,26 +45,6 @@ function isEditableElement(element: HTMLElement) {
   if (element.isContentEditable) return true;
   if (isTextField(element)) return true;
   return element.tagName === "INPUT" && !isButton(element);
-}
-
-function getScrollingElement(
-  element?: Element | null
-): HTMLElement | Element | null {
-  if (!element) {
-    return null;
-  }
-  if (element.clientHeight && element.scrollHeight > element.clientHeight) {
-    const { overflowY } = getComputedStyle(element);
-    const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
-    if (isScrollable) {
-      return element;
-    }
-  }
-  return (
-    getScrollingElement(element.parentElement) ||
-    document.scrollingElement ||
-    document.body
-  );
 }
 
 function getNextPageOffset(scrollingElement: Element, pageUp = false) {

@@ -1,14 +1,30 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
 import { contains } from "ariakit-utils/dom";
+import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
-import { CompositeContext } from "./__utils";
+import { CompositeContext, getScrollingElement } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-function getMouseDestination(event: MouseEvent<HTMLElement>) {
+let screenX = 0;
+let screenY = 0;
+
+function handleGlobalMouseMove(event: MouseEvent) {
+  screenX = event.screenX;
+  screenY = event.screenY;
+}
+
+function isScrolling(event: ReactMouseEvent | MouseEvent) {
+  return (
+    Math.abs(event.screenX - screenX) === 0 &&
+    Math.abs(event.screenY - screenY) === 0
+  );
+}
+
+function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
   const relatedTarget = event.relatedTarget as Node | null;
   if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
     return relatedTarget;
@@ -16,10 +32,34 @@ function getMouseDestination(event: MouseEvent<HTMLElement>) {
   return null;
 }
 
-function hoveringInside(event: MouseEvent<HTMLElement>) {
+function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
   return contains(event.currentTarget, nextElement);
+}
+
+function isPartiallyHidden(element: HTMLElement) {
+  const elementRect = element.getBoundingClientRect();
+  const scroller = getScrollingElement(element);
+  if (!scroller) return false;
+  const scrollerRect = scroller.getBoundingClientRect();
+
+  const isHTML = scroller.tagName === "HTML";
+  const scrollerTop = isHTML
+    ? scrollerRect.top + scroller.scrollTop
+    : scrollerRect.top;
+  const scrollerBottom = isHTML ? scroller.clientHeight : scrollerRect.bottom;
+  const scrollerLeft = isHTML
+    ? scrollerRect.left + scroller.scrollLeft
+    : scrollerRect.left;
+  const scrollerRight = isHTML ? scroller.clientWidth : scrollerRect.right;
+
+  const top = elementRect.top <= scrollerTop;
+  const left = elementRect.left <= scrollerLeft;
+  const bottom = elementRect.bottom >= scrollerBottom;
+  const right = elementRect.right >= scrollerRight;
+
+  return top || left || bottom || right;
 }
 
 /**
@@ -43,22 +83,28 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const focusOnMouseMoveProp = useBooleanEventCallback(focusOnMouseMove);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
+    useEffect(() => {
+      return addGlobalEventListener("mousemove", handleGlobalMouseMove);
+    }, []);
+
     const onMouseMove = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
+      (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
         if (hasFocusWithin(event.currentTarget)) return;
         if (!focusOnMouseMoveProp(event)) return;
-        state?.setActiveId(event.currentTarget.id);
+        if (isPartiallyHidden(event.currentTarget)) return;
+        event.currentTarget.focus();
       },
-      [onMouseMoveProp, focusOnMouseMoveProp, state?.setActiveId]
+      [onMouseMoveProp, focusOnMouseMoveProp]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
 
     const onMouseLeave = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
+      (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseLeaveProp(event);
+        if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
         if (hoveringInside(event)) return;
         if (!focusOnMouseMoveProp(event)) return;
@@ -109,7 +155,7 @@ export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
    * Whether to focus the composite item on mouse move.
    * @default true
    */
-  focusOnMouseMove?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  focusOnMouseMove?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 };
 
 export type CompositeHoverProps<T extends As = "div"> = Props<
