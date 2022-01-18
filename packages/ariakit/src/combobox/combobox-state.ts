@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useControlledState,
   useDeferredValue,
+  useLiveRef,
   useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
@@ -52,14 +53,6 @@ function getMatches(props: Pick<ComboboxState, "limit" | "value" | "list">) {
   return Array.from(matches);
 }
 
-function getActiveValue(props: Pick<ComboboxState, "activeId" | "items">) {
-  if (props.activeId) {
-    return props.items.find((item) => item.id === props.activeId && item.value)
-      ?.value;
-  }
-  return;
-}
-
 /**
  * Provides state for the `Combobox` components.
  * @see https://ariakit.org/components/combobox
@@ -105,17 +98,24 @@ export function useComboboxState({
     includesBaseElement,
   });
   const popover = usePopoverState({ ...props, placement });
-  const nextActiveValue = getActiveValue(composite);
-  const [activeValue, setActiveValue] = useState(nextActiveValue);
-  const [moveType, setMoveType] = useState<"keyboard" | "mouse">("keyboard");
+  const [activeValue, setActiveValue] = useState<string | undefined>();
+  const compositeRef = useLiveRef(composite);
 
-  // We don't want to update the active value state if the last move type wasn't
-  // originated by a keyboard event. For example, if the active item is updated
-  // duo to the user moving the mouse over an item, we don't want to update the
-  // active value state.
-  if (activeValue !== nextActiveValue && moveType === "keyboard") {
+  // Always reset the active value when the active item changes.
+  useEffect(() => {
+    setActiveValue(undefined);
+  }, [composite.activeId]);
+
+  // Update the active value when the active item changes by moving (which
+  // usually happens when using the keyboard).
+  useEffect(() => {
+    const { items, activeId } = compositeRef.current;
+    if (!activeId) return;
+    const nextActiveValue = items.find(
+      (item) => item.id === activeId && item.value
+    )?.value;
     setActiveValue(nextActiveValue);
-  }
+  }, [composite.moves]);
 
   const deferredValue = useDeferredValue(value);
 
@@ -129,12 +129,10 @@ export function useComboboxState({
   // will always put focus back on the combobox input. See
   // ../composite/composite.ts#132
   useUpdateLayoutEffect(() => {
-    if (!popover.visible) {
-      setMoveType("keyboard");
-      // We need to reset the composite state when the popover is closed.
-      composite.setActiveId(defaultActiveId);
-      composite.setMoves(0);
-    }
+    if (popover.visible) return;
+    // We need to reset the composite state when the popover is closed.
+    composite.setActiveId(defaultActiveId);
+    composite.setMoves(0);
   }, [popover.visible, composite.setActiveId, composite.setMoves]);
 
   const state = useMemo(
@@ -148,8 +146,6 @@ export function useComboboxState({
       setList,
       limit,
       matches,
-      moveType,
-      setMoveType,
     }),
     [
       composite,
@@ -161,8 +157,6 @@ export function useComboboxState({
       setList,
       limit,
       matches,
-      moveType,
-      setMoveType,
     ]
   );
 
@@ -214,15 +208,6 @@ export type ComboboxState = CompositeState<Item> &
      * combobox.matches; // ["Green"]
      */
     matches: string[];
-    /**
-     * The type of the last item move.
-     * @default "keyboard"
-     */
-    moveType: "keyboard" | "mouse";
-    /**
-     * Sets the `moveType` state.
-     */
-    setMoveType: SetState<ComboboxState["moveType"]>;
   };
 
 export type ComboboxStateProps = CompositeStateProps<Item> &

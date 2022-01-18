@@ -316,7 +316,6 @@ export const useCombobox = createHook<ComboboxOptions>(
         onKeyDownProp(event);
         hasInsertedTextRef.current = false;
         if (event.defaultPrevented) return;
-        state.setMoveType("keyboard");
         if (event.ctrlKey) return;
         if (event.altKey) return;
         if (event.shiftKey) return;
@@ -333,7 +332,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
       [
         onKeyDownProp,
-        state.setMoveType,
         state.move,
         state.activeId,
         state.visible,

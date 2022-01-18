@@ -106,7 +106,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        state?.setMoveType("keyboard");
         if (state?.virtualFocus) return;
         // When the combobox is not working with virtual focus, the items will
         // receive DOM focus. Therefore, pressing printable keys will not fill
@@ -127,30 +126,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
           }
         }
       },
-      [
-        onKeyDownProp,
-        state?.setMoveType,
-        state?.virtualFocus,
-        state?.baseRef,
-        state?.setValue,
-      ]
-    );
-
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
-
-    const onMouseMove = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseMoveProp(event);
-        if (event.defaultPrevented) return;
-        // If focusOnMouseMove is true or ComboboxItem is combined with another
-        // composite item component, we should make sure to set the appropiate
-        // moveType on the state so, when combobox.autoComplete is "both" or
-        // "inline", we don't change the input value with the active item value.
-        // In fact, the combobox.activeValue property will not be updated if
-        // moveType is set to "mouse".
-        state?.setMoveType("mouse");
-      },
-      [onMouseMoveProp, state?.setMoveType]
+      [onKeyDownProp, state?.virtualFocus, state?.baseRef, state?.setValue]
     );
 
     props = useWrapElement(
@@ -169,7 +145,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       ...props,
       onClick,
       onKeyDown,
-      onMouseMove,
     };
 
     props = useCompositeItem({
