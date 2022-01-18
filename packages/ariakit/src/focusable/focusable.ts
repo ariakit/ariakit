@@ -54,10 +54,14 @@ const alwaysFocusVisibleInputTypes = [
 function isAlwaysFocusVisible(element: HTMLElement) {
   const { tagName, readOnly, type } = element as HTMLInputElement;
   if (tagName === "TEXTAREA" && !readOnly) return true;
+  if (tagName === "SELECT" && !readOnly) return true;
   if (tagName === "INPUT" && !readOnly) {
     return alwaysFocusVisibleInputTypes.includes(type);
   }
-  return element.isContentEditable;
+  if (element.isContentEditable) return true;
+  const role = element.getAttribute("role");
+  if (role === "combobox") return true;
+  return false;
 }
 
 function focusIfNeeded(element: HTMLElement) {
