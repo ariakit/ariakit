@@ -49,9 +49,9 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (event.defaultPrevented) return;
         if (hasFocusWithin(event.currentTarget)) return;
         if (!focusOnMouseMoveProp(event)) return;
-        event.currentTarget.focus();
+        state?.setActiveId(event.currentTarget.id);
       },
-      [onMouseMoveProp, focusOnMouseMoveProp]
+      [onMouseMoveProp, focusOnMouseMoveProp, state?.setActiveId]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
