@@ -1,11 +1,7 @@
 import { MouseEvent, useCallback } from "react";
 import { contains } from "ariakit-utils/dom";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import {
-  useBooleanEventCallback,
-  useEventCallback,
-  useId,
-} from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
@@ -42,8 +38,7 @@ function hoveringInside(event: MouseEvent<HTMLElement>) {
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnMouseMove = true, ...props }) => {
-    state = useStore(state || CompositeContext, ["move"]);
-    const id = useId(props.id);
+    state = useStore(state || CompositeContext, ["setActiveId"]);
 
     const focusOnMouseMoveProp = useBooleanEventCallback(focusOnMouseMove);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
@@ -54,9 +49,9 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (event.defaultPrevented) return;
         if (hasFocusWithin(event.currentTarget)) return;
         if (!focusOnMouseMoveProp(event)) return;
-        state?.move(id);
+        event.currentTarget.focus();
       },
-      [onMouseMoveProp, focusOnMouseMoveProp, state?.move, id]
+      [onMouseMoveProp, focusOnMouseMoveProp]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
@@ -68,13 +63,12 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (hoveringInside(event)) return;
         if (!focusOnMouseMoveProp(event)) return;
         // Move focus to the composite container.
-        state?.move(null);
+        state?.setActiveId(null);
       },
-      [onMouseLeaveProp, state?.move]
+      [onMouseLeaveProp, state?.setActiveId]
     );
 
     props = {
-      id,
       ...props,
       onMouseMove,
       onMouseLeave,
