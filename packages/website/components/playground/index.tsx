@@ -69,6 +69,7 @@ export default function Playground(props: PlaygroundProps) {
   const tab = useTabState({
     orientation: "both",
     defaultSelectedId: firstFileId,
+    selectOnMove: false,
   });
   const [expanded, setExpanded] = useState(false);
   const files = useMemo(
@@ -138,7 +139,6 @@ export default function Playground(props: PlaygroundProps) {
       key={file}
       id={getTabId(file, baseId)}
       onClick={() => setExpanded(true)}
-      manual
     >
       {file}
     </Tab>

@@ -21,6 +21,14 @@ type Panel = CollectionState["items"][number] & {
   tabId?: string | null;
 };
 
+function findEnabledTabById(items: Item[], id?: string | null) {
+  return items.find((item) => item.id === id && !item.disabled && !item.dimmed);
+}
+
+function findFirstEnabledTab(items: Item[]) {
+  return items.find((item) => !item.disabled && !item.dimmed);
+}
+
 /**
  * Provides state for the `Tab` components.
  * @example
@@ -37,6 +45,7 @@ type Panel = CollectionState["items"][number] & {
 export function useTabState({
   orientation = "horizontal",
   focusLoop = true,
+  selectOnMove = true,
   ...props
 }: TabStateProps = {}): TabState {
   const [selectedId, setSelectedId] = useControlledState(
@@ -46,11 +55,24 @@ export function useTabState({
   );
   const composite = useCompositeState({ orientation, focusLoop, ...props });
   const panels = useCollectionState<Panel>();
-  const activeIdRef = useLiveRef(composite.activeId);
+  const compositeRef = useLiveRef(composite);
+
+  // Selects the active tab when selectOnMove is true. Since we're listening to
+  // the moves state, but not the activeId state, this effect will run only when
+  // there's a move, which is usually triggered by moving through the tabs using
+  // the keyboard.
+  useEffect(() => {
+    if (!selectOnMove) return;
+    const { activeId, items } = compositeRef.current;
+    if (!activeId) return;
+    const tab = findEnabledTabById(items, activeId);
+    if (!tab) return;
+    setSelectedId(tab.id);
+  }, [composite.moves, selectOnMove, setSelectedId]);
 
   // Keep activeId in sync with selectedId.
   useEffect(() => {
-    if (selectedId === activeIdRef.current) return;
+    if (selectedId === compositeRef.current.activeId) return;
     composite.setActiveId(selectedId);
   }, [selectedId, composite.setActiveId]);
 
@@ -58,15 +80,15 @@ export function useTabState({
   useEffect(() => {
     if (selectedId !== undefined) return;
     // First, we try to set selectedId based on the current active tab.
-    const activeId = activeIdRef.current;
-    const activeTab = composite.items.find((item) => item.id === activeId);
-    if (activeTab && !activeTab.dimmed) {
+    const activeId = compositeRef.current.activeId;
+    const tab = findEnabledTabById(composite.items, activeId);
+    if (tab) {
       setSelectedId(activeId);
     }
     // If there's no active tab or the active tab is dimmed, we get the first
     // enabled tab instead.
     else {
-      const firstEnabledTab = composite.items.find((item) => !item.dimmed);
+      const firstEnabledTab = findFirstEnabledTab(composite.items);
       setSelectedId(firstEnabledTab?.id);
     }
   }, [selectedId, composite.items, setSelectedId]);
@@ -124,10 +146,16 @@ export type TabState = CompositeState<Item> & {
    * A collection state containing the tab panels.
    */
   panels: CollectionState<Panel>;
+  /**
+   * Whether the tab should be selected when it receives focus. If it's set to
+   * `false`, the tab will be selected only when it's clicked.
+   * @default true
+   */
+  selectOnMove?: boolean;
 };
 
 export type TabStateProps = CompositeStateProps<Item> &
-  Partial<Pick<TabState, "selectedId">> & {
+  Partial<Pick<TabState, "selectedId" | "selectOnMove">> & {
     /**
      * The id of the tab whose panel should be initially visible.
      * @example

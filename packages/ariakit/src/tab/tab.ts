@@ -1,5 +1,5 @@
-import { MouseEvent, useCallback, useEffect } from "react";
-import { useEventCallback, useId, useLiveRef } from "ariakit-utils/hooks";
+import { MouseEvent, useCallback } from "react";
+import { useEventCallback, useId } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -34,7 +34,6 @@ function getPanelId(panels?: TabState["panels"], id?: string) {
 export const useTab = createHook<TabOptions>(
   ({
     state,
-    manual,
     accessibleWhenDisabled = true,
     getItem: getItemProp,
     ...props
@@ -42,11 +41,9 @@ export const useTab = createHook<TabOptions>(
     const id = useId(props.id);
 
     state = useStore(state || TabContext, [
+      useCallback((s: TabState) => id && s.selectedId === id, [id]),
       "panels",
       "setSelectedId",
-      "moves",
-      "activeId",
-      "selectedId",
     ]);
 
     const dimmed = props.disabled;
@@ -61,20 +58,6 @@ export const useTab = createHook<TabOptions>(
       },
       [dimmed, getItemProp]
     );
-
-    const isActiveItem = state?.activeId === id;
-    const isActiveItemRef = useLiveRef(isActiveItem);
-
-    useEffect(() => {
-      if (dimmed) return;
-      if (manual) return;
-      // The tab should be selected only when moves is incremented. That is, by
-      // calling state.move(), and not just state.setActiveId(). This prevents
-      // screen reader users from getting trapped in the tab list.
-      if (state?.moves && isActiveItemRef.current) {
-        state.setSelectedId(id);
-      }
-    }, [dimmed, manual, state?.moves, state?.setSelectedId, id]);
 
     const onClickProp = useEventCallback(props.onClick);
 
@@ -101,7 +84,7 @@ export const useTab = createHook<TabOptions>(
     props = useCompositeItem({
       state,
       ...props,
-      accessibleWhenDisabled: accessibleWhenDisabled,
+      accessibleWhenDisabled,
       getItem,
     });
 
@@ -138,11 +121,6 @@ export type TabOptions<T extends As = "button"> = Omit<
    * `TabList` component's context will be used.
    */
   state?: TabState;
-  /**
-   * Whether the tab should be automatically selected when focused.
-   * @default true
-   */
-  manual?: boolean;
 };
 
 export type TabProps<T extends As = "button"> = Props<TabOptions<T>>;
