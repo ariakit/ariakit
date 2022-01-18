@@ -63,7 +63,14 @@ export const usePopover = createHook<PopoverOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <div role="presentation" {...wrapperProps} ref={popoverRef}>
+        <div
+          role="presentation"
+          {...wrapperProps}
+          // Avoid the wrapper from taking space when used within a flexbox
+          // container with the gap property.
+          style={{ position: "fixed", ...wrapperProps?.style }}
+          ref={popoverRef}
+        >
           {element}
         </div>
       ),
@@ -80,16 +87,20 @@ export const usePopover = createHook<PopoverOptions>(
       [state]
     );
 
+    props = {
+      ...props,
+      style: {
+        position: "relative",
+        ...props.style,
+      },
+    };
+
     props = useDialog({
       state,
       modal,
       preserveTabOrder,
       portal,
       ...props,
-      style: {
-        position: "relative",
-        ...props.style,
-      },
       portalRef,
     });
 
