@@ -15,25 +15,78 @@ export default function Home() {
         </a>{" "}
         to get major updates.
       </p>
-      <h2 className="text-2xl">Components</h2>
-      <ul>
-        <li>
-          <Link href="/components/button">Button</Link>
-        </li>
-      </ul>
       <h2 className="text-2xl">Examples</h2>
       <ul>
         <li>
           <Link href="/examples/button">Button</Link>
         </li>
         <li>
+          <Link href="/examples/button-as-div">Button as div</Link>
+        </li>
+        <li>
+          <Link href="/examples/button-as-link">Button as link</Link>
+        </li>
+        <li>
+          <Link href="/examples/checkbox">Checkbox</Link>
+        </li>
+        <li>
+          <Link href="/examples/checkbox-controlled">Checkbox controlled</Link>
+        </li>
+        <li>
+          <Link href="/examples/collection">Collection</Link>
+        </li>
+        <li>
           <Link href="/examples/combobox">Combobox</Link>
+        </li>
+        <li>
+          <Link href="/examples/combobox-matches">Combobox matches</Link>
+        </li>
+        <li>
+          <Link href="/examples/combobox-multiselect">
+            Combobox multiselect
+          </Link>
+        </li>
+        <li>
+          <Link href="/examples/disclosure">Disclosure</Link>
+        </li>
+        <li>
+          <Link href="/examples/form">Form</Link>
+        </li>
+        <li>
+          <Link href="/examples/group">Group</Link>
+        </li>
+        <li>
+          <Link href="/examples/heading">Heading</Link>
+        </li>
+        <li>
+          <Link href="/examples/hovercard">Hovercard</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
         </li>
         <li>
           <Link href="/examples/popover">Popover</Link>
         </li>
         <li>
-          <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
+          <Link href="/examples/popover-responsive">Popover responsive</Link>
+        </li>
+        <li>
+          <Link href="/examples/radio">Radio</Link>
+        </li>
+        <li>
+          <Link href="/examples/tab">Tab</Link>
+        </li>
+        <li>
+          <Link href="/examples/tab-react-router">Tab react-router</Link>
+        </li>
+        <li>
+          <Link href="/examples/tooltip">Tooltip</Link>
+        </li>
+        <li>
+          <Link href="/examples/tooltip-placement">Tooltip placement</Link>
+        </li>
+        <li>
+          <Link href="/examples/tooltip-timeout">Tooltip timeout</Link>
         </li>
       </ul>
     </div>
