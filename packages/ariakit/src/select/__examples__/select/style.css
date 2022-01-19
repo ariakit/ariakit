@@ -1,0 +1,43 @@
+@import url("../../../popover/__examples__/popover/style.css");
+
+.wrapper {
+  @apply flex flex-col gap-2;
+}
+
+.button {
+  width: 200px;
+  @apply justify-start;
+}
+
+.button > span {
+  margin-left: auto;
+}
+
+.popover {
+  width: 200px;
+  max-height: 300px;
+  @apply gap-0 p-2 overflow-auto;
+}
+
+.popover > * {
+  @apply
+    flex
+    gap-2
+    items-center
+    scroll-m-2
+    outline-none
+    cursor-default
+    rounded
+    p-2
+    hover:bg-primary-1-hover
+    dark:hover:bg-primary-1-dark-hover;
+}
+
+.popover > *[aria-selected="true"],
+.popover > *:focus {
+  @apply
+    bg-primary-2
+    text-primary-2
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark;
+}
