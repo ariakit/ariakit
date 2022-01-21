@@ -74,7 +74,7 @@ export const useSelectList = createHook<SelectListOptions>(
       id,
       role: "listbox",
       hidden: !state.mounted,
-      "aria-labelledby": labelId,
+      // "aria-labelledby": labelId,
       ...props,
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,

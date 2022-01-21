@@ -56,10 +56,12 @@ export function useSelectState({
     ...props,
     virtualFocus,
     orientation,
+    defaultActiveId: null,
+    includesBaseElement: false,
   });
   const popover = usePopoverState({ ...props, placement });
   const initialValue = useInitialValue(props.value ?? props.defaultValue);
-  const activeIdRef = useLiveRef(composite.activeId);
+  const compositeRef = useLiveRef(composite);
 
   // Automatically sets the default value if it's not set.
   useEffect(() => {
@@ -67,7 +69,10 @@ export function useSelectState({
     if (!composite.items.length) return;
     const item = findFirstEnabledItemWithValue(composite.items);
     if (!item?.value) return;
-    setValue(item.value);
+    setValue((prevValue) => {
+      if (prevValue || !item.value) return prevValue;
+      return item.value;
+    });
   }, [initialValue, composite.items, setValue]);
 
   // Sets the activeId based on the value. That is, if the value is updated, we
@@ -89,11 +94,12 @@ export function useSelectState({
   useEffect(() => {
     if (!setValueOnMove && mountedRef.current) return;
     if (!composite.moves) return;
-    if (!activeIdRef.current) return;
-    const item = findEnabledItemById(composite.items, activeIdRef.current);
+    const { activeId, items } = compositeRef.current;
+    if (!activeId) return;
+    const item = findEnabledItemById(items, activeId);
     if (item?.value == null) return;
     setValue(item.value);
-  }, [setValueOnMove, composite.moves, composite.items, setValue]);
+  }, [setValueOnMove, composite.moves, setValue]);
 
   const state = useMemo(
     () => ({

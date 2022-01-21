@@ -67,14 +67,8 @@ export function useCompositeState<T extends Item = Item>({
   const move = useCallback((id?: Item["id"]) => {
     // move() does nothing
     if (id === undefined) return;
-    // move(null) will focus the composite element itself, not an item
-    if (id === null) {
-      setMoves((prevMoves) => prevMoves + 1);
-      setActiveId(id);
-    } else {
-      setMoves((prevMoves) => prevMoves + 1);
-      setActiveId(id);
-    }
+    setMoves((prevMoves) => prevMoves + 1);
+    setActiveId(id);
   }, []);
 
   const first = useCallback(() => {

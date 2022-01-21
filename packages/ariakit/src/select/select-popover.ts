@@ -28,12 +28,13 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
   ({ state, ...props }) => {
     const item = state.items.find((item) => item.value === state.value);
 
-    useEffect(() => () => state.setActiveId(undefined), []);
+    // useEffect(() => () => state.setActiveId(undefined), []);
 
     props = useSelectList({ state, ...props });
     props = usePopover({
       state,
       autoFocusOnShow: !!item?.ref,
+      // autoFocusOnShow: false,
       initialFocusRef: item?.ref,
       ...props,
     });

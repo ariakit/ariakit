@@ -16,7 +16,16 @@
 .popover {
   width: 200px;
   max-height: 300px;
+
+  /* opacity: 0;
+  transform: scaleY(0);
+  transition: opacity 500ms ease-in-out, transform 500ms ease-in-out; */
   @apply gap-0 p-2 overflow-auto;
+}
+
+.popover[data-enter] {
+  opacity: 1;
+  transform: scaleY(1);
 }
 
 .popover > * {

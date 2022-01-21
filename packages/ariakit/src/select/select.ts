@@ -121,13 +121,18 @@ export const useSelect = createHook<SelectOptions>(
     props = {
       role: "combobox",
       "aria-autocomplete": "none",
-      "aria-live": state.mounted || !state.setValueOnMove ? "off" : "assertive",
-      "aria-atomic": state.setValueOnMove ? true : undefined,
+      // "aria-live":
+      //   state.mounted || !state.setValueOnMove || !moveOnKeyDownProp
+      //     ? "off"
+      //     : "assertive",
+      // "aria-atomic": state.setValueOnMove ? true : undefined,
       "aria-labelledby": labelId,
       children: state.value,
       ...props,
       ref: useForkRef(state.selectRef, props.ref),
       onKeyDown,
+      // TODO: Should also listen to onClick without onMouseDown (VoiceOver
+      // click)
       onMouseDown: (event) => {
         queueBeforeEvent(event.currentTarget, "focus", state.toggle);
         // if (hasFocus(event.currentTarget)) {

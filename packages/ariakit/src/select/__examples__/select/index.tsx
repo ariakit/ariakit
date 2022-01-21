@@ -35,11 +35,16 @@ const list = [
 export default function Example() {
   const select = useSelectState({
     gutter: 8,
+    // animated: true,
     // fixed: true,
     // virtualFocus: false,
-    defaultValue: "Tangerine",
-    // setValueOnMove: true,
+    // defaultValue: "Tangerine",
+    setValueOnMove: true,
   });
+  console.log(
+    select.activeId,
+    select.items.find((item) => item.id === select.activeId)?.ref.current
+  );
   return (
     <div className="wrapper">
       <SelectLabel state={select}>Your favorite fruit</SelectLabel>
