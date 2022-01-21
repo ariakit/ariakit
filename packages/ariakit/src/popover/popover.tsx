@@ -1,4 +1,4 @@
-import { HTMLAttributes, RefObject, useState } from "react";
+import { HTMLAttributes, RefObject, useEffect, useState } from "react";
 import {
   useForkRef,
   useSafeLayoutEffect,
@@ -37,6 +37,8 @@ export const usePopover = createHook<PopoverOptions>(
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
+    const domReady = !portal || portalNode;
+    const [lol, setLol] = useState(false);
 
     // When the popover is rendered within a portal, we need to wait for the
     // portalNode to be created so we can update the popover position.
@@ -45,6 +47,10 @@ export const usePopover = createHook<PopoverOptions>(
       if (!state.mounted) return;
       state.render();
     }, [portalNode, state.mounted, state.render]);
+
+    useEffect(() => {
+      setLol(!!domReady && state.mounted);
+    }, [domReady, state.mounted]);
 
     // Makes sure the wrapper element that's passed to popper has the same
     // z-index as the popover element so users only need to set the z-index
@@ -101,6 +107,7 @@ export const usePopover = createHook<PopoverOptions>(
       preserveTabOrder,
       portal,
       ...props,
+      autoFocusOnShow: lol && props.autoFocusOnShow,
       portalRef,
     });
 

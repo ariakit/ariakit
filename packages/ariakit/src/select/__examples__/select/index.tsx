@@ -1,4 +1,3 @@
-import { useId } from "react";
 import {
   Select,
   SelectArrow,
@@ -21,40 +20,52 @@ const list = [
   { value: "Jackfruit", label: "Jackfruit" },
   { value: "Kiwi", label: "Kiwi" },
   { value: "Lemon", label: "Lemon" },
+  { value: "Mango", label: "Mango" },
+  { value: "Nectarine", label: "Nectarine" },
+  { value: "Orange", label: "Orange" },
+  { value: "Papaya", label: "Papaya" },
+  { value: "Quince", label: "Quince" },
+  { value: "Raspberry", label: "Raspberry" },
+  { value: "Strawberry", label: "Strawberry" },
+  { value: "Tangerine", label: "Tangerine" },
+  { value: "Ugli fruit", label: "Ugli fruit" },
+  { value: "Watermelon", label: "Watermelon" },
 ];
 
 export default function Example() {
   const select = useSelectState({
     gutter: 8,
-    // defaultValue: "Grape",
+    // fixed: true,
+    // virtualFocus: false,
+    defaultValue: "Tangerine",
     // setValueOnMove: true,
   });
-  const id = useId();
   return (
     <div className="wrapper">
       <SelectLabel state={select}>Your favorite fruit</SelectLabel>
       <Select
         state={select}
-        moveOnKeyDown
-        showOnKeyDown={false}
-        aria-labelledby={id}
+        // moveOnKeyDown
+        // showOnKeyDown={false}
         className="button"
       >
         {select.value}
         <SelectArrow />
       </Select>
-      <SelectPopover state={select} className="popover">
-        {list.map((item) => (
-          <SelectItem
-            key={item.value}
-            value={item.value}
-            disabled={item.disabled}
-          >
-            <SelectItemCheck />
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectPopover>
+      {select.mounted && (
+        <SelectPopover state={select} className="popover">
+          {list.map((item) => (
+            <SelectItem
+              key={item.value}
+              value={item.value}
+              disabled={item.disabled}
+            >
+              <SelectItemCheck />
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectPopover>
+      )}
     </div>
   );
 }

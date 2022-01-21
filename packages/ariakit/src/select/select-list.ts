@@ -1,8 +1,10 @@
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { hasFocusWithin } from "ariakit-utils/focus";
 import {
   useEventCallback,
   useForkRef,
   useId,
+  useLiveRef,
   useRefId,
 } from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
@@ -55,6 +57,7 @@ export const useSelectList = createHook<SelectListOptions>(
         if (event.key === "Escape") {
           state.setValue(defaultValue);
         }
+        // TODO: Enter/Space close the select list
       },
       [onKeyDownProp, state.setValue, defaultValue]
     );

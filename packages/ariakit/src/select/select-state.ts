@@ -67,19 +67,20 @@ export function useSelectState({
     if (!composite.items.length) return;
     const item = findFirstEnabledItemWithValue(composite.items);
     if (!item?.value) return;
-    setValue(item.value);
+    // setValue(item.value);
   }, [initialValue, composite.items, setValue]);
 
   // Sets the activeId based on the value. That is, if the value is updated, we
   // want to make sure the corresponding item will receive focus the next time
   // the popover is open.
-  useEffect(() => {
-    if (value == null) return;
-    if (popover.mounted) return;
-    const item = findEnabledItemByValue(composite.items, value);
-    if (!item) return;
-    composite.setActiveId(item?.id);
-  }, [value, popover.mounted, composite.items, composite.setActiveId]);
+  // useEffect(() => {
+  //   // TODO: maybe we don't need to set the activeId here?
+  //   if (value == null) return;
+  //   if (popover.mounted) return;
+  //   const item = findEnabledItemByValue(composite.items, value);
+  //   if (!item) return;
+  //   composite.setActiveId(item?.id);
+  // }, [value, popover.mounted, composite.items, composite.setActiveId]);
 
   const mountedRef = useLiveRef(popover.mounted);
 
@@ -91,7 +92,7 @@ export function useSelectState({
     if (!activeIdRef.current) return;
     const item = findEnabledItemById(composite.items, activeIdRef.current);
     if (item?.value == null) return;
-    setValue(item.value);
+    // setValue(item.value);
   }, [setValueOnMove, composite.moves, composite.items, setValue]);
 
   const state = useMemo(

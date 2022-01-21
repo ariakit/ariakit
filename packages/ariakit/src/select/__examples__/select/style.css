@@ -1,7 +1,7 @@
 @import url("../../../popover/__examples__/popover/style.css");
 
 .wrapper {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-2 my-[1000px];
 }
 
 .button {

@@ -1,21 +1,14 @@
-import { useMemo } from "react";
-import { BasePlacement } from "@popperjs/core";
-import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
-import { SelectContext } from "./__utils";
+import { As, Props } from "ariakit-utils/types";
+import {
+  PopoverDisclosureArrowOptions,
+  usePopoverDisclosureArrow,
+} from "../popover/popover-disclosure-arrow";
 import { SelectState } from "./select-state";
-
-const pointsMap = {
-  top: "4,10 8,6 12,10",
-  right: "6,4 10,8 6,12",
-  bottom: "4,6 8,10 12,6",
-  left: "10,4 6,8 10,12",
-};
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -38,41 +31,7 @@ const pointsMap = {
  */
 export const useSelectArrow = createHook<SelectArrowOptions>(
   ({ state, ...props }) => {
-    state = useStore(state || SelectContext, ["placement"]);
-    const dir = state?.placement.split("-")[0] as BasePlacement;
-    const points = pointsMap[dir];
-
-    const children = useMemo(
-      () => (
-        <svg
-          display="block"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.5pt"
-          viewBox="0 0 16 16"
-          height="1em"
-          width="1em"
-        >
-          <polyline points={points} />
-        </svg>
-      ),
-      [points]
-    );
-
-    props = {
-      children,
-      "aria-hidden": true,
-      ...props,
-      style: {
-        width: "1em",
-        height: "1em",
-        pointerEvents: "none",
-        ...props.style,
-      },
-    };
-
+    props = usePopoverDisclosureArrow({ state, ...props });
     return props;
   }
 );
@@ -99,7 +58,10 @@ export const SelectArrow = createComponent<SelectArrowOptions>((props) => {
   return createElement("span", htmlProps);
 });
 
-export type SelectArrowOptions<T extends As = "span"> = Options<T> & {
+export type SelectArrowOptions<T extends As = "span"> = Omit<
+  PopoverDisclosureArrowOptions<T>,
+  "state"
+> & {
   /**
    * Object returned by the `useSelectState` hook. If not provided, the parent
    * `Select` component's context will be used.

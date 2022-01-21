@@ -120,7 +120,7 @@ export const useComposite = createHook<CompositeOptions>(
     useEffect(() => {
       if (!composite) return;
       const element = ref.current;
-      if (state.moves && !activeItem) {
+      if (state.moves && state.activeId === null) {
         // When virtualFocus is enabled, calling composite.move(null) will not
         // fire a blur event on the active item. So we need to do it manually.
         const previousElement = previousElementRef.current;
@@ -135,7 +135,7 @@ export const useComposite = createHook<CompositeOptions>(
         // items while includesBaseElement is true.
         previousElementRef.current = null;
       }
-    }, [composite, state.moves, activeItem]);
+    }, [composite, state.moves, state.activeId]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
       virtualFocus,
@@ -289,8 +289,8 @@ export const useComposite = createHook<CompositeOptions>(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (state.activeId !== null) return;
         if (!isSelfTarget(event)) return;
+        if (activeItem) return;
         const isVertical = state.orientation !== "horizontal";
         const isHorizontal = state.orientation !== "vertical";
         const isGrid = !!findFirstEnabledItem(state.items)?.rowId;
@@ -323,7 +323,7 @@ export const useComposite = createHook<CompositeOptions>(
       },
       [
         onKeyDownProp,
-        state.activeId,
+        activeItem,
         state.orientation,
         state.items,
         state.last,
