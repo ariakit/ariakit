@@ -31,14 +31,13 @@ export const usePopover = createHook<PopoverOptions>(
     modal = false,
     portal = !!modal,
     preserveTabOrder = true,
+    autoFocusOnShow = true,
     wrapperProps,
     ...props
   }) => {
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
-    const domReady = !portal || portalNode;
-    const [lol, setLol] = useState(false);
 
     // When the popover is rendered within a portal, we need to wait for the
     // portalNode to be created so we can update the popover position.
@@ -47,10 +46,6 @@ export const usePopover = createHook<PopoverOptions>(
       if (!state.mounted) return;
       state.render();
     }, [portalNode, state.mounted, state.render]);
-
-    useEffect(() => {
-      setLol(!!domReady && state.mounted);
-    }, [domReady, state.mounted]);
 
     // Makes sure the wrapper element that's passed to popper has the same
     // z-index as the popover element so users only need to set the z-index
@@ -62,6 +57,17 @@ export const usePopover = createHook<PopoverOptions>(
       if (!popover) return;
       wrapper.style.zIndex = getComputedStyle(popover).zIndex;
     }, [popoverRef, state.contentElement]);
+
+    const domReady = !portal || portalNode;
+    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(state.fixed);
+
+    // When the popover is absolutely positioned, we can't move focus right
+    // after it gets open. Otherwise we may see some scroll jumps. So we wait a
+    // bit so Popper can finish positioning the popover before we move focus.
+    useEffect(() => {
+      if (state.fixed) return;
+      setCanAutoFocusOnShow(!!domReady && state.mounted);
+    }, [state.fixed, domReady, state.mounted]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
@@ -106,8 +112,8 @@ export const usePopover = createHook<PopoverOptions>(
       modal,
       preserveTabOrder,
       portal,
+      autoFocusOnShow: canAutoFocusOnShow && autoFocusOnShow,
       ...props,
-      autoFocusOnShow: lol && props.autoFocusOnShow,
       portalRef,
     });
 

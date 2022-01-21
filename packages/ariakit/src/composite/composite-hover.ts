@@ -1,5 +1,5 @@
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
-import { contains } from "ariakit-utils/dom";
+import { closest, contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
@@ -27,7 +27,7 @@ function isScrolling(event: ReactMouseEvent | MouseEvent) {
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
   const relatedTarget = event.relatedTarget as Node | null;
   if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
-    return relatedTarget;
+    return relatedTarget as Element;
   }
   return null;
 }
@@ -62,6 +62,15 @@ function isPartiallyHidden(element: HTMLElement) {
   return top || left || bottom || right;
 }
 
+function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
+  const dest = getMouseDestination(event);
+  if (!dest) return false;
+  return (
+    dest.hasAttribute("data-composite-hover") ||
+    !!closest(dest, "[data-composite-hover]")
+  );
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an element in a composite widget that receives
@@ -78,7 +87,7 @@ function isPartiallyHidden(element: HTMLElement) {
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnHover = true, ...props }) => {
-    state = useStore(state || CompositeContext, ["setActiveId"]);
+    state = useStore(state || CompositeContext, ["move"]);
 
     const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
@@ -107,14 +116,16 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
         if (hoveringInside(event)) return;
+        if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
         // Move focus to the composite container.
-        state?.setActiveId(null);
+        state?.move(null);
       },
-      [onMouseLeaveProp, state?.setActiveId]
+      [onMouseLeaveProp, state?.move]
     );
 
     props = {
+      "data-composite-hover": "",
       ...props,
       onMouseMove,
       onMouseLeave,
