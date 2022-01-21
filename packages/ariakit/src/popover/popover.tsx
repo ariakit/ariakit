@@ -1,4 +1,4 @@
-import { HTMLAttributes, RefObject, useState } from "react";
+import { HTMLAttributes, RefObject, useEffect, useState } from "react";
 import {
   useForkRef,
   useSafeLayoutEffect,
@@ -31,6 +31,7 @@ export const usePopover = createHook<PopoverOptions>(
     modal = false,
     portal = !!modal,
     preserveTabOrder = true,
+    autoFocusOnShow = true,
     wrapperProps,
     ...props
   }) => {
@@ -56,6 +57,17 @@ export const usePopover = createHook<PopoverOptions>(
       if (!popover) return;
       wrapper.style.zIndex = getComputedStyle(popover).zIndex;
     }, [popoverRef, state.contentElement]);
+
+    const domReady = !portal || portalNode;
+    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(state.fixed);
+
+    // When the popover is absolutely positioned, we can't move focus right
+    // after it gets open. Otherwise we may see some scroll jumps. So we wait a
+    // bit so Popper can finish positioning the popover before we move focus.
+    useEffect(() => {
+      if (state.fixed) return;
+      setCanAutoFocusOnShow(!!domReady && state.mounted);
+    }, [state.fixed, domReady, state.mounted]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
@@ -100,6 +112,7 @@ export const usePopover = createHook<PopoverOptions>(
       modal,
       preserveTabOrder,
       portal,
+      autoFocusOnShow: canAutoFocusOnShow && autoFocusOnShow,
       ...props,
       portalRef,
     });

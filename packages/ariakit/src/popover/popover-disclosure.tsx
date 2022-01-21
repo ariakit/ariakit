@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -10,6 +10,7 @@ import {
   DialogDisclosureOptions,
   useDialogDisclosure,
 } from "../dialog/dialog-disclosure";
+import { PopoverContext } from "./__utils";
 import { PopoverAnchorOptions, usePopoverAnchor } from "./popover-anchor";
 
 /**
@@ -36,6 +37,16 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
         onClickProp(event);
       },
       [state.anchorRef, state.setAnchorRect, onClickProp]
+    );
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <PopoverContext.Provider value={state}>
+          {element}
+        </PopoverContext.Provider>
+      ),
+      [state]
     );
 
     props = {

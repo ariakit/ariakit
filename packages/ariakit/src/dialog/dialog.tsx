@@ -17,7 +17,6 @@ import {
   ensureFocus,
   getFirstTabbableIn,
   getLastTabbableIn,
-  hasFocusWithin,
   isFocusable,
 } from "ariakit-utils/focus";
 import {
@@ -228,17 +227,10 @@ export const useDialog = createHook<DialogOptions>(
       if (isNestedDialogVisible) return;
       const dialog = ref.current;
       if (!dialog) return;
-      // If there's already a focused element within the dialog, we'll not move
-      // the focus to another element. This will be true when the user manually
-      // moves the focus to an element inside the dialog when the dialog gets
-      // visible.
-      const isActive = () => hasFocusWithin(dialog);
       const initialFocus = initialFocusRef?.current;
       const element =
         initialFocus || getFirstTabbableIn(dialog, true) || dialog;
-      // If we don't prevent scroll, there will be a scroll jump when opening
-      // popovers.
-      ensureFocus(element, { preventScroll: true, isActive });
+      ensureFocus(element);
     }, [
       state.animating,
       state.visible,
