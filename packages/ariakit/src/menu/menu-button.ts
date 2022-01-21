@@ -2,7 +2,7 @@ import { FocusEvent, KeyboardEvent, MouseEvent, useCallback } from "react";
 import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
 import { useEventCallback, useId } from "ariakit-utils/hooks";
-import { useStore, useStoreProvider } from "ariakit-utils/store";
+import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -21,7 +21,7 @@ import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
-import { MenuBarContext, MenuContext, useParentMenu } from "./__utils";
+import { MenuBarContext, useParentMenu } from "./__utils";
 import { MenuState } from "./menu-state";
 
 function hasExpandedMenuButton(
@@ -150,8 +150,6 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         state.show,
       ]
     );
-
-    props = useStoreProvider({ state, ...props }, MenuContext);
 
     if (hasParentMenu) {
       // On Safari, VO+Space triggers a click twice on native button elements
