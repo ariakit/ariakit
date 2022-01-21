@@ -67,7 +67,7 @@ export function useSelectState({
     if (!composite.items.length) return;
     const item = findFirstEnabledItemWithValue(composite.items);
     if (!item?.value) return;
-    // setValue(item.value);
+    setValue(item.value);
   }, [initialValue, composite.items, setValue]);
 
   // Sets the activeId based on the value. That is, if the value is updated, we
@@ -92,7 +92,7 @@ export function useSelectState({
     if (!activeIdRef.current) return;
     const item = findEnabledItemById(composite.items, activeIdRef.current);
     if (item?.value == null) return;
-    // setValue(item.value);
+    setValue(item.value);
   }, [setValueOnMove, composite.moves, composite.items, setValue]);
 
   const state = useMemo(
