@@ -1,0 +1,15 @@
+[role="toolbar"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[role="gridcell"]:hover [role="toolbar"],
+[role="gridcell"]:focus-within [role="toolbar"] {
+  opacity: 1;
+  pointer-events: initial;
+}
+
+[role="grid"] {
+  overflow: auto;
+  max-height: 400px;
+}
