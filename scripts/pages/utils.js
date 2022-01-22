@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const babel = require("@babel/core");
-const { uniq } = require("lodash");
+const { uniq, uniqBy } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
 const ts = require("typescript");
@@ -239,12 +239,12 @@ async function getPageContent({ filename, dest, componentPath }) {
 
   const importsFlat = Object.values(imports).flat();
 
-  const importDeclarations = uniq(
-    importsFlat.map((i) => {
+  const importDeclarations = uniqBy(importsFlat, (i) => i.identifier).map(
+    (i) => {
       if (!i.identifier) return `import "${i.source}";`;
       if (i.defaultExport) return `import ${i.identifier} from "${i.source}";`;
       return `import * as ${i.identifier} from "${i.source}";`;
-    })
+    }
   );
 
   const { default: _, ...markdownImports } = imports;

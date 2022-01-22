@@ -1,15 +1,46 @@
-[role="toolbar"] {
-  opacity: 0;
-  pointer-events: none;
+@import url("../../../menu/__examples__/menu-item-checkbox/style.css");
+@import url("../../../tooltip/__examples__/tooltip/style.css");
+
+.messages {
+  transform: translate3d(1px, 1px, 0);
+  position: relative;
+  @apply flex flex-col gap-2 p-2 overflow-auto h-80;
 }
 
-[role="gridcell"]:hover [role="toolbar"],
-[role="gridcell"]:focus-within [role="toolbar"] {
-  opacity: 1;
-  pointer-events: initial;
+.message-cell {
+  @apply
+    scroll-m-2
+    flex
+    gap-2
+    items-center
+    rounded-2xl
+    focus-visible:ariakit-outline;
 }
 
-[role="grid"] {
-  overflow: auto;
-  max-height: 400px;
+.message {
+  @apply
+    px-3
+    py-2
+    rounded-2xl
+    bg-primary-2
+    text-primary-2
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark;
+}
+
+.message-toolbar {
+  @apply flex opacity-0 pointer-events-none;
+}
+
+.button {
+  @apply rounded-full p-0 h-8 w-8;
+}
+
+.message-cell:hover .message-toolbar,
+.message-cell:focus-within .message-toolbar {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.menu {
+  @apply w-40;
 }

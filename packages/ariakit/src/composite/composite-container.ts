@@ -112,8 +112,11 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
           isOpenRef.current = false;
           const composite = state?.baseRef.current;
           const selector = "[data-composite-container]";
-          const containers = composite?.querySelectorAll<HTMLElement>(selector);
-          containers?.forEach((container) => disableFocusIn(container));
+          requestAnimationFrame(() => {
+            const containers =
+              composite?.querySelectorAll<HTMLElement>(selector);
+            containers?.forEach((container) => disableFocusIn(container));
+          });
         } else if (!isOpen) {
           // Otherwise, if any element inside the container has received focus,
           // for example, by a direct user click, we should act as the container

@@ -1,24 +1,31 @@
-import { ReactNode, forwardRef } from "react";
+import { ElementType, ReactNode, forwardRef } from "react";
+import { Button } from "ariakit/button";
 import {
-  Menu as AriaMenu,
   MenuButton,
   MenuButtonProps,
+  Menu as MenuPopover,
+  MenuProps as MenuPopoverProps,
   useMenuState,
-} from "ariakit";
+} from "ariakit/menu";
 
-type MenuProps = Omit<MenuButtonProps, "state"> & {
+export type MenuProps = Omit<MenuButtonProps<ElementType>, "state"> & {
   label: ReactNode;
+  popoverProps?: Omit<MenuPopoverProps, "state">;
 };
 
 const Menu = forwardRef<HTMLButtonElement, MenuProps>(
-  ({ label, ...props }, ref) => {
+  ({ label, popoverProps, ...props }, ref) => {
     const menu = useMenuState();
     return (
       <>
-        <MenuButton ref={ref} {...props} state={menu}>
+        <MenuButton as={Button} {...props} ref={ref} state={menu}>
           {label}
         </MenuButton>
-        <AriaMenu state={menu}>{props.children}</AriaMenu>
+        {menu.mounted && (
+          <MenuPopover className="menu" {...popoverProps} state={menu}>
+            {props.children}
+          </MenuPopover>
+        )}
       </>
     );
   }
