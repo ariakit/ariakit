@@ -215,6 +215,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       // the item if isActiveItem changes (and moves doesn't).
       if (state?.moves && isActiveItemRef.current) {
         element.focus();
+        // TODO: Maybe we should call scrollIntoView() here when the item is
+        // already focused.
       }
     }, [state?.moves]);
 

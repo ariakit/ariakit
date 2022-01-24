@@ -37,9 +37,7 @@
     outline-none
     cursor-default
     rounded
-    p-2
-    hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover;
+    p-2;
 }
 
 .popover > *[aria-selected="true"],

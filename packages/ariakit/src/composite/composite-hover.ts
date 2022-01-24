@@ -38,7 +38,7 @@ function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   return contains(event.currentTarget, nextElement);
 }
 
-function isPartiallyHidden(element: HTMLElement) {
+function isPartiallyHidden(element: Element) {
   const elementRect = element.getBoundingClientRect();
   const scroller = getScrollingElement(element);
   if (!scroller) return false;
@@ -65,10 +65,9 @@ function isPartiallyHidden(element: HTMLElement) {
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
   const dest = getMouseDestination(event);
   if (!dest) return false;
-  return (
-    dest.hasAttribute("data-composite-hover") ||
-    !!closest(dest, "[data-composite-hover]")
-  );
+  const item = closest(dest, "[data-composite-hover]");
+  if (!item) return false;
+  return !isPartiallyHidden(item);
 }
 
 /**
