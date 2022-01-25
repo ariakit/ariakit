@@ -13,7 +13,12 @@ import {
   fireKeyboardEvent,
   isSelfTarget,
 } from "ariakit-utils/events";
-import { useEventCallback, useForkRef, useLiveRef } from "ariakit-utils/hooks";
+import {
+  useEventCallback,
+  useForkRef,
+  useLiveRef,
+  useSafeLayoutEffect,
+} from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -119,6 +124,18 @@ export const useComposite = createHook<CompositeOptions>(
     const previousElementRef = useRef<HTMLElement | null>(null);
     const isSelfActive = state.activeId === null;
     const isSelfAciveRef = useLiveRef(isSelfActive);
+    const scheduleFocus = useScheduleFocus(activeItem);
+
+    // Focus on the active item element.
+    useSafeLayoutEffect(() => {
+      const itemElement = activeItemRef.current?.ref.current;
+      if (!itemElement) return;
+      if (!state.moves) return;
+      // We're scheduling the focus on the next tick to avoid the `onFocus`
+      // event on each item to be triggered before the state changes can
+      // propagate to them.
+      scheduleFocus();
+    }, [state.moves]);
 
     useEffect(() => {
       if (!composite) return;
@@ -180,7 +197,6 @@ export const useComposite = createHook<CompositeOptions>(
     );
 
     const onFocusProp = useEventCallback(props.onFocus);
-    const scheduleFocus = useScheduleFocus(activeItem);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {

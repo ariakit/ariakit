@@ -56,19 +56,14 @@ export const useRadio = createHook<RadioOptions>(
   ({ state, value, checked, ...props }) => {
     const id = useId(props.id);
     state = useStore(state || RadioContextState, [
-      "setActiveId",
-      "setValue",
       useCallback((s: RadioState) => s.activeId === id, [id]),
       useCallback((s: RadioState) => s.value === value, [value]),
+      "setActiveId",
+      "setValue",
     ]);
 
     const ref = useRef<HTMLInputElement>(null);
-    const tagName = useTagName(ref, props.as || "input");
-    const nativeRadio = isNativeRadio(tagName, props.type);
     const isActiveItemRef = useLiveRef(state?.activeId === id);
-    const onChangeProp = useEventCallback(props.onChange);
-    const onClickProp = useEventCallback(props.onClick);
-    const onFocusProp = useEventCallback(props.onFocus);
     const isChecked = checked ?? getIsChecked(value, state?.value);
 
     // When the radio state has a default value, we need to update the active id
@@ -79,6 +74,10 @@ export const useRadio = createHook<RadioOptions>(
         state?.setActiveId(id);
       }
     }, [isChecked, state?.setActiveId, id]);
+
+    const onChangeProp = useEventCallback(props.onChange);
+    const tagName = useTagName(ref, props.as || "input");
+    const nativeRadio = isNativeRadio(tagName, props.type);
 
     const onChange = useCallback(
       (event: SyntheticEvent<HTMLInputElement>) => {
@@ -97,6 +96,8 @@ export const useRadio = createHook<RadioOptions>(
       [props.disabled, nativeRadio, onChangeProp, state?.setValue, value]
     );
 
+    const onClickProp = useEventCallback(props.onClick);
+
     const onClick = useCallback(
       (event: MouseEvent<HTMLInputElement>) => {
         onClickProp(event);
@@ -106,6 +107,8 @@ export const useRadio = createHook<RadioOptions>(
       },
       [onClickProp, nativeRadio, onChange]
     );
+
+    const onFocusProp = useEventCallback(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {

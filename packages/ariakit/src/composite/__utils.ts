@@ -15,26 +15,6 @@ function getMaxRowLength(array: Item[][]) {
   return maxLength;
 }
 
-export function getScrollingElement(
-  element?: Element | null
-): HTMLElement | Element | null {
-  if (!element) {
-    return null;
-  }
-  if (element.clientHeight && element.scrollHeight > element.clientHeight) {
-    const { overflowY } = getComputedStyle(element);
-    const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
-    if (isScrollable) {
-      return element;
-    }
-  }
-  return (
-    getScrollingElement(element.parentElement) ||
-    document.scrollingElement ||
-    document.body
-  );
-}
-
 /**
  * Returns only enabled items.
  */

@@ -1,12 +1,12 @@
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
-import { closest, contains } from "ariakit-utils/dom";
+import { closest, contains, isPartiallyHidden } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
-import { CompositeContext, getScrollingElement } from "./__utils";
+import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 let screenX = 0;
@@ -36,30 +36,6 @@ function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
   return contains(event.currentTarget, nextElement);
-}
-
-function isPartiallyHidden(element: Element) {
-  const elementRect = element.getBoundingClientRect();
-  const scroller = getScrollingElement(element);
-  if (!scroller) return false;
-  const scrollerRect = scroller.getBoundingClientRect();
-
-  const isHTML = scroller.tagName === "HTML";
-  const scrollerTop = isHTML
-    ? scrollerRect.top + scroller.scrollTop
-    : scrollerRect.top;
-  const scrollerBottom = isHTML ? scroller.clientHeight : scrollerRect.bottom;
-  const scrollerLeft = isHTML
-    ? scrollerRect.left + scroller.scrollLeft
-    : scrollerRect.left;
-  const scrollerRight = isHTML ? scroller.clientWidth : scrollerRect.right;
-
-  const top = elementRect.top <= scrollerTop;
-  const left = elementRect.left <= scrollerLeft;
-  const bottom = elementRect.bottom >= scrollerBottom;
-  const right = elementRect.right >= scrollerRight;
-
-  return top || left || bottom || right;
 }
 
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
