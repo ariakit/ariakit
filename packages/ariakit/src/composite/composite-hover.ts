@@ -38,9 +38,44 @@ function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   return contains(event.currentTarget, nextElement);
 }
 
-function isPartiallyHidden(element: HTMLElement) {
+const stackingContextWillChangeProps =
+  /\b(?:position|zIndex|opacity|transform|mixBlendMode|filter|isolation)\b/;
+
+function isFlexItem(element: Element) {
+  const parentElement = element.parentElement;
+  if (!parentElement) return false;
+  const display = getComputedStyle(parentElement).display;
+  return display === "flex" || display === "inline-flex";
+}
+
+function isStackingContext(element: Element) {
+  const style = getComputedStyle(element);
+
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+  if (style.position === "fixed") return true;
+  if (style.zIndex !== "auto" && style.position !== "static") return true;
+  if (isFlexItem(element)) return true;
+  if (+style.opacity < 1) return true;
+  if ("transform" in style && style.transform !== "none") return true;
+  if ("mixBlendMode" in style && style.mixBlendMode !== "normal") return true;
+  if ("filter" in style && style.filter !== "none") return true;
+  if ("isolation" in style && style.isolation === "isolate") return true;
+  if (stackingContextWillChangeProps.test(style.willChange)) return true;
+
+  return false;
+}
+
+function findStackingContext(element: Element | null) {
+  while (element) {
+    if (isStackingContext(element)) return element;
+    element = element.parentElement;
+  }
+  return element;
+}
+
+function isPartiallyHidden(element: Element) {
   const elementRect = element.getBoundingClientRect();
-  const scroller = getScrollingElement(element);
+  const scroller = getScrollingElement(findStackingContext(element));
   if (!scroller) return false;
   const scrollerRect = scroller.getBoundingClientRect();
 
@@ -65,10 +100,9 @@ function isPartiallyHidden(element: HTMLElement) {
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
   const dest = getMouseDestination(event);
   if (!dest) return false;
-  return (
-    dest.hasAttribute("data-composite-hover") ||
-    !!closest(dest, "[data-composite-hover]")
-  );
+  const item = closest(dest, "[data-composite-hover]");
+  if (!item) return false;
+  return !isPartiallyHidden(item);
 }
 
 /**
