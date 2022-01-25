@@ -3,13 +3,13 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="p-5 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-5">
       <h1 className="text-3xl font-semibold">Hello!</h1>
       <p>
         The Ariakit docs are still under construction. You can{" "}
         <a
           href="https://newsletter.ariakit.org"
-          className="text-primary-1 dark:text-primary-1-dark underline hover:no-underline"
+          className="text-primary-1 underline hover:no-underline dark:text-primary-1-dark"
         >
           subscribe to our newsletter
         </a>{" "}

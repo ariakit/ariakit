@@ -22,8 +22,8 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(
         className={cx(
           "rounded-lg border border-solid",
           "border-canvas-4 dark:border-canvas-4-dark",
-          "bg-canvas-4 dark:bg-canvas-4-dark text-canvas-4",
-          "dark:text-canvas-4-dark focus-visible:ariakit-outline",
+          "bg-canvas-4 text-canvas-4 dark:bg-canvas-4-dark",
+          "focus-visible:ariakit-outline dark:text-canvas-4-dark",
           elevationMap[elevation],
           props.className
         )}
