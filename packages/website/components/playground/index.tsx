@@ -39,7 +39,7 @@ const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
     ),
   {
     loading: () => (
-      <div className="h-2 bg-canvas-1 dark:bg-canvas-1-dark rounded-b-[inherit]" />
+      <div className="h-2 rounded-b-[inherit] bg-canvas-1 dark:bg-canvas-1-dark" />
     ),
   }
 );
@@ -128,13 +128,13 @@ export default function Playground(props: PlaygroundProps) {
     <Tab
       className={cx(
         hidden ? "rounded-sm" : "rounded-md sm:rounded",
-        "h-10 sm:h-8 px-4 sm:px-3 text-base sm:text-sm whitespace-nowrap bg-alpha-2",
+        "h-10 whitespace-nowrap bg-alpha-2 px-4 text-base sm:h-8 sm:px-3 sm:text-sm",
         "text-black-fade hover:bg-alpha-2-hover aria-selected:bg-primary-2",
         "aria-selected:text-primary-2 aria-selected:hover:to-primary-2-hover",
-        "dark:hover:bg-alpha-2-dark-hover dark:text-white-fade",
+        "dark:text-white-fade dark:hover:bg-alpha-2-dark-hover",
         "dark:aria-selected:bg-primary-2-dark dark:aria-selected:text-primary-2-dark",
         "dark:aria-selected:hover:bg-primary-2-dark-hover",
-        "focus-visible:ariakit-outline flex flex-start items-center"
+        "flex-start flex items-center focus-visible:ariakit-outline"
       )}
       key={file}
       id={getTabId(file, baseId)}
@@ -148,44 +148,44 @@ export default function Playground(props: PlaygroundProps) {
     <div className="!max-w-4xl">
       <PlaygroundContainer
         state={playground}
-        className="flex flex-col items-center w-full gap-3 sm:gap-4 md:gap-6"
+        className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
         <div className="relative w-full">
           <PlaygroundPreview
             getModule={getModule}
             errorProps={errorProps}
             className="flex min-h-[300px] items-center
-            justify-center bg-canvas-3 dark:bg-canvas-3-dark rounded-lg p-4
-            md:p-6 border border-canvas-3 dark:border-0"
+            justify-center rounded-lg border border-canvas-3 bg-canvas-3
+            p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
           />
         </div>
-        <div className="dark relative rounded-lg max-w-3xl w-full">
+        <div className="dark relative w-full max-w-3xl rounded-lg">
           <div
-            className="flex justify-between p-3 pb-1 bg-canvas-1
-            dark:bg-canvas-1-dark rounded-tl-[inherit] rounded-tr-[inherit]
-            text-sm"
+            className="flex justify-between rounded-tl-[inherit] rounded-tr-[inherit] bg-canvas-1
+            p-3 pb-1 text-sm
+            dark:bg-canvas-1-dark"
           >
             <TabList
               state={tab}
-              className="flex flex-row gap-2 w-full overflow-x-auto p-1"
+              className="flex w-full flex-row gap-2 overflow-x-auto p-1"
             >
               {visibleTabs.map((file) => renderTab(file))}
               {!!hiddenTabs.length && (
                 <>
                   <CompositeOverflowDisclosure
                     state={overflow}
-                    className="h-10 sm:h-8 px-4 sm:px-3 rounded text-base sm:text-sm
-                    bg-alpha-2 text-black-fade hover:bg-alpha-2-hover
-                    dark:hover:bg-alpha-2-dark-hover dark:text-white-fade
-                    aria-expanded:bg-alpha-1 dark:aria-expanded:bg-alpha-1-dark
-                    focus-visible:ariakit-outline"
+                    className="h-10 rounded bg-alpha-2 px-4 text-base text-black-fade hover:bg-alpha-2-hover
+                    focus-visible:ariakit-outline aria-expanded:bg-alpha-1 dark:text-white-fade
+                    dark:hover:bg-alpha-2-dark-hover dark:aria-expanded:bg-alpha-1-dark
+                    sm:h-8 sm:px-3
+                    sm:text-sm"
                   >
                     +{hiddenTabs.length}
                   </CompositeOverflowDisclosure>
                   <CompositeOverflow
                     state={overflow}
                     as={Popup}
-                    className="flex flex-col p-2 gap-2"
+                    className="flex flex-col gap-2 p-2"
                     elevation={2}
                   >
                     {hiddenTabs.map((file) => renderTab(file, true))}
@@ -210,7 +210,7 @@ export default function Playground(props: PlaygroundProps) {
                   <div {...props}>
                     <PlaygroundEditor
                       lineNumbers
-                      className="bg-canvas-1 dark:bg-canvas-1-dark focus-visible:ariakit-outline"
+                      className="bg-canvas-1 focus-visible:ariakit-outline dark:bg-canvas-1-dark"
                       state={playground}
                       file={file}
                       theme={theme}

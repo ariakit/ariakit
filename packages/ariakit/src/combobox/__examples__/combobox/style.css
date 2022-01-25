@@ -5,18 +5,18 @@
 .combobox {
   width: 250px;
   @apply
-    border-none
-    px-4
     h-10
     rounded-lg
-    text-base
+    border-none
     bg-canvas-1
+    px-4
+    text-base
     text-canvas-1
     hover:bg-canvas-1-hover
+    focus-visible:ariakit-outline
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    focus-visible:ariakit-outline;
+    dark:hover:bg-canvas-1-dark-hover;
 }
 
 .popover {
@@ -24,34 +24,34 @@
   max-height: 300px;
   @apply
     relative
+    z-50
     flex
     flex-col
-    z-50
-    p-2
     overflow-auto
     rounded-lg
-    drop-shadow
-    dark:drop-shadow-dark
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
+    p-2
     text-canvas-4
-    dark:text-canvas-4-dark;
+    drop-shadow
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    dark:drop-shadow-dark;
 }
 
 .popover > * {
   @apply
     flex
-    gap-2
-    items-center
-    scroll-m-2
-    outline-none
     cursor-default
+    scroll-m-2
+    items-center
+    gap-2
     rounded
     p-2
+    outline-none
     hover:bg-primary-1-hover
     dark:hover:bg-primary-1-dark-hover;
 }

@@ -40,11 +40,11 @@ const PlaygroundDisclosure = forwardRef<
         ...buttonProps.style,
       }}
       className={cx(
-        "flex items-center justify-center gap-1 w-full text-base border-none",
+        "flex w-full items-center justify-center gap-1 border-none text-base",
         "cursor-pointer text-[color:inherit] hover:underline focus-visible:ariakit-outline",
-        expanded && "bg-none p-2 rounded",
+        expanded && "rounded bg-none p-2",
         !expanded &&
-          "absolute bottom-0 p-4 pt-12 rounded-bl-[inherit] rounded-br-[inherit] text-canvas-1-dark",
+          "absolute bottom-0 rounded-bl-[inherit] rounded-br-[inherit] p-4 pt-12 text-canvas-1-dark",
         buttonProps.className
       )}
     >
