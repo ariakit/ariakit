@@ -1,21 +1,21 @@
 .button {
   @apply
     flex
+    h-10
+    cursor-pointer
     items-center
     justify-center
     gap-1
-    text-base
-    cursor-pointer
-    border-none
     rounded-lg
-    px-4
-    h-10
+    border-none
     bg-primary-2
+    px-4
+    text-base
     text-primary-2
     hover:bg-primary-2-hover
+    focus-visible:ariakit-outline
+    aria-disabled:opacity-50
     dark:bg-primary-2-dark
     dark:text-primary-2-dark
-    dark:hover:bg-primary-2-dark-hover
-    focus-visible:ariakit-outline
-    aria-disabled:opacity-50;
+    dark:hover:bg-primary-2-dark-hover;
 }

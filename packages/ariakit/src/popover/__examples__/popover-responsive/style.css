@@ -2,10 +2,10 @@
 
 .popover {
   @apply
+    max-h-[calc(100vh-200px)]
     w-full
     max-w-none
-    sm:max-w-[min(calc(100vw-16px),_320px)]
-    max-h-[calc(100vh-200px)];
+    sm:max-w-[min(calc(100vw-16px),_320px)];
 }
 
 [data-backdrop] {

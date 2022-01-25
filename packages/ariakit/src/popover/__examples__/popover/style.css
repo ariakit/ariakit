@@ -3,30 +3,30 @@
 .popover {
   max-width: min(calc(100vw - 16px), 320px);
   @apply
+    z-50
     flex
     flex-col
     gap-4
-    z-50
-    p-4
     rounded-lg
-    drop-shadow
-    dark:drop-shadow-dark
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
+    p-4
     text-canvas-4
+    drop-shadow
+    focus-visible:ariakit-outline
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    focus-visible:ariakit-outline;
+    dark:drop-shadow-dark;
 }
 
 .arrow svg {
   @apply
     fill-canvas-4
-    dark:fill-canvas-4-dark
     stroke-canvas-4
+    dark:fill-canvas-4-dark
     dark:stroke-canvas-4-dark;
 }
 
