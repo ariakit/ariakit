@@ -5,7 +5,7 @@
 }
 
 .wrapper > * {
-  @apply max-w-3xl w-full;
+  @apply w-full max-w-3xl;
 }
 
 .wrapper h1 {

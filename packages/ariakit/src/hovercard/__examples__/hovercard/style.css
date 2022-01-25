@@ -5,34 +5,34 @@
 }
 
 .anchor {
-  @apply font-semibold hover:underline text-primary-1 dark:text-primary-1-dark;
+  @apply font-semibold text-primary-1 hover:underline dark:text-primary-1-dark;
 }
 
 .hovercard {
   @apply
     relative
-    flex
-    flex-col
-    w-[300px]
-    gap-2
     z-50
-    p-4
+    flex
+    w-[300px]
+    flex-col
+    gap-2
     rounded-lg
-    drop-shadow
-    dark:drop-shadow-dark
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
+    p-4
     text-canvas-4
+    drop-shadow
+    focus-visible:ariakit-outline
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    focus-visible:ariakit-outline;
+    dark:drop-shadow-dark;
 }
 
 .avatar {
-  @apply rounded-full w-16;
+  @apply w-16 rounded-full;
 }
 
 .username {

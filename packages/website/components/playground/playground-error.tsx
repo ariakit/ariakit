@@ -15,12 +15,12 @@ export default function PlaygroundError(props: CommandProps<"pre">) {
         isEmpty
           ? props.className
           : cx(
-              "absolute bottom-2 left-2 right-2 rounded-md p-2 cursor-pointer",
-              "whitespace-pre-wrap overflow-hidden text-sm border",
-              "bg-danger-1 text-danger-1 border-danger-1 hover:bg-danger-1-hover",
-              "dark:bg-danger-1-dark dark:text-danger-1-dark dark:border-danger-1-dark",
-              "dark:hover:bg-danger-1-dark-hover focus-visible:ariakit-outline",
-              !expanded && "h-10 leading-10 py-0",
+              "absolute bottom-2 left-2 right-2 cursor-pointer rounded-md p-2",
+              "overflow-hidden whitespace-pre-wrap border text-sm",
+              "border-danger-1 bg-danger-1 text-danger-1 hover:bg-danger-1-hover",
+              "dark:border-danger-1-dark dark:bg-danger-1-dark dark:text-danger-1-dark",
+              "focus-visible:ariakit-outline dark:hover:bg-danger-1-dark-hover",
+              !expanded && "h-10 py-0 leading-10",
               props.className
             )
       }
