@@ -1,12 +1,12 @@
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
-import { closest, contains } from "ariakit-utils/dom";
+import { closest, contains, isPartiallyHidden } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
-import { CompositeContext, getScrollingElement } from "./__utils";
+import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 let screenX = 0;
@@ -36,65 +36,6 @@ function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
   return contains(event.currentTarget, nextElement);
-}
-
-const stackingContextWillChangeProps =
-  /\b(?:position|zIndex|opacity|transform|mixBlendMode|filter|isolation)\b/;
-
-function isFlexItem(element: Element) {
-  const parentElement = element.parentElement;
-  if (!parentElement) return false;
-  const display = getComputedStyle(parentElement).display;
-  return display === "flex" || display === "inline-flex";
-}
-
-function isStackingContext(element: Element) {
-  const style = getComputedStyle(element);
-
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
-  if (style.position === "fixed") return true;
-  if (style.zIndex !== "auto" && style.position !== "static") return true;
-  if (isFlexItem(element)) return true;
-  if (+style.opacity < 1) return true;
-  if ("transform" in style && style.transform !== "none") return true;
-  if ("mixBlendMode" in style && style.mixBlendMode !== "normal") return true;
-  if ("filter" in style && style.filter !== "none") return true;
-  if ("isolation" in style && style.isolation === "isolate") return true;
-  if (stackingContextWillChangeProps.test(style.willChange)) return true;
-
-  return false;
-}
-
-function findStackingContext(element: Element | null) {
-  while (element) {
-    if (isStackingContext(element)) return element;
-    element = element.parentElement;
-  }
-  return element;
-}
-
-function isPartiallyHidden(element: Element) {
-  const elementRect = element.getBoundingClientRect();
-  const scroller = getScrollingElement(findStackingContext(element));
-  if (!scroller) return false;
-  const scrollerRect = scroller.getBoundingClientRect();
-
-  const isHTML = scroller.tagName === "HTML";
-  const scrollerTop = isHTML
-    ? scrollerRect.top + scroller.scrollTop
-    : scrollerRect.top;
-  const scrollerBottom = isHTML ? scroller.clientHeight : scrollerRect.bottom;
-  const scrollerLeft = isHTML
-    ? scrollerRect.left + scroller.scrollLeft
-    : scrollerRect.left;
-  const scrollerRight = isHTML ? scroller.clientWidth : scrollerRect.right;
-
-  const top = elementRect.top <= scrollerTop;
-  const left = elementRect.left <= scrollerLeft;
-  const bottom = elementRect.bottom >= scrollerBottom;
-  const right = elementRect.right >= scrollerRight;
-
-  return top || left || bottom || right;
 }
 
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {

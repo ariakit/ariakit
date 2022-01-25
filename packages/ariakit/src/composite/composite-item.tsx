@@ -5,19 +5,17 @@ import {
   SyntheticEvent,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { isButton, isTextField } from "ariakit-utils/dom";
+import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
 import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
   useEventCallback,
   useForkRef,
   useId,
-  useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -37,7 +35,6 @@ import {
   Item,
   findEnabledItemById,
   getContextId,
-  getScrollingElement,
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
@@ -184,8 +181,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
   }) => {
     const id = useId(props.id);
     state = useStore(state || CompositeContext, [
-      // TODO: See test "show on space then esc then arrow up"
-      // useCallback((s: CompositeState) => s.moves === 0, []),
       useCallback((s: CompositeState) => s.activeId === id, [id]),
       "baseRef",
       "items",
@@ -203,21 +198,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     ]);
 
     const ref = useRef<HTMLButtonElement>(null);
-    const isActiveItem = state?.activeId === id;
-    const isActiveItemRef = useLiveRef(isActiveItem);
-
-    useEffect(() => {
-      const element = ref.current;
-      if (!element) return;
-      // `moves` will be incremented whenever composite.move() is called. This
-      // means that the composite item should receive focus. We're using
-      // isActiveItemRef instead of isActiveItem because we don't want to focus
-      // the item if isActiveItem changes (and moves doesn't).
-      if (state?.moves && isActiveItemRef.current) {
-        element.focus();
-      }
-    }, [state?.moves]);
-
     const row = useContext(CompositeRowContext);
     const rowId = rowIdProp ?? getContextId(state, row);
     const trulyDisabled = props.disabled && !props.accessibleWhenDisabled;
@@ -388,6 +368,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [providerValue]
     );
 
+    const isActiveItem = state?.activeId === id;
     const role = useRole(ref, props);
     let ariaSelected: boolean | undefined;
 
