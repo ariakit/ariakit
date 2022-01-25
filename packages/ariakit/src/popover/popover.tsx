@@ -58,7 +58,6 @@ export const usePopover = createHook<PopoverOptions>(
       wrapper.style.zIndex = getComputedStyle(popover).zIndex;
     }, [popoverRef, state.contentElement]);
 
-    const domReady = !portal || portalNode;
     const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(state.fixed);
 
     // When the popover is absolutely positioned, we can't move focus right
@@ -66,8 +65,8 @@ export const usePopover = createHook<PopoverOptions>(
     // bit so Popper can finish positioning the popover before we move focus.
     useEffect(() => {
       if (state.fixed) return;
-      setCanAutoFocusOnShow(!!domReady && state.mounted);
-    }, [state.fixed, domReady, state.mounted]);
+      setCanAutoFocusOnShow(state.mounted && !!state.contentElement);
+    }, [state.fixed, state.mounted, state.contentElement]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
