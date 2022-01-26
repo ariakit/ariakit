@@ -1,16 +1,30 @@
 @import url("../../../popover/__examples__/popover/style.css");
 
 .wrapper {
-  @apply flex flex-col gap-2 my-[1000px];
+  @apply flex flex-col gap-2;
 }
 
-.button {
+.select {
   width: 200px;
-  @apply justify-start;
-}
-
-.button > span {
-  margin-left: auto;
+  @apply
+    flex
+    h-10
+    cursor-pointer
+    items-center
+    justify-between
+    gap-1
+    rounded-lg
+    border
+    border-primary-1
+    bg-primary-1
+    px-4
+    text-base
+    hover:bg-primary-1-hover
+    focus-visible:ariakit-outline
+    aria-disabled:opacity-50
+    dark:border-primary-1-dark
+    dark:bg-primary-1-dark
+    dark:hover:bg-primary-1-dark-hover;
 }
 
 .popover {
@@ -20,7 +34,7 @@
   /* opacity: 0;
   transform: scaleY(0);
   transition: opacity 500ms ease-in-out, transform 500ms ease-in-out; */
-  @apply gap-0 p-2 overflow-auto;
+  @apply gap-2 px-0 py-2;
 }
 
 .popover[data-enter] {
@@ -28,20 +42,54 @@
   transform: scaleY(1);
 }
 
-.popover > * {
+.combobox {
+  border: 2px solid transparent;
+  @apply
+    flex-shrink-0
+    h-10
+    rounded-md
+    outline-none
+    bg-canvas-1
+    px-4
+    mx-2
+    text-base
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover;
+}
+
+.combobox:focus {
+  border: 2px solid theme("colors.primary-2.DEFAULT");
+}
+
+.list {
+  @apply flex flex-col overflow-auto px-2;
+}
+
+.popover > .list > * {
   @apply
     flex
     gap-2
     items-center
-    scroll-m-2
+    scroll-m-[0.1px]
     outline-none
     cursor-default
     rounded
     p-2;
 }
 
-.popover > *[aria-selected="true"],
-.popover > *:focus {
+.popover > .list > *[aria-selected="true"],
+.popover > .list > *:focus {
+  @apply
+    bg-primary-2
+    text-primary-2
+    dark:bg-primary-2-dark
+    dark:text-primary-2-dark;
+}
+
+.combobox:not([aria-activedescendant]) + .list > *:hover {
   @apply
     bg-primary-2
     text-primary-2

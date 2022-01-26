@@ -255,7 +255,7 @@ export function getScrollingElement(
  */
 export function isPartiallyHidden(element: Element) {
   const elementRect = element.getBoundingClientRect();
-  const scroller = getScrollingElement(findStackingContext(element));
+  const scroller = getScrollingElement(element);
   if (!scroller) return false;
   const scrollerRect = scroller.getBoundingClientRect();
 
@@ -269,43 +269,10 @@ export function isPartiallyHidden(element: Element) {
     : scrollerRect.left;
   const scrollerRight = isHTML ? scroller.clientWidth : scrollerRect.right;
 
-  const top = elementRect.top <= scrollerTop;
-  const left = elementRect.left <= scrollerLeft;
-  const bottom = elementRect.bottom >= scrollerBottom;
-  const right = elementRect.right >= scrollerRight;
+  const top = elementRect.top < scrollerTop;
+  const left = elementRect.left < scrollerLeft;
+  const bottom = elementRect.bottom > scrollerBottom;
+  const right = elementRect.right > scrollerRight;
 
   return top || left || bottom || right;
 }
-
-function findStackingContext(element: Element | null) {
-  while (element) {
-    if (isStackingContext(element)) return element;
-    element = element.parentElement;
-  }
-  return element;
-}
-
-function isStackingContext(element: Element) {
-  const style = getComputedStyle(element);
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
-  if (style.position === "fixed") return true;
-  if (style.zIndex !== "auto" && style.position !== "static") return true;
-  if (isFlexItem(element)) return true;
-  if (+style.opacity < 1) return true;
-  if ("transform" in style && style.transform !== "none") return true;
-  if ("mixBlendMode" in style && style.mixBlendMode !== "normal") return true;
-  if ("filter" in style && style.filter !== "none") return true;
-  if ("isolation" in style && style.isolation === "isolate") return true;
-  if (stackingContextWillChangeProps.test(style.willChange)) return true;
-  return false;
-}
-
-function isFlexItem(element: Element) {
-  const parentElement = element.parentElement;
-  if (!parentElement) return false;
-  const display = getComputedStyle(parentElement).display;
-  return display === "flex" || display === "inline-flex";
-}
-
-const stackingContextWillChangeProps =
-  /\b(?:position|zIndex|opacity|transform|mixBlendMode|filter|isolation)\b/;

@@ -38,7 +38,7 @@ import { SelectState } from "./select-state";
  * ```
  */
 export const useSelectList = createHook<SelectListOptions>(
-  ({ state, ...props }) => {
+  ({ state, composite = true, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
     const [defaultValue, setDefaultValue] = useState(state.value);
@@ -72,7 +72,7 @@ export const useSelectList = createHook<SelectListOptions>(
 
     props = {
       id,
-      role: "listbox",
+      role: composite ? "listbox" : undefined,
       hidden: !state.mounted,
       // "aria-labelledby": labelId,
       ...props,
@@ -81,7 +81,7 @@ export const useSelectList = createHook<SelectListOptions>(
       onKeyDown,
     };
 
-    props = useComposite({ state, ...props });
+    props = useComposite({ state, ...props, composite });
     props = useCompositeTypeahead({ state, ...props });
 
     return props;

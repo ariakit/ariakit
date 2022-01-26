@@ -18,12 +18,10 @@ import {
 } from "../popover/popover-state";
 import { Item, findFirstEnabledItemWithValue } from "./__utils";
 
-function findEnabledItemByValue(items: Item[], value: string) {
-  return items.find((item) => item.value === value && !item.disabled);
-}
-
-function findEnabledItemById(items: Item[], id: string) {
-  return items.find((item) => item.id === id && !item.disabled);
+function findEnabledItemWithValueById(items: Item[], id: string) {
+  return items.find(
+    (item) => item.value != null && item.id === id && !item.disabled
+  );
 }
 
 /**
@@ -43,6 +41,9 @@ export function useSelectState({
   orientation = "vertical",
   placement = "bottom-start",
   setValueOnMove = false,
+  defaultActiveId = null,
+  includesBaseElement = false,
+  fixed = true,
   ...props
 }: SelectStateProps = {}): SelectState {
   const selectRef = useRef<HTMLElement>(null);
@@ -56,10 +57,10 @@ export function useSelectState({
     ...props,
     virtualFocus,
     orientation,
-    defaultActiveId: null,
-    includesBaseElement: false,
+    defaultActiveId,
+    includesBaseElement,
   });
-  const popover = usePopoverState({ ...props, placement });
+  const popover = usePopoverState({ ...props, placement, fixed });
   const initialValue = useInitialValue(props.value ?? props.defaultValue);
   const compositeRef = useLiveRef(composite);
 
@@ -75,28 +76,16 @@ export function useSelectState({
     });
   }, [initialValue, composite.items, setValue]);
 
-  // Sets the activeId based on the value. That is, if the value is updated, we
-  // want to make sure the corresponding item will receive focus the next time
-  // the popover is open.
-  // useEffect(() => {
-  //   // TODO: maybe we don't need to set the activeId here?
-  //   if (value == null) return;
-  //   if (popover.mounted) return;
-  //   const item = findEnabledItemByValue(composite.items, value);
-  //   if (!item) return;
-  //   composite.setActiveId(item?.id);
-  // }, [value, popover.mounted, composite.items, composite.setActiveId]);
-
   const mountedRef = useLiveRef(popover.mounted);
 
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   useEffect(() => {
     if (!setValueOnMove && mountedRef.current) return;
-    if (!composite.moves) return;
     const { activeId, items } = compositeRef.current;
+    if (!composite.moves) return;
     if (!activeId) return;
-    const item = findEnabledItemById(items, activeId);
+    const item = findEnabledItemWithValueById(items, activeId);
     if (item?.value == null) return;
     setValue(item.value);
   }, [setValueOnMove, composite.moves, setValue]);

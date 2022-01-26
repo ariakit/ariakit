@@ -51,7 +51,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     hideOnClick = value != null,
     setValueOnClick = value != null,
     preventScrollOnKeyDown = true,
-    focusOnHover: focusOnHover = true,
+    focusOnHover = true,
     accessibleWhenDisabled = true,
     ...props
   }) => {
