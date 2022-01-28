@@ -27,7 +27,6 @@ import { SelectState } from "./select-state";
  */
 export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
   ({ state, checked, ...props }) => {
-    // TODO: Fix delay when selectOnMove is true
     const context = useContext(SelectItemCheckedContext);
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });

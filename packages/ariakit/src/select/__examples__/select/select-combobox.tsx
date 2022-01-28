@@ -25,51 +25,52 @@ export type SelectComboboxProps = Omit<SelectProps, "state"> & {
   onFilter?: (matches: string[]) => void;
 };
 
-export const SelectCombobox = forwardRef<HTMLDivElement, SelectComboboxProps>(
-  ({ label, defaultValue, defaultList, onFilter, children, ...props }, ref) => {
-    const select = useSelectState({ defaultValue, gutter: 4 });
-    const combobox = useComboboxState({
-      visible: true,
-      activeId: select.activeId,
-      setActiveId: select.setActiveId,
-      defaultList,
-    });
+export const SelectCombobox = forwardRef<
+  HTMLButtonElement,
+  SelectComboboxProps
+>(({ label, defaultValue, defaultList, onFilter, children, ...props }, ref) => {
+  const select = useSelectState({ defaultValue, gutter: 4 });
+  const combobox = useComboboxState({
+    visible: true,
+    activeId: select.activeId,
+    setActiveId: select.setActiveId,
+    defaultList,
+  });
 
-    useEffect(() => {
-      onFilter?.(combobox.matches);
-    }, [combobox.matches]);
+  useEffect(() => {
+    onFilter?.(combobox.matches);
+  }, [combobox.matches]);
 
-    useEffect(() => {
-      if (!select.mounted) {
-        combobox.setValue("");
-      }
-    }, [select.mounted, combobox.setValue]);
+  useEffect(() => {
+    if (!select.mounted) {
+      combobox.setValue("");
+    }
+  }, [select.mounted, combobox.setValue]);
 
-    return (
-      <>
-        <SelectLabel state={select} className="label">
-          {label}
-        </SelectLabel>
-        <Select state={select} ref={ref} {...props} className="select">
-          {select.value}
-          <SelectArrow />
-        </Select>
-        <SelectPopover state={select} composite={false} className="popover">
-          <Combobox
-            state={combobox}
-            className="combobox"
-            aria-label="Filter"
-            placeholder="Filter items..."
-            autoSelect
-          />
-          <ComboboxList state={combobox} className="list">
-            {children}
-          </ComboboxList>
-        </SelectPopover>
-      </>
-    );
-  }
-);
+  return (
+    <>
+      <SelectLabel state={select} className="label">
+        {label}
+      </SelectLabel>
+      <Select state={select} ref={ref} {...props} className="select">
+        {select.value}
+        <SelectArrow />
+      </Select>
+      <SelectPopover state={select} composite={false} className="popover">
+        <Combobox
+          state={combobox}
+          className="combobox"
+          aria-label="Filter"
+          placeholder="Filter items..."
+          autoSelect
+        />
+        <ComboboxList state={combobox} className="list">
+          {children}
+        </ComboboxList>
+      </SelectPopover>
+    </>
+  );
+});
 
 export type SelectComboboxItemProps = SelectItemProps & ComboboxItemProps;
 

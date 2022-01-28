@@ -1,7 +1,7 @@
 @import url("../../../popover/__examples__/popover/style.css");
 
 .wrapper {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-2 my-[1000px];
 }
 
 .select {
@@ -15,16 +15,16 @@
     gap-1
     rounded-lg
     border
-    border-primary-1
-    bg-primary-1
+    border-alpha-1
+    bg-alpha-1
     px-4
     text-base
-    hover:bg-primary-1-hover
+    hover:bg-alpha-1-hover
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
-    dark:border-primary-1-dark
-    dark:bg-primary-1-dark
-    dark:hover:bg-primary-1-dark-hover;
+    dark:border-alpha-1-dark
+    dark:bg-alpha-1-dark
+    dark:hover:bg-alpha-1-dark-hover;
 }
 
 .popover {

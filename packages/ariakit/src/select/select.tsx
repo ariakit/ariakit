@@ -1,12 +1,12 @@
-import { KeyboardEvent, useCallback } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback } from "react";
 import { BasePlacement } from "@popperjs/core";
 import { queueBeforeEvent } from "ariakit-utils/events";
-import { hasFocus } from "ariakit-utils/focus";
 import {
   useBooleanEventCallback,
   useEventCallback,
   useForkRef,
   useRefId,
+  useWrapElement,
 } from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
@@ -23,6 +23,7 @@ import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
+import { VisuallyHidden } from "../visually-hidden";
 import { SelectContext, findFirstEnabledItemWithValue } from "./__utils";
 import { SelectState } from "./select-state";
 
@@ -38,14 +39,14 @@ import { SelectState } from "./select-state";
  * ```
  */
 export const useSelect = createHook<SelectOptions>(
-  ({ state, showOnKeyDown = true, moveOnKeyDown = false, ...props }) => {
+  ({ state, name, showOnKeyDown = true, moveOnKeyDown = false, ...props }) => {
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEventCallback(moveOnKeyDown);
     const dir = state.placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
+      (event: KeyboardEvent<HTMLButtonElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
         if (event.key === " " || event.key === "Enter") {
@@ -118,6 +119,28 @@ export const useSelect = createHook<SelectOptions>(
     props = useStoreProvider({ state, ...props }, SelectContext);
     const labelId = useRefId(state.labelRef);
 
+    props = useWrapElement(
+      props,
+      (element) => (
+        <>
+          <VisuallyHidden
+            as="input"
+            type="text"
+            tabIndex={-1}
+            aria-hidden
+            aria-labelledby={labelId}
+            name={name}
+            value={state.value}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              state.setValue(event.target.value);
+            }}
+          />
+          {element}
+        </>
+      ),
+      [name, labelId, state.selectRef, state.value, state.setValue]
+    );
+
     props = {
       role: "combobox",
       "aria-autocomplete": "none",
@@ -167,10 +190,10 @@ export const useSelect = createHook<SelectOptions>(
  */
 export const Select = createComponent<SelectOptions>((props) => {
   const htmlProps = useSelect(props);
-  return createElement("div", htmlProps);
+  return createElement("button", htmlProps);
 });
 
-export type SelectOptions<T extends As = "div"> = Omit<
+export type SelectOptions<T extends As = "button"> = Omit<
   PopoverDisclosureOptions<T>,
   "state"
 > &
@@ -193,4 +216,4 @@ export type SelectOptions<T extends As = "div"> = Omit<
     moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   };
 
-export type SelectProps<T extends As = "div"> = Props<SelectOptions<T>>;
+export type SelectProps<T extends As = "button"> = Props<SelectOptions<T>>;

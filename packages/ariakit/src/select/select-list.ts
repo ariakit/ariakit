@@ -1,10 +1,8 @@
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
-import { hasFocusWithin } from "ariakit-utils/focus";
 import {
   useEventCallback,
   useForkRef,
   useId,
-  useLiveRef,
   useRefId,
 } from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
@@ -74,7 +72,7 @@ export const useSelectList = createHook<SelectListOptions>(
       id,
       role: composite ? "listbox" : undefined,
       hidden: !state.mounted,
-      // "aria-labelledby": labelId,
+      "aria-labelledby": labelId,
       ...props,
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,

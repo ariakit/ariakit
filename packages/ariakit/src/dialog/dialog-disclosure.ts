@@ -1,4 +1,3 @@
-import { getPopupRole } from "ariakit-utils/dom";
 import {
   createComponent,
   createElement,
@@ -22,13 +21,7 @@ import { DialogState } from "./dialog-state";
  */
 export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
   ({ state, ...props }) => {
-    props = {
-      "aria-haspopup": getPopupRole(state.contentElement, "dialog"),
-      ...props,
-    };
-
     props = useDisclosure({ state, ...props });
-
     return props;
   }
 );
