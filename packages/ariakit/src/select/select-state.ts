@@ -43,7 +43,6 @@ export function useSelectState({
   setValueOnMove = false,
   defaultActiveId = null,
   includesBaseElement = false,
-  fixed = true,
   ...props
 }: SelectStateProps = {}): SelectState {
   const selectRef = useRef<HTMLElement>(null);
@@ -60,7 +59,7 @@ export function useSelectState({
     defaultActiveId,
     includesBaseElement,
   });
-  const popover = usePopoverState({ ...props, placement, fixed });
+  const popover = usePopoverState({ ...props, placement });
   const initialValue = useInitialValue(props.value ?? props.defaultValue);
   const compositeRef = useLiveRef(composite);
 
