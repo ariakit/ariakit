@@ -58,15 +58,15 @@ export const usePopover = createHook<PopoverOptions>(
       wrapper.style.zIndex = getComputedStyle(popover).zIndex;
     }, [popoverRef, state.contentElement]);
 
-    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(state.fixed);
+    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(false);
 
-    // When the popover is absolutely positioned, we can't move focus right
-    // after it gets open. Otherwise we may see some scroll jumps. So we wait a
-    // bit so Popper can finish positioning the popover before we move focus.
+    // We can't move focus right after the popover is shown. Otherwise we may
+    // see some scroll jumps (when it's absolutely positioned), or VoiceOver may
+    // not move focus (even when the position is fixed). So we wait a bit so
+    // Popper can finish positioning the popover before we move focus.
     useEffect(() => {
-      if (state.fixed) return;
       setCanAutoFocusOnShow(state.mounted && !!state.contentElement);
-    }, [state.fixed, state.mounted, state.contentElement]);
+    }, [state.mounted, state.contentElement]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to

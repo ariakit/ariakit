@@ -161,7 +161,7 @@ export function usePopoverState({
           {
             // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
             name: "preventOverflow",
-            enabled: preventOverflow,
+            enabled: preventOverflow && dialog.mounted,
             options: {
               padding,
               tetherOffset: finalGutter,
