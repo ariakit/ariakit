@@ -18,14 +18,14 @@ import { SelectState } from "./select-state";
  * ```jsx
  * const state = useSelectState();
  * const props = useSelectGroup({ state });
- * <SelectButton state={state}>Recent Items</SelectButton>
- * <Select state={state}>
+ * <Select state={state} />
+ * <SelectPopover state={state}>
  *   <Role {...props}>
- *     <SelectGroupLabel>Applications</SelectGroupLabel>
- *     <SelectItem>Google Chrome.app</SelectItem>
- *     <SelectItem>Safari.app</SelectItem>
+ *     <SelectGroupLabel>Fruits</SelectGroupLabel>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
  *   </Role>
- * </Select>
+ * </SelectPopover>
  * ```
  */
 export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
@@ -39,14 +39,14 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
  * @example
  * ```jsx
  * const select = useSelectState();
- * <SelectButton state={select}>Recent Items</SelectButton>
- * <Select state={select}>
+ * <Select state={select} />
+ * <SelectPopover state={select}>
  *   <SelectGroup>
- *     <SelectGroupLabel>Applications</SelectGroupLabel>
- *     <SelectItem>Google Chrome.app</SelectItem>
- *     <SelectItem>Safari.app</SelectItem>
+ *     <SelectGroupLabel>Fruits</SelectGroupLabel>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
  *   </SelectGroup>
- * </Select>
+ * </SelectPopover>
  * ```
  */
 export const SelectGroup = createComponent<SelectGroupOptions>((props) => {
@@ -59,7 +59,8 @@ export type SelectGroupOptions<T extends As = "div"> = Omit<
   "state"
 > & {
   /**
-   * Object returned by the `useSelectState` hook.
+   * Object returned by the `useSelectState` hook. If not provided, the parent
+   * `SelectList` or `SelectPopover` components' context will be used.
    */
   state?: SelectState;
 };

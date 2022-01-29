@@ -8,20 +8,17 @@ import { SelectState } from "./select-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label for a select field. If the field is not a
- * native input, select or textarea element, the hook will return props to
- * render a `span` element. Instead of relying on the `htmlFor` prop, it'll rely
- * on the `aria-labelledby` attribute on the select field. Clicking on the label
- * will move focus to the field even if it's not a native input.
+ * Ariakit component to render a label for the `Select` component. Since it's
+ * not a native select element, we can't use the native label element. The
+ * `SelectLabel` component will move focus and click on the `Select` component
+ * when the user clicks on the label.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const state = useSelectState({ defaultValues: { email: "" } });
- * const props = useSelectLabel({ state, name: state.names.email });
- * <Select state={state}>
- *   <Role {...props}>Email</Role>
- *   <SelectInput name={state.names.email} />
- * </Select>
+ * const state = useSelectState();
+ * const props = useSelectLabel({ state });
+ * <Role {...props}>Favorite fruit</Role>
+ * <Select state={state} />
  * ```
  */
 export const useSelectLabel = createHook<SelectLabelOptions>(
@@ -34,6 +31,9 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
       (event: MouseEvent<HTMLDivElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
+        // queueMicrotask will guarantee that the focus and click events will be
+        // triggered only after the current event queue is flushed (which
+        // includes this click event).
         queueMicrotask(() => {
           const select = state.selectRef.current;
           select?.focus();
@@ -59,19 +59,20 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
 );
 
 /**
- * A component that renders a label for a select field. If the field is not a
- * native input, select or textarea element, the component will render a `span`
- * element. Instead of relying on the `htmlFor` prop, it'll rely on the
- * `aria-labelledby` attribute on the select field. Clicking on the label will
- * move focus to the field even if it's not a native input.
+ * A component that renders a label for the `Select` component. Since it's not a
+ * native select element, we can't use the native label element. The
+ * `SelectLabel` component will move focus and click on the `Select` component
+ * when the user clicks on the label.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectState({ defaultValues: { email: "" } });
- * <Select state={select}>
- *   <SelectLabel name={select.names.email}>Email</Role>
- *   <SelectInput name={select.names.email} />
- * </Select>
+ * const select = useSelectState({ defaultValue: "Apple" });
+ * <SelectLabel state={select}>Favorite fruit</SelectLabel>
+ * <Select state={select} />
+ * <SelectPopover state={select}>
+ *   <SelectItem value="Apple" />
+ *   <SelectItem value="Orange" />
+ * </SelectPopover>
  * ```
  */
 export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {

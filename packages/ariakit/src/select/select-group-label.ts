@@ -38,14 +38,19 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
  * @example
  * ```jsx
  * const select = useSelectState();
- * <SelectButton state={select}>Recent Items</SelectButton>
- * <Select state={select}>
+ * <Select state={select} />
+ * <SelectPopover state={select}>
  *   <SelectGroup>
- *     <SelectGroupLabel>Applications</SelectGroupLabel>
- *     <SelectItem>Google Chrome.app</SelectItem>
- *     <SelectItem>Safari.app</SelectItem>
+ *     <SelectGroupLabel>Fruits</SelectGroupLabel>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
  *   </SelectGroup>
- * </Select>
+ *   <SelectGroup>
+ *     <SelectGroupLabel>Meat</SelectGroupLabel>
+ *     <SelectItem value="Beef" />
+ *     <SelectItem value="Chicken" />
+ *   </SelectGroup>
+ * </SelectPopover>
  * ```
  */
 export const SelectGroupLabel = createComponent<SelectGroupLabelOptions>(
@@ -60,7 +65,8 @@ export type SelectGroupLabelOptions<T extends As = "div"> = Omit<
   "state"
 > & {
   /**
-   * Object returned by the `useSelectState` hook.
+   * Object returned by the `useSelectState` hook. If not provided, the parent
+   * `SelectList` or `SelectPopover` components' context will be used.
    */
   state?: SelectState;
 };

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   createComponent,
   createElement,
@@ -7,8 +6,6 @@ import {
 import { As, Props } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
 import { SelectListOptions, useSelectList } from "./select-list";
-
-// function findEnabledItemByLabel
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -26,16 +23,13 @@ import { SelectListOptions, useSelectList } from "./select-list";
  */
 export const useSelectPopover = createHook<SelectPopoverOptions>(
   ({ state, ...props }) => {
-    const item = state.items.find((item) => item.value === state.value);
-
-    // useEffect(() => () => state.setActiveId(undefined), []);
+    const selectedItem = state.items.find((item) => item.value === state.value);
 
     props = useSelectList({ state, ...props });
     props = usePopover({
       state,
-      autoFocusOnShow: !!item?.ref,
-      // autoFocusOnShow: false,
-      initialFocusRef: item?.ref,
+      autoFocusOnShow: !!selectedItem?.ref,
+      initialFocusRef: selectedItem?.ref,
       ...props,
     });
 

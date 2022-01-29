@@ -52,7 +52,6 @@ export const useSelectItem = createHook<SelectItemOptions>(
     setValueOnClick = value != null,
     preventScrollOnKeyDown = true,
     focusOnHover = true,
-    accessibleWhenDisabled = true,
     ...props
   }) => {
     state = useStore(state || SelectContext, [
@@ -62,10 +61,12 @@ export const useSelectItem = createHook<SelectItemOptions>(
       "contentElement",
       "mounted",
     ]);
+
     const disabled = props.disabled;
 
     const getItem = useCallback(
       (item) => {
+        // When the item is disabled, we don't register its value.
         const nextItem = { ...item, value: disabled ? undefined : value };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -123,7 +124,6 @@ export const useSelectItem = createHook<SelectItemOptions>(
       state,
       getItem,
       preventScrollOnKeyDown,
-      accessibleWhenDisabled,
       ...props,
     });
 
@@ -188,10 +188,14 @@ export type SelectItemOptions<T extends As = "div"> = Omit<
      *     `select.value` state will be set to this value when the user moves to
      *     it (which is usually the case when moving through the items using the
      *     keyboard).
+     * @example
+     * ```jsx
+     * <SelectItem value="Apple" />
+     * ```
      */
     value?: string;
     /**
-     * Whether to hide the select when this item is clicked. By default, tt's
+     * Whether to hide the select when this item is clicked. By default, it's
      * `true` when the `value` prop is also provided.
      */
     hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

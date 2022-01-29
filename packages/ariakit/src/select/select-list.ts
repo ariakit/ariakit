@@ -1,5 +1,14 @@
-import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { isSelfTarget } from "ariakit-utils/events";
+import {
+  useBooleanEventCallback,
   useEventCallback,
   useForkRef,
   useId,
@@ -11,7 +20,7 @@ import {
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
 import {
   CompositeTypeaheadOptions,
@@ -29,35 +38,57 @@ import { SelectState } from "./select-state";
  * const state = useSelectState();
  * const props = useSelectList({ state });
  * <Role {...props}>
- *   <SelectItem value="Item 1" />
- *   <SelectItem value="Item 2" />
- *   <SelectItem value="Item 3" />
+ *   <SelectItem value="Apple" />
+ *   <SelectItem value="Orange" />
  * </Role>
  * ```
  */
 export const useSelectList = createHook<SelectListOptions>(
-  ({ state, composite = true, ...props }) => {
+  ({
+    state,
+    composite = true,
+    resetOnEscape = true,
+    hideOnKeyboardClick = true,
+    ...props
+  }) => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
     const [defaultValue, setDefaultValue] = useState(state.value);
 
+    // Stores the intial value so we can reset it later when Escape is pressed
     useEffect(() => {
       if (state.mounted) return;
       setDefaultValue(state.value);
     }, [state.mounted, state.value]);
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const resetOnEscapeProp = useBooleanEventCallback(resetOnEscape);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (event.key === "Escape") {
-          state.setValue(defaultValue);
-        }
-        // TODO: Enter/Space close the select list
+        if (event.key !== "Escape") return;
+        if (!resetOnEscapeProp(event)) return;
+        state.setValue(defaultValue);
       },
-      [onKeyDownProp, state.setValue, defaultValue]
+      [onKeyDownProp, resetOnEscapeProp, state.setValue, defaultValue]
+    );
+
+    const onClickProp = useEventCallback(props.onClick);
+    const hideOnKeyboardClickProp =
+      useBooleanEventCallback(hideOnKeyboardClick);
+
+    const onClick = useCallback(
+      (event: MouseEvent<HTMLDivElement>) => {
+        onClickProp(event);
+        if (event.defaultPrevented) return;
+        if (event.detail) return;
+        if (!isSelfTarget(event)) return;
+        if (!hideOnKeyboardClickProp(event)) return;
+        state.hide();
+      },
+      [onClickProp, hideOnKeyboardClickProp, state.hide]
     );
 
     props = useStoreProvider({ state, ...props }, SelectContext);
@@ -77,6 +108,7 @@ export const useSelectList = createHook<SelectListOptions>(
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,
       onKeyDown,
+      onClick,
     };
 
     props = useComposite({ state, ...props, composite });
@@ -116,6 +148,21 @@ export type SelectListOptions<T extends As = "div"> = Omit<
      * Object returned by the `useSelectState` hook.
      */
     state: SelectState;
+    /**
+     * Whether the select value should be reset to the value before the list got
+     * shown when Escape is pressed. This has effect only when the value can
+     * change while the list is still visible. For example, when
+     * `setValueOnClick` is set to `false` on the `SelectItem` component, or
+     * `selectOnMove` is set to `true` on the select state.
+     * @default true
+     */
+    resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+    /**
+     * Whether the select list should be hidden when the user presses Enter or
+     * Space while the list is focused (that is, no item is selected).
+     * @default true
+     */
+    hideOnKeyboardClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   };
 
 export type SelectListProps<T extends As = "div"> = Props<SelectListOptions<T>>;

@@ -14,10 +14,9 @@ import { SelectState } from "./select-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a checkmark inside a `SelectItemCheckbox` or
- * `SelectItemRadio` components. This hook must be used in a component that's
- * wrapped with one of those components or the `checked` prop must be explicitly
- * passed to the component.
+ * Ariakit component to render a checkmark inside a `SelectItem` component. This
+ * hook must be used in a component that's wrapped with `SelectItem` or the
+ * `checked` prop must be explicitly passed to the component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -35,26 +34,24 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
 );
 
 /**
- * A component that renders a checkmark inside a `SelectItemCheckbox` or
- * `SelectItemRadio` components. This component must be wrapped with one of those
- * components or the `checked` prop must be explicitly passed to the component.
+ * A component that renders a checkmark inside a `SelectItem` component. This
+ * component must be wrapped with `SelectItem` or the `checked` prop must be
+ * explicitly passed to the component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectState({
- *   defaultValues: { apple: true, orange: false },
- * });
- * <SelectButton state={select}>Fruits</SelectButton>
- * <Select state={select}>
- *   <SelectItemCheckbox name="apple">
+ * const select = useSelectState();
+ * <Select state={select} />
+ * <SelectPopover state={select}>
+ *   <SelectItem value="Apple">
  *     <SelectItemCheck />
  *     Apple
- *   </SelectItemCheckbox>
- *   <SelectItemCheckbox name="orange">
+ *   </SelectItem>
+ *   <SelectItem value="Orange">
  *     <SelectItemCheck />
  *     Orange
- *   </SelectItemCheckbox>
- * </Select>
+ *   </SelectItem>
+ * </SelectPopover>
  * ```
  */
 export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
@@ -66,12 +63,19 @@ export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
 
 export type SelectItemCheckOptions<T extends As = "span"> = Omit<
   CheckboxCheckOptions<T>,
-  "state"
+  "state" | "checked"
 > & {
   /**
-   * Object returned by the `useSelectState` hook.
+   * Object returned by the `useSelectState` hook. If not provided, the parent
+   * `SelectList` or `SelectPopover` components' context will be used.
    */
   state?: SelectState;
+  /**
+   * Whether the check mark should be shown. This value is automatically
+   * inferred from the parent `SelectItem` component. Manually setting this prop
+   * will override the inferred value.
+   */
+  checked?: boolean;
 };
 
 export type SelectItemCheckProps<T extends As = "span"> = Props<

@@ -52,21 +52,19 @@ export const useSelect = createHook<SelectOptions>(
         if (event.key === " " || event.key === "Enter") {
           state.toggle();
         }
-        if (showOnKeyDownProp(event)) {
-          const isTopOrBottom = dir === "top" || dir === "bottom";
-          const isLeft = dir === "left";
-          const isRight = dir === "right";
-          const keyMap = {
-            ArrowDown: isTopOrBottom,
-            ArrowUp: isTopOrBottom,
-            ArrowLeft: isLeft,
-            ArrowRight: isRight,
-          };
-          const canShow = keyMap[event.key as keyof typeof keyMap];
-          if (canShow) {
-            event.preventDefault();
-            state.show();
-          }
+        const isTopOrBottom = dir === "top" || dir === "bottom";
+        const isLeft = dir === "left";
+        const isRight = dir === "right";
+        const canShowKeyMap = {
+          ArrowDown: isTopOrBottom,
+          ArrowUp: isTopOrBottom,
+          ArrowLeft: isLeft,
+          ArrowRight: isRight,
+        };
+        const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
+        if (canShow && showOnKeyDownProp(event)) {
+          event.preventDefault();
+          state.show();
         }
         if (moveOnKeyDownProp(event)) {
           const isVertical = state.orientation !== "horizontal";
