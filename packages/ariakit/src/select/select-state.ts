@@ -16,13 +16,12 @@ import {
   PopoverStateProps,
   usePopoverState,
 } from "../popover/popover-state";
-import { Item, findFirstEnabledItemWithValue } from "./__utils";
-
-function findEnabledItemWithValueById(items: Item[], id: string) {
-  return items.find(
-    (item) => item.value != null && item.id === id && !item.disabled
-  );
-}
+import {
+  Item,
+  findEnabledItemByValue,
+  findEnabledItemWithValueById,
+  findFirstEnabledItemWithValue,
+} from "./__utils";
 
 /**
  * Provides state for the `Select` components.
@@ -74,6 +73,14 @@ export function useSelectState({
       return item.value;
     });
   }, [initialValue, composite.items, setValue]);
+
+  // Sets the active id when the value changes and the popover is hidden.
+  useEffect(() => {
+    if (popover.mounted) return;
+    const item = findEnabledItemByValue(composite.items, value);
+    if (!item) return;
+    composite.setActiveId(item.id);
+  }, [popover.mounted, composite.items, value, composite.setActiveId]);
 
   const mountedRef = useLiveRef(popover.mounted);
 

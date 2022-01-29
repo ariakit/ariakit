@@ -1,5 +1,4 @@
 import { ReactNode, forwardRef, useEffect } from "react";
-import { SelectLabel } from "ariakit";
 import {
   Combobox,
   ComboboxItem,
@@ -13,6 +12,7 @@ import {
   SelectItem,
   SelectItemCheck,
   SelectItemProps,
+  SelectLabel,
   SelectPopover,
   SelectProps,
   useSelectState,
@@ -52,7 +52,14 @@ export const SelectCombobox = forwardRef<
       <SelectLabel state={select} className="label">
         {label}
       </SelectLabel>
-      <Select state={select} ref={ref} {...props} className="select">
+      <Select
+        state={select}
+        ref={ref}
+        {...props}
+        className="select"
+        moveOnKeyDown
+        showOnKeyDown={false}
+      >
         {select.value}
         <SelectArrow />
       </Select>

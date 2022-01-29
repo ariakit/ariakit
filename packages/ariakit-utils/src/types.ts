@@ -42,7 +42,7 @@ export type SetState<T> = BivariantCallback<(value: SetStateAction<T>) => void>;
  */
 export type BooleanOrCallback<T = never> =
   | boolean
-  | (T extends never ? () => boolean : (arg: T) => boolean);
+  | BivariantCallback<T extends never ? () => boolean : (arg: T) => boolean>;
 
 /**
  * A string that will provide autocomplete for specific strings.

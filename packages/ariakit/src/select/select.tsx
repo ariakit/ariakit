@@ -1,6 +1,14 @@
-import { ChangeEvent, KeyboardEvent, useCallback } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { BasePlacement } from "@popperjs/core";
-import { queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
   useEventCallback,
@@ -24,8 +32,28 @@ import {
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
 import { VisuallyHidden } from "../visually-hidden";
-import { SelectContext, findFirstEnabledItemWithValue } from "./__utils";
+import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
 import { SelectState } from "./select-state";
+
+// When moving through the items when the select list is closed, we don't want
+// to move to items without value, so we filter them out here.
+function nextWithValue(items: Item[], next: SelectState["next"]) {
+  return () => {
+    const nextId = next();
+    if (!nextId) return;
+    let i = 0;
+    let nextItem = items.find((item) => item.id === nextId);
+    const firstItem = nextItem;
+    while (nextItem && nextItem.value == null) {
+      const nextId = next(++i);
+      if (!nextId) return;
+      nextItem = items.find((item) => item.id === nextId);
+      // Prevents infinite loop when focusLoop is true
+      if (nextItem === firstItem) break;
+    }
+    return nextItem?.id;
+  };
+}
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -39,19 +67,31 @@ import { SelectState } from "./select-state";
  * ```
  */
 export const useSelect = createHook<SelectOptions>(
-  ({ state, name, showOnKeyDown = true, moveOnKeyDown = false, ...props }) => {
+  ({
+    state,
+    name,
+    showOnKeyDown = true,
+    moveOnKeyDown = false,
+    toggleOnPress = true,
+    ...props
+  }) => {
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEventCallback(moveOnKeyDown);
+    const toggleOnPressProp = useBooleanEventCallback(toggleOnPress);
     const dir = state.placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
+        // toggleOnPress
         if (event.key === " " || event.key === "Enter") {
-          state.toggle();
+          if (toggleOnPressProp(event)) {
+            state.toggle();
+          }
         }
+        // showOnKeyDown
         const isTopOrBottom = dir === "top" || dir === "bottom";
         const isLeft = dir === "left";
         const isRight = dir === "right";
@@ -66,107 +106,124 @@ export const useSelect = createHook<SelectOptions>(
           event.preventDefault();
           state.show();
         }
-        if (moveOnKeyDownProp(event)) {
-          const isVertical = state.orientation !== "horizontal";
-          const isHorizontal = state.orientation !== "vertical";
-          const isGrid = !!findFirstEnabledItemWithValue(state.items)?.rowId;
-          // TODO: Refactor and explain
-          const withValue = (next = state.next) => {
-            return () => {
-              const id = next();
-              if (!id) return;
-              let i = 0;
-              let item = state.items.find(({ id: itemId }) => itemId === id);
-              while (item && item.value == null) {
-                const nextId = next(++i);
-                item = state.items.find(({ id: itemId }) => itemId === nextId);
-              }
-              return item?.id;
-            };
-          };
-          const keyMap = {
-            ArrowUp: (isGrid || isVertical) && withValue(state.up),
-            ArrowRight: (isGrid || isHorizontal) && withValue(state.next),
-            ArrowDown: (isGrid || isVertical) && withValue(state.down),
-            ArrowLeft: (isGrid || isHorizontal) && withValue(state.previous),
-          };
-          const getId = keyMap[event.key as keyof typeof keyMap];
-          if (getId) {
-            event.preventDefault();
-            state.move(getId());
-          }
+        // moveOnKeyDown
+        const isVertical = state.orientation !== "horizontal";
+        const isHorizontal = state.orientation !== "vertical";
+        const isGrid = !!findFirstEnabledItemWithValue(state.items)?.rowId;
+        const moveKeyMap = {
+          ArrowUp:
+            (isGrid || isVertical) && nextWithValue(state.items, state.up),
+          ArrowRight:
+            (isGrid || isHorizontal) && nextWithValue(state.items, state.next),
+          ArrowDown:
+            (isGrid || isVertical) && nextWithValue(state.items, state.down),
+          ArrowLeft:
+            (isGrid || isHorizontal) &&
+            nextWithValue(state.items, state.previous),
+        };
+        const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
+        if (getId && moveOnKeyDownProp(event)) {
+          event.preventDefault();
+          state.move(getId());
         }
       },
       [
         onKeyDownProp,
-        showOnKeyDownProp,
+        toggleOnPressProp,
+        state.toggle,
         dir,
-        state.activeId,
+        showOnKeyDownProp,
         state.show,
-        moveOnKeyDownProp,
         state.orientation,
         state.items,
         state.up,
         state.next,
         state.down,
         state.previous,
+        moveOnKeyDownProp,
         state.move,
       ]
     );
 
-    props = useStoreProvider({ state, ...props }, SelectContext);
-    const labelId = useRefId(state.labelRef);
+    const onMouseDownProp = useEventCallback(props.onMouseDown);
 
+    const onMouseDown = useCallback(
+      (event: MouseEvent<HTMLButtonElement>) => {
+        onMouseDownProp(event);
+        if (event.defaultPrevented) return;
+        if (!toggleOnPressProp(event)) return;
+        state.disclosureRef.current = event.currentTarget;
+        state.toggle();
+      },
+      [onMouseDownProp, toggleOnPressProp, state.toggle]
+    );
+
+    props = useStoreProvider({ state, ...props }, SelectContext);
+
+    const [autofill, setAutofill] = useState(false);
+    const nativeSelectChangedRef = useRef(false);
+
+    // Resets the autofilled state when the select value changes, but only if
+    // the change wasn't triggered by the native select element (which is an
+    // autofill).
+    useEffect(() => {
+      const nativeSelectChanged = nativeSelectChangedRef.current;
+      nativeSelectChangedRef.current = false;
+      if (nativeSelectChanged) return;
+      setAutofill(false);
+    }, [state.value]);
+
+    const labelId = useRefId(state.labelRef);
+    const itemsWithValue = useMemo(
+      () => state.items.filter((item) => item.value != null),
+      [state.items]
+    );
+
+    // Renders a native select element with the same value as the select so we
+    // support browser autofill. When the native select value changes, the
+    // onChange event is triggered and we set the autofill state to true.
     props = useWrapElement(
       props,
       (element) => (
         <>
           <VisuallyHidden
-            as="input"
-            type="text"
+            as="select"
             tabIndex={-1}
             aria-hidden
             aria-labelledby={labelId}
             name={name}
             value={state.value}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              nativeSelectChangedRef.current = true;
               state.setValue(event.target.value);
+              setAutofill(true);
             }}
-          />
+          >
+            {itemsWithValue.map((item) => (
+              <option key={item.id} value={item.value}>
+                {item.value}
+              </option>
+            ))}
+          </VisuallyHidden>
           {element}
         </>
       ),
-      [name, labelId, state.selectRef, state.value, state.setValue]
+      [labelId, name, state.value, state.setValue, itemsWithValue]
     );
 
     props = {
       role: "combobox",
       "aria-autocomplete": "none",
-      // "aria-live":
-      //   state.mounted || !state.setValueOnMove || !moveOnKeyDownProp
-      //     ? "off"
-      //     : "assertive",
-      // "aria-atomic": state.setValueOnMove ? true : undefined,
       "aria-labelledby": labelId,
+      "data-autofill": autofill ? "" : undefined,
       children: state.value,
       ...props,
       ref: useForkRef(state.selectRef, props.ref),
       onKeyDown,
-      // TODO: Should also listen to onClick without onMouseDown (VoiceOver
-      // click)
-      onMouseDown: (event) => {
-        queueBeforeEvent(event.currentTarget, "focus", state.toggle);
-        // if (hasFocus(event.currentTarget)) {
-        //   requestAnimationFrame(state.show);
-        // } else {
-        //   event.currentTarget.addEventListener("focusin", state.show, {
-        //     once: true,
-        //   });
-        // }
-      },
+      onMouseDown,
     };
 
-    props = usePopoverDisclosure({ state, toggleOnClick: false, ...props });
+    props = usePopoverDisclosure({ state, ...props, toggleOnClick: false });
     props = useCompositeTypeahead({ state, ...props });
 
     return props;
@@ -193,7 +250,7 @@ export const Select = createComponent<SelectOptions>((props) => {
 
 export type SelectOptions<T extends As = "button"> = Omit<
   PopoverDisclosureOptions<T>,
-  "state"
+  "state" | "toggleOnClick"
 > &
   Omit<CompositeTypeaheadOptions<T>, "state"> & {
     /**
@@ -212,6 +269,14 @@ export type SelectOptions<T extends As = "button"> = Omit<
      * @default false
      */
     moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+    /**
+     * Determines whether pressing space, enter or mouse down will toggle the
+     * select list.
+     * @default true
+     */
+    toggleOnPress?: BooleanOrCallback<
+      MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
+    >;
   };
 
 export type SelectProps<T extends As = "button"> = Props<SelectOptions<T>>;
