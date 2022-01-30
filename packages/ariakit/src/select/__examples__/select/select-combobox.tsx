@@ -52,23 +52,20 @@ export const SelectCombobox = forwardRef<
       <SelectLabel state={select} className="label">
         {label}
       </SelectLabel>
-      <Select
-        state={select}
-        ref={ref}
-        {...props}
-        className="select"
-        moveOnKeyDown
-        showOnKeyDown={false}
-      >
+      <Select state={select} ref={ref} {...props} className="select">
         {select.value}
         <SelectArrow />
       </Select>
-      <SelectPopover state={select} composite={false} className="popover">
+      <SelectPopover
+        portal
+        state={select}
+        composite={false}
+        className="popover"
+      >
         <Combobox
           state={combobox}
           className="combobox"
-          aria-label="Filter"
-          placeholder="Filter items..."
+          placeholder="Search"
           autoSelect
         />
         <ComboboxList state={combobox} className="list">

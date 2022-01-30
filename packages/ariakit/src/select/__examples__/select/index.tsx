@@ -1,37 +1,30 @@
-import { useState } from "react";
-import list from "./list";
-import { SelectCombobox, SelectComboboxItem } from "./select-combobox";
+import {
+  Select,
+  SelectArrow,
+  SelectItem,
+  SelectLabel,
+  SelectPopover,
+  useSelectState,
+} from "ariakit/select";
 import "./style.css";
 
 export default function Example() {
-  const [matches, setMatches] = useState<string[]>([]);
+  const select = useSelectState({ defaultValue: "Apple" });
   return (
     <div className="wrapper">
-      <form>
-        <select>
-          <option value="Apple">Apple</option>
-          <option value="Orange">Orange</option>
-          <option value="Banana">Banana</option>
-        </select>
-        <input type="text" name="test" />
-        <SelectCombobox
-          label="Your favorite food"
-          defaultValue="Orange"
-          defaultList={list}
-          onFilter={setMatches}
-          name="favorite-fruit"
-        >
-          {matches.map((value) => (
-            <SelectComboboxItem
-              key={value}
-              value={value}
-              className="select-item"
-              disabled={value === "Grape"}
-            />
-          ))}
-        </SelectCombobox>
-        <input type="password" name="password" />
-      </form>
+      <SelectLabel state={select}>Favorite fruit</SelectLabel>
+      <Select state={select}>
+        {select.value}
+        <SelectArrow />
+      </Select>
+      <SelectPopover state={select}>
+        <SelectItem value="Apple" />
+        <SelectItem value="Banana" />
+        <SelectItem value="Cherry" />
+        <SelectItem value="Grape" />
+        <SelectItem value="Lemon" />
+        <SelectItem value="Orange" />
+      </SelectPopover>
     </div>
   );
 }
