@@ -1,7 +1,5 @@
-@import url("../../../popover/__examples__/popover/style.css");
-
 .wrapper {
-  @apply flex flex-col gap-2 my-[1000px];
+  @apply flex flex-col gap-2;
 }
 
 .select {
@@ -9,66 +7,43 @@
   @apply
     flex
     h-10
-    cursor-pointer
+    cursor-default
     items-center
     justify-between
     gap-1
     rounded-lg
-    border
-    border-alpha-1
-    bg-alpha-1
     px-4
     text-base
-    hover:bg-alpha-1-hover
+    bg-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover
     focus-visible:ariakit-outline
-    aria-disabled:opacity-50
-    dark:border-alpha-1-dark
-    dark:bg-alpha-1-dark
-    dark:hover:bg-alpha-1-dark-hover;
+    aria-disabled:opacity-50;
 }
 
 .popover {
   width: 200px;
-  max-height: 300px;
-
-  /* opacity: 0;
-  transform: scaleY(0);
-  transition: opacity 500ms ease-in-out, transform 500ms ease-in-out; */
-  @apply gap-2 px-0 py-2;
-}
-
-.popover[data-enter] {
-  opacity: 1;
-  transform: scaleY(1);
-}
-
-.combobox {
-  border: 2px solid transparent;
   @apply
-    flex-shrink-0
-    h-10
-    rounded-md
-    outline-none
-    bg-canvas-1
-    px-4
-    mx-2
-    text-base
-    text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+    z-50
+    flex
+    flex-col
+    rounded-lg
+    border
+    border-solid
+    border-canvas-4
+    bg-canvas-4
+    p-2
+    text-canvas-4
+    drop-shadow
+    focus-visible:ariakit-outline
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    dark:drop-shadow-dark;
 }
 
-.combobox:focus {
-  border: 2px solid theme("colors.primary-2.DEFAULT");
-}
-
-.list {
-  @apply flex flex-col overflow-auto px-2;
-}
-
-.popover > .list > * {
+.popover > * {
   @apply
     flex
     gap-2
@@ -77,19 +52,13 @@
     outline-none
     cursor-default
     rounded
-    p-2;
+    p-2
+    aria-disabled:opacity-50;
 }
 
-.popover > .list > *[aria-selected="true"],
-.popover > .list > *:focus {
-  @apply
-    bg-primary-2
-    text-primary-2
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark;
-}
-
-.combobox:not([aria-activedescendant]) + .list > *:hover {
+.popover:not([aria-activedescendant]) > *:hover,
+.popover > *[data-focus],
+.popover > *:focus {
   @apply
     bg-primary-2
     text-primary-2

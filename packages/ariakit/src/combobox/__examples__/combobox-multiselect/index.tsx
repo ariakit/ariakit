@@ -21,12 +21,26 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover
+        state={combobox}
+        aria-multiselectable
+        className="popover"
+      >
         {combobox.matches.length ? (
           combobox.matches.map((value) => (
-            <ComboboxItem key={value} onClick={() => combobox.setValue("")}>
+            <ComboboxItem
+              key={value}
+              aria-selected={checkbox.value.includes(value)}
+              onClick={() => combobox.setValue("")}
+            >
               {(props) => (
-                <Checkbox {...props} as="div" state={checkbox} value={value}>
+                <Checkbox
+                  {...props}
+                  as="div"
+                  aria-checked={undefined}
+                  state={checkbox}
+                  value={value}
+                >
                   <CheckboxCheck />
                   {value}
                 </Checkbox>

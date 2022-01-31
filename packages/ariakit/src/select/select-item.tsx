@@ -115,6 +115,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
 
     props = {
       role: getItemRole(state?.contentElement),
+      "aria-selected": isSelected,
       children: value,
       ...props,
       onClick,

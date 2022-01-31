@@ -395,6 +395,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     props = {
       id,
       "aria-selected": ariaSelected,
+      "data-focus": isActiveItem ? "" : undefined,
       ...props,
       ref: useForkRef(ref, props.ref),
       tabIndex: shouldTabIndex ? props.tabIndex : -1,

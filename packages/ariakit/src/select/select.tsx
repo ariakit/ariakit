@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { BasePlacement } from "@popperjs/core";
+import { queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
   useEventCallback,
@@ -71,7 +72,7 @@ export const useSelect = createHook<SelectOptions>(
     state,
     name,
     showOnKeyDown = true,
-    moveOnKeyDown = false,
+    moveOnKeyDown = true,
     toggleOnPress = true,
     ...props
   }) => {
@@ -90,21 +91,6 @@ export const useSelect = createHook<SelectOptions>(
           if (toggleOnPressProp(event)) {
             state.toggle();
           }
-        }
-        // showOnKeyDown
-        const isTopOrBottom = dir === "top" || dir === "bottom";
-        const isLeft = dir === "left";
-        const isRight = dir === "right";
-        const canShowKeyMap = {
-          ArrowDown: isTopOrBottom,
-          ArrowUp: isTopOrBottom,
-          ArrowLeft: isLeft,
-          ArrowRight: isRight,
-        };
-        const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
-        if (canShow && showOnKeyDownProp(event)) {
-          event.preventDefault();
-          state.show();
         }
         // moveOnKeyDown
         const isVertical = state.orientation !== "horizontal";
@@ -126,14 +112,27 @@ export const useSelect = createHook<SelectOptions>(
           event.preventDefault();
           state.move(getId());
         }
+        // showOnKeyDown
+        const isTopOrBottom = dir === "top" || dir === "bottom";
+        const isLeft = dir === "left";
+        const isRight = dir === "right";
+        const canShowKeyMap = {
+          ArrowDown: isTopOrBottom,
+          ArrowUp: isTopOrBottom,
+          ArrowLeft: isLeft,
+          ArrowRight: isRight,
+        };
+        const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
+        if (canShow && showOnKeyDownProp(event)) {
+          event.preventDefault();
+          state.show();
+          state.move(state.activeId);
+        }
       },
       [
         onKeyDownProp,
         toggleOnPressProp,
         state.toggle,
-        dir,
-        showOnKeyDownProp,
-        state.show,
         state.orientation,
         state.items,
         state.up,
@@ -142,6 +141,10 @@ export const useSelect = createHook<SelectOptions>(
         state.previous,
         moveOnKeyDownProp,
         state.move,
+        dir,
+        showOnKeyDownProp,
+        state.show,
+        state.activeId,
       ]
     );
 
@@ -152,8 +155,11 @@ export const useSelect = createHook<SelectOptions>(
         onMouseDownProp(event);
         if (event.defaultPrevented) return;
         if (!toggleOnPressProp(event)) return;
-        state.disclosureRef.current = event.currentTarget;
-        state.toggle();
+        const element = event.currentTarget;
+        queueBeforeEvent(element, "focusin", () => {
+          state.disclosureRef.current = event.currentTarget;
+          state.toggle();
+        });
       },
       [onMouseDownProp, toggleOnPressProp, state.toggle]
     );

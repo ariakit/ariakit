@@ -1,11 +1,4 @@
-import {
-  KeyboardEvent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
@@ -48,7 +41,7 @@ export const useSelectList = createHook<SelectListOptions>(
     state,
     composite = true,
     resetOnEscape = true,
-    hideOnKeyboardClick = true,
+    hideOnEnter = true,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -63,32 +56,30 @@ export const useSelectList = createHook<SelectListOptions>(
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const resetOnEscapeProp = useBooleanEventCallback(resetOnEscape);
+    const hideOnEnterProp = useBooleanEventCallback(hideOnEnter);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (event.key !== "Escape") return;
-        if (!resetOnEscapeProp(event)) return;
-        state.setValue(defaultValue);
+        if (event.key === "Escape" && resetOnEscapeProp(event)) {
+          state.setValue(defaultValue);
+        }
+        if (event.key === " " || event.key === "Enter") {
+          if (isSelfTarget(event) && hideOnEnterProp(event)) {
+            event.preventDefault();
+            state.hide();
+          }
+        }
       },
-      [onKeyDownProp, resetOnEscapeProp, state.setValue, defaultValue]
-    );
-
-    const onClickProp = useEventCallback(props.onClick);
-    const hideOnKeyboardClickProp =
-      useBooleanEventCallback(hideOnKeyboardClick);
-
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (event.detail) return;
-        if (!isSelfTarget(event)) return;
-        if (!hideOnKeyboardClickProp(event)) return;
-        state.hide();
-      },
-      [onClickProp, hideOnKeyboardClickProp, state.hide]
+      [
+        onKeyDownProp,
+        resetOnEscapeProp,
+        state.setValue,
+        defaultValue,
+        hideOnEnterProp,
+        state.hide,
+      ]
     );
 
     props = useStoreProvider({ state, ...props }, SelectContext);
@@ -108,7 +99,6 @@ export const useSelectList = createHook<SelectListOptions>(
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,
       onKeyDown,
-      onClick,
     };
 
     props = useComposite({ state, ...props, composite });
@@ -162,7 +152,7 @@ export type SelectListOptions<T extends As = "div"> = Omit<
      * Space while the list is focused (that is, no item is selected).
      * @default true
      */
-    hideOnKeyboardClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+    hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   };
 
 export type SelectListProps<T extends As = "div"> = Props<SelectListOptions<T>>;
