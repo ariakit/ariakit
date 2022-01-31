@@ -18,6 +18,8 @@ function handleGlobalMouseMove(event: MouseEvent) {
 }
 
 function isScrolling(event: ReactMouseEvent | MouseEvent) {
+  // JSDOM doesn't support screenX/screenY
+  if (process.env.NODE_ENV === "test") return false;
   return (
     Math.abs(event.screenX - screenX) === 0 &&
     Math.abs(event.screenY - screenY) === 0

@@ -27,6 +27,7 @@ test("markup", () => {
             aria-controls="r:6"
             aria-selected="true"
             class="tab"
+            data-active-item=""
             data-command=""
             href="/fruits"
             id="/fruits"
