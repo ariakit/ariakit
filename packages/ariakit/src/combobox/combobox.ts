@@ -16,7 +16,6 @@ import {
   useForceUpdate,
   useForkRef,
   useUpdateEffect,
-  useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
@@ -149,17 +148,17 @@ export const useCombobox = createHook<ComboboxOptions>(
     ]);
 
     // Auto select the first item on type. Must be a layout effect, otherwise it
-    // doesn't work well with useDeferredValue. TODO: Check if this is still
-    // needed.
-    useUpdateLayoutEffect(() => {
+    // doesn't work well with useDeferredValue.
+    useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
       if (!hasInsertedTextRef.current) return;
-      // If autoSelect is set to true and the last change was a text
-      // insertion, we want to automatically focus on the first suggestion.
-      // This effect will run both when value changes and when items change so
-      // we can also catch async items.
-      state.move(state.first());
+      // If autoSelect is set to true and the last change was a text insertion,
+      // we want to automatically focus on the first suggestion. This effect
+      // will run both when value changes and when items change so we can also
+      // catch async items. We need to defer the focus to avoid scroll jumps.
+      const timeout = setTimeout(() => state.move(state.first()), 16);
+      return () => clearTimeout(timeout);
     }, [
       valueUpdated,
       state.value,
