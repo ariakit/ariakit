@@ -56,8 +56,7 @@
     dark:hover:bg-primary-1-dark-hover;
 }
 
-.popover > *[aria-selected="true"],
-.popover > *:focus {
+.popover > *[data-active-item] {
   @apply
     bg-primary-2
     text-primary-2
