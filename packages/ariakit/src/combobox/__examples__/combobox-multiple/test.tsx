@@ -9,6 +9,7 @@ import {
 import { axe } from "jest-axe";
 import Example from ".";
 
+const getInput = () => getByRole("combobox", { name: "Your favorite food" });
 const getOption = (name: string) => getByRole("option", { name });
 
 test("a11y", async () => {
@@ -18,21 +19,21 @@ test("a11y", async () => {
 
 test("default checked", async () => {
   render(<Example />);
-  await click(getByRole("combobox"));
-  expect(getOption("Apple")).toBeChecked();
+  await click(getInput());
+  expect(getOption("Bacon")).toHaveAttribute("aria-selected", "true");
 });
 
 test("check/uncheck with click", async () => {
   render(<Example />);
-  await click(getByRole("combobox"));
+  await click(getInput());
   await click(getOption("Burger"));
   await click(getOption("Banana"));
-  expect(getOption("Burger")).toBeChecked();
-  expect(getOption("Banana")).toBeChecked();
+  expect(getOption("Burger")).toHaveAttribute("aria-selected", "true");
+  expect(getOption("Banana")).toHaveAttribute("aria-selected", "true");
   await click(getOption("Burger"));
-  expect(getOption("Burger")).not.toBeChecked();
+  expect(getOption("Burger")).toHaveAttribute("aria-selected", "false");
   await click(getOption("Banana"));
-  expect(getOption("Banana")).not.toBeChecked();
+  expect(getOption("Banana")).toHaveAttribute("aria-selected", "false");
 });
 
 test("check/uncheck with enter", async () => {
@@ -41,11 +42,12 @@ test("check/uncheck with enter", async () => {
   await press.ArrowDown();
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(getOption("Bacon")).not.toBeChecked();
+  await press.ArrowDown();
+  expect(getOption("Banana")).toHaveAttribute("aria-selected", "false");
   await press.Enter();
-  expect(getOption("Bacon")).toBeChecked();
+  expect(getOption("Banana")).toHaveAttribute("aria-selected", "true");
   await press.Enter();
-  expect(getOption("Bacon")).not.toBeChecked();
+  expect(getOption("Banana")).toHaveAttribute("aria-selected", "false");
 });
 
 test("no result", async () => {

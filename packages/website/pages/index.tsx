@@ -42,9 +42,7 @@ export default function Home() {
           <Link href="/examples/combobox-matches">Combobox matches</Link>
         </li>
         <li>
-          <Link href="/examples/combobox-multiselect">
-            Combobox multiselect
-          </Link>
+          <Link href="/examples/combobox-multiple">Combobox multiple</Link>
         </li>
         <li>
           <Link href="/examples/disclosure">Disclosure</Link>

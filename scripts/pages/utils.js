@@ -253,8 +253,14 @@ async function getPageContent({ filename, dest, componentPath }) {
     return `"${key}": {
       ${value
         .filter((i) => i.defaultExport)
-        .map((i) => {
-          const name = getPageFilename(i.filename, path.extname(i.filename));
+        .map((i, _, array) => {
+          const getName = (item = i) =>
+            getPageFilename(item.filename, path.extname(item.filename));
+          const name = getName();
+          // If the filename already exists, we use the original filename.
+          if (array.some((item) => item !== i && getName(item) === name)) {
+            return `"${path.basename(i.filename)}": ${i.identifier},`;
+          }
           return `"${name}": ${i.identifier},`;
         })
         .join("\n")}
