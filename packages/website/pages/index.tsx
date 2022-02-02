@@ -50,6 +50,9 @@ export default function Home() {
           <Link href="/examples/disclosure">Disclosure</Link>
         </li>
         <li>
+          <Link href="/examples/focus-trap">Focus trap</Link>
+        </li>
+        <li>
           <Link href="/examples/form">Form</Link>
         </li>
         <li>

@@ -1,9 +1,6 @@
 @import url("../../../button/__examples__/button/style.css");
+@import url("../../../checkbox/__examples__/checkbox/style.css");
 
-.example-container {
-  @apply flex gap-2 flex-col rounded-lg border border-canvas-3 dark:border-canvas-3-dark p-3;
-}
-
-.buttons-container {
-  @apply flex gap-2;
+.wrapper {
+  @apply flex gap-2 flex-col rounded-lg border border-canvas-3 dark:border-canvas-3-dark p-3 w-56;
 }
