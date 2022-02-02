@@ -17,7 +17,7 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
-import { hasFocusWithin, isFocusable } from "ariakit-utils/focus";
+import { focusIfNeeded, isFocusable } from "ariakit-utils/focus";
 import {
   useEventCallback,
   useForkRef,
@@ -62,12 +62,6 @@ function isAlwaysFocusVisible(element: HTMLElement) {
   const role = element.getAttribute("role");
   if (role === "combobox") return true;
   return false;
-}
-
-function focusIfNeeded(element: HTMLElement) {
-  if (!hasFocusWithin(element) && isFocusable(element)) {
-    element.focus();
-  }
 }
 
 function getLabels(element: HTMLElement | HTMLInputElement) {

@@ -57,8 +57,7 @@
 }
 
 .popover:not([aria-activedescendant]) > *:hover,
-.popover > *[data-focus],
-.popover > *:focus {
+.popover > *[data-active-item] {
   @apply
     bg-primary-2
     text-primary-2

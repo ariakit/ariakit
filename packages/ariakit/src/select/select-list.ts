@@ -42,6 +42,7 @@ export const useSelectList = createHook<SelectListOptions>(
     composite = true,
     resetOnEscape = true,
     hideOnEnter = true,
+    focusOnMove = true,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -101,7 +102,12 @@ export const useSelectList = createHook<SelectListOptions>(
       onKeyDown,
     };
 
-    props = useComposite({ state, ...props, composite });
+    props = useComposite({
+      state,
+      ...props,
+      composite,
+      focusOnMove: state.visible && !state.animating && focusOnMove,
+    });
     props = useCompositeTypeahead({ state, ...props });
 
     return props;

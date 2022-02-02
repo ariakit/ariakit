@@ -116,7 +116,7 @@ function useScheduleFocus(activeItem?: Item) {
  * ```
  */
 export const useComposite = createHook<CompositeOptions>(
-  ({ state, composite = true, ...props }) => {
+  ({ state, composite = true, focusOnMove = true, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
     const activeItem = findEnabledItemById(state.items, state.activeId);
@@ -128,6 +128,7 @@ export const useComposite = createHook<CompositeOptions>(
 
     // Focus on the active item element.
     useSafeLayoutEffect(() => {
+      if (!focusOnMove) return;
       const itemElement = activeItemRef.current?.ref.current;
       if (!itemElement) return;
       if (!state.moves) return;
@@ -135,7 +136,7 @@ export const useComposite = createHook<CompositeOptions>(
       // event on each item to be triggered before the state changes can
       // propagate to them.
       scheduleFocus();
-    }, [state.moves]);
+    }, [focusOnMove, state.moves]);
 
     useEffect(() => {
       if (!composite) return;
@@ -418,6 +419,10 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * ```
    */
   composite?: boolean;
+  /**
+   * TODO: Description
+   */
+  focusOnMove?: boolean;
 };
 
 export type CompositeProps<T extends As = "div"> = Props<CompositeOptions<T>>;

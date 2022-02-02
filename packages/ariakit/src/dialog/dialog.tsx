@@ -12,9 +12,10 @@ import {
   getDocument,
   isButton,
 } from "ariakit-utils/dom";
-import { addGlobalEventListener } from "ariakit-utils/events";
+import { addGlobalEventListener, queueBeforeEvent } from "ariakit-utils/events";
 import {
   ensureFocus,
+  focusIfNeeded,
   getFirstTabbableIn,
   getLastTabbableIn,
   isFocusable,
@@ -59,10 +60,17 @@ import { DialogState } from "./dialog-state";
 
 const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
 
+function isBackdrop(dialog: HTMLElement, element: Element) {
+  const id = dialog.id;
+  if (!id) return;
+  return element.getAttribute("data-backdrop") === id;
+}
+
 function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
   if (contains(dialog, activeElement)) return false;
+  if (isBackdrop(dialog, activeElement)) return false;
   if (isFocusable(activeElement)) return true;
   return false;
 }
@@ -139,9 +147,10 @@ export const useDialog = createHook<DialogOptions>(
         const disclosure = state.disclosureRef.current;
         if (!disclosure) return;
         if (!isButton(disclosure)) return;
-        const onMouseDown = (event: MouseEvent) => {
-          event.preventDefault();
-          disclosure.focus();
+        const onMouseDown = () => {
+          queueBeforeEvent(disclosure, "mouseup", () =>
+            focusIfNeeded(disclosure)
+          );
         };
         disclosure.addEventListener("mousedown", onMouseDown);
         return () => {

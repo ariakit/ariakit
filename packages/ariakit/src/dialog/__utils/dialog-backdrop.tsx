@@ -57,6 +57,7 @@ export function DialogBackdrop({
     (event: MouseEvent<HTMLDivElement>) => {
       onClickProp(event);
       if (event.defaultPrevented) return;
+      // TODO: Accept function
       if (!hideOnInteractOutside) return;
       if (!isSelfTarget(event)) return;
       if (previousMouseDownRef.current !== event.currentTarget) return;

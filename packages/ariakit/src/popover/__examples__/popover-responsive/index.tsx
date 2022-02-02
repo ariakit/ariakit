@@ -15,11 +15,13 @@ import "./style.css";
 function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
   const prevStyle = popover.style.cssText;
   const prevArrowStyle = arrow?.style.cssText;
-  popover.style.position = "fixed";
-  popover.style.bottom = "0";
-  popover.style.width = "100%";
-  popover.style.padding = "12px";
-  arrow?.style.setProperty("display", "none");
+  Object.assign(popover.style, {
+    position: "fixed",
+    top: "0",
+    width: "100%",
+    padding: "12px",
+  });
+  Object.assign(arrow?.style, { display: "none" });
   const restoreDesktopStyles = () => {
     popover.style.cssText = prevStyle;
     if (arrow) {

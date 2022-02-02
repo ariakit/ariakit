@@ -138,7 +138,7 @@ export const usePortal = createHook<PortalOptions>(
       props,
       (element) => {
         element = (
-          <PortalContext.Provider value={portalNode}>
+          <PortalContext.Provider value={portalNode || context}>
             {element}
           </PortalContext.Provider>
         );
@@ -228,7 +228,7 @@ export const usePortal = createHook<PortalOptions>(
 
         return element;
       },
-      [portalNode, portal, props.id, preserveTabOrder]
+      [portalNode, context, portal, props.id, preserveTabOrder]
     );
 
     props = {
