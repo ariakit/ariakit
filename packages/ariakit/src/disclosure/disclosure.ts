@@ -56,8 +56,6 @@ export const useDisclosure = createHook<DisclosureOptions>(
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
-        // TODO: Consider doing this assignment on mouse down as well. See the
-        // Select component mouse down.
         state.disclosureRef.current = event.currentTarget;
         onClickProp(event);
         if (event.defaultPrevented) return;
