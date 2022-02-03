@@ -312,6 +312,15 @@ export function hasFocusWithin(element: Node | Element) {
 }
 
 /**
+ * Focus on an element only if it's not already focused.
+ */
+export function focusIfNeeded(element: HTMLElement) {
+  if (!hasFocusWithin(element) && isFocusable(element)) {
+    element.focus();
+  }
+}
+
+/**
  * Disable focus on `element`.
  */
 export function disableFocus(element: HTMLElement) {

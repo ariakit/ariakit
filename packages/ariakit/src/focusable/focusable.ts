@@ -17,7 +17,7 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
-import { hasFocusWithin, isFocusable } from "ariakit-utils/focus";
+import { focusIfNeeded, isFocusable } from "ariakit-utils/focus";
 import {
   useEventCallback,
   useForkRef,
@@ -62,12 +62,6 @@ function isAlwaysFocusVisible(element: HTMLElement) {
   const role = element.getAttribute("role");
   if (role === "combobox") return true;
   return false;
-}
-
-function focusIfNeeded(element: HTMLElement) {
-  if (!hasFocusWithin(element) && isFocusable(element)) {
-    element.focus();
-  }
 }
 
 function getLabels(element: HTMLElement | HTMLInputElement) {
@@ -290,8 +284,8 @@ export const useFocusable = createHook<FocusableOptions>(
         if (event.defaultPrevented) return;
         if (!focusable) return;
         const element = event.currentTarget;
-        // Safari and Firefox on MacOS don't focus on buttons on mouse down
-        // like other browsers/platforms. Instead, they focus on the closest
+        // Safari and Firefox on MacOS don't focus on buttons on mouse down like
+        // other browsers/platforms. Instead, they focus on the closest
         // focusable ancestor element, which is ultimately the body element. So
         // we make sure to give focus to the tabbable element on mouse down so
         // it works consistently across browsers.
