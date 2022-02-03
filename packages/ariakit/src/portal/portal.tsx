@@ -138,6 +138,9 @@ export const usePortal = createHook<PortalOptions>(
       props,
       (element) => {
         element = (
+          // While the portal node is not in the DOM, we need to pass the
+          // current context to the portal context, otherwise it's going to
+          // reset to the body element on nested portals.
           <PortalContext.Provider value={portalNode || context}>
             {element}
           </PortalContext.Provider>

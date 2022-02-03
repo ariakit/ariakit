@@ -2,6 +2,7 @@ import { KeyboardEvent, MouseEvent, useCallback, useRef } from "react";
 import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
+  useBooleanEventCallback,
   useEventCallback,
   useForkRef,
   useSafeLayoutEffect,
@@ -25,7 +26,7 @@ export function DialogBackdrop({
   state,
   backdrop,
   backdropProps,
-  hideOnInteractOutside,
+  hideOnInteractOutside = true,
   hideOnEscape,
   children,
 }: DialogBackdropProps) {
@@ -53,18 +54,21 @@ export function DialogBackdrop({
     backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
   }, [state.contentElement]);
 
+  const hideOnInteractOutsideProp = useBooleanEventCallback(
+    hideOnInteractOutside
+  );
+
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       onClickProp(event);
       if (event.defaultPrevented) return;
-      // TODO: Accept function
-      if (!hideOnInteractOutside) return;
       if (!isSelfTarget(event)) return;
       if (previousMouseDownRef.current !== event.currentTarget) return;
+      if (!hideOnInteractOutsideProp(event)) return;
       event.stopPropagation();
       state.hide();
     },
-    [onClickProp, hideOnInteractOutside, state.hide]
+    [onClickProp, hideOnInteractOutsideProp, state.hide]
   );
 
   // When hideOnInteractOutside is false and the backdrop is clicked, the

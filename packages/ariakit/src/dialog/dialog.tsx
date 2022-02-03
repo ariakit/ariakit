@@ -2,6 +2,7 @@ import {
   ComponentPropsWithRef,
   ElementType,
   RefObject,
+  SyntheticEvent,
   useEffect,
   useRef,
   useState,
@@ -504,7 +505,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * focus on an element outside of the dialog.
      * @default true
      */
-    hideOnInteractOutside?: BooleanOrCallback<Event>;
+    hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
     /**
      * Determines whether the body scrolling will be prevented when the dialog
      * is shown.

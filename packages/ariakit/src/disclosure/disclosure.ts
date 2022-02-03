@@ -40,6 +40,16 @@ export const useDisclosure = createHook<DisclosureOptions>(
       setExpanded(state.visible && isCurrentDisclosure);
     }, [state.disclosureRef, state.visible]);
 
+    const onMouseDownProp = useEventCallback(props.onMouseDown);
+
+    const onMouseDown = useCallback(
+      (event: MouseEvent<HTMLButtonElement>) => {
+        state.disclosureRef.current = event.currentTarget;
+        onMouseDownProp(event);
+      },
+      [onMouseDownProp, state.disclosureRef]
+    );
+
     const onClickProp = useEventCallback(props.onClick);
     const toggleOnClickProp = useBooleanEventCallback(toggleOnClick);
     const isDuplicate = "data-disclosure" in props;
@@ -70,6 +80,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
       "aria-controls": state.contentElement?.id,
       ...props,
       ref: useForkRef(ref, props.ref),
+      onMouseDown,
       onClick,
     };
 

@@ -129,9 +129,9 @@ export const useComposite = createHook<CompositeOptions>(
     // Focus on the active item element.
     useSafeLayoutEffect(() => {
       if (!focusOnMove) return;
+      if (!state.moves) return;
       const itemElement = activeItemRef.current?.ref.current;
       if (!itemElement) return;
-      if (!state.moves) return;
       // We're scheduling the focus on the next tick to avoid the `onFocus`
       // event on each item to be triggered before the state changes can
       // propagate to them.
@@ -420,7 +420,9 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    */
   composite?: boolean;
   /**
-   * TODO: Description
+   * Whether the active composite item should receive focus when
+   * `composite.move` is called.
+   * @default true
    */
   focusOnMove?: boolean;
 };

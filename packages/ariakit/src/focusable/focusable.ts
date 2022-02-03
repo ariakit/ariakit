@@ -284,8 +284,8 @@ export const useFocusable = createHook<FocusableOptions>(
         if (event.defaultPrevented) return;
         if (!focusable) return;
         const element = event.currentTarget;
-        // Safari and Firefox on MacOS don't focus on buttons on mouse down
-        // like other browsers/platforms. Instead, they focus on the closest
+        // Safari and Firefox on MacOS don't focus on buttons on mouse down like
+        // other browsers/platforms. Instead, they focus on the closest
         // focusable ancestor element, which is ultimately the body element. So
         // we make sure to give focus to the tabbable element on mouse down so
         // it works consistently across browsers.
