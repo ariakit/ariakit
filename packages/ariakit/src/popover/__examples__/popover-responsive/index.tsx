@@ -9,22 +9,21 @@ import {
   PopoverStateRenderCallbackProps,
   usePopoverState,
 } from "ariakit/popover";
+import assignStyle from "./assign-style";
 import useMedia from "./use-media";
 import "./style.css";
 
 function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
-  const prevStyle = popover.style.cssText;
-  const prevArrowStyle = arrow?.style.cssText;
-  popover.style.position = "fixed";
-  popover.style.bottom = "0";
-  popover.style.width = "100%";
-  popover.style.padding = "12px";
-  arrow?.style.setProperty("display", "none");
+  const restorePopoverStyle = assignStyle(popover, {
+    position: "fixed",
+    bottom: "0",
+    width: "100%",
+    padding: "12px",
+  });
+  const restoreArrowStyle = assignStyle(arrow, { display: "none" });
   const restoreDesktopStyles = () => {
-    popover.style.cssText = prevStyle;
-    if (arrow) {
-      arrow.style.cssText = prevArrowStyle!;
-    }
+    restorePopoverStyle();
+    restoreArrowStyle();
   };
   return restoreDesktopStyles;
 }
