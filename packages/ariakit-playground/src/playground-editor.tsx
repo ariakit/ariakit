@@ -24,6 +24,7 @@ import {
   drawSelection,
   highlightActiveLine,
   keymap,
+  scrollPastEnd,
 } from "@codemirror/view";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
@@ -97,6 +98,7 @@ const defaultExtensions = [
   prismjsClassNames,
   highlightActiveLineGutter(),
   highlightActiveLine(),
+  scrollPastEnd(),
   drawSelection(),
   EditorState.allowMultipleSelections.of(true),
   bracketMatching(),
