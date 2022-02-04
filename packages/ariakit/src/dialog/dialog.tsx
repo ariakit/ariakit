@@ -1,6 +1,7 @@
 import {
   ComponentPropsWithRef,
   ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
   RefObject,
   SyntheticEvent,
   useEffect,
@@ -22,6 +23,7 @@ import {
   isFocusable,
 } from "ariakit-utils/focus";
 import {
+  useBooleanEventCallback,
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -300,11 +302,12 @@ export const useDialog = createHook<DialogOptions>(
       return focusOnHide;
     }, [autoFocusOnHide, state.visible, finalFocusRef, state.disclosureRef]);
 
+    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+
     // Hide on Escape.
     useEffect(() => {
       const dialog = ref.current;
       if (!dialog) return;
-      if (!hideOnEscape) return;
       if (!domReady) return;
       if (!state.mounted) return;
       const onKeyDown = (event: KeyboardEvent) => {
@@ -328,7 +331,7 @@ export const useDialog = createHook<DialogOptions>(
           if (disclosure && contains(disclosure, target)) return true;
           return false;
         };
-        if (isValidTarget()) {
+        if (isValidTarget() && hideOnEscapeProp(event)) {
           state.hide();
         }
       };
@@ -338,11 +341,11 @@ export const useDialog = createHook<DialogOptions>(
       // we don't have access to the hideOnEscape prop there.
       return addGlobalEventListener("keydown", onKeyDown);
     }, [
-      hideOnEscape,
       domReady,
       state.mounted,
       state.disclosureRef,
       nestedDialogs,
+      hideOnEscapeProp,
       state.hide,
     ]);
 
@@ -513,7 +516,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * Escape key.
      * @default true
      */
-    hideOnEscape?: boolean;
+    hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
     /**
      * Determines whether the dialog will be hidden when the user clicks or
      * focus on an element outside of the dialog.

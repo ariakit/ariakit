@@ -1,6 +1,7 @@
 import { RefObject, useEffect, useState } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import {
+  useBooleanEventCallback,
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -10,7 +11,7 @@ import {
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import {
   DisclosureContentOptions,
   useDisclosureContent,
@@ -51,19 +52,21 @@ export const useTooltip = createHook<TooltipOptions>(
       state.render();
     }, [portalNode, state.mounted, state.render]);
 
+    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+    const hideOnControlProp = useBooleanEventCallback(hideOnControl);
+
     // Hide on Escape/Control
     useEffect(() => {
       if (!state.visible) return;
-      if (!hideOnEscape && !hideOnControl) return;
       return addGlobalEventListener("keydown", (event) => {
         if (event.defaultPrevented) return;
-        const isEscape = event.key === "Escape" && hideOnEscape;
-        const isControl = event.key === "Control" && hideOnControl;
+        const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
+        const isControl = event.key === "Control" && hideOnControlProp(event);
         if (isEscape || isControl) {
           state.hide();
         }
       });
-    }, [state.visible, hideOnEscape, hideOnControl, state.hide]);
+    }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     props = useWrapElement(
       props,
@@ -122,7 +125,7 @@ export type TooltipOptions<T extends As = "div"> = Omit<
      * Escape key.
      * @default true
      */
-    hideOnEscape?: boolean;
+    hideOnEscape?: BooleanOrCallback<KeyboardEvent>;
     /**
      * Determines whether the tooltip will be hidden when the user presses the
      * Control key. This has been proposed as an alternative to the Escape key,
@@ -131,7 +134,7 @@ export type TooltipOptions<T extends As = "div"> = Omit<
      * https://github.com/w3c/aria-practices/issues/1506
      * @default false
      */
-    hideOnControl?: boolean;
+    hideOnControl?: BooleanOrCallback<KeyboardEvent>;
   };
 
 export type TooltipProps<T extends As = "div"> = Props<TooltipOptions<T>>;

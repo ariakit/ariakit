@@ -27,7 +27,7 @@ export function DialogBackdrop({
   backdrop,
   backdropProps,
   hideOnInteractOutside = true,
-  hideOnEscape,
+  hideOnEscape = true,
   children,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -71,6 +71,8 @@ export function DialogBackdrop({
     [onClickProp, hideOnInteractOutsideProp, state.hide]
   );
 
+  const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+
   // When hideOnInteractOutside is false and the backdrop is clicked, the
   // backdrop will receive focus (because we set the tabIndex on it). Therefore,
   // the Escape key will not be captured by the Dialog component. So we listen
@@ -79,12 +81,12 @@ export function DialogBackdrop({
     (event: KeyboardEvent<HTMLDivElement>) => {
       onKeyDownProp(event);
       if (event.defaultPrevented) return;
-      if (!hideOnEscape) return;
-      if (!isSelfTarget(event)) return;
       if (event.key !== "Escape") return;
+      if (!isSelfTarget(event)) return;
+      if (!hideOnEscapeProp(event)) return;
       state.hide();
     },
-    [onKeyDownProp, hideOnEscape, state.hide]
+    [onKeyDownProp, hideOnEscapeProp, state.hide]
   );
 
   const props = useDisclosureContent({
