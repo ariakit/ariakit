@@ -9,7 +9,7 @@ import {
   useRef,
 } from "react";
 import { getPopupRole } from "ariakit-utils/dom";
-import { isFocusEventOutside } from "ariakit-utils/events";
+import { isFocusEventOutside, queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
   useEventCallback,
@@ -81,7 +81,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     focusable = true,
     autoSelect = false,
     showOnChange = true,
-    showOnClick = true,
+    showOnMouseDown = true,
     showOnKeyDown = true,
     autoComplete = state.list.length ? "list" : "none",
     ...props
@@ -253,8 +253,21 @@ export const useCombobox = createHook<ComboboxOptions>(
       [onCompositionEndProp, autoSelect]
     );
 
+    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const showOnMouseDownProp = useBooleanEventCallback(showOnMouseDown);
+
+    const onMouseDown = useCallback(
+      (event: MouseEvent<HTMLInputElement>) => {
+        onMouseDownProp(event);
+        if (event.defaultPrevented) return;
+        if (showOnMouseDownProp(event)) {
+          queueBeforeEvent(event.currentTarget, "mouseup", state.show);
+        }
+      },
+      [onMouseDownProp, showOnMouseDownProp, state.show]
+    );
+
     const onClickProp = useEventCallback(props.onClick);
-    const showOnClickProp = useBooleanEventCallback(showOnClick);
 
     // When clicking on the combobox input, we should make sure the current
     // input value is set on the state and focus is set on the input only.
@@ -262,20 +275,10 @@ export const useCombobox = createHook<ComboboxOptions>(
       (event: MouseEvent<HTMLInputElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        if (showOnClickProp(event)) {
-          state.show();
-        }
         state.setActiveId(null);
         state.setValue(value);
       },
-      [
-        onClickProp,
-        showOnClickProp,
-        state.show,
-        state.setActiveId,
-        state.setValue,
-        value,
-      ]
+      [onClickProp, state.setActiveId, state.setValue, value]
     );
 
     const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
@@ -350,6 +353,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       ref: useForkRef(ref, props.ref),
       onChange,
       onCompositionEnd,
+      onMouseDown,
       onClick,
       onKeyDownCapture,
       onKeyDown,
@@ -439,10 +443,10 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      * @example
      * ```jsx
      * const combobox = useComboboxState();
-     * <Combobox state={combobox} showOnClick={combobox.value.length > 1} />
+     * <Combobox state={combobox} showOnMouseDown={combobox.value.length > 1} />
      * ```
      */
-    showOnClick?: BooleanOrCallback<MouseEvent<HTMLInputElement>>;
+    showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLInputElement>>;
     /**
      * Determines whether the combobox list/popover should be shown when the
      * user presses the arrow up or down keys while focusing on the combobox
