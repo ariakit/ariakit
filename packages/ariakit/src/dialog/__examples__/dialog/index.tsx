@@ -1,8 +1,8 @@
-import { DialogHeading } from "ariakit";
 import {
   Dialog,
   DialogDisclosure,
   DialogDismiss,
+  DialogHeading,
   useDialogState,
 } from "ariakit/dialog";
 import "./style.css";
