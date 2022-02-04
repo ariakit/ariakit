@@ -2,14 +2,18 @@ import { FocusEvent, useCallback, useEffect, useRef, useState } from "react";
 import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import {
+  useBooleanEventCallback,
+  useEventCallback,
+  useForkRef,
+} from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
 import {
   Point,
@@ -123,7 +127,7 @@ export const useHovercard = createHook<HovercardOptions>(
     portal = false,
     hideOnMouseLeave = true,
     hideOnEscape = true,
-    hideOnControl,
+    hideOnControl = false,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -133,22 +137,24 @@ export const useHovercard = createHook<HovercardOptions>(
     const portalRef = useForkRef(setPortalNode, props.portalRef);
     const domReady = !portal || portalNode;
 
+    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+    const hideOnControlProp = useBooleanEventCallback(hideOnControl);
+
     // Hide on Escape/Control. Popover already handles this, but only when the
     // dialog, the backdrop or the disclosure elements are focused. Since the
     // hovercard, by default, does not receive focus when it's shown, we need to
     // handle this globally here.
     useEffect(() => {
       if (!state.visible) return;
-      if (!hideOnEscape && !hideOnControl) return;
       return addGlobalEventListener("keydown", (event) => {
         if (event.defaultPrevented) return;
-        const isEscape = hideOnEscape && event.key === "Escape";
-        const isControl = hideOnControl && event.key === "Control";
+        const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
+        const isControl = event.key === "Control" && hideOnControlProp(event);
         if (isEscape || isControl) {
           state.hide();
         }
       });
-    }, [state.visible, hideOnEscape, hideOnControl, state.hide]);
+    }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
@@ -286,7 +292,7 @@ export type HovercardOptions<T extends As = "div"> = Omit<
    * https://github.com/w3c/aria-practices/issues/1506
    * @default false
    */
-  hideOnControl?: boolean;
+  hideOnControl?: BooleanOrCallback<KeyboardEvent>;
   /**
    * Whether to hide the popover when the mouse cursor leaves any hovercard
    * element, including the hovercard popover itself, but also the anchor

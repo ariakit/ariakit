@@ -76,7 +76,7 @@ test("markup", () => {
                 contenteditable="true"
                 role="textbox"
                 spellcheck="false"
-                style="tab-size: 4"
+                style="tab-size: 4;padding-bottom: -14px"
                 tabindex="-1"
                 translate="no"
               >

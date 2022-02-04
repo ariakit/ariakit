@@ -196,21 +196,6 @@ export const useFocusable = createHook<FocusableOptions>(
       addGlobalEventListener("keydown", onGlobalKeyDown, true);
     }, [focusable]);
 
-    // The native autoFocus prop is problematic in many ways. For example, when
-    // an element has the native autofocus attribute, the focus event will be
-    // triggered before React effects (even layout effects) and before refs are
-    // assigned. This means we won't have access to the element's ref or
-    // anything else that's set up by React effects on the onFocus event. So we
-    // don't pass the autoFocus prop to the element and instead manually focus
-    // the element when it's mounted. See
-    // https://twitter.com/diegohaz/status/1408180632933388289
-    useSafeLayoutEffect(() => {
-      if (!focusable) return;
-      if (autoFocus) {
-        ref.current?.focus();
-      }
-    }, [focusable, autoFocus]);
-
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio
     // buttons when their labels are clicked. This effect will make sure the
     // focusable element is focused on label click.
@@ -367,6 +352,23 @@ export const useFocusable = createHook<FocusableOptions>(
       },
       [onBlurProp, focusable]
     );
+
+    // The native autoFocus prop is problematic in many ways. For example, when
+    // an element has the native autofocus attribute, the focus event will be
+    // triggered before React effects (even layout effects) and before refs are
+    // assigned. This means we won't have access to the element's ref or
+    // anything else that's set up by React effects on the onFocus event. So we
+    // don't pass the autoFocus prop to the element and instead manually focus
+    // the element when it's mounted. The order in which this effect runs also
+    // matters. It must be declared here after all the event callbacks above so
+    // the event callback effects run before this one. See
+    // https://twitter.com/diegohaz/status/1408180632933388289
+    useSafeLayoutEffect(() => {
+      if (!focusable) return;
+      if (autoFocus) {
+        ref.current?.focus();
+      }
+    }, [focusable, autoFocus]);
 
     const tagName = useTagName(ref, props.as);
     const nativeTabbable = focusable && isNativeTabbable(tagName);
