@@ -1,0 +1,40 @@
+@import url("../../../button/__examples__/button/style.css");
+
+.button {
+  @apply absolute top-4 right-4 rounded-full font-semibold;
+}
+
+.anchor {
+  @apply font-semibold text-primary-1 hover:underline dark:text-primary-1-dark;
+}
+
+.hovercard {
+  @apply
+    relative
+    z-50
+    flex
+    w-[300px]
+    flex-col
+    gap-2
+    rounded-lg
+    border
+    border-solid
+    border-canvas-4
+    bg-canvas-4
+    p-4
+    text-canvas-4
+    drop-shadow
+    focus-visible:ariakit-outline
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    dark:drop-shadow-dark;
+}
+
+.avatar {
+  @apply w-16 rounded-full;
+}
+
+.username {
+  @apply text-lg font-semibold;
+}

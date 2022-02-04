@@ -1,36 +1,35 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .popover {
-  width: 250px;
+  max-width: min(calc(100vw - 16px), 320px);
   @apply
-    relative
+    z-50
     flex
     flex-col
-    gap-2
-    z-50
-    p-4
+    gap-4
     rounded-lg
-    drop-shadow
-    dark:drop-shadow-dark
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
+    p-4
     text-canvas-4
+    drop-shadow
+    focus-visible:ariakit-outline
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    ariakit-focus-visible:ariakit-outline;
+    dark:drop-shadow-dark;
 }
 
-.popover-arrow svg {
+.arrow svg {
   @apply
     fill-canvas-4
-    dark:fill-canvas-4-dark
     stroke-canvas-4
+    dark:fill-canvas-4-dark
     dark:stroke-canvas-4-dark;
 }
 
-.popover-heading {
+.heading {
   @apply m-0 text-xl font-medium;
 }

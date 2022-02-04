@@ -2,48 +2,48 @@
 
 .menu {
   @apply
-    w-[250px]
     relative
-    flex
-    flex-col
     z-50
-    p-2
+    flex
+    w-[250px]
+    flex-col
     rounded-lg
-    outline-none
-    drop-shadow
-    dark:drop-shadow-dark
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
+    p-2
     text-canvas-4
-    dark:text-canvas-4-dark;
+    outline-none
+    drop-shadow
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    dark:drop-shadow-dark;
 }
 
 .menu-arrow svg {
   @apply
     fill-canvas-4
-    dark:fill-canvas-4-dark
     stroke-canvas-4
+    dark:fill-canvas-4-dark
     dark:stroke-canvas-4-dark;
 }
 
 .menu-item {
   @apply
     flex
-    gap-2
-    items-center
-    scroll-m-2
-    outline-none
     cursor-default
+    scroll-m-2
+    items-center
+    gap-2
     rounded
     p-2
+    outline-none
     hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover
     focus:bg-primary-2
     focus:text-primary-2
+    dark:hover:bg-primary-1-dark-hover
     dark:focus:bg-primary-2-dark
     dark:focus:text-primary-2-dark;
 }

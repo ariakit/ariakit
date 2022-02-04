@@ -1,0 +1,5 @@
+@import url("../combobox/style.css");
+
+.wrapper {
+  @apply flex flex-col gap-2;
+}

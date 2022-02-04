@@ -1,5 +1,9 @@
 import { KeyboardEvent, useCallback, useState } from "react";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import {
+  useBooleanEventCallback,
+  useEventCallback,
+  useForkRef,
+} from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -34,13 +38,14 @@ export const useMenu = createHook<MenuOptions>(
     const domReady = !props.portal || portalNode;
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
         if (event.key === "Escape") {
-          if (!hideOnEscape) return;
+          if (!hideOnEscapeProp(event)) return;
           if (!hasParentMenu) {
             // On Esc, only stop propagation if there's no parent menu.
             // Otherwise, pressing Esc should close all menus
@@ -49,19 +54,13 @@ export const useMenu = createHook<MenuOptions>(
           return state.hide();
         }
       },
-      [onKeyDownProp, hideOnEscape, hasParentMenu, state.hide]
+      [onKeyDownProp, hideOnEscapeProp, hasParentMenu, state.hide]
     );
 
     props = {
       ...props,
       onKeyDown,
     };
-
-    props = useMenuList({
-      state,
-      ...props,
-      autoFocusOnShow: autoFocusOnShow && !!domReady,
-    });
 
     props = useHovercard({
       state,
@@ -77,6 +76,12 @@ export const useMenu = createHook<MenuOptions>(
       // event.stopPropagation() won't be called, so the parent menus will also
       // be closed.
       hideOnEscape: hasParentMenu ? false : hideOnEscape,
+    });
+
+    props = useMenuList({
+      state,
+      ...props,
+      autoFocusOnShow: autoFocusOnShow && !!domReady,
     });
 
     return props;

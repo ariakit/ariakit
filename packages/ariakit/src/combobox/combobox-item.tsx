@@ -5,7 +5,6 @@ import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
@@ -44,10 +43,11 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
   ({
     state,
     value,
-    hideOnClick = true,
+    hideOnClick = value != null,
     setValueOnClick = true,
     shouldRegisterItem = true,
-    focusOnMouseMove = false,
+    focusOnHover = false,
+    getItem: getItemProp,
     ...props
   }) => {
     state = useStore(state || ComboboxContext, [
@@ -63,12 +63,12 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, value };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [value, props.getItem]
+      [value, getItemProp]
     );
 
     const onClickProp = useEventCallback(props.onClick);
@@ -77,8 +77,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       (event: MouseEvent<HTMLDivElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        if (value == null) return;
-        if (setValueOnClick) {
+        if (setValueOnClick && value != null) {
           state?.setValue(value);
         }
         if (hideOnClick) {
@@ -106,7 +105,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        state?.setMoveType("keyboard");
         if (state?.virtualFocus) return;
         // When the combobox is not working with virtual focus, the items will
         // receive DOM focus. Therefore, pressing printable keys will not fill
@@ -127,30 +125,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
           }
         }
       },
-      [
-        onKeyDownProp,
-        state?.setMoveType,
-        state?.virtualFocus,
-        state?.baseRef,
-        state?.setValue,
-      ]
-    );
-
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
-
-    const onMouseMove = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseMoveProp(event);
-        if (event.defaultPrevented) return;
-        // If focusOnMouseMove is true or ComboboxItem is combined with another
-        // composite item component, we should make sure to set the appropiate
-        // moveType on the state so, when combobox.autoComplete is "both" or
-        // "inline", we don't change the input value with the active item value.
-        // In fact, the combobox.activeValue property will not be updated if
-        // moveType is set to "mouse".
-        state?.setMoveType("mouse");
-      },
-      [onMouseMoveProp, state?.setMoveType]
+      [onKeyDownProp, state?.virtualFocus, state?.baseRef, state?.setValue]
     );
 
     props = useWrapElement(
@@ -163,14 +138,12 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value]
     );
 
-    // TODO: Force aria-selected on virtualFocus: false too
     props = {
       role: getItemRole(state?.contentElement),
       children: value,
       ...props,
       onClick,
       onKeyDown,
-      onMouseMove,
     };
 
     props = useCompositeItem({
@@ -182,7 +155,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       shouldRegisterItem: state?.mounted && shouldRegisterItem,
     });
 
-    props = useCompositeHover({ state, focusOnMouseMove, ...props });
+    props = useCompositeHover({ state, focusOnHover, ...props });
 
     return props;
   }
@@ -218,7 +191,7 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
   CompositeItemOptions<T>,
   "state"
 > &
-  Omit<CompositeHoverOptions<T>, "state" | "focusOnMouseMove"> & {
+  Omit<CompositeHoverOptions<T>, "state" | "focusOnHover"> & {
     /**
      * Object returned by the `useComboboxState` hook. If not provided, the
      * parent `ComboboxList` or `ComboboxPopover` components' context will be
@@ -245,10 +218,10 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
      */
     setValueOnClick?: boolean;
     /**
-     * Whether to focus the combobox item on mouse move.
+     * Whether to focus the combobox item on hover.
      * @default false
      */
-    focusOnMouseMove?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+    focusOnHover?: CompositeHoverOptions["focusOnHover"];
   };
 
 export type ComboboxItemProps<T extends As = "div"> = Props<

@@ -1,10 +1,5 @@
-import {
-  MutableRefObject,
-  ReducerWithoutAction,
-  RefCallback,
-  SetStateAction,
-} from "react";
-import { AnyFunction, AnyObject } from "./types";
+import { MutableRefObject, ReducerWithoutAction, RefCallback } from "react";
+import { AnyFunction, AnyObject, SetStateAction } from "./types";
 
 /**
  * Empty function.

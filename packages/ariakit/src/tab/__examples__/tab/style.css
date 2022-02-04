@@ -3,13 +3,13 @@
     flex
     flex-col
     gap-4
-    p-4
     rounded-lg
     border
-    bg-canvas-3
     border-canvas-3
-    dark:bg-canvas-3-dark
-    dark:border-canvas-3-dark;
+    bg-canvas-3
+    p-4
+    dark:border-canvas-3-dark
+    dark:bg-canvas-3-dark;
 }
 
 .tab-list {
@@ -19,17 +19,19 @@
 .tab {
   @apply
     flex
+    h-10
     items-center
     justify-center
     gap-2
-    text-base
-    border-none
     rounded-md
-    px-4
-    h-10
+    border-none
     bg-alpha-2
+    px-4
+    text-base
     text-alpha-2
     hover:bg-alpha-2-hover
+    focus-visible:ariakit-outline
+    aria-disabled:opacity-50
     aria-selected:bg-primary-2
     aria-selected:text-primary-2
     aria-selected:hover:bg-primary-2-hover
@@ -38,7 +40,5 @@
     dark:hover:bg-alpha-2-dark-hover
     dark:aria-selected:bg-primary-2-dark
     dark:aria-selected:text-primary-2-dark
-    dark:aria-selected:hover:bg-primary-2-dark-hover
-    ariakit-focus-visible:ariakit-outline
-    aria-disabled:opacity-50;
+    dark:aria-selected:hover:bg-primary-2-dark-hover;
 }

@@ -6,10 +6,11 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "ariakit-utils/focus";
-import { queuedMicrotasks, sleep } from "./__utils";
+import { queuedMicrotasks } from "./__utils";
 import { blur } from "./blur";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
+import { sleep } from "./sleep";
 
 const clickableInputTypes = [
   "button",

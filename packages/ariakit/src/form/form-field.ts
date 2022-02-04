@@ -71,7 +71,7 @@ function useItem(state: FormState | undefined, name: string, type: ItemType) {
  * ```
  */
 export const useFormField = createHook<FormFieldOptions>(
-  ({ state, name: nameProp, ...props }) => {
+  ({ state, name: nameProp, getItem: getItemProp, ...props }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
       "setFieldTouched",
@@ -101,12 +101,12 @@ export const useFormField = createHook<FormFieldOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, name, type: "field" };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, name, props.getItem]
+      [id, name, getItemProp]
     );
 
     const onBlurProp = useEventCallback(props.onBlur);

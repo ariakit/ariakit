@@ -1,8 +1,8 @@
-import { SetStateAction, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { applyState } from "ariakit-utils/misc";
 import { useStore, useStorePublisher } from "ariakit-utils/store";
-import { SetState } from "ariakit-utils/types";
+import { SetState, SetStateAction } from "ariakit-utils/types";
 import {
   CompositeState,
   CompositeStateProps,
@@ -14,6 +14,11 @@ import {
   useHovercardState,
 } from "../hovercard/hovercard-state";
 import { MenuBarContext, useParentMenu } from "./__utils";
+
+type Values = Record<
+  string,
+  string | boolean | number | Array<string | number>
+>;
 
 function useParentOrientation(parentMenu?: MenuState) {
   const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
@@ -35,16 +40,16 @@ function useParentOrientation(parentMenu?: MenuState) {
  * </Menu>
  * ```
  */
-export function useMenuState({
+export function useMenuState<V extends Values = Values>({
   orientation = "vertical",
   timeout = 150,
   hideTimeout = 0,
   ...props
-}: MenuStateProps = {}): MenuState {
+}: MenuStateProps<V> = {}): MenuState<V> {
   const [initialFocus, setInitialFocus] =
     useState<MenuState["initialFocus"]>("container");
   const [values, setValues] = useControlledState(
-    props.defaultValues || {},
+    props.defaultValues || ({} as V),
     props.values,
     props.setValues
   );
@@ -73,7 +78,7 @@ export function useMenuState({
   }, [hoverCard.visible, composite.setMoves]);
 
   const setValue = useCallback(
-    (name: string, value: SetStateAction<typeof values[string]>) => {
+    (name: string, value: SetStateAction<V[string]>) => {
       // Preventing prototype pollution.
       if (name === "__proto__" || name === "constructor") return;
       setValues((prevValues) => {
@@ -122,7 +127,7 @@ export function useMenuState({
   return useStorePublisher(state);
 }
 
-export type MenuState = CompositeState &
+export type MenuState<V extends Values = Values> = CompositeState &
   HovercardState & {
     /**
      * Determines the element that should be focused when the menu is opened.
@@ -136,17 +141,17 @@ export type MenuState = CompositeState &
      * A map of names and values that will be used by the `MenuItemCheckbox` and
      * `MenuItemRadio` components.
      */
-    values: Record<string, string | boolean | number | Array<string | number>>;
+    values: V;
     /**
      * Sets the `values` state.
      */
-    setValues: SetState<MenuState["values"]>;
+    setValues: SetState<MenuState<V>["values"]>;
     /**
      * Sets a specific value.
      */
     setValue: (
       name: string,
-      value: SetStateAction<MenuState["values"][string]>
+      value: SetStateAction<MenuState<V>["values"][string]>
     ) => void;
     /**
      * Hides the menu and all the parent menus.
@@ -154,14 +159,14 @@ export type MenuState = CompositeState &
     hideAll: () => void;
   };
 
-export type MenuStateProps = CompositeStateProps &
+export type MenuStateProps<V extends Values = Values> = CompositeStateProps &
   HovercardStateProps &
-  Partial<Pick<MenuState, "values">> & {
+  Partial<Pick<MenuState<V>, "values">> & {
     /**
      * A default map of names and values that will be used by the
      * `MenuItemCheckbox` and `MenuItemRadio` components.
      */
-    defaultValues?: MenuState["values"];
+    defaultValues?: MenuState<V>["values"];
     /**
      * Function that will be called when setting the menu `values` state.
      * @example
@@ -170,5 +175,5 @@ export type MenuStateProps = CompositeStateProps &
      * const menu = useMenuState({ values, setValues });
      * const submenu = useMenuState({ values, setValues });
      */
-    setValues?: (values: MenuState["values"]) => void;
+    setValues?: (values: MenuState<V>["values"]) => void;
   };

@@ -8,10 +8,10 @@ import {
   getSelectionRange,
   queuedMicrotasks,
   setSelectionRange,
-  sleep,
 } from "./__utils";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
+import { sleep } from "./sleep";
 
 export async function type(
   text: string,

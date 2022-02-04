@@ -18,9 +18,9 @@ export default function Example() {
 export default function Example() {
   const playground = usePlaygroundState({ defaultValues });
   return (
-    <Playground state={playground}>
+    <Playground state={playground} className="playground">
+      <PlaygroundEditor file="index.js" className="editor" />
       <PlaygroundClient className="preview" />
-      <PlaygroundEditor file="index.js" />
     </Playground>
   );
 }

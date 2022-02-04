@@ -138,7 +138,10 @@ export const usePortal = createHook<PortalOptions>(
       props,
       (element) => {
         element = (
-          <PortalContext.Provider value={portalNode}>
+          // While the portal node is not in the DOM, we need to pass the
+          // current context to the portal context, otherwise it's going to
+          // reset to the body element on nested portals.
+          <PortalContext.Provider value={portalNode || context}>
             {element}
           </PortalContext.Provider>
         );
@@ -149,8 +152,12 @@ export const usePortal = createHook<PortalOptions>(
           // If the element should be rendered within a portal, but the portal
           // node is not yet in the DOM, we'll return an empty div element. We
           // assign the id to the element so we can use it to set the portal id
-          // later on.
-          return <span ref={refProp} id={props.id} />;
+          // later on. We're using position: fixed here so that the browser
+          // doesn't add margin to the element when setting gap on a parent
+          // element.
+          return (
+            <span ref={refProp} id={props.id} style={{ position: "fixed" }} />
+          );
         }
 
         element = (
@@ -224,7 +231,7 @@ export const usePortal = createHook<PortalOptions>(
 
         return element;
       },
-      [portalNode, portal, props.id, preserveTabOrder]
+      [portalNode, context, portal, props.id, preserveTabOrder]
     );
 
     props = {

@@ -39,7 +39,7 @@ function getTabId(panels: TabState["panels"], id?: string) {
  * ```
  */
 export const useTabPanel = createHook<TabPanelOptions>(
-  ({ state, tabId: tabIdProp, ...props }) => {
+  ({ state, tabId: tabIdProp, getItem: getItemProp, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -55,12 +55,12 @@ export const useTabPanel = createHook<TabPanelOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, tabId: tabIdProp };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, tabIdProp, props.getItem]
+      [id, tabIdProp, getItemProp]
     );
 
     const tabId = tabIdProp || getTabId(state.panels, id);

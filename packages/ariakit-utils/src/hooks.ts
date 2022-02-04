@@ -313,7 +313,7 @@ export function useBooleanEventCallback<T extends unknown[]>(
 }
 
 /**
- * Comment.
+ * Returns props with an additional `wrapElement` prop.
  */
 export function useWrapElement<P>(
   props: P & { wrapElement?: WrapElement },

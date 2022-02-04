@@ -9,32 +9,36 @@
 }
 
 .field input {
-  width: 250px;
   @apply
-    border-none
-    px-4
     h-10
+    w-[250px]
     rounded-lg
-    text-base
-    outline-none
+    border-none
     bg-canvas-1
+    px-4
+    text-base
     text-canvas-1
+    outline-none
     hover:bg-canvas-1-hover
+    focus-visible:ariakit-outline
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    ariakit-focus-visible:ariakit-outline;
+    dark:hover:bg-canvas-1-dark-hover;
+}
+
+.error:empty {
+  @apply absolute;
 }
 
 .error:not(:empty) {
   @apply
-    py-2
-    px-4
-    border
     rounded-lg
-    text-danger-1
+    border
     border-danger-1
     bg-danger-1
+    py-2
+    px-4
+    text-danger-1
     dark:border-danger-1-dark
     dark:bg-danger-1-dark
     dark:text-danger-1-dark;

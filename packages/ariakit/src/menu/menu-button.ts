@@ -2,7 +2,7 @@ import { FocusEvent, KeyboardEvent, MouseEvent, useCallback } from "react";
 import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
 import { useEventCallback, useId } from "ariakit-utils/hooks";
-import { useStore, useStoreProvider } from "ariakit-utils/store";
+import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -21,7 +21,7 @@ import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
-import { MenuBarContext, MenuContext, useParentMenu } from "./__utils";
+import { MenuBarContext, useParentMenu } from "./__utils";
 import { MenuState } from "./menu-state";
 
 function hasExpandedMenuButton(
@@ -55,13 +55,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const disabled = props.disabled || props["aria-disabled"];
-    const dir = state.placement.split("-")[0] as BasePlacement;
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
-    const onFocusProp = useEventCallback(props.onFocus);
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const onClickProp = useEventCallback(props.onClick);
-
     const id = useId(props.id);
+
+    const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
     const onMouseMove = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
@@ -79,6 +75,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       [onMouseMoveProp, disabled, parentMenuBar, parentIsMenuBar, id]
     );
 
+    const onFocusProp = useEventCallback(props.onFocus);
+
     const onFocus = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {
         onFocusProp(event);
@@ -95,6 +93,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       },
       [onFocusProp, disabled, parentMenuBar, parentIsMenuBar, state.show]
     );
+
+    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const dir = state.placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -124,6 +125,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       ]
     );
 
+    const onClickProp = useEventCallback(props.onClick);
+
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
         onClickProp(event);
@@ -147,8 +150,6 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         state.show,
       ]
     );
-
-    props = useStoreProvider({ state, ...props }, MenuContext);
 
     if (hasParentMenu) {
       // On Safari, VO+Space triggers a click twice on native button elements

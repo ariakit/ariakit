@@ -5,25 +5,24 @@ import {
   SyntheticEvent,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { isButton, isTextField } from "ariakit-utils/dom";
+import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
 import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
+  useBooleanEventCallback,
   useEventCallback,
   useForkRef,
   useId,
-  useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { isSafari } from "ariakit-utils/platform";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,
@@ -43,26 +42,6 @@ function isEditableElement(element: HTMLElement) {
   if (element.isContentEditable) return true;
   if (isTextField(element)) return true;
   return element.tagName === "INPUT" && !isButton(element);
-}
-
-function getScrollingElement(
-  element?: Element | null
-): HTMLElement | Element | null {
-  if (!element) {
-    return null;
-  }
-  if (element.clientHeight && element.scrollHeight > element.clientHeight) {
-    const { overflowY } = getComputedStyle(element);
-    const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
-    if (isScrollable) {
-      return element;
-    }
-  }
-  return (
-    getScrollingElement(element.parentElement) ||
-    document.scrollingElement ||
-    document.body
-  );
 }
 
 function getNextPageOffset(scrollingElement: Element, pageUp = false) {
@@ -166,6 +145,10 @@ function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
   return role;
 }
 
+function requiresAriaSelected(role?: string) {
+  return role === "option" || role === "treeitem";
+}
+
 function supportsAriaSelected(role?: string) {
   if (role === "option") return true;
   if (role === "tab") return true;
@@ -192,14 +175,12 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
   ({
     state,
     rowId: rowIdProp,
-    preventScrollOnKeyDown,
+    preventScrollOnKeyDown = false,
     getItem: getItemProp,
     ...props
   }) => {
     const id = useId(props.id);
     state = useStore(state || CompositeContext, [
-      // TODO: See test "show on space then esc then arrow up"
-      // useCallback((s: CompositeState) => s.moves === 0, []),
       useCallback((s: CompositeState) => s.activeId === id, [id]),
       "baseRef",
       "items",
@@ -217,21 +198,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     ]);
 
     const ref = useRef<HTMLButtonElement>(null);
-    const isActiveItem = state?.activeId === id;
-    const isActiveItemRef = useLiveRef(isActiveItem);
-
-    useEffect(() => {
-      const element = ref.current;
-      if (!element) return;
-      // `moves` will be incremented whenever composite.move() is called. This
-      // means that the composite item should receive focus. We're using
-      // isActiveItemRef instead of isActiveItem because we don't want to focus
-      // the item if isActiveItem changes (and moves doesn't).
-      if (state?.moves && isActiveItemRef.current) {
-        element.focus();
-      }
-    }, [state?.moves]);
-
     const row = useContext(CompositeRowContext);
     const rowId = rowIdProp ?? getContextId(state, row);
     const trulyDisabled = props.disabled && !props.accessibleWhenDisabled;
@@ -315,6 +281,9 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     );
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const preventScrollOnKeyDownProp = useBooleanEventCallback(
+      preventScrollOnKeyDown
+    );
     const item = useItem({ state, ...props });
 
     const onKeyDown = useCallback(
@@ -361,7 +330,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         const action = keyMap[event.key as keyof typeof keyMap];
         if (action) {
           const nextId = action();
-          if (preventScrollOnKeyDown || nextId !== undefined) {
+          if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
             event.preventDefault();
             state?.move(nextId);
           }
@@ -379,7 +348,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         state?.previous,
         state?.first,
         state?.last,
-        preventScrollOnKeyDown,
+        preventScrollOnKeyDownProp,
         state?.move,
       ]
     );
@@ -399,11 +368,23 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [providerValue]
     );
 
+    const isActiveItem = state?.activeId === id;
     const role = useRole(ref, props);
-    const ariaSelected =
-      state?.virtualFocus && isActiveItem && supportsAriaSelected(role)
-        ? true
-        : undefined;
+    let ariaSelected: boolean | undefined;
+
+    if (isActiveItem) {
+      if (requiresAriaSelected(role)) {
+        // When the active item role _requires_ the aria-selected attribute
+        // (e.g., option, treeitem), we always set it to true.
+        ariaSelected = true;
+      } else if (state?.virtualFocus && supportsAriaSelected(role)) {
+        // Otherwise, it will be set to true when virtualFocus is set to true
+        // (meaning that the focus will be managed using the
+        // aria-activedescendant attribute) and the aria-selected attribute is
+        // _supported_ by the active item role.
+        ariaSelected = true;
+      }
+    }
 
     const shouldTabIndex =
       (!state?.virtualFocus && isActiveItem) ||
@@ -414,6 +395,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     props = {
       id,
       "aria-selected": ariaSelected,
+      "data-active-item": isActiveItem ? "" : undefined,
       ...props,
       ref: useForkRef(ref, props.ref),
       tabIndex: shouldTabIndex ? props.tabIndex : -1,
@@ -469,10 +451,10 @@ export type CompositeItemOptions<T extends As = "button"> = CommandOptions<T> &
     rowId?: string;
     /**
      * Whether the scroll behavior should be prevented when pressing arrow keys
-     * on the first or the last item. TODO: Test this more thoroughly.
+     * on the first or the last items.
      * @default false
      */
-    preventScrollOnKeyDown?: boolean;
+    preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   };
 
 export type CompositeItemProps<T extends As = "button"> = Props<

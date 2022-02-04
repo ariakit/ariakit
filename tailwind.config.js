@@ -262,16 +262,18 @@ module.exports = {
         ".ariakit-outline": {
           outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
           outlineOffset: "2px",
-          ".dark &": {
-            outlineColor: theme("colors.primary-2.dark.DEFAULT"),
-          },
         },
       });
 
-      addVariant("ariakit-focus-visible", "&[data-focus-visible]");
+      addVariant("enter", "&[data-enter]");
+      addVariant("leave", "&[data-leave]");
+
+      addVariant("active", ["&:active", "&[data-active]"]);
+      addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);
       addVariant("aria-invalid", '&[aria-invalid="true"]');
       addVariant("aria-disabled", '&[aria-disabled="true"]');
       addVariant("aria-selected", '&[aria-selected="true"]');
+      addVariant("aria-expanded", '&[aria-expanded="true"]');
     }),
   ],
 };

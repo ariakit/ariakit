@@ -11,11 +11,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "12.0.7",
-    "rehype-react": "7.0.3"
+    "next": "12.0.8",
+    "rehype-react": "7.0.4"
   },
   "devDependencies": {
-    "autoprefixer": "10.4.0",
+    "autoprefixer": "10.4.2",
     "next-transpile-modules": "9.0.0"
   }
 }

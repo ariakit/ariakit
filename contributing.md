@@ -63,7 +63,7 @@ npm install
 Make sure you create a new branch for your changes. You can do this by running the following command in your terminal:
 
 ```bash
-git checkout -b feat/new-feature
+git checkout -b feat/my-component
 ```
 
 ## Starting the development server
@@ -127,7 +127,6 @@ export type MyComponentOptions<T extends As = "div"> = Options<T> & {
    */
   customProp?: string;
 };
-};
 
 export type MyComponentProps<T extends As = "div"> = Props<
   MyComponentOptions<T>
@@ -170,13 +169,13 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 > To use Tailwind in a CSS file rather than applying classes directly to the HTML elements, we're using the [`@apply`](https://tailwindcss.com/docs/functions-and-directives#apply) directive.
 >
-> Make sure you also take dark mode into account.
+> Make sure you also take [dark mode](https://tailwindcss.com/docs/dark-mode) into account.
 
 `packages/ariakit/src/my-component/__examples__/my-component/style.css`
 
 ```css
 .my-component {
-  @apply bg-danger-2 text-danger-2 dark:bg-danger-2-dark dark:text-danger-2-dark
+  @apply bg-danger-2 text-danger-2 dark:bg-danger-2-dark dark:text-danger-2-dark;
 }
 ```
 
@@ -199,7 +198,7 @@ You'll notice that the transpiled CSS file has been also added to editor's files
 
 ## Testing the example
 
-One of the goals of having use cases written like that is so we can write automated tests for them.
+One of the goals of having use cases written like that is so we can write automated tests for them. Instead of testing the Ariakit components directly, we're testing the examples that represent the way people use Ariakit components.
 
 > We use [`ariakit-test-utils`](packages/ariakit-test-utils), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
 
@@ -284,7 +283,7 @@ We can `@import` CSS files from other examples. You'll usually import the CSS fi
 @import url("../my-component/style.css");
 
 .my-component {
-  @apply p-4
+  @apply p-4;
 }
 ```
 

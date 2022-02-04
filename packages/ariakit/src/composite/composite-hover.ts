@@ -1,29 +1,51 @@
-import { MouseEvent, useCallback } from "react";
-import { contains } from "ariakit-utils/dom";
+import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
+import { closest, contains, isPartiallyHidden } from "ariakit-utils/dom";
+import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import {
-  useBooleanEventCallback,
-  useEventCallback,
-  useId,
-} from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-function getMouseDestination(event: MouseEvent<HTMLElement>) {
+let screenX = 0;
+let screenY = 0;
+
+function handleGlobalMouseMove(event: MouseEvent) {
+  screenX = event.screenX;
+  screenY = event.screenY;
+}
+
+function isScrolling(event: ReactMouseEvent | MouseEvent) {
+  // JSDOM doesn't support screenX/screenY
+  if (process.env.NODE_ENV === "test") return false;
+  return (
+    Math.abs(event.screenX - screenX) === 0 &&
+    Math.abs(event.screenY - screenY) === 0
+  );
+}
+
+function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
   const relatedTarget = event.relatedTarget as Node | null;
   if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
-    return relatedTarget;
+    return relatedTarget as Element;
   }
   return null;
 }
 
-function hoveringInside(event: MouseEvent<HTMLElement>) {
+function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   const nextElement = getMouseDestination(event);
   if (!nextElement) return false;
   return contains(event.currentTarget, nextElement);
+}
+
+function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
+  const dest = getMouseDestination(event);
+  if (!dest) return false;
+  const item = closest(dest, "[data-composite-hover]");
+  if (!item) return false;
+  return !isPartiallyHidden(item);
 }
 
 /**
@@ -41,32 +63,38 @@ function hoveringInside(event: MouseEvent<HTMLElement>) {
  * ```
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
-  ({ state, focusOnMouseMove = true, ...props }) => {
+  ({ state, focusOnHover = true, ...props }) => {
     state = useStore(state || CompositeContext, ["move"]);
-    const id = useId(props.id);
 
-    const focusOnMouseMoveProp = useBooleanEventCallback(focusOnMouseMove);
+    const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
+    useEffect(() => {
+      return addGlobalEventListener("mousemove", handleGlobalMouseMove);
+    }, []);
+
     const onMouseMove = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
+      (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
         if (hasFocusWithin(event.currentTarget)) return;
-        if (!focusOnMouseMoveProp(event)) return;
-        state?.move(id);
+        if (!focusOnHoverProp(event)) return;
+        if (isPartiallyHidden(event.currentTarget)) return;
+        event.currentTarget.focus();
       },
-      [onMouseMoveProp, focusOnMouseMoveProp, state?.move, id]
+      [onMouseMoveProp, focusOnHoverProp]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
 
     const onMouseLeave = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
+      (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseLeaveProp(event);
+        if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
         if (hoveringInside(event)) return;
-        if (!focusOnMouseMoveProp(event)) return;
+        if (movingToAnotherItem(event)) return;
+        if (!focusOnHoverProp(event)) return;
         // Move focus to the composite container.
         state?.move(null);
       },
@@ -74,7 +102,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     );
 
     props = {
-      id,
+      "data-composite-hover": "",
       ...props,
       onMouseMove,
       onMouseLeave,
@@ -112,10 +140,10 @@ export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
    */
   state?: CompositeState;
   /**
-   * Whether to focus the composite item on mouse move.
+   * Whether to focus the composite item on hover.
    * @default true
    */
-  focusOnMouseMove?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 };
 
 export type CompositeHoverProps<T extends As = "div"> = Props<

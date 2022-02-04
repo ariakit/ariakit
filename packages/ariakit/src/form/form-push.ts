@@ -20,11 +20,12 @@ function getFirstFieldsByName(
   name: string
 ) {
   if (!items) return [];
-  const regex = new RegExp(`^${name}\\.\\d+\\.`);
   const fields: FormState["items"] = [];
   for (const item of items) {
     if (item.type !== "field") continue;
     if (!item.name.startsWith(name)) continue;
+    const nameWithIndex = item.name.replace(/(\.\d+)\..+$/, "$1");
+    const regex = new RegExp(`^${nameWithIndex}`);
     if (!fields.some((i) => regex.test(i.name))) {
       fields.push(item);
     }
@@ -58,7 +59,14 @@ function getFirstFieldsByName(
  * ```
  */
 export const useFormPush = createHook<FormPushOptions>(
-  ({ state, name: nameProp, value, autoFocusOnClick = true, ...props }) => {
+  ({
+    state,
+    value,
+    name: nameProp,
+    getItem: getItemProp,
+    autoFocusOnClick = true,
+    ...props
+  }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, ["pushValue", "items"]);
 
@@ -76,12 +84,12 @@ export const useFormPush = createHook<FormPushOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, type: "button", name };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [name, props.getItem]
+      [name, getItemProp]
     );
 
     const onClickProp = useEventCallback(props.onClick);

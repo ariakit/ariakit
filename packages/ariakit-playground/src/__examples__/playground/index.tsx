@@ -18,7 +18,7 @@ export default function Example() {
   const playground = usePlaygroundState({ defaultValues });
   return (
     <Playground state={playground} className="playground">
-      <PlaygroundEditor className={`${theme} editor`} file="index.js" />
+      <PlaygroundEditor theme={theme} file="index.js" className="editor" />
       <PlaygroundPreview className="preview" />
     </Playground>
   );

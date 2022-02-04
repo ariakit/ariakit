@@ -1,4 +1,4 @@
-import { HTMLAttributes, RefObject, useRef, useState } from "react";
+import { HTMLAttributes, RefObject, useEffect, useState } from "react";
 import {
   useForkRef,
   useSafeLayoutEffect,
@@ -31,10 +31,10 @@ export const usePopover = createHook<PopoverOptions>(
     modal = false,
     portal = !!modal,
     preserveTabOrder = true,
+    autoFocusOnShow = true,
     wrapperProps,
     ...props
   }) => {
-    const ref = useRef<HTMLDivElement>(null);
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
@@ -51,12 +51,22 @@ export const usePopover = createHook<PopoverOptions>(
     // z-index as the popover element so users only need to set the z-index
     // once.
     useSafeLayoutEffect(() => {
-      const element = ref.current;
       const wrapper = popoverRef.current;
-      if (!element) return;
+      const popover = state.contentElement;
       if (!wrapper) return;
-      wrapper.style.zIndex = getComputedStyle(element).zIndex;
-    }, [popoverRef]);
+      if (!popover) return;
+      wrapper.style.zIndex = getComputedStyle(popover).zIndex;
+    }, [popoverRef, state.contentElement]);
+
+    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(false);
+
+    // We can't move focus right after the popover is shown. Otherwise we may
+    // see some scroll jumps (when it's absolutely positioned), or VoiceOver may
+    // not move focus (even when the position is fixed). So we wait a bit so
+    // Popper can finish positioning the popover before we move focus.
+    useEffect(() => {
+      setCanAutoFocusOnShow(state.mounted && !!state.contentElement);
+    }, [state.mounted, state.contentElement]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
@@ -64,7 +74,14 @@ export const usePopover = createHook<PopoverOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <div role="presentation" {...wrapperProps} ref={popoverRef}>
+        <div
+          role="presentation"
+          {...wrapperProps}
+          // Avoid the wrapper from taking space when used within a flexbox
+          // container with the gap property.
+          style={{ position: "fixed", ...wrapperProps?.style }}
+          ref={popoverRef}
+        >
           {element}
         </div>
       ),
@@ -81,17 +98,21 @@ export const usePopover = createHook<PopoverOptions>(
       [state]
     );
 
+    props = {
+      ...props,
+      style: {
+        position: "relative",
+        ...props.style,
+      },
+    };
+
     props = useDialog({
       state,
       modal,
       preserveTabOrder,
       portal,
+      autoFocusOnShow: canAutoFocusOnShow && autoFocusOnShow,
       ...props,
-      ref: useForkRef(ref, props.ref),
-      style: {
-        position: "relative",
-        ...props.style,
-      },
       portalRef,
     });
 

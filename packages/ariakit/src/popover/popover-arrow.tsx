@@ -74,6 +74,8 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
       ...props,
       ref: useForkRef(state?.arrowRef, props.ref),
       style: {
+        // server side rendering
+        position: "absolute",
         fontSize: size,
         width: "1em",
         height: "1em",

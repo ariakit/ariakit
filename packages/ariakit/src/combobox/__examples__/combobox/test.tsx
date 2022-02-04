@@ -6,49 +6,58 @@ import {
   render,
   type,
 } from "ariakit-test-utils";
+import { axe } from "jest-axe";
 import Example from ".";
+
+const getCombobox = () => getByRole("combobox");
+const getPopover = () => getByRole("listbox", { hidden: true });
+const getOption = (name: string) => getByRole("option", { name });
+
+test("a11y", async () => {
+  const { container } = render(<Example />);
+  expect(await axe(container)).toHaveNoViolations();
+});
 
 test("show on click", async () => {
   render(<Example />);
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
-  await click(getByRole("combobox"));
-  expect(getByRole("listbox")).toBeVisible();
-  expect(getByRole("option", { name: "🍎 Apple" })).not.toHaveFocus();
+  expect(getPopover()).not.toBeVisible();
+  await click(getCombobox());
+  expect(getPopover()).toBeVisible();
+  expect(getOption("🍎 Apple")).not.toHaveFocus();
 });
 
-test("show on label click", async () => {
+test("label click", async () => {
   render(<Example />);
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getPopover()).not.toBeVisible();
   await click(getByText("Your favorite fruit"));
-  expect(getByRole("listbox")).toBeVisible();
-  expect(getByRole("option", { name: "🍎 Apple" })).not.toHaveFocus();
+  expect(getPopover()).not.toBeVisible();
 });
 
 test("show on arrow down key", async () => {
   render(<Example />);
   await press.Tab();
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getPopover()).not.toBeVisible();
   await press.ArrowDown();
-  expect(getByRole("listbox")).toBeVisible();
-  expect(getByRole("option", { name: "🍎 Apple" })).not.toHaveFocus();
+  expect(getPopover()).toBeVisible();
+  expect(getOption("🍎 Apple")).not.toHaveFocus();
 });
 
 test("show on arrow up key", async () => {
   render(<Example />);
   await press.Tab();
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getPopover()).not.toBeVisible();
   await press.ArrowUp();
-  expect(getByRole("listbox")).toBeVisible();
-  expect(getByRole("option", { name: "🍉 Watermelon" })).not.toHaveFocus();
+  expect(getPopover()).toBeVisible();
+  expect(getOption("🍉 Watermelon")).not.toHaveFocus();
 });
 
 test("show on change", async () => {
   render(<Example />);
   await press.Tab();
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getPopover()).not.toBeVisible();
   await type("a");
-  expect(getByRole("listbox")).toBeVisible();
-  expect(getByRole("option", { name: "🍎 Apple" })).not.toHaveFocus();
+  expect(getPopover()).toBeVisible();
+  expect(getOption("🍎 Apple")).not.toHaveFocus();
 });
 
 test("navigate through items with keyboard", async () => {
@@ -56,11 +65,11 @@ test("navigate through items with keyboard", async () => {
   await press.Tab();
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(getByRole("option", { name: "🍎 Apple" })).toHaveFocus();
+  expect(getOption("🍎 Apple")).toHaveFocus();
   await press.ArrowDown();
-  expect(getByRole("option", { name: "🍇 Grape" })).toHaveFocus();
+  expect(getOption("🍇 Grape")).toHaveFocus();
   await press.ArrowDown();
-  expect(getByRole("option", { name: "🍊 Orange" })).toHaveFocus();
+  expect(getOption("🍊 Orange")).toHaveFocus();
 });
 
 test("type", async () => {
@@ -68,22 +77,22 @@ test("type", async () => {
   await press.Tab();
   await type("a");
   await press.ArrowDown();
-  expect(getByRole("option", { name: "🍎 Apple" })).toHaveFocus();
+  expect(getOption("🍎 Apple")).toHaveFocus();
   await press.ArrowLeft();
-  expect(getByRole("option", { name: "🍎 Apple" })).toHaveFocus();
+  expect(getOption("🍎 Apple")).toHaveFocus();
   await type("b");
-  expect(getByRole("combobox")).toHaveValue("ba");
-  expect(getByRole("option", { name: "🍉 Watermelon" })).not.toHaveFocus();
+  expect(getCombobox()).toHaveValue("ba");
+  expect(getOption("🍉 Watermelon")).not.toHaveFocus();
 });
 
 test("set value and hide on item click with mouse", async () => {
   render(<Example />);
-  await click(getByRole("combobox"));
-  expect(getByRole("combobox")).toHaveValue("");
-  await click(getByRole("option", { name: "🍊 Orange" }));
-  expect(getByRole("combobox")).toHaveFocus();
-  expect(getByRole("combobox")).toHaveValue("Orange");
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  await click(getCombobox());
+  expect(getCombobox()).toHaveValue("");
+  await click(getOption("🍊 Orange"));
+  expect(getCombobox()).toHaveFocus();
+  expect(getCombobox()).toHaveValue("Orange");
+  expect(getPopover()).not.toBeVisible();
 });
 
 test("set value and hide on item click with keyboard", async () => {
@@ -92,11 +101,11 @@ test("set value and hide on item click with keyboard", async () => {
   await press.ArrowDown();
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(getByRole("combobox")).toHaveValue("");
+  expect(getCombobox()).toHaveValue("");
   await press.Enter();
-  expect(getByRole("combobox")).toHaveFocus();
-  expect(getByRole("combobox")).toHaveValue("Grape");
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getCombobox()).toHaveFocus();
+  expect(getCombobox()).toHaveValue("Grape");
+  expect(getPopover()).not.toBeVisible();
 });
 
 test("do not set value and hide by pressing space", async () => {
@@ -105,39 +114,39 @@ test("do not set value and hide by pressing space", async () => {
   await press.ArrowDown();
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(getByRole("combobox")).toHaveValue("");
+  expect(getCombobox()).toHaveValue("");
   await type(" ");
-  expect(getByRole("combobox")).toHaveFocus();
-  expect(getByRole("combobox")).toHaveValue(" ");
-  expect(getByRole("option", { name: "🍊 Orange" })).not.toHaveFocus();
-  expect(getByRole("listbox")).toBeVisible();
+  expect(getCombobox()).toHaveFocus();
+  expect(getCombobox()).toHaveValue(" ");
+  expect(getOption("🍊 Orange")).not.toHaveFocus();
+  expect(getPopover()).toBeVisible();
 });
 
 test("hide listbox by pressing escape", async () => {
   render(<Example />);
-  await click(getByRole("combobox"));
-  expect(getByRole("listbox")).toBeVisible();
+  await click(getCombobox());
+  expect(getPopover()).toBeVisible();
   await press.Escape();
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
-  expect(getByRole("combobox")).toHaveFocus();
+  expect(getPopover()).not.toBeVisible();
+  expect(getCombobox()).toHaveFocus();
 });
 
 test("hide listbox by clicking outside", async () => {
   render(<Example />);
-  await click(getByRole("combobox"));
-  expect(getByRole("listbox")).toBeVisible();
+  await click(getCombobox());
+  expect(getPopover()).toBeVisible();
   await click(document.body);
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
-  expect(getByRole("combobox")).not.toHaveFocus();
+  expect(getPopover()).not.toBeVisible();
+  expect(getCombobox()).not.toHaveFocus();
 });
 
 test("re-open listbox when deleting content", async () => {
   render(<Example />);
   await press.Tab();
   await type("a");
-  expect(getByRole("listbox")).toBeVisible();
+  expect(getPopover()).toBeVisible();
   await press.Escape();
-  expect(getByRole("listbox", { hidden: true })).not.toBeVisible();
+  expect(getPopover()).not.toBeVisible();
   await type("\b");
-  expect(getByRole("listbox")).toBeVisible();
+  expect(getPopover()).toBeVisible();
 });
