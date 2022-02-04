@@ -28,7 +28,6 @@ import {
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
-import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -120,6 +119,14 @@ export const useDialog = createHook<DialogOptions>(
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // visible.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
+
+    // Sets disclosure ref.
+    useEffect(() => {
+      if (!state.mounted) return;
+      const dialog = ref.current;
+      const activeElement = getActiveElement(dialog) as HTMLElement | null;
+      state.disclosureRef.current = activeElement;
+    }, [state.mounted]);
 
     const nested = useNestedDialogs(ref, { state, modal });
     const { nestedDialogs, visibleModals, wrapElement } = nested;
@@ -330,7 +337,14 @@ export const useDialog = createHook<DialogOptions>(
       // We can't do this on a onKeyDown prop on the disclosure element because
       // we don't have access to the hideOnEscape prop there.
       return addGlobalEventListener("keydown", onKeyDown);
-    }, [hideOnEscape, domReady, state.mounted, nestedDialogs, state.hide]);
+    }, [
+      hideOnEscape,
+      domReady,
+      state.mounted,
+      state.disclosureRef,
+      nestedDialogs,
+      state.hide,
+    ]);
 
     // Wraps the element with the nested dialog context.
     props = useWrapElement(props, wrapElement, [wrapElement]);
@@ -411,16 +425,16 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <DialogHeadingContext.Provider value={setHeadingId}>
-          <DialogDescriptionContext.Provider value={setDescriptionId}>
-            {element}
-          </DialogDescriptionContext.Provider>
-        </DialogHeadingContext.Provider>
+        <DialogContext.Provider value={state}>
+          <DialogHeadingContext.Provider value={setHeadingId}>
+            <DialogDescriptionContext.Provider value={setDescriptionId}>
+              {element}
+            </DialogDescriptionContext.Provider>
+          </DialogHeadingContext.Provider>
+        </DialogContext.Provider>
       ),
-      []
+      [state]
     );
-
-    props = useStoreProvider({ state, ...props }, DialogContext);
 
     props = {
       "data-dialog": "",
