@@ -15,8 +15,10 @@ export default function Example() {
         View details
       </DialogDisclosure>
       <Dialog state={dialog} className="dialog">
-        <DialogDismiss className="dismiss" />
-        <DialogHeading className="heading">Apples</DialogHeading>
+        <header className="header">
+          <DialogHeading className="heading">Apples</DialogHeading>
+          <DialogDismiss className="button dismiss" />
+        </header>
         <ul>
           <li>
             <strong>Calories:</strong> 95
