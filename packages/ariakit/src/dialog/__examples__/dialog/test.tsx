@@ -1,146 +1,87 @@
 import { click, getByRole, press, render } from "ariakit-test-utils";
-import Example from "./index";
+import Example from ".";
 
-test("render dialog", () => {
-  const { baseElement } = render(<Example />);
-  expect(baseElement).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-controls="r:0"
-          aria-expanded="false"
-          aria-haspopup="dialog"
-          class="button"
-          data-command=""
-          data-disclosure=""
-          type="button"
-        >
-          View details
-        </button>
-      </div>
-      <div
-        id="r:0-portal"
-      >
-        <div
-          data-backdrop="r:0"
-          hidden=""
-          role="presentation"
-          style="position: fixed; top: 0px; right: 0px; bottom: 0px; left: 0px; display: none;"
-          tabindex="-1"
-        >
-          <div
-            aria-labelledby="r:2"
-            class="dialog"
-            data-dialog=""
-            hidden=""
-            id="r:0"
-            role="dialog"
-            style="display: none;"
-            tabindex="-1"
-          >
-            <button
-              class="dismiss"
-              data-command=""
-              data-dialog-dismiss=""
-              type="button"
-            >
-              <svg
-                aria-label="Dismiss popup"
-                display="block"
-                fill="none"
-                height="1em"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5pt"
-                viewBox="0 0 16 16"
-                width="1em"
-              >
-                <line
-                  x1="4"
-                  x2="12"
-                  y1="4"
-                  y2="12"
-                />
-                <line
-                  x1="4"
-                  x2="12"
-                  y1="12"
-                  y2="4"
-                />
-              </svg>
-            </button>
-            <h1
-              class="heading"
-              id="r:2"
-            >
-              Apples
-            </h1>
-            <ul>
-              <li>
-                <strong>
-                  Calories:
-                </strong>
-                 95
-              </li>
-              <li>
-                <strong>
-                  Carbs:
-                </strong>
-                 25 grams
-              </li>
-              <li>
-                <strong>
-                  Fibers:
-                </strong>
-                 4 grams
-              </li>
-              <li>
-                <strong>
-                  Vitamin C:
-                </strong>
-                 14% of the Reference Daily Intake (RDI)
-              </li>
-              <li>
-                <strong>
-                  Potassium:
-                </strong>
-                 6% of the RDI
-              </li>
-              <li>
-                <strong>
-                  Vitamin K:
-                </strong>
-                 5% of the RDI
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </body>
-  `);
+const getDisclosure = () => getByRole("button", { name: "View details" });
+const getDialog = () => getByRole("dialog", { hidden: true });
+const getDismiss = () => getByRole("button", { name: "Dismiss popup" });
+
+test("show on disclosure click", async () => {
+  render(<Example />);
+  expect(getDialog()).not.toBeVisible();
+  await click(getDisclosure());
+  expect(getDialog()).toBeVisible();
+  expect(getDismiss()).toHaveFocus();
 });
 
-test("dialog should be visible on click", async () => {
+test("show on disclosure enter", async () => {
   render(<Example />);
-  expect(getByRole("dialog", { hidden: true })).not.toBeVisible();
-  await click(getByRole("button"));
-  expect(getByRole("dialog", { hidden: true })).toBeVisible();
-});
-
-test("enter", async () => {
-  render(<Example />);
-  expect(getByRole("dialog", { hidden: true })).not.toBeVisible();
-  await click(getByRole("button"));
+  expect(getDialog()).not.toBeVisible();
   await press.Tab();
   await press.Enter();
-  expect(getByRole("dialog", { hidden: true })).not.toBeVisible();
+  expect(getDialog()).toBeVisible();
+  expect(getDismiss()).toHaveFocus();
 });
 
-test("esc", async () => {
+test("show on disclosure space", async () => {
   render(<Example />);
-  await click(getByRole("button"));
+  expect(getDialog()).not.toBeVisible();
+  await press.Tab();
+  await press.Space();
+  expect(getDialog()).toBeVisible();
+  expect(getDismiss()).toHaveFocus();
+});
+
+test("focus trap", async () => {
+  render(<Example />);
+  await click(getDisclosure());
+  expect(getDismiss()).toHaveFocus();
+  await press.Tab();
+  expect(getDismiss()).toHaveFocus();
+  await press.ShiftTab();
+  expect(getDismiss()).toHaveFocus();
+});
+
+test("hide on escape", async () => {
+  render(<Example />);
+  await click(getDisclosure());
   expect(getByRole("dialog")).toBeVisible();
   await press.Escape();
-  expect(getByRole("dialog", { hidden: true })).not.toBeVisible();
+  expect(getDialog()).not.toBeVisible();
+  expect(getDisclosure()).toHaveFocus();
+});
+
+test("hide on click outside", async () => {
+  const { baseElement } = render(<Example />);
+  await click(getDisclosure());
+  expect(getDialog()).toBeVisible();
+  await click(baseElement);
+  expect(getDialog()).not.toBeVisible();
+  expect(getDisclosure()).toHaveFocus();
+});
+
+test("hide on dismiss button click", async () => {
+  render(<Example />);
+  await click(getDisclosure());
+  expect(getDialog()).toBeVisible();
+  await click(getDismiss());
+  expect(getDialog()).not.toBeVisible();
+  expect(getDisclosure()).toHaveFocus();
+});
+
+test("hide on dismiss button enter", async () => {
+  render(<Example />);
+  await click(getDisclosure());
+  expect(getDialog()).toBeVisible();
+  await press.Enter();
+  expect(getDialog()).not.toBeVisible();
+  expect(getDisclosure()).toHaveFocus();
+});
+
+test("hide on dismiss button space", async () => {
+  render(<Example />);
+  await click(getDisclosure());
+  expect(getDialog()).toBeVisible();
+  await press.Space();
+  expect(getDialog()).not.toBeVisible();
+  expect(getDisclosure()).toHaveFocus();
 });
