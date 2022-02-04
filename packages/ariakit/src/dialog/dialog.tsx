@@ -127,7 +127,9 @@ export const useDialog = createHook<DialogOptions>(
       if (!state.mounted) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog) as HTMLElement | null;
-      state.disclosureRef.current = activeElement;
+      if (activeElement && activeElement.tagName !== "BODY") {
+        state.disclosureRef.current = activeElement;
+      }
     }, [state.mounted]);
 
     const nested = useNestedDialogs(ref, { state, modal });
