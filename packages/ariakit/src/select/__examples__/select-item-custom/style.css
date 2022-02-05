@@ -1,0 +1,22 @@
+@import url("../select/style.css");
+
+.photo {
+  @apply w-12 h-12 rounded-full;
+}
+
+.select {
+  width: 320px;
+  @apply justify-start h-auto gap-3 p-4;
+}
+
+.popover {
+  width: 320px;
+}
+
+.value {
+  @apply flex flex-col items-start flex-1;
+}
+
+.email {
+  @apply opacity-80;
+}
