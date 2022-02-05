@@ -64,7 +64,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnHover = true, ...props }) => {
-    state = useStore(state || CompositeContext, ["move"]);
+    state = useStore(state || CompositeContext, ["setActiveId", "move"]);
 
     const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
@@ -79,10 +79,13 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (event.defaultPrevented) return;
         if (hasFocusWithin(event.currentTarget)) return;
         if (!focusOnHoverProp(event)) return;
-        if (isPartiallyHidden(event.currentTarget)) return;
+        if (isPartiallyHidden(event.currentTarget)) {
+          state?.setActiveId(event.currentTarget.id);
+          return;
+        }
         event.currentTarget.focus();
       },
-      [onMouseMoveProp, focusOnHoverProp]
+      [onMouseMoveProp, focusOnHoverProp, state?.setActiveId]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
@@ -96,9 +99,9 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
         // Move focus to the composite container.
-        state?.move(null);
+        state?.setActiveId(null);
       },
-      [onMouseLeaveProp, state?.move]
+      [onMouseLeaveProp, state?.setActiveId]
     );
 
     props = {

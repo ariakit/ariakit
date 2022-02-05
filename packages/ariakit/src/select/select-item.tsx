@@ -26,6 +26,15 @@ const itemRoleByPopupRole = {
   grid: "gridcell",
 };
 
+function isSelected(stateValue?: string | string[], itemValue?: string) {
+  if (stateValue == null) return false;
+  if (itemValue == null) return false;
+  if (Array.isArray(stateValue)) {
+    return stateValue.includes(itemValue);
+  }
+  return stateValue === itemValue;
+}
+
 function getItemRole(contentElement?: HTMLElement | null) {
   const popupRole = getPopupRole(contentElement);
   if (!popupRole) return;
@@ -48,14 +57,14 @@ export const useSelectItem = createHook<SelectItemOptions>(
     state,
     value,
     getItem: getItemProp,
-    hideOnClick = value != null,
+    hideOnClick,
     setValueOnClick = value != null,
     preventScrollOnKeyDown = true,
     focusOnHover = true,
     ...props
   }) => {
     state = useStore(state || SelectContext, [
-      useCallback((s: SelectState) => s.value === value, [value]),
+      useCallback((s: SelectState) => isSelected(s.value, value), [value]),
       "setValue",
       "hide",
       "contentElement",
@@ -76,6 +85,9 @@ export const useSelectItem = createHook<SelectItemOptions>(
       [disabled, value, getItemProp]
     );
 
+    const multiSelectable = Array.isArray(state?.value);
+    hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
+
     const onClickProp = useEventCallback(props.onClick);
     const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
@@ -85,7 +97,13 @@ export const useSelectItem = createHook<SelectItemOptions>(
         onClickProp(event);
         if (event.defaultPrevented) return;
         if (setValueOnClickProp(event) && value != null) {
-          state?.setValue(value);
+          state?.setValue((prevValue) => {
+            if (!Array.isArray(prevValue)) return value;
+            if (prevValue.includes(value)) {
+              return prevValue.filter((v) => v !== value);
+            }
+            return [...prevValue, value];
+          });
         }
         if (hideOnClickProp(event)) {
           state?.hide();
@@ -101,21 +119,21 @@ export const useSelectItem = createHook<SelectItemOptions>(
       ]
     );
 
-    const isSelected = value != null && value === state?.value;
+    const selected = isSelected(state?.value, value);
 
     props = useWrapElement(
       props,
       (element) => (
-        <SelectItemCheckedContext.Provider value={isSelected}>
+        <SelectItemCheckedContext.Provider value={selected}>
           {element}
         </SelectItemCheckedContext.Provider>
       ),
-      [isSelected]
+      [selected]
     );
 
     props = {
       role: getItemRole(state?.contentElement),
-      "aria-selected": isSelected,
+      "aria-selected": selected,
       children: value,
       ...props,
       onClick,

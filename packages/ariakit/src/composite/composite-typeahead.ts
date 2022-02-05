@@ -1,6 +1,6 @@
 import { KeyboardEvent, useCallback, useContext, useRef } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
   createComponent,
@@ -8,7 +8,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { CompositeContext, Item } from "./__utils";
+import { CompositeContext, Item, flipItems } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 let chars = "";
@@ -69,6 +69,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
     state = state || context;
     const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
     const cleanupTimeoutRef = useRef(0);
+    const activeIdRef = useLiveRef(state?.activeId);
 
     // We have to listen to the event in the capture phase because the event
     // might be handled by a child component. For example, the space key may
@@ -81,7 +82,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         if (!typeahead) return;
         if (!state?.items) return;
         if (!isValidTypeaheadEvent(event)) return;
-        const items = getEnabledItems(state.items);
+        let items = getEnabledItems(state.items);
         if (!isSelfTargetOrItem(event, items)) return;
         event.preventDefault();
         // We need to clear the previous cleanup timeout so we can append the
@@ -92,7 +93,23 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         cleanupTimeoutRef.current = window.setTimeout(() => {
           chars = "";
         }, 500);
-        chars += event.key;
+        const char = event.key.toLowerCase();
+        chars += char;
+
+        const activeId = activeIdRef.current;
+        const activeItem = state.items.find((item) => item.id === activeId);
+        if (
+          activeId &&
+          activeItem &&
+          itemTextStartsWith(char)(activeItem) &&
+          (chars === char || !itemTextStartsWith(chars)(activeItem))
+        ) {
+          chars = char;
+          items = flipItems(items, activeId).filter(
+            (item) => item.id !== activeId
+          );
+        }
+
         const item = items.find(itemTextStartsWith(chars));
         if (item) {
           state.move(item.id);

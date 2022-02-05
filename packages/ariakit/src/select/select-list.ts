@@ -39,10 +39,10 @@ import { SelectState } from "./select-state";
 export const useSelectList = createHook<SelectListOptions>(
   ({
     state,
-    composite = true,
     resetOnEscape = true,
     hideOnEnter = true,
     focusOnMove = true,
+    composite = true,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -63,7 +63,11 @@ export const useSelectList = createHook<SelectListOptions>(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (event.key === "Escape" && resetOnEscapeProp(event)) {
+        if (
+          event.key === "Escape" &&
+          state.setValueOnMove &&
+          resetOnEscapeProp(event)
+        ) {
           state.setValue(defaultValue);
         }
         if (event.key === " " || event.key === "Enter") {
@@ -75,6 +79,7 @@ export const useSelectList = createHook<SelectListOptions>(
       },
       [
         onKeyDownProp,
+        state.setValueOnMove,
         resetOnEscapeProp,
         state.setValue,
         defaultValue,
@@ -85,8 +90,8 @@ export const useSelectList = createHook<SelectListOptions>(
 
     props = useStoreProvider({ state, ...props }, SelectContext);
 
+    const multiSelectable = Array.isArray(state.value);
     const labelId = useRefId(state.labelRef);
-
     const style = state.mounted
       ? props.style
       : { ...props.style, display: "none" };
@@ -96,6 +101,7 @@ export const useSelectList = createHook<SelectListOptions>(
       role: composite ? "listbox" : undefined,
       hidden: !state.mounted,
       "aria-labelledby": labelId,
+      "aria-multiselectable": multiSelectable,
       ...props,
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,
@@ -146,10 +152,8 @@ export type SelectListOptions<T extends As = "div"> = Omit<
     state: SelectState;
     /**
      * Whether the select value should be reset to the value before the list got
-     * shown when Escape is pressed. This has effect only when the value can
-     * change while the list is still visible. For example, when
-     * `setValueOnClick` is set to `false` on the `SelectItem` component, or
-     * `selectOnMove` is set to `true` on the select state.
+     * shown when Escape is pressed. This has effect only when `selectOnMove` is
+     * `true` on the select state.
      * @default true
      */
     resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;

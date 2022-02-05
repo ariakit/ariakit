@@ -36,6 +36,10 @@ import { VisuallyHidden } from "../visually-hidden";
 import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
 import { SelectState } from "./select-state";
 
+function getSelectedValues(select: HTMLSelectElement) {
+  return Array.from(select.selectedOptions).map((option) => option.value);
+}
+
 // When moving through the items when the select list is closed, we don't want
 // to move to items without value, so we filter them out here.
 function nextWithValue(items: Item[], next: SelectState["next"]) {
@@ -81,6 +85,7 @@ export const useSelect = createHook<SelectOptions>(
     const moveOnKeyDownProp = useBooleanEventCallback(moveOnKeyDown);
     const toggleOnPressProp = useBooleanEventCallback(toggleOnPress);
     const dir = state.placement.split("-")[0] as BasePlacement;
+    const multiSelectable = Array.isArray(state.value);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -199,10 +204,15 @@ export const useSelect = createHook<SelectOptions>(
             aria-labelledby={labelId}
             name={name}
             value={state.value}
+            multiple={multiSelectable}
             onChange={(event: ChangeEvent<HTMLSelectElement>) => {
               nativeSelectChangedRef.current = true;
-              state.setValue(event.target.value);
               setAutofill(true);
+              state.setValue(
+                multiSelectable
+                  ? getSelectedValues(event.target)
+                  : event.target.value
+              );
             }}
           >
             {itemsWithValue.map((item) => (
@@ -214,7 +224,14 @@ export const useSelect = createHook<SelectOptions>(
           {element}
         </>
       ),
-      [labelId, name, state.value, state.setValue, itemsWithValue]
+      [
+        labelId,
+        name,
+        state.value,
+        multiSelectable,
+        state.setValue,
+        itemsWithValue,
+      ]
     );
 
     props = {
@@ -229,7 +246,7 @@ export const useSelect = createHook<SelectOptions>(
       onMouseDown,
     };
 
-    props = usePopoverDisclosure({ state, ...props, toggleOnClick: false });
+    props = usePopoverDisclosure({ state, toggleOnClick: false, ...props });
     props = useCompositeTypeahead({ state, ...props });
 
     return props;

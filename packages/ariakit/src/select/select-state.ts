@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useMemo, useRef } from "react";
+import { toArray } from "ariakit-utils/array";
 import {
   useControlledState,
   useInitialValue,
@@ -23,6 +24,8 @@ import {
   findFirstEnabledItemWithValue,
 } from "./__utils";
 
+type Value = string | string[];
+
 /**
  * Provides state for the `Select` components.
  * @example
@@ -35,7 +38,7 @@ import {
  * </SelectPopover>
  * ```
  */
-export function useSelectState({
+export function useSelectState<T extends Value = Value>({
   virtualFocus = true,
   orientation = "vertical",
   placement = "bottom-start",
@@ -43,11 +46,11 @@ export function useSelectState({
   defaultActiveId = null,
   includesBaseElement = false,
   ...props
-}: SelectStateProps = {}): SelectState {
+}: SelectStateProps<T> = {}): SelectState<T> {
   const selectRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLElement>(null);
   const [value, setValue] = useControlledState(
-    props.defaultValue ?? "",
+    props.defaultValue ?? ("" as T),
     props.value,
     props.setValue
   );
@@ -62,22 +65,28 @@ export function useSelectState({
   const initialValue = useInitialValue(props.value ?? props.defaultValue);
   const compositeRef = useLiveRef(composite);
 
+  const multiSelectable = Array.isArray(value);
+
   // Automatically sets the default value if it's not set.
   useEffect(() => {
+    if (multiSelectable) return;
     if (initialValue != null) return;
     if (!composite.items.length) return;
     const item = findFirstEnabledItemWithValue(composite.items);
     if (!item?.value) return;
     setValue((prevValue) => {
       if (prevValue || !item.value) return prevValue;
-      return item.value;
+      return item.value as T;
     });
-  }, [initialValue, composite.items, setValue]);
+  }, [multiSelectable, initialValue, composite.items, setValue]);
 
   // Sets the active id when the value changes and the popover is hidden.
   useEffect(() => {
     if (popover.mounted) return;
-    const item = findEnabledItemByValue(composite.items, value);
+    const values = toArray(value);
+    const lastValue = values[values.length - 1];
+    if (!lastValue) return;
+    const item = findEnabledItemByValue(composite.items, lastValue);
     if (!item) return;
     composite.setActiveId(item.id);
   }, [popover.mounted, composite.items, value, composite.setActiveId]);
@@ -87,14 +96,15 @@ export function useSelectState({
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   useEffect(() => {
+    if (multiSelectable) return;
     if (!setValueOnMove && mountedRef.current) return;
     const { activeId, items } = compositeRef.current;
     if (!composite.moves) return;
     if (!activeId) return;
     const item = findEnabledItemWithValueById(items, activeId);
     if (item?.value == null) return;
-    setValue(item.value);
-  }, [setValueOnMove, composite.moves, setValue]);
+    setValue(item.value as T);
+  }, [multiSelectable, setValueOnMove, composite.moves, setValue]);
 
   const state = useMemo(
     () => ({
@@ -112,19 +122,19 @@ export function useSelectState({
   return useStorePublisher(state);
 }
 
-export type SelectState = CompositeState<Item> &
+export type SelectState<T extends Value = Value> = CompositeState<Item> &
   PopoverState & {
     /**
      * The select value.
      */
-    value: string;
+    value: T;
     /**
      * Sets the `value` state.
      * @example
      * const select = useSelectState();
      * select.setValue("new value");
      */
-    setValue: SetState<SelectState["value"]>;
+    setValue: SetState<SelectState<T>["value"]>;
     /**
      * Whether the select value should be set when the active item changes by
      * moving (which usually happens when moving to an item using the keyboard).
@@ -141,27 +151,28 @@ export type SelectState = CompositeState<Item> &
     labelRef: RefObject<HTMLElement>;
   };
 
-export type SelectStateProps = CompositeStateProps<Item> &
-  PopoverStateProps &
-  Partial<Pick<SelectState, "value" | "setValueOnMove">> & {
-    /**
-     * Default value of the select.
-     */
-    defaultValue?: SelectState["value"];
-    /**
-     * Function that will be called when setting the select `value` state.
-     * @example
-     * // Uncontrolled example
-     * useSelectState({ setValue: (value) => console.log(value) });
-     * @example
-     * // Controlled example
-     * const [value, setValue] = useState("");
-     * useSelectState({ value, setValue });
-     * @example
-     * // Externally controlled example
-     * function MySelect({ value, onChange }) {
-     *   const select = useSelectState({ value, setValue: onChange });
-     * }
-     */
-    setValue?: (value: SelectState["value"]) => void;
-  };
+export type SelectStateProps<T extends Value = Value> =
+  CompositeStateProps<Item> &
+    PopoverStateProps &
+    Partial<Pick<SelectState<T>, "value" | "setValueOnMove">> & {
+      /**
+       * Default value of the select.
+       */
+      defaultValue?: SelectState<T>["value"];
+      /**
+       * Function that will be called when setting the select `value` state.
+       * @example
+       * // Uncontrolled example
+       * useSelectState({ setValue: (value) => console.log(value) });
+       * @example
+       * // Controlled example
+       * const [value, setValue] = useState("");
+       * useSelectState({ value, setValue });
+       * @example
+       * // Externally controlled example
+       * function MySelect({ value, onChange }) {
+       *   const select = useSelectState({ value, setValue: onChange });
+       * }
+       */
+      setValue?: (value: SelectState<T>["value"]) => void;
+    };
