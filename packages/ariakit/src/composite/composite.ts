@@ -49,7 +49,6 @@ function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
 }
 
 function useKeyboardEventProxy(
-  virtualFocus?: boolean,
   activeItem?: Item,
   onKeyboardEventProp?: KeyboardEventHandler
 ) {
@@ -58,7 +57,7 @@ function useKeyboardEventProxy(
     (event: ReactKeyboardEvent) => {
       onKeyboardEvent(event);
       if (event.defaultPrevented) return;
-      if (virtualFocus && canProxyKeyboardEvent(event)) {
+      if (canProxyKeyboardEvent(event)) {
         const activeElement = activeItem?.ref.current;
         if (!activeElement) return;
         const { view, ...eventInit } = event;
@@ -73,7 +72,7 @@ function useKeyboardEventProxy(
         }
       }
     },
-    [onKeyboardEvent, virtualFocus, activeItem]
+    [onKeyboardEvent, activeItem]
   );
 }
 
@@ -159,13 +158,11 @@ export const useComposite = createHook<CompositeOptions>(
     }, [composite, state.moves]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
-      virtualFocus,
       activeItem,
       props.onKeyDownCapture
     );
 
     const onKeyUpCapture = useKeyboardEventProxy(
-      virtualFocus,
       activeItem,
       props.onKeyUpCapture
     );

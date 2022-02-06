@@ -40,10 +40,8 @@
     rounded
     p-2
     outline-none
-    hover:bg-primary-1-hover
     active-item:bg-primary-2
     active-item:text-primary-2
-    dark:hover:bg-primary-1-dark-hover
     dark:active-item:bg-primary-2-dark
     dark:active-item:text-primary-2-dark;
 }

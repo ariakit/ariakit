@@ -1,6 +1,11 @@
 import { KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { BasePlacement } from "@popperjs/core";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import {
+  useEventCallback,
+  useForkRef,
+  useId,
+  useSafeLayoutEffect,
+} from "ariakit-utils/hooks";
 import { isMac, isSafari } from "ariakit-utils/platform";
 import { useStore, useStoreProvider } from "ariakit-utils/store";
 import {
@@ -67,7 +72,7 @@ export const useMenuList = createHook<MenuListOptions>(
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
 
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (state.animating) return;
       if (!state.visible) return;
       if (!autoFocusOnShow) return;
