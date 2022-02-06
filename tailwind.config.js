@@ -267,6 +267,7 @@ module.exports = {
 
       addVariant("enter", "&[data-enter]");
       addVariant("leave", "&[data-leave]");
+      addVariant("active-item", "&[data-active-item]");
 
       addVariant("active", ["&:active", "&[data-active]"]);
       addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);

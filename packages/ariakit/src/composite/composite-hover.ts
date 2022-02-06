@@ -1,5 +1,5 @@
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
-import { closest, contains, isPartiallyHidden } from "ariakit-utils/dom";
+import { closest, contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
@@ -44,8 +44,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
   const dest = getMouseDestination(event);
   if (!dest) return false;
   const item = closest(dest, "[data-composite-hover]");
-  if (!item) return false;
-  return !isPartiallyHidden(item);
+  return !!item;
 }
 
 /**
@@ -64,7 +63,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnHover = true, ...props }) => {
-    state = useStore(state || CompositeContext, ["move"]);
+    state = useStore(state || CompositeContext, ["setActiveId", "baseRef"]);
 
     const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
@@ -77,12 +76,14 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
-        if (hasFocusWithin(event.currentTarget)) return;
         if (!focusOnHoverProp(event)) return;
-        if (isPartiallyHidden(event.currentTarget)) return;
-        event.currentTarget.focus();
+        state?.setActiveId(event.currentTarget.id);
+        // If we're hovering hover an item that doesn't have DOM focus, we move
+        // focus to the composite element.
+        if (hasFocusWithin(event.currentTarget)) return;
+        state?.baseRef.current?.focus();
       },
-      [onMouseMoveProp, focusOnHoverProp]
+      [onMouseMoveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
@@ -95,10 +96,11 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         if (hoveringInside(event)) return;
         if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
-        // Move focus to the composite container.
-        state?.move(null);
+        state?.setActiveId(null);
+        // Move focus to the composite element.
+        state?.baseRef.current?.focus();
       },
-      [onMouseLeaveProp, state?.move]
+      [onMouseLeaveProp, state?.setActiveId, state?.baseRef]
     );
 
     props = {
