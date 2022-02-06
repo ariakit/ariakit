@@ -1,7 +1,25 @@
 @import url("../select/style.css");
 
+.wrapper {
+  @apply my-[400px] w-[540px];
+}
+
 .photo {
   @apply w-12 h-12 rounded-full;
+}
+
+.photo-stack {
+  background-color: inherit;
+  @apply flex flex-row-reverse;
+}
+
+.photo-stack .photo {
+  background-color: inherit;
+  padding: 2px;
+}
+
+.photo-stack .photo:not(:last-of-type) {
+  @apply -ml-7;
 }
 
 .select {
@@ -19,4 +37,10 @@
 
 .email {
   @apply opacity-80;
+}
+
+select {
+  position: absolute;
+  right: 180px;
+  top: 460px;
 }

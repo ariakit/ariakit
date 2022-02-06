@@ -48,12 +48,15 @@ export const useSelectList = createHook<SelectListOptions>(
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
     const [defaultValue, setDefaultValue] = useState(state.value);
+    const multiSelectable = Array.isArray(state.value);
 
     // Stores the intial value so we can reset it later when Escape is pressed
     useEffect(() => {
       if (state.mounted) return;
       setDefaultValue(state.value);
     }, [state.mounted, state.value]);
+
+    resetOnEscape = resetOnEscape && !multiSelectable;
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const resetOnEscapeProp = useBooleanEventCallback(resetOnEscape);
@@ -63,11 +66,7 @@ export const useSelectList = createHook<SelectListOptions>(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (
-          event.key === "Escape" &&
-          state.setValueOnMove &&
-          resetOnEscapeProp(event)
-        ) {
+        if (event.key === "Escape" && resetOnEscapeProp(event)) {
           state.setValue(defaultValue);
         }
         if (event.key === " " || event.key === "Enter") {
@@ -79,7 +78,6 @@ export const useSelectList = createHook<SelectListOptions>(
       },
       [
         onKeyDownProp,
-        state.setValueOnMove,
         resetOnEscapeProp,
         state.setValue,
         defaultValue,
@@ -90,7 +88,6 @@ export const useSelectList = createHook<SelectListOptions>(
 
     props = useStoreProvider({ state, ...props }, SelectContext);
 
-    const multiSelectable = Array.isArray(state.value);
     const labelId = useRefId(state.labelRef);
     const style = state.mounted
       ? props.style
