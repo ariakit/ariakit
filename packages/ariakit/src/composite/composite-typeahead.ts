@@ -1,6 +1,6 @@
 import { KeyboardEvent, useCallback, useContext, useRef } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
+import { useEventCallback } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
   createComponent,
@@ -22,8 +22,8 @@ function isValidTypeaheadEvent(event: KeyboardEvent) {
     !event.ctrlKey &&
     !event.altKey &&
     !event.metaKey &&
-    // TODO: We may need to revisit this arabic pattern.
-    /^[ا-يa-z0-9_-]$/i.test(event.key)
+    // Matches any letter or number of any language.
+    /^[\p{Letter}\p{Number}]$/u.test(event.key)
   );
 }
 
@@ -39,14 +39,32 @@ function getEnabledItems(items: Item[]) {
   return items.filter((item) => !item.disabled);
 }
 
-function itemTextStartsWith(text: string) {
-  return (item: Item) => {
-    const itemText = item.ref.current?.textContent;
-    if (!itemText) return false;
-    return normalizeString(itemText)
-      .toLowerCase()
-      .startsWith(text.toLowerCase());
-  };
+function itemTextStartsWith(item: Item, text: string) {
+  const itemText = item.ref.current?.textContent;
+  if (!itemText) return false;
+  return normalizeString(itemText).toLowerCase().startsWith(text.toLowerCase());
+}
+
+function getSameInitialItems(
+  items: Item[],
+  char: string,
+  activeId?: string | null
+) {
+  if (!activeId) return items;
+  const activeItem = items.find((item) => item.id === activeId);
+  if (!activeItem) return items;
+  if (!itemTextStartsWith(activeItem, char)) return items;
+  // Typing "oo" will match "oof" instead of moving to the next item.
+  if (chars !== char && itemTextStartsWith(activeItem, chars)) return items;
+  // If we're looping through the items, we'll want to reset the chars so "oo"
+  // becomes just "o".
+  chars = char;
+  // flipItems will put the previous items at the end of the list so we can loop
+  // through them.
+  return flipItems(
+    items.filter((item) => itemTextStartsWith(item, chars)),
+    activeId
+  ).filter((item) => item.id !== activeId);
 }
 
 /**
@@ -69,7 +87,6 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
     state = state || context;
     const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
     const cleanupTimeoutRef = useRef(0);
-    const activeIdRef = useLiveRef(state?.activeId);
 
     // We have to listen to the event in the capture phase because the event
     // might be handled by a child component. For example, the space key may
@@ -93,24 +110,11 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         cleanupTimeoutRef.current = window.setTimeout(() => {
           chars = "";
         }, 500);
+        // Always consider the lowercase version of the key.
         const char = event.key.toLowerCase();
         chars += char;
-
-        const activeId = activeIdRef.current;
-        const activeItem = state.items.find((item) => item.id === activeId);
-        if (
-          activeId &&
-          activeItem &&
-          itemTextStartsWith(char)(activeItem) &&
-          (chars === char || !itemTextStartsWith(chars)(activeItem))
-        ) {
-          chars = char;
-          items = flipItems(items, activeId).filter(
-            (item) => item.id !== activeId
-          );
-        }
-
-        const item = items.find(itemTextStartsWith(chars));
+        items = getSameInitialItems(items, char, state?.activeId);
+        const item = items.find((item) => itemTextStartsWith(item, chars));
         if (item) {
           state.move(item.id);
         } else {
@@ -119,7 +123,13 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
           chars = "";
         }
       },
-      [onKeyDownCaptureProp, typeahead, state?.items, state?.move]
+      [
+        onKeyDownCaptureProp,
+        typeahead,
+        state?.items,
+        state?.activeId,
+        state?.move,
+      ]
     );
 
     props = {

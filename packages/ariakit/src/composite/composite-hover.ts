@@ -44,8 +44,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
   const dest = getMouseDestination(event);
   if (!dest) return false;
   const item = closest(dest, "[data-composite-hover]");
-  if (!item) return false;
-  return !isPartiallyHidden(item);
+  return !!item;
 }
 
 /**
@@ -64,7 +63,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnHover = true, ...props }) => {
-    state = useStore(state || CompositeContext, ["setActiveId", "move"]);
+    state = useStore(state || CompositeContext, ["setActiveId"]);
 
     const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
@@ -77,12 +76,13 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
-        if (hasFocusWithin(event.currentTarget)) return;
         if (!focusOnHoverProp(event)) return;
-        if (isPartiallyHidden(event.currentTarget)) {
-          state?.setActiveId(event.currentTarget.id);
-          return;
-        }
+        state?.setActiveId(event.currentTarget.id);
+        if (hasFocusWithin(event.currentTarget)) return;
+        // If the composite item is partially hidden, we don't want to focus
+        // it on mouse move to avoid unintended scrolling. Instead, we just
+        // set the active id.
+        if (isPartiallyHidden(event.currentTarget)) return;
         event.currentTarget.focus();
       },
       [onMouseMoveProp, focusOnHoverProp, state?.setActiveId]

@@ -11,7 +11,10 @@ import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const select = useSelectState({ defaultValue: ["Apple"], gutter: 4 });
+  const select = useSelectState({
+    defaultValue: ["Apple"],
+    gutter: 4,
+  });
   return (
     <div className="wrapper">
       <SelectLabel state={select}>Favorite fruit</SelectLabel>

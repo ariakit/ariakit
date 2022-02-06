@@ -77,9 +77,12 @@ export const useSelect = createHook<SelectOptions>(
     name,
     showOnKeyDown = true,
     moveOnKeyDown = true,
-    toggleOnPress = true,
+    toggleOnClick = false,
+    toggleOnPress = !toggleOnClick,
     ...props
   }) => {
+    toggleOnPress = toggleOnClick ? false : toggleOnPress;
+
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEventCallback(moveOnKeyDown);
@@ -246,7 +249,7 @@ export const useSelect = createHook<SelectOptions>(
       onMouseDown,
     };
 
-    props = usePopoverDisclosure({ state, toggleOnClick: false, ...props });
+    props = usePopoverDisclosure({ state, toggleOnClick, ...props });
     props = useCompositeTypeahead({ state, ...props });
 
     return props;
@@ -293,8 +296,16 @@ export type SelectOptions<T extends As = "button"> = Omit<
      */
     moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
     /**
+     * Determines whether `state.toggle()` will be called on click. By default,
+     * the select list will be shown on press (on mouse down and on key down).
+     * If this prop is set to `true`, the select list will be shown on click
+     * instead.
+     * @default false
+     */
+    toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+    /**
      * Determines whether pressing space, enter or mouse down will toggle the
-     * select list.
+     * select list. This will be ignored if `toggleOnClick` is set to `true`.
      * @default true
      */
     toggleOnPress?: BooleanOrCallback<

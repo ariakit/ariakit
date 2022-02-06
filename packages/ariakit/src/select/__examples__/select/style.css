@@ -55,13 +55,9 @@
     cursor-default
     rounded
     p-2
-    aria-disabled:opacity-50;
-}
-
-.popover > *[data-active-item] {
-  @apply
-    bg-primary-2
-    text-primary-2
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark;
+    aria-disabled:opacity-50
+    active-item:bg-primary-2
+    active-item:text-primary-2
+    dark:active-item:bg-primary-2-dark
+    dark:active-item:text-primary-2-dark;
 }
