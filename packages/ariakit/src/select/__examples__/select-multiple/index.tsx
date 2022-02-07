@@ -10,16 +10,19 @@ import {
 import list from "./list";
 import "./style.css";
 
+function renderValue(value: string[]) {
+  if (value.length === 0) return "No food selected";
+  if (value.length === 1) return value[0];
+  return `${value.length} food selected`;
+}
+
 export default function Example() {
-  const select = useSelectState({
-    defaultValue: ["Apple"],
-    gutter: 4,
-  });
+  const select = useSelectState({ defaultValue: ["Apple", "Cake"] });
   return (
     <div className="wrapper">
-      <SelectLabel state={select}>Favorite fruit</SelectLabel>
+      <SelectLabel state={select}>Favorite food</SelectLabel>
       <Select state={select} className="select">
-        {select.value}
+        {renderValue(select.value)}
         <SelectArrow />
       </Select>
       {select.mounted && (

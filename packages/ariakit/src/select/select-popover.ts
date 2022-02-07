@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { toArray } from "ariakit-utils/array";
 import {
   createComponent,
@@ -7,7 +7,7 @@ import {
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
-import { findEnabledItemByValue } from "./__utils";
+import { Item, findEnabledItemByValue } from "./__utils";
 import { SelectListOptions, useSelectList } from "./select-list";
 
 /**
@@ -28,24 +28,18 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
   ({ state, ...props }) => {
     const values = toArray(state.value);
     const value = values[values.length - 1] ?? "";
-    const initialFocusRef = useRef<HTMLElement | null>(null);
+    const [item, setItem] = useState<Item | null>(null);
 
     useEffect(() => {
-      const item = findEnabledItemByValue(state.items, value);
-      if (item) {
-        initialFocusRef.current = item.ref.current;
-      }
-    }, [state.items, value]);
-
-    const selectedItem = findEnabledItemByValue(state.items, value);
+      setItem((prevItem) => {
+        if (state.mounted && prevItem?.ref.current) return prevItem;
+        const item = findEnabledItemByValue(state.items, value);
+        return item || null;
+      });
+    }, [state.mounted, state.items, value]);
 
     props = useSelectList({ state, ...props });
-    props = usePopover({
-      state,
-      autoFocusOnShow: !!selectedItem?.ref,
-      initialFocusRef,
-      ...props,
-    });
+    props = usePopover({ state, initialFocusRef: item?.ref, ...props });
 
     return props;
   }

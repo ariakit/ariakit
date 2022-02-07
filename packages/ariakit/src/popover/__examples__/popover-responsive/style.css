@@ -9,5 +9,5 @@
 }
 
 [data-backdrop] {
-  @apply bg-alpha-1-dark;
+  background-color: rgb(0 0 0 / 10%);
 }

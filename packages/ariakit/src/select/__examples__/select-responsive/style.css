@@ -1,0 +1,39 @@
+@import url("../../../button/__examples__/button/style.css");
+@import url("../select/style.css");
+
+[data-backdrop] {
+  background-color: rgb(0 0 0 / 10%);
+}
+
+.popover {
+  @apply
+    max-h-[calc(100vh-200px)]
+    w-full
+    sm:w-[200px]
+    sm:max-w-[min(calc(100vw-16px),_320px)];
+}
+
+.popover > * {
+  @apply h-12 sm:h-10 px-4 sm:px-2;
+}
+
+.header {
+  @apply flex items-center justify-between pr-0 pl-3 py-2 mb-4;
+}
+
+.heading {
+  @apply m-0 text-2xl font-medium;
+}
+
+.button.dismiss {
+  @apply
+    w-10
+    h-10
+    p-0
+    bg-alpha-2
+    text-alpha-2
+    hover:bg-alpha-2-hover
+    dark:bg-alpha-2-dark
+    dark:text-alpha-2-dark
+    dark:hover:bg-alpha-2-dark-hover;
+}
