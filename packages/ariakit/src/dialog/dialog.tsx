@@ -122,8 +122,9 @@ export const useDialog = createHook<DialogOptions>(
     // visible.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
 
-    // Sets disclosure ref.
-    useEffect(() => {
+    // Sets disclosure ref. It needs to be a layout effect so we get the focused
+    // element right before the dialog is mounted.
+    useSafeLayoutEffect(() => {
       if (!state.mounted) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog) as HTMLElement | null;
