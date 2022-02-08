@@ -5,7 +5,7 @@ import "./style.css";
 
 export default function Example() {
   const focusTrapped = useCheckboxState({ defaultValue: true });
-  const firstRef = useRef<HTMLButtonElement>(null);
+  const firstRef = useRef<HTMLInputElement>(null);
   const lastRef = useRef<HTMLButtonElement>(null);
 
   const onTrapFocus = (event: FocusEvent) => {
@@ -21,14 +21,12 @@ export default function Example() {
       {focusTrapped.value && <FocusTrap onFocus={onTrapFocus} />}
       <div className="wrapper">
         <label className="label">
-          <Checkbox state={focusTrapped} clickOnEnter className="checkbox" />
+          <Checkbox state={focusTrapped} ref={firstRef} className="checkbox" />
           Trap focus
         </label>
-        <button className="button" ref={firstRef}>
-          First
-        </button>
+
         <button className="button" ref={lastRef}>
-          Last
+          Button
         </button>
       </div>
       {focusTrapped.value && <FocusTrap onFocus={onTrapFocus} />}
