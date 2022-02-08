@@ -1,0 +1,17 @@
+@import url("../checkbox/style.css");
+
+.checkbox {
+  @apply
+    w-5
+    h-5
+    rounded
+    flex
+    justify-center
+    items-center
+    bg-primary-1
+    border-primary-1
+    border
+    aria-checked:after:content-["X"]
+    dark:bg-primary-1
+    text-primary-1;
+}
