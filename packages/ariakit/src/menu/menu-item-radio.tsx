@@ -1,9 +1,5 @@
 import { ChangeEvent, MouseEvent as ReactMouseEvent, useCallback } from "react";
-import {
-  useBooleanEventCallback,
-  useEventCallback,
-  useWrapElement,
-} from "ariakit-utils/hooks";
+import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
