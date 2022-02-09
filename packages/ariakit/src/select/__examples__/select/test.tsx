@@ -123,19 +123,15 @@ test("navigate through items with keyboard", async () => {
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
   expect(getOption("Banana")).toHaveAttribute("aria-selected", "false");
   await press.ArrowDown();
-  expect(getOption("Cherry")).toHaveFocus();
+  expect(getOption("Orange")).toHaveFocus();
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
-  expect(getOption("Cherry")).toHaveAttribute("aria-selected", "false");
-  await press.ArrowRight();
-  expect(getOption("Cherry")).toHaveFocus();
-  await press.ArrowLeft();
-  expect(getOption("Cherry")).toHaveFocus();
-  await press.ArrowDown();
-  expect(getOption("Lemon")).toHaveFocus();
-  expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
-  expect(getOption("Lemon")).toHaveAttribute("aria-selected", "false");
+  expect(getOption("Orange")).toHaveAttribute("aria-selected", "false");
   await press.ArrowUp();
-  expect(getOption("Cherry")).toHaveFocus();
+  expect(getOption("Banana")).toHaveFocus();
+  await press.ArrowRight();
+  expect(getOption("Banana")).toHaveFocus();
+  await press.ArrowLeft();
+  expect(getOption("Banana")).toHaveFocus();
   await press.End();
   expect(getOption("Orange")).toHaveFocus();
   await press.ArrowDown();
@@ -155,10 +151,12 @@ test("typeahead visible", async () => {
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
   expect(getOption("Banana")).toHaveAttribute("aria-selected", "false");
   await sleep(600);
-  await press("l");
-  expect(getOption("Lemon")).toHaveFocus();
+  await press("o");
+  await press("r");
+  await press("a");
+  expect(getOption("Orange")).toHaveFocus();
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
-  expect(getOption("Lemon")).toHaveAttribute("aria-selected", "false");
+  expect(getOption("Orange")).toHaveAttribute("aria-selected", "false");
 });
 
 test("typeahead hidden", async () => {
@@ -170,6 +168,7 @@ test("typeahead hidden", async () => {
   await sleep(600);
   await press("o");
   await press("r");
+  await press("a");
   expect(getSelect()).toHaveTextContent("Orange");
   expect(getList()).not.toBeVisible();
 });
@@ -196,13 +195,13 @@ test("select with space", async () => {
   await press.ArrowDown();
   await press.ArrowDown();
   await press.Space();
-  expect(getSelect()).toHaveTextContent("Cherry");
+  expect(getSelect()).toHaveTextContent("Orange");
   expect(getList()).not.toBeVisible();
   await press.Space();
   expect(getList()).toBeVisible();
-  expect(getOption("Cherry")).toHaveFocus();
+  expect(getOption("Orange")).toHaveFocus();
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "false");
-  expect(getOption("Cherry")).toHaveAttribute("aria-selected", "true");
+  expect(getOption("Orange")).toHaveAttribute("aria-selected", "true");
 });
 
 test("select with click", async () => {
