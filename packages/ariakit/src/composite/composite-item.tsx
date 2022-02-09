@@ -284,7 +284,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const preventScrollOnKeyDownProp = useBooleanEventCallback(
       preventScrollOnKeyDown
     );
-    const item = useItem({ state, ...props });
+    const item = useItem({ state, id, ...props });
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {

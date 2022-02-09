@@ -1,6 +1,5 @@
 import {
   Select,
-  SelectArrow,
   SelectItem,
   SelectLabel,
   SelectPopover,
@@ -13,17 +12,12 @@ export default function Example() {
   return (
     <div className="wrapper">
       <SelectLabel state={select}>Favorite fruit</SelectLabel>
-      <Select state={select} className="select">
-        {select.value}
-        <SelectArrow />
-      </Select>
+      <Select state={select} className="select" />
       <SelectPopover state={select} className="popover">
-        <SelectItem value="Apple" />
-        <SelectItem value="Banana" />
-        <SelectItem value="Cherry" />
-        <SelectItem value="Grape" disabled />
-        <SelectItem value="Lemon" />
-        <SelectItem value="Orange" />
+        <SelectItem className="item" value="Apple" />
+        <SelectItem className="item" value="Banana" />
+        <SelectItem className="item" value="Grape" disabled />
+        <SelectItem className="item" value="Orange" />
       </SelectPopover>
     </div>
   );

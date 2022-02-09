@@ -25,6 +25,8 @@ import {
 } from "./__utils";
 
 type Value = string | string[];
+// TODO: Refactor
+type MutableValue<T extends Value = Value> = T extends string ? string : T;
 
 /**
  * Provides state for the `Select` components.
@@ -50,7 +52,7 @@ export function useSelectState<T extends Value = Value>({
   const selectRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLElement>(null);
   const [value, setValue] = useControlledState(
-    props.defaultValue ?? ("" as T),
+    props.defaultValue ?? ("" as any),
     props.value,
     props.setValue
   );
@@ -76,7 +78,7 @@ export function useSelectState<T extends Value = Value>({
     if (!item?.value) return;
     setValue((prevValue) => {
       if (prevValue || !item.value) return prevValue;
-      return item.value as T;
+      return item.value as MutableValue<T>;
     });
   }, [multiSelectable, initialValue, composite.items, setValue]);
 
@@ -103,7 +105,7 @@ export function useSelectState<T extends Value = Value>({
     if (!activeId) return;
     const item = findEnabledItemWithValueById(items, activeId);
     if (item?.value == null) return;
-    setValue(item.value as T);
+    setValue(item.value as MutableValue<T>);
   }, [multiSelectable, setValueOnMove, composite.moves, setValue]);
 
   const state = useMemo(
@@ -127,7 +129,7 @@ export type SelectState<T extends Value = Value> = CompositeState<Item> &
     /**
      * The select value.
      */
-    value: T;
+    value: MutableValue<T>;
     /**
      * Sets the `value` state.
      * @example
@@ -158,7 +160,7 @@ export type SelectStateProps<T extends Value = Value> =
       /**
        * Default value of the select.
        */
-      defaultValue?: SelectState<T>["value"];
+      defaultValue?: T;
       /**
        * Function that will be called when setting the select `value` state.
        * @example

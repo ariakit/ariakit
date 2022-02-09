@@ -45,7 +45,7 @@
     focus-visible:ariakit-outline;
 }
 
-.popover > * {
+.item {
   @apply
     flex
     gap-2

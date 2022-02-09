@@ -28,7 +28,7 @@ export default function Example() {
       {select.mounted && (
         <SelectPopover state={select} className="popover">
           {list.map((value) => (
-            <SelectItem key={value} value={value}>
+            <SelectItem key={value} value={value} className="item">
               <SelectItemCheck />
               {value}
             </SelectItem>

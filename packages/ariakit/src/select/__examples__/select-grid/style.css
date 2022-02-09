@@ -1,0 +1,66 @@
+@import url("../select/style.css");
+
+.wrapper-wrapper {
+  @apply flex gap-16 py-40;
+}
+
+.canvas {
+  @apply
+    flex
+    flex-col
+    p-8
+    gap-8
+    bg-warn-2
+    dark:bg-warn-2-dark
+    text-warn-2
+    dark:text-warn-2-dark;
+}
+
+.canvas-row {
+  @apply flex gap-8;
+}
+
+.canvas-item[data-active="false"] {
+  visibility: hidden;
+}
+
+.select-arrow,
+.select-arrow svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.popover {
+  @apply w-auto overflow-visible !outline-none;
+}
+
+.row {
+  @apply flex;
+}
+
+.item {
+  @apply p-4;
+}
+
+.item::after {
+  content: "";
+  background-color: currentcolor;
+  @apply w-2 h-2 rounded-sm;
+}
+
+.icon {
+  @apply flex flex-col;
+}
+
+.icon-row {
+  @apply flex;
+}
+
+.icon-item {
+  background-color: currentcolor;
+  @apply w-0.5 h-0.5 m-0.5 opacity-50;
+}
+
+.icon-item[data-active="true"] {
+  @apply w-1 h-1 m-px opacity-100;
+}

@@ -46,7 +46,7 @@ export default function Example() {
       </Select>
       <SelectPopover state={select} className="popover">
         {accounts.map((email) => (
-          <SelectItem key={email} value={email}>
+          <SelectItem key={email} value={email} className="item">
             {renderValue(email)}
           </SelectItem>
         ))}

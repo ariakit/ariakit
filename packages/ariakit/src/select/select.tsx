@@ -34,6 +34,7 @@ import {
 } from "../popover/popover-disclosure";
 import { VisuallyHidden } from "../visually-hidden";
 import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
+import { SelectArrow } from "./select-arrow";
 import { SelectState } from "./select-state";
 
 function getSelectedValues(select: HTMLSelectElement) {
@@ -237,12 +238,19 @@ export const useSelect = createHook<SelectOptions>(
       ]
     );
 
+    const children = (
+      <>
+        {state.value}
+        <SelectArrow />
+      </>
+    );
+
     props = {
       role: "combobox",
       "aria-autocomplete": "none",
       "aria-labelledby": labelId,
       "data-autofill": autofill ? "" : undefined,
-      children: state.value,
+      children,
       ...props,
       ref: useForkRef(state.selectRef, props.ref),
       onKeyDown,
