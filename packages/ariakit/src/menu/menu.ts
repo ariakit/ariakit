@@ -62,6 +62,12 @@ export const useMenu = createHook<MenuOptions>(
       onKeyDown,
     };
 
+    props = useMenuList({
+      state,
+      ...props,
+      autoFocusOnShow: autoFocusOnShow && !!domReady,
+    });
+
     props = useHovercard({
       state,
       autoFocusOnShow: false,
@@ -76,12 +82,6 @@ export const useMenu = createHook<MenuOptions>(
       // event.stopPropagation() won't be called, so the parent menus will also
       // be closed.
       hideOnEscape: hasParentMenu ? false : hideOnEscape,
-    });
-
-    props = useMenuList({
-      state,
-      ...props,
-      autoFocusOnShow: autoFocusOnShow && !!domReady,
     });
 
     return props;
