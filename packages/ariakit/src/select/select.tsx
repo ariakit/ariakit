@@ -205,6 +205,7 @@ export const useSelect = createHook<SelectOptions>(
             as="select"
             tabIndex={-1}
             aria-hidden
+            // TODO: Add props[aria-label] and props[aria-labelledby]
             aria-labelledby={labelId}
             name={name}
             value={state.value}
