@@ -19,6 +19,8 @@
     <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg"></a>
 </p>
 
+> If you're looking for v1, check out [v1](https://github.com/ariakit/ariakit/tree/v1) branch.
+
 ## Installation
 
 npm:
