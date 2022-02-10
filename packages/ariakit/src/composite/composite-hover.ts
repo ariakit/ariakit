@@ -77,11 +77,14 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
         if (!focusOnHoverProp(event)) return;
-        state?.setActiveId(event.currentTarget.id);
         // If we're hovering hover an item that doesn't have DOM focus, we move
-        // focus to the composite element.
-        if (hasFocusWithin(event.currentTarget)) return;
-        state?.baseRef.current?.focus();
+        // focus to the composite element. We're doing this here before setting
+        // the active id because the composite element will automatically set
+        // the active id to null when it receives focus.
+        if (!hasFocusWithin(event.currentTarget)) {
+          state?.baseRef.current?.focus();
+        }
+        state?.setActiveId(event.currentTarget.id);
       },
       [onMouseMoveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
     );
