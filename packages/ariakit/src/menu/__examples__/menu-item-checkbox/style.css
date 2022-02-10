@@ -1,26 +1,4 @@
-@import url("../../../button/__examples__/button/style.css");
-
-.menu {
-  @apply
-    relative
-    z-50
-    flex
-    w-[250px]
-    flex-col
-    rounded-lg
-    border
-    border-solid
-    border-canvas-4
-    bg-canvas-4
-    p-2
-    text-canvas-4
-    outline-none
-    drop-shadow
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-    dark:drop-shadow-dark;
-}
+@import url("../menu/style.css");
 
 .menu-arrow svg {
   @apply
@@ -28,20 +6,4 @@
     stroke-canvas-4
     dark:fill-canvas-4-dark
     dark:stroke-canvas-4-dark;
-}
-
-.menu-item {
-  @apply
-    flex
-    cursor-default
-    scroll-m-2
-    items-center
-    gap-2
-    rounded
-    p-2
-    outline-none
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark;
 }
