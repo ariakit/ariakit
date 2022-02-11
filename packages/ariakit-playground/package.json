@@ -39,7 +39,7 @@
     "@codemirror/lang-javascript": "0.19.7",
     "@codemirror/matchbrackets": "0.19.4",
     "@codemirror/search": "0.19.6",
-    "@codemirror/state": "0.19.6",
+    "@codemirror/state": "0.19.7",
     "@codemirror/view": "0.19.42",
     "@codesandbox/sandpack-client": "0.13.7",
     "@emotion/react": "^11.7.1",
