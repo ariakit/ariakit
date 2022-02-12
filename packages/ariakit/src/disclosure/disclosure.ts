@@ -32,8 +32,13 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const ref = useRef<HTMLButtonElement>(null);
     const [expanded, setExpanded] = useState(false);
 
+    // Assigns the disclosureRef whenever it's undefined or disconnected from
+    // the DOM. If this disclosure element is the disclosureRef, this element
+    // will get the `aria-expanded` attribute set to `true` when the disclosure
+    // content is visible.
     useSafeLayoutEffect(() => {
-      if (!state.disclosureRef.current) {
+      const currentDisclosure = state.disclosureRef.current;
+      if (!currentDisclosure || !currentDisclosure.isConnected) {
         state.disclosureRef.current = ref.current;
       }
       const isCurrentDisclosure = state.disclosureRef.current === ref.current;
