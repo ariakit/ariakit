@@ -127,7 +127,7 @@ export const useDialog = createHook<DialogOptions>(
     useSafeLayoutEffect(() => {
       if (!state.mounted) return;
       const dialog = ref.current;
-      const activeElement = getActiveElement(dialog) as HTMLElement | null;
+      const activeElement = getActiveElement(dialog, true);
       if (activeElement && activeElement.tagName !== "BODY") {
         state.disclosureRef.current = activeElement;
       }
