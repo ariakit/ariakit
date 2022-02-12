@@ -20,10 +20,7 @@ function hasNegativeTabIndex(element: Element) {
 
 /**
  * Checks whether `element` is focusable or not.
- *
  * @example
- * import { isFocusable } from "reakit-utils";
- *
  * isFocusable(document.querySelector("input")); // true
  * isFocusable(document.querySelector("input[tabindex='-1']")); // true
  * isFocusable(document.querySelector("input[hidden]")); // false
@@ -35,10 +32,7 @@ export function isFocusable(element: Element): element is HTMLElement {
 
 /**
  * Checks whether `element` is tabbable or not.
- *
  * @example
- * import { isTabbable } from "reakit-utils";
- *
  * isTabbable(document.querySelector("input")); // true
  * isTabbable(document.querySelector("input[tabindex='-1']")); // false
  * isTabbable(document.querySelector("input[hidden]")); // false
@@ -276,10 +270,7 @@ export function getClosestFocusable(element?: HTMLElement | null) {
 /**
  * Checks if `element` has focus. Elements that are referenced by
  * `aria-activedescendant` are also considered.
- *
  * @example
- * import { hasFocus } from "reakit-utils";
- *
  * hasFocus(document.getElementById("id"));
  */
 export function hasFocus(element: Element) {
@@ -294,10 +285,7 @@ export function hasFocus(element: Element) {
 /**
  * Checks if `element` has focus within. Elements that are referenced by
  * `aria-activedescendant` are also considered.
- *
  * @example
- * import { hasFocusWithin } from "reakit-utils";
- *
  * hasFocusWithin(document.getElementById("id"));
  */
 export function hasFocusWithin(element: Node | Element) {
@@ -370,10 +358,7 @@ export function restoreFocusIn(container: HTMLElement) {
 
 /**
  * Ensures `element` will receive focus if it's not already.
- *
  * @example
- * import { ensureFocus } from "reakit-utils";
- *
  * ensureFocus(document.activeElement); // does nothing
  *
  * const element = document.querySelector("input");

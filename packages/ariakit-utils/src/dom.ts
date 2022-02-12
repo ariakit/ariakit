@@ -30,7 +30,10 @@ export function getWindow(node?: Node | null): Window {
 /**
  * Returns `element.ownerDocument.activeElement`.
  */
-export function getActiveElement(node?: Node | null): Element | null {
+export function getActiveElement(
+  node?: Node | null,
+  activeDescendant = false
+): HTMLElement | null {
   const { activeElement } = getDocument(node);
   if (!activeElement?.nodeName) {
     // In IE11, activeElement might be an empty object if we're interacting
@@ -38,9 +41,21 @@ export function getActiveElement(node?: Node | null): Element | null {
     return null;
   }
   if (isFrame(activeElement) && activeElement.contentDocument) {
-    return getActiveElement(activeElement.contentDocument.body);
+    return getActiveElement(
+      activeElement.contentDocument.body,
+      activeDescendant
+    );
   }
-  return activeElement;
+  if (activeDescendant) {
+    const id = activeElement.getAttribute("aria-activedescendant");
+    if (id) {
+      const element = getDocument(activeElement).getElementById(id);
+      if (element) {
+        return element;
+      }
+    }
+  }
+  return activeElement as HTMLElement | null;
 }
 
 /**
