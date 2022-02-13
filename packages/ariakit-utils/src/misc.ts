@@ -8,10 +8,7 @@ export function noop(..._: any[]): any {}
 
 /**
  * Compares two objects.
- *
  * @example
- * import { shallowEqual } from "reakit-utils";
- *
  * shallowEqual({ a: "a" }, {}); // false
  * shallowEqual({ a: "a" }, { b: "b" }); // false
  * shallowEqual({ a: "a" }, { a: "a" }); // true
@@ -42,10 +39,7 @@ export function shallowEqual(a?: AnyObject, b?: AnyObject) {
 /**
  * Receives a `setState` argument and calls it with `currentValue` if it's a
  * function. Otherwise return the argument as the new value.
- *
  * @example
- * import { applyState } from "reakit-utils";
- *
  * applyState((value) => value + 1, 1); // 2
  * applyState(2, 1); // 2
  */
@@ -86,7 +80,6 @@ export function setRef<T>(
 
 /**
  * Checks whether `arg` is an object or not.
- *
  * @returns {boolean}
  */
 export function isObject(arg: any): arg is Record<any, unknown> {
@@ -95,10 +88,7 @@ export function isObject(arg: any): arg is Record<any, unknown> {
 
 /**
  * Checks whether `arg` is empty or not.
- *
  * @example
- * import { isEmpty } from "reakit-utils";
- *
  * isEmpty([]); // true
  * isEmpty(["a"]); // false
  * isEmpty({}); // true
@@ -118,7 +108,6 @@ export function isEmpty(arg: any): boolean {
 
 /**
  * Checks whether `arg` is a promise or not.
- *
  * @returns {boolean}
  */
 export function isPromise<T>(arg: T | Promise<T>): arg is Promise<T> {
@@ -127,10 +116,7 @@ export function isPromise<T>(arg: T | Promise<T>): arg is Promise<T> {
 
 /**
  * Checks whether `arg` is an integer or not.
- *
  * @example
- * import { isInteger } from "reakit-utils";
- *
  * isInteger(1); // true
  * isInteger(1.5); // false
  * isInteger("1"); // true

@@ -11,8 +11,8 @@
 <p align="center">
   <a href="https://npmjs.org/package/ariakit"><img alt="NPM version" src="https://img.shields.io/npm/v/ariakit.svg" /></a>
   <a href="https://npmjs.org/package/ariakit"><img alt="NPM downloads" src="https://img.shields.io/npm/dm/ariakit.svg"></a>
-  <a href="https://github.com/ariakit/ariakit/actions"><img alt="Build Status" src="https://github.com/ariakit/ariakit/workflows/ci/badge.svg?event=push&branch=master" /></a>
-  <a href="https://codecov.io/gh/ariakit/ariakit"><img src="https://codecov.io/gh/ariakit/ariakit/branch/master/graph/badge.svg" /></a><br>
+  <a href="https://github.com/ariakit/ariakit/actions"><img alt="Build Status" src="https://github.com/ariakit/ariakit/workflows/ci/badge.svg?event=push&branch=main" /></a>
+  <a href="https://codecov.io/gh/ariakit/ariakit"><img src="https://codecov.io/gh/ariakit/ariakit/branch/main/graph/badge.svg" /></a><br>
   <a href="https://opencollective.com/ariakit"><img alt="Sponsors" src="https://opencollective.com/ariakit/sponsor/badge.svg?label=sponsors" /></a>
   <a href="https://opencollective.com/ariakit"><img alt="Backers" src="https://opencollective.com/ariakit/backer/badge.svg?label=backers" /></a>
   <a href="https://twitter.com/ariakitjs">
