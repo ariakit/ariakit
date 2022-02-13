@@ -31,6 +31,12 @@ module.exports = {
         DEFAULT: whiteFade,
         text: whiteFade,
       },
+      link: {
+        text: "hsl(204, 100%, 38%)",
+        dark: {
+          text: "hsl(204, 100%, 62%)",
+        },
+      },
       "canvas-1": {
         DEFAULT: "hsl(204, 20%, 94%)",
         hover: "hsl(204, 20%, 91%)",
