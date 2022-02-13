@@ -23,3 +23,4 @@ export * from "./tab";
 export * from "./toolbar";
 export * from "./tooltip";
 export * from "./visually-hidden";
+export * from "./tree";

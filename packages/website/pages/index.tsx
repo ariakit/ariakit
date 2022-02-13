@@ -69,6 +69,8 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/tooltip", label: "Tooltip" },
   { href: "/examples/tooltip-placement", label: "Tooltip placement" },
   { href: "/examples/tooltip-timeout", label: "Tooltip timeout" },
+  { href: "/examples/tree", label: "Tree" },
+  { href: "/examples/tree-flat", label: "Tree flat" },
 ].sort((a, b) => a.label.localeCompare(b.label));
 
 export default function Home() {
