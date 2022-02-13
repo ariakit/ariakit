@@ -12,10 +12,6 @@ import {
   useCollectionItem,
 } from "../collection/collection-item";
 import {
-  CompositeHoverOptions,
-  useCompositeHover,
-} from "../composite/composite-hover";
-import {
   CompositeItemOptions,
   useCompositeItem,
 } from "../composite/composite-item";
@@ -28,13 +24,7 @@ import {
 import { TreeState } from "./tree-state";
 
 export const useTreeItem = createHook<TreeItemOptions>(
-  ({
-    state,
-    focusOnHover = false,
-    shouldRegisterItem = true,
-    getItem: getItemProp,
-    ...props
-  }) => {
+  ({ state, shouldRegisterItem = true, getItem: getItemProp, ...props }) => {
     const id = useId(props.id);
     const parentTreeGroupId = useContext(TreeGroupIdContext);
     state = useStore(state || TreeContext, ["treeGroups", "treeItems"]);
@@ -105,7 +95,6 @@ export const useTreeItem = createHook<TreeItemOptions>(
           : parentTreeGroup.visible),
     });
 
-    props = useCompositeHover({ state, focusOnHover, ...props });
     props = useCollectionItem({
       state: state?.treeItems,
       ...props,
@@ -126,19 +115,13 @@ export type TreeItemOptions<T extends As = "div"> = Omit<
   CompositeItemOptions<T>,
   "state"
 > &
-  Omit<CollectionItemOptions, "state"> &
-  Omit<CompositeHoverOptions<T>, "state" | "focusOnHover"> & {
+  Omit<CollectionItemOptions, "state"> & {
     /**
      * Object returned by the `useTreeState` hook. If not provided, the
      * parent `Tree` or `TreeGroup` components' context will be
      * used.
      */
     state?: TreeState;
-    /**
-     * Whether to focus the Tree item on hover.
-     * @default false
-     */
-    focusOnHover?: CompositeHoverOptions["focusOnHover"];
   };
 
 export type TreeItemProps<T extends As = "div"> = Props<TreeItemOptions<T>>;

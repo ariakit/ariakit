@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback, useContext } from "react";
+import { KeyboardEvent, MouseEvent, useCallback, useContext } from "react";
 import { useCompositeItem } from "ariakit";
 import { useEventCallback, useId } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -57,6 +57,24 @@ export const useTreeGroupLabel = createHook<TreeGroupLabelOptions>(
       [onClickProp, state?.toggleExpand, id]
     );
 
+    const onKeyDownProp = useEventCallback(props.onKeyDown);
+
+    const onKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp(event);
+      if (event.defaultPrevented) return;
+
+      const keyMap = {
+        ArrowRight: () => {
+          return state?.expand(id);
+        },
+        ArrowLeft: () => {
+          return state?.collapse(id);
+        },
+      };
+      const action = keyMap[event.key as keyof typeof keyMap];
+      action?.();
+    }, []);
+
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, treeItemId };
@@ -71,6 +89,7 @@ export const useTreeGroupLabel = createHook<TreeGroupLabelOptions>(
     props = {
       ...props,
       onClick,
+      onKeyDown,
     };
 
     props = useCompositeItem({

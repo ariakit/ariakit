@@ -34,6 +34,33 @@ type TreeGroupLabelItem = CollectionState["items"][number] & {
   treeItemId?: string | null;
 };
 
+function addToExpandedIds(
+  prevExpandedIds: TreeState["expandedIds"],
+  id?: string
+) {
+  if (!prevExpandedIds) return prevExpandedIds;
+  if (!id) return prevExpandedIds;
+
+  return [...prevExpandedIds, id];
+}
+
+function deleteFromExpandedIds(
+  prevExpandedIds: TreeState["expandedIds"],
+  id?: string
+) {
+  if (!prevExpandedIds) return prevExpandedIds;
+  if (!id) return prevExpandedIds;
+
+  const indexToDelete = prevExpandedIds?.indexOf(id);
+  if (indexToDelete > -1) {
+    const newExpandedIds = [...prevExpandedIds];
+    newExpandedIds.splice(indexToDelete, 1);
+    return newExpandedIds;
+  }
+
+  return prevExpandedIds;
+}
+
 export function useTreeState({
   defaultExpandedIds = [],
   orientation = "vertical",
@@ -52,17 +79,13 @@ export function useTreeState({
 
   const expand = useCallback((id) => {
     setExpandedIds((prevExpandedIds) => {
-      return [...prevExpandedIds, id];
+      return addToExpandedIds(prevExpandedIds, id) || prevExpandedIds;
     });
   }, []);
 
   const collapse = useCallback((id) => {
     setExpandedIds((prevExpandedIds) => {
-      const indexToDelete = prevExpandedIds?.indexOf(id);
-
-      const newExpandedIds = [...prevExpandedIds];
-      newExpandedIds?.slice(indexToDelete, 1);
-      return newExpandedIds;
+      return deleteFromExpandedIds(prevExpandedIds, id) || prevExpandedIds;
     });
   }, []);
 
@@ -70,11 +93,9 @@ export function useTreeState({
     setExpandedIds((prevExpandedIds) => {
       const indexToDelete = prevExpandedIds?.indexOf(id);
       if (indexToDelete > -1) {
-        const newExpandedIds = [...prevExpandedIds];
-        newExpandedIds?.splice(indexToDelete, 1);
-        return newExpandedIds;
+        return deleteFromExpandedIds(prevExpandedIds, id) || prevExpandedIds;
       } else {
-        return [...prevExpandedIds, id];
+        return addToExpandedIds(prevExpandedIds, id) || prevExpandedIds;
       }
     });
   }, []);
