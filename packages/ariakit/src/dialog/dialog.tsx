@@ -251,7 +251,13 @@ export const useDialog = createHook<DialogOptions>(
       if (!dialog) return;
       const initialFocus = initialFocusRef?.current;
       const element =
-        initialFocus || getFirstTabbableIn(dialog, true) || dialog;
+        initialFocus ||
+        // We have to fallback to the first focusable element otherwise portaled
+        // dialogs with preserveTabOrder set to true will not receive focus
+        // properly because the elements aren't tabbable until the dialog
+        // receives focus.
+        getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
+        dialog;
       ensureFocus(element);
     }, [
       state.animating,
@@ -260,6 +266,8 @@ export const useDialog = createHook<DialogOptions>(
       domReady,
       nestedDialogs,
       initialFocusRef,
+      portal,
+      preserveTabOrder,
     ]);
 
     // Auto focus on hide.
