@@ -13,34 +13,47 @@ test("correctly traps focus", async () => {
   // Focus trap is on by default in the Example
   render(
     <div>
+      <div tabIndex={0}>Before</div>
       <Example />
-      <div tabIndex={0}>Outside</div>
+      <div tabIndex={0}>After</div>
     </div>
   );
-  focus(getByRole("checkbox"));
+  await press.Tab();
+  expect(getByText("Before")).toHaveFocus();
+  await press.Tab();
   expect(getByRole("checkbox")).toHaveFocus();
   await press.Tab();
   expect(getByRole("button")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
-  expect(getByText("Outside")).not.toHaveFocus();
+  expect(getByText("After")).not.toHaveFocus();
   await press.Tab();
   expect(getByRole("button")).toHaveFocus();
+  await press.ShiftTab();
+  expect(getByRole("checkbox")).toHaveFocus();
+  await press.ShiftTab();
+  expect(getByText("Before")).not.toHaveFocus();
 });
 
 test("correctly releases focus", async () => {
   // Focus trap is on by default in the Example
   render(
     <div>
+      <div tabIndex={0}>Before</div>
       <Example />
-      <div tabIndex={0}>Outside</div>
+      <div tabIndex={0}>After</div>
     </div>
   );
-  // Disabling focus trap
+  // First, disabling focus trap
   await click(getByLabelText("Trap focus"));
-  await focus(getByRole("button"));
+  expect(getByRole("checkbox")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("checkbox")).not.toHaveFocus();
-  expect(getByRole("button")).not.toHaveFocus();
-  expect(getByText("Outside")).toHaveFocus();
+  expect(getByRole("button")).toHaveFocus();
+  await press.Tab();
+  expect(getByText("After")).toHaveFocus();
+  await press.ShiftTab();
+  expect(getByRole("button")).toHaveFocus();
+  await press.ShiftTab();
+  expect(getByRole("checkbox")).toHaveFocus();
+  await press.ShiftTab();
+  expect(getByText("Before")).toHaveFocus();
 });
