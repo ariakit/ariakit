@@ -1,6 +1,5 @@
 import {
   click,
-  focus,
   getByLabelText,
   getByRole,
   getByText,
