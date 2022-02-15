@@ -1,7 +1,14 @@
-import { FocusEvent, KeyboardEvent, MouseEvent, useCallback } from "react";
+import {
+  FocusEvent,
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
-import { useEventCallback, useId } from "ariakit-utils/hooks";
+import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -50,29 +57,39 @@ function hasExpandedMenuButton(
  */
 export const useMenuButton = createHook<MenuButtonOptions>(
   ({ state, focusable, accessibleWhenDisabled, ...props }) => {
-    const parentMenu = useParentMenu(["items"]);
+    const ref = useRef<HTMLElement>(null);
+    const parentMenu = useParentMenu(["items", "move"]);
     const parentMenuBar = useStore(MenuBarContext, ["items", "move"]);
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const disabled = props.disabled || props["aria-disabled"];
-    const id = useId(props.id);
 
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
+    useEffect(() => {
+      // state.disclosureRef.current = ref.current;
+    });
 
-    const onMouseMove = useCallback(
+    const onMouseMoveCaptureProp = useEventCallback(props.onMouseMoveCapture);
+
+    const onMouseMoveCapture = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
-        onMouseMoveProp(event);
+        onMouseMoveCaptureProp(event);
         if (event.defaultPrevented) return;
         if (disabled) return;
-        // We only want to focus on the menu button if it's in a menu bar
-        if (!parentMenuBar) return;
-        if (!parentIsMenuBar) return;
-        // and there's already another expanded menu button.
-        if (hasExpandedMenuButton(parentMenuBar.items)) {
-          parentMenuBar.move(id);
+        if (parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items)) {
+          // event.currentTarget.focus();
+        }
+        if (hasParentMenu) {
+          // event.currentTarget.focus();
+          state.setActiveId(null);
         }
       },
-      [onMouseMoveProp, disabled, parentMenuBar, parentIsMenuBar, id]
+      [
+        onMouseMoveCaptureProp,
+        disabled,
+        hasParentMenu,
+        parentMenuBar,
+        parentIsMenuBar,
+      ]
     );
 
     const onFocusProp = useEventCallback(props.onFocus);
@@ -117,7 +134,6 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       },
       [
         onKeyDownProp,
-        state.mounted,
         dir,
         state.show,
         state.setAutoFocusOnShow,
@@ -131,11 +147,11 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       (event: MouseEvent<HTMLButtonElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        if (state.mounted) return;
-        if (!parentIsMenuBar) {
-          state.setAutoFocusOnShow(true);
-          state.setInitialFocus(event.detail ? "container" : "first");
-        }
+        // if (state.mounted) return;
+        // if (!parentIsMenuBar) {
+        state.setAutoFocusOnShow(true);
+        state.setInitialFocus(event.detail ? "container" : "first");
+        // }
         if (hasParentMenu && !parentIsMenuBar) {
           state.show();
         }
@@ -160,10 +176,10 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     }
 
     props = {
-      id,
       "aria-haspopup": getPopupRole(state.contentElement, "menu"),
       ...props,
-      onMouseMove,
+      ref: useForkRef(ref, props.ref),
+      onMouseMoveCapture,
       onFocus,
       onKeyDown,
       onClick,
@@ -171,10 +187,19 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     props = useHovercardAnchor({
       state,
-      showOnMouseMove: hasParentMenu,
       focusable,
       accessibleWhenDisabled,
       ...props,
+      showOnHover: (event) => {
+        // TODO: Call props.showOnHover
+        if (
+          hasParentMenu ||
+          (parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items))
+        ) {
+          return true;
+        }
+        return false;
+      },
     });
 
     props = usePopoverDisclosure({

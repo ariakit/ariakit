@@ -11,9 +11,18 @@ import {
   CompositeItemOptions,
   useCompositeItem,
 } from "../composite/composite-item";
-import { MenuContext } from "./__utils";
+import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuBarState } from "./menu-bar-state";
 import { MenuState } from "./menu-state";
+
+function hasExpandedMenuButton(
+  items: MenuState["items"],
+  currentElement?: Element
+) {
+  return items
+    .filter((item) => item.ref.current !== currentElement)
+    .some((item) => item.ref.current?.getAttribute("aria-expanded") === "true");
+}
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -34,7 +43,8 @@ import { MenuState } from "./menu-state";
 export const useMenuItem = createHook<MenuItemOptions>(
   ({ state, hideOnClick = true, preventScrollOnKeyDown = true, ...props }) => {
     const context = MenuContext as Context<typeof state>;
-    state = useStore(state || context, ["move"]);
+    const menuBarState = useStore(state || MenuBarContext, ["items"]);
+    state = useStore(state || context, ["move"]) || menuBarState;
 
     const onClickProp = useEventCallback(props.onClick);
     const hideMenu = state && "hideAll" in state ? state.hideAll : undefined;
@@ -67,8 +77,24 @@ export const useMenuItem = createHook<MenuItemOptions>(
 
     props = useCompositeHover({
       state,
-      focusOnHover: isWithinMenu,
       ...props,
+      focusOnHover: (event) => {
+        if (event.type === "mouseleave") return isWithinMenu;
+        // TODO: Call props.focusOnHover
+        if (isWithinMenu) {
+          if (event.currentTarget.hasAttribute("aria-expanded")) {
+            event.currentTarget.focus();
+          }
+          return true;
+        } else if (
+          state &&
+          hasExpandedMenuButton(state.items, event.currentTarget)
+        ) {
+          event.currentTarget.focus();
+          return true;
+        }
+        return false;
+      },
     });
 
     return props;

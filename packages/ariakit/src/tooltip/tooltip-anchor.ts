@@ -34,6 +34,10 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       (event: FocusEvent<HTMLDivElement>) => {
         onFocusProp(event);
         if (event.defaultPrevented) return;
+        if (state.anchorRef.current !== event.currentTarget) {
+          state.anchorRef.current = event.currentTarget;
+          state.render();
+        }
         state.show();
       },
       [onFocusProp, state.show]
@@ -56,6 +60,10 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       (event: MouseEvent<HTMLDivElement>) => {
         onMouseEnterProp(event);
         if (event.defaultPrevented) return;
+        if (state.anchorRef.current !== event.currentTarget) {
+          state.anchorRef.current = event.currentTarget;
+          state.render();
+        }
         state.show();
       },
       [onMouseEnterProp, state.show]

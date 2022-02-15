@@ -1,18 +1,21 @@
 import {
   MouseEvent as ReactMouseEvent,
-  SyntheticEvent,
   useCallback,
   useEffect,
   useRef,
 } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import {
+  useBooleanEventCallback,
+  useEventCallback,
+  useForkRef,
+} from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable";
 import { HovercardState } from "./hovercard-state";
 
@@ -30,7 +33,7 @@ import { HovercardState } from "./hovercard-state";
  * ```
  */
 export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
-  ({ state, showOnMouseMove = true, ...props }) => {
+  ({ state, showOnHover = true, ...props }) => {
     const showTimeoutRef = useRef(0);
 
     // Clear the show timeout if the anchor is unmounted
@@ -52,41 +55,27 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     }, [state.anchorRef]);
 
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
+    const showOnHoverProp = useBooleanEventCallback(showOnHover);
 
     const onMouseMove = useCallback(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {
         state.anchorRef.current = event.currentTarget;
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
-        if (!showOnMouseMove) return;
-        if (!showTimeoutRef.current) {
-          showTimeoutRef.current = window.setTimeout(() => {
-            showTimeoutRef.current = 0;
-            state.show();
-          }, state.showTimeout);
-        }
+        if (showTimeoutRef.current) return;
+        if (!showOnHoverProp(event)) return;
+        showTimeoutRef.current = window.setTimeout(() => {
+          showTimeoutRef.current = 0;
+          state.show();
+        }, state.showTimeout);
       },
       [
         state.anchorRef,
         onMouseMoveProp,
-        showOnMouseMove,
+        showOnHoverProp,
         state.show,
         state.showTimeout,
       ]
-    );
-
-    const onFocusVisibleProp = useEventCallback(props.onFocusVisible);
-
-    // When the anchor receives keyboard focus, the hovercard disclosure
-    // element should be visible so keyboard users can use it to access the
-    // hovercard contents.
-    const onFocusVisible = useCallback(
-      (event: SyntheticEvent<HTMLAnchorElement>) => {
-        onFocusVisibleProp(event);
-        if (event.defaultPrevented) return;
-        state.setDisclosureVisible(true);
-      },
-      [onFocusVisibleProp, state.setDisclosureVisible]
     );
 
     props = {
@@ -95,7 +84,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
       onMouseMove,
     };
 
-    props = useFocusable({ ...props, onFocusVisible });
+    props = useFocusable(props);
 
     return props;
   }
@@ -128,7 +117,7 @@ export type HovercardAnchorOptions<T extends As = "a"> = FocusableOptions<T> & {
    * Whether to show the hovercard on mouse move.
    * @default true
    */
-  showOnMouseMove?: boolean;
+  showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 };
 
 export type HovercardAnchorProps<T extends As = "a"> = Props<

@@ -23,16 +23,6 @@ import {
 } from "./__utils";
 import { HovercardState } from "./hovercard-state";
 
-function getAnchorElement(anchorRef: HovercardState["anchorRef"]) {
-  // The anchor element can be a VirtualElement, which is just an object with a
-  // getBoundingClientRect() method. Although this is not really valid in the
-  // context of a hovercard, we need to make sure to get the actual element.
-  if (anchorRef.current && "tagName" in anchorRef.current) {
-    return anchorRef.current;
-  }
-  return null;
-}
-
 function isMovingThroughHovercardElements(
   target: Node | null,
   card: HTMLElement,
@@ -46,16 +36,16 @@ function isMovingThroughHovercardElements(
   return false;
 }
 
-// The autoFocusOnShow will be set to true when the hovercard disclosure element
-// is clicked. We have to reset it to false when the hovercard element gets
-// hidden or is unmounted.
+// The autoFocusOnShow state will be set to true when the hovercard disclosure
+// element is clicked. We have to reset it to false when the hovercard element
+// gets hidden or is unmounted.
 function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
   // Resets autoFocusOnShow
   useEffect(() => {
-    if (!state.visible) {
+    if (!state.mounted) {
       state.setAutoFocusOnShow(false);
     }
-  }, [state.visible, state.setAutoFocusOnShow]);
+  }, [state.mounted, state.setAutoFocusOnShow]);
 
   // Resets on unmount as well
   useEffect(
@@ -64,6 +54,7 @@ function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
   );
 
   return {
+    // If the hovercard is modal, we should always autoFocus on show.
     autoFocusOnShow: !!props.modal || state.autoFocusOnShow,
     ...props,
   };
@@ -73,8 +64,6 @@ function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
 // element when the hovercard gets hidden (or unmounted).
 function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
   const [autoFocusOnHide, setAutoFocusOnHide] = useState(false);
-  const finalFocusRef = useRef<HTMLElement | null>(null);
-  const onFocusProp = useEventCallback(props.onFocus);
 
   // Resets autoFocusOnHide
   useEffect(() => {
@@ -83,10 +72,7 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
     }
   }, [state.mounted]);
 
-  // Sets finalFocusRef
-  useEffect(() => {
-    finalFocusRef.current = getAnchorElement(state.anchorRef);
-  }, [state.anchorRef]);
+  const onFocusProp = useEventCallback(props.onFocus);
 
   const onFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
@@ -99,7 +85,7 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
 
   props = {
     autoFocusOnHide,
-    finalFocusRef,
+    finalFocusRef: state.anchorRef,
     ...props,
     onFocus,
   };
@@ -125,9 +111,9 @@ export const useHovercard = createHook<HovercardOptions>(
   ({
     state,
     portal = false,
-    hideOnMouseLeave = true,
     hideOnEscape = true,
     hideOnControl = false,
+    hideOnHoverOutside = true,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -156,18 +142,21 @@ export const useHovercard = createHook<HovercardOptions>(
       });
     }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
+    const mayHideOnHoverOutside = !!hideOnHoverOutside;
+    const hideOnHoverOutsideProp = useBooleanEventCallback(hideOnHoverOutside);
+
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
     useEffect(() => {
-      if (!hideOnMouseLeave) return;
       if (!domReady) return;
       if (!state.mounted) return;
+      if (!mayHideOnHoverOutside) return;
       const element = ref.current;
       if (!element) return;
       const onMouseMove = (event: MouseEvent) => {
         const enterPoint = enterPointRef.current;
         const target = event.target as Node | null;
-        const anchor = getAnchorElement(state.anchorRef);
+        const anchor = state.anchorRef.current;
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
         if (isMovingThroughHovercardElements(target, element, anchor)) {
@@ -182,30 +171,39 @@ export const useHovercard = createHook<HovercardOptions>(
           timeoutRef.current = 0;
           return;
         }
+        // If there's already a scheduled timeout to hide the hovercard, we do
+        // nothing.
         if (timeoutRef.current) return;
+        // Enter point will be null when the user hovers over the hovercard
+        // element.
         if (enterPoint) {
           const currentPoint = getEventPoint(event);
           const placement = state.currentPlacement;
           const elementPolygon = getElementPolygon(element, placement);
           const polygon = [enterPoint, ...elementPolygon];
           // If the current's event mouse position is inside the transit
-          // triangle area, this means that the mouse is moving toward the hover
-          // card.
+          // polygon, this means that the mouse is moving toward the hover card,
+          // so we disable this event. This is necessary because the mousemove
+          // event may trigger focus on other elements and close the hovercard.
           if (isPointInPolygon(currentPoint, polygon)) {
+            if (!hideOnHoverOutsideProp(event)) return;
             event.preventDefault();
             event.stopPropagation();
             return;
           }
         }
+        if (!hideOnHoverOutsideProp(event)) return;
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
         timeoutRef.current = window.setTimeout(state.hide, state.hideTimeout);
       };
       return addGlobalEventListener("mousemove", onMouseMove, true);
     }, [
-      hideOnMouseLeave,
       domReady,
       state.mounted,
+      mayHideOnHoverOutside,
+      state.anchorRef,
       state.currentPlacement,
+      hideOnHoverOutsideProp,
       state.hide,
       state.hideTimeout,
     ]);
@@ -214,9 +212,9 @@ export const useHovercard = createHook<HovercardOptions>(
     // is necessary because these events may trigger focus on other elements and
     // close the hovercard while the user is moving the mouse toward it.
     useEffect(() => {
-      if (!hideOnMouseLeave) return;
       if (!domReady) return;
       if (!state.mounted) return;
+      if (!mayHideOnHoverOutside) return;
       const element = ref.current;
       if (!element) return;
       const disableEvent = (event: MouseEvent) => {
@@ -226,6 +224,7 @@ export const useHovercard = createHook<HovercardOptions>(
         const elementPolygon = getElementPolygon(element, placement);
         const polygon = [enterPoint, ...elementPolygon];
         if (isPointInPolygon(getEventPoint(event), polygon)) {
+          if (!hideOnHoverOutsideProp(event)) return;
           event.preventDefault();
           event.stopPropagation();
         }
@@ -237,7 +236,13 @@ export const useHovercard = createHook<HovercardOptions>(
         addGlobalEventListener("mouseout", disableEvent, true),
         addGlobalEventListener("mouseleave", disableEvent, true)
       );
-    }, [hideOnMouseLeave, domReady, state.mounted, state.currentPlacement]);
+    }, [
+      domReady,
+      state.mounted,
+      mayHideOnHoverOutside,
+      state.currentPlacement,
+      hideOnHoverOutsideProp,
+    ]);
 
     props = {
       ...props,
@@ -299,7 +304,7 @@ export type HovercardOptions<T extends As = "div"> = Omit<
    * element.
    * @default true
    */
-  hideOnMouseLeave?: boolean;
+  hideOnHoverOutside?: BooleanOrCallback<MouseEvent>;
 };
 
 export type HovercardProps<T extends As = "div"> = Props<HovercardOptions<T>>;

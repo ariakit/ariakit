@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { createStoreContext, useStore } from "ariakit-utils/store";
 import { DialogContext } from "../dialog/__utils/dialog-context";
 import { MenuBarState } from "./menu-bar-state";
@@ -14,7 +14,7 @@ export const MenuItemCheckedContext = createContext<boolean | undefined>(
 );
 
 export function useParentMenu(filter: StateFilter<MenuState> = []) {
-  const parentDialog = useStore(DialogContext, ["contentElement"]);
+  const parentDialog = useContext(DialogContext);
   const parentMenu = useStore(MenuContext, [...filter, "contentElement"]);
   const hasIntermediateDialog =
     parentDialog?.contentElement !== parentMenu?.contentElement;

@@ -1,0 +1,17 @@
+@import url("../menu/style.css");
+
+.menubar {
+  @apply flex gap-2;
+}
+
+.menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
+  @apply
+    bg-alpha-3-border
+    text-alpha-3
+    dark:bg-alpha-3-dark-hover
+    dark:text-alpha-3-dark;
+}
+
+.menu-item .label {
+  @apply flex-1;
+}

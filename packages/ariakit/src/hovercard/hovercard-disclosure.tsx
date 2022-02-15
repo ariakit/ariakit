@@ -1,4 +1,10 @@
-import { MouseEvent, useCallback, useEffect } from "react";
+import {
+  MouseEvent,
+  FocusEvent as ReactFocusEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
@@ -12,6 +18,7 @@ import {
   DialogDisclosureOptions,
   useDialogDisclosure,
 } from "../dialog/dialog-disclosure";
+import { useVisuallyHidden } from "../visually-hidden";
 import { HovercardState } from "./hovercard-state";
 
 /**
@@ -32,31 +39,43 @@ import { HovercardState } from "./hovercard-state";
  */
 export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
   ({ state, ...props }) => {
-    const onClickProp = useEventCallback(props.onClick);
+    const [visible, setVisible] = useState(false);
 
     // Listens to blur events on the whole document and hides the hovercard
-    // disclosure if whether the hovercard or the disclosure loses focus. We
-    // don't need to listen to blur events on the anchor element because we are
-    // already showing the disclosure when the anchor element is focused.
+    // disclosure if either the hovercard, the anchor or the disclosure button
+    // itself loses focus.
     useEffect(() => {
-      if (!state.disclosureVisible) return;
+      if (!visible) return;
       const onBlur = (event: FocusEvent) => {
         const nextActiveElement = event.relatedTarget as Node | null;
         if (nextActiveElement) {
+          const anchor = state.anchorRef.current;
           const popover = state.popoverRef.current;
           const disclosure = state.disclosureRef.current;
+          if (anchor && contains(anchor, nextActiveElement)) return;
           if (popover && contains(popover, nextActiveElement)) return;
           if (disclosure && contains(disclosure, nextActiveElement)) return;
         }
-        state.setDisclosureVisible(false);
+        setVisible(false);
       };
       return addGlobalEventListener("focusout", onBlur, true);
-    }, [
-      state.disclosureVisible,
-      state.popoverRef,
-      state.disclosureRef,
-      state.setDisclosureVisible,
-    ]);
+    }, [visible, state.anchorRef, state.popoverRef, state.disclosureRef]);
+
+    // Shows the hovercard disclosure when the anchor receives keyboard focus.
+    useEffect(() => {
+      const anchor = state.anchorRef.current;
+      if (!anchor) return;
+      const onFocus = () => {
+        requestAnimationFrame(() => {
+          if (!anchor.hasAttribute("data-focus-visible")) return;
+          setVisible(true);
+        });
+      };
+      anchor.addEventListener("focus", onFocus);
+      return () => anchor.removeEventListener("focus", onFocus);
+    }, [state.anchorRef]);
+
+    const onClickProp = useEventCallback(props.onClick);
 
     // By default, hovercards don't receive focus when they are shown. When the
     // disclosure element is clicked, though, we want it to behave like a
@@ -70,26 +89,53 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
       [onClickProp, state.setAutoFocusOnShow]
     );
 
+    const onFocusProp = useEventCallback(props.onFocus);
+
+    // Since the disclosure button is only visually hidden, it may receive focus
+    // when the user tabs to it. So we make sure it's visible when that happens.
+    const onFocus = useCallback(
+      (event: ReactFocusEvent<HTMLButtonElement>) => {
+        onFocusProp(event);
+        if (event.defaultPrevented) return;
+        setVisible(true);
+      },
+      [onFocusProp]
+    );
+
+    const { style } = useVisuallyHidden();
+
+    if (!visible) {
+      props = {
+        ...props,
+        style: {
+          ...style,
+          ...props.style,
+        },
+      };
+    }
+
     const children = (
       <svg
-        aria-label="More information"
+        display="block"
+        fill="none"
         stroke="currentColor"
-        fill="currentColor"
-        strokeWidth="0"
-        viewBox="0 0 24 24"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5pt"
+        viewBox="0 0 16 16"
         height="1em"
         width="1em"
       >
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path>
+        <polyline points="4,6 8,10 12,6" />
       </svg>
     );
 
     props = {
-      hidden: !state.disclosureVisible,
       children,
       ...props,
       ref: useForkRef(state.disclosureRef, props.ref),
       onClick,
+      onFocus,
     };
 
     props = useDialogDisclosure({ state, ...props });

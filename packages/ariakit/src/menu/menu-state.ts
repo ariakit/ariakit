@@ -20,14 +20,6 @@ type Values = Record<
   string | boolean | number | Array<string | number>
 >;
 
-function useParentOrientation(parentMenu?: MenuState) {
-  const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
-  if (parentMenu) {
-    return parentMenu.orientation;
-  }
-  return parentMenuBar?.orientation;
-}
-
 /**
  * Provides state for the `Menu` components.
  * @example
@@ -42,7 +34,7 @@ function useParentOrientation(parentMenu?: MenuState) {
  */
 export function useMenuState<V extends Values = Values>({
   orientation = "vertical",
-  timeout = 150,
+  timeout,
   hideTimeout = 0,
   ...props
 }: MenuStateProps<V> = {}): MenuState<V> {
@@ -54,14 +46,18 @@ export function useMenuState<V extends Values = Values>({
     props.setValues
   );
   const parentMenu = useParentMenu(["orientation", "hideAll"]);
-  const contextOrientation = useParentOrientation(parentMenu);
+  const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
+  const contextOrientation =
+    parentMenu?.orientation || parentMenuBar?.orientation;
+  const parentIsMenuBar = !!parentMenuBar && !parentMenu;
   // Defines the placement of the menu popover based on the parent orientation.
   const placement =
     props.placement ||
     (contextOrientation === "vertical" ? "right-start" : "bottom-start");
 
+  timeout = timeout ?? parentIsMenuBar ? 0 : 150;
   const composite = useCompositeState({ orientation, ...props });
-  const hoverCard = useHovercardState({
+  const hovercard = useHovercardState({
     timeout,
     hideTimeout,
     ...props,
@@ -72,10 +68,11 @@ export function useMenuState<V extends Values = Values>({
   // Maybe should reset activeId as well. Needs to be layout effect because of
   // context menu subsequent clicks.
   useSafeLayoutEffect(() => {
-    if (!hoverCard.visible) {
+    if (!hovercard.mounted) {
       composite.setMoves(0);
+      composite.setActiveId(null);
     }
-  }, [hoverCard.visible, composite.setMoves]);
+  }, [hovercard.mounted, composite.setMoves]);
 
   const setValue = useCallback(
     (name: string, value: SetStateAction<V[string]>) => {
@@ -97,14 +94,14 @@ export function useMenuState<V extends Values = Values>({
   );
 
   const hideAll = useCallback(() => {
-    hoverCard.hide();
+    hovercard.hide();
     parentMenu?.hideAll();
-  }, [hoverCard.hide, parentMenu?.hideAll]);
+  }, [hovercard.hide, parentMenu?.hideAll]);
 
   const state = useMemo(
     () => ({
       ...composite,
-      ...hoverCard,
+      ...hovercard,
       initialFocus,
       setInitialFocus,
       values,
@@ -114,7 +111,7 @@ export function useMenuState<V extends Values = Values>({
     }),
     [
       composite,
-      hoverCard,
+      hovercard,
       initialFocus,
       setInitialFocus,
       values,

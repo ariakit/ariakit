@@ -3,26 +3,26 @@ import { closest, contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { chain } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-let screenX = 0;
-let screenY = 0;
+let pageX = 0;
+let pageY = 0;
 
-function handleGlobalMouseMove(event: MouseEvent) {
-  screenX = event.screenX;
-  screenY = event.screenY;
+function trackMousePosition(event: MouseEvent) {
+  pageX = event.pageX;
+  pageY = event.pageY;
 }
 
-function isScrolling(event: ReactMouseEvent | MouseEvent) {
-  // JSDOM doesn't support screenX/screenY
+function isMouseMoving(event: ReactMouseEvent | MouseEvent) {
+  // JSDOM doesn't support pageX/pageY
   if (process.env.NODE_ENV === "test") return false;
   return (
-    Math.abs(event.screenX - screenX) === 0 &&
-    Math.abs(event.screenY - screenY) === 0
+    Math.abs(event.pageX - pageX) !== 0 || Math.abs(event.pageY - pageY) !== 0
   );
 }
 
@@ -69,7 +69,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
     useEffect(() => {
-      return addGlobalEventListener("mousemove", handleGlobalMouseMove);
+      addGlobalEventListener("mousemove", trackMousePosition);
     }, []);
 
     const onMouseMove = useCallback(
@@ -94,8 +94,8 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseLeave = useCallback(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseLeaveProp(event);
-        if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
+        if (!isMouseMoving(event)) return;
         if (hoveringInside(event)) return;
         if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
@@ -146,6 +146,7 @@ export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
   state?: CompositeState;
   /**
    * Whether to focus the composite item on hover.
+   * TODO: activeOnHover
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;

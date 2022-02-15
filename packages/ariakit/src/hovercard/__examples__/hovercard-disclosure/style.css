@@ -1,0 +1,5 @@
+@import url("../hovercard/style.css");
+
+.hovercard-wrapper {
+  @apply inline-flex gap-1 items-center;
+}

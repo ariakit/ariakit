@@ -1,9 +1,11 @@
 import { KeyboardEvent, useCallback, useState } from "react";
+import { hasFocusWithin } from "ariakit-utils/focus";
 import {
   useBooleanEventCallback,
   useEventCallback,
   useForkRef,
 } from "ariakit-utils/hooks";
+import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -11,7 +13,7 @@ import {
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import { HovercardOptions, useHovercard } from "../hovercard/hovercard";
-import { useParentMenu } from "./__utils";
+import { MenuBarContext, useParentMenu } from "./__utils";
 import { MenuListOptions, useMenuList } from "./menu-list";
 
 /**
@@ -32,7 +34,9 @@ import { MenuListOptions, useMenuList } from "./menu-list";
 export const useMenu = createHook<MenuOptions>(
   ({ state, hideOnEscape = true, autoFocusOnShow = true, ...props }) => {
     const parentMenu = useParentMenu();
+    const parentMenuBar = useStore(MenuBarContext, []);
     const hasParentMenu = !!parentMenu;
+    const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
     const domReady = !props.portal || portalNode;
@@ -71,8 +75,14 @@ export const useMenu = createHook<MenuOptions>(
     props = useHovercard({
       state,
       autoFocusOnShow: false,
-      hideOnMouseLeave: hasParentMenu,
       ...props,
+      hideOnHoverOutside: (event) => {
+        // TODO: Call props.hideOnHoverOutside
+        if (hasParentMenu) return true;
+        if (!parentIsMenuBar) return false;
+        if (hasFocusWithin(state.disclosureRef.current)) return false;
+        return true;
+      },
       portalRef,
       // If it's a sub menu, it should behave like a modal dialog, nor display a
       // backdrop.
