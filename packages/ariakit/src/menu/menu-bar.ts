@@ -31,22 +31,26 @@ import { MenuBarState } from "./menu-bar-state";
  * </Role>
  * ```
  */
-export const useMenuBar = createHook<MenuBarOptions>(({ state, ...props }) => {
-  const orientation =
-    state.orientation === "both" ? undefined : state.orientation;
+export const useMenuBar = createHook<MenuBarOptions>(
+  ({ state, composite = true, ...props }) => {
+    const orientation =
+      state.orientation === "both" ? undefined : state.orientation;
 
-  props = useStoreProvider({ state, ...props }, MenuBarContext);
+    props = useStoreProvider({ state, ...props }, MenuBarContext);
 
-  props = {
-    role: "menubar",
-    "aria-orientation": orientation,
-    ...props,
-  };
+    if (composite) {
+      props = {
+        role: "menubar",
+        "aria-orientation": orientation,
+        ...props,
+      };
+    }
 
-  props = useComposite({ state, ...props });
+    props = useComposite({ state, composite, ...props });
 
-  return props;
-});
+    return props;
+  }
+);
 
 /**
  * A component that renders a menu bar that may contain a group of menu items
