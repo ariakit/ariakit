@@ -76,7 +76,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     );
 
     const onClickProp = useEventCallback(props.onClick);
-
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
 
     const onClick = useCallback(
