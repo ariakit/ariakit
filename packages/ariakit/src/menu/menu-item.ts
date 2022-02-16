@@ -1,9 +1,4 @@
-import {
-  Context,
-  MouseEvent,
-  MouseEvent as ReactMouseEvent,
-  useCallback,
-} from "react";
+import { Context, MouseEvent, useCallback } from "react";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -114,7 +109,7 @@ export type MenuItemOptions<T extends As = "div"> = Omit<
      * Whether to hide the menu when the menu item is clicked.
      * @default true
      */
-    hideOnClick?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
      * Whether the scroll behavior should be prevented when pressing arrow keys
      * on the first or the last items.
