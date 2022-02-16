@@ -1,8 +1,8 @@
-import { ChangeEvent, MouseEvent as ReactMouseEvent, useCallback } from "react";
+import { ChangeEvent, useCallback } from "react";
 import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+import { As, Props } from "ariakit-utils/types";
 import { RadioOptions, useRadio } from "../radio/radio";
 import { MenuContext, MenuItemCheckedContext } from "./__utils";
 import { MenuItemOptions, useMenuItem } from "./menu-item";
@@ -123,7 +123,7 @@ export type MenuItemRadioOptions<T extends As = "div"> = Omit<
      * Whether to hide the menu when the menu item radio is clicked.
      * @default false
      */
-    hideOnClick?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+    hideOnClick?: MenuItemOptions<T>["hideOnClick"];
   };
 
 export type MenuItemRadioProps<T extends As = "div"> = Props<
