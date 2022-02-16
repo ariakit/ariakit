@@ -1,9 +1,4 @@
-import {
-  KeyboardEvent,
-  MouseEvent,
-  MouseEvent as ReactMouseEvent,
-  useCallback,
-} from "react";
+import { KeyboardEvent, MouseEvent, useCallback } from "react";
 import { getPopupRole, isTextField } from "ariakit-utils/dom";
 import {
   useBooleanEventCallback,
@@ -221,7 +216,7 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
      * Whether to hide the combobox when this item is clicked.
      * @default true
      */
-    hideOnClick?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
      * Whether to set the combobox value with this item's value when this item is
      * clicked.
