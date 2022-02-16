@@ -95,6 +95,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       },
       [
         onClickProp,
+        hideOnClickProp,
         value,
         setValueOnClick,
         state?.setValue,
