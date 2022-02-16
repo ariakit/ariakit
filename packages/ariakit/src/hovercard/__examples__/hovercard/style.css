@@ -5,7 +5,13 @@
 }
 
 .anchor {
-  @apply font-semibold text-primary-1 hover:underline dark:text-primary-1-dark;
+  text-decoration-skip-ink: none;
+  @apply
+    underline
+    font-medium
+    hover:decoration-[3px]
+    text-link
+    dark:text-link-dark;
 }
 
 .hovercard {

@@ -1,9 +1,6 @@
 /**
  * Transforms `arg` into an array if it's not already.
- *
  * @example
- * import { toArray } from "reakit-utils";
- *
  * toArray("a"); // ["a"]
  * toArray(["a"]); // ["a"]
  */
@@ -17,12 +14,8 @@ export function toArray<T>(arg: T) {
 
 /**
  * Immutably adds an index to an array.
- *
  * @example
- * import { addItemToArray } from "reakit-utils";
- *
  * addItemToArray(["a", "b", "d"], "c", 2); // ["a", "b", "c", "d"]
- *
  * @returns {Array} A new array with the item in the passed array index.
  */
 export function addItemToArray<T extends any[]>(
@@ -38,10 +31,7 @@ export function addItemToArray<T extends any[]>(
 
 /**
  * Flattens a 2D array into a one-dimensional array.
- *
  * @example
- * import { flatten2DArray } from "reakit-utils";
- *
  * flatten2DArray([["a"], ["b"], ["c"]]); // ["a", "b", "c"]
  *
  * @returns {Array} A one-dimensional array.
@@ -56,12 +46,8 @@ export function flatten2DArray<T>(array: T[][]) {
 
 /**
  * Immutably reverses an array.
- *
  * @example
- * import { reverseArray } from "reakit-utils";
- *
  * reverseArray(["a", "b", "c"]); // ["c", "b", "a"]
- *
  * @returns {Array} Reversed array.
  */
 export function reverseArray<T>(array: T[]): T[] {

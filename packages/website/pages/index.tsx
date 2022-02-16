@@ -51,6 +51,9 @@ export default function Home() {
           <Link href="/examples/disclosure">Disclosure</Link>
         </li>
         <li>
+          <Link href="/examples/focus-trap">Focus trap</Link>
+        </li>
+        <li>
           <Link href="/examples/form">Form</Link>
         </li>
         <li>
@@ -61,6 +64,9 @@ export default function Home() {
         </li>
         <li>
           <Link href="/examples/hovercard">Hovercard</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu">Menu</Link>
         </li>
         <li>
           <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>

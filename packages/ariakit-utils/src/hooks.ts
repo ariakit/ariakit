@@ -31,10 +31,7 @@ export const useSafeLayoutEffect = canUseDOM ? useLayoutEffect : useEffect;
 
 /**
  * Returns a value that never changes even if the argument is updated.
- *
  * @example
- * import { useInitialValue } from "reakit-utils";
- *
  * function Component({ prop }) {
  *   const initialProp = useInitialValue(prop);
  * }
@@ -46,10 +43,7 @@ export function useInitialValue<T>(value: T | (() => T)) {
 
 /**
  * Returns a value that is lazily initiated and never changes.
- *
  * @example
- * import { useLazyRef } from "reakit-utils";
- *
  * function Component() {
  *   const set = useLazyRef(() => new Set());
  * }
@@ -65,10 +59,7 @@ export function useLazyRef<T>(init: () => T) {
 /**
  * Creates a `React.RefObject` that is constantly updated with the incoming
  * value.
- *
  * @example
- * import { useLiveRef } from "reakit-utils";
- *
  * function Component({ prop }) {
  *   const propRef = useLiveRef(prop);
  * }
@@ -84,14 +75,10 @@ export function useLiveRef<T>(value: T) {
 /**
  * Creates a memoized callback function that is constantly updated with the
  * incoming callback.
- *
  * @example
- * import { useEffect } from "react";
- * import { useEventCallback } from "reakit-utils";
- *
  * function Component(props) {
  *   const onClick = useEventCallback(props.onClick);
- *   useEffect(() => {}, [onClick]);
+ *   React.useEffect(() => {}, [onClick]);
  * }
  */
 export function useEventCallback<T extends AnyFunction>(callback?: T) {
@@ -112,13 +99,9 @@ export function useEventCallback<T extends AnyFunction>(callback?: T) {
 /**
  * Merges React Refs into a single memoized function ref so you can pass it to
  * an element.
- *
  * @example
- * import { forwardRef, useRef } from "react";
- * import { useForkRef } from "reakit-utils";
- *
- * const Component = forwardRef((props, ref) => {
- *   const internalRef = useRef();
+ * const Component = React.forwardRef((props, ref) => {
+ *   const internalRef = React.useRef();
  *   return <div {...props} ref={useForkRef(internalRef, ref)} />;
  * });
  */
@@ -181,11 +164,7 @@ export function useDeferredValue<T>(value: T) {
 
 /**
  * Returns the tag name by parsing an element ref and the `as` prop.
- *
  * @example
- * import * as React from "react";
- * import { useTagName } from "reakit-utils";
- *
  * function Component(props) {
  *   const ref = React.useRef();
  *   const tagName = useTagName(ref, "button"); // div

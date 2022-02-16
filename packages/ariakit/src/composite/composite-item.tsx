@@ -113,11 +113,11 @@ function findNextPageItemId(
   return id;
 }
 
-function useItem({ state, ...props }: CompositeItemProps) {
+function useItem(items?: Item[], id?: string) {
   return useMemo(() => {
-    if (!props.id) return;
-    return state?.items.find((item) => item.id === props.id);
-  }, [state?.items, props.id]);
+    if (!id) return;
+    return items?.find((item) => item.id === id);
+  }, [items, id]);
 }
 
 function targetIsAnotherItem(event: SyntheticEvent, items: Item[]) {
@@ -284,7 +284,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const preventScrollOnKeyDownProp = useBooleanEventCallback(
       preventScrollOnKeyDown
     );
-    const item = useItem({ state, ...props });
+    const item = useItem(state?.items, id);
+    const isGrid = !!item?.rowId;
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -293,7 +294,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         if (!isSelfTarget(event)) return;
         const isVertical = state?.orientation !== "horizontal";
         const isHorizontal = state?.orientation !== "vertical";
-        const isGrid = !!item?.rowId;
         const keyMap = {
           ArrowUp: (isGrid || isVertical) && state?.up,
           ArrowRight: (isGrid || isHorizontal) && state?.next,
@@ -340,7 +340,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [
         onKeyDownProp,
         state?.orientation,
-        item?.rowId,
+        isGrid,
         state?.up,
         state?.next,
         state?.down,

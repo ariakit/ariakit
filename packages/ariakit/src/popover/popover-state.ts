@@ -82,6 +82,7 @@ export function usePopoverState({
   gutter,
   shift = 0,
   preventOverflow = true,
+  sameWidth = false,
   renderCallback,
   ...props
 }: PopoverStateProps = {}): PopoverState {
@@ -174,6 +175,30 @@ export function usePopoverState({
             options: { element: arrow, padding: arrowPadding },
           },
           {
+            // https://codesandbox.io/s/bitter-sky-pe3z9?file=/src/index.js
+            name: "sameWidth",
+            enabled: sameWidth,
+            phase: "beforeWrite",
+            requires: ["computeStyles"],
+            fn: ({ state }) => {
+              if (state.styles.popper) {
+                state.styles.popper.width = `${state.rects.reference.width}px`;
+              }
+            },
+            effect: ({ state }) => {
+              const { reference } = state.elements;
+              const referenceElement = (
+                "contextElement" in reference
+                  ? reference.contextElement
+                  : reference
+              ) as HTMLElement | null;
+              if (referenceElement && "offsetWidth" in referenceElement) {
+                const referenceWidth = referenceElement.offsetWidth + "px";
+                state.elements.popper.style.width = referenceWidth;
+              }
+            },
+          },
+          {
             // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
             name: "updateState",
             phase: "write",
@@ -198,6 +223,7 @@ export function usePopoverState({
         padding,
         arrowPadding,
         preventOverflow,
+        sameWidth,
         shift,
         popover,
         anchor,
@@ -220,6 +246,7 @@ export function usePopoverState({
     padding,
     arrowPadding,
     preventOverflow,
+    sameWidth,
   ]);
 
   const state = useMemo(
@@ -239,6 +266,7 @@ export function usePopoverState({
       gutter,
       shift,
       preventOverflow,
+      sameWidth,
       render,
       renderCallback,
     }),
@@ -255,6 +283,7 @@ export function usePopoverState({
       gutter,
       shift,
       preventOverflow,
+      sameWidth,
       render,
       renderCallback,
     ]
@@ -272,6 +301,7 @@ export type PopoverStateRenderCallbackProps = Pick<
   | "arrowPadding"
   | "placement"
   | "preventOverflow"
+  | "sameWidth"
   | "gutter"
   | "shift"
 > & {
@@ -369,6 +399,11 @@ export type PopoverState = DialogState & {
    */
   preventOverflow: boolean;
   /**
+   * Whether the popover should have the same width as the anchor element.
+   * @default false
+   */
+  sameWidth: boolean;
+  /**
    * A function that can be used to recompute the popover styles. This is useful
    * when the popover contents change in a way that affects its position or
    * size.
@@ -396,6 +431,7 @@ export type PopoverStateProps = DialogStateProps &
       | "gutter"
       | "shift"
       | "preventOverflow"
+      | "sameWidth"
       | "renderCallback"
     >
   > & {

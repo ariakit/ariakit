@@ -20,13 +20,13 @@ This guide is intended to help you get started with contributing to the project.
 To start contributing to the project, you have to fork this repository and clone it to your local machine:
 
 ```bash
-git clone -b v2 https://github.com/YOUR_USERNAME/reakit.git
+git clone https://github.com/YOUR_USERNAME/ariakit.git
 ```
 
 If you are already part of the organization on GitHub, you can clone the repository directly:
 
 ```bash
-git clone -b v2 https://github.com/reakit/reakit.git
+git clone https://github.com/ariakit/ariakit.git
 ```
 
 ## Installing Node.js and npm

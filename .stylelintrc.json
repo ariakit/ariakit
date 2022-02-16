@@ -2,6 +2,7 @@
   "extends": "stylelint-config-standard",
   "rules": {
     "at-rule-name-newline-after": "always-multi-line",
+    "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
     "max-line-length": 100,
     "selector-pseudo-class-no-unknown": [
