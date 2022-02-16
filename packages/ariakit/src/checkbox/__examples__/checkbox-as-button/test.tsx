@@ -1,4 +1,4 @@
-import { click, getByRole, render } from "ariakit-test-utils";
+import { click, getByRole, press, render } from "ariakit-test-utils";
 import { axe } from "jest-axe";
 import Example from ".";
 
@@ -32,9 +32,22 @@ test("render checkbox as button", async () => {
   `);
 });
 
-test("change controlled state", async () => {
+test("check and uncheck checkbox by clicking", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await click(getByRole("checkbox"));
   expect(getByRole("checkbox")).toBeChecked();
+  await click(getByRole("checkbox"));
+  expect(getByRole("checkbox")).not.toBeChecked();
+});
+
+test("check and uncheck checkbox by with keyboard (space)", async () => {
+  render(<Example />);
+  expect(getByRole("checkbox")).not.toBeChecked();
+  await press.Tab();
+  await press.Space();
+  expect(getByRole("checkbox")).toBeChecked();
+  await press.Tab();
+  await press.Space();
+  expect(getByRole("checkbox")).not.toBeChecked();
 });

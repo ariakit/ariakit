@@ -11,7 +11,10 @@
     bg-primary-1
     border-primary-1
     border
-    aria-checked:after:content-["X"]
     dark:bg-primary-1
     text-primary-1;
+}
+
+.checkbox[aria-checked="true"]::after {
+  content: "X";
 }
