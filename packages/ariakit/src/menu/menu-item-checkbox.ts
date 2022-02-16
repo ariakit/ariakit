@@ -1,7 +1,7 @@
-import { MouseEvent as ReactMouseEvent, useCallback } from "react";
+import { useCallback } from "react";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+import { As, Props } from "ariakit-utils/types";
 import {
   CheckboxOptions,
   CheckboxState,
@@ -98,7 +98,7 @@ export type MenuItemCheckboxOptions<T extends As = "div"> = Omit<
      * Whether to hide the menu when the menu item checkbox is clicked.
      * @default false
      */
-    hideOnClick?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+    hideOnClick?: MenuItemOptions<T>["hideOnClick"];
   };
 
 export type MenuItemCheckboxProps<T extends As = "div"> = Props<
