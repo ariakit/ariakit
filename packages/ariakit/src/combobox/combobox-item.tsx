@@ -1,10 +1,14 @@
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
 import { getPopupRole, isTextField } from "ariakit-utils/dom";
-import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
+import {
+  useBooleanEventCallback,
+  useEventCallback,
+  useWrapElement,
+} from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
@@ -72,6 +76,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     );
 
     const onClickProp = useEventCallback(props.onClick);
+    const hideOnClickProp = useBooleanEventCallback(hideOnClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -80,7 +85,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
         if (setValueOnClick && value != null) {
           state?.setValue(value);
         }
-        if (hideOnClick) {
+        if (hideOnClickProp(event)) {
           // When ComboboxList is used instead of ComboboxPopover, state.hide()
           // does nothing. The focus will not be moved over to the combobox
           // input automatically. So we need to move manually here.
@@ -90,6 +95,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       },
       [
         onClickProp,
+        hideOnClickProp,
         value,
         setValueOnClick,
         state?.setValue,
@@ -210,7 +216,7 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
      * Whether to hide the combobox when this item is clicked.
      * @default true
      */
-    hideOnClick?: boolean;
+    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
      * Whether to set the combobox value with this item's value when this item is
      * clicked.
