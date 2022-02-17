@@ -14,19 +14,21 @@ test("render checkbox as button", async () => {
       <label
         class="label"
       >
-        <button
-          aria-checked="false"
-          class="checkbox"
-          data-command=""
-          role="checkbox"
+        <span
+          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; white-space: nowrap; width: 1px;"
         >
-          <span
-            style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; white-space: nowrap; width: 1px;"
-          >
-            checkbox
-          </span>
-        </button>
-        I have read and agree to the terms and conditions
+          <input
+            aria-checked="false"
+            data-command=""
+            type="checkbox"
+          />
+        </span>
+        <div
+          class="checkbox"
+          data-checked="false"
+        >
+          Unchecked
+        </div>
       </label>
     </div>
   `);
