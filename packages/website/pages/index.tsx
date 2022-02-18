@@ -33,6 +33,11 @@ export default function Home() {
           <Link href="/examples/checkbox-controlled">Checkbox controlled</Link>
         </li>
         <li>
+          <Link href="/examples/checkbox-usecheckboxstate">
+            Checkbox useCheckboxState
+          </Link>
+        </li>
+        <li>
           <Link href="/examples/collection">Collection</Link>
         </li>
         <li>
