@@ -41,6 +41,7 @@ test("check and uncheck checkbox by with keyboard (space)", async () => {
   await press.Space();
   expect(getByRole("checkbox")).not.toBeChecked();
 });
+
 test("check and uncheck checkbox by with keyboard (enter)", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
