@@ -36,6 +36,9 @@ export default function Home() {
           <Link href="/examples/checkbox-custom">Checkbox custom</Link>
         </li>
         <li>
+          <Link href="/examples/checkbox-as-button">Checkbox as button</Link>
+        </li>
+        <li>
           <Link href="/examples/collection">Collection</Link>
         </li>
         <li>
