@@ -19,18 +19,14 @@
     dark:bg-primary-1-dark
     dark:text-primary-1-dark
     dark:hover:bg-primary-1-dark-hover
+    /* Base Checked */
+    aria-checked:bg-primary-2
+    aria-checked:text-primary-2
+    aria-checked:hover:bg-primary-2-hover
+    /* Base Dark Checked */
+    dark:aria-checked:bg-primary-2-dark
+    dark:aria-checked:text-primary-2-dark
+    dark:aria-checked:hover:bg-primary-2-dark-hover
     /* disabled */
     aria-disabled:opacity-50;
-}
-
-.checkbox[data-checked="true"] {
-  @apply
-    /* Base Checked */
-    bg-primary-2
-    text-primary-2
-    hover:bg-primary-2-hover
-    /* Base Dark Checked */
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark
-    dark:hover:bg-primary-2-dark-hover;
 }

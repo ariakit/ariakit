@@ -11,25 +11,14 @@ test("render checkbox as button", async () => {
   const { container } = render(<Example />);
   expect(container).toMatchInlineSnapshot(`
     <div>
-      <label
-        class="label"
+      <button
+        aria-checked="false"
+        class="checkbox"
+        data-command=""
+        role="checkbox"
       >
-        <span
-          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; white-space: nowrap; width: 1px;"
-        >
-          <input
-            aria-checked="false"
-            data-command=""
-            type="checkbox"
-          />
-        </span>
-        <div
-          class="checkbox"
-          data-checked="false"
-        >
-          Unchecked
-        </div>
-      </label>
+        Unchecked
+      </button>
     </div>
   `);
 });
@@ -49,7 +38,15 @@ test("check and uncheck checkbox by with keyboard (space)", async () => {
   await press.Tab();
   await press.Space();
   expect(getByRole("checkbox")).toBeChecked();
-  await press.Tab();
   await press.Space();
+  expect(getByRole("checkbox")).not.toBeChecked();
+});
+test("check and uncheck checkbox by with keyboard (enter)", async () => {
+  render(<Example />);
+  expect(getByRole("checkbox")).not.toBeChecked();
+  await press.Tab();
+  await press.Enter();
+  expect(getByRole("checkbox")).toBeChecked();
+  await press.Enter();
   expect(getByRole("checkbox")).not.toBeChecked();
 });
