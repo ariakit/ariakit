@@ -281,6 +281,7 @@ module.exports = {
       addVariant("aria-disabled", '&[aria-disabled="true"]');
       addVariant("aria-selected", '&[aria-selected="true"]');
       addVariant("aria-expanded", '&[aria-expanded="true"]');
+      addVariant("aria-checked", '&[aria-checked="true"]');
     }),
   ],
 };
