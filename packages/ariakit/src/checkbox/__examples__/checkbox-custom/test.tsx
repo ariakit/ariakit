@@ -56,3 +56,11 @@ test("check and uncheck checkbox by with keyboard (space)", async () => {
   await press.Space();
   expect(getByRole("checkbox")).not.toBeChecked();
 });
+
+test("input gets focus on tab and loses it on blur", async () => {
+  render(<Example />);
+  await press.Tab();
+  expect(getByRole("checkbox")).toHaveFocus();
+  getByRole("checkbox").blur();
+  expect(getByRole("checkbox")).not.toHaveFocus();
+});
