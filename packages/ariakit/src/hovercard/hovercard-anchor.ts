@@ -34,6 +34,11 @@ import { HovercardState } from "./hovercard-state";
  */
 export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
   ({ state, showOnHover = true, ...props }) => {
+    const disabled =
+      props.disabled ||
+      props["aria-disabled"] === true ||
+      props["aria-disabled"] === "true";
+
     const showTimeoutRef = useRef(0);
 
     // Clear the show timeout if the anchor is unmounted
@@ -61,6 +66,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {
         state.anchorRef.current = event.currentTarget;
         onMouseMoveProp(event);
+        if (disabled) return;
         if (event.defaultPrevented) return;
         if (showTimeoutRef.current) return;
         if (!showOnHoverProp(event)) return;
@@ -72,6 +78,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
       [
         state.anchorRef,
         onMouseMoveProp,
+        disabled,
         showOnHoverProp,
         state.show,
         state.showTimeout,

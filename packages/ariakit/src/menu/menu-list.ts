@@ -19,7 +19,7 @@ import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,
 } from "../composite/composite-typeahead";
-import { MenuBarContext, MenuContext, useParentMenu } from "./__utils";
+import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuState } from "./menu-state";
 
 const isSafariOnMac = isMac() && isSafari();
@@ -61,7 +61,7 @@ function useAriaLabelledBy({ state, ...props }: MenuListProps) {
  */
 export const useMenuList = createHook<MenuListOptions>(
   ({ state, autoFocusOnShow = true, composite = true, ...props }) => {
-    const parentMenu = useParentMenu();
+    const parentMenu = useStore(MenuContext, []);
     const parentMenuBar = useStore(MenuBarContext, [
       "items",
       "move",
@@ -72,6 +72,7 @@ export const useMenuList = createHook<MenuListOptions>(
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
 
+    // TODO: Move this to Menu and use initialFocusRef?
     useSafeLayoutEffect(() => {
       if (state.animating) return;
       if (!state.visible) return;

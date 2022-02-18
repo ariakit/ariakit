@@ -13,7 +13,7 @@ import {
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import { HovercardOptions, useHovercard } from "../hovercard/hovercard";
-import { MenuBarContext, useParentMenu } from "./__utils";
+import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuListOptions, useMenuList } from "./menu-list";
 
 /**
@@ -32,8 +32,14 @@ import { MenuListOptions, useMenuList } from "./menu-list";
  * ```
  */
 export const useMenu = createHook<MenuOptions>(
-  ({ state, hideOnEscape = true, autoFocusOnShow = true, ...props }) => {
-    const parentMenu = useParentMenu();
+  ({
+    state,
+    hideOnEscape = true,
+    autoFocusOnShow = true,
+    hideOnHoverOutside,
+    ...props
+  }) => {
+    const parentMenu = useStore(MenuContext, []);
     const parentMenuBar = useStore(MenuBarContext, []);
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
@@ -69,7 +75,7 @@ export const useMenu = createHook<MenuOptions>(
     props = useMenuList({
       state,
       ...props,
-      autoFocusOnShow: autoFocusOnShow && !!domReady,
+      autoFocusOnShow: autoFocusOnShow && (domReady as unknown as boolean),
     });
 
     props = useHovercard({
@@ -77,18 +83,23 @@ export const useMenu = createHook<MenuOptions>(
       autoFocusOnShow: false,
       ...props,
       hideOnHoverOutside: (event) => {
-        // TODO: Call props.hideOnHoverOutside
+        if (typeof hideOnHoverOutside === "function") {
+          return hideOnHoverOutside(event);
+        }
+        if (hideOnHoverOutside != null) return hideOnHoverOutside;
         if (hasParentMenu) return true;
         if (!parentIsMenuBar) return false;
-        if (hasFocusWithin(state.disclosureRef.current)) return false;
+        const disclosure = state.disclosureRef.current;
+        if (!disclosure) return true;
+        if (hasFocusWithin(disclosure)) return false;
         return true;
       },
       portalRef,
-      // If it's a sub menu, it should behave like a modal dialog, nor display a
-      // backdrop.
+      // If it's a submenu, it shouldn't behave like a modal dialog, nor display
+      // a backdrop.
       modal: hasParentMenu ? false : props.modal,
       backdrop: hasParentMenu ? false : props.backdrop,
-      // If it's a sub menu, hide on esc will be handled differently. That is,
+      // If it's a submenu, hide on esc will be handled differently. That is,
       // event.stopPropagation() won't be called, so the parent menus will also
       // be closed.
       hideOnEscape: hasParentMenu ? false : hideOnEscape,

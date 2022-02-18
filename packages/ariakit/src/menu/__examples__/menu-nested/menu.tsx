@@ -27,7 +27,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           <MenuButtonArrow />
         </MenuButton>
         {menu.mounted && (
-          <MenuPopover state={menu} className="menu">
+          <MenuPopover portal state={menu} className="menu">
             {children}
           </MenuPopover>
         )}

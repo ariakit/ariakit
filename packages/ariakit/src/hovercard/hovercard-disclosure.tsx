@@ -47,7 +47,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     useEffect(() => {
       if (!visible) return;
       const onBlur = (event: FocusEvent) => {
-        const nextActiveElement = event.relatedTarget as Node | null;
+        const nextActiveElement = event.relatedTarget as Element | null;
         if (nextActiveElement) {
           const anchor = state.anchorRef.current;
           const popover = state.popoverRef.current;
@@ -55,6 +55,11 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
           if (anchor && contains(anchor, nextActiveElement)) return;
           if (popover && contains(popover, nextActiveElement)) return;
           if (disclosure && contains(disclosure, nextActiveElement)) return;
+          // When the portal prop is set to true on the Hovercard component,
+          // it's going to render focus trap elements outside of the portal.
+          // These elements may transfer focus to the disclosure button, so we
+          // also ignore them here.
+          if (nextActiveElement.hasAttribute("data-focus-trap")) return;
         }
         setVisible(false);
       };

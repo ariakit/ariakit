@@ -117,7 +117,6 @@ export const usePortal = createHook<PortalOptions>(
     useEffect(() => {
       if (!portalNode) return;
       if (!preserveTabOrder) return;
-      disableFocusIn(portalNode, true);
       const onFocus = (event: FocusEvent) => {
         if (isFocusEventOutside(event)) {
           const focusing = event.type === "focusin";

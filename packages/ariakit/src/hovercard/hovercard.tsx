@@ -1,4 +1,12 @@
-import { FocusEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FocusEvent,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
@@ -6,6 +14,7 @@ import {
   useBooleanEventCallback,
   useEventCallback,
   useForkRef,
+  useWrapElement,
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import {
@@ -20,19 +29,26 @@ import {
   getElementPolygon,
   getEventPoint,
   isPointInPolygon,
-} from "./__utils";
+} from "./__utils/polygon";
 import { HovercardState } from "./hovercard-state";
 
-function isMovingThroughHovercardElements(
+function isMovingOnHovercard(
   target: Node | null,
   card: HTMLElement,
-  anchor: HTMLElement | null
+  anchor: HTMLElement | null,
+  nested?: HTMLElement[]
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
+  // The mouse is moving on an element inside the hovercard.
   if (!target) return false;
   if (contains(card, target)) return true;
+  // The mouse is moving on an element inside the anchor element.
   if (anchor && contains(anchor, target)) return true;
+  // The mouse is moving on an element inside a nested hovercard.
+  if (nested?.some((card) => isMovingOnHovercard(target, card, anchor))) {
+    return true;
+  }
   return false;
 }
 
@@ -93,6 +109,10 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
   return props;
 }
 
+const NestedHovercardContext = createContext<
+  ((element: HTMLElement) => () => void) | null
+>(null);
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a hovercard element, which is a popover that's
@@ -110,13 +130,15 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
 export const useHovercard = createHook<HovercardOptions>(
   ({
     state,
-    portal = false,
+    modal = false,
+    portal = !!modal,
     hideOnEscape = true,
     hideOnControl = false,
     hideOnHoverOutside = true,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
+    const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
     const timeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
@@ -159,7 +181,7 @@ export const useHovercard = createHook<HovercardOptions>(
         const anchor = state.anchorRef.current;
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
-        if (isMovingThroughHovercardElements(target, element, anchor)) {
+        if (isMovingOnHovercard(target, element, anchor, nestedHovercards)) {
           // While the mouse is moving over the anchor element while the hover
           // card is visible, keep track of the mouse position so we'll use the
           // last point before the mouse leaves the anchor element.
@@ -186,7 +208,6 @@ export const useHovercard = createHook<HovercardOptions>(
           // so we disable this event. This is necessary because the mousemove
           // event may trigger focus on other elements and close the hovercard.
           if (isPointInPolygon(currentPoint, polygon)) {
-            if (!hideOnHoverOutsideProp(event)) return;
             event.preventDefault();
             event.stopPropagation();
             return;
@@ -202,6 +223,7 @@ export const useHovercard = createHook<HovercardOptions>(
       state.mounted,
       mayHideOnHoverOutside,
       state.anchorRef,
+      nestedHovercards,
       state.currentPlacement,
       hideOnHoverOutsideProp,
       state.hide,
@@ -224,7 +246,6 @@ export const useHovercard = createHook<HovercardOptions>(
         const elementPolygon = getElementPolygon(element, placement);
         const polygon = [enterPoint, ...elementPolygon];
         if (isPointInPolygon(getEventPoint(event), polygon)) {
-          if (!hideOnHoverOutsideProp(event)) return;
           event.preventDefault();
           event.stopPropagation();
         }
@@ -241,8 +262,47 @@ export const useHovercard = createHook<HovercardOptions>(
       state.mounted,
       mayHideOnHoverOutside,
       state.currentPlacement,
-      hideOnHoverOutsideProp,
     ]);
+
+    const registerOnParent = useContext(NestedHovercardContext);
+
+    // Register the hovercard as a nested hovercard on the parent hovercard if
+    // if it's not a modal, is portal and is mounted. We don't need to register
+    // non-portal hovercards because they will be captured by contains in the
+    // isMovingOnHovercard function above.
+    useEffect(() => {
+      if (modal) return;
+      if (!portal) return;
+      if (!state.mounted) return;
+      if (!domReady) return;
+      const element = ref.current;
+      if (!element) return;
+      return registerOnParent?.(element);
+    }, [modal, portal, state.mounted, domReady]);
+
+    const registerNestedHovercard = useCallback(
+      (element) => {
+        setNestedHovercards((prevElements) => [...prevElements, element]);
+        const parentUnregister = registerOnParent?.(element);
+        return () => {
+          setNestedHovercards((prevElements) =>
+            prevElements.filter((item) => item !== element)
+          );
+          parentUnregister?.();
+        };
+      },
+      [registerOnParent]
+    );
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <NestedHovercardContext.Provider value={registerNestedHovercard}>
+          {element}
+        </NestedHovercardContext.Provider>
+      ),
+      [registerNestedHovercard]
+    );
 
     props = {
       ...props,
@@ -255,6 +315,7 @@ export const useHovercard = createHook<HovercardOptions>(
     props = usePopover({
       hideOnEscape,
       state,
+      modal,
       portal,
       ...props,
       portalRef,
