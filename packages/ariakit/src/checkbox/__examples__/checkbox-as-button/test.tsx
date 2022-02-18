@@ -32,10 +32,18 @@ test("check and uncheck checkbox by clicking", async () => {
   expect(getByRole("checkbox")).not.toBeChecked();
 });
 
+test("tab", async () => {
+  render(<Example />);
+  expect(getByRole("checkbox")).not.toHaveFocus();
+  await press.Tab();
+  expect(getByRole("checkbox")).toHaveFocus();
+});
+
 test("check and uncheck checkbox by with keyboard (space)", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await press.Tab();
+  expect(getByRole("checkbox")).toHaveFocus();
   await press.Space();
   expect(getByRole("checkbox")).toBeChecked();
   await press.Space();
@@ -46,6 +54,7 @@ test("check and uncheck checkbox by with keyboard (enter)", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await press.Tab();
+  expect(getByRole("checkbox")).toHaveFocus();
   await press.Enter();
   expect(getByRole("checkbox")).toBeChecked();
   await press.Enter();
