@@ -1,5 +1,6 @@
 import { Checkbox, useCheckboxState } from "ariakit/checkbox";
 import "./style.css";
+
 export default function Example() {
   const checkbox = useCheckboxState();
   return (
