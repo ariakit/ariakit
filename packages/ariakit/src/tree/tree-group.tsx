@@ -28,24 +28,12 @@ import {
 } from "./__utils";
 import { TreeState } from "./tree-state";
 
-function useTreeGroupLabelId(
-  treeGroupLabels?: TreeState["treeGroupLabels"],
-  treeItemId?: string
-) {
-  return useMemo(
-    () =>
-      treeGroupLabels?.items.find((t) => t.treeItemId === treeItemId)?.id ||
-      undefined,
-    [treeGroupLabels?.items, treeItemId]
-  );
-}
-
 function getTreeGroupIsVisible(
   expandedIds?: TreeState["expandedIds"],
-  labelId?: string
+  parentTreeItemId?: string
 ) {
-  if (typeof labelId === "undefined") return false;
-  return expandedIds?.includes(labelId) || false;
+  if (typeof parentTreeItemId === "undefined") return false;
+  return expandedIds?.includes(parentTreeItemId) || false;
 }
 
 export const useTreeGroup = createHook<TreeGroupOptions>(
@@ -62,20 +50,15 @@ export const useTreeGroup = createHook<TreeGroupOptions>(
 
     const parentTreeGroup = useTreeGroupItem(state, parentTreeGroupId);
 
-    const labelId = useTreeGroupLabelId(
-      state?.treeGroupLabels,
-      parentTreeItemId
-    );
-
     const visible =
-      !!labelId && getTreeGroupIsVisible(state?.expandedIds, labelId);
+      !!parentTreeItemId &&
+      getTreeGroupIsVisible(state?.expandedIds, parentTreeItemId);
 
     const getItem = useCallback(
       (item) => {
         const nextItem = {
           ...item,
           id,
-          labelId,
           treeItemId: parentTreeItemId,
           visible,
           level: (parentTreeGroup?.level || 1) + 1,

@@ -52,28 +52,31 @@ export const useTreeGroupLabel = createHook<TreeGroupLabelOptions>(
       (event: MouseEvent<HTMLInputElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        state?.toggleExpand(id);
+        state?.toggleExpand(treeItemId);
       },
-      [onClickProp, state?.toggleExpand, id]
+      [onClickProp, state?.toggleExpand, treeItemId]
     );
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
 
-    const onKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
-      onKeyDownProp(event);
-      if (event.defaultPrevented) return;
+    const onKeyDown = useCallback(
+      (event: KeyboardEvent<HTMLDivElement>) => {
+        onKeyDownProp(event);
+        if (event.defaultPrevented) return;
 
-      const keyMap = {
-        ArrowRight: () => {
-          return state?.expand(id);
-        },
-        ArrowLeft: () => {
-          return state?.collapse(id);
-        },
-      };
-      const action = keyMap[event.key as keyof typeof keyMap];
-      action?.();
-    }, []);
+        const keyMap = {
+          ArrowRight: () => {
+            return state?.expand(treeItemId);
+          },
+          ArrowLeft: () => {
+            return state?.collapse(treeItemId);
+          },
+        };
+        const action = keyMap[event.key as keyof typeof keyMap];
+        action?.();
+      },
+      [treeItemId]
+    );
 
     const getItem = useCallback(
       (item) => {
