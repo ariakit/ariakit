@@ -20,6 +20,7 @@ test("render tooltip", () => {
         id="r:0-portal"
       >
         <div
+          role="presentation"
           style="position: absolute; left: 0px; top: 0px; margin: 0px;"
         >
           <div

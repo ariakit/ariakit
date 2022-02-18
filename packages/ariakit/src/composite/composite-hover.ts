@@ -28,7 +28,7 @@ function trackMousePosition(event: MouseEvent) {
 
 function isMouseMoving(event: ReactMouseEvent | MouseEvent) {
   // JSDOM doesn't support screenX/screenY
-  if (process.env.NODE_ENV === "test") return false;
+  if (process.env.NODE_ENV === "test") return true;
   return event.screenX - screenX || event.screenY - screenY;
 }
 

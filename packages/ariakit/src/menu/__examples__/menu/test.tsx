@@ -173,7 +173,7 @@ test("tab back to menu button", async () => {
   await press.Enter();
   await press.ShiftTab();
   await press.Tab();
-  expect(getMenuItem("Edit")).toHaveFocus();
+  expect(getMenuItem("Edit")).not.toHaveFocus();
   expect(getMenu()).toBeVisible();
 });
 
