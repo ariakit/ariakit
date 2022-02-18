@@ -40,6 +40,7 @@ function addToExpandedIds(
 ) {
   if (!prevExpandedIds) return prevExpandedIds;
   if (!id) return prevExpandedIds;
+  if (prevExpandedIds.includes(id)) return prevExpandedIds;
 
   return [...prevExpandedIds, id];
 }
