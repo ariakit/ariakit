@@ -1,8 +1,8 @@
 import { MouseEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
@@ -46,6 +46,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
       menuBarState;
 
     const onClickProp = useEventCallback(props.onClick);
+    const hideOnClickProp = useBooleanEventCallback(hideOnClick);
     const hideMenu = state && "hideAll" in state ? state.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
@@ -53,14 +54,14 @@ export const useMenuItem = createHook<MenuItemOptions>(
       (event: MouseEvent<HTMLDivElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        if (!hideOnClick) return;
         if (!hideMenu) return;
         // If this item is also a menu button, we don't want to hide the menu.
         const popupType = event.currentTarget.getAttribute("aria-haspopup");
         if (popupType === "menu") return;
+        if (!hideOnClickProp(event)) return;
         hideMenu();
       },
-      [onClickProp, hideOnClick, hideMenu]
+      [onClickProp, hideMenu, hideOnClickProp]
     );
 
     props = {
@@ -137,7 +138,7 @@ export type MenuItemOptions<T extends As = "div"> = Omit<
      * Whether to hide the menu when the menu item is clicked.
      * @default true
      */
-    hideOnClick?: boolean;
+    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
      * Whether the scroll behavior should be prevented when pressing arrow keys
      * on the first or the last items.
