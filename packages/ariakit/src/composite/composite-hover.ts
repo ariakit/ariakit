@@ -11,19 +11,25 @@ import { CompositeState } from "./composite-state";
 
 let screenX = 0;
 let screenY = 0;
+let assignMousePosition = () => {};
 
-function handleGlobalMouseMove(event: MouseEvent) {
-  screenX = event.screenX;
-  screenY = event.screenY;
+function trackMousePosition(event: MouseEvent) {
+  // Discard mousemove events that are not moving the mouse.
+  if (!event.movementX || !event.movementY) return;
+  // Assign the previous mouse position so we can check if the mouse is moving
+  // on mouseleave.
+  assignMousePosition();
+  // Prepare the next mouse position.
+  assignMousePosition = () => {
+    screenX = event.screenX;
+    screenY = event.screenY;
+  };
 }
 
-function isScrolling(event: ReactMouseEvent | MouseEvent) {
+function isMouseMoving(event: ReactMouseEvent | MouseEvent) {
   // JSDOM doesn't support screenX/screenY
-  if (process.env.NODE_ENV === "test") return false;
-  return (
-    Math.abs(event.screenX - screenX) === 0 &&
-    Math.abs(event.screenY - screenY) === 0
-  );
+  if (process.env.NODE_ENV === "test") return true;
+  return event.screenX - screenX || event.screenY - screenY;
 }
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
@@ -69,7 +75,10 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
     useEffect(() => {
-      return addGlobalEventListener("mousemove", handleGlobalMouseMove);
+      // We're not returning the event listener cleanup function here because we
+      // may lose some events if this component is unmounted, but others are
+      // still mounted.
+      addGlobalEventListener("mousemove", trackMousePosition);
     }, []);
 
     const onMouseMove = useCallback(
@@ -86,7 +95,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         }
         state?.setActiveId(event.currentTarget.id);
       },
-      [onMouseMoveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
+      [onMouseMoveProp, focusOnHoverProp, state?.baseRef, state?.setActiveId]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
@@ -94,8 +103,8 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseLeave = useCallback(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseLeaveProp(event);
-        if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
+        if (!isMouseMoving(event)) return;
         if (hoveringInside(event)) return;
         if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
@@ -103,7 +112,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         // Move focus to the composite element.
         state?.baseRef.current?.focus();
       },
-      [onMouseLeaveProp, state?.setActiveId, state?.baseRef]
+      [onMouseLeaveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
     );
 
     props = {
