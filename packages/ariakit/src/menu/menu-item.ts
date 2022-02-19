@@ -81,18 +81,17 @@ export const useMenuItem = createHook<MenuItemOptions>(
         // item is inside a menu, not a menu bar.
         if (event.type === "mouseleave") return isWithinMenu;
         if (isWithinMenu) {
-          // If it's the menu item is also a submenu button, we should move DOM
-          // focus to it so that the submenu will not close when the user moves
-          // the cursor back to the menu button.
+          // If the menu item is also a submenu button, we should move actual
+          // DOM focus to it so that the submenu will not close when the user
+          // moves the cursor back to the menu button.
           if (event.currentTarget.hasAttribute("aria-expanded")) {
             event.currentTarget.focus();
           }
           return true;
         }
-        // On the other hand, if the menu item is inside a menu bar, we should
-        // move DOM focus to the menu item if there's another expanded menu
-        // button inside the menu bar. Without this, the visible menus in the
-        // menu bar wouldn't close.
+        // If the menu item is inside a menu bar, we should move DOM focus to
+        // the menu item if there's another expanded menu button inside the menu
+        // bar. Without this, the visible menus in the menu bar wouldn't close.
         else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
           event.currentTarget.focus();
           return true;

@@ -155,8 +155,8 @@ export default function Playground(props: PlaygroundProps) {
             getModule={getModule}
             errorProps={errorProps}
             className="flex min-h-[300px] items-center
-            justify-center rounded-lg border border-canvas-3 bg-canvas-3
-            p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
+            justify-center rounded-lg bg-canvas-2
+            p-4 dark:border-0 dark:bg-canvas-2-dark md:p-6"
           />
         </div>
         <div className="dark relative w-full max-w-3xl rounded-lg">

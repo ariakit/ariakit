@@ -135,6 +135,7 @@ export const useHovercard = createHook<HovercardOptions>(
     hideOnEscape = true,
     hideOnControl = false,
     hideOnHoverOutside = true,
+    disablePointerEventsOnApproach = !!hideOnHoverOutside,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -166,13 +167,17 @@ export const useHovercard = createHook<HovercardOptions>(
 
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
     const hideOnHoverOutsideProp = useBooleanEventCallback(hideOnHoverOutside);
+    const mayDisablePointerEvents = !!disablePointerEventsOnApproach;
+    const disablePointerEventsProp = useBooleanEventCallback(
+      disablePointerEventsOnApproach
+    );
 
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
     useEffect(() => {
       if (!domReady) return;
       if (!state.mounted) return;
-      if (!mayHideOnHoverOutside) return;
+      if (!mayHideOnHoverOutside && !mayDisablePointerEvents) return;
       const element = ref.current;
       if (!element) return;
       const onMouseMove = (event: MouseEvent) => {
@@ -208,6 +213,7 @@ export const useHovercard = createHook<HovercardOptions>(
           // so we disable this event. This is necessary because the mousemove
           // event may trigger focus on other elements and close the hovercard.
           if (isPointInPolygon(currentPoint, polygon)) {
+            if (!disablePointerEventsProp(event)) return;
             event.preventDefault();
             event.stopPropagation();
             return;
@@ -222,9 +228,11 @@ export const useHovercard = createHook<HovercardOptions>(
       domReady,
       state.mounted,
       mayHideOnHoverOutside,
+      mayDisablePointerEvents,
       state.anchorRef,
       nestedHovercards,
       state.currentPlacement,
+      disablePointerEventsProp,
       hideOnHoverOutsideProp,
       state.hide,
       state.hideTimeout,
@@ -236,7 +244,7 @@ export const useHovercard = createHook<HovercardOptions>(
     useEffect(() => {
       if (!domReady) return;
       if (!state.mounted) return;
-      if (!mayHideOnHoverOutside) return;
+      if (!mayDisablePointerEvents) return;
       const element = ref.current;
       if (!element) return;
       const disableEvent = (event: MouseEvent) => {
@@ -246,6 +254,7 @@ export const useHovercard = createHook<HovercardOptions>(
         const elementPolygon = getElementPolygon(element, placement);
         const polygon = [enterPoint, ...elementPolygon];
         if (isPointInPolygon(getEventPoint(event), polygon)) {
+          if (!disablePointerEventsProp(event)) return;
           event.preventDefault();
           event.stopPropagation();
         }
@@ -260,8 +269,9 @@ export const useHovercard = createHook<HovercardOptions>(
     }, [
       domReady,
       state.mounted,
-      mayHideOnHoverOutside,
+      mayDisablePointerEvents,
       state.currentPlacement,
+      disablePointerEventsProp,
     ]);
 
     const registerOnParent = useContext(NestedHovercardContext);
@@ -366,6 +376,14 @@ export type HovercardOptions<T extends As = "div"> = Omit<
    * @default true
    */
   hideOnHoverOutside?: BooleanOrCallback<MouseEvent>;
+  /**
+   * Whether to disable the pointer events outside of the hovercard while
+   * the mouse is moving toward the hovercard. This is necessary because these
+   * events may trigger focus on other elements and close the hovercard while
+   * the user is moving the mouse toward it.
+   * @default true
+   */
+  disablePointerEventsOnApproach?: BooleanOrCallback<MouseEvent>;
 };
 
 export type HovercardProps<T extends As = "div"> = Props<HovercardOptions<T>>;

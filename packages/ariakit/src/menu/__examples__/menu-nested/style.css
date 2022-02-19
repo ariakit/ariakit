@@ -1,5 +1,9 @@
 @import url("../menu/style.css");
 
+:root {
+  @apply pb-[400px] pt-[100px];
+}
+
 .menubar {
   @apply flex gap-2;
 }
@@ -14,4 +18,12 @@
 
 .menu-item .label {
   @apply flex-1;
+}
+
+.shortcuts {
+  @apply opacity-40;
+}
+
+[data-active-item] .shortcuts {
+  @apply opacity-100;
 }

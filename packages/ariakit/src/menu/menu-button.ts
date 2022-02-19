@@ -31,6 +31,16 @@ import {
 import { MenuBarContext, MenuContext, hasExpandedMenuButton } from "./__utils";
 import { MenuState } from "./menu-state";
 
+function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
+  const keyMap = {
+    ArrowDown: dir === "bottom" || dir === "top" ? "first" : false,
+    ArrowUp: dir === "bottom" || dir === "top" ? "last" : false,
+    ArrowRight: dir === "right" ? "first" : false,
+    ArrowLeft: dir === "left" ? "first" : false,
+  } as const;
+  return keyMap[event.key as keyof typeof keyMap];
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a menu button that triggers a dropdown menu.
@@ -84,24 +94,42 @@ export const useMenuButton = createHook<MenuButtonOptions>(
           state.show();
         }
       },
-      [onFocusProp, disabled, parentMenuBar, parentIsMenuBar, state.show]
+      [
+        onFocusProp,
+        disabled,
+        state.setActiveId,
+        parentMenuBar,
+        parentIsMenuBar,
+        state.show,
+      ]
+    );
+
+    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
+    const dir = state.placement.split("-")[0] as BasePlacement;
+
+    const onKeyDownCapture = useCallback(
+      (event: KeyboardEvent<HTMLButtonElement>) => {
+        onKeyDownCaptureProp(event);
+        if (disabled) return;
+        if (event.defaultPrevented) return;
+        if (getInitialFocus(event, dir)) {
+          // Reset the autoFocusOnShow state so we can focus the menu button
+          // while the menu is open and press arrow keys to move focus to the
+          // menu items.
+          state.setAutoFocusOnShow(false);
+        }
+      },
+      [onKeyDownCaptureProp, disabled, dir]
     );
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const dir = state.placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
         onKeyDownProp(event);
         if (disabled) return;
         if (event.defaultPrevented) return;
-        const keyMap = {
-          ArrowDown: dir === "bottom" || dir === "top" ? "first" : false,
-          ArrowUp: dir === "bottom" || dir === "top" ? "last" : false,
-          ArrowRight: dir === "right" ? "first" : false,
-          ArrowLeft: dir === "left" ? "first" : false,
-        } as const;
-        const initialFocus = keyMap[event.key as keyof typeof keyMap];
+        const initialFocus = getInitialFocus(event, dir);
         if (initialFocus) {
           event.preventDefault();
           state.show();
@@ -165,6 +193,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       ...props,
       ref: useForkRef(ref, props.ref),
       onFocus,
+      onKeyDownCapture,
       onKeyDown,
       onClick,
     };
@@ -177,8 +206,13 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       showOnHover: (event) => {
         if (typeof showOnHover === "function") return showOnHover(event);
         if (showOnHover != null) return showOnHover;
-        if (hasParentMenu) return true;
-        if (parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items)) {
+        if (
+          hasParentMenu ||
+          (parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items))
+        ) {
+          // We need to unset the active menu item so no menu item appears
+          // active while the menu button is focused.
+          state.setActiveId(null);
           return true;
         }
         return false;

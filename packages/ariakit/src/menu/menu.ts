@@ -1,10 +1,6 @@
-import { KeyboardEvent, useCallback, useState } from "react";
+import { KeyboardEvent, useCallback, useMemo } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import {
-  useBooleanEventCallback,
-  useEventCallback,
-  useForkRef,
-} from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -43,9 +39,6 @@ export const useMenu = createHook<MenuOptions>(
     const parentMenuBar = useStore(MenuBarContext, []);
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
-    const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
-    const portalRef = useForkRef(setPortalNode, props.portalRef);
-    const domReady = !props.portal || portalNode;
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
@@ -75,26 +68,57 @@ export const useMenu = createHook<MenuOptions>(
     props = useMenuList({
       state,
       ...props,
-      autoFocusOnShow: autoFocusOnShow && (domReady as unknown as boolean),
     });
+
+    const initialFocusRef = useMemo(() => {
+      switch (state.initialFocus) {
+        case "first": {
+          const id = state.first();
+          if (id) {
+            return state.items.find((item) => item.id === id)?.ref;
+          }
+          break;
+        }
+        case "last": {
+          const id = state.last();
+          if (id) {
+            return state.items.find((item) => item.id === id)?.ref;
+          }
+          break;
+        }
+        case "container": {
+          return state.baseRef;
+        }
+      }
+      return state.baseRef;
+    }, [
+      state.initialFocus,
+      state.first,
+      state.last,
+      state.items,
+      state.baseRef,
+    ]);
 
     props = useHovercard({
       state,
-      autoFocusOnShow: false,
+      autoFocusOnShow: state.autoFocusOnShow && autoFocusOnShow,
+      initialFocusRef,
       ...props,
       hideOnHoverOutside: (event) => {
         if (typeof hideOnHoverOutside === "function") {
           return hideOnHoverOutside(event);
         }
         if (hideOnHoverOutside != null) return hideOnHoverOutside;
-        if (hasParentMenu) return true;
+        if (hasParentMenu) {
+          parentMenu.setActiveId(null);
+          return true;
+        }
         if (!parentIsMenuBar) return false;
         const disclosure = state.disclosureRef.current;
         if (!disclosure) return true;
         if (hasFocusWithin(disclosure)) return false;
         return true;
       },
-      portalRef,
       // If it's a submenu, it shouldn't behave like a modal dialog, nor display
       // a backdrop.
       modal: hasParentMenu ? false : props.modal,

@@ -1,11 +1,6 @@
 import { KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { BasePlacement } from "@popperjs/core";
-import {
-  useEventCallback,
-  useForkRef,
-  useId,
-  useSafeLayoutEffect,
-} from "ariakit-utils/hooks";
+import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
 import { isMac, isSafari } from "ariakit-utils/platform";
 import { useStore, useStoreProvider } from "ariakit-utils/store";
 import {
@@ -60,7 +55,7 @@ function useAriaLabelledBy({ state, ...props }: MenuListProps) {
  * ```
  */
 export const useMenuList = createHook<MenuListOptions>(
-  ({ state, autoFocusOnShow = true, composite = true, ...props }) => {
+  ({ state, composite = true, ...props }) => {
     const parentMenu = useStore(MenuContext, []);
     const parentMenuBar = useStore(MenuBarContext, [
       "items",
@@ -71,48 +66,6 @@ export const useMenuList = createHook<MenuListOptions>(
     ]);
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
-
-    // TODO: Move this to Menu and use initialFocusRef?
-    useSafeLayoutEffect(() => {
-      if (state.animating) return;
-      if (!state.visible) return;
-      if (!autoFocusOnShow) return;
-      if (!state.autoFocusOnShow) return;
-      switch (state.initialFocus) {
-        case "first": {
-          const firstId = state.first();
-          if (firstId) {
-            // Resets autoFocusOnShow so that it can be set the next time the
-            // menu is opened.
-            state.setAutoFocusOnShow(false);
-            state.move(firstId);
-          }
-          break;
-        }
-        case "last": {
-          const lastId = state.last();
-          if (lastId) {
-            state.setAutoFocusOnShow(false);
-            state.move(lastId);
-          }
-          break;
-        }
-        case "container": {
-          state.setAutoFocusOnShow(false);
-          state.move(null);
-        }
-      }
-    }, [
-      state.animating,
-      state.visible,
-      autoFocusOnShow,
-      state.autoFocusOnShow,
-      state.initialFocus,
-      state.first,
-      state.setAutoFocusOnShow,
-      state.move,
-      state.last,
-    ]);
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
     const dir = state.placement.split("-")[0] as BasePlacement;
@@ -243,11 +196,6 @@ export type MenuListOptions<T extends As = "div"> = Omit<
      * Object returned by the `useMenuListState` hook.
      */
     state: MenuState;
-    /**
-     * Determines whether a menu item inside the menu will receive focus when
-     * the menu is shown.
-     */
-    autoFocusOnShow?: boolean;
   };
 
 export type MenuListProps<T extends As = "div"> = Props<MenuListOptions<T>>;
