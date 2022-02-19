@@ -334,17 +334,10 @@ export function disableFocusIn(
  */
 export function restoreFocusIn(container: HTMLElement) {
   const elements = container.querySelectorAll<HTMLElement>("[data-tabindex]");
-  // TODO: This is a workaround for: open portaled menu with enter, press
-  // shift+tab to focus the menu button, then press arrow up to focus the last
-  // item, then press shift+tab to focus the menu button again. Without this,
-  // the previously focused menu item will receive focus on shift+tab. We need
-  // to make this more generic.
-  const hasTabbableElement = !!getFirstTabbableIn(container, true);
   const restoreTabIndex = (element: HTMLElement) => {
     const tabindex = element.getAttribute("data-tabindex");
-    const isFocusTrap = element.hasAttribute("data-focus-trap");
     element.removeAttribute("data-tabindex");
-    if (tabindex && (!hasTabbableElement || isFocusTrap)) {
+    if (tabindex) {
       element.setAttribute("tabindex", tabindex);
     } else {
       element.removeAttribute("tabindex");
