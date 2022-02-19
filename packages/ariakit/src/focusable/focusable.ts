@@ -389,7 +389,7 @@ export const useFocusable = createHook<FocusableOptions>(
         supportsDisabled,
         props.tabIndex
       ),
-      disabled: trulyDisabled ? true : undefined,
+      disabled: supportsDisabled && trulyDisabled ? true : undefined,
       // TODO: Test Focusable contentEditable.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,
