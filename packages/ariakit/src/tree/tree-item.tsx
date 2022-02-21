@@ -1,5 +1,19 @@
-import { useCallback, useContext, useMemo } from "react";
-import { useId, useWrapElement } from "ariakit-utils/hooks";
+import {
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
+import { useDisclosureContent, useDisclosureState } from "ariakit";
+import {
+  useEventCallback,
+  useForkRef,
+  useId,
+  useWrapElement,
+} from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -17,52 +31,135 @@ import {
 } from "../composite/composite-item";
 import {
   TreeContext,
-  TreeGroupIdContext,
   TreeItemIdContext,
-  useTreeGroupItem,
+  TreeItemsSyncContext,
+  useTreeItemFromCollection,
 } from "./__utils";
 import { TreeState } from "./tree-state";
 
 export const useTreeItem = createHook<TreeItemOptions>(
-  ({ state, shouldRegisterItem = true, getItem: getItemProp, ...props }) => {
+  ({ state, shouldRegisterItem, getItem: getItemProp, groupId, ...props }) => {
+    const ref = useRef<HTMLElement>(null);
     const id = useId(props.id);
-    const parentTreeGroupId = useContext(TreeGroupIdContext);
-    state = useStore(state || TreeContext, ["treeGroups", "treeItems"]);
+    const parentTreeItemId = useContext(TreeItemIdContext) || groupId;
+    const { items: syncTreeItems, registerItem } =
+      useContext(TreeItemsSyncContext) || {};
+    state = useStore(state || TreeContext);
 
-    const childTreeGroup = useMemo(() => {
-      return state?.treeGroups.items.find(
-        (treeGroup) => treeGroup.treeItemId === id
-      );
-    }, [state]);
+    const parentTreeItemFromCollection = useTreeItemFromCollection(
+      state,
+      parentTreeItemId
+    );
+    const parentTreeItemFromRef = parentTreeItemId
+      ? syncTreeItems?.[parentTreeItemId]
+      : undefined;
 
-    const parentTreeGroup = useTreeGroupItem(state, parentTreeGroupId);
+    const parentTreeItem =
+      parentTreeItemFromCollection || parentTreeItemFromRef;
+
+    const parentExpanded = useMemo(
+      () => !parentTreeItemId || state?.expandedIds?.includes(parentTreeItemId),
+      [state?.expandedIds, parentTreeItemId]
+    );
+    const childTreeItems = useMemo(
+      () => state?.treeItems.items?.filter((item) => item.groupId === id),
+      [state?.treeItems.items, id]
+    );
+
+    const hasChildTreeItems = !!childTreeItems?.length;
+    const expanded = useMemo(
+      () => !!id && state?.expandedIds?.includes(id),
+      [id, state?.expandedIds]
+    );
+    const level = (parentTreeItem?.level || 0) + 1;
+
+    const visible = parentTreeItem?.expanded ?? true;
+
+    const onClickProp = useEventCallback(props.onClick);
+    const onClick = useCallback(
+      (event: MouseEvent<HTMLInputElement>) => {
+        onClickProp(event);
+        if (event.defaultPrevented) return;
+        state?.toggleExpand(id);
+        event.stopPropagation();
+      },
+      [onClickProp, state?.toggleExpand, id]
+    );
+
+    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDown = useCallback(
+      (event: KeyboardEvent<HTMLDivElement>) => {
+        onKeyDownProp(event);
+        if (event.defaultPrevented) return;
+
+        const keyMap = {
+          ArrowRight: () => {
+            if (!expanded && hasChildTreeItems) return state?.expand(id);
+            childTreeItems?.[0]?.ref.current?.focus();
+          },
+          ArrowLeft: () => {
+            if (expanded) return state?.collapse(id);
+            parentTreeItem?.ref.current?.focus();
+          },
+        };
+        const action = keyMap[event.key as keyof typeof keyMap];
+        if (action) {
+          action();
+          event.stopPropagation();
+        }
+      },
+      [
+        id,
+        state?.expand,
+        state?.collapse,
+        expanded,
+        parentTreeItem?.ref?.current,
+        childTreeItems?.[0]?.ref?.current,
+        hasChildTreeItems,
+      ]
+    );
 
     const getItem = useCallback(
       (item) => {
         const nextItem = {
           ...item,
           id,
-          groupId: parentTreeGroupId,
+          groupId: groupId || parentTreeItemId,
+          expanded: expanded && visible,
+          level,
+          visible,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, parentTreeGroupId, getItemProp]
+      [id, getItemProp, groupId, parentTreeItemId, level, expanded, visible]
     );
 
+    // intentionally run this on rendering to make it SSR-friendly
+    let unregisterItem: (() => void) | undefined;
+    if (id && !syncTreeItems?.[id]) {
+      unregisterItem = registerItem?.(getItem({ ref }));
+    }
+
+    useEffect(() => {
+      return unregisterItem;
+    }, []);
+
     const setSize = useMemo(() => {
-      return state?.treeItems.items
-        .filter((treeItem) => treeItem.groupId === parentTreeGroupId)
-        .reduce((acc) => acc + 1, 0);
+      return (
+        state?.treeItems.items
+          .filter((treeItem) => treeItem.groupId === parentTreeItemId)
+          .reduce((acc) => acc + 1, 0) || undefined
+      );
     }, [state?.treeItems]);
 
     const posInSet = useMemo(() => {
       return (
         (state?.treeItems.items
-          .filter((treeItem) => treeItem.groupId === parentTreeGroupId)
-          .findIndex((treeItem) => treeItem.id === id) || 0) + 1
+          .filter((treeItem) => treeItem.groupId === parentTreeItemId)
+          .findIndex((treeItem) => treeItem.id === id) || 0) + 1 || undefined
       );
     }, [state?.treeItems]);
 
@@ -78,23 +175,23 @@ export const useTreeItem = createHook<TreeItemOptions>(
 
     props = {
       role: "treeitem",
-      "aria-expanded": childTreeGroup?.visible,
-      "aria-level": parentTreeGroup?.level || 1,
+      "aria-expanded": id && hasChildTreeItems ? expanded : undefined,
+      "aria-level": level,
       "aria-posinset": posInSet,
       "aria-setsize": setSize,
+      onClick,
+      onKeyDown,
+      ref: useForkRef(ref, props.ref),
       ...props,
     };
 
+    const disclosure = useDisclosureState({ visible });
+    props = useDisclosureContent({ state: disclosure, ...props });
     props = useCompositeItem({
       state,
       ...props,
-      shouldRegisterItem:
-        !childTreeGroup &&
-        (typeof parentTreeGroup === "undefined"
-          ? shouldRegisterItem
-          : parentTreeGroup.visible),
+      shouldRegisterItem: shouldRegisterItem || parentExpanded,
     });
-
     props = useCollectionItem({
       state: state?.treeItems,
       ...props,
@@ -122,6 +219,11 @@ export type TreeItemOptions<T extends As = "div"> = Omit<
      * used.
      */
     state?: TreeState;
+    /**
+     * Id of the parent tree item or parent group. If not provided, the
+     * parent `TreeItem` id will be used.
+     */
+    groupId?: string;
   };
 
 export type TreeItemProps<T extends As = "div"> = Props<TreeItemOptions<T>>;

@@ -1,0 +1,41 @@
+[role="tree"] {
+  @apply
+    flex
+    flex-col
+    rounded-lg
+    border
+    p-4
+    text-black
+    dark:text-white
+    border-canvas-1
+    bg-canvas-1
+    dark:border-canvas-1-dark
+    dark:bg-canvas-1-dark;
+}
+
+[role="treeitem"] {
+  @apply
+    px-2;
+}
+
+[role="treeitem"][data-focus-visible] {
+  @apply
+    outline-none
+    bg-canvas-5
+    dark:bg-canvas-5-dark;
+}
+
+[role="treeitem"][aria-expanded] {
+  @apply
+    cursor-pointer;
+}
+
+[role="treeitem"]:not([aria-expanded]) {
+  @apply
+    pl-5;
+}
+
+[role="treeitem"] > svg:first-child {
+  @apply
+    pr-1;
+}

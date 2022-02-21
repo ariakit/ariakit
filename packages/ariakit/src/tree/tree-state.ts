@@ -11,28 +11,7 @@ import {
   CompositeStateProps,
   useCompositeState,
 } from "../composite/composite-state";
-
-type Item = CompositeState["items"][number] & {
-  value?: string;
-};
-
-type TreeItem = CollectionState["items"][number] & {
-  id: string;
-  groupId?: string | null;
-};
-
-type TreeGroupItem = CollectionState["items"][number] & {
-  id: string;
-  groupId?: string | null;
-  treeItemId?: string | null;
-  visible?: boolean;
-  level?: number | null;
-};
-
-type TreeGroupLabelItem = CollectionState["items"][number] & {
-  id: string;
-  treeItemId?: string | null;
-};
+import { CollectionTreeItem } from "./__utils";
 
 function addToExpandedIds(
   prevExpandedIds: TreeState["expandedIds"],
@@ -73,10 +52,11 @@ export function useTreeState({
     props.setExpandedIds
   );
 
-  const composite = useCompositeState<Item>({ orientation, ...props });
-  const treeItems = useCollectionState<TreeItem>();
-  const treeGroups = useCollectionState<TreeGroupItem>();
-  const treeGroupLabels = useCollectionState<TreeGroupLabelItem>();
+  const composite = useCompositeState<CollectionTreeItem>({
+    orientation,
+    ...props,
+  });
+  const treeItems = useCollectionState<CollectionTreeItem>();
 
   const expand = useCallback((id) => {
     setExpandedIds((prevExpandedIds) => {
@@ -107,8 +87,6 @@ export function useTreeState({
       expandedIds,
       setExpandedIds,
       treeItems,
-      treeGroups,
-      treeGroupLabels,
       expand,
       collapse,
       toggleExpand,
@@ -118,8 +96,6 @@ export function useTreeState({
       expandedIds,
       setExpandedIds,
       treeItems,
-      treeGroups,
-      treeGroupLabels,
       expand,
       collapse,
       toggleExpand,
@@ -129,18 +105,16 @@ export function useTreeState({
   return useStorePublisher(state);
 }
 
-export type TreeState = CompositeState<Item> & {
+export type TreeState = CompositeState<CollectionTreeItem> & {
   expandedIds?: string[];
   setExpandedIds: SetState<TreeState["expandedIds"]>;
-  treeItems: CollectionState<TreeItem>;
-  treeGroups: CollectionState<TreeGroupItem>;
-  treeGroupLabels: CollectionState<TreeGroupLabelItem>;
+  treeItems: CollectionState<CollectionTreeItem>;
   expand: TreeState["move"];
   collapse: TreeState["move"];
   toggleExpand: TreeState["move"];
 };
 
-export type TreeStateProps = CompositeStateProps<Item> &
+export type TreeStateProps = CompositeStateProps<CollectionTreeItem> &
   Partial<Pick<TreeState, "expandedIds">> & {
     defaultExpandedIds?: TreeState["expandedIds"];
     setExpandedIds?: (expandedIds: TreeState["expandedIds"]) => void;
