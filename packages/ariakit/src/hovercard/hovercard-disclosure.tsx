@@ -70,14 +70,12 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     useEffect(() => {
       const anchor = state.anchorRef.current;
       if (!anchor) return;
-      const onFocus = () => {
-        requestAnimationFrame(() => {
-          if (!anchor.hasAttribute("data-focus-visible")) return;
-          setVisible(true);
-        });
-      };
-      anchor.addEventListener("focus", onFocus);
-      return () => anchor.removeEventListener("focus", onFocus);
+      const observer = new MutationObserver(() => {
+        if (!anchor.hasAttribute("data-focus-visible")) return;
+        setVisible(true);
+      });
+      observer.observe(anchor, { attributeFilter: ["data-focus-visible"] });
+      return () => observer.disconnect();
     }, [state.anchorRef]);
 
     const onClickProp = useEventCallback(props.onClick);

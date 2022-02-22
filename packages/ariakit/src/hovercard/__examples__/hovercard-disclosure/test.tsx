@@ -18,6 +18,12 @@ const getFollowLink = () => getByRole("link", { name: "Follow" });
 const waitForHovercardToShow = (timeout = 600) =>
   waitFor(expect(getHovercard()).toBeVisible, { timeout });
 
+const expectDisclosureToBeHidden = () =>
+  expect(getDisclosure()).toHaveStyle({ height: "1px" });
+
+const expectDisclosureToBeVisible = () =>
+  expect(getDisclosure()).not.toHaveStyle({ height: "1px" });
+
 test("show hovercard on hover after timeout", async () => {
   render(<Example />);
   expect(getHovercard()).not.toBeVisible();
@@ -28,14 +34,16 @@ test("show hovercard on hover after timeout", async () => {
 
 test("do not show disclosure when focusing on anchor with mouse", async () => {
   render(<Example />);
+  await click(document.body);
   await focus(getAnchor());
-  expect(getDisclosure()).toHaveStyle({ height: "1px" });
+  expectDisclosureToBeHidden();
 });
 
 test("show disclosure when focusing on anchor with keyboard", async () => {
   render(<Example />);
+  expectDisclosureToBeHidden();
   await press.Tab();
-  expect(getDisclosure()).not.toHaveStyle({ height: "1px" });
+  expectDisclosureToBeVisible();
 });
 
 test("tab to disclosure", async () => {
@@ -103,10 +111,15 @@ test("hide hovercard on blur", async () => {
       <div tabIndex={0} />
     </>
   );
+  expectDisclosureToBeHidden();
   await press.Tab();
-  waitFor(expect(getHovercard()).toBeVisible);
+  expectDisclosureToBeVisible();
   await press.Tab();
-  waitFor(expect(getHovercard()).toBeVisible);
+  expectDisclosureToBeVisible();
   await press.Tab();
-  expect(getHovercard()).not.toBeVisible();
+  expectDisclosureToBeHidden();
+  await press.ShiftTab();
+  expectDisclosureToBeVisible();
+  await press.ShiftTab();
+  expectDisclosureToBeVisible();
 });
