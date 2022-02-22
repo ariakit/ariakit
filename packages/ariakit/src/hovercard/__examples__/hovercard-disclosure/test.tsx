@@ -95,3 +95,18 @@ test("hide hovercard on escape", async () => {
   expect(getHovercard()).not.toBeVisible();
   expect(getAnchor()).toHaveFocus();
 });
+
+test("hide hovercard on blur", async () => {
+  render(
+    <>
+      <Example />
+      <div tabIndex={0} />
+    </>
+  );
+  await press.Tab();
+  waitFor(expect(getHovercard()).toBeVisible);
+  await press.Tab();
+  waitFor(expect(getHovercard()).toBeVisible);
+  await press.Tab();
+  expect(getHovercard()).not.toBeVisible();
+});
