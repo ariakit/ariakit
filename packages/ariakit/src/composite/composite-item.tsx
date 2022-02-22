@@ -177,7 +177,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     rowId: rowIdProp,
     preventScrollOnKeyDown = false,
     getItem: getItemProp,
-    tabbable = false,
     ...props
   }) => {
     const id = useId(props.id);
@@ -388,7 +387,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     }
 
     const shouldTabIndex =
-      tabbable ||
       (!state?.virtualFocus && isActiveItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
@@ -457,10 +455,6 @@ export type CompositeItemOptions<T extends As = "button"> = CommandOptions<T> &
      * @default false
      */
     preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-    /**
-     * TODO: Comment
-     */
-    tabbable?: boolean;
   };
 
 export type CompositeItemProps<T extends As = "button"> = Props<
