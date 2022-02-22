@@ -1,4 +1,4 @@
-import { Polygon } from "./__utils";
+import { Polygon } from "./polygon";
 
 function getPolygon() {
   const id = "debug-polygon";

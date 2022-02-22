@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { SetState } from "ariakit-utils/types";
 import {
   PopoverState,
@@ -23,22 +23,16 @@ export function useHovercardState({
   ...props
 }: HovercardStateProps = {}): HovercardState {
   const [autoFocusOnShow, setAutoFocusOnShow] = useState(false);
-  const [disclosureVisible, setDisclosureVisible] = useState(false);
-  const disclosureRef = useRef<HTMLElement | null>(null);
-
   const popover = usePopoverState({ placement, ...props });
 
   const state = useMemo(
     () => ({
       ...popover,
-      disclosureRef,
       timeout,
       showTimeout,
       hideTimeout,
       autoFocusOnShow,
       setAutoFocusOnShow,
-      disclosureVisible,
-      setDisclosureVisible,
     }),
     [
       popover,
@@ -47,8 +41,6 @@ export function useHovercardState({
       hideTimeout,
       autoFocusOnShow,
       setAutoFocusOnShow,
-      disclosureVisible,
-      setDisclosureVisible,
     ]
   );
 
@@ -82,15 +74,6 @@ export type HovercardState = PopoverState & {
    * Sets `autoFocusOnShow`.
    */
   setAutoFocusOnShow: SetState<HovercardState["autoFocusOnShow"]>;
-  /**
-   * Whether the popover disclosure is visible.
-   * @default false
-   */
-  disclosureVisible: boolean;
-  /**
-   * Sets `disclosureVisible`.
-   */
-  setDisclosureVisible: SetState<HovercardState["disclosureVisible"]>;
 };
 
 export type HovercardStateProps = PopoverStateProps &

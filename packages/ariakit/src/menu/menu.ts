@@ -71,7 +71,7 @@ export const useMenu = createHook<MenuOptions>(
     props = useHovercard({
       state,
       autoFocusOnShow: false,
-      hideOnMouseLeave: hasParentMenu,
+      hideOnHoverOutside: hasParentMenu,
       ...props,
       portalRef,
       // If it's a sub menu, it should behave like a modal dialog, nor display a

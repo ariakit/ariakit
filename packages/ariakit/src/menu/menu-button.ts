@@ -171,7 +171,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     props = useHovercardAnchor({
       state,
-      showOnMouseMove: hasParentMenu,
+      showOnHover: hasParentMenu,
       focusable,
       accessibleWhenDisabled,
       ...props,

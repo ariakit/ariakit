@@ -2,6 +2,7 @@ import {
   click,
   getByRole,
   hover,
+  press,
   render,
   sleep,
   waitFor,
@@ -9,13 +10,13 @@ import {
 import { axe } from "jest-axe";
 import Example from ".";
 
-const getAnchor = () => getByRole("link", { name: "@A11YProject" });
+const getAnchor = () => getByRole("link", { name: "@ariakitjs" });
 const getHovercard = () => getByRole("dialog", { hidden: true });
 
-const waitForHovercardToShow = (timeout = 1000) =>
+const waitForHovercardToShow = (timeout = 600) =>
   waitFor(expect(getHovercard()).toBeVisible, { timeout });
 
-const waitForHovercardToHide = (timeout = 1000) =>
+const waitForHovercardToHide = (timeout = 600) =>
   waitFor(expect(getHovercard()).not.toBeVisible, { timeout });
 
 test("a11y", async () => {
@@ -46,7 +47,7 @@ test("keep hovercard visible when it has focus", async () => {
   await waitForHovercardToShow();
   await click(getHovercard());
   await hover(baseElement);
-  await sleep(1000);
+  await sleep(600);
   await expect(getHovercard()).toBeVisible();
 });
 
@@ -61,6 +62,26 @@ test("keep hovercard visible when hovering out and in quickly", async () => {
   await hover(baseElement);
   await sleep(400);
   await hover(getHovercard());
-  await sleep(1000);
+  await sleep(600);
   await expect(getHovercard()).toBeVisible();
+});
+
+test("hide unfocused hovercard on escape", async () => {
+  render(<Example />);
+  await hover(getAnchor());
+  await waitForHovercardToShow();
+  await sleep();
+  await press.Escape();
+  expect(getHovercard()).not.toBeVisible();
+  expect(getAnchor()).not.toHaveFocus();
+});
+
+test("hide focused hovercard on escape", async () => {
+  render(<Example />);
+  await hover(getAnchor());
+  await waitForHovercardToShow();
+  await click(getHovercard());
+  await press.Escape();
+  expect(getHovercard()).not.toBeVisible();
+  expect(getAnchor()).toHaveFocus();
 });
