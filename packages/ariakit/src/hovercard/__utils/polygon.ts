@@ -1,4 +1,4 @@
-import { HovercardState } from "./hovercard-state";
+import { HovercardState } from "../hovercard-state";
 
 export type Point = [number, number];
 export type Polygon = Point[];
