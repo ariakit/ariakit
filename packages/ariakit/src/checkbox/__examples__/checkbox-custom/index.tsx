@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Checkbox, CheckboxCheck, useCheckboxState } from "ariakit/checkbox";
 import { VisuallyHidden } from "ariakit/visually-hidden";
-
 import "./style.css";
 
 export default function Example() {
@@ -17,11 +16,7 @@ export default function Example() {
           onBlur={() => setFocusVisible(false)}
         />
       </VisuallyHidden>
-      <div
-        className="checkbox"
-        data-focus-visible={focusVisible ? "" : undefined}
-        data-checked={checkbox.value}
-      >
+      <div className="checkbox" data-focus-visible={focusVisible ? "" : null}>
         <CheckboxCheck checked={checkbox.value} />
       </div>
       I have read and agree to the terms and conditions
