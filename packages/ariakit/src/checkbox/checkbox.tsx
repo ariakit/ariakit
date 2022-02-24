@@ -152,7 +152,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
       onClick,
     };
 
-    props = useCommand({ clickOnEnter: false, ...props });
+    props = useCommand({ clickOnEnter: !nativeCheckbox, ...props });
 
     return {
       value: nativeCheckbox ? value : undefined,

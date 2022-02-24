@@ -134,7 +134,7 @@ export const useRadio = createHook<RadioOptions>(
       onFocus,
     };
 
-    props = useCompositeItem({ state, clickOnEnter: false, ...props });
+    props = useCompositeItem({ state, clickOnEnter: !nativeRadio, ...props });
 
     return {
       value: nativeRadio ? value : undefined,
