@@ -1,0 +1,85 @@
+@import url("../menu/style.css");
+
+:root {
+  @apply pb-[800px] pt-[100px];
+}
+
+.menu-bar {
+  @apply flex gap-2;
+}
+
+.menu-bar .menu-item {
+  @apply px-4 h-10;
+}
+
+.menu-bar:not(:focus) .menu-item:not(:focus)[aria-expanded="true"],
+.menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
+  @apply
+    bg-alpha-3-border
+    text-alpha-3
+    dark:bg-alpha-3-dark-hover
+    dark:text-alpha-3-dark;
+}
+
+.menu {
+  @apply p-1;
+}
+
+.menu-separator {
+  @apply mx-2;
+}
+
+.menu-item {
+  @apply py-1 px-3;
+}
+
+.menu .menu-item .label {
+  @apply flex-1 pr-8;
+}
+
+.menu .menu-item {
+  font-size: 15px;
+}
+
+.shortcuts {
+  word-spacing: -2px;
+  @apply opacity-40;
+}
+
+[data-active-item] .shortcuts {
+  @apply opacity-100;
+}
+
+.has-checkbox .menu-item:not([aria-checked]) {
+  @apply pl-8;
+}
+
+.has-checkbox .menu-item[aria-checked] {
+  @apply pl-2;
+}
+
+.menu-group {
+  @apply flex flex-col;
+}
+
+.group-label {
+  @apply text-sm opacity-50 px-3 pb-1 cursor-default;
+}
+
+.menu-item-input {
+  @apply
+    h-10
+    rounded
+    border-none
+    bg-canvas-1
+    px-3
+    py-1
+    text-base
+    mb-1
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    focus-visible:ariakit-outline
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover;
+}

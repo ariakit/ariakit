@@ -115,7 +115,7 @@ function useScheduleFocus(activeItem?: Item) {
  * ```
  */
 export const useComposite = createHook<CompositeOptions>(
-  ({ state, composite = true, focusOnMove = true, ...props }) => {
+  ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
     const activeItem = findEnabledItemById(state.items, state.activeId);
@@ -209,16 +209,7 @@ export const useComposite = createHook<CompositeOptions>(
           // like it would happen with roving tabindex. When it receives focus,
           // the composite item will move focus back to the composite element.
           if (isSelfTarget(event)) {
-            if (activeItemRef.current?.ref.current) {
-              activeItemRef.current.ref.current.focus();
-            } else {
-              // If there's no active item, it might be because the state.items
-              // haven't been populated yet, for example, when the composite
-              // element is focused right after it gets mounted. So we schedule
-              // a user focus and make another attempt in an effect when the
-              // state.items is populated.
-              scheduleFocus();
-            }
+            activeItemRef.current?.ref.current?.focus();
           }
         } else if (isSelfTarget(event)) {
           // When the roving tabindex composite gets intentionally focused (for

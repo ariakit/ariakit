@@ -34,7 +34,12 @@
     outline-none
     aria-disabled:opacity-25
     active:bg-primary-2-hover
-    dark:active:bg-primary-2-dark-hover
+    dark:active:bg-primary-2-dark-hover;
+}
+
+.menu-bar:focus-within .menu-item,
+.menu:focus-within .menu-item {
+  @apply
     active-item:bg-primary-2
     active-item:text-primary-2
     dark:active-item:bg-primary-2-dark

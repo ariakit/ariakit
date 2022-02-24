@@ -1,0 +1,32 @@
+@import url("../menu/style.css");
+@import url("../../../combobox/__examples__/combobox/style.css");
+
+:root {
+  @apply h-[500px] pb-[360px] pt-[100px];
+}
+
+.menu {
+  @apply p-0;
+}
+
+.menu[role="menu"] {
+  @apply p-2 max-h-60 overflow-auto;
+}
+
+.combobox {
+  @apply
+    w-fit
+    m-2
+    rounded
+    !outline-offset-0;
+}
+
+.combobox-list {
+  background-color: inherit;
+  border-radius: inherit;
+  @apply max-h-60 overflow-auto px-2 pb-2;
+}
+
+.menu-item {
+  @apply scroll-mt-0;
+}

@@ -334,9 +334,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
       [
         onKeyDownProp,
-        state.move,
-        state.activeId,
         state.visible,
+        state.activeId,
         showOnKeyDownProp,
         state.show,
       ]

@@ -1,4 +1,5 @@
 import { KeyboardEvent, useCallback, useContext, useRef } from "react";
+import { isTextField } from "ariakit-utils/dom";
 import { isSelfTarget } from "ariakit-utils/events";
 import { useEventCallback } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
@@ -14,6 +15,8 @@ import { CompositeState } from "./composite-state";
 let chars = "";
 
 function isValidTypeaheadEvent(event: KeyboardEvent) {
+  const target = event.target as HTMLElement | null;
+  if (target && isTextField(target)) return false;
   // If the spacebar is pressed, we'll only consider it a valid typeahead event
   // if there were already other characters typed.
   if (event.key === " " && chars.length) return true;

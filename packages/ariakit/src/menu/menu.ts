@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useMemo } from "react";
+import { KeyboardEvent, useCallback, useEffect, useRef } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -70,27 +70,39 @@ export const useMenu = createHook<MenuOptions>(
       ...props,
     });
 
-    const initialFocusRef = useMemo(() => {
+    const initialFocusRef = useRef<HTMLElement | null>(null);
+
+    useEffect(() => {
       switch (state.initialFocus) {
         case "first": {
           const id = state.first();
           if (id) {
-            return state.items.find((item) => item.id === id)?.ref;
+            const element = state.items.find((item) => item.id === id)?.ref
+              .current;
+            if (element) {
+              initialFocusRef.current = element;
+            }
           }
           break;
         }
         case "last": {
           const id = state.last();
           if (id) {
-            return state.items.find((item) => item.id === id)?.ref;
+            const element = state.items.find((item) => item.id === id)?.ref
+              .current;
+            if (element) {
+              initialFocusRef.current = element;
+            }
           }
           break;
         }
         case "container": {
-          return state.baseRef;
+          const element = state.baseRef.current;
+          if (element) {
+            initialFocusRef.current = element;
+          }
         }
       }
-      return state.baseRef;
     }, [
       state.initialFocus,
       state.first,
