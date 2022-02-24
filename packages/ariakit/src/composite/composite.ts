@@ -115,7 +115,7 @@ function useScheduleFocus(activeItem?: Item) {
  * ```
  */
 export const useComposite = createHook<CompositeOptions>(
-  ({ state, composite = true, focusOnMove = true, ...props }) => {
+  ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
     const activeItem = findEnabledItemById(state.items, state.activeId);
@@ -406,8 +406,8 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * const menu = useMenuState(combobox);
    * <MenuButton state={menu}>Open Menu</MenuButton>
    * <Menu state={menu} composite={false}>
-   *   <Combobox state={combobox} />å
-   *   <ComboboxList state={comboobx}>
+   *   <Combobox state={combobox} />
+   *   <ComboboxList state={combobox}>
    *     <ComboboxItem as={MenuItem}>Item 1</ComboboxItem>
    *     <ComboboxItem as={MenuItem}>Item 2</ComboboxItem>
    *     <ComboboxItem as={MenuItem}>Item 3</ComboboxItem>
