@@ -71,7 +71,6 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
       value,
       checked,
       onChange,
-      clickOnEnter: true,
       ...props,
     });
 

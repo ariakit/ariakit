@@ -51,7 +51,6 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
     props = useCheckbox({
       state: checkboxState,
       checked,
-      clickOnEnter: true,
       ...props,
     });
 

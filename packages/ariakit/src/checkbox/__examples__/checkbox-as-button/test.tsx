@@ -23,7 +23,7 @@ test("render checkbox as button", async () => {
   `);
 });
 
-test("check and uncheck checkbox by clicking", async () => {
+test("check/uncheck on click", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await click(getByRole("checkbox"));
@@ -32,29 +32,20 @@ test("check and uncheck checkbox by clicking", async () => {
   expect(getByRole("checkbox")).not.toBeChecked();
 });
 
-test("tab", async () => {
-  render(<Example />);
-  expect(getByRole("checkbox")).not.toHaveFocus();
-  await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
-});
-
-test("check and uncheck checkbox by with keyboard (space)", async () => {
+test("check/uncheck on space", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
   await press.Space();
   expect(getByRole("checkbox")).toBeChecked();
   await press.Space();
   expect(getByRole("checkbox")).not.toBeChecked();
 });
 
-test("check and uncheck checkbox by with keyboard (enter)", async () => {
+test("check/uncheck on enter", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
   await press.Enter();
   expect(getByRole("checkbox")).toBeChecked();
   await press.Enter();

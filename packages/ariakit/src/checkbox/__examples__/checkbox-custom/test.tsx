@@ -25,7 +25,6 @@ test("render checkbox as button", async () => {
         </span>
         <div
           class="checkbox"
-          data-checked="false"
         >
           <span
             aria-hidden="true"
@@ -38,7 +37,7 @@ test("render checkbox as button", async () => {
   `);
 });
 
-test("check and uncheck checkbox by clicking", async () => {
+test("check/uncheck on click", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await click(getByRole("checkbox"));
@@ -47,19 +46,10 @@ test("check and uncheck checkbox by clicking", async () => {
   expect(getByRole("checkbox")).not.toBeChecked();
 });
 
-test("input gets focus on tab and loses it on blur", async () => {
-  render(<Example />);
-  await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
-  getByRole("checkbox").blur();
-  expect(getByRole("checkbox")).not.toHaveFocus();
-});
-
-test("check and uncheck checkbox by with keyboard (space)", async () => {
+test("check/uncheck on space", async () => {
   render(<Example />);
   expect(getByRole("checkbox")).not.toBeChecked();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
   await press.Space();
   expect(getByRole("checkbox")).toBeChecked();
   await press.Space();

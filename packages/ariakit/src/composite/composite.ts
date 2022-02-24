@@ -397,8 +397,8 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * const menu = useMenuState(combobox);
    * <MenuButton state={menu}>Open Menu</MenuButton>
    * <Menu state={menu} composite={false}>
-   *   <Combobox state={combobox} />å
-   *   <ComboboxList state={comboobx}>
+   *   <Combobox state={combobox} />
+   *   <ComboboxList state={combobox}>
    *     <ComboboxItem as={MenuItem}>Item 1</ComboboxItem>
    *     <ComboboxItem as={MenuItem}>Item 2</ComboboxItem>
    *     <ComboboxItem as={MenuItem}>Item 3</ComboboxItem>
