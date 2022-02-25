@@ -6,7 +6,7 @@ export default function Example() {
 
   return (
     <div>
-      <div>Choices: {checkbox.value.join(", ")}</div>
+      <div>Choices:{checkbox.value.join(", ")}</div>
       <div className="wrapper">
         <label>
           <Checkbox state={checkbox} value="apple" />
