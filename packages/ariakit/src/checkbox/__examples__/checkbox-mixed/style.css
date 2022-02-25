@@ -1,0 +1,5 @@
+@import url("../checkbox/style.css");
+
+.items {
+  @apply pl-4;
+}

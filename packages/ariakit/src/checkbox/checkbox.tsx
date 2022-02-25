@@ -30,7 +30,7 @@ function getStateChecked(
   if (Array.isArray(stateValue)) {
     return false;
   }
-  if (typeof stateValue === "boolean") {
+  if (typeof stateValue === "boolean" || stateValue === "mixed") {
     return stateValue;
   }
   return false;
