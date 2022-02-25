@@ -44,7 +44,8 @@ export default function Example() {
         {values.map((value, i) => (
           <li key={i}>
             <label>
-              <Checkbox state={items} value={value} /> {value}
+              <Checkbox state={items} value={value} />
+              {value}
             </label>
           </li>
         ))}

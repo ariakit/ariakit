@@ -29,7 +29,6 @@ test("render checkbox", async () => {
                 type="checkbox"
                 value="apple"
               />
-
               apple
             </label>
           </li>
@@ -42,7 +41,6 @@ test("render checkbox", async () => {
                 type="checkbox"
                 value="orange"
               />
-
               orange
             </label>
           </li>
@@ -55,7 +53,6 @@ test("render checkbox", async () => {
                 type="checkbox"
                 value="watermelon"
               />
-
               watermelon
             </label>
           </li>
