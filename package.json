@@ -54,7 +54,7 @@
     "babel-plugin-module-resolver": "4.1.0",
     "chalk": "4.1.2",
     "cross-spawn": "7.0.3",
-    "eslint": "8.9.0",
+    "eslint": "8.10.0",
     "eslint-config-prettier": "8.4.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-jest": "26.1.1",
