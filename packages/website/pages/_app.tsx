@@ -1,19 +1,6 @@
 import "../styles/globals.css";
 import { AppProps } from "next/app";
-import Head from "next/head";
-
-const script = `
-function classList(action) {
-  document.documentElement.classList[action]("dark");
-}
-classList(localStorage.theme === "dark" ? "add" : "remove");
-if (!("theme" in localStorage)) {
-  const query = window.matchMedia("(prefers-color-scheme: dark)");
-  classList(query.matches ? "add" : "remove");
-  query.addEventListener("change", (event) => {
-    classList(event.matches ? "add" : "remove");
-  })
-}`;
+import Script from "next/script";
 
 // https://github.com/vercel/next.js/discussions/13387#discussioncomment-101564
 const noOverlayWorkaroundScript = `
@@ -29,14 +16,12 @@ const noOverlayWorkaroundScript = `
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <Head>
-        <script dangerouslySetInnerHTML={{ __html: script }} />
-        {process.env.NODE_ENV !== "production" && (
-          <script
-            dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }}
-          />
-        )}
-      </Head>
+      {process.env.NODE_ENV !== "production" && (
+        <Script
+          id="no-overlay-workaround"
+          dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }}
+        />
+      )}
       <Component {...pageProps} />
     </>
   );

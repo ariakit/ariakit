@@ -11,13 +11,14 @@ import {
   MenuButtonArrow,
   useMenuState,
 } from "ariakit/menu";
-import { defaultList, getIcon } from "./list";
+import defaultList from "./list";
 import "./style.css";
 
 export default function Example() {
   const combobox = useComboboxState({ defaultList });
   const menu = useMenuState(combobox);
 
+  // Resets combobox value when menu is closed
   if (!menu.mounted && combobox.value) {
     combobox.setValue("");
   }
@@ -41,13 +42,10 @@ export default function Example() {
             <ComboboxItem
               key={value}
               value={value}
-              setValueOnClick={false}
               focusOnHover
+              setValueOnClick={false}
               className="menu-item"
-            >
-              {getIcon(value)}
-              {value}
-            </ComboboxItem>
+            />
           ))}
         </ComboboxList>
       </Menu>

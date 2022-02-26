@@ -19,6 +19,7 @@
         ]
       }
     ],
+    "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "at-rule-no-unknown": [
       true,
       {

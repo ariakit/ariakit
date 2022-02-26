@@ -1,24 +1,29 @@
 @import url("../menu/style.css");
-@import url("../../../combobox/__examples__/combobox/style.css");
-
-:root {
-  @apply h-[500px] pb-[360px] pt-[100px];
-}
 
 .menu {
   @apply p-0;
 }
 
-.menu[role="menu"] {
-  @apply p-2 max-h-60 overflow-auto;
-}
-
 .combobox {
   @apply
     w-fit
-    m-2
+    h-10
     rounded
-    !outline-offset-0;
+    border-none
+    bg-canvas-1
+    px-4
+    m-2
+    text-base
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover;
+}
+
+.combobox:focus {
+  outline: 2px solid theme("colors.primary-2.DEFAULT");
+  outline-offset: 0;
 }
 
 .combobox-list {
