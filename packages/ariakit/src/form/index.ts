@@ -10,6 +10,7 @@ export * from "./form-push";
 export * from "./form-radio-group";
 export * from "./form-radio";
 export * from "./form-remove";
+export * from "./form-reset";
 export * from "./form-state";
 export * from "./form-submit";
 export * from "./form";
