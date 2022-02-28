@@ -17,6 +17,7 @@ test("render checkbox", async () => {
         >
           Your favorite fruits
         </div>
+        <br />
         <label
           class="label"
         >
