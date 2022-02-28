@@ -1,10 +1,5 @@
-import {
-  Tree,
-  TreeGroup,
-  TreeGroupLabel,
-  TreeItem,
-  useTreeState,
-} from "ariakit/tree";
+import { Tree, TreeGroup, TreeItem, useTreeState } from "ariakit/tree";
+import { TreeGroupLabel } from "./TreeGroupLabel";
 import "./style.css";
 
 export default function TreeView() {

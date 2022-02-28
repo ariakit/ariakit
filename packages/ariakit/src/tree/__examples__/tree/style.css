@@ -4,13 +4,19 @@
     flex-col
     rounded-lg
     border
-    p-4
+    pl-8
+    pr-4
+    py-4
     text-black
     dark:text-white
-    border-canvas-3
-    bg-canvas-3
-    dark:border-canvas-3-dark
-    dark:bg-canvas-3-dark;
+    border-canvas-1
+    bg-white
+    dark:border-canvas-1-dark
+    dark:bg-black;
+}
+
+[role="treeitem"] {
+  @apply px-1;
 }
 
 [role="group"] {
@@ -20,13 +26,9 @@
     pl-4;
 }
 
-[role="treeitem"][aria-expanded][data-focus-visible] {
-  @apply outline-none;
-}
-
-[role="treeitem"][aria-expanded][data-focus-visible] > [data-label],
-[role="treeitem"]:not([aria-expanded])[data-focus-visible] {
-  @apply outline outline-2 outline-black dark:outline-white;
+[role="treeitem"][data-focus-visible] {
+  @apply
+    outline-none;
 }
 
 [role="treeitem"][aria-expanded] {
@@ -34,37 +36,56 @@
     cursor-pointer;
 }
 
-[role="treeitem"]:not([aria-expanded]) {
+[role="treeitem"]:not([aria-expanded])[data-focus-visible] {
   @apply
-    pl-[12px];
+    rounded-sm
+    text-black
+    dark:text-white
+    bg-primary-1
+    dark:bg-primary-2;
 }
 
-[role="treeitem"][aria-expanded="false"]::before {
+[role="treeitem"][aria-expanded][data-focus-visible] {
   @apply
-    relative
-    left-[-2px];
+    outline-none;
 }
 
-:not(.dark) [role="treeitem"][aria-expanded="false"]::before {
-  content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' style='forced-color-adjust: auto;'%3E%3Cpolygon points='1 1, 1 11, 8 6' fill='black' stroke= 'black' /%3E%3C/svg%3E%0A");
-}
-
-.dark [role="treeitem"][aria-expanded="false"]::before {
-  content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' style='forced-color-adjust: auto;'%3E%3Cpolygon points='1 1, 1 11, 8 6' fill='white' stroke= 'white' /%3E%3C/svg%3E%0A");
-}
-
-[role="treeitem"][aria-expanded="true"]::before {
+[role="treeitem"][data-focus-visible] > [data-label] {
   @apply
-    relative
-    left-[-4px]
-    top-[2px]
-    h-full;
+    rounded-sm
+    outline-none
+    text-black
+    dark:text-white
+    bg-primary-1
+    dark:bg-primary-2;
 }
 
-:not(.dark) [role="treeitem"][aria-expanded="true"]::before {
-  content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' style='forced-color-adjust: auto;'%3E%3Cpolygon points='1 1, 11 1, 6 8' fill='black' stroke= 'black' /%3E%3C/svg%3E ");
+[role="treeitem"] > [data-label] {
+  @apply
+    flex
+    items-center
+    px-1
+    -mx-1
+    relative;
 }
 
-.dark [role="treeitem"][aria-expanded="true"]::before {
-  content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' style='forced-color-adjust: auto;'%3E%3Cpolygon points='1 1, 11 1, 6 8' fill='white' stroke= 'white' /%3E%3C/svg%3E ");
+[role="treeitem"] > [data-label] > svg:first-child {
+  @apply
+    absolute
+    -left-3
+    w-2
+    h-2;
+}
+
+[role="treeitem"][data-focus-visible] > [data-label] > svg:first-child {
+  @apply
+    text-black
+    dark:text-white;
+}
+
+[role="treeitem"] > [data-label] > :not(svg) {
+  @apply
+    flex
+    -ml-1
+    px-1;
 }

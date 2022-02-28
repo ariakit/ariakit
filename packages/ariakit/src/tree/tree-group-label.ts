@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { useGroupLabel } from "ariakit";
+import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -5,6 +8,11 @@ import {
 } from "ariakit-utils/system";
 import { Props } from "ariakit-utils/types";
 import { CollectionItemOptions } from "../collection/collection-item";
+import {
+  TreeContext,
+  TreeItemIdContext,
+  useTreeItemFromCollection,
+} from "./__utils";
 import { TreeState } from "./tree-state";
 
 /**
@@ -22,8 +30,16 @@ import { TreeState } from "./tree-state";
  */
 export const useTreeGroupLabel = createHook<TreeGroupLabelOptions>(
   ({ state, shouldRegisterItem = true, getItem: getItemProp, ...props }) => {
+    state = useStore(state || TreeContext);
+    const parentTreeItemId = useContext(TreeItemIdContext);
+    const parentTreeItem = useTreeItemFromCollection(state, parentTreeItemId);
+
+    props = useGroupLabel(props);
     props = {
-      "data-label": true,
+      "data-label": "",
+      "data-parent-expanded": parentTreeItem?.expanded,
+      "data-parent-level": parentTreeItem?.level,
+      "data-parent-visible": parentTreeItem?.visible,
       ...props,
     };
 

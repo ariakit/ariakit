@@ -1,4 +1,4 @@
-import { createContext, useCallback, useMemo, useRef } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef } from "react";
 import { noop } from "ariakit-utils/misc";
 import { createStoreContext } from "ariakit-utils/store";
 import { Item } from "ariakit/collection/__utils";
@@ -10,6 +10,7 @@ export type CollectionTreeItem = CollectionState["items"][number] & {
   groupId?: string | null;
   expanded?: boolean;
   level?: number;
+  visible?: boolean;
 };
 
 export const TreeContext = createStoreContext<TreeState>();
@@ -59,9 +60,12 @@ export type SyncMapStore<T extends Item> = Omit<CollectionState<T>, "items"> & {
 };
 
 export function useTreeItemFromCollection(state?: TreeState, id?: string) {
+  const { items: syncTreeItems } = useContext(TreeItemsSyncContext) || {};
+
   const treeItem = useMemo(() => {
     return state?.treeItems.items.find((t) => t.id === id);
   }, [state]);
 
-  return treeItem;
+  const treeItemFromContext = id ? syncTreeItems?.[id] : undefined;
+  return treeItem || treeItemFromContext;
 }

@@ -7,7 +7,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { useDisclosureContent, useDisclosureState } from "ariakit";
+import { useDisclosureContent, useDisclosureState, useGroup } from "ariakit";
 import {
   useEventCallback,
   useForkRef,
@@ -46,21 +46,8 @@ export const useTreeItem = createHook<TreeItemOptions>(
       useContext(TreeItemsSyncContext) || {};
     state = useStore(state || TreeContext);
 
-    const parentTreeItemFromCollection = useTreeItemFromCollection(
-      state,
-      parentTreeItemId
-    );
-    const parentTreeItemFromRef = parentTreeItemId
-      ? syncTreeItems?.[parentTreeItemId]
-      : undefined;
+    const parentTreeItem = useTreeItemFromCollection(state, parentTreeItemId);
 
-    const parentTreeItem =
-      parentTreeItemFromCollection || parentTreeItemFromRef;
-
-    const parentExpanded = useMemo(
-      () => !parentTreeItemId || state?.expandedIds?.includes(parentTreeItemId),
-      [state?.expandedIds, parentTreeItemId]
-    );
     const childTreeItems = useMemo(
       () => state?.treeItems.items?.filter((item) => item.groupId === id),
       [state?.treeItems.items, id]
@@ -185,12 +172,14 @@ export const useTreeItem = createHook<TreeItemOptions>(
       ...props,
     };
 
+    props = useGroup(props);
+
     const disclosure = useDisclosureState({ visible });
     props = useDisclosureContent({ state: disclosure, ...props });
     props = useCompositeItem({
       state,
       ...props,
-      shouldRegisterItem: shouldRegisterItem || parentExpanded,
+      shouldRegisterItem: shouldRegisterItem || visible,
     });
     props = useCollectionItem({
       state: state?.treeItems,

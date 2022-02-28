@@ -8,9 +8,9 @@
     text-black
     dark:text-white
     border-canvas-1
-    bg-canvas-1
+    bg-white
     dark:border-canvas-1-dark
-    dark:bg-canvas-1-dark;
+    dark:bg-black;
 }
 
 [role="treeitem"] {
@@ -21,8 +21,8 @@
 [role="treeitem"][data-focus-visible] {
   @apply
     outline-none
-    bg-canvas-5
-    dark:bg-canvas-5-dark;
+    bg-primary-1
+    dark:bg-primary-2;
 }
 
 [role="treeitem"][aria-expanded] {
