@@ -42,7 +42,7 @@ export default function Home() {
           <Link href="/examples/checkbox-state">Checkbox state</Link>
         </li>
         <li>
-          <Link href="/examples/checkbox-multiple">Checkbox multiple</Link>
+          <Link href="/examples/checkbox-group">Checkbox group</Link>
         </li>
         <li>
           <Link href="/examples/collection">Collection</Link>
