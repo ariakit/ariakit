@@ -30,7 +30,6 @@ export const useFormReset = createHook<FormResetOptions>(
       type: "reset",
       disabled: state?.submitting,
       ...props,
-      onClick,
     };
 
     props = useButton(props);
