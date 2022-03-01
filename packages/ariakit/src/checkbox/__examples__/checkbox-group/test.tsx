@@ -1,65 +1,7 @@
 import { click, getByLabelText, press, render } from "ariakit-test-utils";
 import Example from ".";
 
-test("render checkbox", async () => {
-  const { container } = render(<Example />);
-  expect(container).toMatchInlineSnapshot(`
-    <div>
-      <div
-        aria-labelledby="r:0"
-        class="group"
-        role="group"
-      >
-        <div
-          aria-hidden="true"
-          class="group-label"
-          id="r:0"
-        >
-          Your favorite fruits
-        </div>
-        <br />
-        <label
-          class="label"
-        >
-          <input
-            aria-checked="false"
-            class="checkbox"
-            data-command=""
-            type="checkbox"
-            value="apple"
-          />
-           Apple
-        </label>
-        <label
-          class="label"
-        >
-          <input
-            aria-checked="false"
-            class="checkbox"
-            data-command=""
-            type="checkbox"
-            value="orange"
-          />
-           Orange
-        </label>
-        <label
-          class="label"
-        >
-          <input
-            aria-checked="false"
-            class="checkbox"
-            data-command=""
-            type="checkbox"
-            value="mango"
-          />
-           Mango
-        </label>
-      </div>
-    </div>
-  `);
-});
-
-test("check/uncheck on click on click", async () => {
+test("check/uncheck on click", async () => {
   render(<Example />);
   expect(getByLabelText("Apple")).toHaveAttribute("aria-checked", "false");
   expect(getByLabelText("Orange")).toHaveAttribute("aria-checked", "false");

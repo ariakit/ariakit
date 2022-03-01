@@ -1,15 +1,12 @@
 import { Checkbox, useCheckboxState } from "ariakit/checkbox";
 import { Group, GroupLabel } from "ariakit/group";
-
 import "./style.css";
 
 export default function Example() {
   const checkbox = useCheckboxState({ defaultValue: [] });
-
   return (
-    <Group className="group">
-      <GroupLabel className="group-label">Your favorite fruits</GroupLabel>
-      {checkbox.value.length > 0 ? <p>{checkbox.value.join(", ")}</p> : <br />}
+    <Group>
+      <GroupLabel>Your favorite fruits</GroupLabel>
       <label className="label">
         <Checkbox state={checkbox} value="apple" className="checkbox" /> Apple
       </label>
