@@ -24,15 +24,18 @@ import { FormState } from "./form-state";
  */
 export const useFormReset = createHook<FormResetOptions>(
   ({ state, ...props }) => {
-    state = useStore(state || FormContext, [`submitting`]);
+    state = useStore(state || FormContext, ["submitting"]);
 
     props = {
       type: "reset",
       disabled: state?.submitting,
       ...props,
+      onClick,
     };
 
-    return useButton(props);
+    props = useButton(props);
+
+    return props;
   }
 );
 
