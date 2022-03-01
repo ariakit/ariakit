@@ -1,5 +1,3 @@
-import { MouseEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -28,27 +26,13 @@ export const useFormReset = createHook<FormResetOptions>(
   ({ state, ...props }) => {
     state = useStore(state || FormContext, [`submitting`]);
 
-    const onClickProp = useEventCallback(props.onClick);
-
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state?.reset();
-      },
-      [onClickProp, state?.reset]
-    );
-
     props = {
       type: "reset",
       disabled: state?.submitting,
       ...props,
     };
 
-    return useButton({
-      ...props,
-      onClick,
-    });
+    return useButton(props);
   }
 );
 

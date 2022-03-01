@@ -1,5 +1,6 @@
 import {
   click,
+  getAllByText,
   getByRole,
   press,
   queryByText,
@@ -55,7 +56,7 @@ test("show error on submit", async () => {
 
 test("focus on input with error on submit", async () => {
   render(<Example />);
-  await click(getByRole("button"));
+  await click(getAllByText("Submit")[0]!);
   expect(getInput("Name")).toHaveFocus();
 });
 
@@ -67,6 +68,15 @@ test("fix error on change", async () => {
   expect(getError()).toBeInTheDocument();
   await type("John");
   expect(getError()).not.toBeInTheDocument();
+});
+
+test("reset form on reset", async () => {
+  render(<Example />);
+  await press.Tab();
+  await type("John");
+  await press.Tab();
+  await press.Enter();
+  expect(getInput("Name")).toHaveValue("");
 });
 
 test("submit form", async () => {
@@ -97,15 +107,15 @@ test("markup", () => {
           class="field"
         >
           <label
-            for="r:p"
-            id="r:o"
+            for="r:s"
+            id="r:r"
           >
             Name
           </label>
           <input
-            aria-describedby="r:q"
-            aria-labelledby="r:o"
-            id="r:p"
+            aria-describedby="r:t"
+            aria-labelledby="r:r"
+            id="r:s"
             name="name"
             placeholder="John Doe"
             required=""
@@ -113,10 +123,17 @@ test("markup", () => {
           />
           <div
             class="error"
-            id="r:q"
+            id="r:t"
             role="alert"
           />
         </div>
+        <button
+          class="button"
+          data-command=""
+          type="reset"
+        >
+          Reset
+        </button>
         <button
           class="button"
           data-command=""
