@@ -24,7 +24,7 @@ export default function Example() {
         <FormError name={form.names.name} className="error" />
       </div>
       <FormSubmit className="button">Submit</FormSubmit>
-      <FormReset className="button reset">Reset</FormReset>
+      <FormReset className="button secondary">Reset</FormReset>
     </Form>
   );
 }

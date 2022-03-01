@@ -1,6 +1,5 @@
 import {
   click,
-  getAllByText,
   getByRole,
   press,
   queryByText,
@@ -130,16 +129,16 @@ test("markup", () => {
         <button
           class="button"
           data-command=""
-          type="reset"
-        >
-          Reset
-        </button>
-        <button
-          class="button"
-          data-command=""
           type="submit"
         >
           Submit
+        </button>
+        <button
+          class="button secondary"
+          data-command=""
+          type="reset"
+        >
+          Reset
         </button>
       </form>
     </div>

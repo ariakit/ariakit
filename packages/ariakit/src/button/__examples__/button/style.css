@@ -19,3 +19,13 @@
     dark:text-primary-2-dark
     dark:hover:bg-primary-2-dark-hover;
 }
+
+.secondary {
+  @apply
+    text-alpha-2
+    bg-alpha-2
+    hover:bg-alpha-2-hover
+    dark:text-alpha-2-dark
+    dark:bg-alpha-2-dark
+    dark:hover:bg-alpha-2-dark-hover;
+}
