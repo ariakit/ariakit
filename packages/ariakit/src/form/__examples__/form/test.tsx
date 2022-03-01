@@ -56,7 +56,7 @@ test("show error on submit", async () => {
 
 test("focus on input with error on submit", async () => {
   render(<Example />);
-  await click(getAllByText("Submit")[0]!);
+  await click(getByRole("button", { name: "Submit" }));
   expect(getInput("Name")).toHaveFocus();
 });
 

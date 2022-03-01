@@ -23,8 +23,8 @@ export default function Example() {
         <FormInput name={form.names.name} required placeholder="John Doe" />
         <FormError name={form.names.name} className="error" />
       </div>
-      <FormReset className="button">Reset</FormReset>
       <FormSubmit className="button">Submit</FormSubmit>
+      <FormReset className="button reset">Reset</FormReset>
     </Form>
   );
 }
