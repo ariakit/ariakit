@@ -119,6 +119,18 @@ export const useForm = createHook<FormOptions>(
       [onBlurProp, validateOnBlur, state.items, state.validate]
     );
 
+    const onResetProp = useEventCallback(props.onReset);
+
+    const onReset = useCallback(
+      (event: FormEvent<HTMLFormElement>) => {
+        onResetProp(event);
+        if (event.defaultPrevented) return;
+        event.preventDefault();
+        state.reset();
+      },
+      [onResetProp, state.reset]
+    );
+
     const tagName = useTagName(ref, props.as || "form");
 
     props = {
@@ -128,6 +140,7 @@ export const useForm = createHook<FormOptions>(
       ref: useForkRef(ref, props.ref),
       onSubmit,
       onBlur,
+      onReset,
     };
 
     props = useStoreProvider({ state, ...props }, FormContext);
