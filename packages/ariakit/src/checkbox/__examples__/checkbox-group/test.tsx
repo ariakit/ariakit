@@ -19,19 +19,6 @@ test("check/uncheck on click", async () => {
   expect(getByLabelText("Mango")).toHaveAttribute("aria-checked", "true");
 });
 
-test("tab", async () => {
-  render(<Example />);
-  expect(getByLabelText("Apple")).not.toHaveFocus();
-  expect(getByLabelText("Orange")).not.toHaveFocus();
-  expect(getByLabelText("Mango")).not.toHaveFocus();
-
-  await press.Tab();
-  expect(getByLabelText("Apple")).toHaveFocus();
-  expect(getByLabelText("Apple")).not.toBeChecked();
-  expect(getByLabelText("Orange")).not.toHaveFocus();
-  expect(getByLabelText("Mango")).not.toHaveFocus();
-});
-
 test("space", async () => {
   render(<Example />);
   await press.Tab();
