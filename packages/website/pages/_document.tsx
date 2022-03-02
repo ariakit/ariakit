@@ -6,7 +6,7 @@ import Document, {
   NextScript,
 } from "next/document";
 
-const script = `
+const darkModeScript = `
 function classList(action) {
   document.documentElement.classList[action]("dark");
 }
@@ -30,7 +30,7 @@ class MyDocument extends Document {
       <Html>
         <Head />
         <body>
-          <script dangerouslySetInnerHTML={{ __html: script }} />
+          <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
           <Main />
           <NextScript />
         </body>

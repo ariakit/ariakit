@@ -95,8 +95,8 @@ export function usePopoverState({
   );
 
   const anchorRef = useRef<HTMLElement | null>(null);
-  const popoverRef = useRef<HTMLElement | null>(null);
-  const arrowRef = useRef<HTMLElement | null>(null);
+  const popoverRef = useRef<HTMLElement>(null);
+  const arrowRef = useRef<HTMLElement>(null);
 
   const [currentPlacement, setCurrentPlacement] = useState(placement);
   const [rendered, render] = useReducer(() => ({}), {});
