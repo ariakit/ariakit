@@ -74,6 +74,8 @@ test("reset form on reset", async () => {
   await press.Tab();
   await type("John");
   await press.Tab();
+  await press.Tab();
+  expect(getByRole("button", { name: "Reset" })).toHaveFocus();
   await press.Enter();
   expect(getInput("Name")).toHaveValue("");
 });
