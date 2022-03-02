@@ -98,7 +98,6 @@ const defaultExtensions = [
   prismjsClassNames,
   highlightActiveLineGutter(),
   highlightActiveLine(),
-  scrollPastEnd(),
   drawSelection(),
   EditorState.allowMultipleSelections.of(true),
   bracketMatching(),
@@ -163,6 +162,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
         updateListener,
         getLanguage(file),
         showLineNumbers && lineNumbers(),
+        expanded && scrollPastEnd(),
       ].filter(Boolean) as Extension[];
     }, [expanded, state?.setValue, file, showLineNumbers]);
 
