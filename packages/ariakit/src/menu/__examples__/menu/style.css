@@ -23,6 +23,7 @@
 }
 
 .menu-item {
+  outline: none;
   @apply
     flex
     cursor-default
@@ -31,12 +32,7 @@
     gap-2
     rounded
     p-2
-    outline-none
-    aria-disabled:opacity-25;
-}
-
-.menu:focus-within .menu-item {
-  @apply
+    aria-disabled:opacity-25
     active:bg-primary-2-hover
     dark:active:bg-primary-2-dark-hover
     active-item:bg-primary-2

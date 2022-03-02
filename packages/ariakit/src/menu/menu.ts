@@ -11,6 +11,12 @@ import { As, Props } from "ariakit-utils/types";
 import { HovercardOptions, useHovercard } from "../hovercard/hovercard";
 import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuListOptions, useMenuList } from "./menu-list";
+import { MenuState } from "./menu-state";
+
+function getItemElementById(items: MenuState["items"], id?: null | string) {
+  if (!id) return;
+  return items.find((item) => item.id === id)?.ref.current;
+}
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -73,35 +79,14 @@ export const useMenu = createHook<MenuOptions>(
     const initialFocusRef = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
-      switch (state.initialFocus) {
-        case "first": {
-          const id = state.first();
-          if (id) {
-            const element = state.items.find((item) => item.id === id)?.ref
-              .current;
-            if (element) {
-              initialFocusRef.current = element;
-            }
-          }
-          break;
-        }
-        case "last": {
-          const id = state.last();
-          if (id) {
-            const element = state.items.find((item) => item.id === id)?.ref
-              .current;
-            if (element) {
-              initialFocusRef.current = element;
-            }
-          }
-          break;
-        }
-        case "container": {
-          const element = state.baseRef.current;
-          if (element) {
-            initialFocusRef.current = element;
-          }
-        }
+      const element =
+        state.initialFocus === "first"
+          ? getItemElementById(state.items, state.first())
+          : state.initialFocus === "last"
+          ? getItemElementById(state.items, state.last())
+          : state.baseRef.current;
+      if (element) {
+        initialFocusRef.current = element;
       }
     }, [
       state.initialFocus,

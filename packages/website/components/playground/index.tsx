@@ -1,11 +1,16 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { css } from "@emotion/react";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
 import darkTheme from "ariakit-playground/themes/vscode-dark";
-import { useEventCallback, useId, useUpdateEffect } from "ariakit-utils/hooks";
+import {
+  useEventCallback,
+  useId,
+  useLazyRef,
+  useUpdateEffect,
+} from "ariakit-utils/hooks";
 import { cx, hasOwnProperty } from "ariakit-utils/misc";
 import {
   CompositeOverflow,
@@ -109,6 +114,13 @@ export default function Playground(props: PlaygroundProps) {
       [tab.selectedId, baseId, tab.move]
     ),
   });
+  const beenSelected = useLazyRef(() => new Set<string>());
+
+  useEffect(() => {
+    if (tab.selectedId) {
+      beenSelected.add(tab.selectedId);
+    }
+  }, [tab.activeId]);
 
   useUpdateEffect(() => {
     playground.setValues(props.defaultValues);
@@ -206,7 +218,7 @@ export default function Playground(props: PlaygroundProps) {
               className="rounded-[inherit]"
             >
               {(props) =>
-                !props.hidden && (
+                (!props.hidden || beenSelected.has(getTabId(file, baseId))) && (
                   <div {...props}>
                     <PlaygroundEditor
                       lineNumbers

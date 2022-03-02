@@ -8,7 +8,7 @@ import {
 } from "react";
 import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -82,6 +82,10 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         onFocusProp(event);
         if (disabled) return;
         if (event.defaultPrevented) return;
+        // Reset the autoFocusOnShow state so we can focus the menu button while
+        // the menu is open and press arrow keys to move focus to the menu
+        // items.
+        state.setAutoFocusOnShow(false);
         // We need to unset the active menu item so no menu item appears active
         // while the menu button is focused.
         state.setActiveId(null);
@@ -97,6 +101,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       [
         onFocusProp,
         disabled,
+        state.setAutoFocusOnShow,
         state.setActiveId,
         parentMenuBar,
         parentIsMenuBar,
@@ -104,23 +109,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       ]
     );
 
-    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
     const dir = state.placement.split("-")[0] as BasePlacement;
-
-    const onKeyDownCapture = useCallback(
-      (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyDownCaptureProp(event);
-        if (disabled) return;
-        if (event.defaultPrevented) return;
-        if (getInitialFocus(event, dir)) {
-          // Reset the autoFocusOnShow state so we can focus the menu button
-          // while the menu is open and press arrow keys to move focus to the
-          // menu items.
-          state.setAutoFocusOnShow(false);
-        }
-      },
-      [onKeyDownCaptureProp, disabled, dir]
-    );
 
     const onKeyDownProp = useEventCallback(props.onKeyDown);
 
@@ -188,12 +177,14 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       props = { as: "div", ...props };
     }
 
+    const id = useId(props.id);
+
     props = {
+      id,
       "aria-haspopup": getPopupRole(state.contentElement, "menu"),
       ...props,
       ref: useForkRef(ref, props.ref),
       onFocus,
-      onKeyDownCapture,
       onKeyDown,
       onClick,
     };

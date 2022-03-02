@@ -13,6 +13,7 @@ export async function hover(element: Element, options?: MouseEventInit) {
   const document = element.ownerDocument as DocumentWithLastHovered;
   const { lastHovered } = document;
   const { disabled } = element as HTMLButtonElement;
+  const pointerEventsEnabled = isPointerEventsEnabled(element);
 
   if (lastHovered && isPointerEventsEnabled(lastHovered)) {
     fireEvent.pointerMove(lastHovered, options);
@@ -20,28 +21,35 @@ export async function hover(element: Element, options?: MouseEventInit) {
 
     const isElementWithinLastHovered = lastHovered.contains(element);
 
-    fireEvent.pointerOut(lastHovered, options);
+    const relatedTarget = pointerEventsEnabled ? element : null;
+    const outOptions = { ...options, relatedTarget };
+
+    fireEvent.pointerOut(lastHovered, outOptions);
 
     if (!isElementWithinLastHovered) {
-      fireEvent.pointerLeave(lastHovered, options);
+      fireEvent.pointerLeave(lastHovered, outOptions);
     }
 
-    fireEvent.mouseOut(lastHovered, options);
+    fireEvent.mouseOut(lastHovered, outOptions);
 
     if (!isElementWithinLastHovered) {
-      fireEvent.mouseLeave(lastHovered, options);
+      fireEvent.mouseLeave(lastHovered, outOptions);
     }
   }
 
   await sleep();
 
-  if (!isPointerEventsEnabled(element)) return;
+  if (!pointerEventsEnabled) return;
 
-  fireEvent.pointerOver(element, options);
-  fireEvent.pointerEnter(element, options);
+  const inOptions = lastHovered
+    ? { relatedTarget: lastHovered, ...options }
+    : options;
+
+  fireEvent.pointerOver(element, inOptions);
+  fireEvent.pointerEnter(element, inOptions);
   if (!disabled) {
-    fireEvent.mouseOver(element, options);
-    fireEvent.mouseEnter(element, options);
+    fireEvent.mouseOver(element, inOptions);
+    fireEvent.mouseEnter(element, inOptions);
   }
 
   fireEvent.pointerMove(element, options);
