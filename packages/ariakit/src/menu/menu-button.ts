@@ -197,16 +197,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       showOnHover: (event) => {
         if (typeof showOnHover === "function") return showOnHover(event);
         if (showOnHover != null) return showOnHover;
-        if (
-          hasParentMenu ||
-          (parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items))
-        ) {
-          // We need to unset the active menu item so no menu item appears
-          // active while the menu button is focused.
-          state.setActiveId(null);
-          return true;
-        }
-        return false;
+        if (hasParentMenu) return true;
+        return parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items);
       },
     });
 
