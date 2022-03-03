@@ -28,10 +28,10 @@
     bg-alpha-2
     px-4
     text-base
-    text-alpha-2
-    hover:bg-alpha-2-hover
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
+    text-alpha-2
+    hover:bg-alpha-2-hover
     aria-selected:bg-primary-2
     aria-selected:text-primary-2
     aria-selected:hover:bg-primary-2-hover

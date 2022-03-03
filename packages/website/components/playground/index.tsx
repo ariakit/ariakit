@@ -222,7 +222,7 @@ export default function Playground(props: PlaygroundProps) {
                   <div {...props}>
                     <PlaygroundEditor
                       lineNumbers
-                      className="bg-canvas-1 focus-visible:ariakit-outline dark:bg-canvas-1-dark"
+                      className="bg-canvas-1 focus-visible:ariakit-outline-input dark:bg-canvas-1-dark"
                       state={playground}
                       file={file}
                       theme={theme}

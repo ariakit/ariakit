@@ -271,6 +271,12 @@ module.exports = {
         },
       });
 
+      addUtilities({
+        ".ariakit-outline-input": {
+          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+        },
+      });
+
       addVariant("enter", "&[data-enter]");
       addVariant("leave", "&[data-leave]");
       addVariant("active-item", "&[data-active-item]");
