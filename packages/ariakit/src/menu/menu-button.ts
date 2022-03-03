@@ -177,6 +177,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       props = { as: "div", ...props };
     }
 
+    // We'll use this id to render the aria-labelledby attribute on the menu.
     const id = useId(props.id);
 
     props = {

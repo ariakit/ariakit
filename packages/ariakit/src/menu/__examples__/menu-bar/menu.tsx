@@ -88,10 +88,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   }
 );
 
-export type MenuBarProps = HTMLAttributes<HTMLDivElement> & {
-  values?: Record<string, string | boolean>;
-  setValues?: (values: Record<string, string | boolean>) => void;
-};
+export type MenuBarProps = HTMLAttributes<HTMLDivElement>;
 
 /**
  * MenuBar
