@@ -12,8 +12,9 @@ import { CompositeState } from "./composite-state";
 let mouseMoving = false;
 
 function setMouseMoving(event: MouseEvent) {
-  if (!event.movementX && !event.movementY) return;
-  mouseMoving = true;
+  if (event.movementX || event.movementY || process.env.NODE_ENV === "test") {
+    mouseMoving = true;
+  }
 }
 
 function resetMouseMoving() {
