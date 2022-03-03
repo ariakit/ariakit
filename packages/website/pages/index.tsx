@@ -81,7 +81,16 @@ export default function Home() {
           <Link href="/examples/menu">Menu</Link>
         </li>
         <li>
+          <Link href="/examples/menu-bar">Menu bar</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu-combobox">Menu combobox</Link>
+        </li>
+        <li>
           <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu-nested">Menu nested</Link>
         </li>
         <li>
           <Link href="/examples/popover">Popover</Link>
