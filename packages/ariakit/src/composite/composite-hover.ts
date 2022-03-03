@@ -11,10 +11,13 @@ import { CompositeState } from "./composite-state";
 
 let mouseMoving = false;
 
+function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
+  return event.movementX || event.movementY || process.env.NODE_ENV === "test";
+}
+
 function setMouseMoving(event: MouseEvent) {
-  if (event.movementX || event.movementY || process.env.NODE_ENV === "test") {
-    mouseMoving = true;
-  }
+  if (!hasMouseMovement(event)) return;
+  mouseMoving = true;
 }
 
 function resetMouseMoving() {
@@ -76,6 +79,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
+        if (!hasMouseMovement(event)) return;
         if (!focusOnHoverProp(event)) return;
         // If we're hovering over an item that doesn't have DOM focus, we move
         // focus to the composite element. We're doing this here before setting
