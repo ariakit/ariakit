@@ -9,27 +9,16 @@ import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-let screenX = 0;
-let screenY = 0;
-let assignMousePosition = () => {};
+let mouseMoving = false;
 
-function trackMousePosition(event: MouseEvent) {
-  // Discard mousemove events that are not moving the mouse.
-  if (!event.movementX || !event.movementY) return;
-  // Assign the previous mouse position so we can check if the mouse is moving
-  // on mouseleave.
-  assignMousePosition();
-  // Prepare the next mouse position.
-  assignMousePosition = () => {
-    screenX = event.screenX;
-    screenY = event.screenY;
-  };
+function setMouseMoving(event: MouseEvent) {
+  if (event.movementX || event.movementY || process.env.NODE_ENV === "test") {
+    mouseMoving = true;
+  }
 }
 
-function isMouseMoving(event: ReactMouseEvent | MouseEvent) {
-  // JSDOM doesn't support screenX/screenY
-  if (process.env.NODE_ENV === "test") return true;
-  return event.screenX - screenX || event.screenY - screenY;
+function resetMouseMoving() {
+  mouseMoving = false;
 }
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
@@ -78,7 +67,9 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       // We're not returning the event listener cleanup function here because we
       // may lose some events if this component is unmounted, but others are
       // still mounted.
-      addGlobalEventListener("mousemove", trackMousePosition);
+      addGlobalEventListener("mousemove", setMouseMoving, true);
+      addGlobalEventListener("keydown", resetMouseMoving, true);
+      addGlobalEventListener("scroll", resetMouseMoving, true);
     }, []);
 
     const onMouseMove = useCallback(
@@ -86,7 +77,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
         if (!focusOnHoverProp(event)) return;
-        // If we're hovering hover an item that doesn't have DOM focus, we move
+        // If we're hovering over an item that doesn't have DOM focus, we move
         // focus to the composite element. We're doing this here before setting
         // the active id because the composite element will automatically set
         // the active id to null when it receives focus.
@@ -104,7 +95,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseLeaveProp(event);
         if (event.defaultPrevented) return;
-        if (!isMouseMoving(event)) return;
+        if (!mouseMoving) return;
         if (hoveringInside(event)) return;
         if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
