@@ -102,14 +102,10 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
     const onKeyDownCapture = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownCaptureProp(event);
-        if (
-          event.defaultPrevented ||
-          !typeahead ||
-          !state?.items ||
-          !isValidTypeaheadEvent(event)
-        ) {
-          return clearChars();
-        }
+        if (event.defaultPrevented) return;
+        if (!typeahead) return;
+        if (!state?.items) return;
+        if (!isValidTypeaheadEvent(event)) return clearChars();
         let items = getEnabledItems(state.items);
         if (!isSelfTargetOrItem(event, items)) return clearChars();
         event.preventDefault();
