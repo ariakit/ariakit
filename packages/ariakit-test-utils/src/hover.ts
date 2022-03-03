@@ -22,18 +22,18 @@ export async function hover(element: Element, options?: MouseEventInit) {
     const isElementWithinLastHovered = lastHovered.contains(element);
 
     const relatedTarget = pointerEventsEnabled ? element : null;
-    const outOptions = { ...options, relatedTarget };
+    const leaveOptions = { ...options, relatedTarget };
 
-    fireEvent.pointerOut(lastHovered, outOptions);
+    fireEvent.pointerOut(lastHovered, leaveOptions);
 
     if (!isElementWithinLastHovered) {
-      fireEvent.pointerLeave(lastHovered, outOptions);
+      fireEvent.pointerLeave(lastHovered, leaveOptions);
     }
 
-    fireEvent.mouseOut(lastHovered, outOptions);
+    fireEvent.mouseOut(lastHovered, leaveOptions);
 
     if (!isElementWithinLastHovered) {
-      fireEvent.mouseLeave(lastHovered, outOptions);
+      fireEvent.mouseLeave(lastHovered, leaveOptions);
     }
   }
 
@@ -41,15 +41,15 @@ export async function hover(element: Element, options?: MouseEventInit) {
 
   if (!pointerEventsEnabled) return;
 
-  const inOptions = lastHovered
+  const enterOptions = lastHovered
     ? { relatedTarget: lastHovered, ...options }
     : options;
 
-  fireEvent.pointerOver(element, inOptions);
-  fireEvent.pointerEnter(element, inOptions);
+  fireEvent.pointerOver(element, enterOptions);
+  fireEvent.pointerEnter(element, enterOptions);
   if (!disabled) {
-    fireEvent.mouseOver(element, inOptions);
-    fireEvent.mouseEnter(element, inOptions);
+    fireEvent.mouseOver(element, enterOptions);
+    fireEvent.mouseEnter(element, enterOptions);
   }
 
   fireEvent.pointerMove(element, options);
