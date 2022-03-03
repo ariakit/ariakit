@@ -23,14 +23,14 @@
     flex-col
     gap-2
     rounded-lg
+    p-4
+    drop-shadow
+    focus-visible:ariakit-outline
     border
     border-solid
     border-canvas-4
     bg-canvas-4
-    p-4
     text-canvas-4
-    drop-shadow
-    focus-visible:ariakit-outline
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark

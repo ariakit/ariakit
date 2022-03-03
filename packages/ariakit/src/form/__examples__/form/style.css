@@ -14,13 +14,12 @@
     w-[250px]
     rounded-lg
     border-none
-    bg-canvas-1
     px-4
     text-base
+    focus-visible:ariakit-outline-input
+    bg-canvas-1
     text-canvas-1
-    outline-none
     hover:bg-canvas-1-hover
-    focus-visible:ariakit-outline
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
     dark:hover:bg-canvas-1-dark-hover;
