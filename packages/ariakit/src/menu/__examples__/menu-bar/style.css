@@ -1,15 +1,16 @@
 @import url("../menu/style.css");
 
-:root {
-  @apply pb-[800px] pt-[100px];
-}
-
 .menu-bar {
   @apply flex gap-2;
 }
 
 .menu-bar .menu-item {
-  @apply px-4 h-10;
+  @apply px-6 h-10 rounded-lg;
+}
+
+.menu-bar:not(:focus-within) .menu-item[data-active-item] {
+  background-color: transparent;
+  color: inherit;
 }
 
 .menu-bar:not(:focus) .menu-item:not(:focus)[aria-expanded="true"],
@@ -22,15 +23,15 @@
 }
 
 .menu {
-  @apply p-1;
+  /* @apply p-1; */
 }
 
 .menu-separator {
-  @apply mx-2;
+  /* @apply mx-2; */
 }
 
 .menu-item {
-  @apply py-1 px-3;
+  /* @apply py-1 px-3; */
 }
 
 .menu .menu-item .label {
@@ -38,7 +39,7 @@
 }
 
 .menu .menu-item {
-  font-size: 15px;
+  /* font-size: 15px; */
 }
 
 .shortcuts {

@@ -1,15 +1,16 @@
 import {
   HTMLAttributes,
   ReactNode,
+  RefAttributes,
   createContext,
   forwardRef,
   useContext,
 } from "react";
 import {
+  Menu as BaseMenu,
   MenuItem as BaseMenuItem,
   MenuButton,
   MenuButtonArrow,
-  Menu as MenuPopover,
   useMenuState,
 } from "ariakit/menu";
 
@@ -36,16 +37,19 @@ export type MenuProps = HTMLAttributes<HTMLDivElement> & {
   disabled?: boolean;
 };
 
+type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
+  RefAttributes<HTMLDivElement>;
+
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
-    const isSubmenu = useContext(MenuContext);
+    const inSubmenu = useContext(MenuContext);
     const menu = useMenuState({
       gutter: 8,
-      shift: isSubmenu ? -9 : 0,
+      shift: inSubmenu ? -9 : 0,
     });
 
-    const renderMenuButton = (props: HTMLAttributes<HTMLDivElement>) => (
-      <MenuButton state={menu} className="button" {...props}>
+    const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
+      <MenuButton state={menu} className="button" {...menuButtonProps}>
         <span className="label">{label}</span>
         <MenuButtonArrow />
       </MenuButton>
@@ -53,7 +57,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
 
     return (
       <>
-        {isSubmenu ? (
+        {inSubmenu ? (
           // If it's a submenu, we have to combine the MenuButton and the
           // MenuItem components into a single component, so it works as a
           // submenu button.
@@ -62,11 +66,11 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           </BaseMenuItem>
         ) : (
           // Otherwise, we just render the menu button.
-          renderMenuButton(props)
+          renderMenuButton({ ref, ...props })
         )}
-        <MenuPopover state={menu} className="menu">
+        <BaseMenu state={menu} className="menu">
           <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
-        </MenuPopover>
+        </BaseMenu>
       </>
     );
   }
