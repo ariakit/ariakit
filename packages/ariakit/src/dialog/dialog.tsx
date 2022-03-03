@@ -474,7 +474,7 @@ export const useDialog = createHook<DialogOptions>(
  * @example
  * ```jsx
  * const dialog = useDialogState();
- * <DialogDisclosure state={dialog}>Disclosure</DialogDisclosure>
+ * <button onClick={dialog.toggle}>Open dialog</button>
  * <Dialog state={dialog}>Dialog</Dialog>
  * ```
  */
