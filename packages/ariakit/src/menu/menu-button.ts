@@ -181,6 +181,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     props = {
       id,
+      role: hasParentMenu || parentIsMenuBar ? "menuitem" : undefined,
       "aria-haspopup": getPopupRole(state.contentElement, "menu"),
       ...props,
       ref: useForkRef(ref, props.ref),

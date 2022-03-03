@@ -79,7 +79,7 @@ export const useMenuList = createHook<MenuListOptions>(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (hasParentMenu) {
+        if (hasParentMenu || (parentMenuBar && !isHorizontal)) {
           const hideMap = {
             ArrowRight: () => dir === "left" && !isHorizontal,
             ArrowLeft: () => dir === "right" && !isHorizontal,
@@ -124,10 +124,10 @@ export const useMenuList = createHook<MenuListOptions>(
       [
         onKeyDownProp,
         hasParentMenu,
+        parentMenuBar,
+        isHorizontal,
         state.hide,
         dir,
-        orientation,
-        parentMenuBar,
       ]
     );
 

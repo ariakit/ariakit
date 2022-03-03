@@ -14,7 +14,7 @@ import {
   useMenuState,
 } from "ariakit/menu";
 
-// Use a React Context so we can determine if the menu is a submenu or not.
+// Use React Context so we can determine if the menu is a submenu or not.
 const MenuContext = createContext(false);
 
 export type MenuItemProps = HTMLAttributes<HTMLDivElement> & {

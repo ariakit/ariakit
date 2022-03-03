@@ -1,7 +1,6 @@
 import {
   HTMLAttributes,
   ReactNode,
-  RefAttributes,
   createContext,
   forwardRef,
   useContext,
@@ -17,8 +16,9 @@ import {
   useMenuState,
 } from "ariakit/menu";
 
+// Use React Context so we can determine if the menu is a submenu or a top-level
+// menu inside a menu bar.
 const MenuContext = createContext(false);
-const MenuBarContext = createContext(false);
 
 export type MenuItemProps = HTMLAttributes<HTMLDivElement> & {
   label: ReactNode;
@@ -56,39 +56,30 @@ export type MenuProps = HTMLAttributes<HTMLDivElement> & {
   disabled?: boolean;
 };
 
-type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
-  RefAttributes<HTMLDivElement>;
-
 /**
  * Menu
  */
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
-    const inMenuBar = useContext(MenuBarContext);
     const inSubmenu = useContext(MenuContext);
     const menu = useMenuState({
       gutter: 8,
-      shift: inMenuBar && !inSubmenu ? -5 : inSubmenu ? -9 : 0,
+      shift: inSubmenu ? -9 : -5,
     });
-
-    const renderMenuButton = (props: MenuButtonProps) => (
-      <MenuButton state={menu} className="menu-item" {...props}>
-        <span className="label">{label}</span>
-        {inSubmenu && <MenuButtonArrow />}
-      </MenuButton>
-    );
-
     return (
       <>
-        {inSubmenu || inMenuBar ? (
-          <BaseMenuItem className="menu-item" ref={ref} {...props}>
-            {renderMenuButton}
-          </BaseMenuItem>
-        ) : (
-          renderMenuButton({ ref, ...props })
-        )}
+        <MenuButton
+          state={menu}
+          as={BaseMenuItem}
+          className="menu-item"
+          ref={ref}
+          {...props}
+        >
+          <span className="label">{label}</span>
+          {inSubmenu && <MenuButtonArrow />}
+        </MenuButton>
         {menu.mounted && (
-          <BaseMenu portal state={menu} className="menu">
+          <BaseMenu state={menu} portal className="menu">
             <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
           </BaseMenu>
         )}
@@ -109,9 +100,7 @@ export const MenuBar = forwardRef<HTMLDivElement, MenuBarProps>(
   (props, ref) => {
     const menu = useMenuBarState();
     return (
-      <MenuBarContext.Provider value={true}>
-        <BaseMenuBar state={menu} className="menu-bar" ref={ref} {...props} />
-      </MenuBarContext.Provider>
+      <BaseMenuBar state={menu} className="menu-bar" ref={ref} {...props} />
     );
   }
 );
