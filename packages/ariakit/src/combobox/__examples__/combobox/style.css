@@ -43,6 +43,7 @@
 }
 
 .popover > * {
+  outline: none;
   @apply
     flex
     cursor-default
@@ -51,7 +52,6 @@
     gap-2
     rounded
     p-2
-    outline-none
     hover:bg-primary-1-hover
     dark:hover:bg-primary-1-dark-hover;
 }

@@ -2,6 +2,7 @@
 
 .menu {
   min-width: 180px;
+  outline: none;
   @apply
     relative
     z-50
@@ -17,7 +18,6 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    outline-none
     drop-shadow
     dark:drop-shadow-dark;
 }
@@ -41,7 +41,7 @@
     dark:active-item:text-primary-2-dark;
 }
 
-.menu-separator {
+.separator {
   border-width: 1px 0 0;
   border-color: currentcolor;
   @apply my-2 h-0 opacity-25;

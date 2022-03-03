@@ -45,9 +45,7 @@ export type MenuSeparatorProps = HTMLAttributes<HTMLHRElement>;
  */
 export const MenuSeparator = forwardRef<HTMLHRElement, MenuSeparatorProps>(
   (props, ref) => {
-    return (
-      <BaseMenuSeparator className="menu-separator" ref={ref} {...props} />
-    );
+    return <BaseMenuSeparator className="separator" ref={ref} {...props} />;
   }
 );
 
