@@ -18,7 +18,7 @@
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
     dark:hover:bg-canvas-1-dark-hover
-    focus-visible:ariakit-outline
+    focus-visible:ariakit-outline-input
     aria-disabled:opacity-50;
 }
 
@@ -46,12 +46,12 @@
 }
 
 .item {
+  outline: none;
   @apply
     flex
     gap-2
     items-center
     scroll-m-2
-    outline-none
     cursor-default
     rounded
     p-2
