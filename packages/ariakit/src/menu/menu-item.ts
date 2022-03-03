@@ -1,4 +1,4 @@
-import { Context, MouseEvent, useCallback } from "react";
+import { MouseEvent, useCallback } from "react";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -11,7 +11,7 @@ import {
   CompositeItemOptions,
   useCompositeItem,
 } from "../composite/composite-item";
-import { MenuContext } from "./__utils";
+import { MenuBarContext, MenuContext, hasExpandedMenuButton } from "./__utils";
 import { MenuBarState } from "./menu-bar-state";
 import { MenuState } from "./menu-state";
 
@@ -32,13 +32,23 @@ import { MenuState } from "./menu-state";
  * ```
  */
 export const useMenuItem = createHook<MenuItemOptions>(
-  ({ state, hideOnClick = true, preventScrollOnKeyDown = true, ...props }) => {
-    const context = MenuContext as Context<typeof state>;
-    state = useStore(state || context, ["move"]);
+  ({
+    state,
+    hideOnClick = true,
+    preventScrollOnKeyDown = true,
+    focusOnHover,
+    ...props
+  }) => {
+    // Use MenuBar state as a fallback.
+    const menuBarState = useStore(state || MenuBarContext, ["items"]);
+    state =
+      useStore(state || (MenuContext as any), ["move", "hideAll"]) ||
+      menuBarState;
 
     const onClickProp = useEventCallback(props.onClick);
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
     const hideMenu = state && "hideAll" in state ? state.hideAll : undefined;
+    const isWithinMenu = !!hideMenu;
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -51,7 +61,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
         if (!hideOnClickProp(event)) return;
         hideMenu();
       },
-      [onClickProp, hideOnClick, hideMenu]
+      [onClickProp, hideMenu, hideOnClickProp]
     );
 
     props = {
@@ -62,14 +72,33 @@ export const useMenuItem = createHook<MenuItemOptions>(
 
     props = useCompositeItem({ state, preventScrollOnKeyDown, ...props });
 
-    // If the menu item is not inside a menu, but a menu bar, we don't want to
-    // move focus to the menu item on mouse move, nor hide the menu on click.
-    const isWithinMenu = !!state && "hide" in state;
-
     props = useCompositeHover({
       state,
-      focusOnHover: isWithinMenu,
       ...props,
+      focusOnHover: (event) => {
+        if (typeof focusOnHover === "function") return focusOnHover(event);
+        if (focusOnHover != null) return focusOnHover;
+        // The menu container should be focused on mouseleave only if the menu
+        // item is inside a menu, not a menu bar.
+        if (event.type === "mouseleave") return isWithinMenu;
+        if (isWithinMenu) {
+          // If the menu item is also a submenu button, we should move actual
+          // DOM focus to it so that the submenu will not close when the user
+          // moves the cursor back to the menu button.
+          if (event.currentTarget.hasAttribute("aria-expanded")) {
+            event.currentTarget.focus();
+          }
+          return true;
+        }
+        // If the menu item is inside a menu bar, we should move DOM focus to
+        // the menu item if there's another expanded menu button inside the menu
+        // bar. Without this, the visible menus in the menu bar wouldn't close.
+        else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
+          event.currentTarget.focus();
+          return true;
+        }
+        return false;
+      },
     });
 
     return props;

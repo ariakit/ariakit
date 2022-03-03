@@ -5,6 +5,7 @@ import {
   hover,
   press,
   render,
+  type,
 } from "ariakit-test-utils";
 import { axe } from "jest-axe";
 import Example from ".";
@@ -173,7 +174,7 @@ test("tab back to menu button", async () => {
   await press.Enter();
   await press.ShiftTab();
   await press.Tab();
-  expect(getMenuItem("Edit")).toHaveFocus();
+  expect(getMenuItem("Edit")).not.toHaveFocus();
   expect(getMenu()).toBeVisible();
 });
 
@@ -265,4 +266,14 @@ test("menu item hover space", async () => {
   expect(alert).toHaveBeenCalledTimes(1);
   expect(getMenu()).not.toBeVisible();
   expect(getMenuButton()).toHaveFocus();
+});
+
+test("typeahead", async () => {
+  render(<Example />);
+  await click(getMenuButton());
+  expect(getMenuItem("Edit")).not.toHaveFocus();
+  await type("d");
+  expect(getMenu()).toHaveFocus();
+  await type("re");
+  expect(getMenuItem("Report")).toHaveFocus();
 });
