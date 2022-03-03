@@ -24,7 +24,7 @@ export default function Example() {
         <MenuItem className="menu-item" disabled>
           Delete
         </MenuItem>
-        <MenuSeparator className="menu-separator" />
+        <MenuSeparator className="separator" />
         <MenuItem className="menu-item">Report</MenuItem>
       </Menu>
     </>
