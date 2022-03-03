@@ -111,17 +111,23 @@ export const usePortal = createHook<PortalOptions>(
       };
     }, [portal, portalElement, context, portalRef]);
 
+    // When preserveTabOrder is true, make sure elements inside the portal
+    // element are tabbable only when the portal has already been focused,
+    // either by tabbing into a focus trap element outside or using the mouse.
     useEffect(() => {
       if (!portalNode) return;
       if (!preserveTabOrder) return;
-      // When preserveTabOrder is true, make sure elements inside the portal
-      // element are tabbable only when the portal has already been focused,
-      // either by tabbing into a focus trap element outside or using the mouse.
+      let raf = 0;
       const onFocus = (event: FocusEvent) => {
         if (isFocusEventOutside(event)) {
           const focusing = event.type === "focusin";
-          const manageFocus = focusing ? restoreFocusIn : disableFocusIn;
-          manageFocus(portalNode, true);
+          if (focusing) return restoreFocusIn(portalNode);
+          // Wait for the next frame to allow tabindex changes after the focus
+          // event.
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => {
+            disableFocusIn(portalNode, true);
+          });
         }
       };
       // Listen to the event on the capture phase so they run before the focus

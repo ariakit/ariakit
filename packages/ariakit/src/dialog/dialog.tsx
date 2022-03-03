@@ -25,6 +25,7 @@ import {
 import {
   useBooleanEventCallback,
   useForkRef,
+  useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -127,7 +128,7 @@ export const useDialog = createHook<DialogOptions>(
     useSafeLayoutEffect(() => {
       if (!state.mounted) return;
       const dialog = ref.current;
-      const activeElement = getActiveElement(dialog) as HTMLElement | null;
+      const activeElement = getActiveElement(dialog, true);
       if (activeElement && activeElement.tagName !== "BODY") {
         state.disclosureRef.current = activeElement;
       }
@@ -135,6 +136,7 @@ export const useDialog = createHook<DialogOptions>(
 
     const nested = useNestedDialogs(ref, { state, modal });
     const { nestedDialogs, visibleModals, wrapElement } = nested;
+    const nestedDialogsRef = useLiveRef(nestedDialogs);
 
     usePreventBodyScroll(preventBodyScroll && state.mounted);
     // When the dialog is unmounted, we make sure to update the state.
@@ -241,9 +243,8 @@ export const useDialog = createHook<DialogOptions>(
       // focus. This is useful for when the Dialog component is unmounted
       // when hidden.
       if (!domReady) return;
-
       // If there are open nested dialogs, let them handle the focus.
-      const isNestedDialogVisible = nestedDialogs.some(
+      const isNestedDialogVisible = nestedDialogsRef.current?.some(
         (child) => child.current && !child.current.hidden
       );
       if (isNestedDialogVisible) return;
@@ -251,15 +252,22 @@ export const useDialog = createHook<DialogOptions>(
       if (!dialog) return;
       const initialFocus = initialFocusRef?.current;
       const element =
-        initialFocus || getFirstTabbableIn(dialog, true) || dialog;
+        initialFocus ||
+        // We have to fallback to the first focusable element otherwise portaled
+        // dialogs with preserveTabOrder set to true will not receive focus
+        // properly because the elements aren't tabbable until the dialog
+        // receives focus.
+        getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
+        dialog;
       ensureFocus(element);
     }, [
       state.animating,
       state.visible,
       autoFocusOnShow,
       domReady,
-      nestedDialogs,
       initialFocusRef,
+      portal,
+      preserveTabOrder,
     ]);
 
     // Auto focus on hide.

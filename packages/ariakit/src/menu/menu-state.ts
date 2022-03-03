@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useControlledState } from "ariakit-utils/hooks";
 import { applyState } from "ariakit-utils/misc";
 import { useStore, useStorePublisher } from "ariakit-utils/store";
 import { SetState, SetStateAction } from "ariakit-utils/types";
@@ -13,20 +13,12 @@ import {
   HovercardStateProps,
   useHovercardState,
 } from "../hovercard/hovercard-state";
-import { MenuBarContext, useParentMenu } from "./__utils";
+import { MenuBarContext, MenuContext } from "./__utils";
 
 type Values = Record<
   string,
   string | boolean | number | Array<string | number>
 >;
-
-function useParentOrientation(parentMenu?: MenuState) {
-  const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
-  if (parentMenu) {
-    return parentMenu.orientation;
-  }
-  return parentMenuBar?.orientation;
-}
 
 /**
  * Provides state for the `Menu` components.
@@ -42,7 +34,7 @@ function useParentOrientation(parentMenu?: MenuState) {
  */
 export function useMenuState<V extends Values = Values>({
   orientation = "vertical",
-  timeout = 150,
+  timeout,
   hideTimeout = 0,
   ...props
 }: MenuStateProps<V> = {}): MenuState<V> {
@@ -53,29 +45,24 @@ export function useMenuState<V extends Values = Values>({
     props.values,
     props.setValues
   );
-  const parentMenu = useParentMenu(["orientation", "hideAll"]);
-  const contextOrientation = useParentOrientation(parentMenu);
+  const parentMenu = useStore(MenuContext, ["orientation", "hideAll"]);
+  const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
+  const contextOrientation =
+    parentMenu?.orientation || parentMenuBar?.orientation;
+  const parentIsMenuBar = !!parentMenuBar && !parentMenu;
   // Defines the placement of the menu popover based on the parent orientation.
   const placement =
     props.placement ||
     (contextOrientation === "vertical" ? "right-start" : "bottom-start");
 
+  timeout = timeout ?? parentIsMenuBar ? 0 : 150;
   const composite = useCompositeState({ orientation, ...props });
-  const hoverCard = useHovercardState({
+  const hovercard = useHovercardState({
     timeout,
     hideTimeout,
     ...props,
     placement,
   });
-
-  // TODO: Comment. Sometimes re-opening the menu in a menu bar will move focus.
-  // Maybe should reset activeId as well. Needs to be layout effect because of
-  // context menu subsequent clicks.
-  useSafeLayoutEffect(() => {
-    if (!hoverCard.visible) {
-      composite.setMoves(0);
-    }
-  }, [hoverCard.visible, composite.setMoves]);
 
   const setValue = useCallback(
     (name: string, value: SetStateAction<V[string]>) => {
@@ -97,14 +84,14 @@ export function useMenuState<V extends Values = Values>({
   );
 
   const hideAll = useCallback(() => {
-    hoverCard.hide();
+    hovercard.hide();
     parentMenu?.hideAll();
-  }, [hoverCard.hide, parentMenu?.hideAll]);
+  }, [hovercard.hide, parentMenu?.hideAll]);
 
   const state = useMemo(
     () => ({
       ...composite,
-      ...hoverCard,
+      ...hovercard,
       initialFocus,
       setInitialFocus,
       values,
@@ -114,7 +101,7 @@ export function useMenuState<V extends Values = Values>({
     }),
     [
       composite,
-      hoverCard,
+      hovercard,
       initialFocus,
       setInitialFocus,
       values,

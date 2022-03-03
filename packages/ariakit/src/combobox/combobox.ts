@@ -147,8 +147,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       state.value,
     ]);
 
-    // Auto select the first item on type. Must be a layout effect, otherwise it
-    // doesn't work well with useDeferredValue.
+    // Auto select the first item on type.
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
@@ -334,9 +333,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
       [
         onKeyDownProp,
-        state.move,
-        state.activeId,
         state.visible,
+        state.activeId,
         showOnKeyDownProp,
         state.show,
       ]

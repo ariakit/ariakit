@@ -12,22 +12,20 @@ export default function Example() {
     <div className="wrapper">
       <HovercardAnchor
         state={hovercard}
-        href="https://twitter.com/A11YProject"
+        href="https://twitter.com/ariakitjs"
         className="anchor"
       >
-        @A11YProject
+        @ariakitjs
       </HovercardAnchor>
       <Hovercard state={hovercard} className="hovercard">
         <img
-          src="https://pbs.twimg.com/profile_images/1282181187184754688/zr1yW3wE_400x400.png"
-          alt="The A11Y Project"
+          src="https://pbs.twimg.com/profile_images/1116178840467005440/cwXwfYjW_400x400.png"
+          alt="Ariakit"
           className="avatar"
         />
-        <HovercardHeading className="username">
-          The A11Y Project
-        </HovercardHeading>
-        <p>A community-driven effort to make digital accessibility easier.</p>
-        <a href="https://twitter.com/A11YProject" className="button">
+        <HovercardHeading className="username">Ariakit</HovercardHeading>
+        <p>Toolkit for building accessible web apps with React.</p>
+        <a href="https://twitter.com/ariakitjs" className="button">
           Follow
         </a>
       </Hovercard>

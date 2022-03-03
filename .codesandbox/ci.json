@@ -1,5 +1,5 @@
 {
   "packages": ["packages/ariakit*"],
   "buildCommand": "build",
-  "sandboxes": ["packages/*/__examples__/*"]
+  "sandboxes": ["m4n32vjkoj"]
 }

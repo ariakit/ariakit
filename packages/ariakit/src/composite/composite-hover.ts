@@ -9,21 +9,19 @@ import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-let screenX = 0;
-let screenY = 0;
+let mouseMoving = false;
 
-function handleGlobalMouseMove(event: MouseEvent) {
-  screenX = event.screenX;
-  screenY = event.screenY;
+function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
+  return event.movementX || event.movementY || process.env.NODE_ENV === "test";
 }
 
-function isScrolling(event: ReactMouseEvent | MouseEvent) {
-  // JSDOM doesn't support screenX/screenY
-  if (process.env.NODE_ENV === "test") return false;
-  return (
-    Math.abs(event.screenX - screenX) === 0 &&
-    Math.abs(event.screenY - screenY) === 0
-  );
+function setMouseMoving(event: MouseEvent) {
+  if (!hasMouseMovement(event)) return;
+  mouseMoving = true;
+}
+
+function resetMouseMoving() {
+  mouseMoving = false;
 }
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
@@ -69,21 +67,30 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseMoveProp = useEventCallback(props.onMouseMove);
 
     useEffect(() => {
-      return addGlobalEventListener("mousemove", handleGlobalMouseMove);
+      // We're not returning the event listener cleanup function here because we
+      // may lose some events if this component is unmounted, but others are
+      // still mounted.
+      addGlobalEventListener("mousemove", setMouseMoving, true);
+      addGlobalEventListener("keydown", resetMouseMoving, true);
+      addGlobalEventListener("scroll", resetMouseMoving, true);
     }, []);
 
     const onMouseMove = useCallback(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseMoveProp(event);
         if (event.defaultPrevented) return;
+        if (!hasMouseMovement(event)) return;
         if (!focusOnHoverProp(event)) return;
+        // If we're hovering over an item that doesn't have DOM focus, we move
+        // focus to the composite element. We're doing this here before setting
+        // the active id because the composite element will automatically set
+        // the active id to null when it receives focus.
+        if (!hasFocusWithin(event.currentTarget)) {
+          state?.baseRef.current?.focus();
+        }
         state?.setActiveId(event.currentTarget.id);
-        // If we're hovering hover an item that doesn't have DOM focus, we move
-        // focus to the composite element.
-        if (hasFocusWithin(event.currentTarget)) return;
-        state?.baseRef.current?.focus();
       },
-      [onMouseMoveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
+      [onMouseMoveProp, focusOnHoverProp, state?.baseRef, state?.setActiveId]
     );
 
     const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
@@ -91,8 +98,8 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseLeave = useCallback(
       (event: ReactMouseEvent<HTMLDivElement>) => {
         onMouseLeaveProp(event);
-        if (isScrolling(event)) return;
         if (event.defaultPrevented) return;
+        if (!mouseMoving) return;
         if (hoveringInside(event)) return;
         if (movingToAnotherItem(event)) return;
         if (!focusOnHoverProp(event)) return;
@@ -100,7 +107,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
         // Move focus to the composite element.
         state?.baseRef.current?.focus();
       },
-      [onMouseLeaveProp, state?.setActiveId, state?.baseRef]
+      [onMouseLeaveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
     );
 
     props = {

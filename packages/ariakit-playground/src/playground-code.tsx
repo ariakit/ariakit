@@ -3,6 +3,7 @@ import {
   MouseEvent,
   cloneElement,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -10,10 +11,8 @@ import {
 import { ClassNames, SerializedStyles } from "@emotion/react";
 import {
   useControlledState,
-  useDeferredValue,
   useEventCallback,
   useForkRef,
-  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
@@ -66,16 +65,18 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       language = "jsx";
     }
 
-    const deferredValue = useDeferredValue(value);
-
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       if (!maxHeight) return;
       const element = ref.current;
       if (!element) return;
       const scrollerElement = element.querySelector(".cm-scroller");
       if (!scrollerElement) return;
-      setCollapsible(scrollerElement.scrollHeight > maxHeight);
-    }, [deferredValue, maxHeight]);
+      const observer = new ResizeObserver(() => {
+        setCollapsible(scrollerElement.scrollHeight > maxHeight);
+      });
+      observer.observe(scrollerElement);
+      return () => observer.disconnect();
+    }, [maxHeight, props.children]);
 
     const code = useMemo(() => {
       if (!shouldHighlight) return;
@@ -167,9 +168,12 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
           >
             {numbers}
             {code ? (
-              <code dangerouslySetInnerHTML={{ __html: code }} />
+              <code
+                className="cm-content"
+                dangerouslySetInnerHTML={{ __html: code }}
+              />
             ) : (
-              <code>{value}</code>
+              <code className="cm-content">{value}</code>
             )}
           </pre>
         </div>

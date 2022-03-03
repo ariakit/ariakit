@@ -33,6 +33,18 @@ export default function Home() {
           <Link href="/examples/checkbox-controlled">Checkbox controlled</Link>
         </li>
         <li>
+          <Link href="/examples/checkbox-as-button">Checkbox as button</Link>
+        </li>
+        <li>
+          <Link href="/examples/checkbox-custom">Checkbox custom</Link>
+        </li>
+        <li>
+          <Link href="/examples/checkbox-state">Checkbox state</Link>
+        </li>
+        <li>
+          <Link href="/examples/checkbox-group">Checkbox group</Link>
+        </li>
+        <li>
           <Link href="/examples/collection">Collection</Link>
         </li>
         <li>
@@ -51,6 +63,9 @@ export default function Home() {
           <Link href="/examples/disclosure">Disclosure</Link>
         </li>
         <li>
+          <Link href="/examples/focus-trap">Focus trap</Link>
+        </li>
+        <li>
           <Link href="/examples/form">Form</Link>
         </li>
         <li>
@@ -63,7 +78,19 @@ export default function Home() {
           <Link href="/examples/hovercard">Hovercard</Link>
         </li>
         <li>
+          <Link href="/examples/menu">Menu</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu-bar">Menu bar</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu-combobox">Menu combobox</Link>
+        </li>
+        <li>
           <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
+        </li>
+        <li>
+          <Link href="/examples/menu-nested">Menu nested</Link>
         </li>
         <li>
           <Link href="/examples/popover">Popover</Link>

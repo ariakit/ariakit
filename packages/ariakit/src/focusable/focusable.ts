@@ -163,7 +163,6 @@ function onGlobalMouseDown(event: MouseEvent) {
 
 function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.metaKey) return;
-  if (event.altKey) return;
   if (event.ctrlKey) return;
   isKeyboardModality = true;
 }
@@ -390,7 +389,7 @@ export const useFocusable = createHook<FocusableOptions>(
         supportsDisabled,
         props.tabIndex
       ),
-      disabled: trulyDisabled ? true : undefined,
+      disabled: supportsDisabled && trulyDisabled ? true : undefined,
       // TODO: Test Focusable contentEditable.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,

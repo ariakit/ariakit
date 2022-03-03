@@ -12,14 +12,15 @@ import { POPOVER_ARROW_PATH } from "./__popover-arrow-path";
 import { PopoverContext } from "./__utils";
 import { PopoverState } from "./popover-state";
 
-const rotateMap = {
-  top: "rotate(180 0 0)",
-  right: "rotate(-90 0 0)",
-  bottom: "rotate(0 0 0)",
-  left: "rotate(90 0 0)",
-};
-
 const defaultSize = 30;
+const halfDefaultSize = defaultSize / 2;
+
+const rotateMap = {
+  top: `rotate(180 ${halfDefaultSize} ${halfDefaultSize})`,
+  right: `rotate(-90 ${halfDefaultSize} ${halfDefaultSize})`,
+  bottom: `rotate(0 ${halfDefaultSize} ${halfDefaultSize})`,
+  left: `rotate(90 ${halfDefaultSize} ${halfDefaultSize})`,
+};
 
 function useComputedStyle(element?: Element | null) {
   const [style, setStyle] = useState<CSSStyleDeclaration>();
@@ -60,9 +61,11 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
 
     const children = useMemo(
       () => (
-        <svg display="block" transform={transform} viewBox="0 0 30 30">
-          <path fill="none" d={POPOVER_ARROW_PATH} />
-          <path stroke="none" d={POPOVER_ARROW_PATH} />
+        <svg display="block" viewBox="0 0 30 30">
+          <g transform={transform}>
+            <path fill="none" d={POPOVER_ARROW_PATH} />
+            <path stroke="none" d={POPOVER_ARROW_PATH} />
+          </g>
         </svg>
       ),
       [transform]

@@ -1,4 +1,4 @@
-import { Polygon } from "./__utils";
+import { Polygon } from "./polygon";
 
 function getPolygon() {
   const id = "debug-polygon";
@@ -11,9 +11,11 @@ function getPolygon() {
   svg.style.left = "0";
   svg.style.width = "100%";
   svg.style.height = "100%";
-  svg.style.opacity = "0.15";
+  svg.style.fill = "green";
+  svg.style.opacity = "0.2";
   svg.style.position = "fixed";
   svg.style.pointerEvents = "none";
+  svg.style.zIndex = "999999";
   const polygon = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "polygon"
@@ -29,4 +31,6 @@ export function debugPolygon(polygon: Polygon) {
   const polygonElement = getPolygon();
   const points = polygon.map((point) => point.join(",")).join(" ");
   polygonElement.setAttribute("points", points);
+  // Return SVG element
+  return polygonElement.parentElement;
 }

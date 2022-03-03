@@ -1,4 +1,5 @@
 import { KeyboardEvent, useCallback, useContext, useRef } from "react";
+import { isTextField } from "ariakit-utils/dom";
 import { isSelfTarget } from "ariakit-utils/events";
 import { useEventCallback } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
@@ -13,7 +14,13 @@ import { CompositeState } from "./composite-state";
 
 let chars = "";
 
+function clearChars() {
+  chars = "";
+}
+
 function isValidTypeaheadEvent(event: KeyboardEvent) {
+  const target = event.target as HTMLElement | null;
+  if (target && isTextField(target)) return false;
   // If the spacebar is pressed, we'll only consider it a valid typeahead event
   // if there were already other characters typed.
   if (event.key === " " && chars.length) return true;
@@ -95,12 +102,16 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
     const onKeyDownCapture = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownCaptureProp(event);
-        if (event.defaultPrevented) return;
-        if (!typeahead) return;
-        if (!state?.items) return;
-        if (!isValidTypeaheadEvent(event)) return;
+        if (
+          event.defaultPrevented ||
+          !typeahead ||
+          !state?.items ||
+          !isValidTypeaheadEvent(event)
+        ) {
+          return clearChars();
+        }
         let items = getEnabledItems(state.items);
-        if (!isSelfTargetOrItem(event, items)) return;
+        if (!isSelfTargetOrItem(event, items)) return clearChars();
         event.preventDefault();
         // We need to clear the previous cleanup timeout so we can append the
         // pressed char to the existing one.
@@ -120,7 +131,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         } else {
           // Immediately clear the characters so the next keypress starts a new
           // search.
-          chars = "";
+          clearChars();
         }
       },
       [

@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
+import { HTMLAttributes, RefObject, useEffect, useState } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
@@ -38,6 +38,7 @@ export const useTooltip = createHook<TooltipOptions>(
     portal = true,
     hideOnEscape = true,
     hideOnControl = false,
+    wrapperProps,
     ...props
   }) => {
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
@@ -51,6 +52,17 @@ export const useTooltip = createHook<TooltipOptions>(
       if (!state.mounted) return;
       state.render();
     }, [portalNode, state.mounted, state.render]);
+
+    // Makes sure the wrapper element that's passed to popper has the same
+    // z-index as the popover element so users only need to set the z-index
+    // once.
+    useSafeLayoutEffect(() => {
+      const wrapper = popoverRef.current;
+      const tooltip = state.contentElement;
+      if (!wrapper) return;
+      if (!tooltip) return;
+      wrapper.style.zIndex = getComputedStyle(tooltip).zIndex;
+    }, [popoverRef, state.contentElement]);
 
     const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
     const hideOnControlProp = useBooleanEventCallback(hideOnControl);
@@ -70,8 +82,19 @@ export const useTooltip = createHook<TooltipOptions>(
 
     props = useWrapElement(
       props,
-      (element) => <div ref={popoverRef}>{element}</div>,
-      [popoverRef]
+      (element) => (
+        <div
+          role="presentation"
+          {...wrapperProps}
+          // Avoid the wrapper from taking space when used within a flexbox
+          // container with the gap property.
+          style={{ position: "fixed", ...wrapperProps?.style }}
+          ref={popoverRef}
+        >
+          {element}
+        </div>
+      ),
+      [popoverRef, wrapperProps]
     );
 
     props = useWrapElement(
@@ -135,6 +158,11 @@ export type TooltipOptions<T extends As = "div"> = Omit<
      * @default false
      */
     hideOnControl?: BooleanOrCallback<KeyboardEvent>;
+    /**
+     * Props that will be passed to the popover wrapper element. This element will
+     * be used to position the popover.
+     */
+    wrapperProps?: HTMLAttributes<HTMLDivElement>;
   };
 
 export type TooltipProps<T extends As = "div"> = Props<TooltipOptions<T>>;
