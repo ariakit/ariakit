@@ -86,8 +86,13 @@ test("type on combobox", async () => {
   expect(() => getOption("Classic")).toThrow();
   expect(getOption("Code")).toHaveFocus();
   await type("ver");
+  expect(getCombobox()).toHaveValue("cover");
   expect(() => getOption("Code")).toThrow();
   expect(getOption("Cover")).toHaveFocus();
+  await press.Escape();
+  expect(getMenuButton()).toHaveFocus();
+  await click(getMenuButton());
+  expect(getCombobox()).toHaveValue("");
 });
 
 test("move through items with keyboard", async () => {
