@@ -1,6 +1,6 @@
+import { Button } from "ariakit/button";
 import {
   Dialog,
-  DialogDisclosure,
   DialogDismiss,
   DialogHeading,
   useDialogState,
@@ -11,9 +11,9 @@ export default function Example() {
   const dialog = useDialogState();
   return (
     <>
-      <DialogDisclosure state={dialog} className="button">
+      <Button onClick={dialog.toggle} className="button">
         View details
-      </DialogDisclosure>
+      </Button>
       <Dialog state={dialog} className="dialog">
         <header className="header">
           <DialogHeading className="heading">Apples</DialogHeading>

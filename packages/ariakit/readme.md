@@ -40,8 +40,8 @@ yarn add ariakit
 ```jsx
 import { createRoot } from "react-dom";
 import {
+  Button,
   Dialog,
-  DialogDisclosure,
   DialogHeading,
   DialogDescription,
   useDialogState,
@@ -51,7 +51,7 @@ function App() {
   const dialog = useDialogState();
   return (
     <>
-      <DialogDisclosure state={dialog}>Open dialog</DialogDisclosure>
+      <Button onClick={dialog.toggle}>Open dialog</Button>
       <Dialog state={dialog}>
         <DialogHeading>Welcome</DialogHeading>
         <DialogDescription>Welcome to Reakit!</DialogDescription>
