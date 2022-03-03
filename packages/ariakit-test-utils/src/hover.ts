@@ -15,41 +15,42 @@ export async function hover(element: Element, options?: MouseEventInit) {
   const { disabled } = element as HTMLButtonElement;
   const pointerEventsEnabled = isPointerEventsEnabled(element);
 
-  if (lastHovered && isPointerEventsEnabled(lastHovered)) {
+  if (lastHovered) {
     fireEvent.pointerMove(lastHovered, options);
     fireEvent.mouseMove(lastHovered, options);
 
-    const isElementWithinLastHovered = lastHovered.contains(element);
+    if (isPointerEventsEnabled(lastHovered)) {
+      const isElementWithinLastHovered = lastHovered.contains(element);
+      const relatedTarget = pointerEventsEnabled ? element : null;
+      const leaveOptions = { ...options, relatedTarget };
 
-    const relatedTarget = pointerEventsEnabled ? element : null;
-    const leaveOptions = { ...options, relatedTarget };
+      fireEvent.pointerOut(lastHovered, leaveOptions);
 
-    fireEvent.pointerOut(lastHovered, leaveOptions);
+      if (!isElementWithinLastHovered) {
+        fireEvent.pointerLeave(lastHovered, leaveOptions);
+      }
 
-    if (!isElementWithinLastHovered) {
-      fireEvent.pointerLeave(lastHovered, leaveOptions);
-    }
+      fireEvent.mouseOut(lastHovered, leaveOptions);
 
-    fireEvent.mouseOut(lastHovered, leaveOptions);
-
-    if (!isElementWithinLastHovered) {
-      fireEvent.mouseLeave(lastHovered, leaveOptions);
+      if (!isElementWithinLastHovered) {
+        fireEvent.mouseLeave(lastHovered, leaveOptions);
+      }
     }
   }
 
   await sleep();
 
-  if (!pointerEventsEnabled) return;
+  if (pointerEventsEnabled) {
+    const enterOptions = lastHovered
+      ? { relatedTarget: lastHovered, ...options }
+      : options;
 
-  const enterOptions = lastHovered
-    ? { relatedTarget: lastHovered, ...options }
-    : options;
-
-  fireEvent.pointerOver(element, enterOptions);
-  fireEvent.pointerEnter(element, enterOptions);
-  if (!disabled) {
-    fireEvent.mouseOver(element, enterOptions);
-    fireEvent.mouseEnter(element, enterOptions);
+    fireEvent.pointerOver(element, enterOptions);
+    fireEvent.pointerEnter(element, enterOptions);
+    if (!disabled) {
+      fireEvent.mouseOver(element, enterOptions);
+      fireEvent.mouseEnter(element, enterOptions);
+    }
   }
 
   fireEvent.pointerMove(element, options);
