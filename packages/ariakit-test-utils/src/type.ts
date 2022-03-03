@@ -41,53 +41,53 @@ export async function type(
     // active element again.
     element = (getActiveElement(element) || element) as HTMLElement;
 
-    if (!isTextField(element)) return;
+    if (isTextField(element)) {
+      const input = element as TextField;
+      const [start, end] = getSelectionRange(input);
 
-    const input = element as TextField;
-    const [start, end] = getSelectionRange(input);
-
-    if (char === "\b") {
-      // Backspace. If there's no selection (that is, the caret start position
-      // is the same as the end position), then we decrement the position so
-      // it deletes the previous character.
-      const startAfterBackspace =
-        start === end ? Math.max(start - 1, 0) : start;
-      const firstPart = input.value.slice(0, startAfterBackspace);
-      const lastPart = input.value.slice(end, input.value.length);
-      setSelectionRange(input, startAfterBackspace);
-      value = `${firstPart}${lastPart}`;
-      inputType = "deleteContentBackward";
-    } else {
-      // Any other character. Just get the caret position and add the character
-      // there.
-      const firstPart = input.value.slice(0, start);
-      const lastPart = input.value.slice(end, input.value.length);
-      // Increment caret position
-      setSelectionRange(input, start + 1);
-      value = `${firstPart}${char}${lastPart}`;
-    }
-
-    if (defaultAllowed && !input.readOnly) {
-      if (inputType === "insertText") {
-        defaultAllowed = fireEvent.keyPress(input, {
-          key,
-          charCode: key.charCodeAt(0),
-          ...options,
-        });
+      if (char === "\b") {
+        // Backspace. If there's no selection (that is, the caret start position
+        // is the same as the end position), then we decrement the position so
+        // it deletes the previous character.
+        const startAfterBackspace =
+          start === end ? Math.max(start - 1, 0) : start;
+        const firstPart = input.value.slice(0, startAfterBackspace);
+        const lastPart = input.value.slice(end, input.value.length);
+        setSelectionRange(input, startAfterBackspace);
+        value = `${firstPart}${lastPart}`;
+        inputType = "deleteContentBackward";
+      } else {
+        // Any other character. Just get the caret position and add the character
+        // there.
+        const firstPart = input.value.slice(0, start);
+        const lastPart = input.value.slice(end, input.value.length);
+        // Increment caret position
+        setSelectionRange(input, start + 1);
+        value = `${firstPart}${char}${lastPart}`;
       }
-      if (defaultAllowed) {
-        fireEvent.input(input, {
-          data: char,
-          target: { value },
-          inputType,
-          ...options,
-        });
+
+      if (defaultAllowed && !input.readOnly) {
+        if (inputType === "insertText") {
+          defaultAllowed = fireEvent.keyPress(input, {
+            key,
+            charCode: key.charCodeAt(0),
+            ...options,
+          });
+        }
+        if (defaultAllowed) {
+          fireEvent.input(input, {
+            data: char,
+            target: { value },
+            inputType,
+            ...options,
+          });
+        }
       }
     }
 
     await sleep();
 
-    fireEvent.keyUp(input, { key, ...options });
+    fireEvent.keyUp(element, { key, ...options });
 
     await sleep();
   }
