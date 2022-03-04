@@ -73,7 +73,7 @@ export default function Example() {
           <PopoverArrow className="arrow" />
           <SelectRow className="row">
             <SelectItem
-              className="item"
+              className="select-item"
               value="Top Left"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -84,7 +84,7 @@ export default function Example() {
               <VisuallyHidden>Top Left</VisuallyHidden>
             </SelectItem>
             <SelectItem
-              className="item"
+              className="select-item"
               value="Top Center"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -95,7 +95,7 @@ export default function Example() {
               <VisuallyHidden>Top Center</VisuallyHidden>
             </SelectItem>
             <SelectItem
-              className="item"
+              className="select-item"
               value="Top Right"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -108,7 +108,7 @@ export default function Example() {
           </SelectRow>
           <SelectRow className="row">
             <SelectItem
-              className="item"
+              className="select-item"
               value="Center Left"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -119,7 +119,7 @@ export default function Example() {
               <VisuallyHidden>Center Left</VisuallyHidden>
             </SelectItem>
             <SelectItem
-              className="item"
+              className="select-item"
               value="Center"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -130,7 +130,7 @@ export default function Example() {
               <VisuallyHidden>Center</VisuallyHidden>
             </SelectItem>
             <SelectItem
-              className="item"
+              className="select-item"
               value="Center Right"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -143,7 +143,7 @@ export default function Example() {
           </SelectRow>
           <SelectRow className="row">
             <SelectItem
-              className="item"
+              className="select-item"
               value="Bottom Left"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -154,7 +154,7 @@ export default function Example() {
               <VisuallyHidden>Bottom Left</VisuallyHidden>
             </SelectItem>
             <SelectItem
-              className="item"
+              className="select-item"
               value="Bottom Center"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;
@@ -165,7 +165,7 @@ export default function Example() {
               <VisuallyHidden>Bottom Center</VisuallyHidden>
             </SelectItem>
             <SelectItem
-              className="item"
+              className="select-item"
               value="Bottom Right"
               focusOnHover={(event) => {
                 if (event.type === "mouseleave") return false;

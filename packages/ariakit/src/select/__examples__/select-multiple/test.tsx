@@ -4,6 +4,7 @@ import {
   press,
   queryByRole,
   render,
+  type,
 } from "ariakit-test-utils";
 import Example from ".";
 
@@ -69,10 +70,7 @@ test("select with keyboard", async () => {
   render(<Example />);
   await press.Tab();
   await press.ArrowDown();
-  await press("c");
-  await press("c");
-  await press("c");
-  await press("c");
+  await type("cccc");
   expect(getOption("Chocolate")).toHaveFocus();
   await press.Enter();
   expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "true");
@@ -86,7 +84,20 @@ test("select with keyboard", async () => {
   expect(getOption("Chocolate")).toHaveFocus();
   await press.Space();
   expect(getSelect()).toHaveTextContent("2 food selected");
-  await press("b");
-  await press("r");
+  await type("br");
   expect(getOption("Broccoli")).toHaveFocus();
+});
+
+test("select on click", async () => {
+  render(<Example />);
+  await click(getSelect());
+  await click(getOption("Chocolate"));
+  expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "true");
+  expect(getSelect()).toHaveTextContent("3 food selected");
+  await click(getOption("Chocolate"));
+  expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "false");
+  expect(getSelect()).toHaveTextContent("2 food selected");
+  await click(getOption("Cake"));
+  expect(getOption("Cake")).toHaveAttribute("aria-selected", "false");
+  expect(getSelect()).toHaveTextContent("Apple");
 });

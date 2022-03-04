@@ -1,4 +1,11 @@
-import { click, getByRole, hover, press, render } from "ariakit-test-utils";
+import {
+  click,
+  getByRole,
+  hover,
+  press,
+  render,
+  type,
+} from "ariakit-test-utils";
 import Example from ".";
 
 const getSelect = () => getByRole("combobox", { name: "Account" });
@@ -28,4 +35,16 @@ test("set value on move", async () => {
   await press.Escape();
   expect(getList()).not.toBeVisible();
   expect(getSelect()).toHaveTextContent(/Jane Doe/);
+});
+
+test("typeahead", async () => {
+  render(<Example />);
+  expect(getSelect()).toHaveTextContent(/John Doe/);
+  await press.Tab();
+  await type("jjj");
+  expect(getSelect()).toHaveTextContent(/Jane Doe/);
+  await press.Enter();
+  expect(getOption(/Jane Doe/)).toHaveFocus();
+  await type("harry");
+  expect(getSelect()).toHaveTextContent(/Harry Poe/);
 });

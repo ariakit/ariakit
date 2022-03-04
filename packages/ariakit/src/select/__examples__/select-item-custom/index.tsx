@@ -35,6 +35,7 @@ export default function Example() {
   const select = useSelectState({
     defaultValue: "john.doe@example.com",
     setValueOnMove: true,
+    sameWidth: true,
     gutter: 4,
   });
   return (
@@ -46,7 +47,7 @@ export default function Example() {
       </Select>
       <SelectPopover state={select} className="popover">
         {accounts.map((email) => (
-          <SelectItem key={email} value={email} className="item">
+          <SelectItem key={email} value={email} className="select-item">
             {renderValue(email)}
           </SelectItem>
         ))}

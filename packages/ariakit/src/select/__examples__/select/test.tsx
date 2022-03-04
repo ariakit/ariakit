@@ -6,6 +6,7 @@ import {
   press,
   render,
   sleep,
+  type,
 } from "ariakit-test-utils";
 import Example from ".";
 
@@ -146,14 +147,12 @@ test("typeahead visible", async () => {
   render(<Example />);
   await press.Tab();
   await press.Enter();
-  await press("b");
+  await type("b");
   expect(getOption("Banana")).toHaveFocus();
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
   expect(getOption("Banana")).toHaveAttribute("aria-selected", "false");
   await sleep(600);
-  await press("o");
-  await press("r");
-  await press("a");
+  await type("ora");
   expect(getOption("Orange")).toHaveFocus();
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
   expect(getOption("Orange")).toHaveAttribute("aria-selected", "false");
@@ -162,13 +161,11 @@ test("typeahead visible", async () => {
 test("typeahead hidden", async () => {
   render(<Example />);
   await press.Tab();
-  await press("g");
+  await type("g");
   expect(getSelect()).toHaveTextContent("Apple");
   expect(getList()).not.toBeVisible();
   await sleep(600);
-  await press("o");
-  await press("r");
-  await press("a");
+  await type("ora");
   expect(getSelect()).toHaveTextContent("Orange");
   expect(getList()).not.toBeVisible();
 });

@@ -9,10 +9,6 @@
   @apply justify-start h-auto gap-3 p-4;
 }
 
-.popover {
-  width: 320px;
-}
-
 .value {
   @apply flex flex-col items-start flex-1;
 }

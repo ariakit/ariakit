@@ -17,7 +17,10 @@ function renderValue(value: string[]) {
 }
 
 export default function Example() {
-  const select = useSelectState({ defaultValue: ["Apple", "Cake"] });
+  const select = useSelectState({
+    defaultValue: ["Apple", "Cake"],
+    sameWidth: true,
+  });
   return (
     <div className="wrapper">
       <SelectLabel state={select}>Favorite food</SelectLabel>
@@ -28,7 +31,7 @@ export default function Example() {
       {select.mounted && (
         <SelectPopover state={select} className="popover">
           {list.map((value) => (
-            <SelectItem key={value} value={value} className="item">
+            <SelectItem key={value} value={value} className="select-item">
               <SelectItemCheck />
               {value}
             </SelectItem>

@@ -23,7 +23,6 @@
 }
 
 .popover {
-  width: 200px;
   @apply
     max-h-80
     z-50
@@ -45,7 +44,7 @@
     focus-visible:ariakit-outline;
 }
 
-.item {
+.select-item {
   outline: none;
   @apply
     flex
