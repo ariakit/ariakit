@@ -1,0 +1,61 @@
+.wrapper {
+  @apply flex flex-col gap-2;
+}
+
+.select {
+  width: 200px;
+  @apply
+    flex
+    h-10
+    cursor-default
+    items-center
+    justify-between
+    gap-1
+    rounded-lg
+    px-4
+    text-base
+    bg-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover
+    focus-visible:ariakit-outline-input
+    aria-disabled:opacity-50;
+}
+
+.popover {
+  @apply
+    max-h-80
+    z-50
+    flex
+    flex-col
+    rounded-lg
+    border
+    p-2
+    border-solid
+    border-canvas-4
+    bg-canvas-4
+    text-canvas-4
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    drop-shadow
+    dark:drop-shadow-dark
+    focus-visible:ariakit-outline;
+}
+
+.select-item {
+  outline: none;
+  @apply
+    flex
+    gap-2
+    items-center
+    scroll-m-2
+    cursor-default
+    rounded
+    p-2
+    aria-disabled:opacity-50
+    active-item:bg-primary-2
+    active-item:text-primary-2
+    dark:active-item:bg-primary-2-dark
+    dark:active-item:text-primary-2-dark;
+}

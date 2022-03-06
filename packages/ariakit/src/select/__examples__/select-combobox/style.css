@@ -1,0 +1,36 @@
+@import url("../select/style.css");
+
+.popover {
+  @apply p-0;
+}
+
+.combobox {
+  @apply
+    h-10
+    rounded
+    border-none
+    bg-canvas-1
+    px-4
+    m-2
+    text-base
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover;
+}
+
+.combobox:focus {
+  outline: 2px solid theme("colors.primary-2.DEFAULT");
+  outline-offset: 0;
+}
+
+.combobox-list {
+  background-color: inherit;
+  border-radius: inherit;
+  @apply max-h-60 overflow-auto px-2 pb-2;
+}
+
+.select-item {
+  @apply scroll-mt-0;
+}

@@ -1,5 +1,6 @@
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
 import { getPopupRole, isTextField } from "ariakit-utils/dom";
+import { hasFocus } from "ariakit-utils/focus";
 import {
   useBooleanEventCallback,
   useEventCallback,
@@ -58,7 +59,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       "setValue",
       "move",
       "hide",
-      "virtualFocus",
       "baseRef",
       "contentElement",
       "mounted",
@@ -111,15 +111,15 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
-        if (state?.virtualFocus) return;
+        const baseElement = state?.baseRef.current;
+        if (!baseElement) return;
+        if (hasFocus(baseElement)) return;
         // When the combobox is not working with virtual focus, the items will
         // receive DOM focus. Therefore, pressing printable keys will not fill
         // the text field. So we need to programmatically focus on the text
         // field when the user presses printable keys.
         const printable = event.key.length === 1;
         if (printable || event.key === "Backspace" || event.key === "Delete") {
-          const baseElement = state?.baseRef.current;
-          if (!baseElement) return;
           queueMicrotask(() => baseElement.focus());
           if (isTextField(baseElement)) {
             // If the combobox element is a text field, we should update the
@@ -131,7 +131,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
           }
         }
       },
-      [onKeyDownProp, state?.virtualFocus, state?.baseRef, state?.setValue]
+      [onKeyDownProp, state?.baseRef, state?.setValue]
     );
 
     props = useWrapElement(
