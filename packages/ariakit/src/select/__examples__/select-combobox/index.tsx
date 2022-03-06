@@ -39,12 +39,9 @@ export default function Example() {
         />
         <ComboboxList state={combobox} className="combobox-list">
           {combobox.matches.map((value) => (
-            <SelectItem
-              as={ComboboxItem}
-              key={value}
-              value={value}
-              className="select-item"
-            />
+            <ComboboxItem key={value} focusOnHover className="select-item">
+              {(props) => <SelectItem {...props} value={value} />}
+            </ComboboxItem>
           ))}
         </ComboboxList>
       </SelectPopover>

@@ -190,8 +190,11 @@ export const useSelect = createHook<SelectOptions>(
     }, [state.value]);
 
     const labelId = useRefId(state.labelRef);
-    const itemsWithValue = useMemo(
-      () => state.items.filter((item) => item.value != null),
+    const label = props["aria-label"];
+    const labelledBy = props["aria-labelledby"] || labelId;
+    const values = useMemo(
+      // Filter out items without value and duplicate values.
+      () => [...new Set(state.items.map((i) => i.value!).filter(Boolean))],
       [state.items]
     );
 
@@ -206,8 +209,8 @@ export const useSelect = createHook<SelectOptions>(
             as="select"
             tabIndex={-1}
             aria-hidden
-            // TODO: Add props[aria-label] and props[aria-labelledby]
-            aria-labelledby={labelId}
+            aria-label={label}
+            aria-labelledby={labelledBy}
             name={name}
             value={state.value}
             multiple={multiSelectable}
@@ -221,9 +224,9 @@ export const useSelect = createHook<SelectOptions>(
               );
             }}
           >
-            {itemsWithValue.map((item) => (
-              <option key={item.id} value={item.value}>
-                {item.value}
+            {values.map((value) => (
+              <option key={value} value={value}>
+                {value}
               </option>
             ))}
           </VisuallyHidden>
@@ -231,12 +234,13 @@ export const useSelect = createHook<SelectOptions>(
         </>
       ),
       [
-        labelId,
+        label,
+        labelledBy,
         name,
         state.value,
         multiSelectable,
         state.setValue,
-        itemsWithValue,
+        values,
       ]
     );
 

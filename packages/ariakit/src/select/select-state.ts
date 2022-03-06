@@ -25,7 +25,6 @@ import {
 } from "./__utils";
 
 type Value = string | string[];
-// TODO: Refactor
 type MutableValue<T extends Value = Value> = T extends string ? string : T;
 
 /**
