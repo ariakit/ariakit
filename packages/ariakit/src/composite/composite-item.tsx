@@ -84,13 +84,14 @@ function findNextPageItemId(
   let prevDifference: number | undefined;
   // We need to loop through the next items to find the one that is closest to
   // the next page offset.
-  for (let i = 0; ; i += 1) {
+  for (let i = 0; i < items.length; i += 1) {
     const previousId = id;
     id = next(i);
-    if (!id || id === previousId) break;
+    if (!id) break;
+    if (id === previousId) continue;
     const item = findEnabledItemById(items, id);
     const itemElement = item?.ref.current;
-    if (!itemElement) break;
+    if (!itemElement) continue;
     const itemOffset = getItemOffset(itemElement, pageUp);
     const difference = itemOffset - nextPageOffset;
     const absDifference = Math.abs(difference);

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { BasePlacement } from "@popperjs/core";
+import { getPopupRole } from "ariakit-utils/dom";
 import { queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
@@ -250,6 +251,7 @@ export const useSelect = createHook<SelectOptions>(
       role: "combobox",
       "aria-autocomplete": "none",
       "aria-labelledby": labelId,
+      "aria-haspopup": getPopupRole(state.contentElement, "listbox"),
       "data-autofill": autofill ? "" : undefined,
       children,
       ...props,
