@@ -102,6 +102,21 @@ export default function Home() {
           <Link href="/examples/radio">Radio</Link>
         </li>
         <li>
+          <Link href="/examples/select">Select</Link>
+        </li>
+        <li>
+          <Link href="/examples/select-combobox">Select combobox</Link>
+        </li>
+        <li>
+          <Link href="/examples/select-grid">Select grid</Link>
+        </li>
+        <li>
+          <Link href="/examples/select-item-custom">Select item custom</Link>
+        </li>
+        <li>
+          <Link href="/examples/select-multiple">Select multiple</Link>
+        </li>
+        <li>
           <Link href="/examples/tab">Tab</Link>
         </li>
         <li>
