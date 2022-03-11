@@ -27,7 +27,7 @@ test("tab", async () => {
   expect(getByText("Accessible button")).toHaveFocus();
 });
 
-test("Enter", async () => {
+test("enter", async () => {
   const alertMock = jest.spyOn(window, "alert").mockImplementation();
 
   render(<Example />);
@@ -39,7 +39,7 @@ test("Enter", async () => {
   alertMock.mockRestore();
 });
 
-test("Space", async () => {
+test("space", async () => {
   const alertMock = jest.spyOn(window, "alert").mockImplementation();
 
   render(<Example />);
